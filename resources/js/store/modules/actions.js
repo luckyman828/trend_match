@@ -35,6 +35,50 @@ export default {
         console.log("API updating record. Action type: " + action_code + " for user: " + user_id + " and product: " + productToUpdate)
         commit('setAction', {productToUpdate, user_id, action_code})
 
+        await axios.put(`/api/action`, {
+          action_code: action_code,
+          user_id: user_id,
+          product_id: productToUpdate
+        }).then(response => {
+          console.log(response.data)
+        }).catch(err =>{
+          console.log(err);
+        })
+
+      },
+
+      // Update multiple actions for the logged in user
+      async updateActions({commit}, {user_id, productsToUpdate, action_code}) {
+
+        console.log("API updating records. Action type: " + action_code + " for user: " + user_id + " and product: " + productsToUpdate)
+
+        // Construct correctly formatted action objects from the received data
+        const actionsToInsert = []
+        productsToUpdate.forEach(product => {
+          const data = {
+            user_id: user_id,
+            product_id: product,
+            action: action_code
+          }
+          actionsToInsert.push(data)
+        })
+
+        commit('setActions', {actionsToInsert})
+
+        // console.log(actionsToInsert)
+        // let json = JSON.stringify(actionsToInsert)
+        // let post_data={json_data:json}
+        // console.log(post_data);
+        actionsToInsert.forEach(action => {
+          const response = axios.put(`/api/actions`, {
+            user_id: action.user_id,
+            product_id: action.user_id,
+            action_code: action.action
+          })
+          console.log(response.data)
+        })
+        // console.log(response.err)
+
         // await axios.put(`/api/action`, {
         //   action_code: action_code,
         //   user_id: user_id,
@@ -63,7 +107,12 @@ export default {
           },
           data: {action: action_code}
         })
-      }
+      },
+      setActions: (state, {actionsToInsert} ) => {
+        Action.insert({
+          data: actionsToInsert
+        })
+      },
         
     }
 

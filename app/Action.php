@@ -11,4 +11,10 @@ class Action extends Model
     protected $primaryKey = ['user_id', 'product_id'];
     public $incrementing = false;
     protected $table = 'user_products';
+
+    protected $fillable = [
+        'user_id',
+        'product_id',
+        'action',
+        ];
 }

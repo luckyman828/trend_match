@@ -2,6 +2,7 @@
     <div class="products card">
         <table>
             <tr class="header-row">
+                <th>Select</th>
                 <th>Product</th>
                 <th></th>
                 <th>Focus</th>
@@ -16,24 +17,28 @@
             </tr>
             <template v-if="!loading">
                 <tr class="product-row"
-                v-for="product in products" :key="product.id">
+                v-for="(product, index) in products" :key="product.id">
+                    <td><input type="checkbox" @change="onSelect(index)"></td>
                     <td class="image"><img :src="product.images"></td>
                     <td class="title"><span>{{product.title}}</span></td>
-                    <td>{{product.focus}}</td>
-                    <td>{{product.ins}}</td>
-                    <td>{{product.outs}}</td>
-                    <td>{{product.nds}}</td>
+                    <td @click="setTooltip(product.focus)">{{product.focus.length}}</td>
+                    <td @click="setTooltip(product.ins)">{{product.ins.length}}</td>
+                    <td @click="setTooltip(product.outs)">{{product.outs.length}}</td>
+                    <td @click="setTooltip(product.nds)">{{product.nds.length}}</td>
                     <td>{{product.comments.length}}</td>
                     <td class="">{{product.id}}</td>
                     <td><span class="button green" :class="[{ active: product.userAction == 2}]" @click="toggleInOut(product.id, 1, product.userAction)">In</span></td>
                     <td><span class="button red" :class="[{ active: product.userAction == 1}]"  @click="toggleInOut(product.id, 0, product.userAction)">Out</span></td>
-                    <td><span class="button" @click="onViewSingle(product)">View</span></td>
+                    <td><span class="button" @click="onViewSingle(index)">View</span></td>
                 </tr>
             </template>
         </table>
         <template v-if="loading">
             <Loader/>
         </template>
+        <div class="tool-tip card">
+            <p v-for="user in tooltip" :key="user.id">{{user.user.email}}</p>
+        </div>
     </div>
 </template>
 
@@ -51,6 +56,9 @@ export default {
     components: {
         Loader,
     },
+    data: function() { return {
+        tooltip: {}
+    }},
     methods: {
         ...mapActions('entities/actions', ['updateAction']),
         toggleInOut(productID, actionType, userAction) {
@@ -63,10 +71,16 @@ export default {
                 this.updateAction({user_id: this.authUser.id, productToUpdate: productID, action_code: actionType})
             }
         },
-        onViewSingle(product) {
+        onViewSingle(index) {
             // Emit event to parent
-            this.$emit('viewAsSingle', product)
+            this.$emit('viewAsSingle', index)
         },
+        onSelect(index) {
+            this.$emit('onSelect', index)
+        },
+        setTooltip(data) {
+            this.tooltip = data
+        }
     }
 }
 </script>
@@ -164,28 +178,10 @@ export default {
         50% {opacity: 1;}
         100% {opacity: 0;}
     }
-    .button {
-        padding: 4px 12px;
+    input[type=checkbox] {
         display: block;
-        text-align: center;
-        border: solid 2px;
-        margin: 0 4px;
-        cursor: pointer;
-        &.green {
-            border-color: $green;
-            color: $green;
-            &.active {
-                background: $green;
-                color: white;
-            }
-        }
-        &.red {
-            border-color: $red;
-            color: $red;
-            &.active {
-                background: $red;
-                color: white;
-            }
-        }
+        margin: auto;
+        height: 20px;
+        width: 25px;
     }
 </style>

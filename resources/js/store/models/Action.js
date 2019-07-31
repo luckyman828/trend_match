@@ -17,7 +17,6 @@ export default class Action extends Model {
       user_id: this.attr(null),
       product_id: this.attr(''),
       action: this.attr(''),
-      updated_at: this.attr(''),
       product: this.belongsTo(Product, 'product_id'),
       user: this.belongsTo(User, 'user_id'),
     }

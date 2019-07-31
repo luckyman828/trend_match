@@ -35,11 +35,19 @@ use Illuminate\Http\Request;
     Route::post('action', 'ActionController@store');
     // Update action
     Route::put('action', 'ActionController@store');
+    // Update actions
+    Route::put('actions', 'ActionController@storeMany');
     // Delete action
     Route::delete('action/{user_id}/{product_id}', 'ActionController@destroy');
 
     // xxx USERS xxx
     // Get countries
     Route::get('countries', 'UserController@countries');
+
+    // xxx Comments xxx
+    // create new comment
+    Route::post('comment', 'CommentController@store');
+    // Edit comment
+    Route::put('comment', 'CommentController@store');
 
 // });

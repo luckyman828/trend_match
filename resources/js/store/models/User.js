@@ -13,9 +13,9 @@ export default class User extends Model {
     const data = {
       id: this.attr(null),
       email: this.attr(''),
-      name: this.attr(''),
+      // name: this.attr(''),
       country_id: this.attr(''),
-      team_ids: this.attr(''),
+      // team_ids: this.attr(''),
       role_id: this.attr(''),
       comments: this.hasMany(Comment, 'user_id'),
       country: this.belongsTo(Country, 'country_id')

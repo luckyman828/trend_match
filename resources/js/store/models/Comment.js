@@ -14,6 +14,8 @@ export default class Comment extends Model {
       user_id: this.attr(''),
       product_id: this.attr(''),
       comment: this.attr(''),
+      important: this.attr(''),
+      final: this.attr(''),
       user: this.belongsTo(User, 'user_id')
     }
 

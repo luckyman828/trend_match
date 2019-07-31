@@ -6,13 +6,15 @@
                 <div class="grid-2">
                     <h2>Welcome</h2>
                 </div>
-                <product-single :product="singleProduct" :loading="loadingProducts" :authUser="authUser"/>
-                <products :products="products" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct"/>
-                    
+                <product-filter :productTotals="productTotals" @setProductFilter="setProductFilter" :currentFilter="currentProductFilter"/>
+                <product-single :product="singleProductToShow" :nextProductID="nextSingleProductID" :loading="loadingProducts" :authUser="authUser" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/>
+                <products :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct"/>
+
                 <!-- <transition name="fade">
                     <router-view></router-view>
                 </transition> -->
             </div>
+            <SelectedController :productTotals="productTotals" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction"/>
         </div>
     </section>
 </template>
@@ -23,10 +25,13 @@ import { mapActions, mapGetters } from 'vuex'
 import Sidebar from './components/Sidebar'
 import Products from './components/Products'
 import ProductSingle from './components/ProductSingle'
+import ProductFilter from './components/ProductFilter'
+import SelectedController from './components/SelectedController'
 import Comment from './store/models/Comment'
 import Product from './store/models/Product'
 import User from './store/models/User'
 import Country from './store/models/Country'
+import products from './store/modules/products';
 
 export default{
     name: 'app',
@@ -35,69 +40,103 @@ export default{
         Sidebar,
         Products,
         ProductSingle,
+        ProductFilter,
+        SelectedController,
     },
     data: function () { return {
         collectionId: '8762838c-ffe2-4124-b659-6092f92c64a8',
-        singleProduct: {},
+        singleProductID: -1,
+        currentProductFilter: 'overview',
+        selectedProductIDs: [],
     }},
     computed: {
         ...mapGetters('entities/products', ['loadingProducts']),
         ...mapGetters('entities/actions', ['loadingActions']),
         ...mapGetters('entities/comments', ['loadingComments']),
-        productsSmart () {
-            return Product.query().with('actions.user').all()
-        },
         products () {
-            const products = this.$store.getters['entities/products/all']()
-            const allActions = this.actions
-            const totalUsers = this.users.length
+            const products = Product.query().with('actions.user.country').with('comments.user.country').all()
+            const totalUsers = this.users
             const userId = this.authUser.id
             const data = []
             products.forEach(product => {
-                product.actions = 0
-                product.ins = 0
-                product.outs = 0
-                product.focus = 0
-                product.comments = []
+                product.ins = []
+                product.outs = []
+                product.focus = []
                 product.userAction = 0
+                product.nds = JSON.parse(JSON.stringify(totalUsers)) // Copy our users into a new variable
+                product.actions.forEach(action => {
+                    if (action.action == 0)
+                        product.outs.push(action)
+                    if (action.action == 1)
+                        product.ins.push(action)
+                    if (action.action == 2)
+                        product.focus.push(action)
 
-                allActions.forEach(action => {
-                    if (action.product_id == product.id)
+                    // Find the action this user has taken
+                    if (action.user_id == userId)
                     {
-                        product.actions ++
                         if (action.action == 0)
-                            product.outs ++
+                            product.userAction = 1
                         if (action.action == 1)
-                            product.ins ++
-                        if (action.action == 2)
-                            product.focus ++
-
-                        if (action.user_id == userId)
-                        {
-                            if (action.action == 0)
-                                product.userAction = 1
-                            if (action.action == 1)
-                                product.userAction = 2
-                        }
-
+                            product.userAction = 2
                     }
-                })
-                product.nds = totalUsers - product.actions
 
-                this.comments.forEach(comment => {
-                    if (comment.product_id == product.id)
-                        product.comments.push(comment)
+                    var index = product.nds.findIndex(nd => nd.id == action.user_id)
+                        product.nds.splice(index,1)
                 })
-
                 data.push(product)
             })
             return data
         },
-        actions() {
-            return this.$store.getters['entities/actions/all']()
+        productsFiltered() {
+            const method = (this.currentProductFilter == 'ins') ? 2 : (this.currentProductFilter == 'outs') ? 1 : 0
+            const products = this.products
+            if (method > 0) {
+                const productsFiltered = products.filter(product => {
+                    return product.userAction == method
+                })
+                return productsFiltered
+            } else {
+                return products
+            }
+        },
+        selectedProducts() {
+            const products = this.products
+            const selectedProducts = []
+            this.selectedProductIDs.forEach(index => {
+                selectedProducts.push(products[index].id)
+            })
+            return selectedProducts
+        },
+        productTotals() {
+            const data = {
+                products: this.products.length,
+                ins: 0,
+                outs: 0,
+                nds: 0,
+            }
+            this.products.forEach(product => {
+                if (product.userAction == 2)
+                    data.ins ++
+                else if (product.userAction == 1)
+                    data.outs ++
+                else data.nds ++
+            })
+            return data
+        },
+        singleProductToShow() {
+            const productToReturn = (this.singleProductID != -1) ? this.products[this.singleProductID] : {}
+            return productToReturn
+        },
+        nextSingleProductID() {
+            const nextSingleProductID = ( this.singleProductID < this.products.length -1 ) ? this.singleProductID +1 : -1
+            return nextSingleProductID
         },
         users() {
             return User.query().with('country').all()
+        },
+        actions() {
+            return this.$store.getters['entities/actions/all']()
         },
         comments() {
             return Comment.query().with('user.country').all()
@@ -116,8 +155,31 @@ export default{
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/comments', ['fetchComments']),
         ...mapActions('entities/countries', ['fetchCountries']),
-        setSingleProduct(product) {
-            this.singleProduct = product
+        ...mapActions('entities/actions', ['updateAction']),
+        // ...mapActions('entities/actions', ['updateActions']),
+        setSingleProduct(index) {
+            this.singleProductID = index
+        },
+        closeSingleProduct() {
+            this.singleProductID = -1
+        },
+        setNextSingle() {
+            this.singleProductID = this.nextSingleProductID
+        },
+        setProductFilter(filter) {
+            this.currentProductFilter = filter
+        },
+        setSelectedProduct(index) {
+            // Check if index already exists in array. If it exists remove it, else add it to array
+            const selected = this.selectedProductIDs
+            const found = selected.findIndex(el => el == index)
+            const result = (found >= 0) ? selected.splice(found, 1) : selected.push(index)
+        },
+        submitSelectedAction(method) {
+            const actionType = (method == 'in') ? 1 : 0
+            this.selectedProducts.forEach(product => {
+                this.updateAction({user_id: this.authUser.id, productToUpdate: product, action_code: actionType})
+            })
         }
     },
     created() {
@@ -233,6 +295,38 @@ export default{
             width: 150px;
             font-size: 14px;
             cursor: pointer;
+        }
+    }
+    .button {
+        padding: 4px 12px;
+        display: block;
+        text-align: center;
+        border: $dark solid 2px;
+        margin: 0 4px;
+        cursor: pointer;
+        &.active {
+            background: $dark;
+            color: white;
+        }
+        &.green {
+            border-color: $green;
+            color: $green;
+            &.active {
+                background: $green;
+                color: white;
+            }
+        }
+        &.red {
+            border-color: $red;
+            color: $red;
+            &.active {
+                background: $red;
+                color: white;
+            }
+        }
+        &.disabled {
+            pointer-events: none;
+            opacity: .5;
         }
     }
 </style>
