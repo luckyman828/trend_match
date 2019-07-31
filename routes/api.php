@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 
     // xxx CATALOGS xxx
     // List catelogues available to logged in user
-    Route::get('catalogues', 'CatalogueController@index');
+    Route::get('catalogues', 'CatalogueController@catalogues');
     // List collections from catalogue
     Route::get('catalogue/{catalogue_id}/collections', 'CatalogueController@collections');
     // List products from collection

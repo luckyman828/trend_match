@@ -9,6 +9,8 @@ import Comment from './models/Comment';
 import comments from './modules/comments';
 import Country from './models/Country';
 import countries from './modules/countries';
+import Collection from './models/Collection';
+import collections from './modules/collections';
 
 const database = new Database()
 
@@ -17,5 +19,6 @@ database.register(Action, actions)
 database.register(User, users)
 database.register(Comment, comments)
 database.register(Country, countries)
+database.register(Collection, collections)
 
 export default database

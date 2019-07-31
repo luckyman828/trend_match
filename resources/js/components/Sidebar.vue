@@ -2,8 +2,8 @@
     <div class="sidebar">
         <img src="/images/44report-logo_color@2x.png" alt="Trendmatch Insights logo in color" class="logo" height="38px">
         <ul class="navbar">
-            <li><a href="#" class="active"><i class="fas fa-chart-bar"></i>Oversigt</a></li>
-            <li><a href="#"><i class="fas fa-chart-line"></i>Title 2</a></li>
+            <li><router-link to="/catalogue"><i class="fas fa-chart-bar"></i>Catalogue</router-link></li>
+            <li><router-link to="/collection"><i class="fas fa-chart-line"></i>Collection</router-link></li>
             <li><a href="#"><i class="fas fa-chart-line"></i>Title 2</a></li>
         </ul>
     </div>
@@ -12,6 +12,9 @@
 <script>
 export default {
     name: 'Sidebar',
+    props: [
+        'authUser'
+    ]
 }
 </script>
 

@@ -20,7 +20,7 @@ use App\Http\Resources\User as UserResource;
 class CatalogueController extends Controller
 {
     // Return all catalogues available to the logged in user
-    public function index()
+    public function catalogues()
     {
         $catalogues = Catalogue::get();
 

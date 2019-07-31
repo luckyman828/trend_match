@@ -8,5 +8,5 @@ class Catalogue extends Model
 {
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $table = 'collections';
+    protected $table = 'catalogs';
 }
