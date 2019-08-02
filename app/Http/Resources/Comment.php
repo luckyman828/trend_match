@@ -23,6 +23,7 @@ class Comment extends JsonResource
             'comment' => $this->comment,
             'important' => $this->important,
             'final' => $this->final,
+            'product_final' => $this->product_final,
         ];
     }
 }

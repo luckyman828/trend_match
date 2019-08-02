@@ -42,6 +42,7 @@
                         <small>{{comment.user.email}},</small>
                         <small> important: {{comment.important}},</small>
                         <small> final: {{comment.final}}</small>
+                        <span :class="{active: comment.product_final}" @click="onMarkAsFinal(comment)" class="button green">Mark as Final</span>
                     </div>
                     <form @submit="onSubmitComment">
                         <input type="text" name="comment" id="comment-input" placeholder="Write a comment.." v-model="comment.comment">
@@ -76,7 +77,8 @@ export default {
                 product_id: '',
                 comment: '',
                 important: false,
-                final: false
+                final: false,
+                product_final: false,
             },
             user_id: this.authUser.id
     }},
@@ -90,6 +92,7 @@ export default {
     },
     methods: {
         ...mapActions('entities/comments', ['createComment']),
+        ...mapActions('entities/comments', ['markAsFinal']),
         onCloseSingle() {
             // Emit event to parent
             this.$emit('closeSingle', -1)
@@ -100,6 +103,13 @@ export default {
         },
         onNextSingle() {
             this.$emit('nextSingle')
+        },
+        onMarkAsFinal(comment) {
+            console.log('Comment: ' + comment.id)
+            // comment.product_final = !comment.product_final; // This let's us toggle the comments status
+            comment.product_final = true; // This always sets the comment as final
+            console.log(comment.product_final)
+            this.markAsFinal({comment: comment})
         }
     }
 }

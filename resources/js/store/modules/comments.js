@@ -37,11 +37,35 @@ export default {
           comment_body: comment.comment,
           important: comment.important,
           final: comment.final,
+          product_final: comment.product_final,
 
         })
         console.log(response.data)
 
-      }
+      },
+      // Update the action of for a product for a user
+        async markAsFinal({commit}, {comment}) {
+ 
+          console.log('Module updating comment')
+          commit('updateFinal', {comment: comment})
+    
+          await axios.put(`/api/comment/update`, {
+
+            id: comment.id,
+            user_id: comment.user_id,
+            product_id: comment.product_id,
+            comment_body: comment.comment,
+            important: comment.important,
+            final: comment.final,
+            product_final: comment.product_final,
+
+          }).then(response => {
+            console.log(response.data)
+          }).catch(err =>{
+            console.log(err);
+          })
+ 
+        },
     },
 
     mutations: {
@@ -52,6 +76,19 @@ export default {
       },
       addComment: (state, {comment} ) => {
         Comment.insert({
+          data: comment
+        })
+      },
+      updateFinal: (state, {comment} ) => {
+        // Remove final status from this products comments
+        Comment.update({
+          where: (existing_comment) => {
+            return (existing_comment.product_final && existing_comment.product_id === comment.product_id)
+          },
+          data: {product_final: 0}
+        })
+        // Set new comment as final
+        Comment.update({
           data: comment
         })
       }

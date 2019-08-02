@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use App\Action;
 Use App\Http\Resources\Action as ActionResource;
 use Illuminate\Support\Facades\DB;
-
+use App\ProductFinalAction;
+Use App\Http\Resources\ProductFinalAction as ProductFinalActionResource;
 
 class ActionController extends Controller
 {
@@ -40,6 +41,24 @@ class ActionController extends Controller
 
         // DB::raw('call sp_insert_or_update_user_product_action(?, ?, ?)', [$request->input('user_id'), $request->input('product_id'), $request->input('action')]);
     }
+
+    public function storeFinal(Request $request)
+    {
+        // First, check if an action for the following product and phase already exists
+        $existingFinalAction = ProductFinalAction::where('product_id', $request->product_id)->where('phase', $request->phase)->first();
+
+        $finalAction = ($existingFinalAction) ? $existingFinalAction : new ProductFinalAction;
+        
+        $finalAction->phase = $request->input('phase');
+        $finalAction->product_id = $request->input('product_id');
+        $finalAction->action = $request->input('action_code');
+
+        if($finalAction->save()) {
+            return new ProductFinalActionResource($finalAction);
+        }
+    }
+
+    
 
     public function storeMany(Request $request)
     {

@@ -4,7 +4,7 @@
         <h2 v-if="!loadingCollections">{{collection.title}}</h2>
         <product-filter :productTotals="productTotals" @setProductFilter="setProductFilter" :currentFilter="currentProductFilter"/>
         <product-single :product="singleProductToShow" :nextProductID="nextSingleProductID" :loading="loadingProducts" :authUser="authUser" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/>
-        <products :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct"/>
+        <products :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct"/>
         <SelectedController :productTotals="productTotals" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction"/>
     </div>
 </template>
@@ -19,8 +19,11 @@ import SelectedController from '../SelectedController'
 import Comment from '../../store/models/Comment'
 import Product from '../../store/models/Product'
 import User from '../../store/models/User'
+import Team from '../../store/models/Team'
 import Country from '../../store/models/Country'
 import Collection from '../../store/models/Collection'
+import ProductFinalAction from '../../store/models/ProductFinalAction';
+import CommentVote from '../../store/models/CommentVote';
 
 export default{
     name: 'collection',
@@ -48,7 +51,7 @@ export default{
             return Collection.find(this.collectionId)
         },
         products () {
-            const products = Product.query().with('actions.user.country').with('comments.user.country').all()
+            const products = Product.query().with('actions.user.country').with(['comments.user.country', 'comments.votes']).with('productFinalAction').all()
             const totalUsers = this.users
             const userId = this.authUser.id
             const data = []
@@ -127,16 +130,25 @@ export default{
             return nextSingleProductID
         },
         users() {
-            return User.query().with('country').all()
+            return User.query().with('country').with('team').all()
         },
         actions() {
             return this.$store.getters['entities/actions/all']()
         },
         comments() {
-            return Comment.query().with('user.country').all()
+            return Comment.query().with('user.country|team').with('votes').all()
         },
         countries() {
             return Country.query().all()
+        },
+        teams() {
+            return Team.query().all()
+        },
+        finalActions() {
+            return ProductFinalAction.query().all()
+        },
+        commentVotes() {
+            return CommentVote.query().with('comment').all()
         },
         authUser() {
             return this.$store.getters.authUser;
@@ -151,6 +163,10 @@ export default{
         ...mapActions('entities/comments', ['fetchComments']),
         ...mapActions('entities/countries', ['fetchCountries']),
         ...mapActions('entities/actions', ['updateAction']),
+        ...mapActions('entities/teams', ['fetchTeams']),
+        ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
+        ...mapActions('entities/productFinalActions', ['fetchFinalActions']),
+        ...mapActions('entities/productFinalActions', ['updateFinalAction']),
         // ...mapActions('entities/actions', ['updateActions']),
         setSingleProduct(index) {
             this.singleProductID = index
@@ -173,7 +189,7 @@ export default{
         submitSelectedAction(method) {
             const actionType = (method == 'in') ? 1 : 0
             this.selectedProducts.forEach(product => {
-                this.updateAction({user_id: this.authUser.id, productToUpdate: product, action_code: actionType})
+                this.updateFinalAction({productToUpdate: product, phase: this.collection.phase, action_code: actionType})
             })
         }
     },
@@ -185,6 +201,9 @@ export default{
         this.fetchUsers({collection_id: this.collectionId})
         this.fetchComments({collection_id: this.collectionId})
         this.fetchCollections()
+        this.fetchFinalActions({collection_id: this.collectionId})
+        this.fetchTeams({collection_id: this.collectionId})
+        this.fetchCommentVotes({collection_id: this.collectionId})
     }
 }
 </script>

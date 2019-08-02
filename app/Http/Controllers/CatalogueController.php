@@ -16,6 +16,12 @@ use App\Comment;
 Use App\Http\Resources\Comment as CommentResource;
 use App\User;
 use App\Http\Resources\User as UserResource;
+use App\ProductFinalAction;
+use App\Http\Resources\ProductFinalAction as ProductFinalActionResource;
+use App\Team;
+use App\Http\Resources\Team as TeamResource;
+use App\CommentVote;
+use App\Http\Resources\CommentVote as CommentVoteResource;
 
 class CatalogueController extends Controller
 {
@@ -56,6 +62,16 @@ class CatalogueController extends Controller
         return ActionResource::collection($actions);
     }
 
+    // Return all products in the specified collection
+    public function finalActions()
+    {
+        // $actions = Acitvity::where('collection_id', $collection_id)->get();
+        $finalActions = ProductFinalAction::get();
+
+        // Return collection of products as a resource
+        return ProductFinalActionResource::collection($finalActions);
+    }
+
     // Return count of comments per product
     public function comments($collection_id)
     {
@@ -82,6 +98,22 @@ class CatalogueController extends Controller
 
         // Return collection of users as a resource
         return UserResource::collection($users);
+    }
+
+    public function teams($collection_id)
+    {
+        $teams = Team::get();
+
+        // Return collection of users as a resource
+        return TeamResource::collection($teams);
+    }
+
+    public function commentVotes($collection_id)
+    {
+        $comment_votes = CommentVote::get();
+
+        // Return collection of users as a resource
+        return CommentVoteResource::collection($comment_votes);
     }
 
 }

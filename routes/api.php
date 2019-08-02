@@ -29,12 +29,20 @@ use Illuminate\Http\Request;
     Route::get('collection/{collection_id}/comments', 'CatalogueController@comments');
     // List users from collection
     Route::get('collection/{collection_id}/users', 'CatalogueController@users');
+    // List final actions from collection
+    Route::get('collection/{collection_id}/final-actions', 'CatalogueController@finalActions');
+    // List teams from collection
+    Route::get('collection/{collection_id}/teams', 'CatalogueController@teams');
+    // List comment votes
+    Route::get('collection/{collection_id}/comment-votes', 'CatalogueController@commentVotes');
 
     // xxx ACTIONS xxx
     // Create new action
     Route::post('action', 'ActionController@store');
     // Update action
     Route::put('action', 'ActionController@store');
+    // Update actions
+    Route::put('final-action', 'ActionController@storeFinal');
     // Update actions
     Route::put('actions', 'ActionController@storeMany');
     // Delete action
@@ -49,5 +57,7 @@ use Illuminate\Http\Request;
     Route::post('comment', 'CommentController@store');
     // Edit comment
     Route::put('comment', 'CommentController@store');
+    // Update comment
+    Route::put('comment/update', 'CommentController@update');
 
 // });

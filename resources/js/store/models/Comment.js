@@ -1,6 +1,7 @@
 // Product Model
 import { Model } from '@vuex-orm/core'
 import User from './User';
+import CommentVote from './CommentVote';
 
 export default class Comment extends Model {
   // This is the name used as module name of the Vuex Store.
@@ -16,7 +17,9 @@ export default class Comment extends Model {
       comment: this.attr(''),
       important: this.attr(''),
       final: this.attr(''),
-      user: this.belongsTo(User, 'user_id')
+      product_final: this.attr(''),
+      user: this.belongsTo(User, 'user_id'),
+      votes: this.hasMany(CommentVote, 'comment_id'),
     }
 
     return data
