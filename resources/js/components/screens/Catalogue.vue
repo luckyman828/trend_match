@@ -1,155 +1,247 @@
 <template>
     <div class="catalogue">
-        <h1>Catalogue</h1>
-        <div class="card">
-            <table>
-            <tr class="header-row">
-                <th>Select</th>
-                <th>ID</th>
-                <th>Collection</th>
-                <th>Created</th>
-                <th>Deadline</th>
-                <th>Status</th>
-                <th></th>
-                <th>Action</th>
-                <th></th>
-                <th>View</th>
-            </tr>
-            <template v-if="!loadingCollections">
-                <tr class="product-row"
-                v-for="(collection, index) in collections" :key="collection.id">
-                    <td><input type="checkbox" @change="onSelect(index)"></td>
-                    <td><span>{{collection.id}}</span></td>
-                    <td><span>{{collection.title}}</span></td>
-                    <td><span>{{collection.start_time}}</span></td>
-                    <td><span>{{collection.end_time}}</span></td>
-                    <td><span>Stage {{collection.phase}}</span></td>
-                    <td><span>To be calculated</span></td>
-                    <td><span class="button">Action</span></td>
-                    <td><span class="button">Action</span></td>
-                    <td><span class="button" @click="onViewSingle(collection.id)">View</span></td>
-                </tr>
-            </template>
-        </table>
+        <template v-if="!loadingCollections">
+            <progress-bar :loading="loadingCollections" :catalogue="collection" :productTotals="productTotals"/>
+            <filters :categories="products"/>
+            <!-- <product-single :product="singleProductToShow" :nextProductID="nextSingleProductID" :loading="loadingProducts" :authUser="authUser" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/> -->
+            <product-tabs :productTotals="productTotals" :authUser="authUser" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @setProductFilter="setProductFilter" :currentFilter="currentProductFilter"/>
+            <products :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/>
+            <SelectedController :productTotals="productTotals" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction"/>
+        </template>
         <template v-if="loadingCollections">
             <Loader/>
         </template>
-        </div>
     </div>
 </template>
 
 <script>
 import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
+import Products from '../Products'
+import ProductTabs from '../ProductTabs'
+import ProgressBar from '../ProgressBar'
+import Filters from '../Filters'
 import Loader from '../Loader'
+import SelectedController from '../SelectedController'
+import Comment from '../../store/models/Comment'
+import Product from '../../store/models/Product'
+import User from '../../store/models/User'
+import Team from '../../store/models/Team'
+import Country from '../../store/models/Country'
 import Collection from '../../store/models/Collection'
+import ProductFinalAction from '../../store/models/ProductFinalAction';
+import CommentVote from '../../store/models/CommentVote';
 
-export default {
+export default{
     name: 'catalogue',
     store,
     components: {
-        Loader
+        Products,
+        ProductTabs,
+        SelectedController,
+        ProgressBar,
+        Loader,
+        Filters,
     },
-    data: function() { return {
-        selected: [],
+    data: function () { return {
+        singleProductID: -1,
+        currentProductFilter: 'overview',
+        selectedProductIDs: [],
     }},
     computed: {
+        ...mapGetters('entities/products', ['loadingProducts']),
+        ...mapGetters('entities/actions', ['loadingActions']),
+        ...mapGetters('entities/comments', ['loadingComments']),
         ...mapGetters('entities/collections', ['loadingCollections']),
-        collections () {
-            return Collection.query().all()
+        collectionId () {
+            return this.$route.params.catalogueId
+        },
+        collection() {
+            return Collection.find(this.collectionId)
+        },
+        products () {
+            const products = Product.query().with(['actions.user.country', 'actions.user.team']).with(['comments.user.country', 'comments.votes', 'comments.user.team']).with('productFinalAction').all()
+            const totalUsers = this.users
+            const userId = this.authUser.id
+            const data = []
+            products.forEach(product => {
+                product.ins = []
+                product.outs = []
+                product.focus = []
+                product.userAction = 0
+                product.nds = JSON.parse(JSON.stringify(totalUsers)) // Copy our users into a new variable
+                product.actions.forEach(action => {
+                    if (action.action == 0)
+                        product.outs.push(action)
+                    if (action.action == 1)
+                        product.ins.push(action)
+                    if (action.action == 2)
+                        product.focus.push(action)
+
+                    // Find the action this user has taken
+                    if (action.user_id == userId)
+                    {
+                        if (action.action == 0)
+                            product.userAction = 1
+                        if (action.action == 1)
+                            product.userAction = 2
+                    }
+
+                    var index = product.nds.findIndex(nd => nd.id == action.user_id)
+                        product.nds.splice(index,1)
+                })
+                data.push(product)
+            })
+            return data
+        },
+        productsFiltered() {
+            const method = (this.currentProductFilter == 'ins') ? 1 : (this.currentProductFilter == 'outs') ? 0 : (this.currentProductFilter == 'nds') ? 2 : -1
+            const products = this.products
+            if (method > -1) {
+                const productsFiltered = products.filter(product => {
+                    if (method != 2) {
+                        if (product.productFinalAction != null)
+                        return product.productFinalAction.action == method
+                    } else {
+                        return product.productFinalAction == null
+                    }
+                })
+                return productsFiltered
+            } else {
+                return products
+            }
+        },
+        selectedProducts() {
+            const products = this.products
+            const selectedProducts = []
+            this.selectedProductIDs.forEach(index => {
+                selectedProducts.push(products[index].id)
+            })
+            return selectedProducts
+        },
+        productTotals() {
+            const data = {
+                get actions () {
+                    return this.ins + this.outs
+                },
+                get progress () {
+                    return ( (this.actions / (this.actions + this.nds)) * 100 ).toFixed(0)
+                },
+                ins: 0,
+                outs: 0,
+                nds: 0,
+                final: {
+                    products: this.products.length,
+                    ins: 0,
+                    outs: 0,
+                    nds: 0,
+                }
+            }
+            this.products.forEach(product => {
+                    data.ins += product.ins.length
+                    data.outs += product.outs.length
+                    data.nds += product.nds.length
+
+                if (product.productFinalAction != null) {
+                    if (product.productFinalAction.action == 1)
+                        data.final.ins ++
+                    else if (product.productFinalAction.action == 0)
+                        data.final.outs ++
+                }
+                else data.final.nds ++
+            })
+            return data
+        },
+        singleProductToShow() {
+            const productToReturn = (this.singleProductID != -1) ? this.products[this.singleProductID] : {}
+            return productToReturn
+        },
+        nextSingleProductID() {
+            const nextSingleProductID = ( this.singleProductID < this.products.length -1 ) ? this.singleProductID +1 : -1
+            return nextSingleProductID
+        },
+        users() {
+            return User.query().with('country').with('team').all()
+        },
+        actions() {
+            return this.$store.getters['entities/actions/all']()
+        },
+        comments() {
+            return Comment.query().with('user.country|team').with('votes').all()
+        },
+        countries() {
+            return Country.query().all()
+        },
+        teams() {
+            return Team.query().all()
+        },
+        finalActions() {
+            return ProductFinalAction.query().all()
+        },
+        commentVotes() {
+            return CommentVote.query().with('comment').all()
+        },
+        authUser() {
+            return this.$store.getters.authUser;
         },
     },
     methods: {
+        ...mapActions(['getAuthUser']),
         ...mapActions('entities/collections', ['fetchCollections']),
-        onSelect(index) {
+        ...mapActions('entities/products', ['fetchProducts']),
+        ...mapActions('entities/actions', ['fetchActions']),
+        ...mapActions('entities/users', ['fetchUsers']),
+        ...mapActions('entities/comments', ['fetchComments']),
+        ...mapActions('entities/countries', ['fetchCountries']),
+        ...mapActions('entities/actions', ['updateAction']),
+        ...mapActions('entities/teams', ['fetchTeams']),
+        ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
+        ...mapActions('entities/productFinalActions', ['fetchFinalActions']),
+        ...mapActions('entities/productFinalActions', ['updateFinalAction']),
+        // ...mapActions('entities/actions', ['updateActions']),
+        setSingleProduct(index) {
+            this.singleProductID = index
+        },
+        closeSingleProduct() {
+            this.singleProductID = -1
+        },
+        setNextSingle() {
+            this.singleProductID = this.nextSingleProductID
+        },
+        setProductFilter(filter) {
+            this.currentProductFilter = filter
+        },
+        setSelectedProduct(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
-            const selected = this.selected
+            const selected = this.selectedProductIDs
             const found = selected.findIndex(el => el == index)
             const result = (found >= 0) ? selected.splice(found, 1) : selected.push(index)
         },
-        onViewSingle(collectionID) {
-            this.$router.push({name: 'collection', params: {collectionID: collectionID}})
+        submitSelectedAction(method) {
+            const actionType = (method == 'in') ? 1 : 0
+            // Submit the selection
+            this.selectedProducts.forEach(product => {
+                this.updateFinalAction({productToUpdate: product, phase: this.collection.phase, action_code: actionType})
+            })
+            // Reset the selection
+            this.selectedProductIDs = []
         }
     },
     created() {
+        this.getAuthUser();
+        this.fetchCountries()
+        this.fetchProducts({collection_id: this.collectionId})
+        this.fetchActions({collection_id: this.collectionId})
+        this.fetchUsers({collection_id: this.collectionId})
+        this.fetchComments({collection_id: this.collectionId})
         this.fetchCollections()
-    },
-
+        this.fetchFinalActions({collection_id: this.collectionId})
+        this.fetchTeams({collection_id: this.collectionId})
+        this.fetchCommentVotes({collection_id: this.collectionId})
+    }
 }
 </script>
 
-<style scoped lang="scss">
-@import '~@/_variables.scss';
-    table {
-        margin-left: -16px;
-        margin-right: -16px;
-        width: calc(100% + 32px);
-    }
-    tr:hover {
-        background: $light1;
-    }
-    i {
-        margin-right: 12px;
-        font-size: 11px;
-        &.fa-arrow-up {
-            color: $green;
-        }
-        &.fa-arrow-down {
-            color: $red;
-        }
-    }
-    th:first-child {
-        padding-left: 40px;
-        text-transform: uppercase;
-    }
-    tr.header-row {
-        background: $light2;
-        color: $dark2;
-        font-weight: 700;
-        font-size: 12px;
-        height: 45px;
-    }
-    tr.product-row {
-        border-bottom: solid 1px $light2;
-    }
-    th {
-        &.title {
-            width: 50%;
-        }
-        &.swipes {
-            width: 12%;
-            text-align: center;
-        }
-        &.popularity {
-            width: 10%;
-        }
-        &.compare {
-            width: 15%;
-            text-align: center;
-        }
-    }
-    td {
-        &.title {
-            font-size: 13px;
-            color: $dark;
-        }
-        &.swipes {
-            text-align: center;
-            font-size: 13px;
-            color: $dark;
-        }
-        &.popularity {
-            font-size: 11px;
-            font-weight: 700;
-        }
-        &.compare {
-            text-align: center;
-        }
-    }
-    input[type=checkbox] {
-        display: block;
-        margin: auto;
-        height: 20px;
-        width: 25px;
-    }
+<style lang="scss">
+    @import '~@/_variables.scss';
 </style>

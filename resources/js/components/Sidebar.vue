@@ -1,81 +1,60 @@
 <template>
-    <div class="sidebar">
-        <img src="/images/44report-logo_color@2x.png" alt="Trendmatch Insights logo in color" class="logo" height="38px">
-        <ul class="navbar">
-            <li><router-link to="/catalogue"><i class="fas fa-chart-bar"></i>Catalogue</router-link></li>
-            <li><router-link to="/collection"><i class="fas fa-chart-line"></i>Collection</router-link></li>
-            <li><a href="#"><i class="fas fa-chart-line"></i>Title 2</a></li>
-        </ul>
-    </div>
+  <div class="vue-component-sidebar sidebar">
+    <router-link to="/collection">Collection</router-link>
+    <router-link to="/catalogue">Catalogue</router-link>
+  </div>
 </template>
 
 <script>
 export default {
-    name: 'Sidebar',
-    props: [
-        'authUser'
-    ]
-}
+  name: "sidebar",
+  data() { return {
+  
+  }},
+  methods: {
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-    @import '~@/_variables.scss';
-    $paddingSide: 20px;
-    .sidebar {
-        background: $dark;
-        width: $sidebarWidth;
-        position: fixed;
-        left: 0;
-        top: 0;
-        height: 100vh;
-        padding: 20px $paddingSide;
-        box-sizing: border-box;
+@import '~@/_variables.scss';
+.sidebar {
+  margin: 0;
+  padding: 0;
+  width: $sidebarWidth;
+  height: 100%;
+  background-color: white;
+  position: fixed;
+  overflow: auto;
+  left: 0;
+  top: $navbarHeight;
+
+  @media screen and (max-width: 700px) {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+
+  @media screen and (max-width: 400px) {
+    text-align: center;
+    float: none;
+  }
+
+  a {
+    display: block;
+    color: #a8a8a8;
+    padding: 16px;
+    text-decoration: none;;
+
+    @media screen and (max-width: 700px) {
+      float: left;
     }
-    .logo {
-        margin-bottom: 20px;
-    }
-    i {
-        color: $primary;
-        margin-right: 8px;
-        font-size: 1.2rem;
-    }
-    a {
-        color: $light1;
-    }
-    ul {
-        width: calc(100% + #{$paddingSide} * 2);
-        padding: 0;
-        margin-left: -$paddingSide;
-        li {
-            width: 100%;
-            > a {
-                text-decoration: none;
-                font-weight: 500;
-                display: block;
-                padding: $paddingSide;
-                width: 100%;
-                box-sizing: border-box;
-                position: relative;
-                &::before {
-                    content: "";
-                    display: block;
-                    width: 5px;
-                    height: 100%;
-                    left: 0;
-                    top: 0;
-                    position: absolute;
-                }
-                &.active {
-                    background: $darker;
-                    &::before {
-                        content: "";
-                        background: $primary;
-                    }
-                }
-                &:hover {
-                    background: $darker1;
-                }
-            }
-        }
-    }
+  }
+
+  a.router-link-active {
+    background-color: #f9f9f9;
+    color: #1b1c1d;
+    border-left: 5px solid #4facfe;
+  }
+}
 </style>

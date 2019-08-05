@@ -20,6 +20,10 @@ export default class Product extends Model {
       comments: this.hasMany(Comment, 'product_id'),
       actions: this.hasMany(Action, 'product_id'),
       productFinalAction: this.hasOne(ProductFinalAction, 'product_id'),
+      quantity: this.attr(''),
+      wholesale_price: this.attr(''),
+      recommended_retail_price: this.attr(''),
+      composition: this.attr(''),
     }
 
     return data

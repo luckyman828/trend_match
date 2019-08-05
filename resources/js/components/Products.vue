@@ -1,47 +1,73 @@
 <template>
     <div class="products card">
-        <table>
+        <product-totals :totalProductCount="totalProductCount" :selectedCount="selectedCount" :products="products"/>
+        <product-single :product="singleProductToShow" :nextProductID="nextSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @onToggleInOut="toggleInOut"/>
+        <table :class="{disabled: singleProductToShow.id != null}">
             <tr class="header-row">
-                <th>Select</th>
-                <th :class="{active: this.sortBy == 'title'}" class="clickable" @click="onSortBy('title', true)">Product</th>
+                <th class="select">Select <i class="fas fa-chevron-down"></i></th>
+                <th class="clickable id" :class="{active: this.sortBy == 'id'}" @click="onSortBy('id', true)">
+                    Id <i class="fas" :class="[(this.sortBy == 'id' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                </th>
                 <th></th>
-                <th :class="{active: this.sortBy == 'focus'}" class="clickable" @click="onSortBy('focus', false)">Focus</th>
-                <th :class="{active: this.sortBy == 'ins'}" class="clickable" @click="onSortBy('ins', false)">In</th>
-                <th :class="{active: this.sortBy == 'outs'}" class="clickable" @click="onSortBy('outs', false)">Out</th>
-                <th :class="{active: this.sortBy == 'nds'}" class="clickable" @click="onSortBy('nds', false)">ND</th>
-                <th :class="{active: this.sortBy == 'comments'}" class="clickable" @click="onSortBy('comments', false)">Comments</th>
-                <th :class="{active: this.sortBy == 'id'}" class="clickable swipes" @click="onSortBy('id', true)">Id</th>
+                <th :class="{active: this.sortBy == 'title'}" class="clickable title" @click="onSortBy('title', true)">
+                   Product <i class="fas" :class="[(this.sortBy == 'title' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                </th>
+                <th :class="{active: this.sortBy == 'focus'}" class="clickable" @click="onSortBy('focus', false)">
+                    Focus <i class="fas" :class="[(this.sortBy == 'focus' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                </th>
+                <th :class="{active: this.sortBy == 'ins'}" class="clickable" @click="onSortBy('ins', false)">
+                    In <i class="fas" :class="[(this.sortBy == 'ins' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                </th>
+                <th :class="{active: this.sortBy == 'outs'}" class="clickable" @click="onSortBy('outs', false)">
+                    Out <i class="fas" :class="[(this.sortBy == 'outs' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                </th>
+                <th :class="{active: this.sortBy == 'nds'}" class="clickable" @click="onSortBy('nds', false)">
+                    ND <i class="fas" :class="[(this.sortBy == 'nds' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                </th>
+                <th :class="{active: this.sortBy == 'comments'}" class="clickable" @click="onSortBy('comments', false)">
+                    Comments <i class="fas" :class="[(this.sortBy == 'comments' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                </th>
                 <th :class="{active: this.sortBy == 'action'}" class="clickable" @click="onSortBy('action', 2)">Action</th>
                 <th></th>
                 <th>View</th>
             </tr>
             <template v-if="!loading">
                 <tr class="product-row"
-                v-for="(product, index) in productsSorted" :key="product.id">
-                    <td><input type="checkbox" @change="onSelect(index)"></td>
-                    <td class="image"><img :src="product.images"></td>
-                    <td class="title"><span>{{product.title}}</span></td>
-                    <td @click="setTooltip(product.focus)">{{product.focus.length}}</td>
-                    <td @click="setTooltip(product.ins)">{{product.ins.length}}</td>
-                    <td @click="setTooltip(product.outs)">{{product.outs.length}}</td>
-                    <td @click="setTooltip(product.nds)">{{product.nds.length}}</td>
-                    <td>{{product.comments.length}}</td>
-                    <td class="">{{product.id}}</td>
+                v-for="(product, index) in productsSorted" :key="product.id"
+                :class="[ (product.productFinalAction != null) ? (product.productFinalAction.action == 1) ? 'in' : 'out' : '' ]">
+                    <td class="select">
+                        <label class="checkbox">
+                            <input type="checkbox" @change="onSelect(index)" />
+                            <span class="checkmark"></span>
+                        </label>
+                    </td>
+                    <td class="id clickable" @click="onViewSingle(index)">{{product.id}}</td>
+                    <td class="image clickable" @click="onViewSingle(index)"><img :src="product.images"></td>
+                    <td class="title clickable" @click="onViewSingle(index)"><span>{{product.title}}</span></td>
+                    <td @click="setTooltip(product.focus)"><span class="square"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
+                    <td @click="setTooltip(product.ins)"><span class="square"><i class="far fa-heart"></i>{{product.ins.length}}</span></td>
+                    <td @click="setTooltip(product.outs)"><span class="square"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
+                    <td @click="setTooltip(product.nds)"><span class="square"><i class="far fa-question-circle"></i>{{product.nds.length}}</span></td>
+                    <td><span class="square"><i class="far fa-comment"></i>{{product.comments.length}}</span></td>
                     <template v-if="!loadingFinalActions">
                         <template v-if="!product.productFinalAction">
                             <td><span class="button green" @click="toggleInOut(product.id, 1, 'N/A')">In</span></td>
                             <td><span class="button red" @click="toggleInOut(product.id, 0, 'N/A')">Out</span></td>
                         </template>
                         <template v-else>
-                            <td><span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product.id, 1, product.productFinalAction.action)">In</span></td>
-                            <td><span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product.id, 0, product.productFinalAction.action)">Out</span></td>
+                            <td><span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product.id, 1, product.productFinalAction.action)">
+                                In  <i class="far fa-heart"></i>
+                                </span></td>
+                            <td><span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product.id, 0, product.productFinalAction.action)">
+                                Out  <i class="far fa-times-circle"></i>
+                                </span></td>
                         </template>
                     </template>
                     <template v-else>
                         <td><span><Loader/></span></td>
                         <td><span></span></td>
                     </template>
-                    <td><span class="button" @click="onViewSingle(index)">View</span></td>
+                    <td><span class="view-single" @click="onViewSingle(index)">View</span></td>
                 </tr>
             </template>
         </table>
@@ -57,6 +83,8 @@
 <script>
 import Loader from './Loader'
 import { mapActions, mapGetters } from 'vuex'
+import ProductTotals from './ProductTotals'
+import ProductSingle from './ProductSingle'
 
 export default {
     name: 'products',
@@ -65,9 +93,16 @@ export default {
         'loading',
         'authUser',
         'collection',
+        'selectedCount',
+        'totalProductCount',
+        'singleProductToShow',
+        'nextSingleProductID',
+        'authUser',
     ],
     components: {
         Loader,
+        ProductTotals,
+        ProductSingle,
     },
     data: function() { return {
         tooltip: {},
@@ -154,6 +189,12 @@ export default {
             }
 
         },
+        onCloseSingle() {
+            this.$emit('closeSingle', -1)
+        },
+        onNextSingle() {
+            this.$emit('nextSingle')
+        },
     }
 }
 </script>
@@ -161,8 +202,8 @@ export default {
 <style scoped lang="scss">
     @import '~@/_variables.scss';
 
-    th.active {
-        color: $dark;
+    .products {
+        margin-top: 0;
     }
     .clickable {
         cursor: pointer;
@@ -174,9 +215,12 @@ export default {
         margin-left: -16px;
         margin-right: -16px;
         width: calc(100% + 32px);
+        &.disabled {
+            opacity: .5;
+        }
     }
     tr:hover {
-        background: $light1;
+        background: $light;
     }
     img {
         height: 88px;
@@ -194,23 +238,41 @@ export default {
             color: $red;
         }
     }
-    th:first-child {
-        padding-left: 40px;
-        text-transform: uppercase;
-    }
     tr.header-row {
-        background: $light2;
-        color: $dark2;
+        background: white;
         font-weight: 700;
         font-size: 12px;
         height: 45px;
+        border-bottom: solid 2px $light1;
     }
     tr.product-row {
-        border-bottom: solid 1px $light2;
+        border-bottom: solid 1px $light1;
+        &.in > :first-child {
+            box-shadow: 4px 0 $green inset
+        }
+        &.out > :first-child {
+            box-shadow: 4px 0 $red inset
+        }
     }
     th {
+        text-transform: uppercase;
+        font-size: 12px;
+        font-weight: 600;
+        color: $dark2;
+        &:first-child {
+            padding-left: 16px;
+            width: 80px;
+        }
+        &.id {
+            width: 75px;
+        }
         &.title {
-            width: 50%;
+            width: 240px;
+        }
+        i {
+            color: $light2;
+            margin: 0;
+            margin-left: 4px;
         }
         &.swipes {
             width: 12%;
@@ -223,8 +285,16 @@ export default {
             width: 15%;
             text-align: center;
         }
+        &.active {
+            i {
+                color: $primary
+            }
+        }
     }
     td {
+        &.select {
+            padding-left: 20px;
+        }
         &.title {
             font-size: 13px;
             color: $dark;
@@ -257,10 +327,99 @@ export default {
         50% {opacity: 1;}
         100% {opacity: 0;}
     }
-    input[type=checkbox] {
-        display: block;
-        margin: auto;
-        height: 20px;
-        width: 25px;
+    .checkbox {
+      display: block;
+      position: relative;
+      cursor: pointer;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      margin-bottom: 0;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      &:hover {
+          background: $light;
+      }
+    }
+
+    .checkbox input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+
+    .checkmark {
+      content: "";
+      display: inline-block;
+      vertical-align: text-top;
+      width: 24px;
+      height: 24px;
+      background: white;
+      border: 1px solid #dfdfdf;
+    }
+
+    .checkbox input:checked ~ .checkmark {
+      background: linear-gradient(#3b86ff, #3b86ff) no-repeat;
+      background-position: center;
+      background-size: 16px 16px;
+    }
+
+    .checkmark::after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+
+    .checkbox input:checked ~ .checkmark:after {
+      display: block;
+    }
+    .square {
+        background: $light1;
+        color: $dark;
+        padding: 7px 10px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 600;
+        i {
+            color: $dark2;
+            margin-right: 16px;
+            font-size: 16px;
+        }
+    }
+    .button {
+        width: 86px;
+        height: 32px;
+        line-height: 32px;
+        font-size: 12px;
+        border-radius: 4px;
+        padding: 0;
+        line-height: 28px;
+        position: relative;
+        font-weight: 700;
+        padding-right: 22px;
+        color: $dark2;
+        border-color: $light2;
+        i {
+            font-size: 16px;
+            position: absolute;
+            right: 10px;
+            top: 5px;
+            margin: 0;
+        }
+        &.active {
+            i {
+                font-weight: 900;
+            }
+        }
+    }
+    .view-single {
+        font-size: 12px;
+        font-weight: 700;
+        padding: 0 12px;
+        margin-right: 40px;
+        cursor: pointer;
     }
 </style>

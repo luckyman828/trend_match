@@ -13,9 +13,9 @@ import Catalogue from './components/screens/Catalogue'
 const Bar = { template: '<div>bar</div>' }
 
 const routes = [
-    { path: '/collection/:collectionID', name: 'collection', component: Collection },
-    { path: '/catalogue', component: Catalogue }
-  ]
+  { path: '/catalogue/:catalogueId', name: 'catalogue', component: Catalogue },
+  { path: '/collection', component: Collection }
+]
 
   const router = new VueRouter({
     routes // short for `routes: routes`

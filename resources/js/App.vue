@@ -1,13 +1,11 @@
 <template>
     <div class="app">
+        <Navbar/>
         <Sidebar :authUser="authUser"/>
         <div class="main">
-            <div class="container">
-                <transition name="fade">
-                    <router-view></router-view>
-                </transition>
-
-            </div>
+            <transition name="fade">
+                <router-view></router-view>
+            </transition>
         </div>
     </div>
 </template>
@@ -16,12 +14,14 @@
 import store from './store'
 import { mapActions, mapGetters } from 'vuex'
 import Sidebar from './components/Sidebar'
+import Navbar from './components/Navbar'
 
 export default{
     name: 'app',
     store,
     components: {
         Sidebar,
+        Navbar,
     },
     data: function () { return {
     }},
@@ -43,15 +43,21 @@ export default{
     @import '~@/_variables.scss';
     html, body, #app {
         color: $dark;
-        font-family: 'Source Sans Pro', sans-serif;
+        // font-family: 'Source Sans Pro', sans-serif;
+        background: $light;
+    }
+    .app {
+        box-shadow: 0 3px 6px rgba(0,0,0,.05) inset, 5px 0 6px rgba(0,0,0,.02) inset;
+        max-height: calc(100vh - 70px);
+        overflow: scroll;
     }
     .main-wrapper {
         padding-left: $sidebarWidth;
+        padding-top: $navbarHeight;
     }
     .main {
-        background: $light;
         min-height: 100vh;
-        padding: 30px 0;
+        padding: 20px 60px;
     }
     .container {
         max-width: 1170px;
@@ -150,23 +156,45 @@ export default{
         border: $dark solid 2px;
         margin: 0 4px;
         cursor: pointer;
+        border-radius: 4px;
+        &.wide {
+            width: 155px;
+            padding: 0;
+        }
         &.active {
             background: $dark;
             color: white;
         }
         &.green {
-            border-color: $green;
-            color: $green;
+            &:hover {
+                border-color: $green;
+                color: $green;
+            }
             &.active {
+                border-color: $green;
                 background: $green;
                 color: white;
             }
         }
         &.red {
-            border-color: $red;
-            color: $red;
+            &:hover {
+                border-color: $red;
+                color: $red;
+            }
             &.active {
+                border-color: $red;
                 background: $red;
+                color: white;
+            }
+        }
+        &.primary {
+            &:hover {
+                border-color: $primary;
+                color: $primary;
+            }
+            &.active {
+                border-color: $primary;
+                background: $primary;
                 color: white;
             }
         }
