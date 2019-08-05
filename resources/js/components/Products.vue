@@ -28,8 +28,6 @@
                     Comments <i class="fas" :class="[(this.sortBy == 'comments' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
                 <th :class="{active: this.sortBy == 'action'}" class="clickable" @click="onSortBy('action', 2)">Action</th>
-                <th></th>
-                <th>View</th>
             </tr>
             <template v-if="!loading">
                 <tr class="product-row"
@@ -51,23 +49,27 @@
                     <td><span class="square"><i class="far fa-comment"></i>{{product.comments.length}}</span></td>
                     <template v-if="!loadingFinalActions">
                         <template v-if="!product.productFinalAction">
-                            <td><span class="button green" @click="toggleInOut(product.id, 1, 'N/A')">In</span></td>
-                            <td><span class="button red" @click="toggleInOut(product.id, 0, 'N/A')">Out</span></td>
+                            <td>
+                                <span class="button green" @click="toggleInOut(product.id, 1, 'N/A')">In</span>
+                                <span class="button red" @click="toggleInOut(product.id, 0, 'N/A')">Out</span>
+                                <span class="view-single" @click="onViewSingle(index)">View</span>
+                            </td>
                         </template>
                         <template v-else>
-                            <td><span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product.id, 1, product.productFinalAction.action)">
+                            <td>
+                                <span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product.id, 1, product.productFinalAction.action)">
                                 In  <i class="far fa-heart"></i>
-                                </span></td>
-                            <td><span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product.id, 0, product.productFinalAction.action)">
+                                </span>
+                                <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product.id, 0, product.productFinalAction.action)">
                                 Out  <i class="far fa-times-circle"></i>
-                                </span></td>
+                                </span>
+                                <span class="view-single" @click="onViewSingle(index)">View</span>
+                            </td>
                         </template>
                     </template>
                     <template v-else>
                         <td><span><Loader/></span></td>
-                        <td><span></span></td>
                     </template>
-                    <td><span class="view-single" @click="onViewSingle(index)">View</span></td>
                 </tr>
             </template>
         </table>
@@ -316,7 +318,7 @@ export default {
         width: 100%;
         margin: 16px auto 0;
         text-align: center;
-        display: block;
+        display: inline-block;
     }
     .loading {
         animation: loading 2s;
@@ -390,6 +392,7 @@ export default {
         }
     }
     .button {
+        display: inline-block;
         width: 86px;
         height: 32px;
         line-height: 32px;

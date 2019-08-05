@@ -7584,6 +7584,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'productSingleComments',
@@ -7702,6 +7707,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
 //
 //
 //
@@ -8502,7 +8509,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #F3F3F3;\n  border-radius: 8px;\n  padding: 36px;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 30px;\n}\n.comment[data-v-6d61fa50] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n}\n.user[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n}\n.bubble[data-v-6d61fa50] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-6d61fa50] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-6d61fa50] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-6d61fa50] {\n  left: 18px;\n}\n.circle[data-v-6d61fa50] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  cursor: pointer;\n}\n.circle i[data-v-6d61fa50] {\n  font-size: 20px;\n}\n.circle[data-v-6d61fa50]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n}\n.pill[data-v-6d61fa50] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}", ""]);
+exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #F3F3F3;\n  border-radius: 8px;\n  padding: 36px;\n  max-height: 70vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 36px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment[data-v-6d61fa50] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n}\n.user[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-6d61fa50] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-6d61fa50] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-6d61fa50] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-6d61fa50] {\n  left: 18px;\n}\n.circle[data-v-6d61fa50] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.circle i[data-v-6d61fa50] {\n  font-size: 20px;\n}\n.circle[data-v-6d61fa50]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n}\n.circle.active[data-v-6d61fa50] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.pill[data-v-6d61fa50] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #DFDFDF;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #A8A8A8;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #A8A8A8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #F3F3F3;\n  color: #A8A8A8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3B86FF;\n}\nform input[type=submit][data-v-6d61fa50] {\n  -webkit-appearance: none;\n  border: none;\n  height: 32px;\n  border-radius: 4px;\n  margin-top: 12px;\n  background: #3B86FF;\n  color: white;\n  padding: 4px 12px;\n  width: 100%;\n  text-align: center;\n  font-weight: 700;\n  font-size: 12px;\n}\nform input[type=submit].disabled[data-v-6d61fa50] {\n  pointer-events: none;\n  opacity: 0.5;\n}", ""]);
 
 // exports
 
@@ -8559,7 +8566,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".products[data-v-57b394cf] {\n  margin-top: 0;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\ntable[data-v-57b394cf] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\ntable.disabled[data-v-57b394cf] {\n  opacity: 0.5;\n}\ntr[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\nimg[data-v-57b394cf] {\n  height: 88px;\n  width: 66px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  margin: 8px 0 8px 16px;\n}\ni[data-v-57b394cf] {\n  margin-right: 12px;\n  font-size: 11px;\n}\ni.fa-arrow-up[data-v-57b394cf] {\n  color: #5EE2A0;\n}\ni.fa-arrow-down[data-v-57b394cf] {\n  color: #FF6565;\n}\ntr.header-row[data-v-57b394cf] {\n  background: white;\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\ntr.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #F3F3F3;\n}\ntr.product-row.in[data-v-57b394cf] > :first-child {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\ntr.product-row.out[data-v-57b394cf] > :first-child {\n  box-shadow: 4px 0 #FF6565 inset;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\nth[data-v-57b394cf]:first-child {\n  padding-left: 16px;\n  width: 80px;\n}\nth.id[data-v-57b394cf] {\n  width: 75px;\n}\nth.title[data-v-57b394cf] {\n  width: 240px;\n}\nth i[data-v-57b394cf] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.swipes[data-v-57b394cf] {\n  width: 12%;\n  text-align: center;\n}\nth.popularity[data-v-57b394cf] {\n  width: 10%;\n}\nth.compare[data-v-57b394cf] {\n  width: 15%;\n  text-align: center;\n}\nth.active i[data-v-57b394cf] {\n  color: #3B86FF;\n}\ntd.select[data-v-57b394cf] {\n  padding-left: 20px;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\ntd.swipes[data-v-57b394cf] {\n  text-align: center;\n  font-size: 13px;\n  color: #1B1C1D;\n}\ntd.popularity[data-v-57b394cf] {\n  font-size: 11px;\n  font-weight: 700;\n}\ntd.compare[data-v-57b394cf] {\n  text-align: center;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-57b394cf] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-57b394cf] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-57b394cf]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-57b394cf]:after {\n  display: block;\n}\n.square[data-v-57b394cf] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 600;\n}\n.square i[data-v-57b394cf] {\n  color: #A8A8A8;\n  margin-right: 16px;\n  font-size: 16px;\n}\n.button[data-v-57b394cf] {\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  padding-right: 22px;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n}\n.button i[data-v-57b394cf] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-57b394cf] {\n  font-weight: 900;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  padding: 0 12px;\n  margin-right: 40px;\n  cursor: pointer;\n}", ""]);
+exports.push([module.i, ".products[data-v-57b394cf] {\n  margin-top: 0;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\ntable[data-v-57b394cf] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\ntable.disabled[data-v-57b394cf] {\n  opacity: 0.5;\n}\ntr[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\nimg[data-v-57b394cf] {\n  height: 88px;\n  width: 66px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  margin: 8px 0 8px 16px;\n}\ni[data-v-57b394cf] {\n  margin-right: 12px;\n  font-size: 11px;\n}\ni.fa-arrow-up[data-v-57b394cf] {\n  color: #5EE2A0;\n}\ni.fa-arrow-down[data-v-57b394cf] {\n  color: #FF6565;\n}\ntr.header-row[data-v-57b394cf] {\n  background: white;\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\ntr.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #F3F3F3;\n}\ntr.product-row.in[data-v-57b394cf] > :first-child {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\ntr.product-row.out[data-v-57b394cf] > :first-child {\n  box-shadow: 4px 0 #FF6565 inset;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\nth[data-v-57b394cf]:first-child {\n  padding-left: 16px;\n  width: 80px;\n}\nth.id[data-v-57b394cf] {\n  width: 75px;\n}\nth.title[data-v-57b394cf] {\n  width: 240px;\n}\nth i[data-v-57b394cf] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.swipes[data-v-57b394cf] {\n  width: 12%;\n  text-align: center;\n}\nth.popularity[data-v-57b394cf] {\n  width: 10%;\n}\nth.compare[data-v-57b394cf] {\n  width: 15%;\n  text-align: center;\n}\nth.active i[data-v-57b394cf] {\n  color: #3B86FF;\n}\ntd.select[data-v-57b394cf] {\n  padding-left: 20px;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\ntd.swipes[data-v-57b394cf] {\n  text-align: center;\n  font-size: 13px;\n  color: #1B1C1D;\n}\ntd.popularity[data-v-57b394cf] {\n  font-size: 11px;\n  font-weight: 700;\n}\ntd.compare[data-v-57b394cf] {\n  text-align: center;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-57b394cf] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-57b394cf] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-57b394cf]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-57b394cf]:after {\n  display: block;\n}\n.square[data-v-57b394cf] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 600;\n}\n.square i[data-v-57b394cf] {\n  color: #A8A8A8;\n  margin-right: 16px;\n  font-size: 16px;\n}\n.button[data-v-57b394cf] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  padding-right: 22px;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n}\n.button i[data-v-57b394cf] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-57b394cf] {\n  font-weight: 900;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  padding: 0 12px;\n  margin-right: 40px;\n  cursor: pointer;\n}", ""]);
 
 // exports
 
@@ -11683,19 +11690,21 @@ var render = function() {
                 ])
               : _vm._e(),
             _vm._v(" "),
-            _c(
-              "span",
-              {
-                staticClass: "votes bubble",
-                class: { second: comment.important }
-              },
-              [_vm._v(_vm._s(comment.votes.length))]
-            ),
+            comment.votes.length > 0
+              ? _c(
+                  "span",
+                  {
+                    staticClass: "votes bubble",
+                    class: { second: comment.important }
+                  },
+                  [_vm._v(_vm._s(comment.votes.length))]
+                )
+              : _vm._e(),
             _vm._v(" "),
             comment.final
               ? _c("span", { staticClass: "votes pill" }, [
                   _vm._v("Final comment "),
-                  _c("i", { staticClass: "far fa-comment-medical" })
+                  _c("i", { staticClass: "far fa-comment-check" })
                 ])
               : _vm._e(),
             _vm._v(" "),
@@ -11707,13 +11716,14 @@ var render = function() {
               "span",
               {
                 staticClass: "circle",
+                class: { active: comment.product_final },
                 on: {
                   click: function($event) {
                     return _vm.onMarkAsFinal(comment)
                   }
                 }
               },
-              [_c("i", { staticClass: "far fa-comment-medical" })]
+              [_c("i", { staticClass: "far fa-comment-check" })]
             )
           ]),
           _vm._v(" "),
@@ -11731,77 +11741,93 @@ var render = function() {
     ),
     _vm._v(" "),
     _c("form", { on: { submit: _vm.onSubmitComment } }, [
-      _c("input", {
-        directives: [
-          {
-            name: "model",
-            rawName: "v-model",
-            value: _vm.comment.comment,
-            expression: "comment.comment"
-          }
-        ],
-        attrs: {
-          type: "text",
-          name: "comment",
-          id: "comment-input",
-          placeholder: "Write a comment.."
-        },
-        domProps: { value: _vm.comment.comment },
-        on: {
-          input: function($event) {
-            if ($event.target.composing) {
-              return
-            }
-            _vm.$set(_vm.comment, "comment", $event.target.value)
-          }
-        }
-      }),
-      _vm._v(" "),
-      _c("label", [
-        _vm._v("Mark as important\n            "),
-        _c("input", {
+      _c("div", { staticClass: "input-wrapper" }, [
+        _c("i", { staticClass: "far fa-comment" }),
+        _vm._v(" "),
+        _c("textarea", {
           directives: [
             {
               name: "model",
               rawName: "v-model",
-              value: _vm.comment.important,
-              expression: "comment.important"
+              value: _vm.comment.comment,
+              expression: "comment.comment"
             }
           ],
-          attrs: { type: "checkbox", name: "comment-important" },
-          domProps: {
-            checked: Array.isArray(_vm.comment.important)
-              ? _vm._i(_vm.comment.important, null) > -1
-              : _vm.comment.important
+          attrs: {
+            name: "comment",
+            id: "comment-input",
+            placeholder: "Write a comment..",
+            oninput:
+              'this.style.height = "";this.style.height = this.scrollHeight + "px"'
           },
+          domProps: { value: _vm.comment.comment },
           on: {
-            change: function($event) {
-              var $$a = _vm.comment.important,
-                $$el = $event.target,
-                $$c = $$el.checked ? true : false
-              if (Array.isArray($$a)) {
-                var $$v = null,
-                  $$i = _vm._i($$a, $$v)
-                if ($$el.checked) {
-                  $$i < 0 &&
-                    _vm.$set(_vm.comment, "important", $$a.concat([$$v]))
-                } else {
-                  $$i > -1 &&
-                    _vm.$set(
-                      _vm.comment,
-                      "important",
-                      $$a.slice(0, $$i).concat($$a.slice($$i + 1))
-                    )
-                }
-              } else {
-                _vm.$set(_vm.comment, "important", $$c)
+            input: function($event) {
+              if ($event.target.composing) {
+                return
               }
+              _vm.$set(_vm.comment, "comment", $event.target.value)
             }
           }
-        })
+        }),
+        _vm._v(" "),
+        _c("label", [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.comment.important,
+                expression: "comment.important"
+              }
+            ],
+            attrs: { type: "checkbox", name: "comment-important" },
+            domProps: {
+              checked: Array.isArray(_vm.comment.important)
+                ? _vm._i(_vm.comment.important, null) > -1
+                : _vm.comment.important
+            },
+            on: {
+              change: function($event) {
+                var $$a = _vm.comment.important,
+                  $$el = $event.target,
+                  $$c = $$el.checked ? true : false
+                if (Array.isArray($$a)) {
+                  var $$v = null,
+                    $$i = _vm._i($$a, $$v)
+                  if ($$el.checked) {
+                    $$i < 0 &&
+                      _vm.$set(_vm.comment, "important", $$a.concat([$$v]))
+                  } else {
+                    $$i > -1 &&
+                      _vm.$set(
+                        _vm.comment,
+                        "important",
+                        $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                      )
+                  }
+                } else {
+                  _vm.$set(_vm.comment, "important", $$c)
+                }
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c(
+            "span",
+            {
+              staticClass: "checkmark",
+              class: { active: _vm.comment.important }
+            },
+            [_c("i", { staticClass: "fas fa-exclamation" })]
+          )
+        ])
       ]),
       _vm._v(" "),
-      _c("input", { attrs: { type: "submit", value: "Submit comment" } })
+      _c("input", {
+        class: { disabled: _vm.comment.comment.length < 3 },
+        attrs: { type: "submit", value: "Submit comment" }
+      })
     ])
   ])
 }
@@ -12171,11 +12197,7 @@ var render = function() {
                 }
               },
               [_vm._v("Action")]
-            ),
-            _vm._v(" "),
-            _c("th"),
-            _vm._v(" "),
-            _c("th", [_vm._v("View")])
+            )
           ]),
           _vm._v(" "),
           !_vm.loading
@@ -12343,10 +12365,8 @@ var render = function() {
                                       }
                                     },
                                     [_vm._v("In")]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c("td", [
+                                  ),
+                                  _vm._v(" "),
                                   _c(
                                     "span",
                                     {
@@ -12362,6 +12382,19 @@ var render = function() {
                                       }
                                     },
                                     [_vm._v("Out")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass: "view-single",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.onViewSingle(index)
+                                        }
+                                      }
+                                    },
+                                    [_vm._v("View")]
                                   )
                                 ])
                               ]
@@ -12394,10 +12427,8 @@ var render = function() {
                                       ),
                                       _c("i", { staticClass: "far fa-heart" })
                                     ]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c("td", [
+                                  ),
+                                  _vm._v(" "),
                                   _c(
                                     "span",
                                     {
@@ -12427,30 +12458,24 @@ var render = function() {
                                         staticClass: "far fa-times-circle"
                                       })
                                     ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass: "view-single",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.onViewSingle(index)
+                                        }
+                                      }
+                                    },
+                                    [_vm._v("View")]
                                   )
                                 ])
                               ]
                         ]
-                      : [
-                          _c("td", [_c("span", [_c("Loader")], 1)]),
-                          _vm._v(" "),
-                          _vm._m(1, true)
-                        ],
-                    _vm._v(" "),
-                    _c("td", [
-                      _c(
-                        "span",
-                        {
-                          staticClass: "view-single",
-                          on: {
-                            click: function($event) {
-                              return _vm.onViewSingle(index)
-                            }
-                          }
-                        },
-                        [_vm._v("View")]
-                      )
-                    ])
+                      : [_c("td", [_c("span", [_c("Loader")], 1)])]
                   ],
                   2
                 )
@@ -12483,12 +12508,6 @@ var staticRenderFns = [
       _vm._v("Select "),
       _c("i", { staticClass: "fas fa-chevron-down" })
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", [_c("span")])
   }
 ]
 render._withStripped = true
