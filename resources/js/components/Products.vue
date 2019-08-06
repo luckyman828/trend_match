@@ -42,10 +42,10 @@
                     <td class="id clickable" @click="onViewSingle(index)">{{product.id}}</td>
                     <td class="image clickable" @click="onViewSingle(index)"><img :src="product.images"></td>
                     <td class="title clickable" @click="onViewSingle(index)"><span>{{product.title}}</span></td>
-                    <td @click="setTooltip(product.focus)"><span class="square"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
-                    <td @click="setTooltip(product.ins)"><span class="square"><i class="far fa-heart"></i>{{product.ins.length}}</span></td>
-                    <td @click="setTooltip(product.outs)"><span class="square"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
-                    <td @click="setTooltip(product.nds)"><span class="square"><i class="far fa-question-circle"></i>{{product.nds.length}}</span></td>
+                    <td><span class="square clickable" @mouseover="showTooltip($event, 'actions', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
+                    <td><span class="square clickable" @mouseover="showTooltip($event, 'actions', 'In', product.ins)" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length}}</span></td>
+                    <td><span class="square clickable" @mouseover="showTooltip($event, 'actions', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
+                    <td><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}}</span></td>
                     <td><span class="square"><i class="far fa-comment"></i>{{product.comments.length}}</span></td>
                     <template v-if="!loadingFinalActions">
                         <template v-if="!product.productFinalAction">
@@ -76,9 +76,7 @@
         <template v-if="loading">
             <Loader/>
         </template>
-        <div class="tool-tip card">
-            <p v-for="user in tooltip" :key="user.id">{{user.user.email}}</p>
-        </div>
+        <Tooltip :tooltip="tooltip"/>
     </div>
 </template>
 
@@ -87,6 +85,8 @@ import Loader from './Loader'
 import { mapActions, mapGetters } from 'vuex'
 import ProductTotals from './ProductTotals'
 import ProductSingle from './ProductSingle'
+import Tooltip from './Tooltip'
+import { constants } from 'crypto';
 
 export default {
     name: 'products',
@@ -105,9 +105,16 @@ export default {
         Loader,
         ProductTotals,
         ProductSingle,
+        Tooltip,
     },
     data: function() { return {
-        tooltip: {},
+        tooltip: {
+            active: false,
+            position: {},
+            type: 'none',
+            header: '',
+            data: {}
+        },
         sortBy: 'id',
         sortAsc: true
     }},
@@ -167,8 +174,26 @@ export default {
         onSelect(index) {
             this.$emit('onSelect', index)
         },
-        setTooltip(data) {
-            this.tooltip = data
+        showTooltip(event, type, header, data) {
+            const el = event.target
+            const rect = el.getBoundingClientRect()
+            // Set tooltip position
+            // this.tooltip.position.top = window.scrollY + el.top
+            // this.tooltip.position.center = window.scrollX + el.left + el.width / 2
+            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+            this.tooltip.position.top = rect.top + scrollTop - el.closest('.card').offsetTop + el.offsetTop
+            this.tooltip.position.center = rect.left + scrollLeft - el.closest('.card').offsetLeft + el.offsetLeft + (rect.width / 2)
+            // this.tooltip.position.center = el.offsetLeft // + el.width / 2
+            // Set tooltip data and type
+            this.tooltip.data = data
+            this.tooltip.type = type
+            this.tooltip.header = header
+            // Make tooltip active
+            this.tooltip.active = true;
+        },
+        hideTooltip() {
+            // this.tooltip.active = false;
         },
         onSortBy(key, method) {
             if (key == 'action') {

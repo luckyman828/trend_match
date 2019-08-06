@@ -9,14 +9,14 @@
         <title>Trendmatch B2B</title>
 
         {{-- Favicon --}}
-        <link rel="shortcut icon" href="/images/Trendmatch-insights-favicon.png">
+        <link rel="shortcut icon" href="/images/kollekt_logo_00_1024x1024@3x.png">
 
         <!-- Styles -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         {{-- <link rel="stylesheet" src="{{ asset('css/app.css') }}"> --}}
         <link type="text/css" rel="stylesheet" href="{{ mix('css/app.css') }}">
         <link rel="stylesheet" src="{{ asset('css/vue-styles.css') }}" />
-        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700&display=swap" rel="stylesheet">
+        {{-- <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700&display=swap" rel="stylesheet"> --}}
 
         <script>
             //Set the logged in user
