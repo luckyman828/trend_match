@@ -26,24 +26,34 @@
                 <th></th>
             </tr>
             <template v-if="!loading">
-                <tr class="team-row" v-for="(team, index) in teamsSorted" :key="team.id">
-                    <td class="select">
-                        <label class="checkbox">
-                            <input type="checkbox" @change="onSelect(index)" />
-                            <span class="checkmark"></span>
-                        </label>
-                    </td>
-                    <td class="title clickable"><i class="far fa-chevron-right"></i>{{team.title}}</td>
-                    <td class="assigned">Coming soon..</td>
-                    <td class="members"><span>{{team.users.length}}</span></td>
-                    <td class="collections"><span>Coming soon..</span></td>
-                    <td class="status"><span>Coming soon..</span></td>
-                    <td class="action"><span class="button">Edit team</span></td>
-                    <td><span class="view-single">View</span></td>
-                </tr>
-                <!-- <tr class="expanded-row" v-for="(user, index) in team.users" :key="index">
-                    <td class="id">{{}}</td>
-                </tr> -->
+                <template v-for="(team, index) in teamsSorted">
+                    <tbody :key="team.id">
+                        <tr class="team-row"  >
+                            <td class="select">
+                                <label class="checkbox">
+                                    <input type="checkbox" @change="onSelect(index)" />
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                            <td class="title clickable"><i class="far fa-chevron-right"></i>{{team.title}}</td>
+                            <td class="assigned">Coming soon..</td>
+                            <td class="members"><span>{{team.users.length}}</span></td>
+                            <td class="collections"><span>Coming soon..</span></td>
+                            <td class="status"><span>Coming soon..</span></td>
+                            <td class="action"><span class="button">Edit team</span></td>
+                            <td><span class="view-single">View</span></td>
+                        </tr>
+                        <tbody class="team-users">
+                            <tr class="user-row" v-for="(user, index) in team.users" :key="index">
+                                <td class="index">{{index}}</td>
+                                <td class="name">name coming..</td>
+                                <td class="email">{{user.email}}</td>
+                                <td class="collections">collections coming..</td>
+                                <td class="role"><span class="square" :class="user.role.toLowerCase()">{{user.role}}</span></td>
+                            </tr>
+                        </tbody>
+                    </tbody>
+                </template>
             </template>
         </table>
         <template v-if="loading">
@@ -77,31 +87,6 @@ export default {
         sortAsc: true
     }},
     computed: {
-        // teamsAlt () {
-        //     // Manually find the teams and the users belonging to each team.
-        //     // This is only necessary because I cannot make the Vuex ORM realtionship work 
-        //     // If you can make it work, please be my guest
-        //     const users = this.users
-        //     const data = []
-        //     // const uniqueTeams = [...new Set(users.map(x => x.team.title))]
-        //     const uniqueTeams = [...new Set(users.map(x => x.team))]
-        //     data.push(uniqueTeams)
-
-        //         data.newTeams = []
-        //         uniqueTeams.forEach(team => {
-        //             const thisTeam = {
-        //                 title: team,
-        //                 users: [],
-        //             }
-        //             users.forEach(user => {
-        //                 if (user.team.title == team) {
-        //                     thisTeam.users.push(user)
-        //                 }
-        //             })
-        //             data.push(thisTeam)
-        //         })
-        //     return data
-        // },
         teamsAlt () {
             // Manually find the teams and the users belonging to each team.
             // This is only necessary because I cannot make the Vuex ORM realtionship work 
@@ -118,6 +103,11 @@ export default {
                 }
                 users.forEach(user => {
                     if (user.team.id == thisTeam.id) {
+                        // Find the users role
+                        user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
+                        // if (user.role_id == 1) {
+                        //     user.role = 'Sales'
+                        // } else if (user)
                         thisTeam.users.push(user)
                     }
                 })
@@ -126,7 +116,7 @@ export default {
             return data
         },
         teamsSorted() {
-            const teams = this.teams
+            const teams = this.teamsAlt
             let key = this.sortBy
             let sortAsc = this.sortAsc
             const dataSorted = teams.sort((a, b) => {
@@ -148,14 +138,6 @@ export default {
                 }
             })
             return dataSorted
-            // return dataSorted
-            // return('Now sorting by: ' + key + ', ' + sortAsc)
-            // return key
-            // const dataSorted = products.sort((a, b) => {
-            //         return (a[key] > b[key]) ? 1 : -1
-            // })
-            // return dataSorted
-            // return products[0][key]
         }
     },
     methods: {
@@ -359,11 +341,17 @@ export default {
     }
     .square {
         background: $light1;
-        color: $dark;
+        color: white;
         padding: 7px 10px;
         border-radius: 4px;
-        font-size: 14px;
-        font-weight: 600;
+        font-size: 12px;
+        font-weight: 400;
+        &.sales {
+            background: $primary;
+        }
+        &.admin {
+            background: $dark05;
+        }
         i {
             color: $dark2;
             margin-right: 16px;

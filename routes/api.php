@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 */
 
 // Private API routes (Passport protected)
-// Route::middleware('auth:api')->group(function(){
+Route::middleware('auth:api')->group( function(){
 
     // xxx CATALOGS xxx
     // List catelogues available to logged in user
@@ -62,4 +62,4 @@ use Illuminate\Http\Request;
     // Update comment
     Route::put('comment/update', 'CommentController@update');
 
-// });
+});
