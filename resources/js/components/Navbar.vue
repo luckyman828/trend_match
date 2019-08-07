@@ -12,7 +12,7 @@
       <div class="navbar-toggler-icon"></div>
     </button>
     <a class="navbar-brand" href="#">
-      <img src="/assets/44report-logo_color.svg" />
+      <img src="/images/kollekt-logo-color-1.svg" />
     </a>
     <div class="collapse navbar-collapse justify-content-end" id="navbarTogglerDemo03">
       <button class="btn my-2 my-sm-0 align-middle" type="submit">

@@ -2,6 +2,8 @@
 import { Model } from '@vuex-orm/core'
 import Comment from './Comment'
 import Country from './Country'
+import Team from './Team'
+import UserTeam from './UserTeam';
 
 export default class User extends Model {
   // This is the name used as module name of the Vuex Store.
@@ -9,9 +11,11 @@ export default class User extends Model {
 
   // List of all fields (schema) of the product model. `this.attr` is used
   // for the generic field type. The argument is the default value.
+  static primaryKey = 'id'
+
   static fields () {
     const data = {
-      id: this.attr(null),
+      id: this.attr(''),
       email: this.attr(''),
       // name: this.attr(''),
       country_id: this.attr(''),
@@ -19,7 +23,8 @@ export default class User extends Model {
       role_id: this.attr(''),
       comments: this.hasMany(Comment, 'user_id'),
       country: this.belongsTo(Country, 'country_id'),
-      team: this.belongsTo(Country, 'team_ids')
+      team: this.belongsTo(Team, 'team_ids'),
+      userTeam: this.belongsTo(UserTeam, 'team_ids', 'team_id'),
     }
 
     return data

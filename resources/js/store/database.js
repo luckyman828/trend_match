@@ -17,6 +17,8 @@ import Team from './models/Team';
 import teams from './modules/teams';
 import CommentVote from './models/CommentVote';
 import commentVotes from './modules/commentVotes';
+import UserTeam from './models/UserTeam';
+import userTeams from './modules/userTeams';
 
 const database = new Database()
 
@@ -29,5 +31,6 @@ database.register(Collection, collections)
 database.register(ProductFinalAction, productFinalActions)
 database.register(Team, teams)
 database.register(CommentVote, commentVotes)
+database.register(UserTeam, userTeams)
 
 export default database

@@ -21,7 +21,7 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        {{-- <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
@@ -70,11 +70,19 @@
                     </ul>
                 </div>
             </div>
-        </nav>
-
-        <main class="py-4">
-            @yield('content')
-        </main>
+        </nav> --}}
+        <div class="login-wrapper">
+            <img class="bg-left bg" src="/images/graphs.svg" alt="">
+            <div class="login">
+                <main class="py-4">
+                    <a class="logo" href="{{ url('/') }}">
+                        <img src="/images/kollekt-logo.svg" alt="Kollekt logo">
+                    </a>
+                    @yield('content')
+                </main>
+            </div>
+            <img class="bg-right bg" src="/images/graphs.svg" alt="">
+        </div>
     </div>
 </body>
 </html>

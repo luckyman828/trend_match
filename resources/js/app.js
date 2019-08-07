@@ -10,11 +10,13 @@ Vue.component('app', require('./App.vue').default);
 // These can be imported from other files
 import Collection from './components/screens/Collection'
 import Catalogue from './components/screens/Catalogue'
-const Bar = { template: '<div>bar</div>' }
+import Teams from './components/screens/Teams'
 
 const routes = [
   { path: '/catalogue/:catalogueId', name: 'catalogue', component: Catalogue },
-  { path: '/collection', component: Collection }
+  { path: '/collection', component: Collection },
+  { path: '/teams', component: Teams },
+  { path: '*', redirect: '/collection'}
 ]
 
   const router = new VueRouter({

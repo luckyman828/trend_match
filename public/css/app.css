@@ -19745,3 +19745,117 @@ readers do not read off random characters that represent icons */
   font-family: "Font Awesome 5 Brands";
 }
 
+.login-wrapper {
+  background: #3C3B54;
+  min-height: 100vh;
+}
+
+.login-wrapper .bg {
+  position: fixed;
+  bottom: 0;
+  width: 50%;
+}
+
+.login-wrapper .bg.bg-left {
+  left: 0;
+}
+
+.login-wrapper .bg.bg-right {
+  right: 0;
+}
+
+.login {
+  background: white;
+  height: 100vh;
+  width: 100%;
+  max-width: 800px;
+  display: block;
+  margin: auto;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.16);
+  position: relative;
+  z-index: 1;
+}
+
+.login .logo img {
+  display: block;
+  margin: auto;
+  margin-top: 32px;
+  margin-bottom: 52px;
+}
+
+.login-form h2 {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 400;
+  color: #1B1C1D;
+  margin-bottom: 12px;
+}
+
+.login-form h3 {
+  font-size: 16px;
+  text-align: center;
+  color: #A8A8A8;
+  font-weight: 400;
+  margin-bottom: 52px;
+}
+
+.login-form {
+  margin-top: 56px;
+}
+
+.login-form label {
+  cursor: pointer;
+  padding-left: 6px;
+  color: #3C3B54;
+  font-weight: 500;
+}
+
+.login-form input {
+  background: white;
+  border: none;
+}
+
+.login-form .forgot-password {
+  text-align: center;
+  color: #3C3B54;
+  text-decoration: underline;
+  font-size: 14px;
+  font-weight: 400;
+  margin: auto;
+  margin-top: 28px;
+}
+
+.login-form .has-underline {
+  border-bottom: solid 2px #F3F3F3;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.login-form .form-group {
+  margin-bottom: 3rem;
+}
+
+.login-form .submit-login {
+  max-width: 400px;
+  width: 100%;
+  margin: auto;
+  background: #3C3B54;
+  border-radius: 4px;
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  height: 50px;
+}
+
+.login-form .submit-login:hover {
+  opacity: 0.9;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+

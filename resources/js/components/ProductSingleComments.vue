@@ -8,7 +8,7 @@
                     <span v-if="comment.votes.length > 0" class="votes bubble" :class="{second: comment.important}">{{comment.votes.length}}</span>
                     <span class="votes pill" v-if="comment.final">Final comment <i class="far fa-comment-check"></i></span>
                     <span class="body">{{comment.comment}}</span>
-                    <span :class="{active: comment.product_final}" @click="onMarkAsFinal(comment)" class="circle"><i class="far fa-comment-check"></i></span>
+                    <span :class="{active: comment.product_final}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
                 </div>
                 <span class="user" v-if="comment.user != null"><span class="team">{{comment.user.team.title}}</span> | {{comment.user.email}},</span>
             </div>
@@ -20,16 +20,18 @@
                 oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
                 <label>
                     <input type="checkbox" v-model="comment.important" name="comment-important">
-                    <span class="checkmark" :class="{active: comment.important}"><i class="fas fa-exclamation"></i></span>
+                    <span class="checkmark" :class="{active: comment.important}" @mouseover="showTooltip($event, 'Important comment')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
                 </label>
             </div>
             <input type="submit" value="Submit comment" :class="{disabled: comment.comment.length < 3}">
         </form>
+        <Tooltip :tooltip="tooltip"/>
     </div>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
+import Tooltip from './Tooltip'
 
 export default {
     name: 'productSingleComments',
@@ -38,6 +40,9 @@ export default {
         'authUser',
         'product',
     ],
+    components: {
+        Tooltip,
+    },
     data: function () { return {
             comment: {
                 user_id: this.authUser.id,
@@ -48,6 +53,12 @@ export default {
                 product_final: false,
             },
             user_id: this.authUser.id,
+            tooltip: {
+                active: false,
+                position: {},
+                type: 'text',
+                data: ''
+            },
     }},
     watch: {
         product: function (newVal, oldVal) {
@@ -70,6 +81,24 @@ export default {
             comment.product_final = true; // This always sets the comment as final
             console.log(comment.product_final)
             this.markAsFinal({comment: comment})
+        },
+        showTooltip(event, data) {
+            const el = event.target
+            const rect = el.getBoundingClientRect()
+
+            // Set tooltip position
+            this.tooltip.position.top = rect.top - rect.height - 10
+            this.tooltip.position.center = rect.left
+
+            // Set tooltip data
+            this.tooltip.data = data
+
+            // Make tooltip active
+            this.tooltip.active = true;
+        },
+            
+        hideTooltip() {
+            this.tooltip.active = false;
         },
     }
 }

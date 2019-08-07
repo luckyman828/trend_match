@@ -5,7 +5,7 @@
             <filters :categories="products"/>
             <!-- <product-single :product="singleProductToShow" :nextProductID="nextSingleProductID" :loading="loadingProducts" :authUser="authUser" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/> -->
             <product-tabs :productTotals="productTotals" :authUser="authUser" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @setProductFilter="setProductFilter" :currentFilter="currentProductFilter"/>
-            <products :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/>
+            <products :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/>
             <SelectedController :productTotals="productTotals" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction"/>
         </template>
         <template v-if="loadingCollections">
@@ -72,11 +72,11 @@ export default{
                 product.nds = JSON.parse(JSON.stringify(totalUsers)) // Copy our users into a new variable
                 product.actions.forEach(action => {
                     if (action.action == 0)
-                        product.outs.push(action)
+                        product.outs.push(action.user)
                     if (action.action == 1)
-                        product.ins.push(action)
+                        product.ins.push(action.user)
                     if (action.action == 2)
-                        product.focus.push(action)
+                        product.focus.push(action.user)
 
                     // Find the action this user has taken
                     if (action.user_id == userId)
@@ -173,7 +173,7 @@ export default{
             return Country.query().all()
         },
         teams() {
-            return Team.query().all()
+            return Team.query().with('users').all()
         },
         finalActions() {
             return ProductFinalAction.query().all()

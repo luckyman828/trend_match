@@ -35,6 +35,8 @@ use Illuminate\Http\Request;
     Route::get('collection/{collection_id}/teams', 'CatalogueController@teams');
     // List comment votes
     Route::get('collection/{collection_id}/comment-votes', 'CatalogueController@commentVotes');
+    // List user teams
+    Route::get('collection/user-teams', 'CatalogueController@userTeams');
 
     // xxx ACTIONS xxx
     // Create new action

@@ -1,7 +1,9 @@
 <template>
   <div class="vue-component-sidebar sidebar">
-    <router-link to="/collection">Collection</router-link>
-    <router-link to="/catalogue">Catalogue</router-link>
+    <router-link to="/collection"><i class="fas fa-signal-alt-3"></i> Collection</router-link>
+    <!-- <router-link to="/catalogue">Catalogue</router-link> -->
+    <!-- <router-link class="stick-to-bottom" to="/teams"><i class="fas fa-users"></i> Teams</router-link> -->
+    <router-link to="/teams"><i class="fas fa-users"></i> Teams</router-link>
   </div>
 </template>
 
@@ -28,6 +30,8 @@ export default {
   overflow: auto;
   left: 0;
   top: $navbarHeight;
+  display: flex;
+  flex-direction: column;
 
   @media screen and (max-width: 700px) {
     width: 100%;
@@ -39,22 +43,36 @@ export default {
     text-align: center;
     float: none;
   }
-
+  .stick-to-bottom {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    bottom: 120px;
+  }
   a {
     display: block;
     color: #a8a8a8;
     padding: 16px;
-    text-decoration: none;;
+    text-decoration: none;
+    border-left: solid 5px white;
+    &.router-link-active {
+      background-color: #f9f9f9;
+      color: #1b1c1d;
+      border-left: 5px solid #4facfe;
+      i {
+        color: $primary;
+      }
+    }
+    &:hover {
+      background: $light1;
+    }
+    i {
+      margin-right: 8px;
+    }
 
     @media screen and (max-width: 700px) {
       float: left;
     }
-  }
-
-  a.router-link-active {
-    background-color: #f9f9f9;
-    color: #1b1c1d;
-    border-left: 5px solid #4facfe;
   }
 }
 </style>

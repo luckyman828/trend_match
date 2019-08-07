@@ -106,7 +106,7 @@ export default {
         'nextProductID',
     ],
     components: {
-        ProductSingleComments
+        ProductSingleComments,
     },
     data: function () { return {
             comment: {
@@ -118,43 +118,43 @@ export default {
                 product_final: false,
             },
             user_id: this.authUser.id,
-            currentTab: 'ins'
+            currentTab: 'ins',
     }},
     computed: {
         tabBody () {
             if(this.currentTab == 'ins') {
                 // return this.productActionUsers.focus.push(this.productActionUsers.ins)
                 const actions = []
-                this.productActionUsers.focus.forEach(action => {
+                this.product.focus.forEach(action => {
                     action.focus = true;
                     actions.push(action)
                 })
-                this.productActionUsers.ins.forEach(action => {
+                this.product.ins.forEach(action => {
                     action.focus = false
                     actions.push(action)
                 })
                 return actions
             }
-            else return this.productActionUsers[this.currentTab]
+            else return this.product[this.currentTab]
         },
-        productActionUsers () {
-            const data = {
-                nds: this.product.nds,
-                ins: [],
-                outs: [],
-                focus: [],
-            }
-            this.product.focus.forEach(action => {
-                data.focus.push(action.user)
-            })
-            this.product.ins.forEach(action => {
-                data.ins.push(action.user)
-            })
-            this.product.outs.forEach(action => {
-                data.outs.push(action.user)
-            })
-            return data
-        }
+        // productActionUsers () {
+        //     const data = {
+        //         nds: this.product.nds,
+        //         ins: [],
+        //         outs: [],
+        //         focus: [],
+        //     }
+        //     this.product.focus.forEach(action => {
+        //         data.focus.push(action.user)
+        //     })
+        //     this.product.ins.forEach(action => {
+        //         data.ins.push(action.user)
+        //     })
+        //     this.product.outs.forEach(action => {
+        //         data.outs.push(action.user)
+        //     })
+        //     return data
+        // }
     },
     watch: {
         product: function (newVal, oldVal) {

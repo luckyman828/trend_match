@@ -22,6 +22,8 @@ use App\Team;
 use App\Http\Resources\Team as TeamResource;
 use App\CommentVote;
 use App\Http\Resources\CommentVote as CommentVoteResource;
+use App\UserTeam;
+use App\Http\Resources\UserTeam as UserTeamResource;
 
 class CatalogueController extends Controller
 {
@@ -106,6 +108,14 @@ class CatalogueController extends Controller
 
         // Return collection of users as a resource
         return TeamResource::collection($teams);
+    }
+
+    public function userTeams()
+    {
+        $user_teams = UserTeam::get();
+
+        // Return collection of users as a resource
+        return UserTeamResource::collection($user_teams);
     }
 
     public function commentVotes($collection_id)

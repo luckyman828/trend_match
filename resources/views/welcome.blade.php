@@ -6,7 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <script>window.Laravel = { csrfToken: '{{ csrf_token() }}' }</script>
 
-        <title>Trendmatch B2B</title>
+        <title>Kollekt</title>
 
         {{-- Favicon --}}
         <link rel="shortcut icon" href="/images/kollekt_logo_00_1024x1024@3x.png">
@@ -28,12 +28,7 @@
         <div class="main-wrapper">
         {{-- <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    @guest
-                    Insights by Trendmatch
-                    @else
-                    {Hello, {{ Auth::user()->webshop->name }}<br>
-                    Insights by Trendmatch
-                    @endguest
+                    The app
                 </a> 
                
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
@@ -59,19 +54,27 @@
                                 </li>
                             @endif
                         @else
-                            <li class="nav-item">
-
-                                <a class="btn btn-light" href="{{ route('logout') }}"
+                            <li class="nav-item"> --}}
+                                <div class="logout-wrapper" style="
+                                    position: fixed;
+                                    left: 0;
+                                    bottom: 0;
+                                    padding: 16px;
+                                    text-align: center;
+                                    z-index: 1;
+                                    ">
+                                <a href="{{ route('logout') }}"
                                     onclick="event.preventDefault();
                                                     document.getElementById('logout-form').submit();">
-                                    {{ __('Logout') }}, {{ Auth::user()->name }}
+                                                    <i class="far fa-sign-out fa-flip-horizontal"></i>
+                                    {{ __('Sign out') }}
                                 </a>
 
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                     @csrf
                                 </form>
-                                
-                            </li>
+                            </div>
+                            {{-- </li>
                         @endguest
                     </ul>
             </div>

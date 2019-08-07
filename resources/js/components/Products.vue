@@ -42,16 +42,16 @@
                     <td class="id clickable" @click="onViewSingle(index)">{{product.id}}</td>
                     <td class="image clickable" @click="onViewSingle(index)"><img :src="product.images"></td>
                     <td class="title clickable" @click="onViewSingle(index)"><span>{{product.title}}</span></td>
-                    <td><span class="square clickable" @mouseover="showTooltip($event, 'actions', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
-                    <td><span class="square clickable" @mouseover="showTooltip($event, 'actions', 'In', product.ins)" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length}}</span></td>
-                    <td><span class="square clickable" @mouseover="showTooltip($event, 'actions', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
-                    <td><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}}</span></td>
-                    <td><span class="square"><i class="far fa-comment"></i>{{product.comments.length}}</span></td>
+                    <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
+                    <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'In', product.ins)" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length}}</span></td>
+                    <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
+                    <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}}</span></td>
+                    <td class="square-wrapper"><span class="square"><i class="far fa-comment"></i>{{product.comments.length}}</span></td>
                     <template v-if="!loadingFinalActions">
                         <template v-if="!product.productFinalAction">
                             <td>
-                                <span class="button green" @click="toggleInOut(product.id, 1, 'N/A')">In</span>
-                                <span class="button red" @click="toggleInOut(product.id, 0, 'N/A')">Out</span>
+                                <span class="button green" @click="toggleInOut(product.id, 1, 'N/A')">In <i class="far fa-heart"></i></span>
+                                <span class="button red" @click="toggleInOut(product.id, 0, 'N/A')">Out <i class="far fa-times-circle"></i></span>
                                 <span class="view-single" @click="onViewSingle(index)">View</span>
                             </td>
                         </template>
@@ -86,7 +86,6 @@ import { mapActions, mapGetters } from 'vuex'
 import ProductTotals from './ProductTotals'
 import ProductSingle from './ProductSingle'
 import Tooltip from './Tooltip'
-import { constants } from 'crypto';
 
 export default {
     name: 'products',
@@ -99,7 +98,7 @@ export default {
         'totalProductCount',
         'singleProductToShow',
         'nextSingleProductID',
-        'authUser',
+        'teams',
     ],
     components: {
         Loader,
@@ -189,11 +188,17 @@ export default {
             this.tooltip.data = data
             this.tooltip.type = type
             this.tooltip.header = header
+
+            // Add team data to the tooltip 
+            if(type == 'users') {
+                this.tooltip.teams = this.teams
+            }
             // Make tooltip active
             this.tooltip.active = true;
         },
+            
         hideTooltip() {
-            // this.tooltip.active = false;
+            this.tooltip.active = false;
         },
         onSortBy(key, method) {
             if (key == 'action') {
@@ -447,7 +452,9 @@ export default {
         font-size: 12px;
         font-weight: 700;
         padding: 0 12px;
-        margin-right: 40px;
         cursor: pointer;
+    }
+    .square-wrapper {
+        min-width: 65px;
     }
 </style>

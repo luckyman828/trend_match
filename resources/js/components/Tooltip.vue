@@ -1,17 +1,18 @@
 <template>
-    <div v-if="tooltip.active == true" class="vue-component-tooltip" :style="{top: tooltip.position.top + 'px', left: tooltip.position.center - 70 + 'px'}">
-        <div class="header">
+    <div v-if="tooltip.active == true" :class="tooltip.type" class="vue-component-tooltip" :style="{top: tooltip.position.top + 'px', left: tooltip.position.center - 70 + 'px'}">
+        <div class="header" v-if="tooltip.header != null">
             <span>{{tooltip.data.length}} {{tooltip.header}}</span>
         </div>
         <div class="body">
-            <div class="tooltip-row" v-for="(item, index) in tooltip.data" :key="index">
-                <template v-if="tooltip.type == 'actions'">
-                    <span class="team">{{item.user.team.title}} <span class="count"></span></span>
-                </template>
-                <template v-if="tooltip.type == 'users'">
-                    <span class="team">{{item.team.title}}</span>
-                </template>
+            <template v-if="tooltip.type == 'users'">
+            <div class="tooltip-row" v-for="(team, index) in teams" :key="index">
+                <span class="team">{{team.name}} <span class="count">{{team.users.length}}</span></span>
             </div>
+            </template>
+
+            <template v-if="tooltip.type == 'text'">
+                <span>{{tooltip.data}}</span>
+            </template>
         </div>
     </div>
 </template>
@@ -23,60 +24,35 @@ export default {
         'tooltip'
     ],
     computed: {
-        // teams () {
-        //     const tooltip = this.tooltip
-        //     const data = {}
-        //     if (tooltip.type == 'users' || tooltip.type == 'actions') {
-        //         data.teams = []
-        //         if (tooltip.type == 'users') {
-        //             data.teams.push(...new Set(tooltip.data.map(x => x.team.title)))
-
-        //             data.newTeams = []
-        //             data.teams.forEach(team => {
-        //                 const thisTeam = {
-        //                     name: team,
-        //                     users: []
-        //                 }
-        //                 tooltip.data.forEach(user => {
-        //                     if (user.team.title == team) {
-        //                         thisTeam.users.push(user)
-        //                     }
-        //                 })
-        //                 data.newTeams.push(thisTeam)
-        //             })
-        //             // tooltip.data.foreach(user => {
-
-        //             // })
-        //         }
-        //     }
-        //     return data
-        // }
         teams () {
             const tooltip = this.tooltip
-            const data = {}
-            if (tooltip.type == 'users' || tooltip.type == 'actions') {
-                data.teams = []
-                if (tooltip.type == 'users') {
+            const data = []
+            if (tooltip.type == 'users') {
+                // data.teams = []
                     // const uniqueTeams = [...new Set(tooltip.data.map(x => x.team.title))]
-                    data.teams.push([...new Set(tooltip.data.map(x => x.team.title))])
+                    const uniqueTeams = [...new Set(tooltip.data.map(x => x.team.title))]
+                    // data.push(uniqueTeams)
 
                     // data.newTeams = []
-                    // data.teams.forEach(team => {
-                    //     const thisTeam = {
-                    //         name: team,
-                    //         users: []
-                    //     }
-                    //     tooltip.data.forEach(user => {
-                    //         if (user.team.title == team) {
-                    //             thisTeam.users.push(user)
-                    //         }
-                    //     })
-                    //     data.newTeams.push(thisTeam)
-                    // })
+                    uniqueTeams.forEach(team => {
+                        const thisTeam = {
+                            name: team,
+                            users: [],
+                            // teamUsers: (tooltip.teams[0].title == team.toUpperCase())
+                            teamUsers: tooltip.teams.find(obj => {
+                                return obj.title == team.toUpperCase()
+                            })
+                        }
+                        tooltip.data.forEach(user => {
+                            if (user.team.title == team) {
+                                thisTeam.users.push(user)
+                            }
+                        })
+                        data.push(thisTeam)
+                    })
                     // tooltip.data.foreach(user => {
 
                     // })
-                }
             }
             return data
         }
@@ -93,8 +69,14 @@ export default {
         position: absolute;
         z-index: 9;
         color: white;
-        width: 140px;
         border-radius: 4px;
+        &.users {
+            width: 140px;
+        }
+        &.text {
+            padding: 8px;
+            position: fixed;
+        }
     }
     .header {
         text-align: center;
@@ -102,5 +84,20 @@ export default {
         color: $dark2;
         font-size: 14px;
         font-weight: 400;
+    }
+    .tooltip-row {
+        font-size: 12px;
+        padding: 8px;
+        background: rgba(white, .1);
+        &:nth-child(even) {
+            background: rgba(white, .2)
+        }
+        .team {
+            display: flex;
+            justify-content: space-between;
+        }
+        .count {
+            font-weight: 700;
+        }
     }
 </style>
