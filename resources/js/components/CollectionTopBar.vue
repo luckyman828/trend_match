@@ -3,19 +3,19 @@
 
         <div class="grid-2">
             
-            <div class="dropdown category-button">
-                <div v-if="selectedCategories.length > 0" class="counter-filter text-center">{{ selectedCategories.length }}</div>
+            <div class="dropdown">
+                <div v-if="selectedItems.length > 0" class="counter-filter text-center">{{ selectedItems.length }}</div>
                 <button class="btn btn-secondary dropdown-toggle category d-flex justify-content-between" type="button" id="dropdownMenuButton"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Category <img src="/assets/Path26.svg" alt />
+                {{title}} <img src="/assets/Path26.svg" alt />
                 </button>
 
                 <div class="dropdown-menu pt-0" aria-labelledby="dropdownMenuButton">
-                <input type="text" name="Filter" placeholder="Filter by category" />
-                <label v-for="(category, index) in categories" :key="index" class="container" :for="'check-filter-' + index">
-                    <input type="checkbox" :id="'check-filter-' + index" @change="onSelectCategory(category)" />
+                <input type="text" name="Filter" placeholder="Filter by catalogue" />
+                <label v-for="(item, index) in itemsToFilter" :key="index" class="container" :for="'check-filter-' + index">
+                    <input type="checkbox" :id="'check-filter-' + index" @change="onSelectItem(item)" />
                     <span class="checkmark"></span>
-                    <p class="px-2">{{category.title}} <span class="count">({{(category.products != null) ? category.products.length : '0'}})</span></p>
+                    <p class="px-2">{{item.title}}</p>
                 </label>
                 </div>
             </div>
@@ -40,22 +40,22 @@
 
 <script>
 export default {
-    name: 'filters',
+    name: 'collectionTopBar',
     props: [
-        'categories',
+        'itemsToFilter',
+        'title'
     ],
     data: function() { return {
-        selectedCategories: []
+        selectedItems: []
     }},
     computed: {
-        selectedCategoriesLength () {
-            return this.selectedCategories.length
+        selectedItemsLength () {
+            return this.selectedItems.length
         }
     },
     methods: {
-        onSelectCategory(category) {
-            this.selectedCategories.push(category.title)
-            this.$emit()
+        onSelectItem(item) {
+            this.selectedItems.push(item.title)
         }
     },
 }

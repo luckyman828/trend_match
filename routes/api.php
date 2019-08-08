@@ -37,6 +37,8 @@ Route::middleware('auth:api')->group( function(){
     Route::get('collection/{collection_id}/comment-votes', 'CatalogueController@commentVotes');
     // List user teams
     Route::get('collection/user-teams', 'CatalogueController@userTeams');
+    // List categories
+    Route::get('collection/categories', 'CatalogueController@categories');
 
     // xxx ACTIONS xxx
     // Create new action

@@ -13,17 +13,24 @@ export default class Product extends Model {
   static fields () {
     const data = {
       id: this.attr(null),
+      datasource_id: this.attr(''),
       title: this.attr(''),
-      images: this.attr(''),
+      short_description: this.attr(''),
+      sale_description: this.attr(''),
+      brand: this.attr(''),
       collection_id: this.attr(''),
       is_editor_choice: this.attr(''),
-      comments: this.hasMany(Comment, 'product_id'),
-      actions: this.hasMany(Action, 'product_id'),
-      productFinalAction: this.hasOne(ProductFinalAction, 'product_id'),
       quantity: this.attr(''),
       wholesale_price: this.attr(''),
       recommended_retail_price: this.attr(''),
       composition: this.attr(''),
+      mark_up: this.attr(''),
+      category_id: this.attr(''),
+      sub_category_id: this.attr(''),
+      color_variants: this.attr(''),
+      comments: this.hasMany(Comment, 'product_id'),
+      actions: this.hasMany(Action, 'product_id'),
+      productFinalAction: this.hasOne(ProductFinalAction, 'product_id'),
     }
 
     return data

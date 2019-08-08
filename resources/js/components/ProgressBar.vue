@@ -49,16 +49,22 @@ export default {
   },
   computed: {
       startDate () {
-          const date = this.catalogue.start_time
-          const dateEnd = date.indexOf(" ")
-          const newDate = date.substr(0, dateEnd)
-          return newDate.replace('-', '/')
+          if (this.catalogue.start_time != null) {
+            const date = this.catalogue.start_time
+            const dateEnd = date.indexOf(" ")
+            const newDate = date.substr(0, dateEnd)
+            return newDate.replace('-', '/')
+          }
+          return 'Unset'
       },
       endDate () {
-          const date = this.catalogue.end_time
-          const dateEnd = date.indexOf(" ")
-          const newDate = date.substr(0, dateEnd)
-          return newDate.replace('-', '/')
+          if (this.catalogue.end_time != null) {
+            const date = this.catalogue.end_time
+            const dateEnd = date.indexOf(" ")
+            const newDate = date.substr(0, dateEnd)
+            return newDate.replace('-', '/')
+          }
+          return 'Unset'
       },
   },
   methods: {
@@ -76,7 +82,7 @@ export default {
 .bar {
   border-bottom: 2px solid #dfdfdf;
   background-color: #F9F9F9;
-  width: 95%;
+  width: 100%;
 
   h2 {
     display: inline;

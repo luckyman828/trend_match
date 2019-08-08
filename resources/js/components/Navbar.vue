@@ -1,5 +1,5 @@
 <template>
-  <nav class="vue-component-navbar navbar navbar-expand-lg navbar-light fixed-top">
+  <nav class="vue-component-navbar navbar navbar-expand-lg navbar-light fixed-top" style="height: 70px;">
     <button
       class="navbar-toggler"
       type="button"
@@ -11,30 +11,33 @@
     >
       <div class="navbar-toggler-icon"></div>
     </button>
-    <a class="navbar-brand" href="#">
+    <router-link to="/collection" class="navbar-brand">
       <img src="/images/kollekt-logo-color-1.svg" />
-    </a>
-    <div class="collapse navbar-collapse justify-content-end" id="navbarTogglerDemo03">
-      <button class="btn my-2 my-sm-0 align-middle" type="submit">
-        <div class="align-middle backwards-button">
-            <img src="/assets/backwards-arrow.svg"/>
-        </div>
-        <p class="mb-0 ml-2 align-middle">Back to Catalogue</p>
-      </button>
+    </router-link>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarTogglerDemo03" style="padding-left: 100px;">
 
-      <div class="mr-auto vl">
-        <nav aria-label="breadcrumb align-middle">
-          <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item">
-              <a href="#">Brand</a>
-            </li>
-            <li class="breadcrumb-item">
-              <a href="#">Catalogue</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">2020_SPRING</li>
-          </ol>
-        </nav>
-      </div>
+      <template v-if="$route.name == 'catalogue'">
+        <router-link to="/collection">
+        <button class="btn my-2 my-sm-0 align-middle" type="submit">
+          <div class="align-middle backwards-button">
+              <img style="margin-right: 3px" src="/assets/backwards-arrow.svg"/>
+          </div>
+          <p class="mb-0 ml-2 align-middle">Back to Collection</p>
+        </button>
+        </router-link>
+
+        <div class="mr-auto vl">
+          <nav aria-label="breadcrumb align-middle">
+              <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                  <router-link to="/collection">Collection</router-link>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" v-if="$route.params.catalogueTitle != null">{{$route.params.catalogueTitle}}</li>
+                <li class="breadcrumb-item active" aria-current="page" v-else>Current catalogue</li>
+              </ol>
+          </nav>
+        </div>
+      </template>
       <form class="form-inline my-2 my-lg-0">
         <button class="btn my-2 my-sm-0 mx-1 csv" type="submit">Export as CSV</button>
         <button class="btn my-2 my-sm-0 mx-1 feedback" type="submit">Close Feedback</button>

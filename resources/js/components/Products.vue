@@ -39,8 +39,8 @@
                             <span class="checkmark"></span>
                         </label>
                     </td>
-                    <td class="id clickable" @click="onViewSingle(index)">{{product.id}}</td>
-                    <td class="image clickable" @click="onViewSingle(index)"><img :src="product.images"></td>
+                    <td class="id clickable" @click="onViewSingle(index)">{{product.datasource_id}}</td>
+                    <td class="image clickable" @click="onViewSingle(index)"><img :src="product.image"></td>
                     <td class="title clickable" @click="onViewSingle(index)"><span>{{product.title}}</span></td>
                     <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
                     <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'In', product.ins)" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length}}</span></td>

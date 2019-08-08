@@ -40,7 +40,7 @@
 
 <script>
 export default {
-    name: 'filters',
+    name: 'teamsTopBar',
     props: [
         'itemsToFilter',
         'title'

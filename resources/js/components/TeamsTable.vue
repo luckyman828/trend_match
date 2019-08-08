@@ -13,8 +13,8 @@
                 <th :class="{active: this.sortBy == 'assigned'}" class="clickable title" @click="onSortBy('assigned', true)">
                    Assigned <i class="fas" :class="[(this.sortBy == 'assigned' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'members'}" class="clickable" @click="onSortBy('members', false)">
-                    Members <i class="fas" :class="[(this.sortBy == 'members' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                <th :class="{active: this.sortBy == 'users'}" class="clickable" @click="onSortBy('users', false)">
+                    Members <i class="fas" :class="[(this.sortBy == 'users' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
                 <th :class="{active: this.sortBy == 'collections'}" class="clickable" @click="onSortBy('collections', false)">
                     Collections <i class="fas" :class="[(this.sortBy == 'collections' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
@@ -27,31 +27,34 @@
             </tr>
             <template v-if="!loading">
                 <template v-for="(team, index) in teamsSorted">
-                    <tbody :key="team.id">
-                        <tr class="team-row"  >
+                    <tbody :key="team.id" :ref="'team-row-' + index" class="team-row-wrapper">
+                        <tr class="team-row">
                             <td class="select">
                                 <label class="checkbox">
                                     <input type="checkbox" @change="onSelect(index)" />
                                     <span class="checkmark"></span>
                                 </label>
                             </td>
-                            <td class="title clickable"><i class="far fa-chevron-right"></i>{{team.title}}</td>
+                            <td class="title clickable" @click="expandUsers(index)"><span class="square"><i class="far fa-chevron-right"></i>{{team.title}}</span></td>
                             <td class="assigned">Coming soon..</td>
                             <td class="members"><span>{{team.users.length}}</span></td>
                             <td class="collections"><span>Coming soon..</span></td>
                             <td class="status"><span>Coming soon..</span></td>
                             <td class="action"><span class="button">Edit team</span></td>
-                            <td><span class="view-single">View</span></td>
+                            <td><span class="view-single" @click="expandUsers(index)">View</span></td>
                         </tr>
-                        <tbody class="team-users">
-                            <tr class="user-row" v-for="(user, index) in team.users" :key="index">
-                                <td class="index">{{index}}</td>
-                                <td class="name">name coming..</td>
-                                <td class="email">{{user.email}}</td>
-                                <td class="collections">collections coming..</td>
-                                <td class="role"><span class="square" :class="user.role.toLowerCase()">{{user.role}}</span></td>
-                            </tr>
-                        </tbody>
+                    </tbody>
+                    <tbody class="team-users" :key="team.id + 'child'" :ref="'accordion-'+index">
+                        <tr class="user-row" v-for="(user, index) in team.users" :key="index">
+                            <td class="index">{{index + 1}}</td>
+                            <td class="name">{{ (user.name != null) ? user.name : 'No name set' }}</td>
+                            <td class="email">{{user.email}}</td>
+                            <td class="collections">-</td>
+                            <td class="role"><span class="square" :class="user.role.toLowerCase()">{{user.role}}</span></td>
+                            <td></td>
+                            <td class="action"></td>
+                            <td class="remove"></td>
+                        </tr>
                     </tbody>
                 </template>
             </template>
@@ -76,7 +79,6 @@ export default {
         'authUser',
         'collection',
         'selectedCount',
-        'totalProductCount',
         'users',
     ],
     components: {
@@ -159,6 +161,12 @@ export default {
             }
 
         },
+        expandUsers(index) {
+            const usersToShow = this.$refs['accordion-' + index]
+            usersToShow[0].classList.toggle('expanded')
+            const clickedRow = this.$refs['team-row-' + index]
+            clickedRow[0].classList.toggle('expanded')
+        }
     }
 }
 </script>
@@ -208,7 +216,7 @@ export default {
         border-bottom: solid 2px $light1;
     }
     tr.team-row {
-        border-bottom: solid 1px $light1;
+        border-bottom: solid 1px $light2;
         &.in > :first-child {
             box-shadow: 4px 0 $green inset
         }
@@ -261,18 +269,17 @@ export default {
         &.title {
             font-size: 13px;
             color: $dark;
+            .square {
+                color: $dark;
+                background: none;
+                i {
+                    transition: .3s;
+                    font-size: 12px;
+                }
+            }
         }
-        &.swipes {
-            text-align: center;
-            font-size: 13px;
-            color: $dark;
-        }
-        &.popularity {
-            font-size: 11px;
-            font-weight: 700;
-        }
-        &.compare {
-            text-align: center;
+        &.assigned {
+            width: 220px;
         }
     }
     .show-more {
@@ -401,6 +408,42 @@ export default {
             font-weight: 500;
             font-size: 14px;
             margin-right: 20px;
+        }
+    }
+    .user-row {
+        &:not(:last-child) {
+            border-bottom: solid 2px white;
+        }
+        td {
+            background: $light;
+            font-size: 14px;
+            &.index {
+                text-align: right;
+                padding: 12px 20px;
+            }
+        }
+    }
+    .team-users {
+        display: none;
+        &.expanded {
+            display: table-row-group;
+            + .team-row-wrapper {
+                box-shadow: 0 1px 0 $light2 inset;
+            }
+        }
+    }
+    .team-row-wrapper {
+        &.expanded {
+            td.title {
+                .square {
+                    background: $light2;
+                    font-weight: 500;
+                    i {
+                        color: $dark;
+                        transform: rotateZ(90deg);
+                    }
+                }
+            }
         }
     }
 </style>

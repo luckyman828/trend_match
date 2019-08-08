@@ -2,7 +2,7 @@
     <div class="catalogue">
         <template v-if="!loadingCollections">
             <progress-bar :loading="loadingCollections" :catalogue="collection" :productTotals="productTotals"/>
-            <filters :categories="products"/>
+            <filters :categories="categories"/>
             <!-- <product-single :product="singleProductToShow" :nextProductID="nextSingleProductID" :loading="loadingProducts" :authUser="authUser" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/> -->
             <product-tabs :productTotals="productTotals" :authUser="authUser" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @setProductFilter="setProductFilter" :currentFilter="currentProductFilter"/>
             <products :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/>
@@ -31,6 +31,7 @@ import Country from '../../store/models/Country'
 import Collection from '../../store/models/Collection'
 import ProductFinalAction from '../../store/models/ProductFinalAction';
 import CommentVote from '../../store/models/CommentVote';
+import Category from '../../store/models/Category';
 
 export default{
     name: 'catalogue',
@@ -65,6 +66,8 @@ export default{
             const userId = this.authUser.id
             const data = []
             products.forEach(product => {
+                product.color_variants = JSON.parse(product.color_variants)
+                product.image = product.color_variants[0].image
                 product.ins = []
                 product.outs = []
                 product.focus = []
@@ -175,6 +178,9 @@ export default{
         teams() {
             return Team.query().with('users').all()
         },
+        categories() {
+            return Category.query().with('products').all()
+        },
         finalActions() {
             return ProductFinalAction.query().all()
         },
@@ -198,6 +204,7 @@ export default{
         ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
         ...mapActions('entities/productFinalActions', ['fetchFinalActions']),
         ...mapActions('entities/productFinalActions', ['updateFinalAction']),
+        ...mapActions('entities/categories', ['fetchCategories']),
         // ...mapActions('entities/actions', ['updateActions']),
         setSingleProduct(index) {
             this.singleProductID = index
@@ -238,6 +245,7 @@ export default{
         this.fetchFinalActions({collection_id: this.collectionId})
         this.fetchTeams({collection_id: this.collectionId})
         this.fetchCommentVotes({collection_id: this.collectionId})
+        this.fetchCategories()
     }
 }
 </script>

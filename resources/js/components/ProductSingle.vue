@@ -25,13 +25,13 @@
                         <h3>{{product.title}}</h3>
                         <div class="grid-2">
                             <div class="image">
-                                <img :src="product.images">
+                                <img :src="product.image">
                             </div>
                             <div class="description">
                                 <strong>Style number</strong>
-                                <p>{{product.id}}</p>
+                                <p>{{product.datasource_id}}</p>
                                 <strong>Category</strong>
-                                <p>Coming soon..</p>
+                                <p>{{product.short_description}}</p>
                                 <strong>Minimum production</strong>
                                 <p>{{product.quantity}}</p>
                                 <strong>WHS (EUR)</strong>
@@ -39,7 +39,7 @@
                                 <strong>RRP (EUR)</strong>
                                 <p>{{product.recommended_retail_price}}</p>
                                 <strong>MU</strong>
-                                <p>Coming soon..</p>
+                                <p>{{product.mark_up}}</p>
                             </div>
                         </div>
                         <strong>Composition</strong>
