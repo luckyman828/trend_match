@@ -79,8 +79,7 @@ export default {
         onMarkAsFinal(comment) {
             console.log('Comment: ' + comment.id)
             // comment.product_final = !comment.product_final; // This let's us toggle the comments status
-            comment.product_final = true; // This always sets the comment as final
-            console.log(comment.product_final)
+            comment.product_final = !comment.product_final; // This always sets the comment as final
             this.markAsFinal({comment: comment})
         },
         showTooltip(event, data) {

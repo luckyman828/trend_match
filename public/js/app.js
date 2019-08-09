@@ -7643,11 +7643,24 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'productSingle',
-  props: ['product', 'authUser', 'nextProductID'],
+  props: ['product', 'authUser', 'nextProductID', 'prevProductID'],
   components: {
     ProductSingleComments: _ProductSingleComments__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
@@ -7662,7 +7675,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         product_final: false
       },
       user_id: this.authUser.id,
-      currentTab: 'ins'
+      currentTab: 'ins',
+      currentImgIndex: 0
     };
   },
   computed: {
@@ -7692,23 +7706,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['createComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['markAsFinal']), {
     onCloseSingle: function onCloseSingle() {
-      // Emit event to parent
+      this.currentImgIndex = 0; // Emit event to parent
+
       this.$emit('closeSingle');
     },
-    // onSubmitComment(e) {
-    //     e.preventDefault()
-    //     this.createComment({comment: this.comment})
-    // },
     onNextSingle: function onNextSingle() {
+      this.currentImgIndex = 0;
       this.$emit('nextSingle');
     },
-    // onMarkAsFinal(comment) {
-    //     console.log('Comment: ' + comment.id)
-    //     // comment.product_final = !comment.product_final; // This let's us toggle the comments status
-    //     comment.product_final = true; // This always sets the comment as final
-    //     console.log(comment.product_final)
-    //     this.markAsFinal({comment: comment})
-    // },
+    onPrevSingle: function onPrevSingle() {
+      this.currentImgIndex = 0;
+      this.$emit('prevSingle');
+    },
     toggleInOut: function toggleInOut(productID, actionType, userAction) {
       console.log("Emitting toggle in/out !");
       console.log("userAction: ".concat(userAction, ", and actionType = ").concat(actionType));
@@ -7716,6 +7725,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     setCurrentTab: function setCurrentTab(filter) {
       this.currentTab = filter;
+    },
+    cycleImage: function cycleImage() {
+      if (this.currentImgIndex + 1 == this.product.color_variants.length) {
+        this.currentImgIndex = 0;
+      } else {
+        this.currentImgIndex++;
+      }
     }
   })
 });
@@ -7814,9 +7830,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     onMarkAsFinal: function onMarkAsFinal(comment) {
       console.log('Comment: ' + comment.id); // comment.product_final = !comment.product_final; // This let's us toggle the comments status
 
-      comment.product_final = true; // This always sets the comment as final
+      comment.product_final = !comment.product_final; // This always sets the comment as final
 
-      console.log(comment.product_final);
       this.markAsFinal({
         comment: comment
       });
@@ -8003,7 +8018,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'products',
-  props: ['products', 'loading', 'authUser', 'collection', 'selectedCount', 'totalProductCount', 'singleProductToShow', 'nextSingleProductID', 'teams', 'sortAsc', 'sortBy', 'selectedIds'],
+  props: ['products', 'loading', 'authUser', 'collection', 'selectedCount', 'totalProductCount', 'singleProductToShow', 'nextSingleProductID', 'prevSingleProductID', 'teams', 'sortAsc', 'sortBy', 'selectedIds'],
   components: {
     Loader: _Loader__WEBPACK_IMPORTED_MODULE_0__["default"],
     ProductTotals: _ProductTotals__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -8085,6 +8100,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     onNextSingle: function onNextSingle() {
       this.$emit('nextSingle');
+    },
+    onPrevSingle: function onPrevSingle() {
+      this.$emit('prevSingle');
     },
     resetSelected: function resetSelected() {
       document.querySelectorAll('.product-row input[type=checkbox]').forEach(function (input) {
@@ -8665,12 +8683,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var userId = this.authUser.id;
       var data = [];
       products.forEach(function (product) {
-        product.color_variants = JSON.parse(product.color_variants);
-        product.image = product.color_variants[0].image;
+        product.color_variants = JSON.parse(product.color_variants); // product.images = []
+
         product.ins = [];
         product.outs = [];
         product.focus = [];
-        product.userAction = 0; // if (product.productFinalAction != null)
+        product.userAction = 0; // product.color_variants.forEach(variant => {
+        //     product.images.push(variant)
+        // })
+        // if (product.productFinalAction != null)
         //     product.productFinalAction = {}
 
         product.nds = JSON.parse(JSON.stringify(totalUsers)); // Copy our users into a new variable
@@ -8694,19 +8715,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       return data;
     },
-    // aaaa () {
-    //     const products = this.products
-    //     const data = {
-    //         a: products[0][this.sortBy].length,
-    //         b: products[1][this.sortBy].length,
-    //         hasNoLength: (!products[0][this.sortBy].length),
-    //         isString: typeof this.sortBy,
-    //         get test () {
-    //             return (this.a == this.b)
-    //         }
-    //     }
-    //     return data
-    // },
     productsFilteredByCategory: function productsFilteredByCategory() {
       var _this = this;
 
@@ -8715,11 +8723,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToReturn = products; // First filter by category
 
       if (this.selectedCategoryIDs.length > 0) {
-        // productsToReturn = []
-        // Array.from(this.selectedCategoryIDs).forEach(categoryIndex => {
-        //     productsToReturn = productsToReturn.concat(this.categories[categoryIndex].products)
-        //     // productsToReturn.push({key: categoryIndex})
-        // })
         var filteredByCategory = productsToReturn.filter(function (product) {
           return Array.from(_this.selectedCategoryIDs).includes(product.category_id);
         });
@@ -8730,21 +8733,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     productsFiltered: function productsFiltered() {
       var method = this.currentProductFilter == 'ins' ? 1 : this.currentProductFilter == 'outs' ? 0 : this.currentProductFilter == 'nds' ? 2 : -1;
-      var products = this.productsFilteredByCategory; // const categoryIDs = this.selectedCategoryIDs
-
-      var productsToReturn = products; // First filter by category
-      // if (this.selectedCategoryIDs.length > 0) {
-      //     // productsToReturn = []
-      //     // Array.from(this.selectedCategoryIDs).forEach(categoryIndex => {
-      //     //     productsToReturn = productsToReturn.concat(this.categories[categoryIndex].products)
-      //     //     // productsToReturn.push({key: categoryIndex})
-      //     // })
-      //     const filteredByCategory = productsToReturn.filter(product => {
-      //             return Array.from(this.selectedCategoryIDs).includes(product.category_id)
-      //     })
-      //     productsToReturn = filteredByCategory
-      // }
-      // Second filter by in/out
+      var products = this.productsFilteredByCategory;
+      var productsToReturn = products; // filter by in/out
 
       if (method > -1) {
         var filteredByAction = productsToReturn.filter(function (product) {
@@ -8796,54 +8786,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       return dataSorted;
     },
-    // productsSortedOld() {
-    //     const products = this.productsFiltered
-    //     let key = this.sortBy
-    //     let sortAsc = this.sortAsc
-    //     const dataSorted = products.sort((a, b) => {
-    //         if (key == 'productFinalAction') {
-    //             if (a[key] != null) {
-    //                 if (b[key] != null) {
-    //                     // If A and B has a key
-    //                     if (sortAsc)
-    //                         return (a[key].action > b[key].action) ? 1 : -1
-    //                         else return (a[key].action < b[key].action) ? 1 : -1
-    //                 } else {
-    //                     // If ONLY A has a key
-    //                     if (sortAsc)
-    //                         return 1
-    //                         else return -1
-    //                 }
-    //             } else if (b[key] != null) {
-    //                 // If ONLY B has a key
-    //                 if (sortAsc)
-    //                     return -1
-    //                     else return 1
-    //             } else {
-    //                 // Neither A nor B has a key
-    //                 return 0
-    //             }
-    //         }
-    //         else {
-    //             // If the keys don't have length - sort by the key
-    //             if (!products[0][key].length) {
-    //                 if ( a[key] == b[key] ) {
-    //                     return 0
-    //                 } else if (sortAsc)
-    //                     return (a[key] > b[key]) ? 1 : -1
-    //                     else return (a[key] < b[key]) ? 1 : -1
-    //             // If the keys have lengths - sort by their length
-    //             } else {
-    //                 if ( a[key].length == b[key].length ) {
-    //                     return 0
-    //                 } else if (sortAsc)
-    //                     return (a[key].length > b[key].length) ? 1 : -1
-    //                     else return (a[key].length < b[key].length) ? 1 : -1
-    //             }
-    //         }
-    //     })
-    //     return dataSorted
-    // },
     selectedProducts: function selectedProducts() {
       var products = this.products;
       var selectedProducts = [];
@@ -8895,7 +8837,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     nextSingleProductID: function nextSingleProductID() {
       var _this3 = this;
 
-      var products = this.productsSorted;
+      var products = this.productsSorted; // Check if we have a single product
 
       if (this.singleProductID != -1) {
         var currentProductIndex = products.findIndex(function (product) {
@@ -8903,6 +8845,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }); // Check that the current single product is not the last product
 
         if (currentProductIndex + 1 < products.length) return products[currentProductIndex + 1].id;else return -1;
+      } else return -1;
+    },
+    prevSingleProductID: function prevSingleProductID() {
+      var _this4 = this;
+
+      var products = this.productsSorted; // Check if we have a single product
+
+      if (this.singleProductID != -1) {
+        var currentProductIndex = products.findIndex(function (product) {
+          return product.id == _this4.singleProductID;
+        }); // Check that the current single product is not the first product
+
+        if (currentProductIndex != 0) return products[currentProductIndex - 1].id;else return -1;
       } else return -1;
     },
     users: function users() {
@@ -8944,6 +8899,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     setNextSingle: function setNextSingle() {
       this.singleProductID = this.nextSingleProductID;
     },
+    setPrevSingle: function setPrevSingle() {
+      this.singleProductID = this.prevSingleProductID;
+    },
     setProductFilter: function setProductFilter(filter) {
       this.currentProductFilter = filter;
       this.clearSelectedProducts();
@@ -8971,14 +8929,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this4 = this;
+      var _this5 = this;
 
       var actionType = method == 'in' ? 1 : 0; // Submit the selection
 
       this.selectedProducts.forEach(function (product) {
-        _this4.updateFinalAction({
+        _this5.updateFinalAction({
           productToUpdate: product,
-          phase: _this4.collection.phase,
+          phase: _this5.collection.phase,
           action_code: actionType
         });
       }); // Reset the selection
@@ -9310,7 +9268,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".product-single[data-v-019a7388] {\n  position: absolute;\n  right: 0;\n  top: 0;\n  margin: 0;\n  width: 65%;\n  z-index: 1;\n}\n.product-single > .card[data-v-019a7388] {\n  margin: 0;\n  background: white;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #DFDFDF;\n  width: 100%;\n}\n.product-single .description p[data-v-019a7388] {\n  margin-top: -4px;\n  margin-bottom: 8px;\n}\nh3[data-v-019a7388] {\n  font-size: 18px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.square[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 600;\n  display: inline-block;\n  padding: 0;\n  height: 32px;\n  width: 32px;\n  text-align: center;\n  line-height: 40px;\n}\n.square[data-v-019a7388]:hover {\n  cursor: pointer;\n  background: #F9F9F9;\n}\n.square i[data-v-019a7388] {\n  font-size: 22px;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #DFDFDF;\n  width: 2px;\n}\n.button[data-v-019a7388] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  padding-right: 22px;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n}\n.button i[data-v-019a7388] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-019a7388] {\n  font-weight: 900;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #F3F3F3;\n  padding: 6px 0;\n}\n.controls-wrapper .square[data-v-019a7388] {\n  margin-left: 1em;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  padding-right: 1em;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n  margin-left: 20px;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  cursor: pointer;\n  border-bottom: solid 2px #DFDFDF;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #F9F9F9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1B1C1D;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-color: #3B86FF;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tab-body[data-v-019a7388] {\n  background: #F3F3F3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #DFDFDF;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 60px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #A8A8A8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3B86FF;\n  margin-left: 4px;\n  font-size: 16px;\n}", ""]);
+exports.push([module.i, ".product-single[data-v-019a7388] {\n  position: absolute;\n  right: 0;\n  top: 0;\n  margin: 0;\n  width: 65%;\n  z-index: 1;\n}\n.product-single > .card[data-v-019a7388] {\n  margin: 0;\n  background: white;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #DFDFDF;\n  width: 100%;\n}\n.product-single .description p[data-v-019a7388] {\n  margin-top: -4px;\n  margin-bottom: 8px;\n}\nh3[data-v-019a7388] {\n  font-size: 18px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.square[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 600;\n  display: inline-block;\n  padding: 0;\n  height: 32px;\n  width: 32px;\n  text-align: center;\n  line-height: 40px;\n}\n.square[data-v-019a7388]:hover {\n  cursor: pointer;\n  background: #F9F9F9;\n}\n.square i[data-v-019a7388] {\n  font-size: 22px;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #DFDFDF;\n  width: 2px;\n}\n.button[data-v-019a7388] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  padding-right: 22px;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n}\n.button i[data-v-019a7388] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-019a7388] {\n  font-weight: 900;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #F3F3F3;\n  padding: 6px 0;\n}\n.controls-wrapper .square[data-v-019a7388] {\n  margin-left: 1em;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  padding-right: 1em;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  cursor: pointer;\n  border-bottom: solid 2px #DFDFDF;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #F9F9F9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1B1C1D;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-color: #3B86FF;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tab-body[data-v-019a7388] {\n  background: #F3F3F3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #DFDFDF;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 60px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #A8A8A8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3B86FF;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #F3F3F3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #F3F3F3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3C3B54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1B1C1D;\n}", ""]);
 
 // exports
 
@@ -12939,49 +12897,45 @@ var render = function() {
                   [
                     !_vm.product.productFinalAction
                       ? [
-                          _c("td", [
-                            _c(
-                              "span",
-                              {
-                                staticClass: "button green",
-                                on: {
-                                  click: function($event) {
-                                    return _vm.toggleInOut(
-                                      _vm.product.id,
-                                      1,
-                                      "N/A"
-                                    )
-                                  }
+                          _c(
+                            "span",
+                            {
+                              staticClass: "button green",
+                              on: {
+                                click: function($event) {
+                                  return _vm.toggleInOut(
+                                    _vm.product.id,
+                                    1,
+                                    "N/A"
+                                  )
                                 }
-                              },
-                              [
-                                _vm._v("In  "),
-                                _c("i", { staticClass: "far fa-heart" })
-                              ]
-                            )
-                          ]),
+                              }
+                            },
+                            [
+                              _vm._v("In  "),
+                              _c("i", { staticClass: "far fa-heart" })
+                            ]
+                          ),
                           _vm._v(" "),
-                          _c("td", [
-                            _c(
-                              "span",
-                              {
-                                staticClass: "button red",
-                                on: {
-                                  click: function($event) {
-                                    return _vm.toggleInOut(
-                                      _vm.product.id,
-                                      0,
-                                      "N/A"
-                                    )
-                                  }
+                          _c(
+                            "span",
+                            {
+                              staticClass: "button red",
+                              on: {
+                                click: function($event) {
+                                  return _vm.toggleInOut(
+                                    _vm.product.id,
+                                    0,
+                                    "N/A"
+                                  )
                                 }
-                              },
-                              [
-                                _vm._v("Out  "),
-                                _c("i", { staticClass: "far fa-times-circle" })
-                              ]
-                            )
-                          ])
+                              }
+                            },
+                            [
+                              _vm._v("Out  "),
+                              _c("i", { staticClass: "far fa-times-circle" })
+                            ]
+                          )
                         ]
                       : [
                           _c(
@@ -13041,6 +12995,20 @@ var render = function() {
                       "span",
                       {
                         staticClass: "button primary active wide",
+                        class: [{ disabled: _vm.prevProductID < 0 }],
+                        on: {
+                          click: function($event) {
+                            return _vm.onPrevSingle()
+                          }
+                        }
+                      },
+                      [_vm._v("Previous style")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "span",
+                      {
+                        staticClass: "button primary active wide",
                         class: [{ disabled: _vm.nextProductID < 0 }],
                         on: {
                           click: function($event) {
@@ -13048,7 +13016,7 @@ var render = function() {
                           }
                         }
                       },
-                      [_vm._v("Next product")]
+                      [_vm._v("Next style")]
                     )
                   ],
                   2
@@ -13063,9 +13031,26 @@ var render = function() {
                     _c("h3", [_vm._v(_vm._s(_vm.product.title))]),
                     _vm._v(" "),
                     _c("div", { staticClass: "grid-2" }, [
-                      _c("div", { staticClass: "image" }, [
-                        _c("img", { attrs: { src: _vm.product.image } })
-                      ]),
+                      _c(
+                        "div",
+                        {
+                          staticClass: "image",
+                          on: {
+                            click: function($event) {
+                              return _vm.cycleImage()
+                            }
+                          }
+                        },
+                        [
+                          _c("img", {
+                            attrs: {
+                              src:
+                                _vm.product.color_variants[_vm.currentImgIndex]
+                                  .image
+                            }
+                          })
+                        ]
+                      ),
                       _vm._v(" "),
                       _c("div", { staticClass: "description" }, [
                         _c("strong", [_vm._v("Style number")]),
@@ -13101,6 +13086,43 @@ var render = function() {
                     _c("strong", [_vm._v("Composition")]),
                     _vm._v(" "),
                     _c("p", [_vm._v(_vm._s(_vm.product.composition))]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "product-variants" },
+                      _vm._l(_vm.product.color_variants, function(
+                        variant,
+                        index
+                      ) {
+                        return _c(
+                          "div",
+                          {
+                            key: index,
+                            staticClass: "product-variant",
+                            class: { active: _vm.currentImgIndex == index },
+                            on: {
+                              click: function($event) {
+                                _vm.currentImgIndex = index
+                              }
+                            }
+                          },
+                          [
+                            _c("div", { staticClass: "img-wrapper" }, [
+                              _c("img", { attrs: { src: variant.image } })
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "color-wrapper" }, [
+                              _c("div", { staticClass: "circle-img" }, [
+                                _c("img", { attrs: { src: variant.image } })
+                              ]),
+                              _vm._v(" "),
+                              _c("span", [_vm._v(_vm._s(variant.color))])
+                            ])
+                          ]
+                        )
+                      }),
+                      0
+                    ),
                     _vm._v(" "),
                     _c("div", { staticClass: "tabs-wrapper" }, [
                       _c("strong", [_vm._v("Distribution")]),
@@ -13606,11 +13628,13 @@ var render = function() {
         attrs: {
           product: _vm.singleProductToShow,
           nextProductID: _vm.nextSingleProductID,
+          prevProductID: _vm.prevSingleProductID,
           authUser: _vm.authUser
         },
         on: {
           closeSingle: _vm.onCloseSingle,
           nextSingle: _vm.onNextSingle,
+          prevSingle: _vm.onPrevSingle,
           onToggleInOut: _vm.toggleInOut
         }
       }),
@@ -13871,7 +13895,11 @@ var render = function() {
                           }
                         }
                       },
-                      [_c("img", { attrs: { src: product.image } })]
+                      [
+                        _c("img", {
+                          attrs: { src: product.color_variants[0].image }
+                        })
+                      ]
                     ),
                     _vm._v(" "),
                     _c(
@@ -14985,6 +15013,7 @@ var render = function() {
                 teams: _vm.teams,
                 singleProductToShow: _vm.singleProductToShow,
                 nextSingleProductID: _vm.nextSingleProductID,
+                prevSingleProductID: _vm.prevSingleProductID,
                 totalProductCount: _vm.products.length,
                 selectedCount: _vm.selectedProducts.length,
                 collection: _vm.collection,
@@ -14997,7 +15026,8 @@ var render = function() {
                 viewAsSingle: _vm.setSingleProduct,
                 onSelect: _vm.setSelectedProduct,
                 closeSingle: _vm.setSingleProduct,
-                nextSingle: _vm.setNextSingle
+                nextSingle: _vm.setNextSingle,
+                prevSingle: _vm.setPrevSingle
               }
             }),
             _vm._v(" "),
@@ -34251,26 +34281,33 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _createComment = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref3, _ref4) {
-        var commit, comment;
+        var commit, comment, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 commit = _ref3.commit;
                 comment = _ref4.comment;
+                _context2.next = 4;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/comment", {
+                  user_id: comment.user_id,
+                  product_id: comment.product_id,
+                  comment_body: comment.comment,
+                  important: comment.important,
+                  "final": comment["final"],
+                  product_final: comment.product_final
+                });
+
+              case 4:
+                response = _context2.sent;
+                // Get and set the comment id equal to the id given by the database
+                comment.id = response.data.id;
                 commit('addComment', {
                   comment: comment
-                }); // const response = await axios.post(`/api/comment`, {
-                //   user_id: comment.user_id,
-                //   product_id: comment.product_id,
-                //   comment_body: comment.comment,
-                //   important: comment.important,
-                //   final: comment.final,
-                //   product_final: comment.product_final,
-                // })
-                // console.log(response.data)
+                });
+                console.log(response.data);
 
-              case 3:
+              case 8:
               case "end":
                 return _context2.stop();
             }
@@ -34299,21 +34336,23 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 console.log('Module updating comment');
                 commit('updateFinal', {
                   comment: comment
-                }); // await axios.put(`/api/comment/update`, {
-                //   id: comment.id,
-                //   user_id: comment.user_id,
-                //   product_id: comment.product_id,
-                //   comment_body: comment.comment,
-                //   important: comment.important,
-                //   final: comment.final,
-                //   product_final: comment.product_final,
-                // }).then(response => {
-                //   console.log(response.data)
-                // }).catch(err =>{
-                //   console.log(err);
-                // })
+                });
+                _context3.next = 6;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/comment/update", {
+                  id: comment.id,
+                  user_id: comment.user_id,
+                  product_id: comment.product_id,
+                  comment_body: comment.comment,
+                  important: comment.important,
+                  "final": comment["final"],
+                  product_final: comment.product_final
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
 
-              case 4:
+              case 6:
               case "end":
                 return _context3.stop();
             }

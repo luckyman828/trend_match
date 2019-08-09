@@ -6,8 +6,8 @@
                         <span class="square" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
                     <div class="controls">
                         <template v-if="!product.productFinalAction">
-                            <td><span class="button green" @click="toggleInOut(product.id, 1, 'N/A')">In  <i class="far fa-heart"></i></span></td>
-                            <td><span class="button red" @click="toggleInOut(product.id, 0, 'N/A')">Out  <i class="far fa-times-circle"></i></span></td>
+                            <span class="button green" @click="toggleInOut(product.id, 1, 'N/A')">In  <i class="far fa-heart"></i></span>
+                            <span class="button red" @click="toggleInOut(product.id, 0, 'N/A')">Out  <i class="far fa-times-circle"></i></span>
                         </template>
                         <template v-else>
                             <span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product.id, 1, product.productFinalAction.action)">
@@ -17,15 +17,16 @@
                                 Out  <i class="far fa-times-circle"></i>
                                 </span>
                         </template>
-                        <span class="button primary active wide" @click="onNextSingle()" :class="[{ disabled: nextProductID < 0}]">Next product</span>
+                        <span class="button primary active wide" @click="onPrevSingle()" :class="[{ disabled: prevProductID < 0}]">Previous style</span>
+                        <span class="button primary active wide" @click="onNextSingle()" :class="[{ disabled: nextProductID < 0}]">Next style</span>
                     </div>
                 </div>
                 <div class="grid-2 grid-border-between inner">
                     <div>
                         <h3>{{product.title}}</h3>
                         <div class="grid-2">
-                            <div class="image">
-                                <img :src="product.image">
+                            <div class="image" @click="cycleImage()">
+                                <img :src="product.color_variants[currentImgIndex].image">
                             </div>
                             <div class="description">
                                 <strong>Style number</strong>
@@ -44,6 +45,18 @@
                         </div>
                         <strong>Composition</strong>
                         <p>{{product.composition}}</p>
+
+                        <div class="product-variants">
+                            <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
+                                <div class="img-wrapper">
+                                    <img :src="variant.image">
+                                </div>
+                                <div class="color-wrapper">
+                                    <div class="circle-img"><img :src="variant.image"></div>
+                                    <span>{{variant.color}}</span>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="tabs-wrapper">
                             <strong>Distribution</strong>
@@ -84,6 +97,7 @@ export default {
         'product',
         'authUser',
         'nextProductID',
+        'prevProductID',
     ],
     components: {
         ProductSingleComments,
@@ -99,6 +113,7 @@ export default {
             },
             user_id: this.authUser.id,
             currentTab: 'ins',
+            currentImgIndex: 0,
     }},
     computed: {
         tabBody () {
@@ -117,24 +132,6 @@ export default {
             }
             else return this.product[this.currentTab]
         },
-        // productActionUsers () {
-        //     const data = {
-        //         nds: this.product.nds,
-        //         ins: [],
-        //         outs: [],
-        //         focus: [],
-        //     }
-        //     this.product.focus.forEach(action => {
-        //         data.focus.push(action.user)
-        //     })
-        //     this.product.ins.forEach(action => {
-        //         data.ins.push(action.user)
-        //     })
-        //     this.product.outs.forEach(action => {
-        //         data.outs.push(action.user)
-        //     })
-        //     return data
-        // }
     },
     watch: {
         product: function (newVal, oldVal) {
@@ -148,23 +145,18 @@ export default {
         ...mapActions('entities/comments', ['createComment']),
         ...mapActions('entities/comments', ['markAsFinal']),
         onCloseSingle() {
+            this.currentImgIndex = 0
             // Emit event to parent
             this.$emit('closeSingle')
         },
-        // onSubmitComment(e) {
-        //     e.preventDefault()
-        //     this.createComment({comment: this.comment})
-        // },
         onNextSingle() {
+            this.currentImgIndex = 0
             this.$emit('nextSingle')
         },
-        // onMarkAsFinal(comment) {
-        //     console.log('Comment: ' + comment.id)
-        //     // comment.product_final = !comment.product_final; // This let's us toggle the comments status
-        //     comment.product_final = true; // This always sets the comment as final
-        //     console.log(comment.product_final)
-        //     this.markAsFinal({comment: comment})
-        // },
+        onPrevSingle() {
+            this.currentImgIndex = 0
+            this.$emit('prevSingle')
+        },
         toggleInOut(productID, actionType, userAction) {
             console.log("Emitting toggle in/out !")
             console.log(`userAction: ${userAction}, and actionType = ${actionType}`)
@@ -172,6 +164,13 @@ export default {
         },
         setCurrentTab(filter) {
             this.currentTab = filter
+        },
+        cycleImage() {
+            if (this.currentImgIndex + 1 == this.product.color_variants.length) {
+                this.currentImgIndex = 0
+            } else {
+                this.currentImgIndex ++
+            }
         }
     }
 }
@@ -198,6 +197,7 @@ export default {
             }
         }  
         .image {
+            cursor: pointer;
             img {
                 border: solid 1px $light2;
                 width: 100%;
@@ -295,7 +295,6 @@ export default {
         padding-right: 1em;
         :last-child {
             margin-right: 0;
-            margin-left: 20px;
         }
     }
     .tab-headers {
@@ -366,6 +365,73 @@ export default {
                 color: $primary;
                 margin-left: 4px;
                 font-size: 16px;
+            }
+        }
+    }
+    .grid-2 {
+        grid-template-columns: repeat( auto-fit, minmax(33.33%, 1fr) );
+    }
+    .product-variants {
+        white-space: nowrap;
+        overflow-x: auto;
+    }
+    .product-variant {
+        width: 85px;
+        display: inline-block;
+        cursor: pointer;
+        &:not(:last-child) {
+            margin-right: 12px;
+        }
+        .color-wrapper {
+            overflow: hidden;
+            margin-right: 5px;
+            span {
+                font-size: 10px;
+                font-weight: 500;
+                color: $dark2;
+            }
+            .circle-img {
+                width: 12px;
+                height: 12px;
+                border-radius: 6px;
+                border: solid 1px $light1;
+                position: relative;
+                overflow: hidden;
+                display: inline-block;
+                img {
+                    left: 50%;
+                    top: 50%;
+                    transform: translate(-50%, -50%);
+                    position: absolute;
+                }
+            }
+        }
+        .img-wrapper {
+            padding-top: 100%;
+            width: 100%;
+            height: 0;
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            margin-right: 4px;
+            border-radius: 4px;
+            border: solid 1px $light1;
+            overflow: hidden;
+            img {
+                width: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+        }
+        &.active {
+            .img-wrapper {
+                border-color: $dark05;
+            }
+            .color-wrapper {
+                span {
+                    color: $dark;
+                }
             }
         }
     }

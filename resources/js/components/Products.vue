@@ -1,7 +1,7 @@
 <template>
     <div class="products card">
         <product-totals :totalProductCount="totalProductCount" :selectedCount="selectedCount" :products="products"/>
-        <product-single :product="singleProductToShow" :nextProductID="nextSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @onToggleInOut="toggleInOut"/>
+        <product-single :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut"/>
         <table :class="{disabled: singleProductToShow.id != null}">
             <tr class="header-row">
                 <th class="select">Select <i class="fas fa-chevron-down"></i></th>
@@ -42,7 +42,7 @@
                         </label>
                     </td>
                     <td class="id clickable" @click="onViewSingle(product.id)">{{product.datasource_id}}</td>
-                    <td class="image clickable" @click="onViewSingle(product.id)"><img :src="product.image"></td>
+                    <td class="image clickable" @click="onViewSingle(product.id)"><img :src="product.color_variants[0].image"></td>
                     <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
                     <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
                     <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'In', product.ins)" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length}}</span></td>
@@ -100,6 +100,7 @@ export default {
         'totalProductCount',
         'singleProductToShow',
         'nextSingleProductID',
+        'prevSingleProductID',
         'teams',
         'sortAsc',
         'sortBy',
@@ -185,6 +186,9 @@ export default {
         },
         onNextSingle() {
             this.$emit('nextSingle')
+        },
+        onPrevSingle() {
+            this.$emit('prevSingle')
         },
         resetSelected() {
             document.querySelectorAll('.product-row input[type=checkbox]').forEach(input => {
