@@ -2,22 +2,26 @@
     <div class="vue-component-filters filter-row">
 
         <div class="grid-2">
-            
-            <div class="dropdown category-button">
-                <div v-if="selectedCategoriesCount > 0" class="counter-filter text-center">{{ selectedCategoriesCount }}</div>
-                <button class="btn btn-secondary dropdown-toggle category d-flex justify-content-between" type="button" id="dropdownMenuButton"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Category <img src="/assets/Path26.svg" alt />
-                </button>
+          
+            <div class="category-filter-wrapper">
+              <div class="dropdown category-button">
+                  <div v-if="selectedCategoriesCount > 0" class="counter-filter text-center">{{ selectedCategoriesCount }}</div>
+                  <button class="btn btn-secondary dropdown-toggle category d-flex justify-content-between" type="button" id="dropdownMenuButton"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Category <img src="/assets/Path26.svg" alt />
+                  </button>
 
-                <div class="dropdown-menu pt-0" aria-labelledby="dropdownMenuButton">
-                <input type="text" name="Filter" placeholder="Filter by category" />
-                <label v-for="(category, index) in categories" :key="index" class="container" :for="'check-filter-' + index">
-                    <input type="checkbox" :id="'check-filter-' + index" @change="onSelectCategory(category.id)" />
-                    <span class="checkmark"></span>
-                    <p class="px-2">{{category.title}} <span class="count">({{(category.products != null) ? category.products.length : '0'}})</span></p>
-                </label>
-                </div>
+                  <div class="dropdown-menu pt-0" aria-labelledby="dropdownMenuButton">
+                  <input type="text" name="Filter" placeholder="Filter by category" />
+                  <label v-for="(category, index) in categories" :key="index" class="container" :for="'check-filter-' + index">
+                      <input type="checkbox" :id="'check-filter-' + index" @change="onSelectCategory(category.id)" />
+                      <span class="checkmark"></span>
+                      <p class="px-2">{{category.title}} <span class="count">({{(category.products != null) ? category.products.length : '0'}})</span></p>
+                  </label>
+                  </div>
+              </div>
+
+              <span v-if="selectedCategoriesCount > 0" class="clear-filter" @click="clearFilter">Clear filter</span>
             </div>
 
             <div class="dropdown">
@@ -54,6 +58,9 @@ export default {
     methods: {
         onSelectCategory(id) {
             this.$emit('onSelectCategory', id)
+        },
+        clearFilter() {
+          this.$emit('onClearFilter')
         }
     },
 }
@@ -63,6 +70,23 @@ export default {
 @import '~@/_variables.scss';
 .vue-component-filters {
     margin-bottom: 12px;
+}
+.category-button {
+  display: inline-block;
+  .dropdown-menu {
+    min-width: 220px;
+  }
+}
+.clear-filter {
+  display: inline-block;
+  margin-left: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $primary;
+  cursor: pointer;
+  &:hover {
+    opacity: .9;
+  }
 }
 .global {
     height: 32px;

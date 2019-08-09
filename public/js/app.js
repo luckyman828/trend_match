@@ -7441,6 +7441,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'filters',
   props: ['categories', 'selectedCategoriesCount'],
@@ -7453,6 +7457,9 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     onSelectCategory: function onSelectCategory(id) {
       this.$emit('onSelectCategory', id);
+    },
+    clearFilter: function clearFilter() {
+      this.$emit('onClearFilter');
     }
   }
 });
@@ -7996,7 +8003,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'products',
-  props: ['products', 'loading', 'authUser', 'collection', 'selectedCount', 'totalProductCount', 'singleProductToShow', 'nextSingleProductID', 'teams', 'sortAsc', 'sortBy'],
+  props: ['products', 'loading', 'authUser', 'collection', 'selectedCount', 'totalProductCount', 'singleProductToShow', 'nextSingleProductID', 'teams', 'sortAsc', 'sortBy', 'selectedIds'],
   components: {
     Loader: _Loader__WEBPACK_IMPORTED_MODULE_0__["default"],
     ProductTotals: _ProductTotals__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -8071,26 +8078,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.tooltip.active = false;
     },
     onSortBy: function onSortBy(key, method) {
-      this.$emit('onSortBy', key, method); // if (key == 'action') {
-      //     console.log('Sort by final_action not supported yet. Sorting by id, asc')
-      //     this.sortAsc = true
-      //     this.sortBy = 'datasource_id'
-      // } else {
-      // Check if the sorting key we are setting is already the key we are sorting by
-      // If this is the case, toggle the sorting method (asc|desc)
-      // if (this.sortBy !== key) {
-      //     this.sortAsc = method
-      //     this.sortBy = key
-      // } else {
-      //     this.sortAsc = !this.sortAsc
-      // }
-      // }
+      this.$emit('onSortBy', key, method);
     },
     onCloseSingle: function onCloseSingle() {
       this.$emit('closeSingle', -1);
     },
     onNextSingle: function onNextSingle() {
       this.$emit('nextSingle');
+    },
+    resetSelected: function resetSelected() {
+      document.querySelectorAll('.product-row input[type=checkbox]').forEach(function (input) {
+        input.checked = false;
+      });
     }
   })
 });
@@ -8947,6 +8946,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     setProductFilter: function setProductFilter(filter) {
       this.currentProductFilter = filter;
+      this.clearSelectedProducts();
     },
     setSelectedProduct: function setSelectedProduct(index) {
       // Check if index already exists in array. If it exists remove it, else add it to array
@@ -8957,7 +8957,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var result = found >= 0 ? selected.splice(found, 1) : selected.push(index);
     },
     clearSelectedProducts: function clearSelectedProducts() {
-      this.selectedCategoryIDs = [];
+      this.selectedProductIDs = [];
+      this.$refs.productsComponent.resetSelected();
     },
     setSelectedCategory: function setSelectedCategory(id) {
       var selected = this.selectedCategoryIDs;
@@ -8965,6 +8966,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return el == id;
       });
       var result = found >= 0 ? selected.splice(found, 1) : selected.push(id);
+    },
+    clearSelectedCategories: function clearSelectedCategories() {
+      this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
       var _this4 = this;
@@ -9249,7 +9253,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".vue-component-filters[data-v-b9055040] {\n  margin-bottom: 12px;\n}\n.global[data-v-b9055040] {\n  height: 32px;\n  width: 150px;\n  color: #1b1c1d;\n  background-color: #ffffff;\n  border: 1px solid #dfdfdf;\n  font-size: 14px;\n  font-weight: bold;\n  margin-left: auto;\n}\n.global img[data-v-b9055040] {\n  margin-top: 6px;\n}\n.global span[data-v-b9055040] {\n  margin-left: -8px;\n  margin-top: -3px;\n  background-color: #3b86ff;\n  width: 24px;\n  height: 24px;\n  border-radius: 25%;\n}\n.global span img[data-v-b9055040] {\n  margin-top: 0px;\n}\n.counter-filter[data-v-b9055040] {\n  position: absolute;\n  height: 20px;\n  width: 20px;\n  border-radius: 50%;\n  background-color: #f3f3f3;\n  z-index: 500;\n  box-shadow: 0px 3px 6px #a8a8a8;\n  margin-left: -10px;\n  margin-top: -10px;\n  line-height: 14px;\n}\n.category[data-v-b9055040] {\n  background-color: #dfdfdf;\n  color: #1b1c1d;\n  font-size: 12px;\n  font-weight: bold;\n  border: 0;\n  height: 32px;\n  width: 114px;\n}\n.category img[data-v-b9055040] {\n  margin-top: 6px;\n}\n.dropdown-toggle[data-v-b9055040]::after {\n  display: none;\n}\n.dropdown-menu[data-v-b9055040]:hover {\n  display: block;\n}\n.dropdown-menu[data-v-b9055040] {\n  overflow-y: auto;\n  max-height: 285px;\n  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);\n}\n.dropdown-menu input[type=text][data-v-b9055040] {\n  border: 0px;\n  border-bottom: 1px solid #a8a8a8;\n  color: #a8a8a8;\n  padding: 5px 0;\n  width: 100%;\n}\n.dropdown-menu input[type=text][data-v-b9055040]::-webkit-input-placeholder {\n  color: #a8a8a8;\n  text-align: center;\n}\n.dropdown-menu p[data-v-b9055040] {\n  display: inline;\n  font-size: 12px;\n  color: #1b1c1d;\n}\n.dropdown-menu .container[data-v-b9055040] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.dropdown-menu .container[data-v-b9055040]:hover {\n  background: #F9F9F9;\n}\n.dropdown-menu .container input[data-v-b9055040] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.dropdown-menu .checkmark[data-v-b9055040] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.dropdown-menu .container input:checked ~ .checkmark[data-v-b9055040] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.dropdown-menu .checkmark[data-v-b9055040]:after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.dropdown-menu .container input:checked ~ .checkmark[data-v-b9055040]:after {\n  display: block;\n}", ""]);
+exports.push([module.i, ".vue-component-filters[data-v-b9055040] {\n  margin-bottom: 12px;\n}\n.category-button[data-v-b9055040] {\n  display: inline-block;\n}\n.category-button .dropdown-menu[data-v-b9055040] {\n  min-width: 220px;\n}\n.clear-filter[data-v-b9055040] {\n  display: inline-block;\n  margin-left: 20px;\n  font-size: 14px;\n  font-weight: 500;\n  color: #3B86FF;\n  cursor: pointer;\n}\n.clear-filter[data-v-b9055040]:hover {\n  opacity: 0.9;\n}\n.global[data-v-b9055040] {\n  height: 32px;\n  width: 150px;\n  color: #1b1c1d;\n  background-color: #ffffff;\n  border: 1px solid #dfdfdf;\n  font-size: 14px;\n  font-weight: bold;\n  margin-left: auto;\n}\n.global img[data-v-b9055040] {\n  margin-top: 6px;\n}\n.global span[data-v-b9055040] {\n  margin-left: -8px;\n  margin-top: -3px;\n  background-color: #3b86ff;\n  width: 24px;\n  height: 24px;\n  border-radius: 25%;\n}\n.global span img[data-v-b9055040] {\n  margin-top: 0px;\n}\n.counter-filter[data-v-b9055040] {\n  position: absolute;\n  height: 20px;\n  width: 20px;\n  border-radius: 50%;\n  background-color: #f3f3f3;\n  z-index: 500;\n  box-shadow: 0px 3px 6px #a8a8a8;\n  margin-left: -10px;\n  margin-top: -10px;\n  line-height: 14px;\n}\n.category[data-v-b9055040] {\n  background-color: #dfdfdf;\n  color: #1b1c1d;\n  font-size: 12px;\n  font-weight: bold;\n  border: 0;\n  height: 32px;\n  width: 114px;\n}\n.category img[data-v-b9055040] {\n  margin-top: 6px;\n}\n.dropdown-toggle[data-v-b9055040]::after {\n  display: none;\n}\n.dropdown-menu[data-v-b9055040]:hover {\n  display: block;\n}\n.dropdown-menu[data-v-b9055040] {\n  overflow-y: auto;\n  max-height: 285px;\n  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);\n}\n.dropdown-menu input[type=text][data-v-b9055040] {\n  border: 0px;\n  border-bottom: 1px solid #a8a8a8;\n  color: #a8a8a8;\n  padding: 5px 0;\n  width: 100%;\n}\n.dropdown-menu input[type=text][data-v-b9055040]::-webkit-input-placeholder {\n  color: #a8a8a8;\n  text-align: center;\n}\n.dropdown-menu p[data-v-b9055040] {\n  display: inline;\n  font-size: 12px;\n  color: #1b1c1d;\n}\n.dropdown-menu .container[data-v-b9055040] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.dropdown-menu .container[data-v-b9055040]:hover {\n  background: #F9F9F9;\n}\n.dropdown-menu .container input[data-v-b9055040] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.dropdown-menu .checkmark[data-v-b9055040] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.dropdown-menu .container input:checked ~ .checkmark[data-v-b9055040] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.dropdown-menu .checkmark[data-v-b9055040]:after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.dropdown-menu .container input:checked ~ .checkmark[data-v-b9055040]:after {\n  display: block;\n}", ""]);
 
 // exports
 
@@ -12488,70 +12492,80 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "vue-component-filters filter-row" }, [
     _c("div", { staticClass: "grid-2" }, [
-      _c("div", { staticClass: "dropdown category-button" }, [
-        _vm.selectedCategoriesCount > 0
-          ? _c("div", { staticClass: "counter-filter text-center" }, [
-              _vm._v(_vm._s(_vm.selectedCategoriesCount))
-            ])
-          : _vm._e(),
-        _vm._v(" "),
-        _vm._m(0),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "dropdown-menu pt-0",
-            attrs: { "aria-labelledby": "dropdownMenuButton" }
-          },
-          [
-            _c("input", {
-              attrs: {
-                type: "text",
-                name: "Filter",
-                placeholder: "Filter by category"
-              }
-            }),
-            _vm._v(" "),
-            _vm._l(_vm.categories, function(category, index) {
-              return _c(
-                "label",
-                {
-                  key: index,
-                  staticClass: "container",
-                  attrs: { for: "check-filter-" + index }
-                },
-                [
-                  _c("input", {
-                    attrs: { type: "checkbox", id: "check-filter-" + index },
-                    on: {
-                      change: function($event) {
-                        return _vm.onSelectCategory(category.id)
+      _c("div", { staticClass: "category-filter-wrapper" }, [
+        _c("div", { staticClass: "dropdown category-button" }, [
+          _vm.selectedCategoriesCount > 0
+            ? _c("div", { staticClass: "counter-filter text-center" }, [
+                _vm._v(_vm._s(_vm.selectedCategoriesCount))
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          _vm._m(0),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "dropdown-menu pt-0",
+              attrs: { "aria-labelledby": "dropdownMenuButton" }
+            },
+            [
+              _c("input", {
+                attrs: {
+                  type: "text",
+                  name: "Filter",
+                  placeholder: "Filter by category"
+                }
+              }),
+              _vm._v(" "),
+              _vm._l(_vm.categories, function(category, index) {
+                return _c(
+                  "label",
+                  {
+                    key: index,
+                    staticClass: "container",
+                    attrs: { for: "check-filter-" + index }
+                  },
+                  [
+                    _c("input", {
+                      attrs: { type: "checkbox", id: "check-filter-" + index },
+                      on: {
+                        change: function($event) {
+                          return _vm.onSelectCategory(category.id)
+                        }
                       }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "checkmark" }),
-                  _vm._v(" "),
-                  _c("p", { staticClass: "px-2" }, [
-                    _vm._v(_vm._s(category.title) + " "),
-                    _c("span", { staticClass: "count" }, [
-                      _vm._v(
-                        "(" +
-                          _vm._s(
-                            category.products != null
-                              ? category.products.length
-                              : "0"
-                          ) +
-                          ")"
-                      )
+                    }),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "checkmark" }),
+                    _vm._v(" "),
+                    _c("p", { staticClass: "px-2" }, [
+                      _vm._v(_vm._s(category.title) + " "),
+                      _c("span", { staticClass: "count" }, [
+                        _vm._v(
+                          "(" +
+                            _vm._s(
+                              category.products != null
+                                ? category.products.length
+                                : "0"
+                            ) +
+                            ")"
+                        )
+                      ])
                     ])
-                  ])
-                ]
-              )
-            })
-          ],
-          2
-        )
+                  ]
+                )
+              })
+            ],
+            2
+          )
+        ]),
+        _vm._v(" "),
+        _vm.selectedCategoriesCount > 0
+          ? _c(
+              "span",
+              { staticClass: "clear-filter", on: { click: _vm.clearFilter } },
+              [_vm._v("Clear filter")]
+            )
+          : _vm._e()
       ]),
       _vm._v(" "),
       _vm._m(1)
@@ -12577,7 +12591,7 @@ var staticRenderFns = [
         }
       },
       [
-        _vm._v("\n            Category "),
+        _vm._v("\n              Category "),
         _c("img", { attrs: { src: "/assets/Path26.svg", alt: "" } })
       ]
     )
@@ -14948,7 +14962,10 @@ var render = function() {
                 categories: _vm.categories,
                 selectedCategoriesCount: _vm.selectedCategoryIDs.length
               },
-              on: { onSelectCategory: _vm.setSelectedCategory }
+              on: {
+                onSelectCategory: _vm.setSelectedCategory,
+                onClearFilter: _vm.clearSelectedCategories
+              }
             }),
             _vm._v(" "),
             _c("product-tabs", {
@@ -14960,7 +14977,9 @@ var render = function() {
             }),
             _vm._v(" "),
             _c("products", {
+              ref: "productsComponent",
               attrs: {
+                selectedIds: _vm.selectedProductIDs,
                 sortBy: _vm.sortBy,
                 sortAsc: _vm.sortAsc,
                 teams: _vm.teams,
@@ -32446,15 +32465,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!*******************************************************!*\
   !*** ./resources/js/components/screens/Catalogue.vue ***!
   \*******************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Catalogue_vue_vue_type_template_id_76e8b686___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Catalogue.vue?vue&type=template&id=76e8b686& */ "./resources/js/components/screens/Catalogue.vue?vue&type=template&id=76e8b686&");
 /* harmony import */ var _Catalogue_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Catalogue.vue?vue&type=script&lang=js& */ "./resources/js/components/screens/Catalogue.vue?vue&type=script&lang=js&");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Catalogue_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Catalogue_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _Catalogue_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Catalogue.vue?vue&type=style&index=0&lang=scss& */ "./resources/js/components/screens/Catalogue.vue?vue&type=style&index=0&lang=scss&");
+/* empty/unused harmony star reexport *//* harmony import */ var _Catalogue_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Catalogue.vue?vue&type=style&index=0&lang=scss& */ "./resources/js/components/screens/Catalogue.vue?vue&type=style&index=0&lang=scss&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -32486,7 +32504,7 @@ component.options.__file = "resources/js/components/screens/Catalogue.vue"
 /*!********************************************************************************!*\
   !*** ./resources/js/components/screens/Catalogue.vue?vue&type=script&lang=js& ***!
   \********************************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

@@ -2,10 +2,10 @@
     <div class="catalogue">
         <template v-if="!loadingCollections">
             <progress-bar :loading="loadingCollections" :catalogue="collection" :productTotals="productTotals"/>
-            <filters :categories="categories" :selectedCategoriesCount="selectedCategoryIDs.length" @onSelectCategory="setSelectedCategory"/>
+            <filters :categories="categories" :selectedCategoriesCount="selectedCategoryIDs.length" @onSelectCategory="setSelectedCategory" @onClearFilter="clearSelectedCategories"/>
             <!-- <product-single :product="singleProductToShow" :nextProductID="nextSingleProductID" :loading="loadingProducts" :authUser="authUser" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/> -->
             <product-tabs :productTotals="productTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
-            <products :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsSorted" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/>
+            <products ref="productsComponent" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsSorted" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/>
             <SelectedController :totalCount="productsSorted.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction"/>
         </template>
         <template v-if="loadingCollections">
@@ -403,6 +403,7 @@ export default{
         },
         setProductFilter(filter) {
             this.currentProductFilter = filter
+            this.clearSelectedProducts()
         },
         setSelectedProduct(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
@@ -411,12 +412,16 @@ export default{
             const result = (found >= 0) ? selected.splice(found, 1) : selected.push(index)
         },
         clearSelectedProducts() {
-            this.selectedCategoryIDs = []
+            this.selectedProductIDs = []
+            this.$refs.productsComponent.resetSelected()
         },
         setSelectedCategory(id) {
             const selected = this.selectedCategoryIDs
             const found = selected.findIndex(el => el == id)
             const result = (found >= 0) ? selected.splice(found, 1) : selected.push(id)
+        },
+        clearSelectedCategories() {
+            this.selectedCategoryIDs = []
         },
         submitSelectedAction(method) {
             const actionType = (method == 'in') ? 1 : 0

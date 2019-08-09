@@ -102,7 +102,8 @@ export default {
         'nextSingleProductID',
         'teams',
         'sortAsc',
-        'sortBy'
+        'sortBy',
+        'selectedIds'
     ],
     components: {
         Loader,
@@ -178,25 +179,6 @@ export default {
         },
         onSortBy(key, method) {
             this.$emit('onSortBy', key, method)
-            // if (key == 'action') {
-                
-            //     console.log('Sort by final_action not supported yet. Sorting by id, asc')
-            //     this.sortAsc = true
-            //     this.sortBy = 'datasource_id'
-                
-            // } else {
-                    
-            // Check if the sorting key we are setting is already the key we are sorting by
-            // If this is the case, toggle the sorting method (asc|desc)
-                // if (this.sortBy !== key) {
-                //     this.sortAsc = method
-                //     this.sortBy = key
-                // } else {
-                //     this.sortAsc = !this.sortAsc
-                // }
-
-            // }
-
         },
         onCloseSingle() {
             this.$emit('closeSingle', -1)
@@ -204,6 +186,11 @@ export default {
         onNextSingle() {
             this.$emit('nextSingle')
         },
+        resetSelected() {
+            document.querySelectorAll('.product-row input[type=checkbox]').forEach(input => {
+                input.checked = false
+            })
+        }
     }
 }
 </script>
