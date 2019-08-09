@@ -7443,21 +7443,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'filters',
-  props: ['categories'],
+  props: ['categories', 'selectedCategoriesCount'],
   data: function data() {
     return {
       selectedCategories: []
     };
   },
-  computed: {
-    selectedCategoriesLength: function selectedCategoriesLength() {
-      return this.selectedCategories.length;
-    }
-  },
+  computed: {},
   methods: {
-    onSelectCategory: function onSelectCategory(category) {
-      this.selectedCategories.push(category.title);
-      this.$emit();
+    onSelectCategory: function onSelectCategory(id) {
+      this.$emit('onSelectCategory', id);
     }
   }
 });
@@ -7565,26 +7560,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -7796,7 +7771,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
-      comment: {
+      newComment: {
         user_id: this.authUser.id,
         product_id: this.product.id,
         comment: '',
@@ -7815,17 +7790,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   watch: {
     product: function product(newVal, oldVal) {
-      this.comment.product_id = newVal.id;
+      this.newComment.product_id = newVal.id;
     },
     authUser: function authUser(newVal, oldVal) {
-      this.comment.user_id = newVal.id;
+      this.newComment.user_id = newVal.id;
     }
   },
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['createComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['markAsFinal']), {
     onSubmitComment: function onSubmitComment(e) {
       e.preventDefault();
+      console.log('submitting comment to store');
       this.createComment({
-        comment: this.comment
+        comment: this.newComment
       });
     },
     onMarkAsFinal: function onMarkAsFinal(comment) {
@@ -8011,6 +7987,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 
@@ -8018,7 +7996,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'products',
-  props: ['products', 'loading', 'authUser', 'collection', 'selectedCount', 'totalProductCount', 'singleProductToShow', 'nextSingleProductID', 'teams'],
+  props: ['products', 'loading', 'authUser', 'collection', 'selectedCount', 'totalProductCount', 'singleProductToShow', 'nextSingleProductID', 'teams', 'sortAsc', 'sortBy'],
   components: {
     Loader: _Loader__WEBPACK_IMPORTED_MODULE_0__["default"],
     ProductTotals: _ProductTotals__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -8027,40 +8005,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
+      coolProducts: [],
       tooltip: {
         active: false,
         position: {},
         type: 'none',
         header: '',
         data: {}
-      },
-      sortBy: 'id',
-      sortAsc: true
+      }
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/productFinalActions', ['loadingFinalActions']), {
-    productsSorted: function productsSorted() {
-      var products = this.products;
-      var key = this.sortBy;
-      var sortAsc = this.sortAsc;
-      var dataSorted = products.sort(function (a, b) {
-        // If the keys don't have length - sort by the key
-        if (!products[0][key].length) {
-          if (sortAsc) return a[key] > b[key] ? 1 : -1;else return a[key] < b[key] ? 1 : -1; // If the keys have lengths - sort by their length
-        } else {
-          if (sortAsc) return a[key].length > b[key].length ? 1 : -1;else return a[key].length < b[key].length ? 1 : -1;
-        }
-      });
-      return dataSorted; // return dataSorted
-      // return('Now sorting by: ' + key + ', ' + sortAsc)
-      // return key
-      // const dataSorted = products.sort((a, b) => {
-      //         return (a[key] > b[key]) ? 1 : -1
-      // })
-      // return dataSorted
-      // return products[0][key]
+  watch: {
+    products: function products(newVal, oldVal) {
+      this.coolProducts = newVal;
     }
-  }),
+  },
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/productFinalActions', ['loadingFinalActions'])),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/productFinalActions', ['updateFinalAction']), {
     toggleInOut: function toggleInOut(productID, actionType, userAction) {
       if (actionType == userAction) {
@@ -8077,9 +8037,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
       }
     },
-    onViewSingle: function onViewSingle(index) {
+    onViewSingle: function onViewSingle(id) {
       // Emit event to parent
-      this.$emit('viewAsSingle', index);
+      this.$emit('viewAsSingle', id);
     },
     onSelect: function onSelect(index) {
       this.$emit('onSelect', index);
@@ -8111,20 +8071,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.tooltip.active = false;
     },
     onSortBy: function onSortBy(key, method) {
-      if (key == 'action') {
-        console.log('Sort by final_action not supported yet. Sorting by id, asc');
-        this.sortAsc = true;
-        this.sortBy = 'id';
-      } else {
-        // Check if the sorting key we are setting is already the key we are sorting by
-        // If this is the case, toggle the sorting method (asc|desc)
-        if (this.sortBy !== key) {
-          this.sortAsc = method;
-          this.sortBy = key;
-        } else {
-          this.sortAsc = !this.sortAsc;
-        }
-      }
+      this.$emit('onSortBy', key, method); // if (key == 'action') {
+      //     console.log('Sort by final_action not supported yet. Sorting by id, asc')
+      //     this.sortAsc = true
+      //     this.sortBy = 'datasource_id'
+      // } else {
+      // Check if the sorting key we are setting is already the key we are sorting by
+      // If this is the case, toggle the sorting method (asc|desc)
+      // if (this.sortBy !== key) {
+      //     this.sortAsc = method
+      //     this.sortBy = key
+      // } else {
+      //     this.sortAsc = !this.sortAsc
+      // }
+      // }
     },
     onCloseSingle: function onCloseSingle() {
       this.$emit('closeSingle', -1);
@@ -8241,7 +8201,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'selectedController',
-  props: ['selected', 'productTotals'],
+  props: ['selected', 'totalCount'],
   data: function data() {
     return {
       method: ''
@@ -8630,6 +8590,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../store/models/ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
 /* harmony import */ var _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../store/models/CommentVote */ "./resources/js/store/models/CommentVote.js");
 /* harmony import */ var _store_models_Category__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../store/models/Category */ "./resources/js/store/models/Category.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -8682,7 +8644,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     return {
       singleProductID: -1,
       currentProductFilter: 'overview',
-      selectedProductIDs: []
+      selectedProductIDs: [],
+      selectedCategoryIDs: [],
+      sortBy: 'datasource_id',
+      sortAsc: true
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections']), {
@@ -8691,6 +8656,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     collection: function collection() {
       return _store_models_Collection__WEBPACK_IMPORTED_MODULE_13__["default"].find(this.collectionId);
+    },
+    aaa: function aaa() {
+      return this.selectedCategoryIDs.length;
     },
     products: function products() {
       var products = _store_models_Product__WEBPACK_IMPORTED_MODULE_9__["default"].query()["with"](['actions.user.country', 'actions.user.team'])["with"](['comments.user.country', 'comments.votes', 'comments.user.team'])["with"]('productFinalAction').all();
@@ -8703,7 +8671,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         product.ins = [];
         product.outs = [];
         product.focus = [];
-        product.userAction = 0;
+        product.userAction = 0; // if (product.productFinalAction != null)
+        //     product.productFinalAction = {}
+
         product.nds = JSON.parse(JSON.stringify(totalUsers)); // Copy our users into a new variable
 
         product.actions.forEach(function (action) {
@@ -8725,23 +8695,156 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       return data;
     },
+    // aaaa () {
+    //     const products = this.products
+    //     const data = {
+    //         a: products[0][this.sortBy].length,
+    //         b: products[1][this.sortBy].length,
+    //         hasNoLength: (!products[0][this.sortBy].length),
+    //         isString: typeof this.sortBy,
+    //         get test () {
+    //             return (this.a == this.b)
+    //         }
+    //     }
+    //     return data
+    // },
+    productsFilteredByCategory: function productsFilteredByCategory() {
+      var _this = this;
+
+      var products = this.products;
+      var categoryIDs = this.selectedCategoryIDs;
+      var productsToReturn = products; // First filter by category
+
+      if (this.selectedCategoryIDs.length > 0) {
+        // productsToReturn = []
+        // Array.from(this.selectedCategoryIDs).forEach(categoryIndex => {
+        //     productsToReturn = productsToReturn.concat(this.categories[categoryIndex].products)
+        //     // productsToReturn.push({key: categoryIndex})
+        // })
+        var filteredByCategory = productsToReturn.filter(function (product) {
+          return Array.from(_this.selectedCategoryIDs).includes(product.category_id);
+        });
+        productsToReturn = filteredByCategory;
+      }
+
+      return productsToReturn;
+    },
     productsFiltered: function productsFiltered() {
       var method = this.currentProductFilter == 'ins' ? 1 : this.currentProductFilter == 'outs' ? 0 : this.currentProductFilter == 'nds' ? 2 : -1;
-      var products = this.products;
+      var products = this.productsFilteredByCategory; // const categoryIDs = this.selectedCategoryIDs
+
+      var productsToReturn = products; // First filter by category
+      // if (this.selectedCategoryIDs.length > 0) {
+      //     // productsToReturn = []
+      //     // Array.from(this.selectedCategoryIDs).forEach(categoryIndex => {
+      //     //     productsToReturn = productsToReturn.concat(this.categories[categoryIndex].products)
+      //     //     // productsToReturn.push({key: categoryIndex})
+      //     // })
+      //     const filteredByCategory = productsToReturn.filter(product => {
+      //             return Array.from(this.selectedCategoryIDs).includes(product.category_id)
+      //     })
+      //     productsToReturn = filteredByCategory
+      // }
+      // Second filter by in/out
 
       if (method > -1) {
-        var productsFiltered = products.filter(function (product) {
+        var filteredByAction = productsToReturn.filter(function (product) {
           if (method != 2) {
             if (product.productFinalAction != null) return product.productFinalAction.action == method;
           } else {
             return product.productFinalAction == null;
           }
         });
-        return productsFiltered;
-      } else {
-        return products;
+        productsToReturn = filteredByAction;
       }
+
+      return productsToReturn;
     },
+    productsSorted: function productsSorted() {
+      var products = this.productsFiltered;
+      var key = this.sortBy;
+      var sortAsc = this.sortAsc;
+      var dataSorted = products.sort(function (a, b) {
+        if (key == 'productFinalAction') {
+          if (a[key] != null) {
+            if (b[key] != null) {
+              // If A and B has a key
+              if (sortAsc) return a[key].action > b[key].action ? 1 : -1;else return a[key].action < b[key].action ? 1 : -1;
+            } else {
+              // If ONLY A has a key
+              if (sortAsc) return 1;else return -1;
+            }
+          } else if (b[key] != null) {
+            // If ONLY B has a key
+            if (sortAsc) return -1;else return 1;
+          } else {
+            // Neither A nor B has a key
+            return 0;
+          }
+        } else {
+          if (_typeof(products[0][key]) == 'object') {
+            // Sort by key length
+            if (a[key].length == b[key].length) {
+              return 0;
+            } else if (sortAsc) return a[key].length > b[key].length ? 1 : -1;else return a[key].length < b[key].length ? 1 : -1;
+          } // If the keys aren't objects, finalActions or strings - sort by the key
+          else {
+              if (a[key] == b[key]) {
+                return 0;
+              } else if (sortAsc) return a[key] > b[key] ? 1 : -1;else return a[key] < b[key] ? 1 : -1;
+            }
+        }
+      });
+      return dataSorted;
+    },
+    // productsSortedOld() {
+    //     const products = this.productsFiltered
+    //     let key = this.sortBy
+    //     let sortAsc = this.sortAsc
+    //     const dataSorted = products.sort((a, b) => {
+    //         if (key == 'productFinalAction') {
+    //             if (a[key] != null) {
+    //                 if (b[key] != null) {
+    //                     // If A and B has a key
+    //                     if (sortAsc)
+    //                         return (a[key].action > b[key].action) ? 1 : -1
+    //                         else return (a[key].action < b[key].action) ? 1 : -1
+    //                 } else {
+    //                     // If ONLY A has a key
+    //                     if (sortAsc)
+    //                         return 1
+    //                         else return -1
+    //                 }
+    //             } else if (b[key] != null) {
+    //                 // If ONLY B has a key
+    //                 if (sortAsc)
+    //                     return -1
+    //                     else return 1
+    //             } else {
+    //                 // Neither A nor B has a key
+    //                 return 0
+    //             }
+    //         }
+    //         else {
+    //             // If the keys don't have length - sort by the key
+    //             if (!products[0][key].length) {
+    //                 if ( a[key] == b[key] ) {
+    //                     return 0
+    //                 } else if (sortAsc)
+    //                     return (a[key] > b[key]) ? 1 : -1
+    //                     else return (a[key] < b[key]) ? 1 : -1
+    //             // If the keys have lengths - sort by their length
+    //             } else {
+    //                 if ( a[key].length == b[key].length ) {
+    //                     return 0
+    //                 } else if (sortAsc)
+    //                     return (a[key].length > b[key].length) ? 1 : -1
+    //                     else return (a[key].length < b[key].length) ? 1 : -1
+    //             }
+    //         }
+    //     })
+    //     return dataSorted
+    // },
     selectedProducts: function selectedProducts() {
       var products = this.products;
       var selectedProducts = [];
@@ -8751,6 +8854,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return selectedProducts;
     },
     productTotals: function productTotals() {
+      var products = this.productsFilteredByCategory;
       var data = {
         get actions() {
           return this.ins + this.outs;
@@ -8764,13 +8868,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         outs: 0,
         nds: 0,
         "final": {
-          products: this.products.length,
+          products: products.length,
           ins: 0,
           outs: 0,
           nds: 0
         }
       };
-      this.products.forEach(function (product) {
+      products.forEach(function (product) {
         data.ins += product.ins.length;
         data.outs += product.outs.length;
         data.nds += product.nds.length;
@@ -8782,12 +8886,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return data;
     },
     singleProductToShow: function singleProductToShow() {
-      var productToReturn = this.singleProductID != -1 ? this.products[this.singleProductID] : {};
+      var _this2 = this;
+
+      var productToReturn = this.singleProductID != -1 ? this.products.find(function (product) {
+        return product.id == _this2.singleProductID;
+      }) : {};
       return productToReturn;
     },
     nextSingleProductID: function nextSingleProductID() {
-      var nextSingleProductID = this.singleProductID < this.products.length - 1 ? this.singleProductID + 1 : -1;
-      return nextSingleProductID;
+      var _this3 = this;
+
+      var products = this.productsSorted;
+
+      if (this.singleProductID != -1) {
+        var currentProductIndex = products.findIndex(function (product) {
+          return product.id == _this3.singleProductID;
+        }); // Check that the current single product is not the last product
+
+        if (currentProductIndex + 1 < products.length) return products[currentProductIndex + 1].id;else return -1;
+      } else return -1;
     },
     users: function users() {
       return _store_models_User__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"]('country')["with"]('team').all();
@@ -8839,20 +8956,38 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       var result = found >= 0 ? selected.splice(found, 1) : selected.push(index);
     },
+    clearSelectedProducts: function clearSelectedProducts() {
+      this.selectedCategoryIDs = [];
+    },
+    setSelectedCategory: function setSelectedCategory(id) {
+      var selected = this.selectedCategoryIDs;
+      var found = selected.findIndex(function (el) {
+        return el == id;
+      });
+      var result = found >= 0 ? selected.splice(found, 1) : selected.push(id);
+    },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this = this;
+      var _this4 = this;
 
       var actionType = method == 'in' ? 1 : 0; // Submit the selection
 
       this.selectedProducts.forEach(function (product) {
-        _this.updateFinalAction({
+        _this4.updateFinalAction({
           productToUpdate: product,
-          phase: _this.collection.phase,
+          phase: _this4.collection.phase,
           action_code: actionType
         });
       }); // Reset the selection
 
       this.selectedProductIDs = [];
+    },
+    onSortBy: function onSortBy(key, method) {
+      if (this.sortBy !== key) {
+        this.sortAsc = method;
+        this.sortBy = key;
+      } else {
+        this.sortAsc = !this.sortAsc;
+      }
     }
   }),
   created: function created() {
@@ -9171,7 +9306,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".product-single[data-v-019a7388] {\n  position: absolute;\n  right: 0;\n  top: 0;\n  margin: 0;\n  width: 65%;\n  z-index: 1;\n}\n.product-single > .card[data-v-019a7388] {\n  margin: 0;\n  background: white;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #DFDFDF;\n  width: 100%;\n}\n.product-single .description p[data-v-019a7388] {\n  margin-top: -4px;\n  margin-bottom: 8px;\n}\nh3[data-v-019a7388] {\n  font-size: 18px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.square[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 600;\n  display: inline-block;\n  padding: 0;\n  height: 32px;\n  width: 32px;\n  text-align: center;\n  line-height: 40px;\n}\n.square[data-v-019a7388]:hover {\n  cursor: pointer;\n  background: #F9F9F9;\n}\n.square i[data-v-019a7388] {\n  font-size: 22px;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: calc(100% + 2em);\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #DFDFDF;\n  width: 2px;\n}\n.button[data-v-019a7388] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  padding-right: 22px;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n}\n.button i[data-v-019a7388] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-019a7388] {\n  font-weight: 900;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #F3F3F3;\n  padding: 6px 0;\n}\n.controls-wrapper .square[data-v-019a7388] {\n  margin-left: 1em;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  padding-right: 1em;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n  margin-left: 20px;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  cursor: pointer;\n  border-bottom: solid 2px #DFDFDF;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #F9F9F9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1B1C1D;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-color: #3B86FF;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tab-body[data-v-019a7388] {\n  background: #F3F3F3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #DFDFDF;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 60px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #A8A8A8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3B86FF;\n  margin-left: 4px;\n  font-size: 16px;\n}", ""]);
+exports.push([module.i, ".product-single[data-v-019a7388] {\n  position: absolute;\n  right: 0;\n  top: 0;\n  margin: 0;\n  width: 65%;\n  z-index: 1;\n}\n.product-single > .card[data-v-019a7388] {\n  margin: 0;\n  background: white;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #DFDFDF;\n  width: 100%;\n}\n.product-single .description p[data-v-019a7388] {\n  margin-top: -4px;\n  margin-bottom: 8px;\n}\nh3[data-v-019a7388] {\n  font-size: 18px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.square[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 600;\n  display: inline-block;\n  padding: 0;\n  height: 32px;\n  width: 32px;\n  text-align: center;\n  line-height: 40px;\n}\n.square[data-v-019a7388]:hover {\n  cursor: pointer;\n  background: #F9F9F9;\n}\n.square i[data-v-019a7388] {\n  font-size: 22px;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #DFDFDF;\n  width: 2px;\n}\n.button[data-v-019a7388] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  padding-right: 22px;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n}\n.button i[data-v-019a7388] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-019a7388] {\n  font-weight: 900;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #F3F3F3;\n  padding: 6px 0;\n}\n.controls-wrapper .square[data-v-019a7388] {\n  margin-left: 1em;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  padding-right: 1em;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n  margin-left: 20px;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  cursor: pointer;\n  border-bottom: solid 2px #DFDFDF;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #F9F9F9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1B1C1D;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-color: #3B86FF;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tab-body[data-v-019a7388] {\n  background: #F3F3F3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #DFDFDF;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 60px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #A8A8A8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3B86FF;\n  margin-left: 4px;\n  font-size: 16px;\n}", ""]);
 
 // exports
 
@@ -12354,9 +12489,9 @@ var render = function() {
   return _c("div", { staticClass: "vue-component-filters filter-row" }, [
     _c("div", { staticClass: "grid-2" }, [
       _c("div", { staticClass: "dropdown category-button" }, [
-        _vm.selectedCategories.length > 0
+        _vm.selectedCategoriesCount > 0
           ? _c("div", { staticClass: "counter-filter text-center" }, [
-              _vm._v(_vm._s(_vm.selectedCategories.length))
+              _vm._v(_vm._s(_vm.selectedCategoriesCount))
             ])
           : _vm._e(),
         _vm._v(" "),
@@ -12390,7 +12525,7 @@ var render = function() {
                     attrs: { type: "checkbox", id: "check-filter-" + index },
                     on: {
                       change: function($event) {
-                        return _vm.onSelectCategory(category)
+                        return _vm.onSelectCategory(category.id)
                       }
                     }
                   }),
@@ -13197,8 +13332,8 @@ var render = function() {
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.comment.comment,
-                expression: "comment.comment"
+                value: _vm.newComment.comment,
+                expression: "newComment.comment"
               }
             ],
             attrs: {
@@ -13208,13 +13343,13 @@ var render = function() {
               oninput:
                 'this.style.height = "";this.style.height = this.scrollHeight + "px"'
             },
-            domProps: { value: _vm.comment.comment },
+            domProps: { value: _vm.newComment.comment },
             on: {
               input: function($event) {
                 if ($event.target.composing) {
                   return
                 }
-                _vm.$set(_vm.comment, "comment", $event.target.value)
+                _vm.$set(_vm.newComment, "comment", $event.target.value)
               }
             }
           }),
@@ -13225,19 +13360,19 @@ var render = function() {
                 {
                   name: "model",
                   rawName: "v-model",
-                  value: _vm.comment.important,
-                  expression: "comment.important"
+                  value: _vm.newComment.important,
+                  expression: "newComment.important"
                 }
               ],
               attrs: { type: "checkbox", name: "comment-important" },
               domProps: {
-                checked: Array.isArray(_vm.comment.important)
-                  ? _vm._i(_vm.comment.important, null) > -1
-                  : _vm.comment.important
+                checked: Array.isArray(_vm.newComment.important)
+                  ? _vm._i(_vm.newComment.important, null) > -1
+                  : _vm.newComment.important
               },
               on: {
                 change: function($event) {
-                  var $$a = _vm.comment.important,
+                  var $$a = _vm.newComment.important,
                     $$el = $event.target,
                     $$c = $$el.checked ? true : false
                   if (Array.isArray($$a)) {
@@ -13245,17 +13380,17 @@ var render = function() {
                       $$i = _vm._i($$a, $$v)
                     if ($$el.checked) {
                       $$i < 0 &&
-                        _vm.$set(_vm.comment, "important", $$a.concat([$$v]))
+                        _vm.$set(_vm.newComment, "important", $$a.concat([$$v]))
                     } else {
                       $$i > -1 &&
                         _vm.$set(
-                          _vm.comment,
+                          _vm.newComment,
                           "important",
                           $$a.slice(0, $$i).concat($$a.slice($$i + 1))
                         )
                     }
                   } else {
-                    _vm.$set(_vm.comment, "important", $$c)
+                    _vm.$set(_vm.newComment, "important", $$c)
                   }
                 }
               }
@@ -13265,7 +13400,7 @@ var render = function() {
               "span",
               {
                 staticClass: "checkmark",
-                class: { active: _vm.comment.important },
+                class: { active: _vm.newComment.important },
                 on: {
                   mouseover: function($event) {
                     return _vm.showTooltip($event, "Important comment")
@@ -13279,7 +13414,7 @@ var render = function() {
         ]),
         _vm._v(" "),
         _c("input", {
-          class: { disabled: _vm.comment.comment.length < 3 },
+          class: { disabled: _vm.newComment.comment.length < 3 },
           attrs: { type: "submit", value: "Submit comment" }
         })
       ]),
@@ -13477,10 +13612,10 @@ var render = function() {
               "th",
               {
                 staticClass: "clickable id",
-                class: { active: this.sortBy == "id" },
+                class: { active: this.sortBy == "datasource_id" },
                 on: {
                   click: function($event) {
-                    return _vm.onSortBy("id", true)
+                    return _vm.onSortBy("datasource_id", true)
                   }
                 }
               },
@@ -13489,7 +13624,7 @@ var render = function() {
                 _c("i", {
                   staticClass: "fas",
                   class: [
-                    this.sortBy == "id" && !_vm.sortAsc
+                    this.sortBy == "datasource_id" && !_vm.sortAsc
                       ? "fa-long-arrow-alt-up"
                       : "fa-long-arrow-alt-down"
                   ]
@@ -13647,19 +13782,29 @@ var render = function() {
               "th",
               {
                 staticClass: "clickable",
-                class: { active: this.sortBy == "action" },
+                class: { active: this.sortBy == "productFinalAction" },
                 on: {
                   click: function($event) {
-                    return _vm.onSortBy("action", 2)
+                    return _vm.onSortBy("productFinalAction", false)
                   }
                 }
               },
-              [_vm._v("Action")]
+              [
+                _vm._v("\n                Action "),
+                _c("i", {
+                  staticClass: "fas",
+                  class: [
+                    this.sortBy == "productFinalAction" && !_vm.sortAsc
+                      ? "fa-long-arrow-alt-up"
+                      : "fa-long-arrow-alt-down"
+                  ]
+                })
+              ]
             )
           ]),
           _vm._v(" "),
           !_vm.loading
-            ? _vm._l(_vm.productsSorted, function(product, index) {
+            ? _vm._l(_vm.products, function(product, index) {
                 return _c(
                   "tr",
                   {
@@ -13695,7 +13840,7 @@ var render = function() {
                         staticClass: "id clickable",
                         on: {
                           click: function($event) {
-                            return _vm.onViewSingle(index)
+                            return _vm.onViewSingle(product.id)
                           }
                         }
                       },
@@ -13708,7 +13853,7 @@ var render = function() {
                         staticClass: "image clickable",
                         on: {
                           click: function($event) {
-                            return _vm.onViewSingle(index)
+                            return _vm.onViewSingle(product.id)
                           }
                         }
                       },
@@ -13721,7 +13866,7 @@ var render = function() {
                         staticClass: "title clickable",
                         on: {
                           click: function($event) {
-                            return _vm.onViewSingle(index)
+                            return _vm.onViewSingle(product.id)
                           }
                         }
                       },
@@ -13884,7 +14029,7 @@ var render = function() {
                                       staticClass: "view-single",
                                       on: {
                                         click: function($event) {
-                                          return _vm.onViewSingle(index)
+                                          return _vm.onViewSingle(product.id)
                                         }
                                       }
                                     },
@@ -13960,7 +14105,7 @@ var render = function() {
                                       staticClass: "view-single",
                                       on: {
                                         click: function($event) {
-                                          return _vm.onViewSingle(index)
+                                          return _vm.onViewSingle(product.id)
                                         }
                                       }
                                     },
@@ -14103,7 +14248,7 @@ var render = function() {
           _vm._v(
             _vm._s(_vm.selected.length) +
               " of " +
-              _vm._s(_vm.productTotals.final.products) +
+              _vm._s(_vm.totalCount) +
               " selected"
           )
         ]),
@@ -14798,34 +14943,38 @@ var render = function() {
               }
             }),
             _vm._v(" "),
-            _c("filters", { attrs: { categories: _vm.categories } }),
+            _c("filters", {
+              attrs: {
+                categories: _vm.categories,
+                selectedCategoriesCount: _vm.selectedCategoryIDs.length
+              },
+              on: { onSelectCategory: _vm.setSelectedCategory }
+            }),
             _vm._v(" "),
             _c("product-tabs", {
               attrs: {
                 productTotals: _vm.productTotals,
-                authUser: _vm.authUser,
                 currentFilter: _vm.currentProductFilter
               },
-              on: {
-                closeSingle: _vm.setSingleProduct,
-                nextSingle: _vm.setNextSingle,
-                setProductFilter: _vm.setProductFilter
-              }
+              on: { setProductFilter: _vm.setProductFilter }
             }),
             _vm._v(" "),
             _c("products", {
               attrs: {
+                sortBy: _vm.sortBy,
+                sortAsc: _vm.sortAsc,
                 teams: _vm.teams,
                 singleProductToShow: _vm.singleProductToShow,
                 nextSingleProductID: _vm.nextSingleProductID,
                 totalProductCount: _vm.products.length,
                 selectedCount: _vm.selectedProducts.length,
                 collection: _vm.collection,
-                products: _vm.productsFiltered,
+                products: _vm.productsSorted,
                 loading: _vm.loadingProducts,
                 authUser: _vm.authUser
               },
               on: {
+                onSortBy: _vm.onSortBy,
                 viewAsSingle: _vm.setSingleProduct,
                 onSelect: _vm.setSelectedProduct,
                 closeSingle: _vm.setSingleProduct,
@@ -14835,7 +14984,7 @@ var render = function() {
             _vm._v(" "),
             _c("SelectedController", {
               attrs: {
-                productTotals: _vm.productTotals,
+                totalCount: _vm.productsSorted.length,
                 selected: _vm.selectedProductIDs
               },
               on: { onSelectedAction: _vm.submitSelectedAction }
@@ -32297,14 +32446,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!*******************************************************!*\
   !*** ./resources/js/components/screens/Catalogue.vue ***!
   \*******************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Catalogue_vue_vue_type_template_id_76e8b686___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Catalogue.vue?vue&type=template&id=76e8b686& */ "./resources/js/components/screens/Catalogue.vue?vue&type=template&id=76e8b686&");
 /* harmony import */ var _Catalogue_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Catalogue.vue?vue&type=script&lang=js& */ "./resources/js/components/screens/Catalogue.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _Catalogue_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Catalogue.vue?vue&type=style&index=0&lang=scss& */ "./resources/js/components/screens/Catalogue.vue?vue&type=style&index=0&lang=scss&");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Catalogue_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Catalogue_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _Catalogue_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Catalogue.vue?vue&type=style&index=0&lang=scss& */ "./resources/js/components/screens/Catalogue.vue?vue&type=style&index=0&lang=scss&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -32336,7 +32486,7 @@ component.options.__file = "resources/js/components/screens/Catalogue.vue"
 /*!********************************************************************************!*\
   !*** ./resources/js/components/screens/Catalogue.vue?vue&type=script&lang=js& ***!
   \********************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -34083,7 +34233,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _createComment = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref3, _ref4) {
-        var commit, comment, response;
+        var commit, comment;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -34092,22 +34242,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 comment = _ref4.comment;
                 commit('addComment', {
                   comment: comment
-                });
-                _context2.next = 5;
-                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/comment", {
-                  user_id: comment.user_id,
-                  product_id: comment.product_id,
-                  comment_body: comment.comment,
-                  important: comment.important,
-                  "final": comment["final"],
-                  product_final: comment.product_final
-                });
+                }); // const response = await axios.post(`/api/comment`, {
+                //   user_id: comment.user_id,
+                //   product_id: comment.product_id,
+                //   comment_body: comment.comment,
+                //   important: comment.important,
+                //   final: comment.final,
+                //   product_final: comment.product_final,
+                // })
+                // console.log(response.data)
 
-              case 5:
-                response = _context2.sent;
-                console.log(response.data);
-
-              case 7:
+              case 3:
               case "end":
                 return _context2.stop();
             }
@@ -34136,23 +34281,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 console.log('Module updating comment');
                 commit('updateFinal', {
                   comment: comment
-                });
-                _context3.next = 6;
-                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/comment/update", {
-                  id: comment.id,
-                  user_id: comment.user_id,
-                  product_id: comment.product_id,
-                  comment_body: comment.comment,
-                  important: comment.important,
-                  "final": comment["final"],
-                  product_final: comment.product_final
-                }).then(function (response) {
-                  console.log(response.data);
-                })["catch"](function (err) {
-                  console.log(err);
-                });
+                }); // await axios.put(`/api/comment/update`, {
+                //   id: comment.id,
+                //   user_id: comment.user_id,
+                //   product_id: comment.product_id,
+                //   comment_body: comment.comment,
+                //   important: comment.important,
+                //   final: comment.final,
+                //   product_final: comment.product_final,
+                // }).then(response => {
+                //   console.log(response.data)
+                // }).catch(err =>{
+                //   console.log(err);
+                // })
 
-              case 6:
+              case 4:
               case "end":
                 return _context3.stop();
             }

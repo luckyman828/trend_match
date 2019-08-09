@@ -1,7 +1,7 @@
 <template>
     <div class="card selected-controller" :class="{active: selected.length}">
         <div class="inner">
-            <span>{{selected.length}} of {{productTotals.final.products}} selected</span>
+            <span>{{selected.length}} of {{totalCount}} selected</span>
             <span :class="{active: method == 'in'}" class="button" @click="setMethod('in')">In <i class="far fa-heart"></i></span>
             <span :class="{active: method == 'out'}" class="button" @click="setMethod('out')">Out <i class="far fa-times-circle"></i></span>
             <span :class="{disabled: method == ''}" class="button green" @click="onSubmitAction()">Choose action</span>
@@ -14,7 +14,7 @@ export default {
     name: 'selectedController',
     props: [
         'selected',
-        'productTotals'
+        'totalCount'
     ],
     data: function() { return {
         method: ''

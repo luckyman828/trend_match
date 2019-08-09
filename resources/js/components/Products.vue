@@ -5,8 +5,8 @@
         <table :class="{disabled: singleProductToShow.id != null}">
             <tr class="header-row">
                 <th class="select">Select <i class="fas fa-chevron-down"></i></th>
-                <th class="clickable id" :class="{active: this.sortBy == 'id'}" @click="onSortBy('id', true)">
-                    Id <i class="fas" :class="[(this.sortBy == 'id' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                <th class="clickable id" :class="{active: this.sortBy == 'datasource_id'}" @click="onSortBy('datasource_id', true)">
+                    Id <i class="fas" :class="[(this.sortBy == 'datasource_id' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
                 <th></th>
                 <th :class="{active: this.sortBy == 'title'}" class="clickable title" @click="onSortBy('title', true)">
@@ -27,11 +27,13 @@
                 <th :class="{active: this.sortBy == 'comments'}" class="clickable" @click="onSortBy('comments', false)">
                     Comments <i class="fas" :class="[(this.sortBy == 'comments' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'action'}" class="clickable" @click="onSortBy('action', 2)">Action</th>
+                <th :class="{active: this.sortBy == 'productFinalAction'}" class="clickable" @click="onSortBy('productFinalAction', false)">
+                    Action <i class="fas" :class="[(this.sortBy == 'productFinalAction' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                </th>
             </tr>
             <template v-if="!loading">
                 <tr class="product-row"
-                v-for="(product, index) in productsSorted" :key="product.id"
+                v-for="(product, index) in products" :key="product.id"
                 :class="[ (product.productFinalAction != null) ? (product.productFinalAction.action == 1) ? 'in' : 'out' : '' ]">
                     <td class="select">
                         <label class="checkbox">
@@ -39,9 +41,9 @@
                             <span class="checkmark"></span>
                         </label>
                     </td>
-                    <td class="id clickable" @click="onViewSingle(index)">{{product.datasource_id}}</td>
-                    <td class="image clickable" @click="onViewSingle(index)"><img :src="product.image"></td>
-                    <td class="title clickable" @click="onViewSingle(index)"><span>{{product.title}}</span></td>
+                    <td class="id clickable" @click="onViewSingle(product.id)">{{product.datasource_id}}</td>
+                    <td class="image clickable" @click="onViewSingle(product.id)"><img :src="product.image"></td>
+                    <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
                     <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
                     <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'In', product.ins)" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length}}</span></td>
                     <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
@@ -52,7 +54,7 @@
                             <td>
                                 <span class="button green" @click="toggleInOut(product.id, 1, 'N/A')">In <i class="far fa-heart"></i></span>
                                 <span class="button red" @click="toggleInOut(product.id, 0, 'N/A')">Out <i class="far fa-times-circle"></i></span>
-                                <span class="view-single" @click="onViewSingle(index)">View</span>
+                                <span class="view-single" @click="onViewSingle(product.id)">View</span>
                             </td>
                         </template>
                         <template v-else>
@@ -63,7 +65,7 @@
                                 <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product.id, 0, product.productFinalAction.action)">
                                 Out  <i class="far fa-times-circle"></i>
                                 </span>
-                                <span class="view-single" @click="onViewSingle(index)">View</span>
+                                <span class="view-single" @click="onViewSingle(product.id)">View</span>
                             </td>
                         </template>
                     </template>
@@ -99,6 +101,8 @@ export default {
         'singleProductToShow',
         'nextSingleProductID',
         'teams',
+        'sortAsc',
+        'sortBy'
     ],
     components: {
         Loader,
@@ -107,6 +111,7 @@ export default {
         Tooltip,
     },
     data: function() { return {
+        coolProducts: [],
         tooltip: {
             active: false,
             position: {},
@@ -114,43 +119,14 @@ export default {
             header: '',
             data: {}
         },
-        sortBy: 'id',
-        sortAsc: true
     }},
+    watch: {
+        products: function (newVal, oldVal) {
+            this.coolProducts = newVal
+        },
+    },
     computed: {
         ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
-        productsSorted() {
-            const products = this.products
-            let key = this.sortBy
-            let sortAsc = this.sortAsc
-            const dataSorted = products.sort((a, b) => {
-
-                // If the keys don't have length - sort by the key
-                if (!products[0][key].length) {
-
-                    if (sortAsc)
-                        return (a[key] > b[key]) ? 1 : -1
-                        else return (a[key] < b[key]) ? 1 : -1
-
-                // If the keys have lengths - sort by their length
-                } else {
-
-                    if (sortAsc)
-                        return (a[key].length > b[key].length) ? 1 : -1
-                        else return (a[key].length < b[key].length) ? 1 : -1
-
-                }
-            })
-            return dataSorted
-            // return dataSorted
-            // return('Now sorting by: ' + key + ', ' + sortAsc)
-            // return key
-            // const dataSorted = products.sort((a, b) => {
-            //         return (a[key] > b[key]) ? 1 : -1
-            // })
-            // return dataSorted
-            // return products[0][key]
-        }
     },
     methods: {
         ...mapActions('entities/actions', ['updateAction']),
@@ -166,9 +142,9 @@ export default {
                 this.updateFinalAction({phase: this.collection.phase, productToUpdate: productID, action_code: actionType})
             }
         },
-        onViewSingle(index) {
+        onViewSingle(id) {
             // Emit event to parent
-            this.$emit('viewAsSingle', index)
+            this.$emit('viewAsSingle', id)
         },
         onSelect(index) {
             this.$emit('onSelect', index)
@@ -201,24 +177,25 @@ export default {
             this.tooltip.active = false;
         },
         onSortBy(key, method) {
-            if (key == 'action') {
+            this.$emit('onSortBy', key, method)
+            // if (key == 'action') {
                 
-                console.log('Sort by final_action not supported yet. Sorting by id, asc')
-                this.sortAsc = true
-                this.sortBy = 'id'
+            //     console.log('Sort by final_action not supported yet. Sorting by id, asc')
+            //     this.sortAsc = true
+            //     this.sortBy = 'datasource_id'
                 
-            } else {
+            // } else {
                     
             // Check if the sorting key we are setting is already the key we are sorting by
             // If this is the case, toggle the sorting method (asc|desc)
-                if (this.sortBy !== key) {
-                    this.sortAsc = method
-                    this.sortBy = key
-                } else {
-                    this.sortAsc = !this.sortAsc
-                }
+                // if (this.sortBy !== key) {
+                //     this.sortAsc = method
+                //     this.sortBy = key
+                // } else {
+                //     this.sortAsc = !this.sortAsc
+                // }
 
-            }
+            // }
 
         },
         onCloseSingle() {

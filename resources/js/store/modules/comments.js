@@ -30,17 +30,17 @@ export default {
         
         commit('addComment', {comment: comment})
 
-        const response = await axios.post(`/api/comment`, {
+        // const response = await axios.post(`/api/comment`, {
 
-          user_id: comment.user_id,
-          product_id: comment.product_id,
-          comment_body: comment.comment,
-          important: comment.important,
-          final: comment.final,
-          product_final: comment.product_final,
+        //   user_id: comment.user_id,
+        //   product_id: comment.product_id,
+        //   comment_body: comment.comment,
+        //   important: comment.important,
+        //   final: comment.final,
+        //   product_final: comment.product_final,
 
-        })
-        console.log(response.data)
+        // })
+        // console.log(response.data)
 
       },
       // Update the action of for a product for a user
@@ -49,21 +49,21 @@ export default {
           console.log('Module updating comment')
           commit('updateFinal', {comment: comment})
     
-          await axios.put(`/api/comment/update`, {
+          // await axios.put(`/api/comment/update`, {
 
-            id: comment.id,
-            user_id: comment.user_id,
-            product_id: comment.product_id,
-            comment_body: comment.comment,
-            important: comment.important,
-            final: comment.final,
-            product_final: comment.product_final,
+          //   id: comment.id,
+          //   user_id: comment.user_id,
+          //   product_id: comment.product_id,
+          //   comment_body: comment.comment,
+          //   important: comment.important,
+          //   final: comment.final,
+          //   product_final: comment.product_final,
 
-          }).then(response => {
-            console.log(response.data)
-          }).catch(err =>{
-            console.log(err);
-          })
+          // }).then(response => {
+          //   console.log(response.data)
+          // }).catch(err =>{
+          //   console.log(err);
+          // })
  
         },
     },

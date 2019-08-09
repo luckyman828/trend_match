@@ -4,7 +4,7 @@
         <div class="grid-2">
             
             <div class="dropdown category-button">
-                <div v-if="selectedCategories.length > 0" class="counter-filter text-center">{{ selectedCategories.length }}</div>
+                <div v-if="selectedCategoriesCount > 0" class="counter-filter text-center">{{ selectedCategoriesCount }}</div>
                 <button class="btn btn-secondary dropdown-toggle category d-flex justify-content-between" type="button" id="dropdownMenuButton"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Category <img src="/assets/Path26.svg" alt />
@@ -13,7 +13,7 @@
                 <div class="dropdown-menu pt-0" aria-labelledby="dropdownMenuButton">
                 <input type="text" name="Filter" placeholder="Filter by category" />
                 <label v-for="(category, index) in categories" :key="index" class="container" :for="'check-filter-' + index">
-                    <input type="checkbox" :id="'check-filter-' + index" @change="onSelectCategory(category)" />
+                    <input type="checkbox" :id="'check-filter-' + index" @change="onSelectCategory(category.id)" />
                     <span class="checkmark"></span>
                     <p class="px-2">{{category.title}} <span class="count">({{(category.products != null) ? category.products.length : '0'}})</span></p>
                 </label>
@@ -43,19 +43,17 @@ export default {
     name: 'filters',
     props: [
         'categories',
+        'selectedCategoriesCount'
     ],
     data: function() { return {
         selectedCategories: []
     }},
     computed: {
-        selectedCategoriesLength () {
-            return this.selectedCategories.length
-        }
+
     },
     methods: {
-        onSelectCategory(category) {
-            this.selectedCategories.push(category.title)
-            this.$emit()
+        onSelectCategory(id) {
+            this.$emit('onSelectCategory', id)
         }
     },
 }

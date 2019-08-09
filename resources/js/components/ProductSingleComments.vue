@@ -16,14 +16,14 @@
         <form @submit="onSubmitComment">
             <div class="input-wrapper">
                 <i class="far fa-comment"></i>
-                <textarea name="comment" id="comment-input" placeholder="Write a comment.." v-model="comment.comment" 
+                <textarea name="comment" id="comment-input" placeholder="Write a comment.." v-model="newComment.comment" 
                 oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
                 <label>
-                    <input type="checkbox" v-model="comment.important" name="comment-important">
-                    <span class="checkmark" :class="{active: comment.important}" @mouseover="showTooltip($event, 'Important comment')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
+                    <input type="checkbox" v-model="newComment.important" name="comment-important">
+                    <span class="checkmark" :class="{active: newComment.important}" @mouseover="showTooltip($event, 'Important comment')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
                 </label>
             </div>
-            <input type="submit" value="Submit comment" :class="{disabled: comment.comment.length < 3}">
+            <input type="submit" value="Submit comment" :class="{disabled: newComment.comment.length < 3}">
         </form>
         <Tooltip :tooltip="tooltip"/>
     </div>
@@ -44,7 +44,7 @@ export default {
         Tooltip,
     },
     data: function () { return {
-            comment: {
+            newComment: {
                 user_id: this.authUser.id,
                 product_id: this.product.id,
                 comment: '',
@@ -62,10 +62,10 @@ export default {
     }},
     watch: {
         product: function (newVal, oldVal) {
-            this.comment.product_id = newVal.id
+            this.newComment.product_id = newVal.id
         },
         authUser: function (newVal, oldVal) {
-            this.comment.user_id = newVal.id
+            this.newComment.user_id = newVal.id
         },
     },
     methods: {
@@ -73,7 +73,8 @@ export default {
         ...mapActions('entities/comments', ['markAsFinal']),
         onSubmitComment(e) {
             e.preventDefault()
-            this.createComment({comment: this.comment})
+            console.log('submitting comment to store')
+            this.createComment({comment: this.newComment})
         },
         onMarkAsFinal(comment) {
             console.log('Comment: ' + comment.id)

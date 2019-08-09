@@ -65,26 +65,6 @@
                         </div>
                     </div>
                     <ProductSingleComments :comments="product.comments" :authUser="authUser" :product="product"/>
-                    <!-- <div class="comments">
-                        <h4>Comments</h4>
-                        <div class="card" v-for="comment in product.comments" :key="comment.id">
-                            <div class="inline-children">
-                                <img v-bind:src="'/images/flags/flag-' + comment.user.country.title + '.png'" style="display: inline">
-                                <span>{{comment.comment}}</span>
-                            </div>
-                            <small>{{comment.user.email}},</small>
-                            <small> important: {{comment.important}},</small>
-                            <small> final: {{comment.final}}</small>
-                            <span :class="{active: comment.product_final}" @click="onMarkAsFinal(comment)" class="button green">Mark as Final</span>
-                        </div>
-                        <form @submit="onSubmitComment">
-                            <input type="text" name="comment" id="comment-input" placeholder="Write a comment.." v-model="comment.comment">
-                            <label>Mark as important
-                                <input type="checkbox" v-model="comment.important" name="comment-important">
-                            </label>
-                            <input type="submit" value="Submit comment">
-                        </form>
-                    </div> -->
                 </div>
             </div>
         </template>
@@ -264,7 +244,8 @@ export default {
             &::after {
                 content: "";
                 position: absolute;
-                height: calc(100% + 2em);
+                // height: calc(100% + 2em);
+                height: 100%;
                 right: calc(-.5rem - 1px);
                 top: 0;
                 background: $light2;

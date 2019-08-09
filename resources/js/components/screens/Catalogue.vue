@@ -2,11 +2,11 @@
     <div class="catalogue">
         <template v-if="!loadingCollections">
             <progress-bar :loading="loadingCollections" :catalogue="collection" :productTotals="productTotals"/>
-            <filters :categories="categories"/>
+            <filters :categories="categories" :selectedCategoriesCount="selectedCategoryIDs.length" @onSelectCategory="setSelectedCategory"/>
             <!-- <product-single :product="singleProductToShow" :nextProductID="nextSingleProductID" :loading="loadingProducts" :authUser="authUser" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/> -->
-            <product-tabs :productTotals="productTotals" :authUser="authUser" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @setProductFilter="setProductFilter" :currentFilter="currentProductFilter"/>
-            <products :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/>
-            <SelectedController :productTotals="productTotals" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction"/>
+            <product-tabs :productTotals="productTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
+            <products :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsSorted" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/>
+            <SelectedController :totalCount="productsSorted.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction"/>
         </template>
         <template v-if="loadingCollections">
             <Loader/>
@@ -48,6 +48,9 @@ export default{
         singleProductID: -1,
         currentProductFilter: 'overview',
         selectedProductIDs: [],
+        selectedCategoryIDs: [],
+        sortBy: 'datasource_id',
+        sortAsc: true
     }},
     computed: {
         ...mapGetters('entities/products', ['loadingProducts']),
@@ -59,6 +62,9 @@ export default{
         },
         collection() {
             return Collection.find(this.collectionId)
+        },
+        aaa() {
+            return this.selectedCategoryIDs.length
         },
         products () {
             const products = Product.query().with(['actions.user.country', 'actions.user.team']).with(['comments.user.country', 'comments.votes', 'comments.user.team']).with('productFinalAction').all()
@@ -72,6 +78,8 @@ export default{
                 product.outs = []
                 product.focus = []
                 product.userAction = 0
+                // if (product.productFinalAction != null)
+                //     product.productFinalAction = {}
                 product.nds = JSON.parse(JSON.stringify(totalUsers)) // Copy our users into a new variable
                 product.actions.forEach(action => {
                     if (action.action == 0)
@@ -97,11 +105,65 @@ export default{
             })
             return data
         },
+        // aaaa () {
+        //     const products = this.products
+        //     const data = {
+        //         a: products[0][this.sortBy].length,
+        //         b: products[1][this.sortBy].length,
+        //         hasNoLength: (!products[0][this.sortBy].length),
+        //         isString: typeof this.sortBy,
+        //         get test () {
+        //             return (this.a == this.b)
+        //         }
+        //     }
+        //     return data
+        // },
+        productsFilteredByCategory() {
+            const products = this.products
+            const categoryIDs = this.selectedCategoryIDs
+            let productsToReturn = products
+
+            // First filter by category
+            if (this.selectedCategoryIDs.length > 0) {
+                
+                // productsToReturn = []
+                // Array.from(this.selectedCategoryIDs).forEach(categoryIndex => {
+                //     productsToReturn = productsToReturn.concat(this.categories[categoryIndex].products)
+                //     // productsToReturn.push({key: categoryIndex})
+                // })
+                const filteredByCategory = productsToReturn.filter(product => {
+                        return Array.from(this.selectedCategoryIDs).includes(product.category_id)
+                })
+                productsToReturn = filteredByCategory
+            }
+
+            return productsToReturn
+        },
         productsFiltered() {
             const method = (this.currentProductFilter == 'ins') ? 1 : (this.currentProductFilter == 'outs') ? 0 : (this.currentProductFilter == 'nds') ? 2 : -1
-            const products = this.products
+            const products = this.productsFilteredByCategory
+            // const categoryIDs = this.selectedCategoryIDs
+            let productsToReturn = products
+
+            // First filter by category
+            // if (this.selectedCategoryIDs.length > 0) {
+                
+            //     // productsToReturn = []
+            //     // Array.from(this.selectedCategoryIDs).forEach(categoryIndex => {
+            //     //     productsToReturn = productsToReturn.concat(this.categories[categoryIndex].products)
+            //     //     // productsToReturn.push({key: categoryIndex})
+            //     // })
+            //     const filteredByCategory = productsToReturn.filter(product => {
+            //             return Array.from(this.selectedCategoryIDs).includes(product.category_id)
+            //     })
+            //     productsToReturn = filteredByCategory
+
+
+            // }
+
+            // Second filter by in/out
             if (method > -1) {
-                const productsFiltered = products.filter(product => {
+                const filteredByAction = productsToReturn.filter(product => {
                     if (method != 2) {
                         if (product.productFinalAction != null)
                         return product.productFinalAction.action == method
@@ -109,11 +171,125 @@ export default{
                         return product.productFinalAction == null
                     }
                 })
-                return productsFiltered
-            } else {
-                return products
+                productsToReturn = filteredByAction
             }
+
+            
+            return productsToReturn
         },
+        productsSorted() {
+            const products = this.productsFiltered
+            let key = this.sortBy
+            let sortAsc = this.sortAsc
+            const dataSorted = products.sort((a, b) => {
+
+                if (key == 'productFinalAction') {
+                    if (a[key] != null) {
+                        if (b[key] != null) {
+                            // If A and B has a key
+                            if (sortAsc)
+                                return (a[key].action > b[key].action) ? 1 : -1
+                                else return (a[key].action < b[key].action) ? 1 : -1
+                        } else {
+                            // If ONLY A has a key
+                            if (sortAsc)
+                                return 1
+                                else return -1
+                        }
+                    } else if (b[key] != null) {
+                        // If ONLY B has a key
+                        if (sortAsc)
+                            return -1
+                            else return 1
+                    } else {
+                        // Neither A nor B has a key
+                        return 0
+                    }
+                }
+                
+                else {
+
+                    if ( typeof products[0][key] == 'object' ) {
+
+                        // Sort by key length
+                        if ( a[key].length == b[key].length ) {
+                            return 0
+                        } else if (sortAsc)
+                            return (a[key].length > b[key].length) ? 1 : -1
+                            else return (a[key].length < b[key].length) ? 1 : -1
+
+                    }
+
+                    // If the keys aren't objects, finalActions or strings - sort by the key
+                    else {
+
+                        if ( a[key] == b[key] ) {
+                            return 0
+                        } else if (sortAsc)
+                            return (a[key] > b[key]) ? 1 : -1
+                            else return (a[key] < b[key]) ? 1 : -1
+                    }
+
+                }
+            })
+            return dataSorted
+        },
+        // productsSortedOld() {
+        //     const products = this.productsFiltered
+        //     let key = this.sortBy
+        //     let sortAsc = this.sortAsc
+        //     const dataSorted = products.sort((a, b) => {
+
+        //         if (key == 'productFinalAction') {
+        //             if (a[key] != null) {
+        //                 if (b[key] != null) {
+        //                     // If A and B has a key
+        //                     if (sortAsc)
+        //                         return (a[key].action > b[key].action) ? 1 : -1
+        //                         else return (a[key].action < b[key].action) ? 1 : -1
+        //                 } else {
+        //                     // If ONLY A has a key
+        //                     if (sortAsc)
+        //                         return 1
+        //                         else return -1
+        //                 }
+        //             } else if (b[key] != null) {
+        //                 // If ONLY B has a key
+        //                 if (sortAsc)
+        //                     return -1
+        //                     else return 1
+        //             } else {
+        //                 // Neither A nor B has a key
+        //                 return 0
+        //             }
+        //         }
+                
+        //         else {
+        //             // If the keys don't have length - sort by the key
+        //             if (!products[0][key].length) {
+
+        //                 if ( a[key] == b[key] ) {
+        //                     return 0
+        //                 } else if (sortAsc)
+        //                     return (a[key] > b[key]) ? 1 : -1
+        //                     else return (a[key] < b[key]) ? 1 : -1
+
+                        
+
+        //             // If the keys have lengths - sort by their length
+        //             } else {
+
+        //                 if ( a[key].length == b[key].length ) {
+        //                     return 0
+        //                 } else if (sortAsc)
+        //                     return (a[key].length > b[key].length) ? 1 : -1
+        //                     else return (a[key].length < b[key].length) ? 1 : -1
+
+        //             }
+        //         }
+        //     })
+        //     return dataSorted
+        // },
         selectedProducts() {
             const products = this.products
             const selectedProducts = []
@@ -123,6 +299,8 @@ export default{
             return selectedProducts
         },
         productTotals() {
+            const products = this.productsFilteredByCategory
+
             const data = {
                 get actions () {
                     return this.ins + this.outs
@@ -134,13 +312,13 @@ export default{
                 outs: 0,
                 nds: 0,
                 final: {
-                    products: this.products.length,
+                    products: products.length,
                     ins: 0,
                     outs: 0,
                     nds: 0,
                 }
             }
-            this.products.forEach(product => {
+            products.forEach(product => {
                     data.ins += product.ins.length
                     data.outs += product.outs.length
                     data.nds += product.nds.length
@@ -156,12 +334,20 @@ export default{
             return data
         },
         singleProductToShow() {
-            const productToReturn = (this.singleProductID != -1) ? this.products[this.singleProductID] : {}
+            const productToReturn = (this.singleProductID != -1) ? this.products.find(product => product.id == this.singleProductID) : {}
             return productToReturn
         },
         nextSingleProductID() {
-            const nextSingleProductID = ( this.singleProductID < this.products.length -1 ) ? this.singleProductID +1 : -1
-            return nextSingleProductID
+            const products = this.productsSorted
+
+            if (this.singleProductID != -1) {
+                const currentProductIndex = products.findIndex(product => product.id == this.singleProductID)
+                // Check that the current single product is not the last product
+                if (currentProductIndex + 1 < products.length)
+                    return products[currentProductIndex + 1].id
+                    else return -1
+            }
+            else return -1
         },
         users() {
             return User.query().with('country').with('team').all()
@@ -224,6 +410,14 @@ export default{
             const found = selected.findIndex(el => el == index)
             const result = (found >= 0) ? selected.splice(found, 1) : selected.push(index)
         },
+        clearSelectedProducts() {
+            this.selectedCategoryIDs = []
+        },
+        setSelectedCategory(id) {
+            const selected = this.selectedCategoryIDs
+            const found = selected.findIndex(el => el == id)
+            const result = (found >= 0) ? selected.splice(found, 1) : selected.push(id)
+        },
         submitSelectedAction(method) {
             const actionType = (method == 'in') ? 1 : 0
             // Submit the selection
@@ -232,6 +426,14 @@ export default{
             })
             // Reset the selection
             this.selectedProductIDs = []
+        },
+        onSortBy(key, method) {
+            if (this.sortBy !== key) {
+                this.sortAsc = method
+                this.sortBy = key
+            } else {
+                this.sortAsc = !this.sortAsc
+            }
         }
     },
     created() {
