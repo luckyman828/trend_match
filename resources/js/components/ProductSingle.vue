@@ -1,5 +1,5 @@
 <template>
-    <div class="product-single">
+    <div class="product-single" :class="[{visible: Object.keys(product).length != 0}, {sticky: sticky}]">
         <template v-if="Object.keys(product).length != 0">
             <div class="card">
                 <div class="controls-wrapper">
@@ -98,6 +98,7 @@ export default {
         'authUser',
         'nextProductID',
         'prevProductID',
+        'sticky',
     ],
     components: {
         ProductSingleComments,
@@ -183,8 +184,21 @@ export default {
         right: 0;
         top: 0;
         margin: 0;
-        width: 65%;
+        max-width: 60vw;
         z-index: 1;
+        &.visible {
+            width: 100%;
+        }
+        &.sticky {
+            right: 76px;
+            top: 130px;
+            position: fixed;
+            height: calc(100vh - 160px);
+            > .card {
+                height: 100%;
+                overflow-y: scroll;
+            }
+        }
         > .card {
             margin: 0;
             background: white;
@@ -434,5 +448,8 @@ export default {
                 }
             }
         }
+    }
+    .tabs-wrapper {
+        margin-bottom: 60px;
     }
 </style>

@@ -61,7 +61,13 @@ export default {
         },
         clearFilter() {
           this.$emit('onClearFilter')
-        }
+          this.resetSelected()
+        },
+        resetSelected() {
+            document.querySelectorAll('input[type=checkbox]').forEach(input => {
+                input.checked = false
+            })
+        },
     },
 }
 </script>

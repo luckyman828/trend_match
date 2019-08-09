@@ -1,8 +1,8 @@
 <template>
-    <div class="app">
+    <div class="app" id="app-component">
         <Navbar/>
         <Sidebar :authUser="authUser"/>
-        <div class="main">
+        <div class="main" id="main">
             <transition name="fade">
                 <router-view></router-view>
             </transition>

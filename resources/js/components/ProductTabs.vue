@@ -24,6 +24,13 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
+    .product-tabs {
+        &.sticky {
+            position: fixed;
+            top: $navbarHeight + 20px;
+            z-index: 9;
+        }
+    }
     .tab {
         display: inline-block;
         width: 184px;

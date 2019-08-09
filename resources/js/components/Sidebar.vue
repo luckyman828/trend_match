@@ -32,6 +32,7 @@ export default {
   top: $navbarHeight;
   display: flex;
   flex-direction: column;
+  z-index: 99;
 
   @media screen and (max-width: 700px) {
     width: 100%;

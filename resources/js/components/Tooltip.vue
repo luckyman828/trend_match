@@ -66,7 +66,7 @@ export default {
         background: $darkAlt;
         border: solid 1px $darkAlt;
         box-shadow: 0 3px 6px rgba(0,0,0,.1);
-        position: absolute;
+        position: fixed;
         z-index: 9;
         color: white;
         border-radius: 4px;

@@ -83,8 +83,7 @@ export default {
             this.markAsFinal({comment: comment})
         },
         showTooltip(event, data) {
-            const el = event.target
-            const rect = el.getBoundingClientRect()
+            const rect = event.target.getBoundingClientRect()
 
             // Set tooltip position
             this.tooltip.position.top = rect.top - rect.height - 10
@@ -283,6 +282,7 @@ export default {
             text-align: center;
             font-weight: 700;
             font-size: 12px;
+            margin-bottom: 60px;
             &.disabled {
                 pointer-events: none;
                 opacity: .5;
