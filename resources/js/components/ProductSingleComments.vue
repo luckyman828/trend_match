@@ -23,7 +23,7 @@
                     <span class="checkmark" :class="{active: newComment.important}" @mouseover="showTooltip($event, 'Important comment')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
                 </label>
             </div>
-            <input type="submit" value="Submit comment" :class="{disabled: newComment.comment.length < 3}">
+            <input type="submit" value="Submit comment" :class="{disabled: newComment.comment.length < 1}">
         </form>
         <Tooltip :tooltip="tooltip"/>
     </div>
