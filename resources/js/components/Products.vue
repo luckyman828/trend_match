@@ -42,20 +42,20 @@
                             <span class="checkmark"></span>
                         </label>
                     </td>
-                    <td class="id clickable" @click="onViewSingle(product.id)">{{product.datasource_id}}</td>
-                    <td class="image clickable" @click="onViewSingle(product.id)"><img :src="product.color_variants[0].image"></td>
-                    <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
+                    <td class="id clickable bind-view-single" @click="onViewSingle(product.id)">{{product.datasource_id}}</td>
+                    <td class="image clickable" @click="onViewSingle(product.id)"><img class="bind-view-single" :src="product.color_variants[0].image"></td>
+                    <td class="title clickable" @click="onViewSingle(product.id)"><span class="bind-view-single">{{product.title}}</span></td>
                     <td class="square-wrapper focus"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
-                    <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'In', product.ins)" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length}}</span></td>
+                    <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length + product.focus.length}}</span></td>
                     <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
                     <td class="square-wrapper nds"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}} / {{teamUsers.length}}</span></td>
-                    <td class="square-wrapper comments"><span class="square"><i class="far fa-comment"></i>{{product.comments.length}}</span></td>
+                    <td class="square-wrapper comments bind-view-single"><span class="square clickable" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.comments.length}}</span></td>
                     <template v-if="!loadingFinalActions">
                         <template v-if="!product.productFinalAction">
                             <td class="action">
                                 <span class="button green" @click="toggleInOut(product.id, 1, 'N/A')">In <i class="far fa-heart"></i></span>
                                 <span class="button red" @click="toggleInOut(product.id, 0, 'N/A')">Out <i class="far fa-times-circle"></i></span>
-                                <span class="view-single" @click="onViewSingle(product.id)">View</span>
+                                <span class="view-single bind-view-single" @click="onViewSingle(product.id)">View</span>
                             </td>
                         </template>
                         <template v-else>
@@ -66,7 +66,7 @@
                                 <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product.id, 0, product.productFinalAction.action)">
                                 Out  <i class="far fa-times-circle"></i>
                                 </span>
-                                <span class="view-single" @click="onViewSingle(product.id)">View</span>
+                                <span class="view-single bind-view-single" @click="onViewSingle(product.id)">View</span>
                             </td>
                         </template>
                     </template>
@@ -145,6 +145,8 @@ export default {
         onViewSingle(id) {
             // Emit event to parent
             this.$emit('viewAsSingle', id)
+            if (document.getElementById('app-component').scrollTop < 130)
+                document.getElementById('app-component').scrollTo(0, 130)
         },
         onSelect(index) {
             this.$emit('onSelect', index)
@@ -328,10 +330,10 @@ export default {
     }
     .product-row {
         border-bottom: solid 1px $light1;
-        &.in > :first-child {
+        &.in {
             box-shadow: 4px 0 $green inset
         }
-        &.out > :first-child {
+        &.out {
             box-shadow: 4px 0 $red inset
         }
         &:hover {
@@ -449,7 +451,7 @@ export default {
         font-weight: 600;
         i {
             color: $dark2;
-            margin-right: 16px;
+            margin-right: 12px;
             font-size: 16px;
         }
     }

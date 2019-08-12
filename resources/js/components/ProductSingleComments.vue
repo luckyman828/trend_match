@@ -4,7 +4,7 @@
         <div class="comments-wrapper">
             <div class="comment-wrapper" v-for="comment in comments" :key="comment.id">
                 <div class="comment">
-                    <span class="important bubble" v-if="comment.important"><i class="fas fa-exclamation"></i></span>
+                    <span class="important bubble" v-if="comment.important" @mouseover="showTooltip($event, 'Important')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
                     <span v-if="comment.votes.length > 0" class="votes bubble" :class="{second: comment.important}">{{comment.votes.length}}</span>
                     <span class="votes pill" v-if="comment.final">Final comment <i class="far fa-comment-check"></i></span>
                     <span class="body">{{comment.comment}}</span>
@@ -16,7 +16,7 @@
         <form @submit="onSubmitComment">
             <div class="input-wrapper">
                 <i class="far fa-comment"></i>
-                <textarea name="comment" id="comment-input" placeholder="Write a comment.." v-model="newComment.comment" 
+                <textarea @keyup.ctrl.enter="onSubmitComment" name="comment" id="comment-input" placeholder="Write a comment.." v-model="newComment.comment" 
                 oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
                 <label>
                     <input type="checkbox" v-model="newComment.important" name="comment-important">
@@ -71,10 +71,16 @@ export default {
     methods: {
         ...mapActions('entities/comments', ['createComment']),
         ...mapActions('entities/comments', ['markAsFinal']),
-        onSubmitComment(e) {
+        async onSubmitComment(e) {
             e.preventDefault()
             console.log('submitting comment to store')
-            this.createComment({comment: this.newComment})
+            await this.createComment({comment: this.newComment})
+
+            // Reset comment
+            this.newComment.comment = ''
+            this.newComment.important = false
+            this.newComment.final = false
+            this.newComment.product_final = false
         },
         onMarkAsFinal(comment) {
             console.log('Comment: ' + comment.id)
@@ -86,7 +92,7 @@ export default {
             const rect = event.target.getBoundingClientRect()
 
             // Set tooltip position
-            this.tooltip.position.top = rect.top - rect.height - 10
+            this.tooltip.position.top = rect.top - rect.height - 12
             this.tooltip.position.center = rect.left
 
             // Set tooltip data
@@ -113,7 +119,7 @@ export default {
         background: $light1;
         border-radius: 8px;
         padding: 36px;
-        max-height: 70vh;
+        max-height: 57vh;
         overflow-y: scroll;
         overflow-x: hidden;
         box-sizing: border-box;

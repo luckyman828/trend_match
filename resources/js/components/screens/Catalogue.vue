@@ -196,6 +196,45 @@ export default{
                         return 0
                     }
                 }
+
+                else if (key == 'focus') {
+                    // First sort by focus
+                    if ( a[key].length != b[key].length ) {
+
+                        if (sortAsc)
+                            return (a[key].length > b[key].length) ? 1 : -1
+                            else return (a[key].length < b[key].length) ? 1 : -1
+
+                    // Then sort by ins
+                    } else if ( a.ins.length == b.ins.length ) {
+                            return 0 
+                    } else {
+                        if (sortAsc)
+                            return (a.ins.length > b.ins.length) ? 1 : -1
+                            else return (a.ins.length < b.ins.length) ? 1 : -1 
+                    }
+                }
+
+                else if (key == 'ins') {
+                    // First sort by focus
+                    const aInLength = a[key].length + a.focus.length
+                    const bInLength = b[key].length + b.focus.length
+
+                    if ( aInLength != bInLength ) {
+
+                        if (sortAsc)
+                            return (aInLength > bInLength) ? 1 : -1
+                            else return (aInLength < bInLength) ? 1 : -1
+
+                    // Then sort by focus
+                    } else if ( a.focus.length == b.focus.length ) {
+                            return 0 
+                    } else {
+                        if (sortAsc)
+                            return (a.focus.length > b.focus.length) ? 1 : -1
+                            else return (a.focus.length < b.focus.length) ? 1 : -1 
+                    }
+                }
                 
                 else {
 
@@ -405,6 +444,7 @@ export default{
             })
             // Reset the selection
             this.selectedProductIDs = []
+            this.clearSelectedProducts()
         },
         onSortBy(key, method) {
             if (this.sortBy !== key) {

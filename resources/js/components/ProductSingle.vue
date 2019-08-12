@@ -172,7 +172,35 @@ export default {
             } else {
                 this.currentImgIndex ++
             }
+        },
+        clickOutsideEvent(event) {
+            const thisElement = document.querySelector('.product-single')
+            // Check if the clicked element is outside component
+            if (!(thisElement == event.target || thisElement.contains(event.target))) {
+                if ( !event.target.classList.contains('bind-view-single') )
+                    this.onCloseSingle()
+            }
+        },
+        hotkeyHandler(event) {
+            console.log(event)
+            const key = event.code
+            if (key == 'Escape')
+                this.onCloseSingle()
+            if (key == 'ArrowRight')
+                this.onNextSingle()
+            if (key == 'ArrowLeft')
+                this.onPrevSingle()
         }
+    },
+    created() {
+        // Listen for clicks outside component
+        document.body.addEventListener('click', this.clickOutsideEvent)
+        document.body.addEventListener('keyup', this.hotkeyHandler)
+    },
+    destroyed() {
+        // Remove click listener
+        document.body.removeEventListener('click', this.clickOutsideEvent)
+        document.body.removeEventListener('keyup', this.hotkeyHandler)
     }
 }
 </script>

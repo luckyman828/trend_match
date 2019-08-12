@@ -7752,8 +7752,32 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else {
         this.currentImgIndex++;
       }
+    },
+    clickOutsideEvent: function clickOutsideEvent(event) {
+      var thisElement = document.querySelector('.product-single'); // Check if the clicked element is outside component
+
+      if (!(thisElement == event.target || thisElement.contains(event.target))) {
+        if (!event.target.classList.contains('bind-view-single')) this.onCloseSingle();
+      }
+    },
+    hotkeyHandler: function hotkeyHandler(event) {
+      console.log(event);
+      var key = event.code;
+      if (key == 'Escape') this.onCloseSingle();
+      if (key == 'ArrowRight') this.onNextSingle();
+      if (key == 'ArrowLeft') this.onPrevSingle();
     }
-  })
+  }),
+  created: function created() {
+    // Listen for clicks outside component
+    document.body.addEventListener('click', this.clickOutsideEvent);
+    document.body.addEventListener('keyup', this.hotkeyHandler);
+  },
+  destroyed: function destroyed() {
+    // Remove click listener
+    document.body.removeEventListener('click', this.clickOutsideEvent);
+    document.body.removeEventListener('keyup', this.hotkeyHandler);
+  }
 });
 
 /***/ }),
@@ -7767,8 +7791,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _Tooltip__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tooltip */ "./resources/js/components/Tooltip.vue");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Tooltip__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tooltip */ "./resources/js/components/Tooltip.vue");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -7810,7 +7842,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   name: 'productSingleComments',
   props: ['comments', 'authUser', 'product'],
   components: {
-    Tooltip: _Tooltip__WEBPACK_IMPORTED_MODULE_1__["default"]
+    Tooltip: _Tooltip__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   data: function data() {
     return {
@@ -7839,14 +7871,43 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.newComment.user_id = newVal.id;
     }
   },
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['createComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['markAsFinal']), {
-    onSubmitComment: function onSubmitComment(e) {
-      e.preventDefault();
-      console.log('submitting comment to store');
-      this.createComment({
-        comment: this.newComment
-      });
-    },
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['createComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['markAsFinal']), {
+    onSubmitComment: function () {
+      var _onSubmitComment = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(e) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                e.preventDefault();
+                console.log('submitting comment to store');
+                _context.next = 4;
+                return this.createComment({
+                  comment: this.newComment
+                });
+
+              case 4:
+                // Reset comment
+                this.newComment.comment = '';
+                this.newComment.important = false;
+                this.newComment["final"] = false;
+                this.newComment.product_final = false;
+
+              case 8:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function onSubmitComment(_x) {
+        return _onSubmitComment.apply(this, arguments);
+      }
+
+      return onSubmitComment;
+    }(),
     onMarkAsFinal: function onMarkAsFinal(comment) {
       console.log('Comment: ' + comment.id); // comment.product_final = !comment.product_final; // This let's us toggle the comments status
 
@@ -7859,7 +7920,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     showTooltip: function showTooltip(event, data) {
       var rect = event.target.getBoundingClientRect(); // Set tooltip position
 
-      this.tooltip.position.top = rect.top - rect.height - 10;
+      this.tooltip.position.top = rect.top - rect.height - 12;
       this.tooltip.position.center = rect.left; // Set tooltip data
 
       this.tooltip.data = data; // Make tooltip active
@@ -8077,6 +8138,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     onViewSingle: function onViewSingle(id) {
       // Emit event to parent
       this.$emit('viewAsSingle', id);
+      if (document.getElementById('app-component').scrollTop < 130) document.getElementById('app-component').scrollTo(0, 130);
     },
     onSelect: function onSelect(index) {
       this.$emit('onSelect', index);
@@ -8840,6 +8902,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             // Neither A nor B has a key
             return 0;
           }
+        } else if (key == 'focus') {
+          // First sort by focus
+          if (a[key].length != b[key].length) {
+            if (sortAsc) return a[key].length > b[key].length ? 1 : -1;else return a[key].length < b[key].length ? 1 : -1; // Then sort by ins
+          } else if (a.ins.length == b.ins.length) {
+            return 0;
+          } else {
+            if (sortAsc) return a.ins.length > b.ins.length ? 1 : -1;else return a.ins.length < b.ins.length ? 1 : -1;
+          }
+        } else if (key == 'ins') {
+          // First sort by focus
+          var aInLength = a[key].length + a.focus.length;
+          var bInLength = b[key].length + b.focus.length;
+
+          if (aInLength != bInLength) {
+            if (sortAsc) return aInLength > bInLength ? 1 : -1;else return aInLength < bInLength ? 1 : -1; // Then sort by focus
+          } else if (a.focus.length == b.focus.length) {
+            return 0;
+          } else {
+            if (sortAsc) return a.focus.length > b.focus.length ? 1 : -1;else return a.focus.length < b.focus.length ? 1 : -1;
+          }
         } else {
           if (_typeof(products[0][key]) == 'object') {
             // Sort by key length
@@ -9035,6 +9118,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }); // Reset the selection
 
       this.selectedProductIDs = [];
+      this.clearSelectedProducts();
     },
     onSortBy: function onSortBy(key, method) {
       if (this.sortBy !== key) {
@@ -9286,7 +9370,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\nhtml, body, #app {\n  color: #1B1C1D;\n  background: #F9F9F9;\n}\n.app {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05) inset, 5px 0 6px rgba(0, 0, 0, 0.02) inset;\n  max-height: calc(100vh - 70px);\n  overflow: scroll;\n}\n.main-wrapper {\n  padding-left: 200px;\n  padding-top: 70px;\n}\n.main {\n  min-height: 100vh;\n  padding: 20px 60px;\n}\n.container {\n  max-width: 1170px;\n}\nh1 {\n  margin-bottom: 30px;\n}\n.grid-3 {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-gap: 1rem;\n}\n.grid-2 {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  grid-gap: 1rem;\n}\n.card {\n  padding: 1em;\n  border-radius: 6px;\n  margin: 30px 0;\n  border: none;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n}\n.pill {\n  background: #F3F3F3;\n  height: 20px;\n  font-size: 13px;\n  border-radius: 20px;\n  width: 85px;\n  height: 25px;\n  display: inline-block;\n  line-height: 25px;\n  text-align: center;\n}\n.pill.positive {\n  background: rgba(105, 228, 166, 0.35);\n}\n.tabs {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.tabs .tab {\n  display: inline-block;\n  font-size: 18px;\n  opacity: 0.5;\n  padding: 10px 25px;\n  border-bottom: solid 3px transparent;\n  margin-bottom: 8px;\n}\n.tabs .tab.active {\n  opacity: 1;\n  border-color: #3B86FF;\n}\n.tabs .tab:not(.active):hover {\n  border-color: rgba(59, 134, 255, 0.5);\n  cursor: pointer;\n}\n.vdp-datepicker {\n  display: grid;\n  justify-items: end;\n}\n.vdp-datepicker.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.vdp-datepicker > div::after {\n  content: \"\\F078\";\n  font-size: 11px;\n  color: #A8A8A8;\n  display: block;\n  position: absolute;\n  z-index: 1;\n  right: 12px;\n  height: 32px;\n  top: 0;\n  line-height: 32px;\n  font-weight: 900;\n  font-family: \"Font Awesome 5 Pro\";\n}\n.vdp-datepicker input {\n  border: solid 1px #DFDFDF;\n  border-radius: 4px;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  padding-left: 12px;\n  height: 32px;\n  width: 150px;\n  font-size: 14px;\n  cursor: pointer;\n}\n.button {\n  padding: 4px 12px;\n  display: block;\n  text-align: center;\n  border: #1B1C1D solid 2px;\n  margin: 0 4px;\n  cursor: pointer;\n  border-radius: 4px;\n}\n.button.wide {\n  width: 155px;\n  padding: 0;\n}\n.button.active {\n  background: #1B1C1D;\n  color: white;\n}\n.button.green:hover {\n  border-color: #5EE2A0;\n  color: #5EE2A0;\n}\n.button.green.active {\n  border-color: #5EE2A0;\n  background: #5EE2A0;\n  color: white;\n}\n.button.red:hover {\n  border-color: #FF6565;\n  color: #FF6565;\n}\n.button.red.active {\n  border-color: #FF6565;\n  background: #FF6565;\n  color: white;\n}\n.button.primary:hover {\n  border-color: #3B86FF;\n  color: #3B86FF;\n}\n.button.primary.active {\n  border-color: #3B86FF;\n  background: #3B86FF;\n  color: white;\n}\n.button.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.loading {\n  -webkit-animation: loading 2s;\n          animation: loading 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\nhtml, body, #app {\n  color: #1B1C1D;\n  background: #F9F9F9;\n}\n.app {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05) inset, 5px 0 6px rgba(0, 0, 0, 0.02) inset;\n  max-height: calc(100vh - 70px);\n  overflow: scroll;\n  scroll-behavior: smooth;\n}\n.main-wrapper {\n  padding-left: 200px;\n  padding-top: 70px;\n}\n.main {\n  min-height: 100vh;\n  padding: 20px 60px;\n}\n.container {\n  max-width: 1170px;\n}\nh1 {\n  margin-bottom: 30px;\n}\n.grid-3 {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-gap: 1rem;\n}\n.grid-2 {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  grid-gap: 1rem;\n}\n.card {\n  padding: 1em;\n  border-radius: 6px;\n  margin: 30px 0;\n  border: none;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n}\n.pill {\n  background: #F3F3F3;\n  height: 20px;\n  font-size: 13px;\n  border-radius: 20px;\n  width: 85px;\n  height: 25px;\n  display: inline-block;\n  line-height: 25px;\n  text-align: center;\n}\n.pill.positive {\n  background: rgba(105, 228, 166, 0.35);\n}\n.tabs {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.tabs .tab {\n  display: inline-block;\n  font-size: 18px;\n  opacity: 0.5;\n  padding: 10px 25px;\n  border-bottom: solid 3px transparent;\n  margin-bottom: 8px;\n}\n.tabs .tab.active {\n  opacity: 1;\n  border-color: #3B86FF;\n}\n.tabs .tab:not(.active):hover {\n  border-color: rgba(59, 134, 255, 0.5);\n  cursor: pointer;\n}\n.vdp-datepicker {\n  display: grid;\n  justify-items: end;\n}\n.vdp-datepicker.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.vdp-datepicker > div::after {\n  content: \"\\F078\";\n  font-size: 11px;\n  color: #A8A8A8;\n  display: block;\n  position: absolute;\n  z-index: 1;\n  right: 12px;\n  height: 32px;\n  top: 0;\n  line-height: 32px;\n  font-weight: 900;\n  font-family: \"Font Awesome 5 Pro\";\n}\n.vdp-datepicker input {\n  border: solid 1px #DFDFDF;\n  border-radius: 4px;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  padding-left: 12px;\n  height: 32px;\n  width: 150px;\n  font-size: 14px;\n  cursor: pointer;\n}\n.button {\n  padding: 4px 12px;\n  display: block;\n  text-align: center;\n  border: #1B1C1D solid 2px;\n  margin: 0 4px;\n  cursor: pointer;\n  border-radius: 4px;\n}\n.button.wide {\n  width: 155px;\n  padding: 0;\n}\n.button.active {\n  background: #1B1C1D;\n  color: white;\n}\n.button.green:hover {\n  border-color: #5EE2A0;\n  color: #5EE2A0;\n}\n.button.green.active {\n  border-color: #5EE2A0;\n  background: #5EE2A0;\n  color: white;\n}\n.button.red:hover {\n  border-color: #FF6565;\n  color: #FF6565;\n}\n.button.red.active {\n  border-color: #FF6565;\n  background: #FF6565;\n  color: white;\n}\n.button.primary:hover {\n  border-color: #3B86FF;\n  color: #3B86FF;\n}\n.button.primary.active {\n  border-color: #3B86FF;\n  background: #3B86FF;\n  color: white;\n}\n.button.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.loading {\n  -webkit-animation: loading 2s;\n          animation: loading 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}", ""]);
 
 // exports
 
@@ -9419,7 +9503,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #F3F3F3;\n  border-radius: 8px;\n  padding: 36px;\n  max-height: 70vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 36px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment[data-v-6d61fa50] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n}\n.user[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-6d61fa50] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-6d61fa50] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-6d61fa50] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-6d61fa50] {\n  left: 18px;\n}\n.circle[data-v-6d61fa50] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.circle i[data-v-6d61fa50] {\n  font-size: 20px;\n}\n.circle[data-v-6d61fa50]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n}\n.circle.active[data-v-6d61fa50] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.pill[data-v-6d61fa50] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #DFDFDF;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #A8A8A8;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #A8A8A8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #F3F3F3;\n  color: #A8A8A8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3B86FF;\n}\nform input[type=submit][data-v-6d61fa50] {\n  -webkit-appearance: none;\n  border: none;\n  height: 32px;\n  border-radius: 4px;\n  margin-top: 12px;\n  background: #3B86FF;\n  color: white;\n  padding: 4px 12px;\n  width: 100%;\n  text-align: center;\n  font-weight: 700;\n  font-size: 12px;\n  margin-bottom: 60px;\n}\nform input[type=submit].disabled[data-v-6d61fa50] {\n  pointer-events: none;\n  opacity: 0.5;\n}", ""]);
+exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #F3F3F3;\n  border-radius: 8px;\n  padding: 36px;\n  max-height: 57vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 36px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment[data-v-6d61fa50] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n}\n.user[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-6d61fa50] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-6d61fa50] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-6d61fa50] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-6d61fa50] {\n  left: 18px;\n}\n.circle[data-v-6d61fa50] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.circle i[data-v-6d61fa50] {\n  font-size: 20px;\n}\n.circle[data-v-6d61fa50]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n}\n.circle.active[data-v-6d61fa50] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.pill[data-v-6d61fa50] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #DFDFDF;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #A8A8A8;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #A8A8A8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #F3F3F3;\n  color: #A8A8A8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3B86FF;\n}\nform input[type=submit][data-v-6d61fa50] {\n  -webkit-appearance: none;\n  border: none;\n  height: 32px;\n  border-radius: 4px;\n  margin-top: 12px;\n  background: #3B86FF;\n  color: white;\n  padding: 4px 12px;\n  width: 100%;\n  text-align: center;\n  font-weight: 700;\n  font-size: 12px;\n  margin-bottom: 60px;\n}\nform input[type=submit].disabled[data-v-6d61fa50] {\n  pointer-events: none;\n  opacity: 0.5;\n}", ""]);
 
 // exports
 
@@ -9476,7 +9560,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".products[data-v-57b394cf] {\n  margin-top: 0;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 0;\n  background: #F9F9F9;\n  width: 100%;\n  height: 130px;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  width: calc(100% - 120px - 200px - 16px);\n  margin-left: 1px;\n  border-radius: 0.25rem 0.25rem 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.flex-table[data-v-57b394cf] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  padding-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf] {\n  min-width: 70px;\n  padding-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.nds[data-v-57b394cf] {\n  min-width: 100px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 80px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: auto;\n  padding-left: 16px;\n  min-width: 300px;\n}\ni[data-v-57b394cf] {\n  margin-right: 12px;\n  font-size: 11px;\n}\ni.fa-arrow-up[data-v-57b394cf] {\n  color: #5EE2A0;\n}\ni.fa-arrow-down[data-v-57b394cf] {\n  color: #FF6565;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #F3F3F3;\n}\n.product-row.in[data-v-57b394cf] > :first-child {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\n.product-row.out[data-v-57b394cf] > :first-child {\n  box-shadow: 4px 0 #FF6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #DFDFDF;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3B86FF;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-57b394cf] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-57b394cf] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-57b394cf]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-57b394cf]:after {\n  display: block;\n}\n.square[data-v-57b394cf] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 600;\n}\n.square i[data-v-57b394cf] {\n  color: #A8A8A8;\n  margin-right: 16px;\n  font-size: 16px;\n}\n.button[data-v-57b394cf] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  padding-right: 22px;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n  margin: 0;\n  margin-right: 24px;\n}\n.button i[data-v-57b394cf] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-57b394cf] {\n  font-weight: 900;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.square-wrapper[data-v-57b394cf] {\n  min-width: 65px;\n}", ""]);
+exports.push([module.i, ".products[data-v-57b394cf] {\n  margin-top: 0;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 0;\n  background: #F9F9F9;\n  width: 100%;\n  height: 130px;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  width: calc(100% - 120px - 200px - 16px);\n  margin-left: 1px;\n  border-radius: 0.25rem 0.25rem 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.flex-table[data-v-57b394cf] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  padding-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf] {\n  min-width: 70px;\n  padding-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.nds[data-v-57b394cf] {\n  min-width: 100px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 80px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: auto;\n  padding-left: 16px;\n  min-width: 300px;\n}\ni[data-v-57b394cf] {\n  margin-right: 12px;\n  font-size: 11px;\n}\ni.fa-arrow-up[data-v-57b394cf] {\n  color: #5EE2A0;\n}\ni.fa-arrow-down[data-v-57b394cf] {\n  color: #FF6565;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #F3F3F3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #FF6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #DFDFDF;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3B86FF;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-57b394cf] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-57b394cf] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-57b394cf]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-57b394cf]:after {\n  display: block;\n}\n.square[data-v-57b394cf] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 600;\n}\n.square i[data-v-57b394cf] {\n  color: #A8A8A8;\n  margin-right: 12px;\n  font-size: 16px;\n}\n.button[data-v-57b394cf] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  padding-right: 22px;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n  margin: 0;\n  margin-right: 24px;\n}\n.button i[data-v-57b394cf] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-57b394cf] {\n  font-weight: 900;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.square-wrapper[data-v-57b394cf] {\n  min-width: 65px;\n}", ""]);
 
 // exports
 
@@ -13457,9 +13541,19 @@ var render = function() {
             [
               _c("div", { staticClass: "comment" }, [
                 comment.important
-                  ? _c("span", { staticClass: "important bubble" }, [
-                      _c("i", { staticClass: "fas fa-exclamation" })
-                    ])
+                  ? _c(
+                      "span",
+                      {
+                        staticClass: "important bubble",
+                        on: {
+                          mouseover: function($event) {
+                            return _vm.showTooltip($event, "Important")
+                          },
+                          mouseleave: _vm.hideTooltip
+                        }
+                      },
+                      [_c("i", { staticClass: "fas fa-exclamation" })]
+                    )
                   : _vm._e(),
                 _vm._v(" "),
                 comment.votes.length > 0
@@ -13542,6 +13636,18 @@ var render = function() {
             },
             domProps: { value: _vm.newComment.comment },
             on: {
+              keyup: function($event) {
+                if (
+                  !$event.type.indexOf("key") &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                if (!$event.ctrlKey) {
+                  return null
+                }
+                return _vm.onSubmitComment($event)
+              },
               input: function($event) {
                 if ($event.target.composing) {
                   return
@@ -14042,7 +14148,7 @@ var render = function() {
                     _c(
                       "td",
                       {
-                        staticClass: "id clickable",
+                        staticClass: "id clickable bind-view-single",
                         on: {
                           click: function($event) {
                             return _vm.onViewSingle(product.id)
@@ -14064,6 +14170,7 @@ var render = function() {
                       },
                       [
                         _c("img", {
+                          staticClass: "bind-view-single",
                           attrs: { src: product.color_variants[0].image }
                         })
                       ]
@@ -14079,7 +14186,11 @@ var render = function() {
                           }
                         }
                       },
-                      [_c("span", [_vm._v(_vm._s(product.title))])]
+                      [
+                        _c("span", { staticClass: "bind-view-single" }, [
+                          _vm._v(_vm._s(product.title))
+                        ])
+                      ]
                     ),
                     _vm._v(" "),
                     _c("td", { staticClass: "square-wrapper focus" }, [
@@ -14113,11 +14224,11 @@ var render = function() {
                           staticClass: "square clickable",
                           on: {
                             mouseover: function($event) {
-                              return _vm.showTooltip(
+                              _vm.showTooltip(
                                 $event,
                                 "users",
                                 "In",
-                                product.ins
+                                product.focus.concat(product.ins)
                               )
                             },
                             mouseleave: _vm.hideTooltip
@@ -14125,7 +14236,9 @@ var render = function() {
                         },
                         [
                           _c("i", { staticClass: "far fa-heart" }),
-                          _vm._v(_vm._s(product.ins.length))
+                          _vm._v(
+                            _vm._s(product.ins.length + product.focus.length)
+                          )
                         ]
                       )
                     ]),
@@ -14182,12 +14295,29 @@ var render = function() {
                       )
                     ]),
                     _vm._v(" "),
-                    _c("td", { staticClass: "square-wrapper comments" }, [
-                      _c("span", { staticClass: "square" }, [
-                        _c("i", { staticClass: "far fa-comment" }),
-                        _vm._v(_vm._s(product.comments.length))
-                      ])
-                    ]),
+                    _c(
+                      "td",
+                      {
+                        staticClass: "square-wrapper comments bind-view-single"
+                      },
+                      [
+                        _c(
+                          "span",
+                          {
+                            staticClass: "square clickable",
+                            on: {
+                              click: function($event) {
+                                return _vm.onViewSingle(product.id)
+                              }
+                            }
+                          },
+                          [
+                            _c("i", { staticClass: "far fa-comment" }),
+                            _vm._v(_vm._s(product.comments.length))
+                          ]
+                        )
+                      ]
+                    ),
                     _vm._v(" "),
                     !_vm.loadingFinalActions
                       ? [
@@ -14239,7 +14369,8 @@ var render = function() {
                                   _c(
                                     "span",
                                     {
-                                      staticClass: "view-single",
+                                      staticClass:
+                                        "view-single bind-view-single",
                                       on: {
                                         click: function($event) {
                                           return _vm.onViewSingle(product.id)
@@ -14315,7 +14446,8 @@ var render = function() {
                                   _c(
                                     "span",
                                     {
-                                      staticClass: "view-single",
+                                      staticClass:
+                                        "view-single bind-view-single",
                                       on: {
                                         click: function($event) {
                                           return _vm.onViewSingle(product.id)

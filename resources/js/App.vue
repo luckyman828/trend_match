@@ -50,6 +50,7 @@ export default{
         box-shadow: 0 3px 6px rgba(0,0,0,.05) inset, 5px 0 6px rgba(0,0,0,.02) inset;
         max-height: calc(100vh - 70px);
         overflow: scroll;
+        scroll-behavior: smooth;
     }
     .main-wrapper {
         padding-left: $sidebarWidth;
