@@ -5,6 +5,12 @@
         </div>
         <div class="body">
             <template v-if="tooltip.type == 'users'">
+            <div class="tooltip-row" v-for="(user, index) in tooltip.data" :key="index">
+                <span class="user"><span class="email">{{user.email}}</span></span>
+            </div>
+            </template>
+
+            <template v-if="tooltip.type == 'teams'">
             <div class="tooltip-row" v-for="(team, index) in teams" :key="index">
                 <span class="team">{{team.name}} <span class="count">{{team.users.length}}</span></span>
             </div>
@@ -21,24 +27,19 @@
 export default {
     name: 'tooltip',
     props: [
-        'tooltip'
+        'tooltip',
     ],
     computed: {
         teams () {
             const tooltip = this.tooltip
             const data = []
-            if (tooltip.type == 'users') {
-                // data.teams = []
-                    // const uniqueTeams = [...new Set(tooltip.data.map(x => x.team.title))]
-                    const uniqueTeams = [...new Set(tooltip.data.map(x => x.team.title))]
-                    // data.push(uniqueTeams)
+            if (tooltip.type == 'teams') {
 
-                    // data.newTeams = []
+                    const uniqueTeams = [...new Set(tooltip.data.map(x => x.team.title))]
                     uniqueTeams.forEach(team => {
                         const thisTeam = {
                             name: team,
                             users: [],
-                            // teamUsers: (tooltip.teams[0].title == team.toUpperCase())
                             teamUsers: tooltip.teams.find(obj => {
                                 return obj.title == team.toUpperCase()
                             })
@@ -50,11 +51,14 @@ export default {
                         })
                         data.push(thisTeam)
                     })
-                    // tooltip.data.foreach(user => {
-
-                    // })
             }
             return data
+        },
+        users() {
+            const tooltip = this.tooltip
+            if (tooltip.type == 'users') {
+                return tooltip.users
+            }
         }
     }
 }
@@ -70,8 +74,11 @@ export default {
         z-index: 9;
         color: white;
         border-radius: 4px;
-        &.users {
+        &.teams {
             width: 140px;
+        }
+        &.users {
+            width: 200px;
         }
         &.text {
             padding: 8px;

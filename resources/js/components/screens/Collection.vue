@@ -14,6 +14,7 @@ import Loader from '../Loader'
 import CollectionTopBar from '../CollectionTopBar'
 import CataloguesTable from '../CataloguesTable'
 import Collection from '../../store/models/Collection'
+import Team from '../../store/models/Team'
 
 export default {
     name: 'collection',
@@ -34,6 +35,7 @@ export default {
     },
     methods: {
         ...mapActions('entities/collections', ['fetchCollections']),
+        ...mapActions('entities/teams', ['fetchTeams']),
         onSelect(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
             const selected = this.selected
@@ -46,6 +48,7 @@ export default {
     },
     created() {
         this.fetchCollections()
+        this.fetchTeams()
     },
 
 }

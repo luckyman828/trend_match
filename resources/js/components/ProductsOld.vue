@@ -1,81 +1,82 @@
 <template>
-    <div class="products card" :class="{sticky: sticky}">
-        <div class="scroll-bg"></div>
+    <div class="products card">
         <product-totals :totalProductCount="totalProductCount" :selectedCount="selectedCount" :products="products"/>
-        <product-single :sticky="sticky" :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut"/>
-        <div class="flex-table" :class="{disabled: singleProductToShow.id != null}">
-            <div class="header-row flex-table-row">
+        <product-single :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut"/>
+        <table :class="{disabled: singleProductToShow.id != null}">
+            <tr class="header-row">
                 <th class="select">Select <i class="fas fa-chevron-down"></i></th>
                 <th class="clickable id" :class="{active: this.sortBy == 'datasource_id'}" @click="onSortBy('datasource_id', true)">
                     Id <i class="fas" :class="[(this.sortBy == 'datasource_id' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th class="image"></th>
+                <th></th>
                 <th :class="{active: this.sortBy == 'title'}" class="clickable title" @click="onSortBy('title', true)">
-                   Product name <i class="fas" :class="[(this.sortBy == 'title' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                   Product <i class="fas" :class="[(this.sortBy == 'title' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'focus'}" class="clickable square-wrapper focus" @click="onSortBy('focus', false)">
+                <th :class="{active: this.sortBy == 'focus'}" class="clickable" @click="onSortBy('focus', false)">
                     Focus <i class="fas" :class="[(this.sortBy == 'focus' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'ins'}" class="clickable square-wrapper" @click="onSortBy('ins', false)">
+                <th :class="{active: this.sortBy == 'ins'}" class="clickable" @click="onSortBy('ins', false)">
                     In <i class="fas" :class="[(this.sortBy == 'ins' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'outs'}" class="clickable square-wrapper" @click="onSortBy('outs', false)">
+                <th :class="{active: this.sortBy == 'outs'}" class="clickable" @click="onSortBy('outs', false)">
                     Out <i class="fas" :class="[(this.sortBy == 'outs' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'nds'}" class="clickable square-wrapper" @click="onSortBy('nds', false)">
+                <th :class="{active: this.sortBy == 'nds'}" class="clickable" @click="onSortBy('nds', false)">
                     ND <i class="fas" :class="[(this.sortBy == 'nds' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'comments'}" class="clickable square-wrapper" @click="onSortBy('comments', false)">
+                <th :class="{active: this.sortBy == 'comments'}" class="clickable" @click="onSortBy('comments', false)">
                     Comments <i class="fas" :class="[(this.sortBy == 'comments' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'productFinalAction'}" class="clickable action" @click="onSortBy('productFinalAction', false)">
+                <th :class="{active: this.sortBy == 'productFinalAction'}" class="clickable" @click="onSortBy('productFinalAction', false)">
                     Action <i class="fas" :class="[(this.sortBy == 'productFinalAction' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-            </div>
+            </tr>
             <template v-if="!loading">
-                <div class="product-row flex-table-row"
-                v-for="(product, index) in products" :key="product.id"
-                :class="[ (product.productFinalAction != null) ? (product.productFinalAction.action == 1) ? 'in' : 'out' : '' ]">
-                    <td class="select">
-                        <label class="checkbox">
-                            <input type="checkbox" @change="onSelect(index)" />
-                            <span class="checkmark"></span>
-                        </label>
-                    </td>
-                    <td class="id clickable" @click="onViewSingle(product.id)">{{product.datasource_id}}</td>
-                    <td class="image clickable" @click="onViewSingle(product.id)"><img :src="product.color_variants[0].image"></td>
-                    <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
-                    <td class="square-wrapper focus"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
-                    <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'In', product.ins)" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length}}</span></td>
-                    <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
-                    <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}}</span></td>
-                    <td class="square-wrapper"><span class="square"><i class="far fa-comment"></i>{{product.comments.length}}</span></td>
-                    <template v-if="!loadingFinalActions">
-                        <template v-if="!product.productFinalAction">
-                            <td class="action">
-                                <span class="button green" @click="toggleInOut(product.id, 1, 'N/A')">In <i class="far fa-heart"></i></span>
-                                <span class="button red" @click="toggleInOut(product.id, 0, 'N/A')">Out <i class="far fa-times-circle"></i></span>
-                                <span class="view-single" @click="onViewSingle(product.id)">View</span>
-                            </td>
+                <tbody>
+                    <tr class="product-row"
+                    v-for="(product, index) in products" :key="product.id"
+                    :class="[ (product.productFinalAction != null) ? (product.productFinalAction.action == 1) ? 'in' : 'out' : '' ]">
+                        <td class="select">
+                            <label class="checkbox">
+                                <input type="checkbox" @change="onSelect(index)" />
+                                <span class="checkmark"></span>
+                            </label>
+                        </td>
+                        <td class="id clickable" @click="onViewSingle(product.id)">{{product.datasource_id}}</td>
+                        <td class="image clickable" @click="onViewSingle(product.id)"><img :src="product.color_variants[0].image"></td>
+                        <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
+                        <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
+                        <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'In', product.ins)" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length}}</span></td>
+                        <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
+                        <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}}</span></td>
+                        <td class="square-wrapper"><span class="square"><i class="far fa-comment"></i>{{product.comments.length}}</span></td>
+                        <template v-if="!loadingFinalActions">
+                            <template v-if="!product.productFinalAction">
+                                <td>
+                                    <span class="button green" @click="toggleInOut(product.id, 1, 'N/A')">In <i class="far fa-heart"></i></span>
+                                    <span class="button red" @click="toggleInOut(product.id, 0, 'N/A')">Out <i class="far fa-times-circle"></i></span>
+                                    <span class="view-single" @click="onViewSingle(product.id)">View</span>
+                                </td>
+                            </template>
+                            <template v-else>
+                                <td>
+                                    <span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product.id, 1, product.productFinalAction.action)">
+                                    In  <i class="far fa-heart"></i>
+                                    </span>
+                                    <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product.id, 0, product.productFinalAction.action)">
+                                    Out  <i class="far fa-times-circle"></i>
+                                    </span>
+                                    <span class="view-single" @click="onViewSingle(product.id)">View</span>
+                                </td>
+                            </template>
                         </template>
                         <template v-else>
-                            <td class="action">
-                                <span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product.id, 1, product.productFinalAction.action)">
-                                In  <i class="far fa-heart"></i>
-                                </span>
-                                <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product.id, 0, product.productFinalAction.action)">
-                                Out  <i class="far fa-times-circle"></i>
-                                </span>
-                                <span class="view-single" @click="onViewSingle(product.id)">View</span>
-                            </td>
+                            <td><span><Loader/></span></td>
                         </template>
-                    </template>
-                    <template v-else>
-                        <td><span><Loader/></span></td>
-                    </template>
-                </div>
+                    </tr>
+                </tbody>
             </template>
-        </div>
+        </table>
         <template v-if="loading">
             <Loader/>
         </template>
@@ -91,7 +92,7 @@ import ProductSingle from './ProductSingle'
 import Tooltip from './Tooltip'
 
 export default {
-    name: 'productsAlt',
+    name: 'products',
     props: [
         'products',
         'loading',
@@ -114,6 +115,7 @@ export default {
         Tooltip,
     },
     data: function() { return {
+        coolProducts: [],
         tooltip: {
             active: false,
             position: {},
@@ -121,8 +123,12 @@ export default {
             header: '',
             data: {}
         },
-        sticky: false,
     }},
+    watch: {
+        products: function (newVal, oldVal) {
+            this.coolProducts = newVal
+        },
+    },
     computed: {
         ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
     },
@@ -148,13 +154,17 @@ export default {
             this.$emit('onSelect', index)
         },
         showTooltip(event, type, header, data) {
-            const rect = event.target.getBoundingClientRect()
-
+            const el = event.target
+            const rect = el.getBoundingClientRect()
             // Set tooltip position
-            this.tooltip.position.top = rect.top + rect.height + 10
-            this.tooltip.position.center = rect.left + ( rect.width / 2 )
-
-            // Set tooltip data
+            // this.tooltip.position.top = window.scrollY + el.top
+            // this.tooltip.position.center = window.scrollX + el.left + el.width / 2
+            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+            this.tooltip.position.top = rect.top + scrollTop - el.closest('.card').offsetTop + el.offsetTop
+            this.tooltip.position.center = rect.left + scrollLeft - el.closest('.card').offsetLeft + el.offsetLeft + (rect.width / 2)
+            // this.tooltip.position.center = el.offsetLeft // + el.width / 2
+            // Set tooltip data and type
             this.tooltip.data = data
             this.tooltip.type = type
             this.tooltip.header = header
@@ -186,27 +196,7 @@ export default {
             document.querySelectorAll('.product-row input[type=checkbox]').forEach(input => {
                 input.checked = false
             })
-        },
-        handleScroll (event) {
-            // Fix table header to screen
-            const theWindow = document.getElementById('app-component')
-            let scrollDist = theWindow.scrollTop
-            const stickyThis = document.querySelector('.product-tabs')
-            const stickyThisTop = stickyThis.getBoundingClientRect().top - 70
-            if (scrollDist >= 130) {
-                this.sticky = true
-                stickyThis.classList.add('sticky')
-            } else {
-                this.sticky = false
-                stickyThis.classList.remove('sticky')
-            }
         }
-    },
-    created () {
-        document.getElementById('app-component').addEventListener('scroll', this.handleScroll);
-    },
-    destroyed () {
-        document.getElementById('app-component').removeEventListener('scroll', this.handleScroll);
     }
 }
 </script>
@@ -216,32 +206,6 @@ export default {
 
     .products {
         margin-top: 0;
-        &.sticky {
-            margin-top: 90px;
-            .scroll-bg {
-                display: block;
-                z-index: 8;
-                position: fixed;
-                right: 20px;
-                top: 0;
-                background: $light;
-                width: 100%;
-                height: 130px;
-            }
-            .header-row {
-                position: fixed;
-                top: $navbarHeight + 20px + 40px;
-                z-index: 9;
-                background: white;
-                width: calc(100% - 120px - 200px - 16px);
-                margin-left: 1px;
-                border-radius: 0.25rem 0.25rem 0 0;
-                box-shadow: 0 6px 3px -2px rgba(0,0,0, .05);
-            }
-        }
-    }
-    .scroll-bg {
-        display: none;
     }
     .clickable {
         cursor: pointer;
@@ -249,7 +213,7 @@ export default {
     .products {
         padding-top: 0;
     }
-    .flex-table {
+    table {
         margin-left: -16px;
         margin-right: -16px;
         width: calc(100% + 32px);
@@ -257,41 +221,14 @@ export default {
             opacity: .5;
         }
     }
-    .flex-table-row {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        > * {
-            &.select {
-                padding-left: 16px;
-                min-width: 80px;
-            }
-            &.id {
-                min-width: 75px;
-            }
-            &.image {
-                margin: 8px 0 8px 16px;
-                min-width: 55px;
-            }
-            &.title {
-                width: 300px;
-                padding-left: 16px;
-                // padding-right: 16px;
-            }
-            &.focus {
-                margin-left: auto;
-            }
-            &.square-wrapper {
-                min-width: 80px;
-                padding-left: 16px;
-                box-sizing: content-box;
-            }
-            &.action {
-                margin-left: auto;
-                padding-left: 16px;
-                min-width: 300px;
-            }
-        }
+    tr:hover {
+        background: $light;
+    }
+    img {
+        height: 88px;
+        width: 66px;
+        object-fit: cover;
+        margin: 8px 0 8px 16px;
     }
     i {
         margin-right: 12px;
@@ -303,13 +240,14 @@ export default {
             color: $red;
         }
     }
-    .header-row {
+    tr.header-row {
+        background: white;
         font-weight: 700;
         font-size: 12px;
         height: 45px;
         border-bottom: solid 2px $light1;
     }
-    .product-row {
+    tr.product-row {
         border-bottom: solid 1px $light1;
         &.in > :first-child {
             box-shadow: 4px 0 $green inset
@@ -317,35 +255,37 @@ export default {
         &.out > :first-child {
             box-shadow: 4px 0 $red inset
         }
-        &:hover {
-            background: $light;
-        }
-        .image {
-            border: solid 1px $light2;
-            height: 75px;
-            position: relative;
-            img {
-                width: 100%;
-                position: absolute;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
-                padding: 1px;
-            }
-        }
     }
     th {
         text-transform: uppercase;
         font-size: 12px;
         font-weight: 600;
         color: $dark2;
+        &:first-child {
+            padding-left: 16px;
+            width: 80px;
+        }
         &.id {
-            padding-left: 20px;
+            width: 75px;
+        }
+        &.title {
+            width: 240px;
         }
         i {
             color: $light2;
             margin: 0;
             margin-left: 4px;
+        }
+        &.swipes {
+            width: 12%;
+            text-align: center;
+        }
+        &.popularity {
+            width: 10%;
+        }
+        &.compare {
+            width: 15%;
+            text-align: center;
         }
         &.active {
             i {
@@ -354,9 +294,24 @@ export default {
         }
     }
     td {
+        &.select {
+            padding-left: 20px;
+        }
         &.title {
             font-size: 13px;
             color: $dark;
+        }
+        &.swipes {
+            text-align: center;
+            font-size: 13px;
+            color: $dark;
+        }
+        &.popularity {
+            font-size: 11px;
+            font-weight: 700;
+        }
+        &.compare {
+            text-align: center;
         }
     }
     .show-more {
@@ -450,8 +405,6 @@ export default {
         padding-right: 22px;
         color: $dark2;
         border-color: $light2;
-        margin: 0;
-        margin-right: 24px;
         i {
             font-size: 16px;
             position: absolute;
@@ -468,6 +421,7 @@ export default {
     .view-single {
         font-size: 12px;
         font-weight: 700;
+        padding: 0 12px;
         cursor: pointer;
     }
     .square-wrapper {

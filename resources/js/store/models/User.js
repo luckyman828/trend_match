@@ -17,7 +17,7 @@ export default class User extends Model {
     const data = {
       id: this.attr(''),
       email: this.attr(''),
-      // name: this.attr(''),
+      name: this.attr(''),
       country_id: this.attr(''),
       team_ids: this.attr(''),
       role_id: this.attr(''),

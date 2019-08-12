@@ -298,6 +298,10 @@ export default {
         display: flex;
         border-bottom: solid 2px $light1;
         padding: 6px 0;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: white;
         .square {
             margin-left: 1em;
         }

@@ -2,11 +2,11 @@
     <div class="catalogue">
         <template v-if="!loadingCollections">
             <progress-bar :loading="loadingCollections" :catalogue="collection" :productTotals="productTotals"/>
-            <filters :categories="categories" :selectedCategoriesCount="selectedCategoryIDs.length" @onSelectCategory="setSelectedCategory" @onClearFilter="clearSelectedCategories"/>
+            <filters :teams="teams" :teamFilterId="teamFilterId" :categories="categories" :selectedCategoriesCount="selectedCategoryIDs.length" @onSelectTeam="filterByTeam" @onSelectCategory="setSelectedCategory" @onClearFilter="clearSelectedCategories"/>
             <!-- <product-single :product="singleProductToShow" :nextProductID="nextSingleProductID" :loading="loadingProducts" :authUser="authUser" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/> -->
             <product-tabs :productTotals="productTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
             <!-- <products ref="productsComponent" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :prevSingleProductID="prevSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsSorted" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @prevSingle="setPrevSingle"/> -->
-            <products-alt ref="productsComponent" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :prevSingleProductID="prevSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsSorted" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @prevSingle="setPrevSingle"/>
+            <products ref="productsComponent" :teamFilterId="teamFilterId" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :prevSingleProductID="prevSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsSorted" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @prevSingle="setPrevSingle"/>
             <SelectedController :totalCount="productsSorted.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction"/>
         </template>
         <template v-if="loadingCollections">
@@ -19,7 +19,6 @@
 import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
 import Products from '../Products'
-import ProductsAlt from '../ProductsAlt'
 import ProductTabs from '../ProductTabs'
 import ProgressBar from '../ProgressBar'
 import Filters from '../Filters'
@@ -40,7 +39,6 @@ export default{
     store,
     components: {
         Products,
-        ProductsAlt,
         ProductTabs,
         SelectedController,
         ProgressBar,
@@ -53,7 +51,9 @@ export default{
         selectedProductIDs: [],
         selectedCategoryIDs: [],
         sortBy: 'datasource_id',
-        sortAsc: true
+        sortAsc: true,
+        teamFilterId: '-1',
+        catalogueId: '',
     }},
     computed: {
         ...mapGetters('entities/products', ['loadingProducts']),
@@ -66,13 +66,11 @@ export default{
         collection() {
             return Collection.find(this.collectionId)
         },
-        aaa() {
-            return this.selectedCategoryIDs.length
-        },
         products () {
             const products = Product.query().with(['actions.user.country', 'actions.user.team']).with(['comments.user.country', 'comments.votes', 'comments.user.team']).with('productFinalAction').all()
-            const totalUsers = this.users
+            const totalUsers = this.teamUsers
             const userId = this.authUser.id
+            const teamFilterId = this.teamFilterId
             const data = []
             products.forEach(product => {
                 product.color_variants = JSON.parse(product.color_variants)
@@ -89,12 +87,29 @@ export default{
                 //     product.productFinalAction = {}
                 product.nds = JSON.parse(JSON.stringify(totalUsers)) // Copy our users into a new variable
                 product.actions.forEach(action => {
-                    if (action.action == 0)
-                        product.outs.push(action.user)
-                    if (action.action == 1)
-                        product.ins.push(action.user)
-                    if (action.action == 2)
-                        product.focus.push(action.user)
+
+                    // Filter actions by the current team filter
+                    if ( teamFilterId > 0 ) {
+                        // Check if the user has a team
+                        if (action.user.team != null) {
+                            if (action.user.team.id == teamFilterId) {
+                                if (action.action == 0)
+                                    product.outs.push(action.user)
+                                if (action.action == 1)
+                                    product.ins.push(action.user)
+                                if (action.action == 2)
+                                    product.focus.push(action.user)
+                            }
+                        }
+                    // Dont filter by team, id no current team is set
+                    } else {
+                        if (action.action == 0)
+                            product.outs.push(action.user)
+                        if (action.action == 1)
+                            product.ins.push(action.user)
+                        if (action.action == 2)
+                            product.focus.push(action.user)
+                    }
 
                     // Find the action this user has taken
                     if (action.user_id == userId)
@@ -105,8 +120,10 @@ export default{
                             product.userAction = 2
                     }
 
-                    var index = product.nds.findIndex(nd => nd.id == action.user_id)
+                    let index = product.nds.findIndex(nd => nd.id == action.user_id)
+                    if (index > -1) {
                         product.nds.splice(index,1)
+                    }
                 })
                 data.push(product)
             })
@@ -280,6 +297,19 @@ export default{
             }
             else return -1
         },
+        teamUsers() {
+            const teamFilterId = this.teamFilterId
+            let totalUsers = []
+            if (teamFilterId > 0) {
+                this.users.forEach(user => {
+                    if(user.team_ids == teamFilterId)
+                        totalUsers.push(user)
+                })
+            } else {
+                totalUsers = this.users
+            }
+            return totalUsers
+        },
         users() {
             return User.query().with('country').with('team').all()
         },
@@ -287,7 +317,17 @@ export default{
             return this.$store.getters['entities/actions/all']()
         },
         comments() {
-            return Comment.query().with('user.country|team').with('votes').all()
+            const comments = Comment.query().with(['votes', 'user.country', 'user.team']).all()
+            const teamFilterId = this.teamFilterId
+            if (teamFilterId > 0) {
+                let commentsToReturn = []
+                comments.forEach(comment => {
+                    if (comment.user.team_ids == teamFilterId)
+                        commentsToReturn.push(comment)
+                })
+                return commentsToReturn
+            } 
+            else return comments
         },
         countries() {
             return Country.query().all()
@@ -373,10 +413,22 @@ export default{
             } else {
                 this.sortAsc = !this.sortAsc
             }
-        }
+        },
+        filterByTeam(id) {
+            this.teamFilterId = id
+        },
+        async fetchInitialData() {
+            // Get catalogue id
+            this.catalogueId = this.$route.params.catalogueId
+            
+            // Get user
+            await this.getAuthUser()
+            this.teamFilterId = this.authUser.team_ids
+        },
     },
     created() {
-        this.getAuthUser();
+        this.fetchInitialData()
+        // Fetch all our data
         this.fetchCountries()
         this.fetchProducts({collection_id: this.collectionId})
         this.fetchActions({collection_id: this.collectionId})
@@ -387,6 +439,9 @@ export default{
         this.fetchTeams({collection_id: this.collectionId})
         this.fetchCommentVotes({collection_id: this.collectionId})
         this.fetchCategories()
+    },
+    mounted() {
+
     }
 }
 </script>

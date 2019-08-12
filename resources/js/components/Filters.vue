@@ -27,13 +27,13 @@
             <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle global d-flex justify-content-between" type="button" id="dropdownMenuButton" 
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span><img src="/assets/Path5699.svg" alt /></span> Global <img src="/assets/Path26.svg" alt />
+                <span><img src="/assets/Path5699.svg" alt /></span> {{currentTeam.title}} <img src="/assets/Path26.svg" alt />
                 </button>
 
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="#">Action</a>
-                <a class="dropdown-item" href="#">Another action</a>
-                <a class="dropdown-item" href="#">Something else here</a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                <p class="dropdown-item current-item active"> {{currentTeam.title}} </p>
+                <p class="dropdown-item" @click="onSelectTeam(0)">Global</p>
+                <p :class="{active: currentTeam.id == team.id}" class="dropdown-item" v-for="team in teams" :key="team.id" @click="onSelectTeam(team.id)">{{team.title}}</p>
                 </div>
             </div>
 
@@ -47,13 +47,28 @@ export default {
     name: 'filters',
     props: [
         'categories',
-        'selectedCategoriesCount'
+        'selectedCategoriesCount',
+        'teams',
+        'teamFilterId'
     ],
     data: function() { return {
-        selectedCategories: []
+        selectedCategories: [],
     }},
     computed: {
-
+        currentTeam() {
+          if (this.teamFilterId > 0 && this.teams.length > 0)
+            return this.teams.find(el => el.id == this.teamFilterId)
+            else return {title: 'Global'}
+            // return 'what'
+        },
+        // teamsSorted() {
+        //   const dataSorted = this.teams.sort((a, b) => {
+        //     if (a.id == this.currentTeamId)
+        //       return -1
+        //       else return 0
+        //   })
+        //   return dataSorted
+        // }
     },
     methods: {
         onSelectCategory(id) {
@@ -68,12 +83,31 @@ export default {
                 input.checked = false
             })
         },
+        onSelectTeam(id) {
+          this.$emit('onSelectTeam', id)
+        }
     },
 }
 </script>
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
+.dropdown-menu {
+  min-width: 150px;
+  padding-top: 0;
+  p.dropdown-item {
+    display: block;
+    margin: 0;
+    padding: 12px 16px;
+    cursor: pointer;
+  }
+  .current-item {
+    background: $light;
+    border-bottom: solid 1px $light2;
+  }
+}
+
+
 .vue-component-filters {
     margin-bottom: 12px;
 }
