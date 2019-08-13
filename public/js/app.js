@@ -8537,35 +8537,35 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   computed: {
-    teamsAlt: function teamsAlt() {
-      // Manually find the teams and the users belonging to each team.
-      // This is only necessary because I cannot make the Vuex ORM realtionship work 
-      // If you can make it work, please be my guest
-      var users = this.users;
-      var teams = this.teams;
-      var data = [];
-      teams.forEach(function (team) {
-        var thisTeam = {
-          id: team.id,
-          title: team.title,
-          users: []
-        };
-        users.forEach(function (user) {
-          if (user.team.id == thisTeam.id) {
-            // Find the users role
-            user.role = user.role_id == 1 ? 'Sales' : user.role_id == 2 ? 'Sales Rep' : 'Admin'; // if (user.role_id == 1) {
-            //     user.role = 'Sales'
-            // } else if (user)
-
-            thisTeam.users.push(user);
-          }
-        });
-        data.push(thisTeam);
-      });
-      return data;
-    },
+    // teamsAlt () {
+    //     // Manually find the teams and the users belonging to each team.
+    //     // This is only necessary because I cannot make the Vuex ORM realtionship work 
+    //     // If you can make it work, please be my guest
+    //     const users = this.users
+    //     const teams = this.teams
+    //     const data = []
+    //     teams.forEach(team => {
+    //         const thisTeam = {
+    //             id: team.id,
+    //             title: team.title,
+    //             users: []
+    //         }
+    //         users.forEach(user => {
+    //             if (user.team.id == thisTeam.id) {
+    //                 // Find the users role
+    //                 user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
+    //                 // if (user.role_id == 1) {
+    //                 //     user.role = 'Sales'
+    //                 // } else if (user)
+    //                 thisTeam.users.push(user)
+    //             }
+    //         })
+    //         data.push(thisTeam)
+    //     })
+    //     return data
+    // },
     teamsSorted: function teamsSorted() {
-      var teams = this.teamsAlt;
+      var teams = this.teams;
       var key = this.sortBy;
       var sortAsc = this.sortAsc;
       var dataSorted = teams.sort(function (a, b) {
@@ -8785,13 +8785,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _SelectedController__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../SelectedController */ "./resources/js/components/SelectedController.vue");
 /* harmony import */ var _store_models_Comment__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../store/models/Comment */ "./resources/js/store/models/Comment.js");
 /* harmony import */ var _store_models_Product__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../store/models/Product */ "./resources/js/store/models/Product.js");
-/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
-/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
-/* harmony import */ var _store_models_Country__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../store/models/Country */ "./resources/js/store/models/Country.js");
-/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
-/* harmony import */ var _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../store/models/ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
-/* harmony import */ var _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../store/models/CommentVote */ "./resources/js/store/models/CommentVote.js");
-/* harmony import */ var _store_models_Category__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../store/models/Category */ "./resources/js/store/models/Category.js");
+/* harmony import */ var _store_models_Country__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../store/models/Country */ "./resources/js/store/models/Country.js");
+/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
+/* harmony import */ var _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../store/models/ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
+/* harmony import */ var _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../store/models/CommentVote */ "./resources/js/store/models/CommentVote.js");
+/* harmony import */ var _store_models_Category__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../store/models/Category */ "./resources/js/store/models/Category.js");
+/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -8830,7 +8829,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
-
+ // import User from '../../store/models/User'
+// import Team from '../../store/models/Team'
 
 
 
@@ -8866,7 +8866,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return this.$route.params.catalogueId;
     },
     collection: function collection() {
-      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_14__["default"].find(this.collectionId);
+      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_12__["default"].find(this.collectionId);
     },
     products: function products() {
       var products = _store_models_Product__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"](['actions.user.country', 'actions.user.team'])["with"](['comments.user.country', 'comments.votes', 'comments.user.team'])["with"]('productFinalAction').all();
@@ -9104,9 +9104,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       return totalUsers;
     },
-    users: function users() {
-      return _store_models_User__WEBPACK_IMPORTED_MODULE_11__["default"].query()["with"]('country')["with"]('team').all();
-    },
     actions: function actions() {
       return this.$store.getters['entities/actions/all']();
     },
@@ -9123,25 +9120,90 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else return comments;
     },
     countries: function countries() {
-      return _store_models_Country__WEBPACK_IMPORTED_MODULE_13__["default"].query().all();
-    },
-    teams: function teams() {
-      return _store_models_Team__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"]('users').all();
+      return _store_models_Country__WEBPACK_IMPORTED_MODULE_11__["default"].query().all();
     },
     categories: function categories() {
-      return _store_models_Category__WEBPACK_IMPORTED_MODULE_17__["default"].query()["with"]('products').all();
+      return _store_models_Category__WEBPACK_IMPORTED_MODULE_15__["default"].query()["with"]('products').all();
     },
     finalActions: function finalActions() {
-      return _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_15__["default"].query().all();
+      return _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_13__["default"].query().all();
     },
     commentVotes: function commentVotes() {
-      return _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_16__["default"].query()["with"]('comment').all();
+      return _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_14__["default"].query()["with"]('comment').all();
     },
     authUser: function authUser() {
       return this.$store.getters.authUser;
+    },
+    userTeams: function userTeams() {
+      return _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_16__["default"].query()["with"]('team')["with"]('user').all();
+    },
+    users: function users() {
+      // Generate users from the userTeam model
+      var userTeams = JSON.parse(JSON.stringify(this.userTeams));
+      var usersToReturn = [];
+      var ready = true;
+      userTeams.forEach(function (userTeam) {
+        if (userTeam.team == null || userTeam.user == null) {
+          ready = false;
+        }
+      });
+
+      if (ready) {
+        userTeams.forEach(function (userTeam) {
+          var newUser = userTeam.user;
+          newUser.team = userTeam.team;
+          usersToReturn.push(newUser);
+        });
+      }
+
+      return usersToReturn;
+    },
+    teams: function teams() {
+      var userTeams = JSON.parse(JSON.stringify(this.userTeams)); // Generate teams from the userTeams model
+
+      var teams = [];
+      var ready = true;
+      userTeams.forEach(function (userTeam) {
+        if (userTeam.team == null || userTeam.user == null) {
+          ready = false;
+        }
+      });
+
+      if (ready) {
+        userTeams.forEach(function (userTeam) {
+          // If the team doesnt already exist - create it
+          if (!teams.filter(function (e) {
+            return e.id == userTeam.team_id;
+          }).length > 0) {
+            teams.push(userTeam.team);
+          }
+        });
+      } // Manually find the teams and the users belonging to each team.
+      // This is only necessary because I cannot make the Vuex ORM realtionship work 
+      // If you can make it work, please be my guest
+
+
+      var users = this.users;
+      var data = [];
+      teams.forEach(function (team) {
+        var thisTeam = {
+          id: team.id,
+          title: team.title,
+          users: []
+        };
+        users.forEach(function (user) {
+          if (user.team.id == thisTeam.id) {
+            // Find the users role
+            user.role = user.role_id == 1 ? 'Sales' : user.role_id == 2 ? 'Sales Rep' : 'Admin';
+            thisTeam.users.push(user);
+          }
+        });
+        data.push(thisTeam);
+      });
+      return data;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])(['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/countries', ['fetchCountries']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['updateFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])(['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/countries', ['fetchCountries']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['updateFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {
     // ...mapActions('entities/actions', ['updateActions']),
     setSingleProduct: function setSingleProduct(index) {
       this.singleProductID = index;
@@ -9267,6 +9329,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       collection_id: this.collectionId
     });
     this.fetchCategories();
+    this.fetchUserTeams();
   },
   mounted: function mounted() {}
 });
@@ -9336,7 +9399,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return _store_models_Collection__WEBPACK_IMPORTED_MODULE_6__["default"].query().all();
     },
     teams: function teams() {
-      return _store_models_Team__WEBPACK_IMPORTED_MODULE_7__["default"].query()["with"]('users').all();
+      return _store_models_Team__WEBPACK_IMPORTED_MODULE_7__["default"].query().all();
     },
     authUser: function authUser() {
       return this.$store.getters.authUser;
@@ -9410,11 +9473,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
-/* harmony import */ var _TeamsTopBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../TeamsTopBar */ "./resources/js/components/TeamsTopBar.vue");
-/* harmony import */ var _TeamsTable__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../TeamsTable */ "./resources/js/components/TeamsTable.vue");
-/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
-/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _TeamsTopBar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../TeamsTopBar */ "./resources/js/components/TeamsTopBar.vue");
+/* harmony import */ var _TeamsTable__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../TeamsTable */ "./resources/js/components/TeamsTable.vue");
+/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -9428,35 +9489,94 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+ // import Team from '../../store/models/Team'
 
 
-
-
+ // import User from '../../store/models/User'
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'teams',
   components: {
-    TeamsTopBar: _TeamsTopBar__WEBPACK_IMPORTED_MODULE_2__["default"],
-    TeamsTable: _TeamsTable__WEBPACK_IMPORTED_MODULE_3__["default"]
+    TeamsTopBar: _TeamsTopBar__WEBPACK_IMPORTED_MODULE_1__["default"],
+    TeamsTable: _TeamsTable__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   data: function data() {
     return {
       selected: []
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/teams', ['loadingTeams']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/teams', ['loadingTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/userTeams', ['loadingUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/users', ['loadingUsers']), {
     authUser: function authUser() {
       return this.$store.getters.authUser;
     },
-    teams: function teams() {
-      return _store_models_Team__WEBPACK_IMPORTED_MODULE_1__["default"].query()["with"]('users')["with"]('vegetables').all();
+    userTeams: function userTeams() {
+      return _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_3__["default"].query()["with"]('team')["with"]('user').all();
     },
     users: function users() {
-      return _store_models_User__WEBPACK_IMPORTED_MODULE_4__["default"].query()["with"]('team')["with"]('userTeam').all();
+      // Generate users from the userTeam model
+      var userTeams = JSON.parse(JSON.stringify(this.userTeams));
+      var usersToReturn = [];
+      var ready = true;
+      userTeams.forEach(function (userTeam) {
+        if (userTeam.team == null || userTeam.user == null) {
+          ready = false;
+        }
+      });
+
+      if (ready) {
+        userTeams.forEach(function (userTeam) {
+          var newUser = userTeam.user;
+          newUser.team = userTeam.team;
+          usersToReturn.push(newUser);
+        });
+      }
+
+      return usersToReturn;
     },
-    userTeams: function userTeams() {
-      return _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_5__["default"].query()["with"]('team')["with"]('user').all();
+    teams: function teams() {
+      var userTeams = JSON.parse(JSON.stringify(this.userTeams)); // Generate teams from the userTeams model
+
+      var teams = [];
+      var ready = true;
+      userTeams.forEach(function (userTeam) {
+        if (userTeam.team == null || userTeam.user == null) {
+          ready = false;
+        }
+      });
+
+      if (ready) {
+        userTeams.forEach(function (userTeam) {
+          // If the team doesnt already exist - create it
+          if (!teams.filter(function (e) {
+            return e.id == userTeam.team_id;
+          }).length > 0) {
+            teams.push(userTeam.team);
+          }
+        });
+      } // Manually find the teams and the users belonging to each team.
+      // This is only necessary because I cannot make the Vuex ORM realtionship work 
+      // If you can make it work, please be my guest
+
+
+      var users = this.users;
+      var data = [];
+      teams.forEach(function (team) {
+        var thisTeam = {
+          id: team.id,
+          title: team.title,
+          users: []
+        };
+        users.forEach(function (user) {
+          if (user.team.id == thisTeam.id) {
+            // Find the users role
+            user.role = user.role_id == 1 ? 'Sales' : user.role_id == 2 ? 'Sales Rep' : 'Admin';
+            thisTeam.users.push(user);
+          }
+        });
+        data.push(thisTeam);
+      });
+      return data;
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {

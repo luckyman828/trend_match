@@ -89,36 +89,36 @@ export default {
         sortAsc: true
     }},
     computed: {
-        teamsAlt () {
-            // Manually find the teams and the users belonging to each team.
-            // This is only necessary because I cannot make the Vuex ORM realtionship work 
-            // If you can make it work, please be my guest
-            const users = this.users
-            const teams = this.teams
-            const data = []
+        // teamsAlt () {
+        //     // Manually find the teams and the users belonging to each team.
+        //     // This is only necessary because I cannot make the Vuex ORM realtionship work 
+        //     // If you can make it work, please be my guest
+        //     const users = this.users
+        //     const teams = this.teams
+        //     const data = []
 
-            teams.forEach(team => {
-                const thisTeam = {
-                    id: team.id,
-                    title: team.title,
-                    users: []
-                }
-                users.forEach(user => {
-                    if (user.team.id == thisTeam.id) {
-                        // Find the users role
-                        user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
-                        // if (user.role_id == 1) {
-                        //     user.role = 'Sales'
-                        // } else if (user)
-                        thisTeam.users.push(user)
-                    }
-                })
-                data.push(thisTeam)
-            })
-            return data
-        },
+        //     teams.forEach(team => {
+        //         const thisTeam = {
+        //             id: team.id,
+        //             title: team.title,
+        //             users: []
+        //         }
+        //         users.forEach(user => {
+        //             if (user.team.id == thisTeam.id) {
+        //                 // Find the users role
+        //                 user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
+        //                 // if (user.role_id == 1) {
+        //                 //     user.role = 'Sales'
+        //                 // } else if (user)
+        //                 thisTeam.users.push(user)
+        //             }
+        //         })
+        //         data.push(thisTeam)
+        //     })
+        //     return data
+        // },
         teamsSorted() {
-            const teams = this.teamsAlt
+            const teams = this.teams
             let key = this.sortBy
             let sortAsc = this.sortAsc
             const dataSorted = teams.sort((a, b) => {

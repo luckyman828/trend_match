@@ -26,13 +26,14 @@ import Loader from '../Loader'
 import SelectedController from '../SelectedController'
 import Comment from '../../store/models/Comment'
 import Product from '../../store/models/Product'
-import User from '../../store/models/User'
-import Team from '../../store/models/Team'
+// import User from '../../store/models/User'
+// import Team from '../../store/models/Team'
 import Country from '../../store/models/Country'
 import Collection from '../../store/models/Collection'
 import ProductFinalAction from '../../store/models/ProductFinalAction';
 import CommentVote from '../../store/models/CommentVote';
 import Category from '../../store/models/Category';
+import UserTeam from '../../store/models/UserTeam';
 
 export default{
     name: 'catalogue',
@@ -349,9 +350,6 @@ export default{
             }
             return totalUsers
         },
-        users() {
-            return User.query().with('country').with('team').all()
-        },
         actions() {
             return this.$store.getters['entities/actions/all']()
         },
@@ -371,9 +369,6 @@ export default{
         countries() {
             return Country.query().all()
         },
-        teams() {
-            return Team.query().with('users').all()
-        },
         categories() {
             return Category.query().with('products').all()
         },
@@ -385,6 +380,79 @@ export default{
         },
         authUser() {
             return this.$store.getters.authUser;
+        },
+        userTeams() {
+            return UserTeam.query().with('team').with('user').all()
+        },
+        users() {
+            // Generate users from the userTeam model
+            const userTeams = JSON.parse(JSON.stringify(this.userTeams))
+            const usersToReturn = []
+
+            let ready = true 
+
+            userTeams.forEach(userTeam => {
+                if (userTeam.team == null || userTeam.user == null) {
+                    ready = false
+                }
+            })
+
+            if ( ready ) {
+                
+                userTeams.forEach(userTeam => {
+                    const newUser = userTeam.user
+                    newUser.team = userTeam.team
+                    usersToReturn.push(newUser)
+                })
+
+            }
+            return usersToReturn
+        },
+        teams () {
+            const userTeams = JSON.parse(JSON.stringify(this.userTeams))
+            // Generate teams from the userTeams model
+            let teams = []
+
+            let ready = true 
+            userTeams.forEach(userTeam => {
+                if (userTeam.team == null || userTeam.user == null) {
+                    ready = false
+                }
+            })
+
+            if ( ready ) {
+
+                userTeams.forEach(userTeam => {
+                    // If the team doesnt already exist - create it
+                        if (!teams.filter(e => e.id == userTeam.team_id).length > 0) {
+                            teams.push(userTeam.team)
+                        }
+                })
+            
+            }
+
+            // Manually find the teams and the users belonging to each team.
+            // This is only necessary because I cannot make the Vuex ORM realtionship work 
+            // If you can make it work, please be my guest
+            const users = this.users
+            const data = []
+
+            teams.forEach(team => {
+                const thisTeam = {
+                    id: team.id,
+                    title: team.title,
+                    users: []
+                }
+                users.forEach(user => {
+                    if (user.team.id == thisTeam.id) {
+                        // Find the users role
+                        user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
+                        thisTeam.users.push(user)
+                    }
+                })
+                data.push(thisTeam)
+            })
+            return data
         },
     },
     methods: {
@@ -401,6 +469,7 @@ export default{
         ...mapActions('entities/productFinalActions', ['fetchFinalActions']),
         ...mapActions('entities/productFinalActions', ['updateFinalAction']),
         ...mapActions('entities/categories', ['fetchCategories']),
+        ...mapActions('entities/userTeams', ['fetchUserTeams']),
         // ...mapActions('entities/actions', ['updateActions']),
         setSingleProduct(index) {
             this.singleProductID = index
@@ -479,6 +548,7 @@ export default{
         this.fetchTeams({collection_id: this.collectionId})
         this.fetchCommentVotes({collection_id: this.collectionId})
         this.fetchCategories()
+        this.fetchUserTeams()
     },
     mounted() {
 

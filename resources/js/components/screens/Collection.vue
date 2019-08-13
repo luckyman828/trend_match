@@ -34,7 +34,7 @@ export default {
             return Collection.query().all()
         },
         teams() {
-            return Team.query().with('users').all()
+            return Team.query().all()
         },
         authUser() {
             return this.$store.getters.authUser;
