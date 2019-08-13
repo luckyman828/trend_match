@@ -21,10 +21,31 @@ export default {
           
           const apiUrl = `/api/collection/${collection_id}/users`
 
+          let tryCount = 3
+          while(tryCount > 0) {
+            try {
+              tryCount --
+              const response = await axios.get(`${apiUrl}`)
+              User.create({ data: response.data })
+              commit('setLoading', false)
+            }
+            catch (err) {
+              console.log('API error in users.js :')
+              console.log(err)
+              console.log(`Trying to fetch again. TryCount = ${tryCount}`)
+              tryCount --
+              if (tryCount <= 0) throw err
+            }
+          }
+
           // console.log(`Getting users from ${apiUrl}`)
-          const response = await axios.get(`${apiUrl}`) //Get the data from the api
-          User.create({ data: response.data })
-          commit('setLoading', false)
+          // const response = await axios.get(`${apiUrl}`) //Get the data from the api
+          // .catch(err => {
+          //   console.log('API error in users.js :')
+          //   console.log(err)
+          // })
+          // User.create({ data: response.data })
+          // commit('setLoading', false)
       }
     },
 

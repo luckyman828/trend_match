@@ -21,10 +21,31 @@ export default {
           
           const apiUrl = `/api/collection/${collection_id}/final-actions`
 
-          // console.log(`Getting comments from ${apiUrl}`)
-          const response = await axios.get(`${apiUrl}`) //Get the data from the api
-          ProductFinalAction.create({ data: response.data })
-          commit('setLoading', false)
+          let tryCount = 3
+          while(tryCount > 0) {
+            try {
+              tryCount --
+              const response = await axios.get(`${apiUrl}`)
+              ProductFinalAction.create({ data: response.data })
+              commit('setLoading', false)
+            }
+            catch (err) {
+              console.log('API error in productFinalAction.js :')
+              console.log(err)
+              console.log(`Trying to fetch again. TryCount = ${tryCount}`)
+              tryCount --
+              if (tryCount <= 0) throw err
+            }
+          }
+          
+          // const response = await axios.get(`${apiUrl}`) //Get the data from the api
+          // .catch(err => {
+          //   console.log('API error in productFinalAction.js :')
+          //   console.log(err)
+          //   console.log('Trying to fetch again')
+          // })
+          // ProductFinalAction.create({ data: response.data })
+          // commit('setLoading', false)
       },
       // Update the action of for a product for a user
       async updateFinalAction({commit}, {phase, productToUpdate, action_code}) {

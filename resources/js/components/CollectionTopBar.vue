@@ -20,7 +20,9 @@
                 </div>
             </div>
 
-            <div class="dropdown">
+            <team-dropdown :teams="teams" :teamFilterId="teamFilterId" @onSelectTeam="onSelectTeam"/>
+
+            <!-- <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle global d-flex justify-content-between" type="button" id="dropdownMenuButton" 
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span><img src="/assets/Path5699.svg" alt /></span> Global <img src="/assets/Path26.svg" alt />
@@ -31,7 +33,7 @@
                 <a class="dropdown-item" href="#">Another action</a>
                 <a class="dropdown-item" href="#">Something else here</a>
                 </div>
-            </div>
+            </div> -->
 
         </div>
 
@@ -39,12 +41,19 @@
 </template>
 
 <script>
+import TeamDropdown from './TeamDropdown'
+
 export default {
     name: 'collectionTopBar',
     props: [
         'itemsToFilter',
-        'title'
+        'title',
+        'teams',
+        'teamFilterId'
     ],
+    components: {
+      TeamDropdown,
+    },
     data: function() { return {
         selectedItems: []
     }},
@@ -56,6 +65,9 @@ export default {
     methods: {
         onSelectItem(item) {
             this.selectedItems.push(item.title)
+        },
+        onSelectTeam(id) {
+          this.$emit('onSelectTeam', id)
         }
     },
 }

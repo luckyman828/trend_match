@@ -2,7 +2,7 @@
     <div class="collection">
         <h1>Collection</h1>
         <div class="underline"></div>
-        <CollectionTopBar :itemsToFilter="collections" :title="'Catalogues'"/>
+        <CollectionTopBar :itemsToFilter="collections" :title="'Catalogues'" :teams="teams" :teamFilterId="teamFilterId" @onSelectTeam="filterByTeam"/>
         <CataloguesTable :catalogues="collections" :loading="loadingCollections" @onSelect="onSelect"/>
     </div>
 </template>
@@ -26,14 +26,22 @@ export default {
     },
     data: function() { return {
         selected: [],
+        teamFilterId: '-1',
     }},
     computed: {
         ...mapGetters('entities/collections', ['loadingCollections']),
         collections () {
             return Collection.query().all()
         },
+        teams() {
+            return Team.query().with('users').all()
+        },
+        authUser() {
+            return this.$store.getters.authUser;
+        },
     },
     methods: {
+        ...mapActions(['getAuthUser']),
         ...mapActions('entities/collections', ['fetchCollections']),
         ...mapActions('entities/teams', ['fetchTeams']),
         onSelect(index) {
@@ -44,11 +52,20 @@ export default {
         },
         onViewSingle(collectionID) {
             this.$router.push({name: 'catalogue', params: {catalogueId: collectionID}})
-        }
+        },
+        filterByTeam(id) {
+            this.teamFilterId = id
+        },
+        async fetchInitialData() {
+            // Get user
+            await this.getAuthUser()
+            this.teamFilterId = this.authUser.team_ids
+        },
     },
     created() {
+        this.fetchInitialData()
         this.fetchCollections()
-        this.fetchTeams()
+        this.fetchTeams(1234)
     },
 
 }

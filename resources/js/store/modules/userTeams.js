@@ -21,10 +21,31 @@ export default {
           
           const apiUrl = `/api/collection/user-teams`
 
+          let tryCount = 3
+          while(tryCount > 0) {
+            try {
+              tryCount --
+              const response = await axios.get(`${apiUrl}`)
+              UserTeam.create({ data: response.data })
+              commit('setLoading', false)
+            }
+            catch (err) {
+              console.log('API error in userTeams.js :')
+              console.log(err)
+              console.log(`Trying to fetch again. TryCount = ${tryCount}`)
+              tryCount --
+              if (tryCount <= 0) throw err
+            }
+          }
+
           // console.log(`Getting comments from ${apiUrl}`)
-          const response = await axios.get(`${apiUrl}`) //Get the data from the api
-          UserTeam.create({ data: response.data })
-          commit('setLoading', false)
+          // const response = await axios.get(`${apiUrl}`) //Get the data from the api
+          // .catch(err => {
+          //   console.log('API error in userTeams.js :')
+          //   console.log(err)
+          // })
+          // UserTeam.create({ data: response.data })
+          // commit('setLoading', false)
       }
     },
 

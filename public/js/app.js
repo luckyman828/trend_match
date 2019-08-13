@@ -7257,7 +7257,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 
 
@@ -7330,6 +7329,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _TeamDropdown__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TeamDropdown */ "./resources/js/components/TeamDropdown.vue");
 //
 //
 //
@@ -7370,9 +7370,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'collectionTopBar',
-  props: ['itemsToFilter', 'title'],
+  props: ['itemsToFilter', 'title', 'teams', 'teamFilterId'],
+  components: {
+    TeamDropdown: _TeamDropdown__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
   data: function data() {
     return {
       selectedItems: []
@@ -7386,6 +7392,9 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     onSelectItem: function onSelectItem(item) {
       this.selectedItems.push(item.title);
+    },
+    onSelectTeam: function onSelectTeam(id) {
+      this.$emit('onSelectTeam', id);
     }
   }
 });
@@ -7401,6 +7410,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _TeamDropdown__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TeamDropdown */ "./resources/js/components/TeamDropdown.vue");
 //
 //
 //
@@ -7445,9 +7455,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'filters',
   props: ['categories', 'selectedCategoriesCount', 'teams', 'teamFilterId'],
+  components: {
+    TeamDropdown: _TeamDropdown__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
   data: function data() {
     return {
       selectedCategories: []
@@ -8373,6 +8388,54 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamDropdown.vue?vue&type=script&lang=js&":
+/*!***********************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/TeamDropdown.vue?vue&type=script&lang=js& ***!
+  \***********************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'teamDropDown',
+  props: ['teams', 'teamFilterId'],
+  computed: {
+    currentTeam: function currentTeam() {
+      var _this = this;
+
+      if (this.teamFilterId > 0 && this.teams.length > 0) return this.teams.find(function (el) {
+        return el.id == _this.teamFilterId;
+      });else return {
+        title: 'Global' // return 'what'
+
+      };
+    }
+  },
+  methods: {
+    onSelectTeam: function onSelectTeam(id) {
+      this.$emit('onSelectTeam', id);
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamsTable.vue?vue&type=script&lang=js&":
 /*!*********************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/TeamsTable.vue?vue&type=script&lang=js& ***!
@@ -9215,13 +9278,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../store */ "./resources/js/store/index.js");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Loader */ "./resources/js/components/Loader.vue");
-/* harmony import */ var _CollectionTopBar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../CollectionTopBar */ "./resources/js/components/CollectionTopBar.vue");
-/* harmony import */ var _CataloguesTable__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../CataloguesTable */ "./resources/js/components/CataloguesTable.vue");
-/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
-/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../store */ "./resources/js/store/index.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Loader */ "./resources/js/components/Loader.vue");
+/* harmony import */ var _CollectionTopBar__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../CollectionTopBar */ "./resources/js/components/CollectionTopBar.vue");
+/* harmony import */ var _CataloguesTable__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../CataloguesTable */ "./resources/js/components/CataloguesTable.vue");
+/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
+/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -9244,23 +9315,30 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'collection',
-  store: _store__WEBPACK_IMPORTED_MODULE_0__["default"],
+  store: _store__WEBPACK_IMPORTED_MODULE_1__["default"],
   components: {
-    Loader: _Loader__WEBPACK_IMPORTED_MODULE_2__["default"],
-    CollectionTopBar: _CollectionTopBar__WEBPACK_IMPORTED_MODULE_3__["default"],
-    CataloguesTable: _CataloguesTable__WEBPACK_IMPORTED_MODULE_4__["default"]
+    Loader: _Loader__WEBPACK_IMPORTED_MODULE_3__["default"],
+    CollectionTopBar: _CollectionTopBar__WEBPACK_IMPORTED_MODULE_4__["default"],
+    CataloguesTable: _CataloguesTable__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
   data: function data() {
     return {
-      selected: []
+      selected: [],
+      teamFilterId: '-1'
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/collections', ['loadingCollections']), {
     collections: function collections() {
-      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_5__["default"].query().all();
+      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_6__["default"].query().all();
+    },
+    teams: function teams() {
+      return _store_models_Team__WEBPACK_IMPORTED_MODULE_7__["default"].query()["with"]('users').all();
+    },
+    authUser: function authUser() {
+      return this.$store.getters.authUser;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teams', ['fetchTeams']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])(['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {
     onSelect: function onSelect(index) {
       // Check if index already exists in array. If it exists remove it, else add it to array
       var selected = this.selected;
@@ -9276,11 +9354,43 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           catalogueId: collectionID
         }
       });
-    }
+    },
+    filterByTeam: function filterByTeam(id) {
+      this.teamFilterId = id;
+    },
+    fetchInitialData: function () {
+      var _fetchInitialData = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.next = 2;
+                return this.getAuthUser();
+
+              case 2:
+                this.teamFilterId = this.authUser.team_ids;
+
+              case 3:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function fetchInitialData() {
+        return _fetchInitialData.apply(this, arguments);
+      }
+
+      return fetchInitialData;
+    }()
   }),
   created: function created() {
+    this.fetchInitialData();
     this.fetchCollections();
-    this.fetchTeams();
+    this.fetchTeams(1234);
   }
 });
 
@@ -9399,7 +9509,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".catalogues-table[data-v-f0b881ae] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.clickable[data-v-f0b881ae] {\n  cursor: pointer;\n}\ntable[data-v-f0b881ae] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\ntable.disabled[data-v-f0b881ae] {\n  opacity: 0.5;\n}\ntr[data-v-f0b881ae]:hover {\n  background: #F9F9F9;\n}\nimg[data-v-f0b881ae] {\n  height: 88px;\n  width: 66px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  margin: 8px 0 8px 16px;\n}\ni[data-v-f0b881ae] {\n  margin-right: 12px;\n  font-size: 11px;\n}\ni.fa-arrow-up[data-v-f0b881ae] {\n  color: #5EE2A0;\n}\ni.fa-arrow-down[data-v-f0b881ae] {\n  color: #FF6565;\n}\ntr.header-row[data-v-f0b881ae] {\n  background: white;\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\ntr.catalogue-row[data-v-f0b881ae] {\n  border-bottom: solid 1px #DFDFDF;\n}\ntr.catalogue-row.in[data-v-f0b881ae] > :first-child {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\ntr.catalogue-row.out[data-v-f0b881ae] > :first-child {\n  box-shadow: 4px 0 #FF6565 inset;\n}\nth[data-v-f0b881ae] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\nth[data-v-f0b881ae]:first-child {\n  padding-left: 16px;\n  width: 100px;\n}\nth.id[data-v-f0b881ae] {\n  width: 75px;\n}\nth.title[data-v-f0b881ae] {\n  width: 150px;\n  padding-left: 40px;\n}\nth i[data-v-f0b881ae] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-f0b881ae] {\n  color: #3B86FF;\n}\ntd.select[data-v-f0b881ae] {\n  padding: 20px 0;\n  padding-left: 20px;\n}\ntd.id[data-v-f0b881ae] {\n  white-space: nowrap;\n  max-width: 50px;\n  overflow: hidden;\n}\ntd.title[data-v-f0b881ae] {\n  padding: 0 40px;\n  white-space: nowrap;\n}\ntd.created[data-v-f0b881ae], td.deadline[data-v-f0b881ae] {\n  width: 120px;\n}\ntd.stage[data-v-f0b881ae] {\n  width: 84px;\n}\n.show-more[data-v-f0b881ae] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-f0b881ae] {\n  -webkit-animation: loading-data-v-f0b881ae 2s;\n          animation: loading-data-v-f0b881ae 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-f0b881ae] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-f0b881ae]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-f0b881ae] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-f0b881ae] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-f0b881ae]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae]:after {\n  display: block;\n}\n.square[data-v-f0b881ae] {\n  background: #F3F3F3;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 12px;\n  font-weight: 700;\n}\n.square.sales[data-v-f0b881ae] {\n  background: #3B86FF;\n}\n.square.admin[data-v-f0b881ae] {\n  background: #3C3B54;\n}\n.square i[data-v-f0b881ae] {\n  color: #A8A8A8;\n  margin-right: 16px;\n  font-size: 16px;\n}\n.button[data-v-f0b881ae] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n}\n.button i[data-v-f0b881ae] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-f0b881ae] {\n  font-weight: 900;\n}\n.view-single[data-v-f0b881ae] {\n  font-size: 12px;\n  font-weight: 700;\n  padding: 0 12px;\n  color: #A8A8A8;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-f0b881ae] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-f0b881ae] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
+exports.push([module.i, ".catalogues-table[data-v-f0b881ae] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.clickable[data-v-f0b881ae] {\n  cursor: pointer;\n}\ntable[data-v-f0b881ae] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\ntable.disabled[data-v-f0b881ae] {\n  opacity: 0.5;\n}\ntr > *.action[data-v-f0b881ae] {\n  padding: 0 32px;\n  text-align: right;\n}\ntr[data-v-f0b881ae]:hover {\n  background: #F9F9F9;\n}\nimg[data-v-f0b881ae] {\n  height: 88px;\n  width: 66px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  margin: 8px 0 8px 16px;\n}\ni[data-v-f0b881ae] {\n  margin-right: 12px;\n  font-size: 11px;\n}\ni.fa-arrow-up[data-v-f0b881ae] {\n  color: #5EE2A0;\n}\ni.fa-arrow-down[data-v-f0b881ae] {\n  color: #FF6565;\n}\ntr.header-row[data-v-f0b881ae] {\n  background: white;\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\ntr.catalogue-row[data-v-f0b881ae] {\n  border-bottom: solid 1px #DFDFDF;\n}\ntr.catalogue-row.in[data-v-f0b881ae] > :first-child {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\ntr.catalogue-row.out[data-v-f0b881ae] > :first-child {\n  box-shadow: 4px 0 #FF6565 inset;\n}\nth[data-v-f0b881ae] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\nth[data-v-f0b881ae]:first-child {\n  padding-left: 16px;\n  width: 100px;\n}\nth.id[data-v-f0b881ae] {\n  width: 75px;\n}\nth.title[data-v-f0b881ae] {\n  width: 150px;\n  padding-left: 40px;\n}\nth i[data-v-f0b881ae] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-f0b881ae] {\n  color: #3B86FF;\n}\ntd.select[data-v-f0b881ae] {\n  padding: 20px 0;\n  padding-left: 20px;\n}\ntd.id[data-v-f0b881ae] {\n  white-space: nowrap;\n  max-width: 50px;\n  overflow: hidden;\n}\ntd.title[data-v-f0b881ae] {\n  padding: 0 40px;\n  white-space: nowrap;\n}\ntd.created[data-v-f0b881ae], td.deadline[data-v-f0b881ae] {\n  width: 120px;\n}\ntd.stage[data-v-f0b881ae] {\n  width: 84px;\n}\n.show-more[data-v-f0b881ae] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-f0b881ae] {\n  -webkit-animation: loading-data-v-f0b881ae 2s;\n          animation: loading-data-v-f0b881ae 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-f0b881ae] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-f0b881ae]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-f0b881ae] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-f0b881ae] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-f0b881ae]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae]:after {\n  display: block;\n}\n.square[data-v-f0b881ae] {\n  background: #F3F3F3;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 12px;\n  font-weight: 700;\n}\n.square.sales[data-v-f0b881ae] {\n  background: #3B86FF;\n}\n.square.admin[data-v-f0b881ae] {\n  background: #3C3B54;\n}\n.square i[data-v-f0b881ae] {\n  color: #A8A8A8;\n  margin-right: 16px;\n  font-size: 16px;\n}\n.button[data-v-f0b881ae] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n}\n.button i[data-v-f0b881ae] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-f0b881ae] {\n  font-weight: 900;\n}\n.view-single[data-v-f0b881ae] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-f0b881ae] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-f0b881ae] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
 
 // exports
 
@@ -9628,6 +9738,25 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 // module
 exports.push([module.i, ".sidebar[data-v-81fbb27e] {\n  margin: 0;\n  padding: 0;\n  width: 200px;\n  height: 100%;\n  background-color: white;\n  position: fixed;\n  overflow: auto;\n  left: 0;\n  top: 70px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  z-index: 99;\n}\n@media screen and (max-width: 700px) {\n.sidebar[data-v-81fbb27e] {\n    width: 100%;\n    height: auto;\n    position: relative;\n}\n}\n@media screen and (max-width: 400px) {\n.sidebar[data-v-81fbb27e] {\n    text-align: center;\n    float: none;\n}\n}\n.sidebar .stick-to-bottom[data-v-81fbb27e] {\n  position: absolute;\n  left: 0;\n  width: 100%;\n  bottom: 120px;\n}\n.sidebar a[data-v-81fbb27e] {\n  display: block;\n  color: #a8a8a8;\n  padding: 16px;\n  text-decoration: none;\n  border-left: solid 5px white;\n}\n.sidebar a.router-link-active[data-v-81fbb27e] {\n  background-color: #f9f9f9;\n  color: #1b1c1d;\n  border-left: 5px solid #4facfe;\n}\n.sidebar a.router-link-active i[data-v-81fbb27e] {\n  color: #3B86FF;\n}\n.sidebar a[data-v-81fbb27e]:hover {\n  background: #F3F3F3;\n}\n.sidebar a i[data-v-81fbb27e] {\n  margin-right: 8px;\n}\n@media screen and (max-width: 700px) {\n.sidebar a[data-v-81fbb27e] {\n    float: left;\n}\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamDropdown.vue?vue&type=style&index=0&id=a1af8b0e&scoped=true&lang=scss&":
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/TeamDropdown.vue?vue&type=style&index=0&id=a1af8b0e&scoped=true&lang=scss& ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".dropdown-menu[data-v-a1af8b0e] {\n  min-width: 150px;\n  padding-top: 0;\n}\n.dropdown-menu p.dropdown-item[data-v-a1af8b0e] {\n  display: block;\n  margin: 0;\n  padding: 12px 16px;\n  cursor: pointer;\n}\n.dropdown-menu .current-item[data-v-a1af8b0e] {\n  background: #F9F9F9;\n  border-bottom: solid 1px #DFDFDF;\n}\n.global[data-v-a1af8b0e] {\n  height: 32px;\n  width: 150px;\n  color: #1b1c1d;\n  background-color: #ffffff;\n  border: 1px solid #dfdfdf;\n  font-size: 14px;\n  font-weight: bold;\n  margin-left: auto;\n}\n.global img[data-v-a1af8b0e] {\n  margin-top: 6px;\n}\n.global span[data-v-a1af8b0e] {\n  margin-left: -8px;\n  margin-top: -3px;\n  background-color: #3b86ff;\n  width: 24px;\n  height: 24px;\n  border-radius: 25%;\n}\n.global span img[data-v-a1af8b0e] {\n  margin-top: 0px;\n}\n.dropdown-toggle[data-v-a1af8b0e]::after {\n  display: none;\n}\n.dropdown-menu[data-v-a1af8b0e]:hover {\n  display: block;\n}\n.dropdown-menu[data-v-a1af8b0e] {\n  overflow-y: auto;\n  max-height: 285px;\n  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);\n}\n.dropdown-menu input[type=text][data-v-a1af8b0e] {\n  border: 0px;\n  border-bottom: 1px solid #a8a8a8;\n  color: #a8a8a8;\n  padding: 5px 0;\n  width: 100%;\n}\n.dropdown-menu input[type=text][data-v-a1af8b0e]::-webkit-input-placeholder {\n  color: #a8a8a8;\n  text-align: center;\n}\n.dropdown-menu p[data-v-a1af8b0e] {\n  display: inline;\n  font-size: 12px;\n  color: #1b1c1d;\n}\n.dropdown-menu .container[data-v-a1af8b0e] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.dropdown-menu .container[data-v-a1af8b0e]:hover {\n  background: #F9F9F9;\n}", ""]);
 
 // exports
 
@@ -11407,6 +11536,36 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamDropdown.vue?vue&type=style&index=0&id=a1af8b0e&scoped=true&lang=scss&":
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/TeamDropdown.vue?vue&type=style&index=0&id=a1af8b0e&scoped=true&lang=scss& ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./TeamDropdown.vue?vue&type=style&index=0&id=a1af8b0e&scoped=true&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamDropdown.vue?vue&type=style&index=0&id=a1af8b0e&scoped=true&lang=scss&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamsTable.vue?vue&type=style&index=0&id=0b6bf463&scoped=true&lang=scss&":
 /*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/TeamsTable.vue?vue&type=style&index=0&id=0b6bf463&scoped=true&lang=scss& ***!
@@ -12364,9 +12523,7 @@ var render = function() {
             _vm._v(" "),
             _c("th"),
             _vm._v(" "),
-            _c("th", [_vm._v("Action")]),
-            _vm._v(" "),
-            _c("th")
+            _c("th", { staticClass: "action" }, [_vm._v("Action")])
           ]),
           _vm._v(" "),
           !_vm.loading
@@ -12423,7 +12580,7 @@ var render = function() {
                             catalogue.start_time != null
                               ? catalogue.start_time
                                   .substr(0, catalogue.start_time.indexOf(" "))
-                                  .replace(/\./g, "/")
+                                  .replace(/\-/g, "/")
                               : "Unset"
                           )
                         )
@@ -12453,14 +12610,10 @@ var render = function() {
                     _vm._m(1, true),
                     _vm._v(" "),
                     _c("td", { staticClass: "action" }, [
-                      _c("span", { staticClass: "button" }, [_vm._v("Action")]),
-                      _vm._v(" "),
-                      _c("span", { staticClass: "button" }, [_vm._v("Action")]),
-                      _vm._v(" "),
                       _c(
                         "span",
                         {
-                          staticClass: "clickable",
+                          staticClass: "clickable view-single",
                           on: {
                             click: function($event) {
                               return _vm.viewSingle(
@@ -12527,132 +12680,92 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "vue-component-filters filter-row" }, [
-    _c("div", { staticClass: "grid-2" }, [
-      _c("div", { staticClass: "dropdown" }, [
-        _vm.selectedItems.length > 0
-          ? _c("div", { staticClass: "counter-filter text-center" }, [
-              _vm._v(_vm._s(_vm.selectedItems.length))
-            ])
-          : _vm._e(),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass:
-              "btn btn-secondary dropdown-toggle category d-flex justify-content-between",
-            attrs: {
-              type: "button",
-              id: "dropdownMenuButton",
-              "data-toggle": "dropdown",
-              "aria-haspopup": "true",
-              "aria-expanded": "false"
-            }
-          },
-          [
-            _vm._v("\n            " + _vm._s(_vm.title) + " "),
-            _c("img", { attrs: { src: "/assets/Path26.svg", alt: "" } })
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "dropdown-menu pt-0",
-            attrs: { "aria-labelledby": "dropdownMenuButton" }
-          },
-          [
-            _c("input", {
+    _c(
+      "div",
+      { staticClass: "grid-2" },
+      [
+        _c("div", { staticClass: "dropdown" }, [
+          _vm.selectedItems.length > 0
+            ? _c("div", { staticClass: "counter-filter text-center" }, [
+                _vm._v(_vm._s(_vm.selectedItems.length))
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass:
+                "btn btn-secondary dropdown-toggle category d-flex justify-content-between",
               attrs: {
-                type: "text",
-                name: "Filter",
-                placeholder: "Filter by catalogue"
+                type: "button",
+                id: "dropdownMenuButton",
+                "data-toggle": "dropdown",
+                "aria-haspopup": "true",
+                "aria-expanded": "false"
               }
-            }),
-            _vm._v(" "),
-            _vm._l(_vm.itemsToFilter, function(item, index) {
-              return _c(
-                "label",
-                {
-                  key: index,
-                  staticClass: "container",
-                  attrs: { for: "check-filter-" + index }
-                },
-                [
-                  _c("input", {
-                    attrs: { type: "checkbox", id: "check-filter-" + index },
-                    on: {
-                      change: function($event) {
-                        return _vm.onSelectItem(item)
+            },
+            [
+              _vm._v("\n            " + _vm._s(_vm.title) + " "),
+              _c("img", { attrs: { src: "/assets/Path26.svg", alt: "" } })
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "dropdown-menu pt-0",
+              attrs: { "aria-labelledby": "dropdownMenuButton" }
+            },
+            [
+              _c("input", {
+                attrs: {
+                  type: "text",
+                  name: "Filter",
+                  placeholder: "Filter by catalogue"
+                }
+              }),
+              _vm._v(" "),
+              _vm._l(_vm.itemsToFilter, function(item, index) {
+                return _c(
+                  "label",
+                  {
+                    key: index,
+                    staticClass: "container",
+                    attrs: { for: "check-filter-" + index }
+                  },
+                  [
+                    _c("input", {
+                      attrs: { type: "checkbox", id: "check-filter-" + index },
+                      on: {
+                        change: function($event) {
+                          return _vm.onSelectItem(item)
+                        }
                       }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "checkmark" }),
-                  _vm._v(" "),
-                  _c("p", { staticClass: "px-2" }, [_vm._v(_vm._s(item.title))])
-                ]
-              )
-            })
-          ],
-          2
-        )
-      ]),
-      _vm._v(" "),
-      _vm._m(0)
-    ])
+                    }),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "checkmark" }),
+                    _vm._v(" "),
+                    _c("p", { staticClass: "px-2" }, [
+                      _vm._v(_vm._s(item.title))
+                    ])
+                  ]
+                )
+              })
+            ],
+            2
+          )
+        ]),
+        _vm._v(" "),
+        _c("team-dropdown", {
+          attrs: { teams: _vm.teams, teamFilterId: _vm.teamFilterId },
+          on: { onSelectTeam: _vm.onSelectTeam }
+        })
+      ],
+      1
+    )
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "dropdown" }, [
-      _c(
-        "button",
-        {
-          staticClass:
-            "btn btn-secondary dropdown-toggle global d-flex justify-content-between",
-          attrs: {
-            type: "button",
-            id: "dropdownMenuButton",
-            "data-toggle": "dropdown",
-            "aria-haspopup": "true",
-            "aria-expanded": "false"
-          }
-        },
-        [
-          _c("span", [
-            _c("img", { attrs: { src: "/assets/Path5699.svg", alt: "" } })
-          ]),
-          _vm._v(" Global "),
-          _c("img", { attrs: { src: "/assets/Path26.svg", alt: "" } })
-        ]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "dropdown-menu",
-          attrs: { "aria-labelledby": "dropdownMenuButton" }
-        },
-        [
-          _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
-            _vm._v("Action")
-          ]),
-          _vm._v(" "),
-          _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
-            _vm._v("Another action")
-          ]),
-          _vm._v(" "),
-          _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
-            _vm._v("Something else here")
-          ])
-        ]
-      )
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -12675,149 +12788,96 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "vue-component-filters filter-row" }, [
-    _c("div", { staticClass: "grid-2" }, [
-      _c("div", { staticClass: "category-filter-wrapper" }, [
-        _c("div", { staticClass: "dropdown category-button" }, [
-          _vm.selectedCategoriesCount > 0
-            ? _c("div", { staticClass: "counter-filter text-center" }, [
-                _vm._v(_vm._s(_vm.selectedCategoriesCount))
-              ])
-            : _vm._e(),
-          _vm._v(" "),
-          _vm._m(0),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              staticClass: "dropdown-menu pt-0",
-              attrs: { "aria-labelledby": "dropdownMenuButton" }
-            },
-            [
-              _c("input", {
-                attrs: {
-                  type: "text",
-                  name: "Filter",
-                  placeholder: "Filter by category"
-                }
-              }),
-              _vm._v(" "),
-              _vm._l(_vm.categories, function(category, index) {
-                return _c(
-                  "label",
-                  {
-                    key: index,
-                    staticClass: "container",
-                    attrs: { for: "check-filter-" + index }
-                  },
-                  [
-                    _c("input", {
-                      attrs: { type: "checkbox", id: "check-filter-" + index },
-                      on: {
-                        change: function($event) {
-                          return _vm.onSelectCategory(category.id)
-                        }
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("span", { staticClass: "checkmark" }),
-                    _vm._v(" "),
-                    _c("p", { staticClass: "px-2" }, [
-                      _vm._v(_vm._s(category.title) + " "),
-                      _c("span", { staticClass: "count" }, [
-                        _vm._v(
-                          "(" +
-                            _vm._s(
-                              category.products != null
-                                ? category.products.length
-                                : "0"
-                            ) +
-                            ")"
-                        )
-                      ])
-                    ])
-                  ]
-                )
-              })
-            ],
-            2
-          )
-        ]),
-        _vm._v(" "),
-        _vm.selectedCategoriesCount > 0
-          ? _c(
-              "span",
-              { staticClass: "clear-filter", on: { click: _vm.clearFilter } },
-              [_vm._v("Clear filter")]
-            )
-          : _vm._e()
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "dropdown" }, [
-        _c(
-          "button",
-          {
-            staticClass:
-              "btn btn-secondary dropdown-toggle global d-flex justify-content-between",
-            attrs: {
-              type: "button",
-              id: "dropdownMenuButton",
-              "data-toggle": "dropdown",
-              "aria-haspopup": "true",
-              "aria-expanded": "false"
-            }
-          },
-          [
-            _vm._m(1),
-            _vm._v(" " + _vm._s(_vm.currentTeam.title) + " "),
-            _c("img", { attrs: { src: "/assets/Path26.svg", alt: "" } })
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "dropdown-menu dropdown-menu-right",
-            attrs: { "aria-labelledby": "dropdownMenuButton" }
-          },
-          [
-            _c("p", { staticClass: "dropdown-item current-item active" }, [
-              _vm._v(" " + _vm._s(_vm.currentTeam.title) + " ")
-            ]),
+    _c(
+      "div",
+      { staticClass: "grid-2" },
+      [
+        _c("div", { staticClass: "category-filter-wrapper" }, [
+          _c("div", { staticClass: "dropdown category-button" }, [
+            _vm.selectedCategoriesCount > 0
+              ? _c("div", { staticClass: "counter-filter text-center" }, [
+                  _vm._v(_vm._s(_vm.selectedCategoriesCount))
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm._m(0),
             _vm._v(" "),
             _c(
-              "p",
+              "div",
               {
-                staticClass: "dropdown-item",
-                on: {
-                  click: function($event) {
-                    return _vm.onSelectTeam(0)
-                  }
-                }
+                staticClass: "dropdown-menu pt-0",
+                attrs: { "aria-labelledby": "dropdownMenuButton" }
               },
-              [_vm._v("Global")]
-            ),
-            _vm._v(" "),
-            _vm._l(_vm.teams, function(team) {
-              return _c(
-                "p",
-                {
-                  key: team.id,
-                  staticClass: "dropdown-item",
-                  class: { active: _vm.currentTeam.id == team.id },
-                  on: {
-                    click: function($event) {
-                      return _vm.onSelectTeam(team.id)
-                    }
+              [
+                _c("input", {
+                  attrs: {
+                    type: "text",
+                    name: "Filter",
+                    placeholder: "Filter by category"
                   }
-                },
-                [_vm._v(_vm._s(team.title))]
+                }),
+                _vm._v(" "),
+                _vm._l(_vm.categories, function(category, index) {
+                  return _c(
+                    "label",
+                    {
+                      key: index,
+                      staticClass: "container",
+                      attrs: { for: "check-filter-" + index }
+                    },
+                    [
+                      _c("input", {
+                        attrs: {
+                          type: "checkbox",
+                          id: "check-filter-" + index
+                        },
+                        on: {
+                          change: function($event) {
+                            return _vm.onSelectCategory(category.id)
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("span", { staticClass: "checkmark" }),
+                      _vm._v(" "),
+                      _c("p", { staticClass: "px-2" }, [
+                        _vm._v(_vm._s(category.title) + " "),
+                        _c("span", { staticClass: "count" }, [
+                          _vm._v(
+                            "(" +
+                              _vm._s(
+                                category.products != null
+                                  ? category.products.length
+                                  : "0"
+                              ) +
+                              ")"
+                          )
+                        ])
+                      ])
+                    ]
+                  )
+                })
+              ],
+              2
+            )
+          ]),
+          _vm._v(" "),
+          _vm.selectedCategoriesCount > 0
+            ? _c(
+                "span",
+                { staticClass: "clear-filter", on: { click: _vm.clearFilter } },
+                [_vm._v("Clear filter")]
               )
-            })
-          ],
-          2
-        )
-      ])
-    ])
+            : _vm._e()
+        ]),
+        _vm._v(" "),
+        _c("team-dropdown", {
+          attrs: { teams: _vm.teams, teamFilterId: _vm.teamFilterId },
+          on: { onSelectTeam: _vm.onSelectTeam }
+        })
+      ],
+      1
+    )
   ])
 }
 var staticRenderFns = [
@@ -12843,14 +12903,6 @@ var staticRenderFns = [
         _c("img", { attrs: { src: "/assets/Path26.svg", alt: "" } })
       ]
     )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("span", [
-      _c("img", { attrs: { src: "/assets/Path5699.svg", alt: "" } })
-    ])
   }
 ]
 render._withStripped = true
@@ -14701,6 +14753,103 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamDropdown.vue?vue&type=template&id=a1af8b0e&scoped=true&":
+/*!***************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/TeamDropdown.vue?vue&type=template&id=a1af8b0e&scoped=true& ***!
+  \***************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "team-dropdown dropdown" }, [
+    _c(
+      "button",
+      {
+        staticClass:
+          "btn btn-secondary dropdown-toggle global d-flex justify-content-between",
+        attrs: {
+          type: "button",
+          id: "dropdownMenuButton",
+          "data-toggle": "dropdown",
+          "aria-haspopup": "true",
+          "aria-expanded": "false"
+        }
+      },
+      [
+        _vm._m(0),
+        _vm._v(" " + _vm._s(_vm.currentTeam.title) + " "),
+        _c("img", { attrs: { src: "/assets/Path26.svg", alt: "" } })
+      ]
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "dropdown-menu dropdown-menu-right",
+        attrs: { "aria-labelledby": "dropdownMenuButton" }
+      },
+      [
+        _c("p", { staticClass: "dropdown-item current-item active" }, [
+          _vm._v(" " + _vm._s(_vm.currentTeam.title) + " ")
+        ]),
+        _vm._v(" "),
+        _c(
+          "p",
+          {
+            staticClass: "dropdown-item",
+            on: {
+              click: function($event) {
+                return _vm.onSelectTeam(0)
+              }
+            }
+          },
+          [_vm._v("Global")]
+        ),
+        _vm._v(" "),
+        _vm._l(_vm.teams, function(team) {
+          return _c(
+            "p",
+            {
+              key: team.id,
+              staticClass: "dropdown-item",
+              class: { active: _vm.currentTeam.id == team.id },
+              on: {
+                click: function($event) {
+                  return _vm.onSelectTeam(team.id)
+                }
+              }
+            },
+            [_vm._v(_vm._s(team.title))]
+          )
+        })
+      ],
+      2
+    )
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("span", [
+      _c("img", { attrs: { src: "/assets/Path5699.svg", alt: "" } })
+    ])
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamsTable.vue?vue&type=template&id=0b6bf463&scoped=true&":
 /*!*************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/TeamsTable.vue?vue&type=template&id=0b6bf463&scoped=true& ***!
@@ -15413,7 +15562,13 @@ var render = function() {
       _c("div", { staticClass: "underline" }),
       _vm._v(" "),
       _c("CollectionTopBar", {
-        attrs: { itemsToFilter: _vm.collections, title: "Catalogues" }
+        attrs: {
+          itemsToFilter: _vm.collections,
+          title: "Catalogues",
+          teams: _vm.teams,
+          teamFilterId: _vm.teamFilterId
+        },
+        on: { onSelectTeam: _vm.filterByTeam }
       }),
       _vm._v(" "),
       _c("CataloguesTable", {
@@ -32566,6 +32721,93 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/TeamDropdown.vue":
+/*!**************************************************!*\
+  !*** ./resources/js/components/TeamDropdown.vue ***!
+  \**************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _TeamDropdown_vue_vue_type_template_id_a1af8b0e_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TeamDropdown.vue?vue&type=template&id=a1af8b0e&scoped=true& */ "./resources/js/components/TeamDropdown.vue?vue&type=template&id=a1af8b0e&scoped=true&");
+/* harmony import */ var _TeamDropdown_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TeamDropdown.vue?vue&type=script&lang=js& */ "./resources/js/components/TeamDropdown.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _TeamDropdown_vue_vue_type_style_index_0_id_a1af8b0e_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./TeamDropdown.vue?vue&type=style&index=0&id=a1af8b0e&scoped=true&lang=scss& */ "./resources/js/components/TeamDropdown.vue?vue&type=style&index=0&id=a1af8b0e&scoped=true&lang=scss&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _TeamDropdown_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _TeamDropdown_vue_vue_type_template_id_a1af8b0e_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _TeamDropdown_vue_vue_type_template_id_a1af8b0e_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "a1af8b0e",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/TeamDropdown.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/TeamDropdown.vue?vue&type=script&lang=js&":
+/*!***************************************************************************!*\
+  !*** ./resources/js/components/TeamDropdown.vue?vue&type=script&lang=js& ***!
+  \***************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamDropdown_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./TeamDropdown.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamDropdown.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamDropdown_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/TeamDropdown.vue?vue&type=style&index=0&id=a1af8b0e&scoped=true&lang=scss&":
+/*!************************************************************************************************************!*\
+  !*** ./resources/js/components/TeamDropdown.vue?vue&type=style&index=0&id=a1af8b0e&scoped=true&lang=scss& ***!
+  \************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamDropdown_vue_vue_type_style_index_0_id_a1af8b0e_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./TeamDropdown.vue?vue&type=style&index=0&id=a1af8b0e&scoped=true&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamDropdown.vue?vue&type=style&index=0&id=a1af8b0e&scoped=true&lang=scss&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamDropdown_vue_vue_type_style_index_0_id_a1af8b0e_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamDropdown_vue_vue_type_style_index_0_id_a1af8b0e_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamDropdown_vue_vue_type_style_index_0_id_a1af8b0e_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamDropdown_vue_vue_type_style_index_0_id_a1af8b0e_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamDropdown_vue_vue_type_style_index_0_id_a1af8b0e_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/TeamDropdown.vue?vue&type=template&id=a1af8b0e&scoped=true&":
+/*!*********************************************************************************************!*\
+  !*** ./resources/js/components/TeamDropdown.vue?vue&type=template&id=a1af8b0e&scoped=true& ***!
+  \*********************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamDropdown_vue_vue_type_template_id_a1af8b0e_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./TeamDropdown.vue?vue&type=template&id=a1af8b0e&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamDropdown.vue?vue&type=template&id=a1af8b0e&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamDropdown_vue_vue_type_template_id_a1af8b0e_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamDropdown_vue_vue_type_template_id_a1af8b0e_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/TeamsTable.vue":
 /*!************************************************!*\
   !*** ./resources/js/components/TeamsTable.vue ***!
@@ -34037,7 +34279,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchActions = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, response;
+        var commit, collection_id, apiUrl, tryCount, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -34046,25 +34288,54 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 collection_id = _ref2.collection_id;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/collection/".concat(collection_id, "/actions"); // console.log(`Getting actions from ${apiUrl}`)
+                apiUrl = "/api/collection/".concat(collection_id, "/actions");
+                tryCount = 3;
 
-                _context.next = 6;
+              case 5:
+                if (!(tryCount > 0)) {
+                  _context.next = 25;
+                  break;
+                }
+
+                _context.prev = 6;
+                tryCount--;
+                _context.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 6:
+              case 10:
                 response = _context.sent;
-                //Get the data from the api
                 _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
+                _context.next = 23;
+                break;
 
-              case 9:
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in actions.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+                tryCount--;
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 23;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 23:
+                _context.next = 5;
+                break;
+
+              case 25:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, null, [[6, 15]]);
       }));
 
       function fetchActions(_x, _x2) {
@@ -34326,7 +34597,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchCategories = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref) {
-        var commit, apiUrl, response;
+        var commit, apiUrl, tryCount, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -34334,25 +34605,54 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit = _ref.commit;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/collection/categories"; // console.log(`Getting comments from ${apiUrl}`)
+                apiUrl = "/api/collection/categories";
+                tryCount = 3;
 
-                _context.next = 5;
+              case 4:
+                if (!(tryCount > 0)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                _context.prev = 5;
+                tryCount--;
+                _context.next = 9;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 5:
+              case 9:
                 response = _context.sent;
-                //Get the data from the api
                 _models_Category__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
+                _context.next = 22;
+                break;
 
-              case 8:
+              case 14:
+                _context.prev = 14;
+                _context.t0 = _context["catch"](5);
+                console.log('API error in categories.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+                tryCount--;
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 22;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 22:
+                _context.next = 4;
+                break;
+
+              case 24:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, null, [[5, 14]]);
       }));
 
       function fetchCategories(_x) {
@@ -34409,7 +34709,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchCollections = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref) {
-        var commit, catalogue_id, apiUrl, response;
+        var commit, catalogue_id, apiUrl, tryCount, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -34418,25 +34718,54 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 // Set the state to loading
                 commit('setLoading', true);
                 catalogue_id = 1;
-                apiUrl = "/api/catalogue/".concat(catalogue_id, "/collections"); // console.log(`Getting comments from ${apiUrl}`)
+                apiUrl = "/api/catalogue/".concat(catalogue_id, "/collections");
+                tryCount = 3;
 
-                _context.next = 6;
+              case 5:
+                if (!(tryCount > 0)) {
+                  _context.next = 25;
+                  break;
+                }
+
+                _context.prev = 6;
+                tryCount--;
+                _context.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 6:
+              case 10:
                 response = _context.sent;
-                //Get the data from the api
                 _models_Collection__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
+                _context.next = 23;
+                break;
 
-              case 9:
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in collections.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+                tryCount--;
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 23;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 23:
+                _context.next = 5;
+                break;
+
+              case 25:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, null, [[6, 15]]);
       }));
 
       function fetchCollections(_x) {
@@ -34493,7 +34822,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchCommentVotes = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, response;
+        var commit, collection_id, apiUrl, tryCount, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -34502,25 +34831,54 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 collection_id = _ref2.collection_id;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/collection/".concat(collection_id, "/comment-votes"); // console.log(`Getting comments from ${apiUrl}`)
+                apiUrl = "/api/collection/".concat(collection_id, "/comment-votes");
+                tryCount = 3;
 
-                _context.next = 6;
+              case 5:
+                if (!(tryCount > 0)) {
+                  _context.next = 25;
+                  break;
+                }
+
+                _context.prev = 6;
+                tryCount--;
+                _context.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 6:
+              case 10:
                 response = _context.sent;
-                //Get the data from the api
                 _models_CommentVote__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
+                _context.next = 23;
+                break;
 
-              case 9:
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in commentVotes.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+                tryCount--;
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 23;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 23:
+                _context.next = 5;
+                break;
+
+              case 25:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, null, [[6, 15]]);
       }));
 
       function fetchCommentVotes(_x, _x2) {
@@ -34577,7 +34935,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchComments = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, response;
+        var commit, collection_id, apiUrl, tryCount, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -34586,25 +34944,54 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 collection_id = _ref2.collection_id;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/collection/".concat(collection_id, "/comments"); // console.log(`Getting comments from ${apiUrl}`)
+                apiUrl = "/api/collection/".concat(collection_id, "/comments");
+                tryCount = 3;
 
-                _context.next = 6;
+              case 5:
+                if (!(tryCount > 0)) {
+                  _context.next = 25;
+                  break;
+                }
+
+                _context.prev = 6;
+                tryCount--;
+                _context.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 6:
+              case 10:
                 response = _context.sent;
-                //Get the data from the api
                 _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
+                _context.next = 23;
+                break;
 
-              case 9:
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in comments.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+                tryCount--;
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 23;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 23:
+                _context.next = 5;
+                break;
+
+              case 25:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, null, [[6, 15]]);
       }));
 
       function fetchComments(_x, _x2) {
@@ -34772,7 +35159,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchCountries = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref) {
-        var commit, apiUrl, response;
+        var commit, apiUrl, tryCount, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -34780,25 +35167,54 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit = _ref.commit;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/countries"; // console.log(`Getting comments from ${apiUrl}`)
+                apiUrl = "/api/countries";
+                tryCount = 3;
 
-                _context.next = 5;
+              case 4:
+                if (!(tryCount > 0)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                _context.prev = 5;
+                tryCount--;
+                _context.next = 9;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 5:
+              case 9:
                 response = _context.sent;
-                //Get the data from the api
                 _models_Country__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
+                _context.next = 22;
+                break;
 
-              case 8:
+              case 14:
+                _context.prev = 14;
+                _context.t0 = _context["catch"](5);
+                console.log('API error in countries.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+                tryCount--;
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 22;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 22:
+                _context.next = 4;
+                break;
+
+              case 24:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, null, [[5, 14]]);
       }));
 
       function fetchCountries(_x) {
@@ -34855,7 +35271,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchFinalActions = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, response;
+        var commit, collection_id, apiUrl, tryCount, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -34864,25 +35280,54 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 collection_id = _ref2.collection_id;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/collection/".concat(collection_id, "/final-actions"); // console.log(`Getting comments from ${apiUrl}`)
+                apiUrl = "/api/collection/".concat(collection_id, "/final-actions");
+                tryCount = 3;
 
-                _context.next = 6;
+              case 5:
+                if (!(tryCount > 0)) {
+                  _context.next = 25;
+                  break;
+                }
+
+                _context.prev = 6;
+                tryCount--;
+                _context.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 6:
+              case 10:
                 response = _context.sent;
-                //Get the data from the api
                 _models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
+                _context.next = 23;
+                break;
 
-              case 9:
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in productFinalAction.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+                tryCount--;
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 23;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 23:
+                _context.next = 5;
+                break;
+
+              case 25:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, null, [[6, 15]]);
       }));
 
       function fetchFinalActions(_x, _x2) {
@@ -34994,7 +35439,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchProducts = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, response;
+        var commit, collection_id, apiUrl, tryCount, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -35003,25 +35448,54 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 collection_id = _ref2.collection_id;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/collection/".concat(collection_id, "/products"); // console.log(`Getting products from ${apiUrl}`)
+                apiUrl = "/api/collection/".concat(collection_id, "/products");
+                tryCount = 3;
 
-                _context.next = 6;
+              case 5:
+                if (!(tryCount > 0)) {
+                  _context.next = 25;
+                  break;
+                }
+
+                _context.prev = 6;
+                tryCount--;
+                _context.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 6:
+              case 10:
                 response = _context.sent;
-                //Get the data from the api
                 _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
+                _context.next = 23;
+                break;
 
-              case 9:
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in products.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+                tryCount--;
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 23;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 23:
+                _context.next = 5;
+                break;
+
+              case 25:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, null, [[6, 15]]);
       }));
 
       function fetchProducts(_x, _x2) {
@@ -35078,7 +35552,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchTeams = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, response;
+        var commit, collection_id, apiUrl, tryCount, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -35087,25 +35561,59 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 collection_id = _ref2.collection_id;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/collection/".concat(collection_id, "/teams"); // console.log(`Getting users from ${apiUrl}`)
 
-                _context.next = 6;
-                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
+                if (collection_id == null) {
+                  collection_id = 1234;
+                }
+
+                apiUrl = "/api/collection/".concat(collection_id, "/teams");
+                tryCount = 3;
 
               case 6:
+                if (!(tryCount > 0)) {
+                  _context.next = 26;
+                  break;
+                }
+
+                _context.prev = 7;
+                tryCount--;
+                _context.next = 11;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
+
+              case 11:
                 response = _context.sent;
-                //Get the data from the api
                 _models_Team__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
+                _context.next = 24;
+                break;
 
-              case 9:
+              case 16:
+                _context.prev = 16;
+                _context.t0 = _context["catch"](7);
+                console.log('API error in teams.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+                tryCount--;
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 24:
+                _context.next = 6;
+                break;
+
+              case 26:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, null, [[7, 16]]);
       }));
 
       function fetchTeams(_x, _x2) {
@@ -35162,7 +35670,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchUserTeams = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref) {
-        var commit, apiUrl, response;
+        var commit, apiUrl, tryCount, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -35170,25 +35678,54 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit = _ref.commit;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/collection/user-teams"; // console.log(`Getting comments from ${apiUrl}`)
+                apiUrl = "/api/collection/user-teams";
+                tryCount = 3;
 
-                _context.next = 5;
+              case 4:
+                if (!(tryCount > 0)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                _context.prev = 5;
+                tryCount--;
+                _context.next = 9;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 5:
+              case 9:
                 response = _context.sent;
-                //Get the data from the api
                 _models_UserTeam__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
+                _context.next = 22;
+                break;
 
-              case 8:
+              case 14:
+                _context.prev = 14;
+                _context.t0 = _context["catch"](5);
+                console.log('API error in userTeams.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+                tryCount--;
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 22;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 22:
+                _context.next = 4;
+                break;
+
+              case 24:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, null, [[5, 14]]);
       }));
 
       function fetchUserTeams(_x) {
@@ -35245,7 +35782,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchUsers = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, response;
+        var commit, collection_id, apiUrl, tryCount, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -35254,25 +35791,54 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 collection_id = _ref2.collection_id;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/collection/".concat(collection_id, "/users"); // console.log(`Getting users from ${apiUrl}`)
+                apiUrl = "/api/collection/".concat(collection_id, "/users");
+                tryCount = 3;
 
-                _context.next = 6;
+              case 5:
+                if (!(tryCount > 0)) {
+                  _context.next = 25;
+                  break;
+                }
+
+                _context.prev = 6;
+                tryCount--;
+                _context.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 6:
+              case 10:
                 response = _context.sent;
-                //Get the data from the api
                 _models_User__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
+                _context.next = 23;
+                break;
 
-              case 9:
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in users.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+                tryCount--;
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 23;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 23:
+                _context.next = 5;
+                break;
+
+              case 25:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, null, [[6, 15]]);
       }));
 
       function fetchUsers(_x, _x2) {

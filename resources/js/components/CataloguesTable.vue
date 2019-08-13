@@ -23,8 +23,7 @@
                     Status <i class="fas" :class="[(this.sortBy == 'phase' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
                 <th></th>
-                <th>Action</th>
-                <th></th>
+                <th class="action">Action</th>
             </tr>
             <template v-if="!loading">
                 <tr class="catalogue-row" v-for="(catalogue, index) in cataloguesSorted" :key="catalogue.id">
@@ -38,7 +37,7 @@
                     <td class="title clickable" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.title}}</td>
 
                     <td class="created"><span class="square">{{
-                        (catalogue.start_time != null) ? catalogue.start_time.substr(0, catalogue.start_time.indexOf(" ")).replace(/\./g, "/") : 'Unset'
+                        (catalogue.start_time != null) ? catalogue.start_time.substr(0, catalogue.start_time.indexOf(" ")).replace(/\-/g, "/") : 'Unset'
                     }}</span></td>
                     <td class="deadline"><span class="square">{{
                         (catalogue.end_time != null) ? catalogue.end_time.substr(0, catalogue.end_time.indexOf(" ")).replace(/\-/g, "/") : 'Unset'
@@ -47,9 +46,9 @@
                     <td class="stage"><span class="square">STAGE {{catalogue.phase}}</span></td>
                     <td class="status"><span class="square">tbd</span></td>
                     <td class="action">
-                        <span class="button">Action</span>
-                        <span class="button">Action</span>
-                        <span class="clickable" @click="viewSingle(catalogue.id, catalogue.title)">View</span>
+                        <!-- <span class="button">Action</span>
+                        <span class="button">Action</span> -->
+                        <span class="clickable view-single" @click="viewSingle(catalogue.id, catalogue.title)">View</span>
                     </td>
                 </tr>
             </template>
@@ -160,6 +159,12 @@ export default {
         width: calc(100% + 32px);
         &.disabled {
             opacity: .5;
+        }
+    }
+    tr > * {
+        &.action {
+            padding: 0 32px;
+            text-align: right;
         }
     }
     tr:hover {
@@ -356,8 +361,8 @@ export default {
     .view-single {
         font-size: 12px;
         font-weight: 700;
-        padding: 0 12px;
-        color: $dark2;
+        // padding: 0 12px;
+        // color: $dark2;
         cursor: pointer;
     }
     .catalogue-totals {
