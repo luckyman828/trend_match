@@ -58,6 +58,23 @@ class ActionController extends Controller
         }
     }
 
+    public function destroyFinal(Request $request)
+    {
+        // First, check if an action for the following product and phase already exists
+        // $existingFinalAction = ProductFinalAction::where('product_id', $request->product_id)->where('phase', $request->phase)->firstOrFail();
+
+        // return $request;
+
+        $existingFinalAction = ProductFinalAction::where('product_id', $request->product_id)->where('phase', $request->phase)->first();
+
+        // return new ProductFinalActionResource($existingFinalAction);
+        if( $existingFinalAction->delete() ) {
+            return new ProductFinalActionResource($existingFinalAction);
+        } else {
+            return 'nothing found';
+        }
+    }
+
     
 
     public function storeMany(Request $request)

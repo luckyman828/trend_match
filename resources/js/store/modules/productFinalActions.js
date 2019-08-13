@@ -22,18 +22,18 @@ export default {
           const apiUrl = `/api/collection/${collection_id}/final-actions`
 
           let tryCount = 3
-          while(tryCount > 0) {
+          let succes = false
+          while(tryCount-- > 0 && !succes) {
             try {
-              tryCount --
               const response = await axios.get(`${apiUrl}`)
               ProductFinalAction.create({ data: response.data })
               commit('setLoading', false)
+              succes = true
             }
             catch (err) {
               console.log('API error in productFinalAction.js :')
               console.log(err)
               console.log(`Trying to fetch again. TryCount = ${tryCount}`)
-              tryCount --
               if (tryCount <= 0) throw err
             }
           }
@@ -63,6 +63,25 @@ export default {
         })
 
       },
+
+      async deleteFinalAction({commit}, {phase, productToUpdate}) {
+
+        commit('deleteFinalAction', {productToUpdate, phase})
+
+        await axios.delete(`/api/final-action`, {
+          data: {
+            phase: phase,
+            product_id: productToUpdate
+          }
+        }).then(response => {
+          console.log(response.data)
+        }).catch(err =>{
+          console.log(err);
+        })
+
+      },
+
+
     },
 
     mutations: {
@@ -80,6 +99,14 @@ export default {
               phase: phase,
             }
         })
+      },
+      deleteFinalAction: (state, {productToUpdate, phase} ) => {
+        console.log('deleting final action')
+
+        ProductFinalAction.delete( (record) => {
+          return record.product_id == productToUpdate && record.phase == phase
+        } )
+
       },
     }
 

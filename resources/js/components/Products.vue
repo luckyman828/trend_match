@@ -131,10 +131,12 @@ export default {
     methods: {
         ...mapActions('entities/actions', ['updateAction']),
         ...mapActions('entities/productFinalActions', ['updateFinalAction']),
+        ...mapActions('entities/productFinalActions', ['deleteFinalAction']),
         toggleInOut(productID, actionType, userAction) {
             if (actionType == userAction) {
                 // Undo current toggle - delete record
                 console.log("Deleting record for user: " + this.authUser.id + " and product: " + productID)
+                this.deleteFinalAction({phase: this.collection.phase, productToUpdate: productID})
             } else {
                 // updateAction({commit}, {user_id, product_id, action_code})
                 console.log("Setting actioncode:" + actionType + " for phase: " + this.collection.phase + " and product: " + productID)

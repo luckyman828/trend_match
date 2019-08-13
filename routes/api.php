@@ -45,9 +45,11 @@ Route::middleware('auth:api')->group( function(){
     Route::post('action', 'ActionController@store');
     // Update action
     Route::put('action', 'ActionController@store');
-    // Update actions
+    // Update final action
     Route::put('final-action', 'ActionController@storeFinal');
-    // Update actions
+    // Delete final action
+    Route::delete('final-action', 'ActionController@destroyFinal');
+    // Update final actions
     Route::put('actions', 'ActionController@storeMany');
     // Delete action
     Route::delete('action/{user_id}/{product_id}', 'ActionController@destroy');

@@ -8144,11 +8144,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/productFinalActions', ['loadingFinalActions'])),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/productFinalActions', ['updateFinalAction']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/productFinalActions', ['updateFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/productFinalActions', ['deleteFinalAction']), {
     toggleInOut: function toggleInOut(productID, actionType, userAction) {
       if (actionType == userAction) {
         // Undo current toggle - delete record
         console.log("Deleting record for user: " + this.authUser.id + " and product: " + productID);
+        this.deleteFinalAction({
+          phase: this.collection.phase,
+          productToUpdate: productID
+        });
       } else {
         // updateAction({commit}, {user_id, product_id, action_code})
         console.log("Setting actioncode:" + actionType + " for phase: " + this.collection.phase + " and product: " + productID); // this.updateAction({user_id: this.authUser.id, productToUpdate: productID, action_code: actionType})
@@ -34279,7 +34283,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchActions = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, tryCount, response;
+        var commit, collection_id, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -34290,15 +34294,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit('setLoading', true);
                 apiUrl = "/api/collection/".concat(collection_id, "/actions");
                 tryCount = 3;
+                succes = false;
 
-              case 5:
-                if (!(tryCount > 0)) {
+              case 6:
+                if (!(tryCount-- > 0 && !succes)) {
                   _context.next = 25;
                   break;
                 }
 
-                _context.prev = 6;
-                tryCount--;
+                _context.prev = 7;
                 _context.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
@@ -34308,16 +34312,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data: response.data
                 });
                 commit('setLoading', false);
+                succes = true;
                 _context.next = 23;
                 break;
 
-              case 15:
-                _context.prev = 15;
-                _context.t0 = _context["catch"](6);
+              case 16:
+                _context.prev = 16;
+                _context.t0 = _context["catch"](7);
                 console.log('API error in actions.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
-                tryCount--;
 
                 if (!(tryCount <= 0)) {
                   _context.next = 23;
@@ -34327,7 +34331,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 throw _context.t0;
 
               case 23:
-                _context.next = 5;
+                _context.next = 6;
                 break;
 
               case 25:
@@ -34335,7 +34339,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context.stop();
             }
           }
-        }, _callee, null, [[6, 15]]);
+        }, _callee, null, [[7, 16]]);
       }));
 
       function fetchActions(_x, _x2) {
@@ -34597,7 +34601,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchCategories = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref) {
-        var commit, apiUrl, tryCount, response;
+        var commit, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -34607,15 +34611,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit('setLoading', true);
                 apiUrl = "/api/collection/categories";
                 tryCount = 3;
+                succes = false;
 
-              case 4:
-                if (!(tryCount > 0)) {
+              case 5:
+                if (!(tryCount-- > 0 && !succes)) {
                   _context.next = 24;
                   break;
                 }
 
-                _context.prev = 5;
-                tryCount--;
+                _context.prev = 6;
                 _context.next = 9;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
@@ -34625,16 +34629,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data: response.data
                 });
                 commit('setLoading', false);
+                succes = true;
                 _context.next = 22;
                 break;
 
-              case 14:
-                _context.prev = 14;
-                _context.t0 = _context["catch"](5);
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
                 console.log('API error in categories.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
-                tryCount--;
 
                 if (!(tryCount <= 0)) {
                   _context.next = 22;
@@ -34644,7 +34648,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 throw _context.t0;
 
               case 22:
-                _context.next = 4;
+                _context.next = 5;
                 break;
 
               case 24:
@@ -34652,7 +34656,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context.stop();
             }
           }
-        }, _callee, null, [[5, 14]]);
+        }, _callee, null, [[6, 15]]);
       }));
 
       function fetchCategories(_x) {
@@ -34709,7 +34713,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchCollections = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref) {
-        var commit, catalogue_id, apiUrl, tryCount, response;
+        var commit, catalogue_id, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -34720,15 +34724,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 catalogue_id = 1;
                 apiUrl = "/api/catalogue/".concat(catalogue_id, "/collections");
                 tryCount = 3;
+                succes = false;
 
-              case 5:
-                if (!(tryCount > 0)) {
+              case 6:
+                if (!(tryCount-- > 0 && !succes)) {
                   _context.next = 25;
                   break;
                 }
 
-                _context.prev = 6;
-                tryCount--;
+                _context.prev = 7;
                 _context.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
@@ -34738,16 +34742,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data: response.data
                 });
                 commit('setLoading', false);
+                succes = true;
                 _context.next = 23;
                 break;
 
-              case 15:
-                _context.prev = 15;
-                _context.t0 = _context["catch"](6);
+              case 16:
+                _context.prev = 16;
+                _context.t0 = _context["catch"](7);
                 console.log('API error in collections.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
-                tryCount--;
 
                 if (!(tryCount <= 0)) {
                   _context.next = 23;
@@ -34757,7 +34761,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 throw _context.t0;
 
               case 23:
-                _context.next = 5;
+                _context.next = 6;
                 break;
 
               case 25:
@@ -34765,7 +34769,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context.stop();
             }
           }
-        }, _callee, null, [[6, 15]]);
+        }, _callee, null, [[7, 16]]);
       }));
 
       function fetchCollections(_x) {
@@ -34822,7 +34826,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchCommentVotes = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, tryCount, response;
+        var commit, collection_id, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -34833,15 +34837,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit('setLoading', true);
                 apiUrl = "/api/collection/".concat(collection_id, "/comment-votes");
                 tryCount = 3;
+                succes = false;
 
-              case 5:
-                if (!(tryCount > 0)) {
+              case 6:
+                if (!(tryCount-- > 0 && !succes)) {
                   _context.next = 25;
                   break;
                 }
 
-                _context.prev = 6;
-                tryCount--;
+                _context.prev = 7;
                 _context.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
@@ -34851,16 +34855,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data: response.data
                 });
                 commit('setLoading', false);
+                succes = true;
                 _context.next = 23;
                 break;
 
-              case 15:
-                _context.prev = 15;
-                _context.t0 = _context["catch"](6);
+              case 16:
+                _context.prev = 16;
+                _context.t0 = _context["catch"](7);
                 console.log('API error in commentVotes.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
-                tryCount--;
 
                 if (!(tryCount <= 0)) {
                   _context.next = 23;
@@ -34870,7 +34874,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 throw _context.t0;
 
               case 23:
-                _context.next = 5;
+                _context.next = 6;
                 break;
 
               case 25:
@@ -34878,7 +34882,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context.stop();
             }
           }
-        }, _callee, null, [[6, 15]]);
+        }, _callee, null, [[7, 16]]);
       }));
 
       function fetchCommentVotes(_x, _x2) {
@@ -34935,7 +34939,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchComments = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, tryCount, response;
+        var commit, collection_id, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -34946,15 +34950,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit('setLoading', true);
                 apiUrl = "/api/collection/".concat(collection_id, "/comments");
                 tryCount = 3;
+                succes = false;
 
-              case 5:
-                if (!(tryCount > 0)) {
+              case 6:
+                if (!(tryCount-- > 0 && !succes)) {
                   _context.next = 25;
                   break;
                 }
 
-                _context.prev = 6;
-                tryCount--;
+                _context.prev = 7;
                 _context.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
@@ -34964,16 +34968,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data: response.data
                 });
                 commit('setLoading', false);
+                succes = true;
                 _context.next = 23;
                 break;
 
-              case 15:
-                _context.prev = 15;
-                _context.t0 = _context["catch"](6);
+              case 16:
+                _context.prev = 16;
+                _context.t0 = _context["catch"](7);
                 console.log('API error in comments.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
-                tryCount--;
 
                 if (!(tryCount <= 0)) {
                   _context.next = 23;
@@ -34983,7 +34987,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 throw _context.t0;
 
               case 23:
-                _context.next = 5;
+                _context.next = 6;
                 break;
 
               case 25:
@@ -34991,7 +34995,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context.stop();
             }
           }
-        }, _callee, null, [[6, 15]]);
+        }, _callee, null, [[7, 16]]);
       }));
 
       function fetchComments(_x, _x2) {
@@ -35159,7 +35163,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchCountries = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref) {
-        var commit, apiUrl, tryCount, response;
+        var commit, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -35169,15 +35173,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit('setLoading', true);
                 apiUrl = "/api/countries";
                 tryCount = 3;
+                succes = false;
 
-              case 4:
-                if (!(tryCount > 0)) {
+              case 5:
+                if (!(tryCount-- > 0 && !succes)) {
                   _context.next = 24;
                   break;
                 }
 
-                _context.prev = 5;
-                tryCount--;
+                _context.prev = 6;
                 _context.next = 9;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
@@ -35187,16 +35191,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data: response.data
                 });
                 commit('setLoading', false);
+                succes = true;
                 _context.next = 22;
                 break;
 
-              case 14:
-                _context.prev = 14;
-                _context.t0 = _context["catch"](5);
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
                 console.log('API error in countries.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
-                tryCount--;
 
                 if (!(tryCount <= 0)) {
                   _context.next = 22;
@@ -35206,7 +35210,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 throw _context.t0;
 
               case 22:
-                _context.next = 4;
+                _context.next = 5;
                 break;
 
               case 24:
@@ -35214,7 +35218,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context.stop();
             }
           }
-        }, _callee, null, [[5, 14]]);
+        }, _callee, null, [[6, 15]]);
       }));
 
       function fetchCountries(_x) {
@@ -35271,7 +35275,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchFinalActions = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, tryCount, response;
+        var commit, collection_id, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -35282,15 +35286,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit('setLoading', true);
                 apiUrl = "/api/collection/".concat(collection_id, "/final-actions");
                 tryCount = 3;
+                succes = false;
 
-              case 5:
-                if (!(tryCount > 0)) {
+              case 6:
+                if (!(tryCount-- > 0 && !succes)) {
                   _context.next = 25;
                   break;
                 }
 
-                _context.prev = 6;
-                tryCount--;
+                _context.prev = 7;
                 _context.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
@@ -35300,16 +35304,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data: response.data
                 });
                 commit('setLoading', false);
+                succes = true;
                 _context.next = 23;
                 break;
 
-              case 15:
-                _context.prev = 15;
-                _context.t0 = _context["catch"](6);
+              case 16:
+                _context.prev = 16;
+                _context.t0 = _context["catch"](7);
                 console.log('API error in productFinalAction.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
-                tryCount--;
 
                 if (!(tryCount <= 0)) {
                   _context.next = 23;
@@ -35319,7 +35323,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 throw _context.t0;
 
               case 23:
-                _context.next = 5;
+                _context.next = 6;
                 break;
 
               case 25:
@@ -35327,7 +35331,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context.stop();
             }
           }
-        }, _callee, null, [[6, 15]]);
+        }, _callee, null, [[7, 16]]);
       }));
 
       function fetchFinalActions(_x, _x2) {
@@ -35377,6 +35381,47 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return updateFinalAction;
+    }(),
+    deleteFinalAction: function () {
+      var _deleteFinalAction = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref5, _ref6) {
+        var commit, phase, productToUpdate;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                commit = _ref5.commit;
+                phase = _ref6.phase, productToUpdate = _ref6.productToUpdate;
+                commit('deleteFinalAction', {
+                  productToUpdate: productToUpdate,
+                  phase: phase
+                });
+                _context3.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/final-action", {
+                  data: {
+                    phase: phase,
+                    product_id: productToUpdate
+                  }
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+
+      function deleteFinalAction(_x5, _x6) {
+        return _deleteFinalAction.apply(this, arguments);
+      }
+
+      return deleteFinalAction;
     }()
   },
   mutations: {
@@ -35384,10 +35429,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     setLoading: function setLoading(state, bool) {
       state.loading = bool;
     },
-    setFinalAction: function setFinalAction(state, _ref5) {
-      var productToUpdate = _ref5.productToUpdate,
-          phase = _ref5.phase,
-          action_code = _ref5.action_code;
+    setFinalAction: function setFinalAction(state, _ref7) {
+      var productToUpdate = _ref7.productToUpdate,
+          phase = _ref7.phase,
+          action_code = _ref7.action_code;
       console.log('setting action');
       _models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: {
@@ -35395,6 +35440,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           product_id: productToUpdate,
           phase: phase
         }
+      });
+    },
+    deleteFinalAction: function deleteFinalAction(state, _ref8) {
+      var productToUpdate = _ref8.productToUpdate,
+          phase = _ref8.phase;
+      console.log('deleting final action');
+      _models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (record) {
+        return record.product_id == productToUpdate && record.phase == phase;
       });
     }
   }
@@ -35439,7 +35492,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchProducts = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, tryCount, response;
+        var commit, collection_id, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -35450,15 +35503,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit('setLoading', true);
                 apiUrl = "/api/collection/".concat(collection_id, "/products");
                 tryCount = 3;
+                succes = false;
 
-              case 5:
-                if (!(tryCount > 0)) {
+              case 6:
+                if (!(tryCount-- > 0 && !succes)) {
                   _context.next = 25;
                   break;
                 }
 
-                _context.prev = 6;
-                tryCount--;
+                _context.prev = 7;
                 _context.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
@@ -35468,16 +35521,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data: response.data
                 });
                 commit('setLoading', false);
+                succes = true;
                 _context.next = 23;
                 break;
 
-              case 15:
-                _context.prev = 15;
-                _context.t0 = _context["catch"](6);
+              case 16:
+                _context.prev = 16;
+                _context.t0 = _context["catch"](7);
                 console.log('API error in products.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
-                tryCount--;
 
                 if (!(tryCount <= 0)) {
                   _context.next = 23;
@@ -35487,7 +35540,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 throw _context.t0;
 
               case 23:
-                _context.next = 5;
+                _context.next = 6;
                 break;
 
               case 25:
@@ -35495,7 +35548,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context.stop();
             }
           }
-        }, _callee, null, [[6, 15]]);
+        }, _callee, null, [[7, 16]]);
       }));
 
       function fetchProducts(_x, _x2) {
@@ -35552,7 +35605,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchTeams = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, tryCount, response;
+        var commit, collection_id, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -35568,15 +35621,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                 apiUrl = "/api/collection/".concat(collection_id, "/teams");
                 tryCount = 3;
+                succes = false;
 
-              case 6:
-                if (!(tryCount > 0)) {
+              case 7:
+                if (!(tryCount-- > 0 && !succes)) {
                   _context.next = 26;
                   break;
                 }
 
-                _context.prev = 7;
-                tryCount--;
+                _context.prev = 8;
                 _context.next = 11;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
@@ -35586,16 +35639,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data: response.data
                 });
                 commit('setLoading', false);
+                succes = true;
                 _context.next = 24;
                 break;
 
-              case 16:
-                _context.prev = 16;
-                _context.t0 = _context["catch"](7);
+              case 17:
+                _context.prev = 17;
+                _context.t0 = _context["catch"](8);
                 console.log('API error in teams.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
-                tryCount--;
 
                 if (!(tryCount <= 0)) {
                   _context.next = 24;
@@ -35605,7 +35658,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 throw _context.t0;
 
               case 24:
-                _context.next = 6;
+                _context.next = 7;
                 break;
 
               case 26:
@@ -35613,7 +35666,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context.stop();
             }
           }
-        }, _callee, null, [[7, 16]]);
+        }, _callee, null, [[8, 17]]);
       }));
 
       function fetchTeams(_x, _x2) {
@@ -35670,7 +35723,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchUserTeams = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref) {
-        var commit, apiUrl, tryCount, response;
+        var commit, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -35680,15 +35733,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit('setLoading', true);
                 apiUrl = "/api/collection/user-teams";
                 tryCount = 3;
+                succes = false;
 
-              case 4:
-                if (!(tryCount > 0)) {
+              case 5:
+                if (!(tryCount-- > 0 && !succes)) {
                   _context.next = 24;
                   break;
                 }
 
-                _context.prev = 5;
-                tryCount--;
+                _context.prev = 6;
                 _context.next = 9;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
@@ -35698,16 +35751,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data: response.data
                 });
                 commit('setLoading', false);
+                succes = true;
                 _context.next = 22;
                 break;
 
-              case 14:
-                _context.prev = 14;
-                _context.t0 = _context["catch"](5);
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
                 console.log('API error in userTeams.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
-                tryCount--;
 
                 if (!(tryCount <= 0)) {
                   _context.next = 22;
@@ -35717,7 +35770,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 throw _context.t0;
 
               case 22:
-                _context.next = 4;
+                _context.next = 5;
                 break;
 
               case 24:
@@ -35725,7 +35778,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context.stop();
             }
           }
-        }, _callee, null, [[5, 14]]);
+        }, _callee, null, [[6, 15]]);
       }));
 
       function fetchUserTeams(_x) {
@@ -35782,7 +35835,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _fetchUsers = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, tryCount, response;
+        var commit, collection_id, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -35793,15 +35846,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit('setLoading', true);
                 apiUrl = "/api/collection/".concat(collection_id, "/users");
                 tryCount = 3;
+                succes = false;
 
-              case 5:
-                if (!(tryCount > 0)) {
+              case 6:
+                if (!(tryCount-- > 0 && !succes)) {
                   _context.next = 25;
                   break;
                 }
 
-                _context.prev = 6;
-                tryCount--;
+                _context.prev = 7;
                 _context.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
@@ -35811,16 +35864,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data: response.data
                 });
                 commit('setLoading', false);
+                succes = true;
                 _context.next = 23;
                 break;
 
-              case 15:
-                _context.prev = 15;
-                _context.t0 = _context["catch"](6);
+              case 16:
+                _context.prev = 16;
+                _context.t0 = _context["catch"](7);
                 console.log('API error in users.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
-                tryCount--;
 
                 if (!(tryCount <= 0)) {
                   _context.next = 23;
@@ -35830,7 +35883,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 throw _context.t0;
 
               case 23:
-                _context.next = 5;
+                _context.next = 6;
                 break;
 
               case 25:
@@ -35838,7 +35891,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context.stop();
             }
           }
-        }, _callee, null, [[6, 15]]);
+        }, _callee, null, [[7, 16]]);
       }));
 
       function fetchUsers(_x, _x2) {

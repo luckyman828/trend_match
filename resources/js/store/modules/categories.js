@@ -23,18 +23,18 @@ export default {
           const apiUrl = `/api/collection/categories`
 
           let tryCount = 3
-          while(tryCount > 0) {
+          let succes = false
+          while(tryCount-- > 0 && !succes) {
             try {
-              tryCount --
               const response = await axios.get(`${apiUrl}`)
               Category.create({ data: response.data })
               commit('setLoading', false)
+              succes = true
             }
             catch (err) {
               console.log('API error in categories.js :')
               console.log(err)
               console.log(`Trying to fetch again. TryCount = ${tryCount}`)
-              tryCount --
               if (tryCount <= 0) throw err
             }
           }

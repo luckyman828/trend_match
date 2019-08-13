@@ -22,18 +22,18 @@ export default {
           const apiUrl = `/api/collection/${collection_id}/products`
 
           let tryCount = 3
-          while(tryCount > 0) {
+          let succes = false
+          while(tryCount-- > 0 && !succes) {
             try {
-              tryCount --
               const response = await axios.get(`${apiUrl}`)
               Product.create({ data: response.data })
               commit('setLoading', false)
+              succes = true
             }
             catch (err) {
               console.log('API error in products.js :')
               console.log(err)
               console.log(`Trying to fetch again. TryCount = ${tryCount}`)
-              tryCount --
               if (tryCount <= 0) throw err
             }
           }
