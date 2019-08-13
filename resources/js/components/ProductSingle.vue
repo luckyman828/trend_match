@@ -182,7 +182,7 @@ export default {
             }
         },
         hotkeyHandler(event) {
-            console.log(event)
+            // console.log(event)
             const key = event.code
             if (key == 'Escape')
                 this.onCloseSingle()
@@ -190,6 +190,18 @@ export default {
                 this.onNextSingle()
             if (key == 'ArrowLeft')
                 this.onPrevSingle()
+            if (key == 'KeyI')
+                if (this.product.productFinalAction == null) {
+                    this.toggleInOut(this.product.id, 1, 'N/A')
+                } else {
+                    this.toggleInOut(this.product.id, 1, this.product.productFinalAction.action)
+                }
+            if (key == 'KeyO')
+                if (this.product.productFinalAction == null) {
+                    this.toggleInOut(this.product.id, 0, 'N/A')
+                } else {
+                    this.toggleInOut(this.product.id, 0, this.product.productFinalAction.action)
+                }
         }
     },
     created() {
