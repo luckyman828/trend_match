@@ -80,26 +80,9 @@ class ActionController extends Controller
     public function storeManyFinal(Request $request)
     {
 
-        // $count = 0;
-
-        // foreach($request->product_ids as $product_id){
-        //     // Check if the action already exists
-        //     $existingFinalAction = ProductFinalAction::where('product_id', $product_id)->where('phase', $request->phase)->first();
-        //     $finalAction = ($existingFinalAction) ? $existingFinalAction : new ProductFinalAction;
-            
-        //     $finalAction->product_id = $product_id;
-        //     $finalAction->phase = $request->phase;
-        //     $finalAction->action = $request->action_code;
-            
-        //     $finalAction->save();
-        //     $count++;
-        // }
-        // return 'Updated ' . $count . ' records';
-
-        // $dataToSave = [];
-        // $dataToCheck = [];
         $count = 0;
         $starttime = microtime(true);
+        $dataToInsert = [];
 
         foreach($request->product_ids as $product_id){
             // Check if the action already exists
@@ -111,24 +94,26 @@ class ActionController extends Controller
                 'phase' => $request->phase,
                 'action' => $request->action_code,
             ];
-
-            $dataToCheck = [
-                'product_id' => $product_id,
-                'phase' => $request->phase,
-            ];
-            
-            // array_push($dataToSave, $dataToPush);
-            // array_push($dataToCheck, $dataToPushToCheck);
-            ProductFinalAction::updateOrCreate($dataToCheck, $dataToPush);
+            array_push($dataToInsert, $dataToPush);
             $count++;
         }
         $endtime = microtime(true);
         $timediff = $endtime - $starttime;
+        ProductFinalAction::insert($dataToInsert);
+        return 'Inserted ' . $count . ' records. Time elapsed: ' . $timediff;
+
+    }
+
+    public function updateManyFinal(Request $request)
+    {
+
+        $count = sizeof($request->product_ids);
+        $starttime = microtime(true);
+
+        ProductFinalAction::whereIn('product_id', $request->product_ids)->where('phase', $request->phase)->update(['action' => $request->action_code]);
+        $endtime = microtime(true);
+        $timediff = $endtime - $starttime;
         return 'Updated ' . $count . ' records. Time elapsed: ' . $timediff;
-        // $dataToSave->save();
-        // ProductFinalAction::updateOrCreate($dataToCheck, $dataToSave);
-        // $resourceImporter->insertOrUpdate('product_final_actions', $dataToSave);
-        // return $dataToCheck;
 
     }
 

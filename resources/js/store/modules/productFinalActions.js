@@ -71,6 +71,22 @@ export default {
 
       },
 
+      async createManyFinalAction({commit}, {productIds, phase, action_code}) {
+
+        commit('setManyFinalAction', {productIds, phase, action_code})
+
+        await axios.post(`/api/many-final-action`, {
+          product_ids: productIds,
+          phase: phase,
+          action_code: action_code
+        }).then(response => {
+          console.log(response.data)
+        }).catch(err =>{
+          console.log(err);
+        })
+
+      },
+
       async deleteFinalAction({commit}, {phase, productToUpdate}) {
 
         commit('deleteFinalAction', {productToUpdate, phase})

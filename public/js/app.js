@@ -9346,7 +9346,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return data;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])(['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'deleteManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])(['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {
     // ...mapActions('entities/actions', ['updateActions']),
     setSingleProduct: function setSingleProduct(index) {
       this.singleProductID = index;
@@ -9402,8 +9402,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
       var actionType = method == 'in' ? 1 : 0;
-      var productsToDelete = [];
       var productsToUpdate = [];
+      var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
         var thisProduct = _this6.products.find(function (x) {
           return x.id == product;
@@ -9415,19 +9415,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             // If the products final action isnt the same as the one we are trying to set
             productsToUpdate.push(product);
           }
-        } // productsToDelete.push(product)
-        else productsToUpdate.push(product);
+        } // If product does not have a final action
+        else productsToCreate.push(product);
       }); // Submit the selection
 
-      this.deleteManyFinalAction({
-        phase: phase,
-        productIds: productsToDelete
-      });
-      this.updateManyFinalAction({
-        productIds: productsToUpdate,
-        phase: phase,
-        action_code: actionType
-      }); // Reset the selection
+      if (productsToUpdate.length > 0) {
+        this.updateManyFinalAction({
+          productIds: productsToUpdate,
+          phase: phase,
+          action_code: actionType
+        });
+      }
+
+      if (productsToCreate.length > 0) {
+        this.createManyFinalAction({
+          productIds: productsToCreate,
+          phase: phase,
+          action_code: actionType
+        });
+      } // Reset the selection
+
 
       this.selectedProductIDs = [];
       this.clearSelectedProducts();
@@ -36114,27 +36121,27 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       return updateManyFinalAction;
     }(),
-    deleteFinalAction: function () {
-      var _deleteFinalAction = _asyncToGenerator(
+    createManyFinalAction: function () {
+      var _createManyFinalAction = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref7, _ref8) {
-        var commit, phase, productToUpdate;
+        var commit, productIds, phase, action_code;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
                 commit = _ref7.commit;
-                phase = _ref8.phase, productToUpdate = _ref8.productToUpdate;
-                commit('deleteFinalAction', {
-                  productToUpdate: productToUpdate,
-                  phase: phase
+                productIds = _ref8.productIds, phase = _ref8.phase, action_code = _ref8.action_code;
+                commit('setManyFinalAction', {
+                  productIds: productIds,
+                  phase: phase,
+                  action_code: action_code
                 });
                 _context4.next = 5;
-                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/final-action", {
-                  data: {
-                    phase: phase,
-                    product_id: productToUpdate
-                  }
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/many-final-action", {
+                  product_ids: productIds,
+                  phase: phase,
+                  action_code: action_code
                 }).then(function (response) {
                   console.log(response.data);
                 })["catch"](function (err) {
@@ -36149,7 +36156,48 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee4);
       }));
 
-      function deleteFinalAction(_x7, _x8) {
+      function createManyFinalAction(_x7, _x8) {
+        return _createManyFinalAction.apply(this, arguments);
+      }
+
+      return createManyFinalAction;
+    }(),
+    deleteFinalAction: function () {
+      var _deleteFinalAction = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5(_ref9, _ref10) {
+        var commit, phase, productToUpdate;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                commit = _ref9.commit;
+                phase = _ref10.phase, productToUpdate = _ref10.productToUpdate;
+                commit('deleteFinalAction', {
+                  productToUpdate: productToUpdate,
+                  phase: phase
+                });
+                _context5.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/final-action", {
+                  data: {
+                    phase: phase,
+                    product_id: productToUpdate
+                  }
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5);
+      }));
+
+      function deleteFinalAction(_x9, _x10) {
         return _deleteFinalAction.apply(this, arguments);
       }
 
@@ -36158,14 +36206,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     deleteManyFinalAction: function () {
       var _deleteManyFinalAction = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5(_ref9, _ref10) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee6(_ref11, _ref12) {
         var commit, phase, productIds;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee6$(_context6) {
           while (1) {
-            switch (_context5.prev = _context5.next) {
+            switch (_context6.prev = _context6.next) {
               case 0:
-                commit = _ref9.commit;
-                phase = _ref10.phase, productIds = _ref10.productIds;
+                commit = _ref11.commit;
+                phase = _ref12.phase, productIds = _ref12.productIds;
                 commit('deleteManyFinalAction', {
                   phase: phase,
                   productIds: productIds
@@ -36182,13 +36230,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 3:
               case "end":
-                return _context5.stop();
+                return _context6.stop();
             }
           }
-        }, _callee5);
+        }, _callee6);
       }));
 
-      function deleteManyFinalAction(_x9, _x10) {
+      function deleteManyFinalAction(_x11, _x12) {
         return _deleteManyFinalAction.apply(this, arguments);
       }
 
@@ -36200,10 +36248,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     setLoading: function setLoading(state, bool) {
       state.loading = bool;
     },
-    setFinalAction: function setFinalAction(state, _ref11) {
-      var productToUpdate = _ref11.productToUpdate,
-          phase = _ref11.phase,
-          action_code = _ref11.action_code;
+    setFinalAction: function setFinalAction(state, _ref13) {
+      var productToUpdate = _ref13.productToUpdate,
+          phase = _ref13.phase,
+          action_code = _ref13.action_code;
       console.log('setting action');
       _models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: {
@@ -36213,10 +36261,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }
       });
     },
-    setManyFinalAction: function setManyFinalAction(state, _ref12) {
-      var productIds = _ref12.productIds,
-          phase = _ref12.phase,
-          action_code = _ref12.action_code;
+    setManyFinalAction: function setManyFinalAction(state, _ref14) {
+      var productIds = _ref14.productIds,
+          phase = _ref14.phase,
+          action_code = _ref14.action_code;
       // Prepare the data
       var data = [];
       productIds.forEach(function (product) {
@@ -36231,17 +36279,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         data: data
       });
     },
-    deleteFinalAction: function deleteFinalAction(state, _ref13) {
-      var productToUpdate = _ref13.productToUpdate,
-          phase = _ref13.phase;
+    deleteFinalAction: function deleteFinalAction(state, _ref15) {
+      var productToUpdate = _ref15.productToUpdate,
+          phase = _ref15.phase;
       console.log('deleting final action');
       _models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (record) {
         return record.product_id == productToUpdate && record.phase == phase;
       });
     },
-    deleteManyFinalAction: function deleteManyFinalAction(state, _ref14) {
-      var phase = _ref14.phase,
-          productIds = _ref14.productIds;
+    deleteManyFinalAction: function deleteManyFinalAction(state, _ref16) {
+      var phase = _ref16.phase,
+          productIds = _ref16.productIds;
       _models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (record) {
         return productIds.includes(record.product_id);
       });

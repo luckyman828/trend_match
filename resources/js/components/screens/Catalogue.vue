@@ -445,7 +445,7 @@ export default{
         ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
         // ...mapActions('entities/productFinalActions', ['fetchFinalActions']),
         // ...mapActions('entities/productFinalActions', ['updateFinalAction']),
-        ...mapActions('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'deleteManyFinalAction', 'updateManyFinalAction']),
+        ...mapActions('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']),
         ...mapActions('entities/categories', ['fetchCategories']),
         ...mapActions('entities/userTeams', ['fetchUserTeams']),
         // ...mapActions('entities/actions', ['updateActions']),
@@ -497,8 +497,8 @@ export default{
             // Find out whether we should update or delete the products final actions
             const phase = this.collection.phase
             const actionType = (method == 'in') ? 1 : 0
-            let productsToDelete = []
             let productsToUpdate = []
+            let productsToCreate = []
 
             this.selectedProducts.forEach(product => {
                 const thisProduct = this.products.find(x => x.id == product)
@@ -510,14 +510,18 @@ export default{
                         productsToUpdate.push(product)
                     }
                 } 
-                // productsToDelete.push(product)
-                else productsToUpdate.push(product)
+                // If product does not have a final action
+                else productsToCreate.push(product)
 
             })
 
             // Submit the selection
-            this.deleteManyFinalAction({phase: phase, productIds: productsToDelete})
-            this.updateManyFinalAction({productIds: productsToUpdate, phase: phase, action_code: actionType})
+            if (productsToUpdate.length > 0) {
+                this.updateManyFinalAction({productIds: productsToUpdate, phase: phase, action_code: actionType})
+            }
+            if (productsToCreate.length > 0) {
+                this.createManyFinalAction({productIds: productsToCreate, phase: phase, action_code: actionType})
+            }
 
             // Reset the selection
             this.selectedProductIDs = []
