@@ -1,15 +1,13 @@
 <template>
-  <div class="logout-wrapper signout-button" style="">
-        <a href="/logout"
-            onclick="event.preventDefault();
-            document.getElementById('logout-form').submit();">
-            <i class="far fa-sign-out fa-flip-horizontal"></i>
-            Sign out
-        </a>
+  <a class="logout-wrapper signout-button" href="/logout"
+        onclick="event.preventDefault();
+        document.getElementById('logout-form').submit();">
+        <i class="far fa-sign-out fa-flip-horizontal"></i>
+        Sign out
         <form id="logout-form" action="/logout" method="POST" style="display: none;">
             <input type="hidden" name="_token" :value="csrfToken">
         </form>
-    </div>
+    </a>
 </template>
 
 <script>
@@ -24,7 +22,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
-    a {
+    @import '~@/_variables.scss';
+
+    a.link.signout-button {
         text-decoration: none;
+        color: $primary;
     }
 </style>

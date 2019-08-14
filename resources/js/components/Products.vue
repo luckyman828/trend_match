@@ -5,7 +5,10 @@
         <product-single :sticky="sticky" :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut"/>
         <div class="flex-table" :class="{disabled: singleProductToShow.id != null}">
             <div class="header-row flex-table-row">
-                <th class="select">Select <i class="fas fa-chevron-down"></i></th>
+                <th class="select dropdown-parent" @click="toggleDropdown($event)">
+                    Select <i class="fas fa-chevron-down"></i>
+                    <select-dropdown @onSelectByCondition="selectByCondition"/>
+                </th>
                 <th class="clickable id" :class="{active: this.sortBy == 'datasource_id'}" @click="onSortBy('datasource_id', true)">
                     Id <i class="fas" :class="[(this.sortBy == 'datasource_id' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
@@ -38,7 +41,7 @@
                 :class="[ (product.productFinalAction != null) ? (product.productFinalAction.action == 1) ? 'in' : 'out' : '' ]">
                     <td class="select">
                         <label class="checkbox">
-                            <input type="checkbox" @change="onSelect(index)" />
+                            <input type="checkbox" @change="onSelect(index)" :ref="'checkbox-for-' + index"/>
                             <span class="checkmark"></span>
                         </label>
                     </td>
@@ -53,17 +56,17 @@
                     <template v-if="!loadingFinalActions">
                         <template v-if="!product.productFinalAction">
                             <td class="action">
-                                <span class="button green" @click="toggleInOut(product.id, 1, 'N/A')">In <i class="far fa-heart"></i></span>
-                                <span class="button red" @click="toggleInOut(product.id, 0, 'N/A')">Out <i class="far fa-times-circle"></i></span>
+                                <span class="button green" @click="toggleInOut(product, 1)">In <i class="far fa-heart"></i></span>
+                                <span class="button red" @click="toggleInOut(product, 0)">Out <i class="far fa-times-circle"></i></span>
                                 <span class="view-single bind-view-single" @click="onViewSingle(product.id)">View</span>
                             </td>
                         </template>
                         <template v-else>
                             <td class="action">
-                                <span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product.id, 1, product.productFinalAction.action)">
+                                <span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product, 1)">
                                 In  <i class="far fa-heart"></i>
                                 </span>
-                                <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product.id, 0, product.productFinalAction.action)">
+                                <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product, 0)">
                                 Out  <i class="far fa-times-circle"></i>
                                 </span>
                                 <span class="view-single bind-view-single" @click="onViewSingle(product.id)">View</span>
@@ -89,6 +92,8 @@ import { mapActions, mapGetters } from 'vuex'
 import ProductTotals from './ProductTotals'
 import ProductSingle from './ProductSingle'
 import Tooltip from './Tooltip'
+import SelectDropdown from './SelectDropdown'
+import products from '../store/modules/products';
 
 export default {
     name: 'products',
@@ -114,6 +119,7 @@ export default {
         ProductTotals,
         ProductSingle,
         Tooltip,
+        SelectDropdown,
     },
     data: function() { return {
         tooltip: {
@@ -130,18 +136,21 @@ export default {
     },
     methods: {
         ...mapActions('entities/actions', ['updateAction']),
-        ...mapActions('entities/productFinalActions', ['updateFinalAction']),
-        ...mapActions('entities/productFinalActions', ['deleteFinalAction']),
-        toggleInOut(productID, actionType, userAction) {
-            if (actionType == userAction) {
-                // Undo current toggle - delete record
-                console.log("Deleting record for user: " + this.authUser.id + " and product: " + productID)
-                this.deleteFinalAction({phase: this.collection.phase, productToUpdate: productID})
+        ...mapActions('entities/productFinalActions', ['updateFinalAction', 'deleteFinalAction']),
+        // ...mapActions('entities/productFinalActions', ['deleteFinalAction']),
+        toggleInOut(product, actionType) {
+            if (product.productFinalAction != null) {
+                // If the product has a final action
+                if(product.productFinalAction.action == actionType) {
+                    // If the products final action is the same as the requested
+                    this.deleteFinalAction({phase: this.collection.phase, productToUpdate: product.id})
+                } else {
+                    // Update action
+                    this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
+                }
             } else {
-                // updateAction({commit}, {user_id, product_id, action_code})
-                console.log("Setting actioncode:" + actionType + " for phase: " + this.collection.phase + " and product: " + productID)
-                // this.updateAction({user_id: this.authUser.id, productToUpdate: productID, action_code: actionType})
-                this.updateFinalAction({phase: this.collection.phase, productToUpdate: productID, action_code: actionType})
+                // Create action
+                this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
             }
         },
         onViewSingle(id) {
@@ -152,6 +161,41 @@ export default {
         },
         onSelect(index) {
             this.$emit('onSelect', index)
+        },
+        selectByCondition(condition) {
+            const selected = this.selectedIds
+            const products = this.products
+            let index = 0
+            products.forEach(product => {
+
+                if (condition == 'no_in') {
+                    if (product.ins.length < 1) {
+                        // Get the index of the selected product
+                        const found = selected.findIndex(el => el == index)
+                        if (found < 0)
+                            // Select
+                            this.onSelect(index)
+                            // mark checkbox
+                            this.$refs['checkbox-for-' + index][0].checked = true
+                        // console.log(this.$refs['checkbox-for-' + index][0].checked)
+                    }
+                }
+                if (condition == 'no_comment_no_out') {
+                    if (product.comments.length < 1 && product.outs.length < 1) {
+                        // Get the index of the selected product
+                        const found = selected.findIndex(el => el == index)
+                        if (found < 0)
+                            // Select
+                            this.onSelect(index)
+                            // mark checkbox
+                            this.$refs['checkbox-for-' + index][0].checked = true
+                        // console.log(this.$refs['checkbox-for-' + index][0].checked)
+                    }
+                }
+                index++
+
+            })
+            // if (condition == no_comment_no_out)
         },
         showTooltip(event, type, header, data) {
             const rect = event.target.getBoundingClientRect()
@@ -215,6 +259,19 @@ export default {
                 this.sticky = false
                 stickyThis.classList.remove('sticky')
             }
+        },
+        toggleDropdown(event) {
+            const target = event.target
+            let dropdown
+            // Find child with class 'dropdown-menu
+            target.childNodes.forEach(child => {
+                if (child.classList != null)
+                    if (child.classList.contains('dropdown-menu'))
+                        dropdown = child
+            })
+            if(dropdown != null) {
+                dropdown.classList.toggle('show')
+            }
         }
     },
     created () {
@@ -229,6 +286,13 @@ export default {
 <style scoped lang="scss">
     @import '~@/_variables.scss';
 
+    .dropdown-parent {
+        position: relative;
+        cursor: pointer;
+        &:hover {
+            color: $dark;
+        }
+    }
     .products {
         margin-top: 0;
         &.sticky {

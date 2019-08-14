@@ -23,14 +23,14 @@
                     <span class="checkmark" :class="{active: newComment.important}" @mouseover="showTooltip($event, 'Important comment')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
                 </label>
             </div>
-            <input type="submit" value="Submit comment" :class="{disabled: newComment.comment.length < 1}">
+            <input type="submit" value="Submit comment" :class="{disabled: (newComment.comment.length < 1 || submittingComment)}">
         </form>
         <Tooltip :tooltip="tooltip"/>
     </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import Tooltip from './Tooltip'
 
 export default {
@@ -67,6 +67,9 @@ export default {
         authUser: function (newVal, oldVal) {
             this.newComment.user_id = newVal.id
         },
+    },
+    computed: {
+        ...mapGetters('entities/comments', ['submittingComment'])
     },
     methods: {
         ...mapActions('entities/comments', ['createComment']),

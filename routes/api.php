@@ -45,10 +45,16 @@ Route::middleware('auth:api')->group( function(){
     Route::post('action', 'ActionController@store');
     // Update action
     Route::put('action', 'ActionController@store');
+    
     // Update final action
     Route::put('final-action', 'ActionController@storeFinal');
     // Delete final action
     Route::delete('final-action', 'ActionController@destroyFinal');
+    // Update final action
+    Route::put('many-final-action', 'ActionController@storeManyFinal');
+    // Delete final action
+    Route::delete('many-final-action', 'ActionController@destroyManyFinal');
+    
     // Update final actions
     Route::put('actions', 'ActionController@storeMany');
     // Delete action

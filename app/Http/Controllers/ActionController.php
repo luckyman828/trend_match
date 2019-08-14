@@ -77,31 +77,59 @@ class ActionController extends Controller
 
     
 
-    public function storeMany(Request $request)
+    public function storeManyFinal(Request $request)
     {
-        // $action = $request->isMethod('put') 
-        // ? Action::where('product_id', $request->product_id)->where('user_id', $request->user_id)->firstOrFail()
-        // : new Action;
 
-        // $action->user_id = $request->input('user_id');
-        // $action->product_id = $request->input('product_id');
-        // $action->action = $request->input('action_code');
+        // $count = 0;
 
-        // if($action->save()) {
-        //     return new ActionResource($action);
+        // foreach($request->product_ids as $product_id){
+        //     // Check if the action already exists
+        //     $existingFinalAction = ProductFinalAction::where('product_id', $product_id)->where('phase', $request->phase)->first();
+        //     $finalAction = ($existingFinalAction) ? $existingFinalAction : new ProductFinalAction;
+            
+        //     $finalAction->product_id = $product_id;
+        //     $finalAction->phase = $request->phase;
+        //     $finalAction->action = $request->action_code;
+            
+        //     $finalAction->save();
+        //     $count++;
         // }
-        // $jsonArray = json_decode($request, true);
-        // $data = json_decode($request, true);
-        return 'API response: ' . $request;
-        // return $request;
+        // return 'Updated ' . $count . ' records';
 
-        // $userID = '"' . (string)$request->input('user_id') . '"';
-        // $productID = $request->input('product_id');
-        // $actionCode = $request->input('action_code');
-        // //return ($userID . ", " . $productID . ", " . $actionCode);
-        // DB::raw("call sp_insert_or_update_user_product_action($userID, $productID, $actionCode)");
+        // $dataToSave = [];
+        // $dataToCheck = [];
+        $count = 0;
+        $starttime = microtime(true);
 
-        // DB::raw('call sp_insert_or_update_user_product_action(?, ?, ?)', [$request->input('user_id'), $request->input('product_id'), $request->input('action')]);
+        foreach($request->product_ids as $product_id){
+            // Check if the action already exists
+            $existingFinalAction = ProductFinalAction::where('product_id', $product_id)->where('phase', $request->phase)->first();
+            // $finalAction = ($existingFinalAction) ? $existingFinalAction : new ProductFinalAction;
+            
+            $dataToPush = [
+                'product_id' => $product_id,
+                'phase' => $request->phase,
+                'action' => $request->action_code,
+            ];
+
+            $dataToCheck = [
+                'product_id' => $product_id,
+                'phase' => $request->phase,
+            ];
+            
+            // array_push($dataToSave, $dataToPush);
+            // array_push($dataToCheck, $dataToPushToCheck);
+            ProductFinalAction::updateOrCreate($dataToCheck, $dataToPush);
+            $count++;
+        }
+        $endtime = microtime(true);
+        $timediff = $endtime - $starttime;
+        return 'Updated ' . $count . ' records. Time elapsed: ' . $timediff;
+        // $dataToSave->save();
+        // ProductFinalAction::updateOrCreate($dataToCheck, $dataToSave);
+        // $resourceImporter->insertOrUpdate('product_final_actions', $dataToSave);
+        // return $dataToCheck;
+
     }
 
 

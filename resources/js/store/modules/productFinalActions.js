@@ -37,15 +37,6 @@ export default {
               if (tryCount <= 0) throw err
             }
           }
-          
-          // const response = await axios.get(`${apiUrl}`) //Get the data from the api
-          // .catch(err => {
-          //   console.log('API error in productFinalAction.js :')
-          //   console.log(err)
-          //   console.log('Trying to fetch again')
-          // })
-          // ProductFinalAction.create({ data: response.data })
-          // commit('setLoading', false)
       },
       // Update the action of for a product for a user
       async updateFinalAction({commit}, {phase, productToUpdate, action_code}) {
@@ -56,6 +47,22 @@ export default {
           action_code: action_code,
           phase: phase,
           product_id: productToUpdate
+        }).then(response => {
+          console.log(response.data)
+        }).catch(err =>{
+          console.log(err);
+        })
+
+      },
+
+      async updateManyFinalAction({commit}, {productIds, phase, action_code}) {
+
+        commit('setManyFinalAction', {productIds, phase, action_code})
+
+        await axios.put(`/api/many-final-action`, {
+          product_ids: productIds,
+          phase: phase,
+          action_code: action_code
         }).then(response => {
           console.log(response.data)
         }).catch(err =>{
@@ -81,6 +88,23 @@ export default {
 
       },
 
+      async deleteManyFinalAction({commit}, {phase, productIds}) {
+
+        commit('deleteManyFinalAction', {phase, productIds})
+
+        // await axios.delete(`/api/final-action`, {
+        //   data: {
+        //     phase: phase,
+        //     product_id: productToUpdate
+        //   }
+        // }).then(response => {
+        //   console.log(response.data)
+        // }).catch(err =>{
+        //   console.log(err);
+        // })
+
+      },
+
 
     },
 
@@ -100,6 +124,24 @@ export default {
             }
         })
       },
+      setManyFinalAction: (state, {productIds, phase, action_code} ) => {
+
+        // Prepare the data
+        let data = []
+        
+        productIds.forEach(product => {
+          const productData = {
+            product_id: product,
+            phase: phase,
+            action: action_code 
+          }
+          data.push(productData)
+        })
+
+        ProductFinalAction.insert({
+          data: data
+        })
+      },
       deleteFinalAction: (state, {productToUpdate, phase} ) => {
         console.log('deleting final action')
 
@@ -107,6 +149,11 @@ export default {
           return record.product_id == productToUpdate && record.phase == phase
         } )
 
+      },
+      deleteManyFinalAction: (state, {phase, productIds}) => {
+        ProductFinalAction.delete( (record) => {
+          return productIds.includes(record.product_id)
+        } )
       },
     }
 

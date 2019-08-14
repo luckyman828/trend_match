@@ -7,7 +7,7 @@
             <product-tabs :productTotals="productTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
             <!-- <products ref="productsComponent" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :prevSingleProductID="prevSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsSorted" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @prevSingle="setPrevSingle"/> -->
             <products ref="productsComponent" :teamFilterId="teamFilterId" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :prevSingleProductID="prevSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsSorted" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @prevSingle="setPrevSingle"/>
-            <SelectedController :totalCount="productsSorted.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction"/>
+            <SelectedController :totalCount="productsSorted.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction" @onClearSelection="clearSelectedProducts"/>
         </template>
         <template v-if="loadingCollections">
             <Loader/>
@@ -443,8 +443,9 @@ export default{
         ...mapActions('entities/actions', ['updateAction']),
         ...mapActions('entities/teams', ['fetchTeams']),
         ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
-        ...mapActions('entities/productFinalActions', ['fetchFinalActions']),
-        ...mapActions('entities/productFinalActions', ['updateFinalAction']),
+        // ...mapActions('entities/productFinalActions', ['fetchFinalActions']),
+        // ...mapActions('entities/productFinalActions', ['updateFinalAction']),
+        ...mapActions('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'deleteManyFinalAction', 'updateManyFinalAction']),
         ...mapActions('entities/categories', ['fetchCategories']),
         ...mapActions('entities/userTeams', ['fetchUserTeams']),
         // ...mapActions('entities/actions', ['updateActions']),
@@ -482,15 +483,60 @@ export default{
         clearSelectedCategories() {
             this.selectedCategoryIDs = []
         },
+        // submitSelectedAction(method) {
+        //     const actionType = (method == 'in') ? 1 : 0
+        //     // Submit the selection
+        //     this.selectedProducts.forEach(product => {
+        //         this.updateFinalAction({productToUpdate: product, phase: this.collection.phase, action_code: actionType})
+        //     })
+        //     // Reset the selection
+        //     this.selectedProductIDs = []
+        //     this.clearSelectedProducts()
+        // },
         submitSelectedAction(method) {
+            // Find out whether we should update or delete the products final actions
+            const phase = this.collection.phase
             const actionType = (method == 'in') ? 1 : 0
-            // Submit the selection
+            let productsToDelete = []
+            let productsToUpdate = []
+
             this.selectedProducts.forEach(product => {
-                this.updateFinalAction({productToUpdate: product, phase: this.collection.phase, action_code: actionType})
+                const thisProduct = this.products.find(x => x.id == product)
+
+                if (thisProduct.productFinalAction != null) {
+                    // If product has a final action
+                    if (thisProduct.productFinalAction.action != actionType) {
+                        // If the products final action isnt the same as the one we are trying to set
+                        productsToUpdate.push(product)
+                    }
+                } 
+                // productsToDelete.push(product)
+                else productsToUpdate.push(product)
+
             })
+
+            // Submit the selection
+            this.deleteManyFinalAction({phase: phase, productIds: productsToDelete})
+            this.updateManyFinalAction({productIds: productsToUpdate, phase: phase, action_code: actionType})
+
             // Reset the selection
             this.selectedProductIDs = []
             this.clearSelectedProducts()
+        },
+        toggleInOut(product, actionType) {
+            if (product.productFinalAction != null) {
+                // If the product has a final action
+                if(product.productFinalAction.action == actionType) {
+                    // If the products final action is the same as the requested
+                    this.deleteFinalAction({phase: this.collection.phase, productToUpdate: product.id})
+                } else {
+                    // Update action
+                    this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
+                }
+            } else {
+                // Create action
+                this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
+            }
         },
         onSortBy(key, method) {
             if (this.sortBy !== key) {

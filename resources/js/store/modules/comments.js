@@ -5,12 +5,16 @@ export default {
     namespaced: true,
 
     state: {
-      loading: true
+      loading: true,
+      submitting: false,
     },
 
     getters: {
       loadingComments: state => {
         return state.loading
+      },
+      submittingComment: state => {
+        return state.submitting
       }
     },
   
@@ -49,6 +53,8 @@ export default {
       },
       async createComment({commit}, {comment}) {
 
+        commit('setSubmitting', true)
+
         const response = await axios.post(`/api/comment`, {
 
           user_id: comment.user_id,
@@ -65,6 +71,7 @@ export default {
         commit('addComment', {comment: comment})
 
         console.log(response.data)
+        commit('setSubmitting', false)
 
       },
       // Update the action of for a product for a user
@@ -97,6 +104,9 @@ export default {
       //Set the loading status of the app
       setLoading(state, bool) {
         state.loading = bool
+      },
+      setSubmitting(state, bool) {
+        state.submitting = bool
       },
       addComment: (state, {comment} ) => {
         Comment.insert({

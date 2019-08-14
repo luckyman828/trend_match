@@ -6,14 +6,14 @@
                         <span class="square" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
                     <div class="controls">
                         <template v-if="!product.productFinalAction">
-                            <span class="button green" @click="toggleInOut(product.id, 1, 'N/A')">In  <i class="far fa-heart"></i></span>
-                            <span class="button red" @click="toggleInOut(product.id, 0, 'N/A')">Out  <i class="far fa-times-circle"></i></span>
+                            <span class="button green" @click="toggleInOut(product, 1)">In  <i class="far fa-heart"></i></span>
+                            <span class="button red" @click="toggleInOut(product, 0)">Out  <i class="far fa-times-circle"></i></span>
                         </template>
                         <template v-else>
-                            <span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product.id, 1, product.productFinalAction.action)">
+                            <span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product, 1)">
                                 In  <i class="far fa-heart"></i>
                                 </span>
-                            <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product.id, 0, product.productFinalAction.action)">
+                            <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product, 0)">
                                 Out  <i class="far fa-times-circle"></i>
                                 </span>
                         </template>
@@ -158,10 +158,8 @@ export default {
             this.currentImgIndex = 0
             this.$emit('prevSingle')
         },
-        toggleInOut(productID, actionType, userAction) {
-            console.log("Emitting toggle in/out !")
-            console.log(`userAction: ${userAction}, and actionType = ${actionType}`)
-            this.$emit('onToggleInOut', productID, actionType, userAction)
+        toggleInOut(product, actionType) {
+            this.$emit('onToggleInOut', product, actionType)
         },
         setCurrentTab(filter) {
             this.currentTab = filter
