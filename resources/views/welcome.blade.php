@@ -59,13 +59,13 @@
                             @endif
                         @else
                             <li class="nav-item"> --}}
-                                <div class="logout-wrapper" style="
+                                {{-- <div class="logout-wrapper" style="
                                     position: fixed;
                                     left: 0;
                                     bottom: 0;
                                     padding: 16px;
                                     text-align: center;
-                                    z-index: 1;
+                                    z-index: 100;
                                     ">
                                 <a href="{{ route('logout') }}"
                                     onclick="event.preventDefault();
@@ -77,7 +77,7 @@
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                     @csrf
                                 </form>
-                            </div>
+                            </div> --}}
                             {{-- </li>
                         @endguest
                     </ul>

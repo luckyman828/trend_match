@@ -49,7 +49,7 @@
                     <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length + product.focus.length}}</span></td>
                     <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
                     <td class="square-wrapper nds"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}} / {{teamUsers.length}}</span></td>
-                    <td class="square-wrapper comments bind-view-single"><span class="square clickable" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.comments.length}}</span></td>
+                    <td class="square-wrapper comments"><span class="square clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.comments.length}}</span></td>
                     <template v-if="!loadingFinalActions">
                         <template v-if="!product.productFinalAction">
                             <td class="action">
