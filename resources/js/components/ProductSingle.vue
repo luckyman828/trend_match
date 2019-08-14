@@ -68,7 +68,7 @@
                             <div class="tab-body">
                                 <strong class="tab-title">{{currentTab.substr(0, currentTab.length - 1)}}</strong>
                                 <p v-for="user in tabBody" :key="user.id">
-                                    <span class="team">{{user.team.title}}</span>
+                                    <span class="team">{{user.teams[0].title}}</span>
                                     <span class="user">{{user.email}}</span>
                                     <template v-if="user.focus != null">
                                         <span class="focus" v-if="user.focus">Focus <i class="fas fa-star"></i></span>

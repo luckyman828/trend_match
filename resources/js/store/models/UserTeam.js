@@ -15,7 +15,7 @@ export default class UserTeam extends Model {
   static fields () {
     const data = {
       user_id: this.attr(null),
-      team_id: this.attr(''),
+      team_id: this.attr(null),
       team: this.belongsTo(Team, 'team_id', 'id'),
       user: this.belongsTo(User, 'user_id', 'id')
     }

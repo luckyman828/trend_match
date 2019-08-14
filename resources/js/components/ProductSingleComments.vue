@@ -10,7 +10,7 @@
                     <span class="body">{{comment.comment}}</span>
                     <span :class="{active: comment.product_final}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
                 </div>
-                <span class="user" v-if="comment.user != null"><span class="team">{{comment.user.team.title}}</span> | {{comment.user.email}},</span>
+                <span class="user" v-if="comment.user != null"><span class="team">{{comment.user.teams[0].title}}</span> | {{comment.user.email}},</span>
             </div>
         </div>
         <form @submit="onSubmitComment">

@@ -15,6 +15,8 @@ import CollectionTopBar from '../CollectionTopBar'
 import CataloguesTable from '../CataloguesTable'
 import Collection from '../../store/models/Collection'
 import Team from '../../store/models/Team'
+import User from '../../store/models/User'
+import UserTeam from '../../store/models/UserTeam';
 
 export default {
     name: 'collection',
@@ -33,17 +35,22 @@ export default {
         collections () {
             return Collection.query().all()
         },
-        teams() {
-            return Team.query().all()
+        users() {
+            return User.query().with('teams').all()
         },
         authUser() {
             return this.$store.getters.authUser;
+        },
+        teams() {
+            return Team.query().with('users').all()
         },
     },
     methods: {
         ...mapActions(['getAuthUser']),
         ...mapActions('entities/collections', ['fetchCollections']),
         ...mapActions('entities/teams', ['fetchTeams']),
+        ...mapActions('entities/users', ['fetchUsers']),
+        ...mapActions('entities/userTeams', ['fetchUserTeams']),
         onSelect(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
             const selected = this.selected
@@ -65,6 +72,8 @@ export default {
     created() {
         this.fetchInitialData()
         this.fetchCollections()
+        this.fetchUserTeams()
+        this.fetchUsers(1234)
         this.fetchTeams(1234)
     },
 

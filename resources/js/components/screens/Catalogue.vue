@@ -26,9 +26,8 @@ import Loader from '../Loader'
 import SelectedController from '../SelectedController'
 import Comment from '../../store/models/Comment'
 import Product from '../../store/models/Product'
-// import User from '../../store/models/User'
-// import Team from '../../store/models/Team'
-import Country from '../../store/models/Country'
+import User from '../../store/models/User'
+import Team from '../../store/models/Team'
 import Collection from '../../store/models/Collection'
 import ProductFinalAction from '../../store/models/ProductFinalAction';
 import CommentVote from '../../store/models/CommentVote';
@@ -53,7 +52,7 @@ export default{
         selectedCategoryIDs: [],
         sortBy: 'datasource_id',
         sortAsc: true,
-        teamFilterId: '-1',
+        teamFilterId: -1,
         catalogueId: '',
     }},
     computed: {
@@ -68,7 +67,7 @@ export default{
             return Collection.find(this.collectionId)
         },
         products () {
-            const products = Product.query().with(['actions.user.country', 'actions.user.team']).with(['comments.user.country', 'comments.votes', 'comments.user.team']).with('productFinalAction').all()
+            const products = Product.query().with(['actions.user.teams']).with(['comments.votes', 'comments.user.teams']).with('productFinalAction').all()
             const totalUsers = this.teamUsers
             const userId = this.authUser.id
             const teamFilterId = this.teamFilterId
@@ -92,8 +91,8 @@ export default{
                     // Filter actions by the current team filter
                     if ( teamFilterId > 0 ) {
                         // Check if the user has a team
-                        if (action.user.team != null) {
-                            if (action.user.team.id == teamFilterId) {
+                        if (action.user.teams[0] != null) {
+                            if (action.user.teams[0].id == teamFilterId) {
                                 if (action.action == 0)
                                     product.outs.push(action.user)
                                 if (action.action == 1)
@@ -337,37 +336,53 @@ export default{
             }
             else return -1
         },
-        teamUsers() {
-            const teamFilterId = this.teamFilterId
-            let totalUsers = []
-            if (teamFilterId > 0) {
-                this.users.forEach(user => {
-                    if(user.team_ids == teamFilterId)
-                        totalUsers.push(user)
-                })
+        // teamUsers () {
+        //     const teamFilterId = this.teamFilterId
+        //     const allUsers = this.users
+        //     let totalUsers = []
+        //     if (teamFilterId > 0) {
+        //         allUsers.forEach(user => {
+        //             // Make sure the user has any teams
+        //             if (user.teams[0] != null) {
+        //                 // Check that the team has an id 
+        //                 if ('id' in user.teams[0]) {
+        //                     if(user.teams[0].id == teamFilterId) {
+        //                         totalUsers.push(user)
+        //                     }
+        //                 }
+        //             }
+        //         })
+        //     } else {
+        //         totalUsers = this.users
+        //     }
+        //     return totalUsers
+        // },
+        teamUsers () {
+            let usersToReturn = []
+            if (this.teamFilterId > 0) {
+                const thisTeam = this.teams.find(team => team.id == this.teamFilterId)
+                if (thisTeam)
+                    usersToReturn = thisTeam.users
             } else {
-                totalUsers = this.users
+                usersToReturn = this.users
             }
-            return totalUsers
+            return usersToReturn
         },
         actions() {
             return this.$store.getters['entities/actions/all']()
         },
         comments() {
-            const comments = Comment.query().with(['votes', 'user.country', 'user.team']).all()
+            const comments = Comment.query().with(['votes', 'user.teams']).all()
             const teamFilterId = this.teamFilterId
             if (teamFilterId > 0) {
                 let commentsToReturn = []
                 comments.forEach(comment => {
-                    if (comment.user.team_ids == teamFilterId)
+                    if (comment.user.teams[0].id == teamFilterId)
                         commentsToReturn.push(comment)
                 })
                 return commentsToReturn
             } 
             else return comments
-        },
-        countries() {
-            return Country.query().all()
         },
         categories() {
             return Category.query().with('products').all()
@@ -381,59 +396,17 @@ export default{
         authUser() {
             return this.$store.getters.authUser;
         },
-        userTeams() {
-            return UserTeam.query().with('team').with('user').all()
-        },
-        users() {
-            // Generate users from the userTeam model
-            const userTeams = JSON.parse(JSON.stringify(this.userTeams))
-            const usersToReturn = []
-
-            let ready = true 
-
-            userTeams.forEach(userTeam => {
-                if (userTeam.team == null || userTeam.user == null) {
-                    ready = false
-                }
-            })
-
-            if ( ready ) {
-                
-                userTeams.forEach(userTeam => {
-                    const newUser = userTeam.user
-                    newUser.team = userTeam.team
-                    usersToReturn.push(newUser)
-                })
-
-            }
-            return usersToReturn
+        // userTeams() {
+        //     return UserTeam.query().with('team').with('user').all()
+        // },
+        users () {
+            return User.query().with('teams').all()
         },
         teams () {
-            const userTeams = JSON.parse(JSON.stringify(this.userTeams))
-            // Generate teams from the userTeams model
-            let teams = []
-
-            let ready = true 
-            userTeams.forEach(userTeam => {
-                if (userTeam.team == null || userTeam.user == null) {
-                    ready = false
-                }
-            })
-
-            if ( ready ) {
-
-                userTeams.forEach(userTeam => {
-                    // If the team doesnt already exist - create it
-                        if (!teams.filter(e => e.id == userTeam.team_id).length > 0) {
-                            teams.push(userTeam.team)
-                        }
-                })
-            
-            }
-
             // Manually find the teams and the users belonging to each team.
             // This is only necessary because I cannot make the Vuex ORM realtionship work 
             // If you can make it work, please be my guest
+            const teams = Team.query().with('users').all()
             const users = this.users
             const data = []
 
@@ -444,10 +417,15 @@ export default{
                     users: []
                 }
                 users.forEach(user => {
-                    if (user.team.id == thisTeam.id) {
-                        // Find the users role
-                        user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
-                        thisTeam.users.push(user)
+                    // Make sure that the user has a team
+                    if (user.teams[0] != null) {
+                        if ('id' in user.teams[0]) {
+                            if (user.teams[0].id == thisTeam.id) {
+                                // Find the users role
+                                user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
+                                thisTeam.users.push(user)
+                            }
+                        }
                     }
                 })
                 data.push(thisTeam)
@@ -462,7 +440,6 @@ export default{
         ...mapActions('entities/actions', ['fetchActions']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/comments', ['fetchComments']),
-        ...mapActions('entities/countries', ['fetchCountries']),
         ...mapActions('entities/actions', ['updateAction']),
         ...mapActions('entities/teams', ['fetchTeams']),
         ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
@@ -538,7 +515,6 @@ export default{
     created() {
         this.fetchInitialData()
         // Fetch all our data
-        this.fetchCountries()
         this.fetchProducts({collection_id: this.collectionId})
         this.fetchActions({collection_id: this.collectionId})
         this.fetchUsers({collection_id: this.collectionId})

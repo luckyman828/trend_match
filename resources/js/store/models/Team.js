@@ -1,6 +1,6 @@
-// Product Model
+// Team Model
 import { Model } from '@vuex-orm/core'
-import User from './User'
+import User from './Team'
 import UserTeam from './UserTeam';
 
 export default class Team extends Model {
@@ -9,14 +9,13 @@ export default class Team extends Model {
 
   // List of all fields (schema) of the product model. `this.attr` is used
   // for the generic field type. The argument is the default value.
-  static primaryKey = 'id'
+  // static primaryKey = 'id'
 
   static fields () {
     const data = {
       id: this.attr(null),
       title: this.attr(''),
-      // users: this.hasManyThrough(User, UserTeam, 'team_id', 'team_ids', 'id', 'team_id'),
-      users: this.hasMany(User, 'team_ids'),
+      users: this.belongsToMany(User, UserTeam, 'team_id', 'user_id'),
     }
 
     return data
