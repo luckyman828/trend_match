@@ -408,29 +408,24 @@ export default{
             // If you can make it work, please be my guest
             const teams = Team.query().with('users').all()
             const users = this.users
-            const data = []
-
-            teams.forEach(team => {
-                const thisTeam = {
-                    id: team.id,
-                    title: team.title,
-                    users: []
-                }
-                users.forEach(user => {
-                    // Make sure that the user has a team
-                    if (user.teams[0] != null) {
-                        if ('id' in user.teams[0]) {
-                            if (user.teams[0].id == thisTeam.id) {
-                                // Find the users role
-                                user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
-                                thisTeam.users.push(user)
-                            }
-                        }
+            // Loop through the users and sort them between the teams
+            users.forEach(user => {
+                // First check that the user has a team and that the team has an id
+                if (user.teams[0] != null) {
+                    if ('id' in user.teams[0]) {
+                        // If we have a team with an id
+                        // Set the users role
+                        user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
+                        user.teams.forEach(userTeam => {
+                            // Loop through each of the users teams and add the user
+                            // Find the corresponding team
+                            const foundTeam = teams.find(team => team.id == userTeam.id)
+                            foundTeam.users.push(user)
+                        })
                     }
-                })
-                data.push(thisTeam)
+                }
             })
-            return data
+            return teams
         },
     },
     methods: {

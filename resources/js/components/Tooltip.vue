@@ -12,7 +12,7 @@
 
             <template v-if="tooltip.type == 'teams'">
             <div class="tooltip-row" v-for="(team, index) in teams" :key="index">
-                <span class="team">{{team.name}} <span class="count">{{team.users.length}}</span></span>
+                <span class="team">{{team.title}} <span class="count">{{team.users.length}}</span></span>
             </div>
             </template>
 
@@ -35,24 +35,65 @@ export default {
             const data = []
             if (tooltip.type == 'teams') {
 
-                    const uniqueTeams = [...new Set(tooltip.data.map(x => x.team.title))]
-                    uniqueTeams.forEach(team => {
-                        const thisTeam = {
-                            name: team,
+                    // const uniqueTeams = [...new Set(tooltip.data.map(x => x.team.title))]
+                    // Create an array of unique teams from the users in data
+                    let uniqueTeams = []
+                    if (tooltip.data.length > 0) {
+                        uniqueTeams.push({
+                            title: 'NO TEAM',
                             users: [],
-                            teamUsers: tooltip.teams.find(obj => {
-                                return obj.title == team.toUpperCase()
-                            })
-                        }
-                        tooltip.data.forEach(user => {
-                            if (user.team.title == team) {
-                                thisTeam.users.push(user)
-                            }
                         })
-                        data.push(thisTeam)
+                    }
+
+                    const users = tooltip.data
+                    users.forEach(user => {
+                        // Check if the user has any teams
+                        if (user.teams[0] != null) {
+                            if ('id' in user.teams[0]) {
+                                // Loop through the users teams to find the unique teams
+                                user.teams.forEach(team => {
+                                    // If the uniqueTeams array does not include the current team -> add it
+                                    const foundTeam = uniqueTeams.find(x => x.title == team.title)
+                                    if (foundTeam == null) {
+                                        // If there the team doesnt exist in the array, add the team to the table
+                                        // Construct a new teeam
+                                        const newTeam = {
+                                            title: team.title,
+                                            users: []
+                                        }
+                                        newTeam.users.push(user)
+                                        uniqueTeams.push(newTeam)
+                                        // Also add the user to the new team
+                                    } else {
+                                        // If the team already exists, add the user to the team
+                                        foundTeam.users.push(user)
+                                    }
+                                })
+                            }
+                        }
+                        // If the user does not have a team, add them to a "No team" group
+                        else {
+                            uniqueTeams[0].users.push(user)
+                        }
                     })
+
+                    // uniqueTeams.forEach(team => {
+                    //     const thisTeam = {
+                    //         name: team,
+                    //         users: [],
+                    //         teamUsers: tooltip.teams.find(obj => {
+                    //             return obj.title == team.toUpperCase()
+                    //         })
+                    //     }
+                    //     tooltip.data.forEach(user => {
+                    //         if (user.team.title == team) {
+                    //             thisTeam.users.push(user)
+                    //         }
+                    //     })
+                    //     data.push(thisTeam)
+                    // })
+                return uniqueTeams
             }
-            return data
         },
         users() {
             const tooltip = this.tooltip

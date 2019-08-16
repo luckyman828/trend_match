@@ -37,16 +37,8 @@ export default {
               if (tryCount <= 0) throw err
             }
           }
+      },
 
-          // console.log(`Getting users from ${apiUrl}`)
-          // const response = await axios.get(`${apiUrl}`) //Get the data from the api
-          // .catch(err => {
-          //   console.log('API error in users.js :')
-          //   console.log(err)
-          // })
-          // User.create({ data: response.data })
-          // commit('setLoading', false)
-      }
     },
 
     mutations: {

@@ -3,7 +3,8 @@
         <h1>Teams</h1>
         <div class="underline"></div>
         <TeamsTopBar :itemsToFilter="teams" :title="'Teams'"/>
-        <TeamsTable :teams="teams" :users="users" :loading="loadingTeams" @onSelect="setSelected"/>
+        <TeamsTable :teams="teams" :users="users" :loading="loadingTeams" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/>
+        <InviteToTeamModal v-if="singleTeam != null" :team="singleTeam" :users="users" :authUser="authUser" @onCloseModal="closeModal"/>
     </div>
 </template>
 
@@ -14,16 +15,27 @@ import TeamsTopBar from '../TeamsTopBar'
 import TeamsTable from '../TeamsTable'
 import User from '../../store/models/User'
 import UserTeam from '../../store/models/UserTeam'
+import InviteToTeamModal from '../InviteToTeamModal';
 
 export default {
     name: 'teams',
     components: {
         TeamsTopBar,
-        TeamsTable
+        TeamsTable,
+        InviteToTeamModal
     },
     data: function () { return {
         selected: [],
+        singleTeam: null,
     }},
+    watch: {
+        singleTeam: function (newVal, oldVal) {
+            console.log
+            if (newVal != null)
+                document.querySelector('body').classList.add('disabled')
+            else document.querySelector('body').classList.remove('disabled')
+        }
+    },
     computed: {
         ...mapGetters('entities/teams', ['loadingTeams']),
         ...mapGetters('entities/userTeams', ['loadingUserTeams']),
@@ -43,29 +55,27 @@ export default {
             // If you can make it work, please be my guest
             const teams = Team.query().with('users').all()
             const users = this.users
-            const data = []
-
-            teams.forEach(team => {
-                const thisTeam = {
-                    id: team.id,
-                    title: team.title,
-                    users: []
-                }
-                users.forEach(user => {
-                    // Make sure that the user has a team
-                    if (user.teams[0] != null) {
-                        if ('id' in user.teams[0]) {
-                            if (user.teams[0].id == thisTeam.id) {
-                                // Find the users role
-                                user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
-                                thisTeam.users.push(user)
-                            }
-                        }
+            // Loop through the users and sort them between the teams
+            users.forEach(user => {
+                // First check that the user has a team and that the team has an id
+                if (user.teams[0] != null) {
+                    if ('id' in user.teams[0]) {
+                        // If we have a team with an id
+                        // Set the users role
+                        user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
+                        user.teams.forEach(userTeam => {
+                            // Loop through each of the users teams and add the user
+                            // Find the corresponding team
+                            const foundTeam = teams.find(team => team.id == userTeam.id)
+                            // Check that the user doesnt already exist in this team
+                            if ( !foundTeam.users.includes(user) )
+                                // Push the user to the team if the user is not already a member
+                                foundTeam.users.push(user)
+                        })
                     }
-                })
-                data.push(thisTeam)
+                }
             })
-            return data
+            return teams
         },
     },
     methods: {
@@ -79,6 +89,12 @@ export default {
             const found = selected.findIndex(el => el == index)
             const result = (found >= 0) ? selected.splice(found, 1) : selected.push(index)
         },
+        openInviteToTeam(team) {
+            this.singleTeam = team
+        },
+        closeModal() {
+            this.singleTeam = null;
+        }
     },
     created () {
         this.fetchTeams({collection_id: 124124124})

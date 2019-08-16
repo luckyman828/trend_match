@@ -4,61 +4,67 @@
             <span>{{selectedCount}} selected</span>
             <span>{{teams.length}} records</span>
         </div>
-        <table>
-            <tr class="header-row">
+        <div class="flex-table">
+            <div class="header-row flex-table-row">
                 <th class="select">Select <i class="fas fa-chevron-down"></i></th>
                 <th class="clickable title" :class="{active: this.sortBy == 'title'}" @click="onSortBy('title', true)">
                     Team <i class="fas" :class="[(this.sortBy == 'title' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'assigned'}" class="clickable title" @click="onSortBy('assigned', true)">
+                <th :class="{active: this.sortBy == 'assigned'}" class="clickable assigned" @click="onSortBy('assigned', true)">
                    Assigned <i class="fas" :class="[(this.sortBy == 'assigned' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'users'}" class="clickable" @click="onSortBy('users', false)">
+                <th :class="{active: this.sortBy == 'users'}" class="clickable members" @click="onSortBy('users', false)">
                     Members <i class="fas" :class="[(this.sortBy == 'users' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'collections'}" class="clickable" @click="onSortBy('collections', false)">
+                <th :class="{active: this.sortBy == 'collections'}" class="clickable collections" @click="onSortBy('collections', false)">
                     Collections <i class="fas" :class="[(this.sortBy == 'collections' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'status'}" class="clickable" @click="onSortBy('status', false)">
+                <th :class="{active: this.sortBy == 'status'}" class="clickable status" @click="onSortBy('status', false)">
                     Status <i class="fas" :class="[(this.sortBy == 'status' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th>Action</th>
+                <th class="action">Action</th>
                 <th></th>
-            </tr>
+            </div>
             <template v-if="!loading">
-                <template v-for="(team, index) in teamsSorted">
-                    <tbody :key="team.id" :ref="'team-row-' + index" class="team-row-wrapper">
-                        <tr class="team-row">
-                            <td class="select">
-                                <label class="checkbox">
-                                    <input type="checkbox" @change="onSelect(index)" />
-                                    <span class="checkmark"></span>
-                                </label>
-                            </td>
-                            <td class="title clickable" @click="expandUsers(index)"><span class="square"><i class="far fa-chevron-right"></i>{{team.title}}</span></td>
-                            <td class="assigned">Coming soon..</td>
-                            <td class="members"><span>{{team.users.length}}</span></td>
-                            <td class="collections"><span>Coming soon..</span></td>
-                            <td class="status"><span>Coming soon..</span></td>
-                            <td class="action"><span class="button">Edit team</span></td>
-                            <td><span class="view-single" @click="expandUsers(index)">View</span></td>
-                        </tr>
-                    </tbody>
-                    <tbody class="team-users" :key="team.id + 'child'" :ref="'accordion-'+index">
-                        <tr class="user-row" v-for="(user, index) in team.users" :key="index">
+                <div class="team-row-wrapper" v-for="(team, index) in teamsSorted" :key="team.id">
+
+                    <div class="team-row item-row flex-table-row" :class="[{expanded: expandedIds.includes(team.id)}, {collapsed: !expandedIds.includes(team.id)}]">
+                        <td class="select">
+                            <label class="checkbox">
+                                <input type="checkbox" @change="onSelect(index)" />
+                                <span class="checkmark"></span>
+                            </label>
+                        </td>
+                        <td class="title clickable" @click="expandUsers(team)"><span class="square"><i class="far fa-chevron-right"></i>{{team.title}}</span></td>
+                        <td class="assigned">{{team.expanded}}</td>
+                        <td class="members"><span>{{team.users.length}}</span></td>
+                        <td class="collections"><span>N/A</span></td>
+                        <td class="status"><span>N/A</span></td>
+                        <td class="action">
+                            <span v-if="expandedIds.includes(team.id)" class="button green active"  @click="openInviteToTeam(team)">Add to team</span>
+                            <span v-else class="button"  @click="expandUsers(team)">Edit team</span>
+                            <span class="view-single button" @click="expandUsers(team)">View</span>
+                        </td>
+                    </div>
+
+                    <div class="team-users" :class="[{expanded: expandedIds.includes(team.id)}, {collapsed: !expandedIds.includes(team.id)}]">
+                        <div class="user-row item-row sub-item-row flex-table-row" v-for="(user, index) in team.users" :key="index">
                             <td class="index">{{index + 1}}</td>
                             <td class="name">{{ (user.name != null) ? user.name : 'No name set' }}</td>
                             <td class="email">{{user.email}}</td>
                             <td class="collections">-</td>
                             <td class="role"><span class="square" :class="user.role.toLowerCase()">{{user.role}}</span></td>
                             <td></td>
-                            <td class="action"></td>
-                            <td class="remove"></td>
-                        </tr>
-                    </tbody>
-                </template>
+                            <td class="action">
+                                <span class="resend"></span>
+                                <span class="remove button red invisible-button"><i class="far fa-user-minus"></i> Remove</span>
+                            </td>
+                        </div>
+                    </div>
+
+                </div>
             </template>
-        </table>
+        </div>
         <template v-if="loading">
             <Loader/>
         </template>
@@ -68,8 +74,6 @@
 <script>
 import Loader from './Loader'
 import { mapActions, mapGetters } from 'vuex'
-import ProductTotals from './ProductTotals'
-import ProductSingle from './ProductSingle'
 
 export default {
     name: 'teamsTable',
@@ -86,39 +90,15 @@ export default {
     },
     data: function() { return {
         sortBy: 'id',
-        sortAsc: true
+        sortAsc: true,
+        expandedIds: [],
     }},
     computed: {
-        // teamsAlt () {
-        //     // Manually find the teams and the users belonging to each team.
-        //     // This is only necessary because I cannot make the Vuex ORM realtionship work 
-        //     // If you can make it work, please be my guest
-        //     const users = this.users
-        //     const teams = this.teams
-        //     const data = []
-
-        //     teams.forEach(team => {
-        //         const thisTeam = {
-        //             id: team.id,
-        //             title: team.title,
-        //             users: []
-        //         }
-        //         users.forEach(user => {
-        //             if (user.team.id == thisTeam.id) {
-        //                 // Find the users role
-        //                 user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
-        //                 // if (user.role_id == 1) {
-        //                 //     user.role = 'Sales'
-        //                 // } else if (user)
-        //                 thisTeam.users.push(user)
-        //             }
-        //         })
-        //         data.push(thisTeam)
-        //     })
-        //     return data
-        // },
         teamsSorted() {
             const teams = this.teams
+            teams.forEach(team => {
+                team.active = false
+            });
             let key = this.sortBy
             let sortAsc = this.sortAsc
             const dataSorted = teams.sort((a, b) => {
@@ -161,12 +141,25 @@ export default {
             }
 
         },
-        expandUsers(index) {
-            const usersToShow = this.$refs['accordion-' + index]
-            usersToShow[0].classList.toggle('expanded')
-            const clickedRow = this.$refs['team-row-' + index]
-            clickedRow[0].classList.toggle('expanded')
+        expandUsers(team) {
+            const expanded = this.expandedIds
+            const found = expanded.findIndex(el => el == team.id)
+            const result = (found >= 0) ? expanded.splice(found, 1) : expanded.push(team.id)
+            this.setHeights()
+        },
+        setHeights() {
+            const elements = document.querySelectorAll('.team-users')
+            if (elements.length > 0)
+                elements.forEach(el => {
+                    el.style['max-height'] = el.scrollHeight + "px"
+                })
+        },
+        openInviteToTeam(team) {
+            this.$emit('onOpenInviteToTeam', team)
         }
+    },
+    updated() {
+        this.setHeights()
     }
 }
 </script>
@@ -177,110 +170,70 @@ export default {
     .teams-table {
         margin-top: 52px;
         padding-top: 0;
-    }
-    .clickable {
-        cursor: pointer;
-    }
-    table {
-        margin-left: -16px;
-        margin-right: -16px;
-        width: calc(100% + 32px);
-        &.disabled {
-            opacity: .5;
-        }
-    }
-    tr:hover {
-        background: $light;
-    }
-    img {
-        height: 88px;
-        width: 66px;
-        object-fit: cover;
-        margin: 8px 0 8px 16px;
-    }
-    i {
-        margin-right: 12px;
-        font-size: 11px;
-        &.fa-arrow-up {
-            color: $green;
-        }
-        &.fa-arrow-down {
-            color: $red;
-        }
-    }
-    tr.header-row {
-        background: white;
-        font-weight: 700;
-        font-size: 12px;
-        height: 45px;
-        border-bottom: solid 2px $light1;
-    }
-    tr.team-row {
-        border-bottom: solid 1px $light2;
-        &.in > :first-child {
-            box-shadow: 4px 0 $green inset
-        }
-        &.out > :first-child {
-            box-shadow: 4px 0 $red inset
-        }
-    }
-    th {
-        text-transform: uppercase;
-        font-size: 12px;
-        font-weight: 600;
-        color: $dark2;
-        &:first-child {
-            padding-left: 16px;
-            width: 100px;
-        }
-        &.id {
-            width: 75px;
-        }
-        &.title {
-            width: 150px;
-        }
-        i {
-            color: $light2;
-            margin: 0;
-            margin-left: 4px;
-        }
-        &.swipes {
-            width: 12%;
-            text-align: center;
-        }
-        &.popularity {
-            width: 10%;
-        }
-        &.compare {
-            width: 15%;
-            text-align: center;
-        }
-        &.active {
-            i {
-                color: $primary
+        .team-row {
+            .view-single {
+                border-color: transparent;
             }
-        }
-    }
-    td {
-        &.select {
-            padding: 20px 0;
-            padding-left: 20px;
-        }
-        &.title {
-            font-size: 13px;
-            color: $dark;
-            .square {
-                color: $dark;
-                background: none;
-                i {
-                    transition: .3s;
-                    font-size: 12px;
+            &.expanded {
+                background: $light1;
+                .view-single {
+                    color: $dark;
+                    background: white;
                 }
             }
         }
-        &.assigned {
-            width: 220px;
+    }
+    .flex-table-row {
+        padding: 12px 0;
+        > * {
+            &.select, &:nth-child(1) {
+                padding-left: 16px;
+                min-width: 80px;
+            }
+            &:nth-child(2) {
+                padding-left: 32px;
+                min-width: 220px;
+            }
+            &:nth-child(3) {
+                min-width: 220px;
+            }
+            &:nth-child(4) {
+                min-width: 112px;
+                padding-left: 16px;
+            }
+            &:nth-child(5) {
+                min-width: 132px;
+                padding-left: 16px;
+            }
+            &:nth-child(6) {
+                min-width: 80px;
+                padding-left: 16px;
+            }
+            &:nth-child(7) {
+                margin-left: auto;
+                min-width: 80px;
+                padding-left: 16px;
+                padding-right: 32px;
+            }
         }
+        td {
+            &.title {
+                font-size: 13px;
+                color: $dark;
+                .square {
+                    margin-left: -32px;
+                    color: $dark;
+                    background: none;
+                    i {
+                        transition: .3s;
+                        font-size: 12px;
+                    }
+                }
+            }
+        }
+    }
+    i {
+        font-size: 11px;
     }
     .show-more {
         width: 100%;
@@ -308,9 +261,6 @@ export default {
       margin-bottom: 0;
       padding-top: 5px;
       padding-bottom: 5px;
-      &:hover {
-          background: $light;
-      }
     }
 
     .checkbox input {
@@ -367,7 +317,7 @@ export default {
     }
     .button {
         display: inline-block;
-        width: 86px;
+        width: 92px;
         height: 32px;
         line-height: 32px;
         font-size: 12px;
@@ -378,17 +328,13 @@ export default {
         font-weight: 700;
         color: $dark2;
         border-color: $light2;
-        i {
-            font-size: 16px;
-            position: absolute;
-            right: 10px;
-            top: 5px;
-            margin: 0;
-        }
         &.active {
             i {
                 font-weight: 900;
             }
+        }
+        &.remove {
+            color: $red;
         }
     }
     .view-single {
@@ -411,28 +357,31 @@ export default {
         }
     }
     .user-row {
+        background: $light;
         &:not(:last-child) {
             border-bottom: solid 2px white;
         }
         td {
-            background: $light;
             font-size: 14px;
             &.index {
                 text-align: right;
-                padding: 12px 20px;
+                padding-right: 20px;
             }
         }
     }
     .team-users {
-        display: none;
+        overflow: hidden;
+        transition: .2s;
+        &.collapsed {
+            max-height: 0 !important;
+        }
         &.expanded {
-            display: table-row-group;
             + .team-row-wrapper {
                 box-shadow: 0 1px 0 $light2 inset;
             }
         }
     }
-    .team-row-wrapper {
+    .team-row {
         &.expanded {
             td.title {
                 .square {

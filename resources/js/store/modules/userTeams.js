@@ -1,5 +1,6 @@
 import axios from 'axios'
 import UserTeam from '../models/UserTeam';
+import User from '../models/User';
 
 export default {
     namespaced: true,
@@ -46,6 +47,25 @@ export default {
           // })
           // UserTeam.create({ data: response.data })
           // commit('setLoading', false)
+      },
+      async inviteUserToTeam({commit}, {user, team, authUser}) {
+        
+        // await axios.post(`/api/invite-user`, {
+        //   user: user,
+        //   team: team,
+        //   sender: authUser
+        // }).then(response => {
+        //   console.log(response.data)
+        // }).catch(err =>{
+        //   console.log(err);
+        // })
+
+        // Check if the user already exists
+        const existingUser = User.query().where('email', user.email).first()
+        if (existingUser != null) {
+          commit('addUserToTeam', {user: existingUser, team: team})
+        }
+
       }
     },
 
@@ -54,6 +74,17 @@ export default {
       //Set the loading status of the app
       setLoading(state, bool) {
         state.loading = bool
+      },
+  
+      addUserToTeam(state, {user, team}) {
+        console.log(user)
+        console.log(team)
+        UserTeam.insert({
+          data: {
+              user_id: user.id,
+              team_id: team.id,
+            }
+        })
       }
     }
 

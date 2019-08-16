@@ -7501,6 +7501,78 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/InviteToTeamModal.vue?vue&type=script&lang=js&":
+/*!****************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/InviteToTeamModal.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'inviteToTeamModal',
+  props: ['team', 'users', 'authUser'],
+  data: function data() {
+    return {
+      newUser: {
+        email: '',
+        name: ''
+      },
+      theTeam: this.team
+    };
+  },
+  computed: {
+    submitDisabled: function submitDisabled() {
+      if (this.newUser.email.length > 7) return false;else return true;
+    }
+  },
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/userTeams', ['inviteUserToTeam']), {
+    closeModal: function closeModal() {
+      this.$emit('onCloseModal');
+    },
+    submitInvite: function submitInvite(e) {
+      e.preventDefault();
+      this.inviteUserToTeam({
+        user: this.newUser,
+        team: this.theTeam,
+        authUser: this.authUser
+      });
+    }
+  })
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Loader.vue?vue&type=script&lang=js&":
 /*!*****************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Loader.vue?vue&type=script&lang=js& ***!
@@ -8599,8 +8671,6 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Loader */ "./resources/js/components/Loader.vue");
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _ProductTotals__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ProductTotals */ "./resources/js/components/ProductTotals.vue");
-/* harmony import */ var _ProductSingle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ProductSingle */ "./resources/js/components/ProductSingle.vue");
 //
 //
 //
@@ -8668,8 +8738,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-
-
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -8681,39 +8755,16 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       sortBy: 'id',
-      sortAsc: true
+      sortAsc: true,
+      expandedIds: []
     };
   },
   computed: {
-    // teamsAlt () {
-    //     // Manually find the teams and the users belonging to each team.
-    //     // This is only necessary because I cannot make the Vuex ORM realtionship work 
-    //     // If you can make it work, please be my guest
-    //     const users = this.users
-    //     const teams = this.teams
-    //     const data = []
-    //     teams.forEach(team => {
-    //         const thisTeam = {
-    //             id: team.id,
-    //             title: team.title,
-    //             users: []
-    //         }
-    //         users.forEach(user => {
-    //             if (user.team.id == thisTeam.id) {
-    //                 // Find the users role
-    //                 user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
-    //                 // if (user.role_id == 1) {
-    //                 //     user.role = 'Sales'
-    //                 // } else if (user)
-    //                 thisTeam.users.push(user)
-    //             }
-    //         })
-    //         data.push(thisTeam)
-    //     })
-    //     return data
-    // },
     teamsSorted: function teamsSorted() {
       var teams = this.teams;
+      teams.forEach(function (team) {
+        team.active = false;
+      });
       var key = this.sortBy;
       var sortAsc = this.sortAsc;
       var dataSorted = teams.sort(function (a, b) {
@@ -8744,12 +8795,26 @@ __webpack_require__.r(__webpack_exports__);
         this.sortAsc = !this.sortAsc;
       }
     },
-    expandUsers: function expandUsers(index) {
-      var usersToShow = this.$refs['accordion-' + index];
-      usersToShow[0].classList.toggle('expanded');
-      var clickedRow = this.$refs['team-row-' + index];
-      clickedRow[0].classList.toggle('expanded');
+    expandUsers: function expandUsers(team) {
+      var expanded = this.expandedIds;
+      var found = expanded.findIndex(function (el) {
+        return el == team.id;
+      });
+      var result = found >= 0 ? expanded.splice(found, 1) : expanded.push(team.id);
+      this.setHeights();
+    },
+    setHeights: function setHeights() {
+      var elements = document.querySelectorAll('.team-users');
+      if (elements.length > 0) elements.forEach(function (el) {
+        el.style['max-height'] = el.scrollHeight + "px";
+      });
+    },
+    openInviteToTeam: function openInviteToTeam(team) {
+      this.$emit('onOpenInviteToTeam', team);
     }
+  },
+  updated: function updated() {
+    this.setHeights();
   }
 });
 
@@ -8835,14 +8900,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 //
 //
 //
@@ -8877,28 +8934,66 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       var data = [];
 
       if (tooltip.type == 'teams') {
-        var uniqueTeams = _toConsumableArray(new Set(tooltip.data.map(function (x) {
-          return x.team.title;
-        })));
+        // const uniqueTeams = [...new Set(tooltip.data.map(x => x.team.title))]
+        // Create an array of unique teams from the users in data
+        var uniqueTeams = [];
 
-        uniqueTeams.forEach(function (team) {
-          var thisTeam = {
-            name: team,
-            users: [],
-            teamUsers: tooltip.teams.find(function (obj) {
-              return obj.title == team.toUpperCase();
-            })
-          };
-          tooltip.data.forEach(function (user) {
-            if (user.team.title == team) {
-              thisTeam.users.push(user);
-            }
+        if (tooltip.data.length > 0) {
+          uniqueTeams.push({
+            title: 'NO TEAM',
+            users: []
           });
-          data.push(thisTeam);
-        });
-      }
+        }
 
-      return data;
+        var users = tooltip.data;
+        users.forEach(function (user) {
+          // Check if the user has any teams
+          if (user.teams[0] != null) {
+            if ('id' in user.teams[0]) {
+              // Loop through the users teams to find the unique teams
+              user.teams.forEach(function (team) {
+                // If the uniqueTeams array does not include the current team -> add it
+                var foundTeam = uniqueTeams.find(function (x) {
+                  return x.title == team.title;
+                });
+
+                if (foundTeam == null) {
+                  // If there the team doesnt exist in the array, add the team to the table
+                  // Construct a new teeam
+                  var newTeam = {
+                    title: team.title,
+                    users: []
+                  };
+                  newTeam.users.push(user);
+                  uniqueTeams.push(newTeam); // Also add the user to the new team
+                } else {
+                  // If the team already exists, add the user to the team
+                  foundTeam.users.push(user);
+                }
+              });
+            }
+          } // If the user does not have a team, add them to a "No team" group
+          else {
+              uniqueTeams[0].users.push(user);
+            }
+        }); // uniqueTeams.forEach(team => {
+        //     const thisTeam = {
+        //         name: team,
+        //         users: [],
+        //         teamUsers: tooltip.teams.find(obj => {
+        //             return obj.title == team.toUpperCase()
+        //         })
+        //     }
+        //     tooltip.data.forEach(user => {
+        //         if (user.team.title == team) {
+        //             thisTeam.users.push(user)
+        //         }
+        //     })
+        //     data.push(thisTeam)
+        // })
+
+        return uniqueTeams;
+      }
     },
     users: function users() {
       var tooltip = this.tooltip;
@@ -9313,29 +9408,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // This is only necessary because I cannot make the Vuex ORM realtionship work 
       // If you can make it work, please be my guest
       var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"]('users').all();
-      var users = this.users;
-      var data = [];
-      teams.forEach(function (team) {
-        var thisTeam = {
-          id: team.id,
-          title: team.title,
-          users: []
-        };
-        users.forEach(function (user) {
-          // Make sure that the user has a team
-          if (user.teams[0] != null) {
-            if ('id' in user.teams[0]) {
-              if (user.teams[0].id == thisTeam.id) {
-                // Find the users role
-                user.role = user.role_id == 1 ? 'Sales' : user.role_id == 2 ? 'Sales Rep' : 'Admin';
-                thisTeam.users.push(user);
-              }
-            }
+      var users = this.users; // Loop through the users and sort them between the teams
+
+      users.forEach(function (user) {
+        // First check that the user has a team and that the team has an id
+        if (user.teams[0] != null) {
+          if ('id' in user.teams[0]) {
+            // If we have a team with an id
+            // Set the users role
+            user.role = user.role_id == 1 ? 'Sales' : user.role_id == 2 ? 'Sales Rep' : 'Admin';
+            user.teams.forEach(function (userTeam) {
+              // Loop through each of the users teams and add the user
+              // Find the corresponding team
+              var foundTeam = teams.find(function (team) {
+                return team.id == userTeam.id;
+              });
+              foundTeam.users.push(user);
+            });
           }
-        });
-        data.push(thisTeam);
+        }
       });
-      return data;
+      return teams;
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])(['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {
@@ -9684,6 +9777,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _TeamsTable__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../TeamsTable */ "./resources/js/components/TeamsTable.vue");
 /* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
 /* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _InviteToTeamModal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../InviteToTeamModal */ "./resources/js/components/InviteToTeamModal.vue");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -9697,6 +9791,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+
 
 
 
@@ -9707,12 +9803,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   name: 'teams',
   components: {
     TeamsTopBar: _TeamsTopBar__WEBPACK_IMPORTED_MODULE_2__["default"],
-    TeamsTable: _TeamsTable__WEBPACK_IMPORTED_MODULE_3__["default"]
+    TeamsTable: _TeamsTable__WEBPACK_IMPORTED_MODULE_3__["default"],
+    InviteToTeamModal: _InviteToTeamModal__WEBPACK_IMPORTED_MODULE_6__["default"]
   },
   data: function data() {
     return {
-      selected: []
+      selected: [],
+      singleTeam: null
     };
+  },
+  watch: {
+    singleTeam: function singleTeam(newVal, oldVal) {
+      console.log;
+      if (newVal != null) document.querySelector('body').classList.add('disabled');else document.querySelector('body').classList.remove('disabled');
+    }
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/teams', ['loadingTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/userTeams', ['loadingUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/users', ['loadingUsers']), {
     authUser: function authUser() {
@@ -9729,29 +9833,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // This is only necessary because I cannot make the Vuex ORM realtionship work 
       // If you can make it work, please be my guest
       var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_1__["default"].query()["with"]('users').all();
-      var users = this.users;
-      var data = [];
-      teams.forEach(function (team) {
-        var thisTeam = {
-          id: team.id,
-          title: team.title,
-          users: []
-        };
-        users.forEach(function (user) {
-          // Make sure that the user has a team
-          if (user.teams[0] != null) {
-            if ('id' in user.teams[0]) {
-              if (user.teams[0].id == thisTeam.id) {
-                // Find the users role
-                user.role = user.role_id == 1 ? 'Sales' : user.role_id == 2 ? 'Sales Rep' : 'Admin';
-                thisTeam.users.push(user);
-              }
-            }
+      var users = this.users; // Loop through the users and sort them between the teams
+
+      users.forEach(function (user) {
+        // First check that the user has a team and that the team has an id
+        if (user.teams[0] != null) {
+          if ('id' in user.teams[0]) {
+            // If we have a team with an id
+            // Set the users role
+            user.role = user.role_id == 1 ? 'Sales' : user.role_id == 2 ? 'Sales Rep' : 'Admin';
+            user.teams.forEach(function (userTeam) {
+              // Loop through each of the users teams and add the user
+              // Find the corresponding team
+              var foundTeam = teams.find(function (team) {
+                return team.id == userTeam.id;
+              }); // Check that the user doesnt already exist in this team
+
+              if (!foundTeam.users.includes(user)) // Push the user to the team if the user is not already a member
+                foundTeam.users.push(user);
+            });
           }
-        });
-        data.push(thisTeam);
+        }
       });
-      return data;
+      return teams;
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {
@@ -9762,6 +9866,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return el == index;
       });
       var result = found >= 0 ? selected.splice(found, 1) : selected.push(index);
+    },
+    openInviteToTeam: function openInviteToTeam(team) {
+      this.singleTeam = team;
+    },
+    closeModal: function closeModal() {
+      this.singleTeam = null;
     }
   }),
   created: function created() {
@@ -9789,7 +9899,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\nhtml, body, #app {\n  color: #1B1C1D;\n  background: #F9F9F9;\n}\n.app {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05) inset, 5px 0 6px rgba(0, 0, 0, 0.02) inset;\n  max-height: calc(100vh - 70px);\n  overflow: scroll;\n  scroll-behavior: smooth;\n}\n.main-wrapper {\n  padding-left: 200px;\n  padding-top: 70px;\n}\n.main {\n  min-height: 100vh;\n  padding: 20px 60px;\n}\n.container {\n  max-width: 1170px;\n}\nh1 {\n  margin-bottom: 30px;\n}\n.grid-3 {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-gap: 1rem;\n}\n.grid-2 {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  grid-gap: 1rem;\n}\n.card {\n  padding: 1em;\n  border-radius: 6px;\n  margin: 30px 0;\n  border: none;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n}\n.pill {\n  background: #F3F3F3;\n  height: 20px;\n  font-size: 13px;\n  border-radius: 20px;\n  width: 85px;\n  height: 25px;\n  display: inline-block;\n  line-height: 25px;\n  text-align: center;\n}\n.pill.positive {\n  background: rgba(105, 228, 166, 0.35);\n}\n.tabs {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.tabs .tab {\n  display: inline-block;\n  font-size: 18px;\n  opacity: 0.5;\n  padding: 10px 25px;\n  border-bottom: solid 3px transparent;\n  margin-bottom: 8px;\n}\n.tabs .tab.active {\n  opacity: 1;\n  border-color: #3B86FF;\n}\n.tabs .tab:not(.active):hover {\n  border-color: rgba(59, 134, 255, 0.5);\n  cursor: pointer;\n}\n.vdp-datepicker {\n  display: grid;\n  justify-items: end;\n}\n.vdp-datepicker.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.vdp-datepicker > div::after {\n  content: \"\\F078\";\n  font-size: 11px;\n  color: #A8A8A8;\n  display: block;\n  position: absolute;\n  z-index: 1;\n  right: 12px;\n  height: 32px;\n  top: 0;\n  line-height: 32px;\n  font-weight: 900;\n  font-family: \"Font Awesome 5 Pro\";\n}\n.vdp-datepicker input {\n  border: solid 1px #DFDFDF;\n  border-radius: 4px;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  padding-left: 12px;\n  height: 32px;\n  width: 150px;\n  font-size: 14px;\n  cursor: pointer;\n}\n.button {\n  padding: 4px 12px;\n  display: block;\n  text-align: center;\n  border: #1B1C1D solid 2px;\n  margin: 0 4px;\n  cursor: pointer;\n  border-radius: 4px;\n}\n.button.wide {\n  width: 155px;\n  padding: 0;\n}\n.button.active {\n  background: #1B1C1D;\n  color: white;\n}\n.button.green:hover {\n  border-color: #5EE2A0;\n  color: #5EE2A0;\n}\n.button.green.active {\n  border-color: #5EE2A0;\n  background: #5EE2A0;\n  color: white;\n}\n.button.red:hover {\n  border-color: #FF6565;\n  color: #FF6565;\n}\n.button.red.active {\n  border-color: #FF6565;\n  background: #FF6565;\n  color: white;\n}\n.button.primary:hover {\n  border-color: #3B86FF;\n  color: #3B86FF;\n}\n.button.primary.active {\n  border-color: #3B86FF;\n  background: #3B86FF;\n  color: white;\n}\n.button.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.loading {\n  -webkit-animation: loading 2s;\n          animation: loading 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\nhtml, body, #app {\n  color: #1B1C1D;\n  background: #F9F9F9;\n}\n.app {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05) inset, 5px 0 6px rgba(0, 0, 0, 0.02) inset;\n  max-height: calc(100vh - 70px);\n  overflow: scroll;\n  scroll-behavior: smooth;\n}\n.main-wrapper {\n  padding-left: 200px;\n  padding-top: 70px;\n}\n.main {\n  min-height: 100vh;\n  padding: 20px 60px;\n}\n.container {\n  max-width: 1170px;\n}\nh1 {\n  margin-bottom: 30px;\n}\n.grid-3 {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-gap: 1rem;\n}\n.grid-2 {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  grid-gap: 1rem;\n}\n.card {\n  padding: 1em;\n  border-radius: 6px;\n  margin: 30px 0;\n  border: none;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n}\n.pill {\n  background: #F3F3F3;\n  height: 20px;\n  font-size: 13px;\n  border-radius: 20px;\n  width: 85px;\n  height: 25px;\n  display: inline-block;\n  line-height: 25px;\n  text-align: center;\n}\n.pill.positive {\n  background: rgba(105, 228, 166, 0.35);\n}\n.tabs {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.tabs .tab {\n  display: inline-block;\n  font-size: 18px;\n  opacity: 0.5;\n  padding: 10px 25px;\n  border-bottom: solid 3px transparent;\n  margin-bottom: 8px;\n}\n.tabs .tab.active {\n  opacity: 1;\n  border-color: #3B86FF;\n}\n.tabs .tab:not(.active):hover {\n  border-color: rgba(59, 134, 255, 0.5);\n  cursor: pointer;\n}\n.vdp-datepicker {\n  display: grid;\n  justify-items: end;\n}\n.vdp-datepicker.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.vdp-datepicker > div::after {\n  content: \"\\F078\";\n  font-size: 11px;\n  color: #A8A8A8;\n  display: block;\n  position: absolute;\n  z-index: 1;\n  right: 12px;\n  height: 32px;\n  top: 0;\n  line-height: 32px;\n  font-weight: 900;\n  font-family: \"Font Awesome 5 Pro\";\n}\n.vdp-datepicker input {\n  border: solid 1px #DFDFDF;\n  border-radius: 4px;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  padding-left: 12px;\n  height: 32px;\n  width: 150px;\n  font-size: 14px;\n  cursor: pointer;\n}\n.button {\n  padding: 4px 12px;\n  display: block;\n  text-align: center;\n  border: #1B1C1D solid 2px;\n  margin: 0 4px;\n  cursor: pointer;\n  border-radius: 4px;\n}\n.button.wide {\n  width: 155px;\n  padding: 0;\n}\n.button.active {\n  background: #1B1C1D;\n  color: white;\n}\n.button.green:hover {\n  border-color: #5EE2A0;\n  color: #5EE2A0;\n}\n.button.green.active {\n  border-color: #5EE2A0;\n  background: #5EE2A0;\n  color: white;\n}\n.button.red:hover {\n  border-color: #FF6565;\n  color: #FF6565;\n}\n.button.red.active {\n  border-color: #FF6565;\n  background: #FF6565;\n  color: white;\n}\n.button.primary:hover {\n  border-color: #3B86FF;\n  color: #3B86FF;\n}\n.button.primary.active {\n  border-color: #3B86FF;\n  background: #3B86FF;\n  color: white;\n}\n.button.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.button.invisible-button {\n  border-color: transparent;\n}\n.loading {\n  -webkit-animation: loading 2s;\n          animation: loading 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.flex-table {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled {\n  opacity: 0.5;\n}\n.flex-table .flex-table-row {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-table-row > *.select {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table .header-row {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.flex-table .item-row {\n  border-bottom: solid 1px #F3F3F3;\n}\n.flex-table .item-row:hover {\n  background: #F9F9F9;\n}\n.flex-table th {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\n.flex-table th i {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\n.flex-table th.active i {\n  color: #3B86FF;\n}\n.clickable {\n  cursor: pointer;\n}\nbody::after {\n  content: \"\";\n  display: none;\n  position: fixed;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(27, 28, 29, 0.7);\n  z-index: 110;\n}\nbody.disabled::after {\n  display: block;\n}", ""]);
 
 // exports
 
@@ -9847,6 +9957,25 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 // module
 exports.push([module.i, ".dropdown-menu[data-v-b9055040] {\n  min-width: 150px;\n  padding-top: 0;\n}\n.dropdown-menu p.dropdown-item[data-v-b9055040] {\n  display: block;\n  margin: 0;\n  padding: 12px 16px;\n  cursor: pointer;\n}\n.dropdown-menu .current-item[data-v-b9055040] {\n  background: #F9F9F9;\n  border-bottom: solid 1px #DFDFDF;\n}\n.vue-component-filters[data-v-b9055040] {\n  margin-bottom: 12px;\n}\n.category-button[data-v-b9055040] {\n  display: inline-block;\n}\n.category-button .dropdown-menu[data-v-b9055040] {\n  min-width: 220px;\n}\n.clear-filter[data-v-b9055040] {\n  display: inline-block;\n  margin-left: 20px;\n  font-size: 14px;\n  font-weight: 500;\n  color: #3B86FF;\n  cursor: pointer;\n}\n.clear-filter[data-v-b9055040]:hover {\n  opacity: 0.9;\n}\n.global[data-v-b9055040] {\n  height: 32px;\n  width: 150px;\n  color: #1b1c1d;\n  background-color: #ffffff;\n  border: 1px solid #dfdfdf;\n  font-size: 14px;\n  font-weight: bold;\n  margin-left: auto;\n}\n.global img[data-v-b9055040] {\n  margin-top: 6px;\n}\n.global span[data-v-b9055040] {\n  margin-left: -8px;\n  margin-top: -3px;\n  background-color: #3b86ff;\n  width: 24px;\n  height: 24px;\n  border-radius: 25%;\n}\n.global span img[data-v-b9055040] {\n  margin-top: 0px;\n}\n.counter-filter[data-v-b9055040] {\n  position: absolute;\n  height: 20px;\n  width: 20px;\n  border-radius: 50%;\n  background-color: #f3f3f3;\n  z-index: 500;\n  box-shadow: 0px 3px 6px #a8a8a8;\n  margin-left: -10px;\n  margin-top: -10px;\n  line-height: 14px;\n}\n.category[data-v-b9055040] {\n  background-color: #dfdfdf;\n  color: #1b1c1d;\n  font-size: 12px;\n  font-weight: bold;\n  border: 0;\n  height: 32px;\n  width: 114px;\n}\n.category img[data-v-b9055040] {\n  margin-top: 6px;\n}\n.dropdown-toggle[data-v-b9055040]::after {\n  display: none;\n}\n.dropdown-menu[data-v-b9055040]:hover {\n  display: block;\n}\n.dropdown-menu[data-v-b9055040] {\n  overflow-y: auto;\n  max-height: 285px;\n  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);\n}\n.dropdown-menu input[type=text][data-v-b9055040] {\n  border: 0px;\n  border-bottom: 1px solid #a8a8a8;\n  color: #a8a8a8;\n  padding: 5px 0;\n  width: 100%;\n}\n.dropdown-menu input[type=text][data-v-b9055040]::-webkit-input-placeholder {\n  color: #a8a8a8;\n  text-align: center;\n}\n.dropdown-menu p[data-v-b9055040] {\n  display: inline;\n  font-size: 12px;\n  color: #1b1c1d;\n}\n.dropdown-menu .container[data-v-b9055040] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.dropdown-menu .container[data-v-b9055040]:hover {\n  background: #F9F9F9;\n}\n.dropdown-menu .container input[data-v-b9055040] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.dropdown-menu .checkmark[data-v-b9055040] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.dropdown-menu .container input:checked ~ .checkmark[data-v-b9055040] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.dropdown-menu .checkmark[data-v-b9055040]:after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.dropdown-menu .container input:checked ~ .checkmark[data-v-b9055040]:after {\n  display: block;\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/InviteToTeamModal.vue?vue&type=style&index=0&id=a8bdd31e&scoped=true&lang=scss&":
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/InviteToTeamModal.vue?vue&type=style&index=0&id=a8bdd31e&scoped=true&lang=scss& ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".invite-to-team[data-v-a8bdd31e] {\n  display: block;\n  position: fixed;\n  z-index: 120;\n  left: 50%;\n  top: 5vh;\n  height: 70vh;\n  -webkit-transform: translateX(-50%);\n          transform: translateX(-50%);\n  width: 100%;\n  max-width: 646px;\n  margin: 0;\n  background: #F9F9F9;\n}\n.circle[data-v-a8bdd31e] {\n  position: absolute;\n  right: 8px;\n  top: 8px;\n  height: 40px;\n  width: 40px;\n  display: block;\n  line-height: 44px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  cursor: pointer;\n  color: #3C3B54;\n}\n.circle i[data-v-a8bdd31e] {\n  font-size: 21px;\n}\n.circle[data-v-a8bdd31e]:hover {\n  color: #FF6565;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n}\nh2[data-v-a8bdd31e] {\n  font-size: 24px;\n  font-weight: 400;\n  text-align: center;\n  margin-top: 20px;\n}\nh2 strong[data-v-a8bdd31e] {\n  font-weight: 500;\n}\np.info[data-v-a8bdd31e] {\n  font-size: 16px;\n  color: #A8A8A8;\n  text-align: center;\n}\nform[data-v-a8bdd31e] {\n  width: 100%;\n  max-width: 400px;\n  display: block;\n  margin: auto;\n}\nlabel[data-v-a8bdd31e] {\n  font-size: 12px;\n  font-weight: 500;\n  color: #3C3B54;\n  display: block;\n  width: 100%;\n  margin-bottom: 12px;\n}\nlabel.team[data-v-a8bdd31e] {\n  position: relative;\n  background: #F3F3F3;\n  margin-bottom: 72px;\n  margin-top: 40px;\n  border-radius: 4px;\n}\nlabel.team input[data-v-a8bdd31e] {\n  background: transparent;\n  border: none;\n  padding-left: 40px;\n}\nlabel.team .square[data-v-a8bdd31e] {\n  position: absolute;\n  left: 8px;\n  top: 8px;\n  background: #3B86FF;\n  color: white;\n  height: 24px;\n  width: 24px;\n  text-align: center;\n}\nlabel.team .square i[data-v-a8bdd31e] {\n  font-size: 10px;\n  line-height: 24px;\n}\ninput[data-v-a8bdd31e] {\n  display: block;\n  width: 100%;\n  border: solid 1px #F3F3F3;\n  border-radius: 4px;\n  height: 40px;\n  box-sizing: border-box;\n  padding: 0 12px;\n  line-height: 40px;\n  font-size: 14px;\n  background: white;\n}\ninput[data-v-a8bdd31e]::-webkit-input-placeholder {\n  color: #DFDFDF;\n}\ninput[data-v-a8bdd31e]::-moz-placeholder {\n  color: #DFDFDF;\n}\ninput[data-v-a8bdd31e]:-ms-input-placeholder {\n  color: #DFDFDF;\n}\ninput[data-v-a8bdd31e]::-ms-input-placeholder {\n  color: #DFDFDF;\n}\ninput[data-v-a8bdd31e]::placeholder {\n  color: #DFDFDF;\n}\ninput[type=submit][data-v-a8bdd31e] {\n  height: 50px;\n  line-height: 50px;\n  background: #3B86FF;\n  color: white;\n  font-weight: 500;\n  margin-top: 20px;\n}\ninput[type=submit][data-v-a8bdd31e]:disabled {\n  background: rgba(60, 59, 84, 0.5);\n}", ""]);
 
 // exports
 
@@ -10112,7 +10241,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".teams-table[data-v-0b6bf463] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.clickable[data-v-0b6bf463] {\n  cursor: pointer;\n}\ntable[data-v-0b6bf463] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\ntable.disabled[data-v-0b6bf463] {\n  opacity: 0.5;\n}\ntr[data-v-0b6bf463]:hover {\n  background: #F9F9F9;\n}\nimg[data-v-0b6bf463] {\n  height: 88px;\n  width: 66px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  margin: 8px 0 8px 16px;\n}\ni[data-v-0b6bf463] {\n  margin-right: 12px;\n  font-size: 11px;\n}\ni.fa-arrow-up[data-v-0b6bf463] {\n  color: #5EE2A0;\n}\ni.fa-arrow-down[data-v-0b6bf463] {\n  color: #FF6565;\n}\ntr.header-row[data-v-0b6bf463] {\n  background: white;\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\ntr.team-row[data-v-0b6bf463] {\n  border-bottom: solid 1px #DFDFDF;\n}\ntr.team-row.in[data-v-0b6bf463] > :first-child {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\ntr.team-row.out[data-v-0b6bf463] > :first-child {\n  box-shadow: 4px 0 #FF6565 inset;\n}\nth[data-v-0b6bf463] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\nth[data-v-0b6bf463]:first-child {\n  padding-left: 16px;\n  width: 100px;\n}\nth.id[data-v-0b6bf463] {\n  width: 75px;\n}\nth.title[data-v-0b6bf463] {\n  width: 150px;\n}\nth i[data-v-0b6bf463] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.swipes[data-v-0b6bf463] {\n  width: 12%;\n  text-align: center;\n}\nth.popularity[data-v-0b6bf463] {\n  width: 10%;\n}\nth.compare[data-v-0b6bf463] {\n  width: 15%;\n  text-align: center;\n}\nth.active i[data-v-0b6bf463] {\n  color: #3B86FF;\n}\ntd.select[data-v-0b6bf463] {\n  padding: 20px 0;\n  padding-left: 20px;\n}\ntd.title[data-v-0b6bf463] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\ntd.title .square[data-v-0b6bf463] {\n  color: #1B1C1D;\n  background: none;\n}\ntd.title .square i[data-v-0b6bf463] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  font-size: 12px;\n}\ntd.assigned[data-v-0b6bf463] {\n  width: 220px;\n}\n.show-more[data-v-0b6bf463] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-0b6bf463] {\n  -webkit-animation: loading-data-v-0b6bf463 2s;\n          animation: loading-data-v-0b6bf463 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-0b6bf463] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-0b6bf463]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-0b6bf463] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-0b6bf463] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-0b6bf463]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463]:after {\n  display: block;\n}\n.square[data-v-0b6bf463] {\n  background: #F3F3F3;\n  color: white;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 12px;\n  font-weight: 400;\n}\n.square.sales[data-v-0b6bf463] {\n  background: #3B86FF;\n}\n.square.admin[data-v-0b6bf463] {\n  background: #3C3B54;\n}\n.square i[data-v-0b6bf463] {\n  color: #A8A8A8;\n  margin-right: 16px;\n  font-size: 16px;\n}\n.button[data-v-0b6bf463] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n}\n.button i[data-v-0b6bf463] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-0b6bf463] {\n  font-weight: 900;\n}\n.view-single[data-v-0b6bf463] {\n  font-size: 12px;\n  font-weight: 700;\n  padding: 0 12px;\n  color: #A8A8A8;\n  cursor: pointer;\n}\n.team-totals[data-v-0b6bf463] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.team-totals span[data-v-0b6bf463] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.user-row[data-v-0b6bf463]:not(:last-child) {\n  border-bottom: solid 2px white;\n}\n.user-row td[data-v-0b6bf463] {\n  background: #F9F9F9;\n  font-size: 14px;\n}\n.user-row td.index[data-v-0b6bf463] {\n  text-align: right;\n  padding: 12px 20px;\n}\n.team-users[data-v-0b6bf463] {\n  display: none;\n}\n.team-users.expanded[data-v-0b6bf463] {\n  display: table-row-group;\n}\n.team-users.expanded + .team-row-wrapper[data-v-0b6bf463] {\n  box-shadow: 0 1px 0 #DFDFDF inset;\n}\n.team-row-wrapper.expanded td.title .square[data-v-0b6bf463] {\n  background: #DFDFDF;\n  font-weight: 500;\n}\n.team-row-wrapper.expanded td.title .square i[data-v-0b6bf463] {\n  color: #1B1C1D;\n  -webkit-transform: rotateZ(90deg);\n          transform: rotateZ(90deg);\n}", ""]);
+exports.push([module.i, ".teams-table[data-v-0b6bf463] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.teams-table .team-row .view-single[data-v-0b6bf463] {\n  border-color: transparent;\n}\n.teams-table .team-row.expanded[data-v-0b6bf463] {\n  background: #F3F3F3;\n}\n.teams-table .team-row.expanded .view-single[data-v-0b6bf463] {\n  color: #1B1C1D;\n  background: white;\n}\n.flex-table-row[data-v-0b6bf463] {\n  padding: 12px 0;\n}\n.flex-table-row > *.select[data-v-0b6bf463], .flex-table-row > *[data-v-0b6bf463]:nth-child(1) {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(2) {\n  padding-left: 32px;\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(3) {\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(4) {\n  min-width: 112px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(5) {\n  min-width: 132px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(6) {\n  min-width: 80px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(7) {\n  margin-left: auto;\n  min-width: 80px;\n  padding-left: 16px;\n  padding-right: 32px;\n}\n.flex-table-row td.title[data-v-0b6bf463] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.flex-table-row td.title .square[data-v-0b6bf463] {\n  margin-left: -32px;\n  color: #1B1C1D;\n  background: none;\n}\n.flex-table-row td.title .square i[data-v-0b6bf463] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  font-size: 12px;\n}\ni[data-v-0b6bf463] {\n  font-size: 11px;\n}\n.show-more[data-v-0b6bf463] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-0b6bf463] {\n  -webkit-animation: loading-data-v-0b6bf463 2s;\n          animation: loading-data-v-0b6bf463 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-0b6bf463] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox input[data-v-0b6bf463] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-0b6bf463] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-0b6bf463]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463]:after {\n  display: block;\n}\n.square[data-v-0b6bf463] {\n  background: #F3F3F3;\n  color: white;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 12px;\n  font-weight: 400;\n}\n.square.sales[data-v-0b6bf463] {\n  background: #3B86FF;\n}\n.square.admin[data-v-0b6bf463] {\n  background: #3C3B54;\n}\n.square i[data-v-0b6bf463] {\n  color: #A8A8A8;\n  margin-right: 16px;\n  font-size: 16px;\n}\n.button[data-v-0b6bf463] {\n  display: inline-block;\n  width: 92px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n}\n.button.active i[data-v-0b6bf463] {\n  font-weight: 900;\n}\n.button.remove[data-v-0b6bf463] {\n  color: #FF6565;\n}\n.view-single[data-v-0b6bf463] {\n  font-size: 12px;\n  font-weight: 700;\n  padding: 0 12px;\n  color: #A8A8A8;\n  cursor: pointer;\n}\n.team-totals[data-v-0b6bf463] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.team-totals span[data-v-0b6bf463] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.user-row[data-v-0b6bf463] {\n  background: #F9F9F9;\n}\n.user-row[data-v-0b6bf463]:not(:last-child) {\n  border-bottom: solid 2px white;\n}\n.user-row td[data-v-0b6bf463] {\n  font-size: 14px;\n}\n.user-row td.index[data-v-0b6bf463] {\n  text-align: right;\n  padding-right: 20px;\n}\n.team-users[data-v-0b6bf463] {\n  overflow: hidden;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n}\n.team-users.collapsed[data-v-0b6bf463] {\n  max-height: 0 !important;\n}\n.team-users.expanded + .team-row-wrapper[data-v-0b6bf463] {\n  box-shadow: 0 1px 0 #DFDFDF inset;\n}\n.team-row.expanded td.title .square[data-v-0b6bf463] {\n  background: #DFDFDF;\n  font-weight: 500;\n}\n.team-row.expanded td.title .square i[data-v-0b6bf463] {\n  color: #1B1C1D;\n  -webkit-transform: rotateZ(90deg);\n          transform: rotateZ(90deg);\n}", ""]);
 
 // exports
 
@@ -11552,6 +11681,36 @@ if(false) {}
 
 
 var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./Filters.vue?vue&type=style&index=0&id=b9055040&scoped=true&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Filters.vue?vue&type=style&index=0&id=b9055040&scoped=true&lang=scss&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/InviteToTeamModal.vue?vue&type=style&index=0&id=a8bdd31e&scoped=true&lang=scss&":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/InviteToTeamModal.vue?vue&type=style&index=0&id=a8bdd31e&scoped=true&lang=scss& ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./InviteToTeamModal.vue?vue&type=style&index=0&id=a8bdd31e&scoped=true&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/InviteToTeamModal.vue?vue&type=style&index=0&id=a8bdd31e&scoped=true&lang=scss&");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -13300,6 +13459,137 @@ var staticRenderFns = [
         _c("img", { attrs: { src: "/assets/Path26.svg", alt: "" } })
       ]
     )
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/InviteToTeamModal.vue?vue&type=template&id=a8bdd31e&scoped=true&":
+/*!********************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/InviteToTeamModal.vue?vue&type=template&id=a8bdd31e&scoped=true& ***!
+  \********************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "invite-to-team card modal" }, [
+    _c("span", { staticClass: "circle", on: { click: _vm.closeModal } }, [
+      _c("i", { staticClass: "fal fa-times" })
+    ]),
+    _vm._v(" "),
+    _c("h2", [
+      _vm._v("Invite people to "),
+      _c("strong", [_vm._v(_vm._s(_vm.team.title))])
+    ]),
+    _vm._v(" "),
+    _vm._m(0),
+    _vm._v(" "),
+    _c("form", { on: { submit: _vm.submitInvite } }, [
+      _c("label", { staticClass: "team" }, [
+        _c("input", {
+          attrs: { type: "text", name: "team", disabled: "" },
+          domProps: { value: _vm.theTeam.title }
+        }),
+        _vm._v(" "),
+        _vm._m(1)
+      ]),
+      _vm._v(" "),
+      _c("label", [
+        _vm._v("\n            Email\n            "),
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.newUser.email,
+              expression: "newUser.email"
+            }
+          ],
+          attrs: {
+            type: "email",
+            name: "email",
+            id: "invite-email",
+            placeholder: "example@mail.com"
+          },
+          domProps: { value: _vm.newUser.email },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.$set(_vm.newUser, "email", $event.target.value)
+            }
+          }
+        })
+      ]),
+      _vm._v(" "),
+      _c("label", [
+        _vm._v("\n            Name (optional)\n            "),
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.newUser.name,
+              expression: "newUser.name"
+            }
+          ],
+          attrs: {
+            type: "text",
+            name: "name",
+            id: "invite-name",
+            placeholder: "Optional"
+          },
+          domProps: { value: _vm.newUser.name },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.$set(_vm.newUser, "name", $event.target.value)
+            }
+          }
+        })
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        attrs: {
+          type: "submit",
+          value: "Add email",
+          disabled: _vm.submitDisabled
+        }
+      })
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", { staticClass: "info" }, [
+      _vm._v("We'll send an invite via "),
+      _c("strong", [_vm._v("e-mail")]),
+      _vm._v(" they need to accept")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("span", { staticClass: "square" }, [
+      _c("i", { staticClass: "fas fa-check" })
+    ])
   }
 ]
 render._withStripped = true
@@ -15384,9 +15674,10 @@ var render = function() {
       ]),
       _vm._v(" "),
       _c(
-        "table",
+        "div",
+        { staticClass: "flex-table" },
         [
-          _c("tr", { staticClass: "header-row" }, [
+          _c("div", { staticClass: "header-row flex-table-row" }, [
             _vm._m(0),
             _vm._v(" "),
             _c(
@@ -15416,7 +15707,7 @@ var render = function() {
             _c(
               "th",
               {
-                staticClass: "clickable title",
+                staticClass: "clickable assigned",
                 class: { active: this.sortBy == "assigned" },
                 on: {
                   click: function($event) {
@@ -15440,7 +15731,7 @@ var render = function() {
             _c(
               "th",
               {
-                staticClass: "clickable",
+                staticClass: "clickable members",
                 class: { active: this.sortBy == "users" },
                 on: {
                   click: function($event) {
@@ -15464,7 +15755,7 @@ var render = function() {
             _c(
               "th",
               {
-                staticClass: "clickable",
+                staticClass: "clickable collections",
                 class: { active: this.sortBy == "collections" },
                 on: {
                   click: function($event) {
@@ -15488,7 +15779,7 @@ var render = function() {
             _c(
               "th",
               {
-                staticClass: "clickable",
+                staticClass: "clickable status",
                 class: { active: this.sortBy == "status" },
                 on: {
                   click: function($event) {
@@ -15509,104 +15800,132 @@ var render = function() {
               ]
             ),
             _vm._v(" "),
-            _c("th", [_vm._v("Action")]),
+            _c("th", { staticClass: "action" }, [_vm._v("Action")]),
             _vm._v(" "),
             _c("th")
           ]),
           _vm._v(" "),
           !_vm.loading
-            ? [
-                _vm._l(_vm.teamsSorted, function(team, index) {
-                  return [
+            ? _vm._l(_vm.teamsSorted, function(team, index) {
+                return _c(
+                  "div",
+                  { key: team.id, staticClass: "team-row-wrapper" },
+                  [
                     _c(
-                      "tbody",
+                      "div",
                       {
-                        key: team.id,
-                        ref: "team-row-" + index,
-                        refInFor: true,
-                        staticClass: "team-row-wrapper"
+                        staticClass: "team-row item-row flex-table-row",
+                        class: [
+                          { expanded: _vm.expandedIds.includes(team.id) },
+                          { collapsed: !_vm.expandedIds.includes(team.id) }
+                        ]
                       },
                       [
-                        _c("tr", { staticClass: "team-row" }, [
-                          _c("td", { staticClass: "select" }, [
-                            _c("label", { staticClass: "checkbox" }, [
-                              _c("input", {
-                                attrs: { type: "checkbox" },
-                                on: {
-                                  change: function($event) {
-                                    return _vm.onSelect(index)
-                                  }
+                        _c("td", { staticClass: "select" }, [
+                          _c("label", { staticClass: "checkbox" }, [
+                            _c("input", {
+                              attrs: { type: "checkbox" },
+                              on: {
+                                change: function($event) {
+                                  return _vm.onSelect(index)
                                 }
-                              }),
-                              _vm._v(" "),
-                              _c("span", { staticClass: "checkmark" })
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c("span", { staticClass: "checkmark" })
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c(
+                          "td",
+                          {
+                            staticClass: "title clickable",
+                            on: {
+                              click: function($event) {
+                                return _vm.expandUsers(team)
+                              }
+                            }
+                          },
+                          [
+                            _c("span", { staticClass: "square" }, [
+                              _c("i", { staticClass: "far fa-chevron-right" }),
+                              _vm._v(_vm._s(team.title))
                             ])
-                          ]),
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c("td", { staticClass: "assigned" }, [
+                          _vm._v(_vm._s(team.expanded))
+                        ]),
+                        _vm._v(" "),
+                        _c("td", { staticClass: "members" }, [
+                          _c("span", [_vm._v(_vm._s(team.users.length))])
+                        ]),
+                        _vm._v(" "),
+                        _vm._m(1, true),
+                        _vm._v(" "),
+                        _vm._m(2, true),
+                        _vm._v(" "),
+                        _c("td", { staticClass: "action" }, [
+                          _vm.expandedIds.includes(team.id)
+                            ? _c(
+                                "span",
+                                {
+                                  staticClass: "button green active",
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.openInviteToTeam(team)
+                                    }
+                                  }
+                                },
+                                [_vm._v("Add to team")]
+                              )
+                            : _c(
+                                "span",
+                                {
+                                  staticClass: "button",
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.expandUsers(team)
+                                    }
+                                  }
+                                },
+                                [_vm._v("Edit team")]
+                              ),
                           _vm._v(" "),
                           _c(
-                            "td",
+                            "span",
                             {
-                              staticClass: "title clickable",
+                              staticClass: "view-single button",
                               on: {
                                 click: function($event) {
-                                  return _vm.expandUsers(index)
+                                  return _vm.expandUsers(team)
                                 }
                               }
                             },
-                            [
-                              _c("span", { staticClass: "square" }, [
-                                _c("i", {
-                                  staticClass: "far fa-chevron-right"
-                                }),
-                                _vm._v(_vm._s(team.title))
-                              ])
-                            ]
-                          ),
-                          _vm._v(" "),
-                          _c("td", { staticClass: "assigned" }, [
-                            _vm._v("Coming soon..")
-                          ]),
-                          _vm._v(" "),
-                          _c("td", { staticClass: "members" }, [
-                            _c("span", [_vm._v(_vm._s(team.users.length))])
-                          ]),
-                          _vm._v(" "),
-                          _vm._m(1, true),
-                          _vm._v(" "),
-                          _vm._m(2, true),
-                          _vm._v(" "),
-                          _vm._m(3, true),
-                          _vm._v(" "),
-                          _c("td", [
-                            _c(
-                              "span",
-                              {
-                                staticClass: "view-single",
-                                on: {
-                                  click: function($event) {
-                                    return _vm.expandUsers(index)
-                                  }
-                                }
-                              },
-                              [_vm._v("View")]
-                            )
-                          ])
+                            [_vm._v("View")]
+                          )
                         ])
                       ]
                     ),
                     _vm._v(" "),
                     _c(
-                      "tbody",
+                      "div",
                       {
-                        key: team.id + "child",
-                        ref: "accordion-" + index,
-                        refInFor: true,
-                        staticClass: "team-users"
+                        staticClass: "team-users",
+                        class: [
+                          { expanded: _vm.expandedIds.includes(team.id) },
+                          { collapsed: !_vm.expandedIds.includes(team.id) }
+                        ]
                       },
                       _vm._l(team.users, function(user, index) {
                         return _c(
-                          "tr",
-                          { key: index, staticClass: "user-row" },
+                          "div",
+                          {
+                            key: index,
+                            staticClass:
+                              "user-row item-row sub-item-row flex-table-row"
+                          },
                           [
                             _c("td", { staticClass: "index" }, [
                               _vm._v(_vm._s(index + 1))
@@ -15641,17 +15960,15 @@ var render = function() {
                             _vm._v(" "),
                             _c("td"),
                             _vm._v(" "),
-                            _c("td", { staticClass: "action" }),
-                            _vm._v(" "),
-                            _c("td", { staticClass: "remove" })
+                            _vm._m(3, true)
                           ]
                         )
                       }),
                       0
                     )
                   ]
-                })
-              ]
+                )
+              })
             : _vm._e()
         ],
         2
@@ -15677,23 +15994,26 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("td", { staticClass: "collections" }, [
-      _c("span", [_vm._v("Coming soon..")])
+      _c("span", [_vm._v("N/A")])
     ])
   },
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("td", { staticClass: "status" }, [
-      _c("span", [_vm._v("Coming soon..")])
-    ])
+    return _c("td", { staticClass: "status" }, [_c("span", [_vm._v("N/A")])])
   },
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("td", { staticClass: "action" }, [
-      _c("span", { staticClass: "button" }, [_vm._v("Edit team")])
+      _c("span", { staticClass: "resend" }),
+      _vm._v(" "),
+      _c("span", { staticClass: "remove button red invisible-button" }, [
+        _c("i", { staticClass: "far fa-user-minus" }),
+        _vm._v(" Remove")
+      ])
     ])
   }
 ]
@@ -15917,7 +16237,7 @@ var render = function() {
                       { key: index, staticClass: "tooltip-row" },
                       [
                         _c("span", { staticClass: "team" }, [
-                          _vm._v(_vm._s(team.name) + " "),
+                          _vm._v(_vm._s(team.title) + " "),
                           _c("span", { staticClass: "count" }, [
                             _vm._v(_vm._s(team.users.length))
                           ])
@@ -16130,8 +16450,22 @@ var render = function() {
           users: _vm.users,
           loading: _vm.loadingTeams
         },
-        on: { onSelect: _vm.setSelected }
-      })
+        on: {
+          onSelect: _vm.setSelected,
+          onOpenInviteToTeam: _vm.openInviteToTeam
+        }
+      }),
+      _vm._v(" "),
+      _vm.singleTeam != null
+        ? _c("InviteToTeamModal", {
+            attrs: {
+              team: _vm.singleTeam,
+              users: _vm.users,
+              authUser: _vm.authUser
+            },
+            on: { onCloseModal: _vm.closeModal }
+          })
+        : _vm._e()
     ],
     1
   )
@@ -32362,6 +32696,93 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/InviteToTeamModal.vue":
+/*!*******************************************************!*\
+  !*** ./resources/js/components/InviteToTeamModal.vue ***!
+  \*******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _InviteToTeamModal_vue_vue_type_template_id_a8bdd31e_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./InviteToTeamModal.vue?vue&type=template&id=a8bdd31e&scoped=true& */ "./resources/js/components/InviteToTeamModal.vue?vue&type=template&id=a8bdd31e&scoped=true&");
+/* harmony import */ var _InviteToTeamModal_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./InviteToTeamModal.vue?vue&type=script&lang=js& */ "./resources/js/components/InviteToTeamModal.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _InviteToTeamModal_vue_vue_type_style_index_0_id_a8bdd31e_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./InviteToTeamModal.vue?vue&type=style&index=0&id=a8bdd31e&scoped=true&lang=scss& */ "./resources/js/components/InviteToTeamModal.vue?vue&type=style&index=0&id=a8bdd31e&scoped=true&lang=scss&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _InviteToTeamModal_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _InviteToTeamModal_vue_vue_type_template_id_a8bdd31e_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _InviteToTeamModal_vue_vue_type_template_id_a8bdd31e_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "a8bdd31e",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/InviteToTeamModal.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/InviteToTeamModal.vue?vue&type=script&lang=js&":
+/*!********************************************************************************!*\
+  !*** ./resources/js/components/InviteToTeamModal.vue?vue&type=script&lang=js& ***!
+  \********************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_InviteToTeamModal_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./InviteToTeamModal.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/InviteToTeamModal.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_InviteToTeamModal_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/InviteToTeamModal.vue?vue&type=style&index=0&id=a8bdd31e&scoped=true&lang=scss&":
+/*!*****************************************************************************************************************!*\
+  !*** ./resources/js/components/InviteToTeamModal.vue?vue&type=style&index=0&id=a8bdd31e&scoped=true&lang=scss& ***!
+  \*****************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_InviteToTeamModal_vue_vue_type_style_index_0_id_a8bdd31e_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./InviteToTeamModal.vue?vue&type=style&index=0&id=a8bdd31e&scoped=true&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/InviteToTeamModal.vue?vue&type=style&index=0&id=a8bdd31e&scoped=true&lang=scss&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_InviteToTeamModal_vue_vue_type_style_index_0_id_a8bdd31e_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_InviteToTeamModal_vue_vue_type_style_index_0_id_a8bdd31e_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_InviteToTeamModal_vue_vue_type_style_index_0_id_a8bdd31e_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_InviteToTeamModal_vue_vue_type_style_index_0_id_a8bdd31e_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_InviteToTeamModal_vue_vue_type_style_index_0_id_a8bdd31e_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/InviteToTeamModal.vue?vue&type=template&id=a8bdd31e&scoped=true&":
+/*!**************************************************************************************************!*\
+  !*** ./resources/js/components/InviteToTeamModal.vue?vue&type=template&id=a8bdd31e&scoped=true& ***!
+  \**************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_InviteToTeamModal_vue_vue_type_template_id_a8bdd31e_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./InviteToTeamModal.vue?vue&type=template&id=a8bdd31e&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/InviteToTeamModal.vue?vue&type=template&id=a8bdd31e&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_InviteToTeamModal_vue_vue_type_template_id_a8bdd31e_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_InviteToTeamModal_vue_vue_type_template_id_a8bdd31e_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/Loader.vue":
 /*!********************************************!*\
   !*** ./resources/js/components/Loader.vue ***!
@@ -36536,11 +36957,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _models_UserTeam__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _models_User__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../models/User */ "./resources/js/store/models/User.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -36622,12 +37045,68 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return fetchUserTeams;
+    }(),
+    inviteUserToTeam: function () {
+      var _inviteUserToTeam = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, _ref3) {
+        var commit, user, team, authUser, existingUser;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                commit = _ref2.commit;
+                user = _ref3.user, team = _ref3.team, authUser = _ref3.authUser;
+                // await axios.post(`/api/invite-user`, {
+                //   user: user,
+                //   team: team,
+                //   sender: authUser
+                // }).then(response => {
+                //   console.log(response.data)
+                // }).catch(err =>{
+                //   console.log(err);
+                // })
+                // Check if the user already exists
+                existingUser = _models_User__WEBPACK_IMPORTED_MODULE_3__["default"].query().where('email', user.email).first();
+
+                if (existingUser != null) {
+                  commit('addUserToTeam', {
+                    user: existingUser,
+                    team: team
+                  });
+                }
+
+              case 4:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }));
+
+      function inviteUserToTeam(_x2, _x3) {
+        return _inviteUserToTeam.apply(this, arguments);
+      }
+
+      return inviteUserToTeam;
     }()
   },
   mutations: {
     //Set the loading status of the app
     setLoading: function setLoading(state, bool) {
       state.loading = bool;
+    },
+    addUserToTeam: function addUserToTeam(state, _ref4) {
+      var user = _ref4.user,
+          team = _ref4.team;
+      console.log(user);
+      console.log(team);
+      _models_UserTeam__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
+        data: {
+          user_id: user.id,
+          team_id: team.id
+        }
+      });
     }
   }
 });

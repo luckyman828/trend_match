@@ -64,7 +64,8 @@ Route::middleware('auth:api')->group( function(){
 
     // xxx USERS xxx
     // Get countries
-    Route::get('countries', 'UserController@countries');
+    // Route::get('countries', 'UserController@countries');
+    Route::post('invite-user', 'MailController@inviteUser');
 
     // xxx Comments xxx
     // create new comment
