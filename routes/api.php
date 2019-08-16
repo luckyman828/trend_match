@@ -77,7 +77,12 @@ Route::middleware('auth:api')->group( function(){
 
     // xxx Team Invites xxx
     // List team invites
-    Route::get('team-invites', 'CatalogueController@teamInvites');
+    Route::get('team-invites', 'InviteController@index');
+    Route::delete('team-invite', 'InviteController@destroy');
+    Route::post('resend-invite', 'MailController@resendInvite');
+
+    // xxxx Teams xxx
+    Route::delete('user-team', 'TeamController@destroy');
 
 
 });

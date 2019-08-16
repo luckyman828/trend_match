@@ -8670,8 +8670,16 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Loader */ "./resources/js/components/Loader.vue");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Loader */ "./resources/js/components/Loader.vue");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -8766,9 +8774,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'teamsTable',
-  props: ['teams', 'loading', 'authUser', 'collection', 'selectedCount', 'users'],
+  props: ['teams', 'loading', 'authUser', 'collection', 'selectedCount', 'users', 'authUser'],
   components: {
-    Loader: _Loader__WEBPACK_IMPORTED_MODULE_0__["default"]
+    Loader: _Loader__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   data: function data() {
     return {
@@ -8796,7 +8804,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return dataSorted;
     }
   },
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamInvites', ['deleteInvite', 'resend']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teamInvites', ['deleteInvite', 'resend']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['removeUserFromTeam']), {
     onSelect: function onSelect(index) {
       this.$emit('onSelect', index);
     },
@@ -8830,23 +8838,58 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     openInviteToTeam: function openInviteToTeam(team) {
       this.$emit('onOpenInviteToTeam', team);
     },
-    resendInvite: function resendInvite(e, email, team_title) {
-      this.resend({
-        email: email,
-        team_title: team_title
-      });
-      var el = e.target;
-      var succes = false;
+    resendInvite: function () {
+      var _resendInvite = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(e, email, team) {
+        var succes, el;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                // const response = await this.resend({email: email, team: team, authUser: this.authUser})
+                succes = false;
+                _context.next = 3;
+                return this.resend({
+                  email: email,
+                  team: team,
+                  authUser: this.authUser
+                }).then(function (response) {
+                  return succes = response;
+                });
 
-      if (succes) {
-        el.innerHTML = '<i class="green fas fa-check-circle"></i> Invite sent';
-      } else {
-        el.innerHTML = '<i class="red fas fa-times-circle"></i> Failed';
+              case 3:
+                el = e.target;
+
+                if (succes) {
+                  el.innerHTML = '<i class="green fas fa-check-circle"></i> Invite sent';
+                } else {
+                  el.innerHTML = '<i class="red fas fa-times-circle"></i> Failed';
+                }
+
+              case 5:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function resendInvite(_x, _x2, _x3) {
+        return _resendInvite.apply(this, arguments);
       }
-    },
+
+      return resendInvite;
+    }(),
     removeInvite: function removeInvite(email, team_id) {
-      this.deleteInvite({
+      if (confirm("Are you sure you want to delete this invite?")) this.deleteInvite({
         email: email,
+        team_id: team_id
+      });
+    },
+    removeUser: function removeUser(user_id, team_id) {
+      if (confirm("Are you sure you want to remove this user from this team?")) this.removeUserFromTeam({
+        user_id: user_id,
         team_id: team_id
       });
     }
@@ -16011,7 +16054,28 @@ var render = function() {
                               _vm._v(" "),
                               _c("td"),
                               _vm._v(" "),
-                              _vm._m(3, true)
+                              _c("td", { staticClass: "action" }, [
+                                _c("span", { staticClass: "resend" }),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass:
+                                      "remove button red invisible-button",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.removeUser(user.id, team.id)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "far fa-user-minus"
+                                    }),
+                                    _vm._v(" Remove")
+                                  ]
+                                )
+                              ])
                             ]
                           )
                         }),
@@ -16037,7 +16101,7 @@ var render = function() {
                                 _vm._v(_vm._s(invited.email))
                               ]),
                               _vm._v(" "),
-                              _vm._m(4, true),
+                              _vm._m(3, true),
                               _vm._v(" "),
                               _c("td", { staticClass: "role" }),
                               _vm._v(" "),
@@ -16054,7 +16118,7 @@ var render = function() {
                                         return _vm.resendInvite(
                                           $event,
                                           invited.email,
-                                          team.title
+                                          team
                                         )
                                       }
                                     }
@@ -16131,19 +16195,6 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("td", { staticClass: "status" }, [_c("span", [_vm._v("N/A")])])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", { staticClass: "action" }, [
-      _c("span", { staticClass: "resend" }),
-      _vm._v(" "),
-      _c("span", { staticClass: "remove button red invisible-button" }, [
-        _c("i", { staticClass: "far fa-user-minus" }),
-        _vm._v(" Remove")
-      ])
-    ])
   },
   function() {
     var _vm = this
@@ -16588,7 +16639,8 @@ var render = function() {
         attrs: {
           teams: _vm.teams,
           users: _vm.users,
-          loading: _vm.loadingTeams
+          loading: _vm.loadingTeams,
+          authUser: _vm.authUser
         },
         on: {
           onSelect: _vm.setSelected,
@@ -37146,27 +37198,34 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _resend = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, _ref3) {
-        var commit, email, team_title;
+        var commit, email, team, authUser, newUser, succes;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 commit = _ref2.commit;
-                email = _ref3.email, team_title = _ref3.team_title;
-                console.log(email);
-                console.log(team_title); // // Handle the invite in the DB via API
-                // console.log('Sending request to /api/invite-user')
-                // await axios.post(`/api/invite-user`, {
-                //   user: user,
-                //   team: team,
-                //   sender: authUser
-                // }).then(response => {
-                //   console.log(response.data)
-                // }).catch(err =>{
-                //   console.log(err);
-                // })
+                email = _ref3.email, team = _ref3.team, authUser = _ref3.authUser;
+                newUser = {
+                  email: email,
+                  name: ''
+                };
+                _context2.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/resend-invite", {
+                  user: newUser,
+                  team: team,
+                  sender: authUser
+                }).then(function (response) {
+                  console.log(response.data);
+                  succes = true;
+                })["catch"](function (err) {
+                  console.log(err);
+                  succes = false;
+                });
 
-              case 4:
+              case 5:
+                return _context2.abrupt("return", succes);
+
+              case 6:
               case "end":
                 return _context2.stop();
             }
@@ -37184,31 +37243,32 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _deleteInvite = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref4, _ref5) {
-        var commit, email, team_id;
+        var commit, email, team_id, apiUrl;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 commit = _ref4.commit;
                 email = _ref5.email, team_id = _ref5.team_id;
-                console.log(email);
-                console.log(team_id);
                 commit('deleteTeamInvite', {
                   email: email,
                   team_id: team_id
-                }); // // Handle the invite in the DB via API
-                // console.log('Sending request to /api/invite-user')
-                // await axios.post(`/api/invite-user`, {
-                //   user: user,
-                //   team: team,
-                //   sender: authUser
-                // }).then(response => {
-                //   console.log(response.data)
-                // }).catch(err =>{
-                //   console.log(err);
-                // })
+                });
+                apiUrl = "/api/team-invite"; // Handle the invite in the DB via API
 
-              case 5:
+                _context3.next = 6;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("".concat(apiUrl), {
+                  data: {
+                    email: email,
+                    team_id: team_id
+                  }
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 6:
               case "end":
                 return _context3.stop();
             }
@@ -37241,11 +37301,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     deleteTeamInvite: function deleteTeamInvite(state, _ref7) {
       var email = _ref7.email,
           team_id = _ref7.team_id;
-      _models_TeamInvite__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
-        data: {
-          email: email,
-          team_id: team_id
-        }
+      _models_TeamInvite__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (invite) {
+        return invite.email == email && invite.team_id == team_id;
       });
     }
   }
@@ -37531,6 +37588,50 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return inviteUserToTeam;
+    }(),
+    removeUserFromTeam: function () {
+      var _removeUserFromTeam = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref4, _ref5) {
+        var commit, user_id, team_id;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                commit = _ref4.commit;
+                user_id = _ref5.user_id, team_id = _ref5.team_id;
+                // If the user does not exist - add a record to the team_invites store
+                commit('removeUser', {
+                  user_id: user_id,
+                  team_id: team_id
+                }); // Handle the invite in the DB via API
+
+                console.log('Sending request to /api/invite-user');
+                _context3.next = 6;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/user-team", {
+                  data: {
+                    user_id: user_id,
+                    team_id: team_id
+                  }
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 6:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+
+      function removeUserFromTeam(_x4, _x5) {
+        return _removeUserFromTeam.apply(this, arguments);
+      }
+
+      return removeUserFromTeam;
     }()
   },
   mutations: {
@@ -37538,14 +37639,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     setLoading: function setLoading(state, bool) {
       state.loading = bool;
     },
-    addUserToTeam: function addUserToTeam(state, _ref4) {
-      var user = _ref4.user,
-          team = _ref4.team;
+    addUserToTeam: function addUserToTeam(state, _ref6) {
+      var user = _ref6.user,
+          team = _ref6.team;
       _models_UserTeam__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: {
           user_id: user.id,
           team_id: team.id
         }
+      });
+    },
+    removeUser: function removeUser(state, _ref7) {
+      var user_id = _ref7.user_id,
+          team_id = _ref7.team_id;
+      _models_UserTeam__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (x) {
+        return x.user_id == user_id && x.team_id == team_id;
       });
     }
   }

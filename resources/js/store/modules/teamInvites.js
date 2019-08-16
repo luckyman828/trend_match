@@ -40,43 +40,46 @@ export default {
           }
 
       },
-      async resend({commit}, {email, team_title}) {
-        
-        console.log(email)
-        console.log(team_title)
+      async resend({commit}, {email, team, authUser}) {
 
-        // // Handle the invite in the DB via API
-        // console.log('Sending request to /api/invite-user')
-        // await axios.post(`/api/invite-user`, {
-        //   user: user,
-        //   team: team,
-        //   sender: authUser
-        // }).then(response => {
-        //   console.log(response.data)
-        // }).catch(err =>{
-        //   console.log(err);
-        // })
+        const newUser = {
+          email: email,
+          name: ''
+        }
+
+        let succes
+        // Handle the invite in the DB via API
+        await axios.post(`/api/resend-invite`, {
+          user: newUser,
+          team: team,
+          sender: authUser
+        }).then(response => {
+          console.log(response.data)
+          succes = true
+        }).catch(err =>{
+          console.log(err);
+          succes = false
+        })
+        return succes
 
 
       },
       async deleteInvite({commit}, {email, team_id}) {
-        
-        console.log(email)
-        console.log(team_id)
 
         commit('deleteTeamInvite', {email: email, team_id: team_id})
 
-        // // Handle the invite in the DB via API
-        // console.log('Sending request to /api/invite-user')
-        // await axios.post(`/api/invite-user`, {
-        //   user: user,
-        //   team: team,
-        //   sender: authUser
-        // }).then(response => {
-        //   console.log(response.data)
-        // }).catch(err =>{
-        //   console.log(err);
-        // })
+        const apiUrl = `/api/team-invite`
+        // Handle the invite in the DB via API
+        await axios.delete(`${apiUrl}`, {
+          data: {
+            email: email,
+            team_id: team_id
+          }
+        }).then(response => {
+          console.log(response.data)
+        }).catch(err =>{
+          console.log(err);
+        })
 
 
       }
@@ -99,11 +102,8 @@ export default {
       },
 
       deleteTeamInvite(state, {email, team_id}) {
-        TeamInvite.insert({
-          data: {
-              email: email,
-              team_id: team_id,
-            }
+        TeamInvite.delete(invite => {
+          return ( invite.email == email && invite.team_id == team_id)
         })
       }
     }

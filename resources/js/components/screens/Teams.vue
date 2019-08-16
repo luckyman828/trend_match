@@ -3,7 +3,7 @@
         <h1>Teams</h1>
         <div class="underline"></div>
         <TeamsTopBar :itemsToFilter="teams" :title="'Teams'"/>
-        <TeamsTable :teams="teams" :users="users" :loading="loadingTeams" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/>
+        <TeamsTable :teams="teams" :users="users" :loading="loadingTeams" :authUser="authUser" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/>
         <InviteToTeamModal v-if="singleTeam != null" :team="singleTeam" :users="users" :authUser="authUser" @onCloseModal="closeModal"/>
     </div>
 </template>

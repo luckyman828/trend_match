@@ -74,6 +74,26 @@ export default {
         })
 
 
+      },
+      async removeUserFromTeam({commit}, {user_id, team_id}) {
+        
+        // If the user does not exist - add a record to the team_invites store
+        commit('removeUser', {user_id: user_id, team_id: team_id})
+
+        // Handle the invite in the DB via API
+        console.log('Sending request to /api/invite-user')
+        await axios.delete(`/api/user-team`, {
+          data: {
+            user_id: user_id,
+            team_id: team_id,
+          }
+        }).then(response => {
+          console.log(response.data)
+        }).catch(err =>{
+          console.log(err);
+        })
+
+
       }
     },
 
@@ -90,6 +110,12 @@ export default {
               user_id: user.id,
               team_id: team.id,
             }
+        })
+      },
+
+      removeUser(state, {user_id, team_id}) {
+        UserTeam.delete(x => {
+          return ( x.user_id == user_id && x.team_id == team_id)
         })
       }
     }

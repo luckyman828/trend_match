@@ -57,7 +57,7 @@
                             <td></td>
                             <td class="action">
                                 <span class="resend"></span>
-                                <span class="remove button red invisible-button"><i class="far fa-user-minus"></i> Remove</span>
+                                <span class="remove button red invisible-button" @click="removeUser(user.id, team.id)"><i class="far fa-user-minus"></i> Remove</span>
                             </td>
                         </div>
 
@@ -69,7 +69,7 @@
                             <td class="role"></td>
                             <td></td>
                             <td class="action">
-                                <span class="resend button dark invisible-button" @click="resendInvite($event, invited.email, team.title)"><i class="far fa-paper-plane"></i> Resend invite</span>
+                                <span class="resend button dark invisible-button" @click="resendInvite($event, invited.email, team)"><i class="far fa-paper-plane"></i> Resend invite</span>
                                 <span class="remove button red invisible-button" @click="removeInvite(invited.email, team.id)"><i class="far fa-user-minus"></i> Remove</span>
                             </td>
                         </div>
@@ -97,6 +97,7 @@ export default {
         'collection',
         'selectedCount',
         'users',
+        'authUser',
     ],
     components: {
         Loader,
@@ -137,6 +138,7 @@ export default {
     },
     methods: {
         ...mapActions('entities/teamInvites', ['deleteInvite', 'resend']),
+        ...mapActions('entities/userTeams', ['removeUserFromTeam']),
         onSelect(index) {
             this.$emit('onSelect', index)
         },
@@ -171,10 +173,11 @@ export default {
         openInviteToTeam(team) {
             this.$emit('onOpenInviteToTeam', team)
         },
-        resendInvite(e, email, team_title) {
-            this.resend({email: email, team_title: team_title})
-            const el = e.target
+        async resendInvite(e, email, team) {
+            // const response = await this.resend({email: email, team: team, authUser: this.authUser})
             let succes = false
+            await this.resend({email: email, team: team, authUser: this.authUser}).then(response => succes = response)
+            const el = e.target
             if (succes) {
                 el.innerHTML = '<i class="green fas fa-check-circle"></i> Invite sent'
             }
@@ -183,7 +186,12 @@ export default {
             }
         },
         removeInvite(email, team_id) {
-            this.deleteInvite({email: email, team_id: team_id})
+            if ( confirm("Are you sure you want to delete this invite?") )
+                this.deleteInvite({email: email, team_id: team_id})
+        },
+        removeUser(user_id, team_id) {
+            if ( confirm("Are you sure you want to remove this user from this team?") )
+                this.removeUserFromTeam({user_id: user_id, team_id: team_id})
         }
     },
     updated() {
