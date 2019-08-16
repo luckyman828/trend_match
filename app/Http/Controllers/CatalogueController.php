@@ -26,6 +26,8 @@ use App\UserTeam;
 use App\Http\Resources\UserTeam as UserTeamResource;
 use App\Category;
 use App\Http\Resources\Category as CategoryResource;
+use App\TeamInvite;
+use App\Http\Resources\TeamInvite as TeamInviteResource;
 
 class CatalogueController extends Controller
 {
@@ -134,6 +136,14 @@ class CatalogueController extends Controller
 
         // Return collection of users as a resource
         return CommentVoteResource::collection($comment_votes);
+    }
+
+    public function teamInvites()
+    {
+        $team_invites = TeamInvite::get();
+
+        // Return collection of users as a resource
+        return TeamInviteResource::collection($team_invites);
     }
 
 }

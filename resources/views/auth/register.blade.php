@@ -1,5 +1,19 @@
 @extends('layouts.app')
 
+
+@php
+    $user_email = '';
+    $user_name = '';
+    if ( isset($_GET['email']) ) {
+        $user_email = $_GET['email'];
+    }
+    if ( isset($_GET['name']) ) {
+        $user_name = ucwords( $_GET['name'] );
+    }
+    // $user_email = htmlspecialchars($_GET["email"]);
+    // $user_name = htmlspecialchars($_GET["name"]);
+@endphp
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
@@ -15,7 +29,7 @@
                             <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
 
                             <div class="col-md-6">
-                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ $user_name }}" required autocomplete="name" autofocus>
 
                                 @error('name')
                                     <span class="invalid-feedback" role="alert">
@@ -29,7 +43,7 @@
                             <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 
                             <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
+                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ $user_email }}" required autocomplete="email">
 
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">

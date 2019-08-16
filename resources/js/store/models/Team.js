@@ -2,6 +2,7 @@
 import { Model } from '@vuex-orm/core'
 import User from './Team'
 import UserTeam from './UserTeam';
+import TeamInvite from './TeamInvite';
 
 export default class Team extends Model {
   // This is the name used as module name of the Vuex Store.
@@ -16,6 +17,7 @@ export default class Team extends Model {
       id: this.attr(null),
       title: this.attr(''),
       users: this.belongsToMany(User, UserTeam, 'team_id', 'user_id'),
+      invites: this.hasMany(TeamInvite, 'team_id'),
     }
 
     return data

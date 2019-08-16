@@ -56,6 +56,7 @@ class ActionController extends Controller
         if($finalAction->save()) {
             return new ProductFinalActionResource($finalAction);
         }
+
     }
 
     public function destroyFinal(Request $request)

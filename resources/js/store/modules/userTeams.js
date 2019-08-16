@@ -50,21 +50,29 @@ export default {
       },
       async inviteUserToTeam({commit}, {user, team, authUser}) {
         
-        // await axios.post(`/api/invite-user`, {
-        //   user: user,
-        //   team: team,
-        //   sender: authUser
-        // }).then(response => {
-        //   console.log(response.data)
-        // }).catch(err =>{
-        //   console.log(err);
-        // })
-
+        // Handle the invite in Vuex
         // Check if the user already exists
         const existingUser = User.query().where('email', user.email).first()
         if (existingUser != null) {
+          // If the user exists - add them to the team (does not matter if they are already a member of the team)
           commit('addUserToTeam', {user: existingUser, team: team})
+        } else {
+          // If the user does not exist - add a record to the team_invites store
+          commit('entities/teamInvites/addTeamInvite', {email: user.email, team_id: team.id}, {root: true})
         }
+
+        // Handle the invite in the DB via API
+        console.log('Sending request to /api/invite-user')
+        await axios.post(`/api/invite-user`, {
+          user: user,
+          team: team,
+          sender: authUser
+        }).then(response => {
+          console.log(response.data)
+        }).catch(err =>{
+          console.log(err);
+        })
+
 
       }
     },
@@ -77,8 +85,6 @@ export default {
       },
   
       addUserToTeam(state, {user, team}) {
-        console.log(user)
-        console.log(team)
         UserTeam.insert({
           data: {
               user_id: user.id,

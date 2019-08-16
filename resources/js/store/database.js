@@ -21,6 +21,8 @@ import UserTeam from './models/UserTeam';
 import userTeams from './modules/userTeams';
 import Category from './models/Category';
 import categories from './modules/categories';
+import TeamInvite from './models/TeamInvite';
+import teamInvites from './modules/teamInvites';
 
 const database = new Database()
 
@@ -35,5 +37,6 @@ database.register(Team, teams)
 database.register(CommentVote, commentVotes)
 database.register(UserTeam, userTeams)
 database.register(Category, categories)
+database.register(TeamInvite, teamInvites)
 
 export default database

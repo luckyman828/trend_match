@@ -60,6 +60,19 @@
                                 <span class="remove button red invisible-button"><i class="far fa-user-minus"></i> Remove</span>
                             </td>
                         </div>
+
+                        <div class="user-row item-row sub-item-row flex-table-row invited-row" v-for="(invited, index) in team.invites" :key="index + team.users.length + 1">
+                            <td class="index">{{team.users.length + index + 1}}</td>
+                            <td class="name">No name yet</td>
+                            <td class="email">{{invited.email}}</td>
+                            <td class="collections"><span><i class="far fa-exclamation-triangle"></i> invited</span></td>
+                            <td class="role"></td>
+                            <td></td>
+                            <td class="action">
+                                <span class="resend button dark invisible-button" @click="resendInvite($event, invited.email, team.title)"><i class="far fa-paper-plane"></i> Resend invite</span>
+                                <span class="remove button red invisible-button" @click="removeInvite(invited.email, team.id)"><i class="far fa-user-minus"></i> Remove</span>
+                            </td>
+                        </div>
                     </div>
 
                 </div>
@@ -123,6 +136,7 @@ export default {
         }
     },
     methods: {
+        ...mapActions('entities/teamInvites', ['deleteInvite', 'resend']),
         onSelect(index) {
             this.$emit('onSelect', index)
         },
@@ -156,6 +170,20 @@ export default {
         },
         openInviteToTeam(team) {
             this.$emit('onOpenInviteToTeam', team)
+        },
+        resendInvite(e, email, team_title) {
+            this.resend({email: email, team_title: team_title})
+            const el = e.target
+            let succes = false
+            if (succes) {
+                el.innerHTML = '<i class="green fas fa-check-circle"></i> Invite sent'
+            }
+            else {
+                el.innerHTML = '<i class="red fas fa-times-circle"></i> Failed'
+            }
+        },
+        removeInvite(email, team_id) {
+            this.deleteInvite({email: email, team_id: team_id})
         }
     },
     updated() {
@@ -215,6 +243,11 @@ export default {
                 padding-left: 16px;
                 padding-right: 32px;
             }
+            &.action {
+                > :first-child {
+                    margin-right: 20px;
+                }
+            }
         }
         td {
             &.title {
@@ -230,6 +263,14 @@ export default {
                     }
                 }
             }
+        }
+        &.invited-row {
+            .name, .email, .role {
+                opacity: .5;
+            }
+        }
+        i {
+            margin-right: 8px;
         }
     }
     i {
@@ -335,6 +376,15 @@ export default {
         }
         &.remove {
             color: $red;
+        }
+        &.dark {
+            color: $dark;
+            // border: none;
+            // width: auto;
+            white-space: nowrap;
+            &:hover {
+                border-bottom: solid $dark 1px;
+            }
         }
     }
     .view-single {

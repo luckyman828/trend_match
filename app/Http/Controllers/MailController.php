@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\InviteUser;
+use App\TeamInvite;
 use App\User;
 use App\UserTeam;
 use Illuminate\Http\Request;
@@ -64,7 +65,27 @@ class MailController extends Controller
 
             
         } else {
+            // If the user does not exist
+            // Send an email invite to the user
             Mail::to($request->user['email'])->send(new InviteUser($request));
+
+            // Create an entry in the team_invite table
+            // Check if the email is already invited to this team
+            $alreadyInvited = TeamInvite::find(['email' => $request->user['email'], 'team_id' => $request->team['id']]);
+            if ($alreadyInvited) {
+                // If the email has already been invited to this team, throw an error
+                return "ERR: The provided email has already been invited to this team - a new invite email has been sent though";
+            } else {
+                // If the user is not currently a member of the team - add the user to the team
+                // Construct a new TeamInvite model object
+                $teamInvite = new TeamInvite;
+                $teamInvite->email = $request->user['email'];
+                $teamInvite->team_id = $request->team['id'];
+                // Add the invite to the table
+                $teamInvite->save();
+                return "Succes: Send invite and created a new team_invite entry";
+            }
+
         }
     }
 }

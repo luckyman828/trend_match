@@ -51,15 +51,15 @@ export default {
     .selected-controller {
         position: fixed;
         bottom: 20px;
-        left: 50%;
+        left: calc(50% + 100px); //Sidebar width / 2
         box-shadow: 0 3px 6px rgba(0,0,0,.5);
-        transform: translateY(calc(100% + 20px));
+        transform: translateX(-50%) translateY(calc(100% + 20px));
         margin: 0;
         transition: .3s;
         background: $light1;
         padding: 28px 32px 20px;
         &.active {
-            transform: none;
+            transform: translateX(-50%) translateY(0);
         }
     }
     .clear-selection {

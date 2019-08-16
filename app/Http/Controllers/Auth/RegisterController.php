@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\User;
 use App\Http\Controllers\Controller;
+use App\TeamInvite;
+use App\UserTeam;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -63,10 +65,29 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        // Create the user
+        // Save a reference to the new user
+        $newUser = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+
+        // Find the teams that the user may have been invited to
+        $teamInvites = TeamInvite::where('email', $newUser->email)->get();
+        if ($teamInvites) {
+            foreach( $teamInvites as $invite) {
+                $user_team = new UserTeam;
+                $user_team->user_id = $newUser->id;
+                $user_team->team_id = $invite->team_id;
+                // Save the new user teams
+                $user_team->save();
+                // Delete the invites
+                $invite->delete();
+            }
+        }
+
+
+        return $newUser;
     }
 }

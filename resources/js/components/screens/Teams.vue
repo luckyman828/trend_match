@@ -16,6 +16,7 @@ import TeamsTable from '../TeamsTable'
 import User from '../../store/models/User'
 import UserTeam from '../../store/models/UserTeam'
 import InviteToTeamModal from '../InviteToTeamModal';
+import TeamInvite from '../../store/models/TeamInvite'
 
 export default {
     name: 'teams',
@@ -43,6 +44,9 @@ export default {
         authUser() {
             return this.$store.getters.authUser;
         },
+        teamInvites() {
+            return TeamInvite.query().all()
+        },
         userTeams() {
             return UserTeam.query().with('team').with('user').all()
         },
@@ -53,7 +57,7 @@ export default {
             // Manually find the teams and the users belonging to each team.
             // This is only necessary because I cannot make the Vuex ORM realtionship work 
             // If you can make it work, please be my guest
-            const teams = Team.query().with('users').all()
+            const teams = Team.query().with('users').with('invites').all()
             const users = this.users
             // Loop through the users and sort them between the teams
             users.forEach(user => {
@@ -83,6 +87,7 @@ export default {
         ...mapActions('entities/teams', ['fetchTeams']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/userTeams', ['fetchUserTeams']),
+        ...mapActions('entities/teamInvites', ['fetchTeamInvites']),
         setSelected(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
             const selected = this.selected
@@ -100,6 +105,7 @@ export default {
         this.fetchTeams({collection_id: 124124124})
         this.fetchUsers({collection_id: 124124124})
         this.fetchUserTeams()
+        this.fetchTeamInvites()
     }
 }
 </script>

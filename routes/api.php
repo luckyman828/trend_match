@@ -75,4 +75,9 @@ Route::middleware('auth:api')->group( function(){
     // Update comment
     Route::put('comment/update', 'CommentController@update');
 
+    // xxx Team Invites xxx
+    // List team invites
+    Route::get('team-invites', 'CatalogueController@teamInvites');
+
+
 });

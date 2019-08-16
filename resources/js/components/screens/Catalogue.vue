@@ -92,7 +92,9 @@ export default{
                     if ( teamFilterId > 0 ) {
                         // Check if the user has a team
                         if (action.user.teams[0] != null) {
-                            if (action.user.teams[0].id == teamFilterId) {
+                            // Find the users team
+                            if ( action.user.teams.findIndex(x => x.id == teamFilterId) > -1 ) {
+                            // if (action.user.teams[0].id == teamFilterId) {
                                 if (action.action == 0)
                                     product.outs.push(action.user)
                                 if (action.action == 1)

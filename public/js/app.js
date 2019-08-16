@@ -7567,6 +7567,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         team: this.theTeam,
         authUser: this.authUser
       });
+      this.closeModal();
     }
   })
 });
@@ -8671,6 +8672,23 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Loader */ "./resources/js/components/Loader.vue");
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -8778,7 +8796,7 @@ __webpack_require__.r(__webpack_exports__);
       return dataSorted;
     }
   },
-  methods: {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamInvites', ['deleteInvite', 'resend']), {
     onSelect: function onSelect(index) {
       this.$emit('onSelect', index);
     },
@@ -8811,8 +8829,28 @@ __webpack_require__.r(__webpack_exports__);
     },
     openInviteToTeam: function openInviteToTeam(team) {
       this.$emit('onOpenInviteToTeam', team);
+    },
+    resendInvite: function resendInvite(e, email, team_title) {
+      this.resend({
+        email: email,
+        team_title: team_title
+      });
+      var el = e.target;
+      var succes = false;
+
+      if (succes) {
+        el.innerHTML = '<i class="green fas fa-check-circle"></i> Invite sent';
+      } else {
+        el.innerHTML = '<i class="red fas fa-times-circle"></i> Failed';
+      }
+    },
+    removeInvite: function removeInvite(email, team_id) {
+      this.deleteInvite({
+        email: email,
+        team_id: team_id
+      });
     }
-  },
+  }),
   updated: function updated() {
     this.setHeights();
   }
@@ -9136,7 +9174,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           if (teamFilterId > 0) {
             // Check if the user has a team
             if (action.user.teams[0] != null) {
-              if (action.user.teams[0].id == teamFilterId) {
+              // Find the users team
+              if (action.user.teams.findIndex(function (x) {
+                return x.id == teamFilterId;
+              }) > -1) {
+                // if (action.user.teams[0].id == teamFilterId) {
                 if (action.action == 0) product.outs.push(action.user);
                 if (action.action == 1) product.ins.push(action.user);
                 if (action.action == 2) product.focus.push(action.user);
@@ -9778,6 +9820,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
 /* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
 /* harmony import */ var _InviteToTeamModal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../InviteToTeamModal */ "./resources/js/components/InviteToTeamModal.vue");
+/* harmony import */ var _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../store/models/TeamInvite */ "./resources/js/store/models/TeamInvite.js");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -9792,6 +9835,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+
 
 
 
@@ -9822,6 +9866,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     authUser: function authUser() {
       return this.$store.getters.authUser;
     },
+    teamInvites: function teamInvites() {
+      return _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_7__["default"].query().all();
+    },
     userTeams: function userTeams() {
       return _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_5__["default"].query()["with"]('team')["with"]('user').all();
     },
@@ -9832,7 +9879,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // Manually find the teams and the users belonging to each team.
       // This is only necessary because I cannot make the Vuex ORM realtionship work 
       // If you can make it work, please be my guest
-      var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_1__["default"].query()["with"]('users').all();
+      var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_1__["default"].query()["with"]('users')["with"]('invites').all();
       var users = this.users; // Loop through the users and sort them between the teams
 
       users.forEach(function (user) {
@@ -9858,7 +9905,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return teams;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/teamInvites', ['fetchTeamInvites']), {
     setSelected: function setSelected(index) {
       // Check if index already exists in array. If it exists remove it, else add it to array
       var selected = this.selected;
@@ -9882,6 +9929,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       collection_id: 124124124
     });
     this.fetchUserTeams();
+    this.fetchTeamInvites();
   }
 });
 
@@ -9899,7 +9947,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\nhtml, body, #app {\n  color: #1B1C1D;\n  background: #F9F9F9;\n}\n.app {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05) inset, 5px 0 6px rgba(0, 0, 0, 0.02) inset;\n  max-height: calc(100vh - 70px);\n  overflow: scroll;\n  scroll-behavior: smooth;\n}\n.main-wrapper {\n  padding-left: 200px;\n  padding-top: 70px;\n}\n.main {\n  min-height: 100vh;\n  padding: 20px 60px;\n}\n.container {\n  max-width: 1170px;\n}\nh1 {\n  margin-bottom: 30px;\n}\n.grid-3 {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-gap: 1rem;\n}\n.grid-2 {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  grid-gap: 1rem;\n}\n.card {\n  padding: 1em;\n  border-radius: 6px;\n  margin: 30px 0;\n  border: none;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n}\n.pill {\n  background: #F3F3F3;\n  height: 20px;\n  font-size: 13px;\n  border-radius: 20px;\n  width: 85px;\n  height: 25px;\n  display: inline-block;\n  line-height: 25px;\n  text-align: center;\n}\n.pill.positive {\n  background: rgba(105, 228, 166, 0.35);\n}\n.tabs {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.tabs .tab {\n  display: inline-block;\n  font-size: 18px;\n  opacity: 0.5;\n  padding: 10px 25px;\n  border-bottom: solid 3px transparent;\n  margin-bottom: 8px;\n}\n.tabs .tab.active {\n  opacity: 1;\n  border-color: #3B86FF;\n}\n.tabs .tab:not(.active):hover {\n  border-color: rgba(59, 134, 255, 0.5);\n  cursor: pointer;\n}\n.vdp-datepicker {\n  display: grid;\n  justify-items: end;\n}\n.vdp-datepicker.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.vdp-datepicker > div::after {\n  content: \"\\F078\";\n  font-size: 11px;\n  color: #A8A8A8;\n  display: block;\n  position: absolute;\n  z-index: 1;\n  right: 12px;\n  height: 32px;\n  top: 0;\n  line-height: 32px;\n  font-weight: 900;\n  font-family: \"Font Awesome 5 Pro\";\n}\n.vdp-datepicker input {\n  border: solid 1px #DFDFDF;\n  border-radius: 4px;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  padding-left: 12px;\n  height: 32px;\n  width: 150px;\n  font-size: 14px;\n  cursor: pointer;\n}\n.button {\n  padding: 4px 12px;\n  display: block;\n  text-align: center;\n  border: #1B1C1D solid 2px;\n  margin: 0 4px;\n  cursor: pointer;\n  border-radius: 4px;\n}\n.button.wide {\n  width: 155px;\n  padding: 0;\n}\n.button.active {\n  background: #1B1C1D;\n  color: white;\n}\n.button.green:hover {\n  border-color: #5EE2A0;\n  color: #5EE2A0;\n}\n.button.green.active {\n  border-color: #5EE2A0;\n  background: #5EE2A0;\n  color: white;\n}\n.button.red:hover {\n  border-color: #FF6565;\n  color: #FF6565;\n}\n.button.red.active {\n  border-color: #FF6565;\n  background: #FF6565;\n  color: white;\n}\n.button.primary:hover {\n  border-color: #3B86FF;\n  color: #3B86FF;\n}\n.button.primary.active {\n  border-color: #3B86FF;\n  background: #3B86FF;\n  color: white;\n}\n.button.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.button.invisible-button {\n  border-color: transparent;\n}\n.loading {\n  -webkit-animation: loading 2s;\n          animation: loading 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.flex-table {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled {\n  opacity: 0.5;\n}\n.flex-table .flex-table-row {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-table-row > *.select {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table .header-row {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.flex-table .item-row {\n  border-bottom: solid 1px #F3F3F3;\n}\n.flex-table .item-row:hover {\n  background: #F9F9F9;\n}\n.flex-table th {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\n.flex-table th i {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\n.flex-table th.active i {\n  color: #3B86FF;\n}\n.clickable {\n  cursor: pointer;\n}\nbody::after {\n  content: \"\";\n  display: none;\n  position: fixed;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(27, 28, 29, 0.7);\n  z-index: 110;\n}\nbody.disabled::after {\n  display: block;\n}", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\nhtml, body, #app {\n  color: #1B1C1D;\n  background: #F9F9F9;\n}\n.app {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05) inset, 5px 0 6px rgba(0, 0, 0, 0.02) inset;\n  max-height: calc(100vh - 70px);\n  overflow: scroll;\n  scroll-behavior: smooth;\n}\n.main-wrapper {\n  padding-left: 200px;\n  padding-top: 70px;\n}\n.main {\n  min-height: 100vh;\n  padding: 20px 60px;\n}\n.container {\n  max-width: 1170px;\n}\nh1 {\n  margin-bottom: 30px;\n}\n.grid-3 {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-gap: 1rem;\n}\n.grid-2 {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  grid-gap: 1rem;\n}\n.card {\n  padding: 1em;\n  border-radius: 6px;\n  margin: 30px 0;\n  border: none;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n}\n.pill {\n  background: #F3F3F3;\n  height: 20px;\n  font-size: 13px;\n  border-radius: 20px;\n  width: 85px;\n  height: 25px;\n  display: inline-block;\n  line-height: 25px;\n  text-align: center;\n}\n.pill.positive {\n  background: rgba(105, 228, 166, 0.35);\n}\n.tabs {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.tabs .tab {\n  display: inline-block;\n  font-size: 18px;\n  opacity: 0.5;\n  padding: 10px 25px;\n  border-bottom: solid 3px transparent;\n  margin-bottom: 8px;\n}\n.tabs .tab.active {\n  opacity: 1;\n  border-color: #3B86FF;\n}\n.tabs .tab:not(.active):hover {\n  border-color: rgba(59, 134, 255, 0.5);\n  cursor: pointer;\n}\n.vdp-datepicker {\n  display: grid;\n  justify-items: end;\n}\n.vdp-datepicker.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.vdp-datepicker > div::after {\n  content: \"\\F078\";\n  font-size: 11px;\n  color: #A8A8A8;\n  display: block;\n  position: absolute;\n  z-index: 1;\n  right: 12px;\n  height: 32px;\n  top: 0;\n  line-height: 32px;\n  font-weight: 900;\n  font-family: \"Font Awesome 5 Pro\";\n}\n.vdp-datepicker input {\n  border: solid 1px #DFDFDF;\n  border-radius: 4px;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  padding-left: 12px;\n  height: 32px;\n  width: 150px;\n  font-size: 14px;\n  cursor: pointer;\n}\n.button {\n  padding: 4px 12px;\n  display: block;\n  text-align: center;\n  border: #1B1C1D solid 2px;\n  margin: 0 4px;\n  cursor: pointer;\n  border-radius: 4px;\n}\n.button.wide {\n  width: 155px;\n  padding: 0;\n}\n.button.active {\n  background: #1B1C1D;\n  color: white;\n}\n.button.green:hover {\n  border-color: #5EE2A0;\n  color: #5EE2A0;\n}\n.button.green.active {\n  border-color: #5EE2A0;\n  background: #5EE2A0;\n  color: white;\n}\n.button.red:hover {\n  border-color: #FF6565;\n  color: #FF6565;\n}\n.button.red.active {\n  border-color: #FF6565;\n  background: #FF6565;\n  color: white;\n}\n.button.primary:hover {\n  border-color: #3B86FF;\n  color: #3B86FF;\n}\n.button.primary.active {\n  border-color: #3B86FF;\n  background: #3B86FF;\n  color: white;\n}\n.button.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.button.invisible-button {\n  border-color: transparent;\n}\n.loading {\n  -webkit-animation: loading 2s;\n          animation: loading 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.flex-table {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled {\n  opacity: 0.5;\n}\n.flex-table .flex-table-row {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-table-row > *.select {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table .header-row {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.flex-table .item-row {\n  border-bottom: solid 1px #F3F3F3;\n}\n.flex-table .item-row:hover {\n  background: #F9F9F9;\n}\n.flex-table th {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\n.flex-table th i {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\n.flex-table th.active i {\n  color: #3B86FF;\n}\n.clickable {\n  cursor: pointer;\n}\nbody::after {\n  content: \"\";\n  display: none;\n  position: fixed;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(27, 28, 29, 0.7);\n  z-index: 110;\n}\nbody.disabled::after {\n  display: block;\n}\ni.green {\n  color: #5EE2A0;\n}\ni.red {\n  color: #FF6565;\n}\ni.dark {\n  color: #1B1C1D;\n}\ni.primary {\n  color: #3B86FF;\n}", ""]);
 
 // exports
 
@@ -10165,7 +10213,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "span[data-v-9a749a7c] {\n  display: inline-block;\n  font-size: 14px;\n  font-weight: 700;\n}\nspan[data-v-9a749a7c]:first-child {\n  margin-right: 12px;\n}\n.selected-controller[data-v-9a749a7c] {\n  position: fixed;\n  bottom: 20px;\n  left: 50%;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);\n  -webkit-transform: translateY(calc(100% + 20px));\n          transform: translateY(calc(100% + 20px));\n  margin: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  background: #F3F3F3;\n  padding: 28px 32px 20px;\n}\n.selected-controller.active[data-v-9a749a7c] {\n  -webkit-transform: none;\n          transform: none;\n}\n.clear-selection[data-v-9a749a7c] {\n  position: absolute;\n  z-index: 1;\n  top: 8px;\n  color: #FF6565;\n  cursor: pointer;\n  font-size: 12px;\n}\n.clear-selection[data-v-9a749a7c]:hover {\n  opacity: 0.8;\n}\n.button[data-v-9a749a7c] {\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  padding-right: 22px;\n  color: #1B1C1D;\n  border-color: white;\n  background: white;\n}\n.button.green[data-v-9a749a7c] {\n  width: 155px;\n  background: #5EE2A0;\n  color: white;\n  border-color: #5EE2A0;\n  padding: 0;\n}\n.button.green.disabled[data-v-9a749a7c] {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.button i[data-v-9a749a7c] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-9a749a7c] {\n  font-weight: 900;\n}", ""]);
+exports.push([module.i, "span[data-v-9a749a7c] {\n  display: inline-block;\n  font-size: 14px;\n  font-weight: 700;\n}\nspan[data-v-9a749a7c]:first-child {\n  margin-right: 12px;\n}\n.selected-controller[data-v-9a749a7c] {\n  position: fixed;\n  bottom: 20px;\n  left: calc(50% + 100px);\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);\n  -webkit-transform: translateX(-50%) translateY(calc(100% + 20px));\n          transform: translateX(-50%) translateY(calc(100% + 20px));\n  margin: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  background: #F3F3F3;\n  padding: 28px 32px 20px;\n}\n.selected-controller.active[data-v-9a749a7c] {\n  -webkit-transform: translateX(-50%) translateY(0);\n          transform: translateX(-50%) translateY(0);\n}\n.clear-selection[data-v-9a749a7c] {\n  position: absolute;\n  z-index: 1;\n  top: 8px;\n  color: #FF6565;\n  cursor: pointer;\n  font-size: 12px;\n}\n.clear-selection[data-v-9a749a7c]:hover {\n  opacity: 0.8;\n}\n.button[data-v-9a749a7c] {\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  padding-right: 22px;\n  color: #1B1C1D;\n  border-color: white;\n  background: white;\n}\n.button.green[data-v-9a749a7c] {\n  width: 155px;\n  background: #5EE2A0;\n  color: white;\n  border-color: #5EE2A0;\n  padding: 0;\n}\n.button.green.disabled[data-v-9a749a7c] {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.button i[data-v-9a749a7c] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-9a749a7c] {\n  font-weight: 900;\n}", ""]);
 
 // exports
 
@@ -10241,7 +10289,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".teams-table[data-v-0b6bf463] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.teams-table .team-row .view-single[data-v-0b6bf463] {\n  border-color: transparent;\n}\n.teams-table .team-row.expanded[data-v-0b6bf463] {\n  background: #F3F3F3;\n}\n.teams-table .team-row.expanded .view-single[data-v-0b6bf463] {\n  color: #1B1C1D;\n  background: white;\n}\n.flex-table-row[data-v-0b6bf463] {\n  padding: 12px 0;\n}\n.flex-table-row > *.select[data-v-0b6bf463], .flex-table-row > *[data-v-0b6bf463]:nth-child(1) {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(2) {\n  padding-left: 32px;\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(3) {\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(4) {\n  min-width: 112px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(5) {\n  min-width: 132px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(6) {\n  min-width: 80px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(7) {\n  margin-left: auto;\n  min-width: 80px;\n  padding-left: 16px;\n  padding-right: 32px;\n}\n.flex-table-row td.title[data-v-0b6bf463] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.flex-table-row td.title .square[data-v-0b6bf463] {\n  margin-left: -32px;\n  color: #1B1C1D;\n  background: none;\n}\n.flex-table-row td.title .square i[data-v-0b6bf463] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  font-size: 12px;\n}\ni[data-v-0b6bf463] {\n  font-size: 11px;\n}\n.show-more[data-v-0b6bf463] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-0b6bf463] {\n  -webkit-animation: loading-data-v-0b6bf463 2s;\n          animation: loading-data-v-0b6bf463 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-0b6bf463] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox input[data-v-0b6bf463] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-0b6bf463] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-0b6bf463]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463]:after {\n  display: block;\n}\n.square[data-v-0b6bf463] {\n  background: #F3F3F3;\n  color: white;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 12px;\n  font-weight: 400;\n}\n.square.sales[data-v-0b6bf463] {\n  background: #3B86FF;\n}\n.square.admin[data-v-0b6bf463] {\n  background: #3C3B54;\n}\n.square i[data-v-0b6bf463] {\n  color: #A8A8A8;\n  margin-right: 16px;\n  font-size: 16px;\n}\n.button[data-v-0b6bf463] {\n  display: inline-block;\n  width: 92px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n}\n.button.active i[data-v-0b6bf463] {\n  font-weight: 900;\n}\n.button.remove[data-v-0b6bf463] {\n  color: #FF6565;\n}\n.view-single[data-v-0b6bf463] {\n  font-size: 12px;\n  font-weight: 700;\n  padding: 0 12px;\n  color: #A8A8A8;\n  cursor: pointer;\n}\n.team-totals[data-v-0b6bf463] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.team-totals span[data-v-0b6bf463] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.user-row[data-v-0b6bf463] {\n  background: #F9F9F9;\n}\n.user-row[data-v-0b6bf463]:not(:last-child) {\n  border-bottom: solid 2px white;\n}\n.user-row td[data-v-0b6bf463] {\n  font-size: 14px;\n}\n.user-row td.index[data-v-0b6bf463] {\n  text-align: right;\n  padding-right: 20px;\n}\n.team-users[data-v-0b6bf463] {\n  overflow: hidden;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n}\n.team-users.collapsed[data-v-0b6bf463] {\n  max-height: 0 !important;\n}\n.team-users.expanded + .team-row-wrapper[data-v-0b6bf463] {\n  box-shadow: 0 1px 0 #DFDFDF inset;\n}\n.team-row.expanded td.title .square[data-v-0b6bf463] {\n  background: #DFDFDF;\n  font-weight: 500;\n}\n.team-row.expanded td.title .square i[data-v-0b6bf463] {\n  color: #1B1C1D;\n  -webkit-transform: rotateZ(90deg);\n          transform: rotateZ(90deg);\n}", ""]);
+exports.push([module.i, ".teams-table[data-v-0b6bf463] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.teams-table .team-row .view-single[data-v-0b6bf463] {\n  border-color: transparent;\n}\n.teams-table .team-row.expanded[data-v-0b6bf463] {\n  background: #F3F3F3;\n}\n.teams-table .team-row.expanded .view-single[data-v-0b6bf463] {\n  color: #1B1C1D;\n  background: white;\n}\n.flex-table-row[data-v-0b6bf463] {\n  padding: 12px 0;\n}\n.flex-table-row > *.select[data-v-0b6bf463], .flex-table-row > *[data-v-0b6bf463]:nth-child(1) {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(2) {\n  padding-left: 32px;\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(3) {\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(4) {\n  min-width: 112px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(5) {\n  min-width: 132px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(6) {\n  min-width: 80px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(7) {\n  margin-left: auto;\n  min-width: 80px;\n  padding-left: 16px;\n  padding-right: 32px;\n}\n.flex-table-row > *.action[data-v-0b6bf463] > :first-child {\n  margin-right: 20px;\n}\n.flex-table-row td.title[data-v-0b6bf463] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.flex-table-row td.title .square[data-v-0b6bf463] {\n  margin-left: -32px;\n  color: #1B1C1D;\n  background: none;\n}\n.flex-table-row td.title .square i[data-v-0b6bf463] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  font-size: 12px;\n}\n.flex-table-row.invited-row .name[data-v-0b6bf463], .flex-table-row.invited-row .email[data-v-0b6bf463], .flex-table-row.invited-row .role[data-v-0b6bf463] {\n  opacity: 0.5;\n}\n.flex-table-row i[data-v-0b6bf463] {\n  margin-right: 8px;\n}\ni[data-v-0b6bf463] {\n  font-size: 11px;\n}\n.show-more[data-v-0b6bf463] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-0b6bf463] {\n  -webkit-animation: loading-data-v-0b6bf463 2s;\n          animation: loading-data-v-0b6bf463 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-0b6bf463] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox input[data-v-0b6bf463] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-0b6bf463] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-0b6bf463]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463]:after {\n  display: block;\n}\n.square[data-v-0b6bf463] {\n  background: #F3F3F3;\n  color: white;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 12px;\n  font-weight: 400;\n}\n.square.sales[data-v-0b6bf463] {\n  background: #3B86FF;\n}\n.square.admin[data-v-0b6bf463] {\n  background: #3C3B54;\n}\n.square i[data-v-0b6bf463] {\n  color: #A8A8A8;\n  margin-right: 16px;\n  font-size: 16px;\n}\n.button[data-v-0b6bf463] {\n  display: inline-block;\n  width: 92px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n}\n.button.active i[data-v-0b6bf463] {\n  font-weight: 900;\n}\n.button.remove[data-v-0b6bf463] {\n  color: #FF6565;\n}\n.button.dark[data-v-0b6bf463] {\n  color: #1B1C1D;\n  white-space: nowrap;\n}\n.button.dark[data-v-0b6bf463]:hover {\n  border-bottom: solid #1B1C1D 1px;\n}\n.view-single[data-v-0b6bf463] {\n  font-size: 12px;\n  font-weight: 700;\n  padding: 0 12px;\n  color: #A8A8A8;\n  cursor: pointer;\n}\n.team-totals[data-v-0b6bf463] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.team-totals span[data-v-0b6bf463] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.user-row[data-v-0b6bf463] {\n  background: #F9F9F9;\n}\n.user-row[data-v-0b6bf463]:not(:last-child) {\n  border-bottom: solid 2px white;\n}\n.user-row td[data-v-0b6bf463] {\n  font-size: 14px;\n}\n.user-row td.index[data-v-0b6bf463] {\n  text-align: right;\n  padding-right: 20px;\n}\n.team-users[data-v-0b6bf463] {\n  overflow: hidden;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n}\n.team-users.collapsed[data-v-0b6bf463] {\n  max-height: 0 !important;\n}\n.team-users.expanded + .team-row-wrapper[data-v-0b6bf463] {\n  box-shadow: 0 1px 0 #DFDFDF inset;\n}\n.team-row.expanded td.title .square[data-v-0b6bf463] {\n  background: #DFDFDF;\n  font-weight: 500;\n}\n.team-row.expanded td.title .square i[data-v-0b6bf463] {\n  color: #1B1C1D;\n  -webkit-transform: rotateZ(90deg);\n          transform: rotateZ(90deg);\n}", ""]);
 
 // exports
 
@@ -15918,53 +15966,134 @@ var render = function() {
                           { collapsed: !_vm.expandedIds.includes(team.id) }
                         ]
                       },
-                      _vm._l(team.users, function(user, index) {
-                        return _c(
-                          "div",
-                          {
-                            key: index,
-                            staticClass:
-                              "user-row item-row sub-item-row flex-table-row"
-                          },
-                          [
-                            _c("td", { staticClass: "index" }, [
-                              _vm._v(_vm._s(index + 1))
-                            ]),
-                            _vm._v(" "),
-                            _c("td", { staticClass: "name" }, [
-                              _vm._v(
-                                _vm._s(
-                                  user.name != null ? user.name : "No name set"
+                      [
+                        _vm._l(team.users, function(user, index) {
+                          return _c(
+                            "div",
+                            {
+                              key: index,
+                              staticClass:
+                                "user-row item-row sub-item-row flex-table-row"
+                            },
+                            [
+                              _c("td", { staticClass: "index" }, [
+                                _vm._v(_vm._s(index + 1))
+                              ]),
+                              _vm._v(" "),
+                              _c("td", { staticClass: "name" }, [
+                                _vm._v(
+                                  _vm._s(
+                                    user.name != null
+                                      ? user.name
+                                      : "No name set"
+                                  )
                                 )
-                              )
-                            ]),
-                            _vm._v(" "),
-                            _c("td", { staticClass: "email" }, [
-                              _vm._v(_vm._s(user.email))
-                            ]),
-                            _vm._v(" "),
-                            _c("td", { staticClass: "collections" }, [
-                              _vm._v("-")
-                            ]),
-                            _vm._v(" "),
-                            _c("td", { staticClass: "role" }, [
-                              _c(
-                                "span",
-                                {
-                                  staticClass: "square",
-                                  class: user.role.toLowerCase()
-                                },
-                                [_vm._v(_vm._s(user.role))]
-                              )
-                            ]),
-                            _vm._v(" "),
-                            _c("td"),
-                            _vm._v(" "),
-                            _vm._m(3, true)
-                          ]
-                        )
-                      }),
-                      0
+                              ]),
+                              _vm._v(" "),
+                              _c("td", { staticClass: "email" }, [
+                                _vm._v(_vm._s(user.email))
+                              ]),
+                              _vm._v(" "),
+                              _c("td", { staticClass: "collections" }, [
+                                _vm._v("-")
+                              ]),
+                              _vm._v(" "),
+                              _c("td", { staticClass: "role" }, [
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "square",
+                                    class: user.role.toLowerCase()
+                                  },
+                                  [_vm._v(_vm._s(user.role))]
+                                )
+                              ]),
+                              _vm._v(" "),
+                              _c("td"),
+                              _vm._v(" "),
+                              _vm._m(3, true)
+                            ]
+                          )
+                        }),
+                        _vm._v(" "),
+                        _vm._l(team.invites, function(invited, index) {
+                          return _c(
+                            "div",
+                            {
+                              key: index + team.users.length + 1,
+                              staticClass:
+                                "user-row item-row sub-item-row flex-table-row invited-row"
+                            },
+                            [
+                              _c("td", { staticClass: "index" }, [
+                                _vm._v(_vm._s(team.users.length + index + 1))
+                              ]),
+                              _vm._v(" "),
+                              _c("td", { staticClass: "name" }, [
+                                _vm._v("No name yet")
+                              ]),
+                              _vm._v(" "),
+                              _c("td", { staticClass: "email" }, [
+                                _vm._v(_vm._s(invited.email))
+                              ]),
+                              _vm._v(" "),
+                              _vm._m(4, true),
+                              _vm._v(" "),
+                              _c("td", { staticClass: "role" }),
+                              _vm._v(" "),
+                              _c("td"),
+                              _vm._v(" "),
+                              _c("td", { staticClass: "action" }, [
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass:
+                                      "resend button dark invisible-button",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.resendInvite(
+                                          $event,
+                                          invited.email,
+                                          team.title
+                                        )
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "far fa-paper-plane"
+                                    }),
+                                    _vm._v(" Resend invite")
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass:
+                                      "remove button red invisible-button",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.removeInvite(
+                                          invited.email,
+                                          team.id
+                                        )
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "far fa-user-minus"
+                                    }),
+                                    _vm._v(" Remove")
+                                  ]
+                                )
+                              ])
+                            ]
+                          )
+                        })
+                      ],
+                      2
                     )
                   ]
                 )
@@ -16013,6 +16142,17 @@ var staticRenderFns = [
       _c("span", { staticClass: "remove button red invisible-button" }, [
         _c("i", { staticClass: "far fa-user-minus" }),
         _vm._v(" Remove")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("td", { staticClass: "collections" }, [
+      _c("span", [
+        _c("i", { staticClass: "far fa-exclamation-triangle" }),
+        _vm._v(" invited")
       ])
     ])
   }
@@ -34468,6 +34608,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_userTeams__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./modules/userTeams */ "./resources/js/store/modules/userTeams.js");
 /* harmony import */ var _models_Category__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./models/Category */ "./resources/js/store/models/Category.js");
 /* harmony import */ var _modules_categories__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./modules/categories */ "./resources/js/store/modules/categories.js");
+/* harmony import */ var _models_TeamInvite__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./models/TeamInvite */ "./resources/js/store/models/TeamInvite.js");
+/* harmony import */ var _modules_teamInvites__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./modules/teamInvites */ "./resources/js/store/modules/teamInvites.js");
+
+
 
 
 
@@ -34503,6 +34647,7 @@ database.register(_models_Team__WEBPACK_IMPORTED_MODULE_15__["default"], _module
 database.register(_models_CommentVote__WEBPACK_IMPORTED_MODULE_17__["default"], _modules_commentVotes__WEBPACK_IMPORTED_MODULE_18__["default"]);
 database.register(_models_UserTeam__WEBPACK_IMPORTED_MODULE_19__["default"], _modules_userTeams__WEBPACK_IMPORTED_MODULE_20__["default"]);
 database.register(_models_Category__WEBPACK_IMPORTED_MODULE_21__["default"], _modules_categories__WEBPACK_IMPORTED_MODULE_22__["default"]);
+database.register(_models_TeamInvite__WEBPACK_IMPORTED_MODULE_23__["default"], _modules_teamInvites__WEBPACK_IMPORTED_MODULE_24__["default"]);
 /* harmony default export */ __webpack_exports__["default"] = (database);
 
 /***/ }),
@@ -35134,6 +35279,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
 /* harmony import */ var _Team__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Team */ "./resources/js/store/models/Team.js");
 /* harmony import */ var _UserTeam__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _TeamInvite__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./TeamInvite */ "./resources/js/store/models/TeamInvite.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -35153,6 +35299,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // Team Model
+
 
 
 
@@ -35178,7 +35325,8 @@ function (_Model) {
       var data = {
         id: this.attr(null),
         title: this.attr(''),
-        users: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_1__["default"], _UserTeam__WEBPACK_IMPORTED_MODULE_2__["default"], 'team_id', 'user_id')
+        users: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_1__["default"], _UserTeam__WEBPACK_IMPORTED_MODULE_2__["default"], 'team_id', 'user_id'),
+        invites: this.hasMany(_TeamInvite__WEBPACK_IMPORTED_MODULE_3__["default"], 'team_id')
       };
       return data;
     }
@@ -35188,6 +35336,73 @@ function (_Model) {
 }(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
 
 Team.entity = 'teams';
+
+
+/***/ }),
+
+/***/ "./resources/js/store/models/TeamInvite.js":
+/*!*************************************************!*\
+  !*** ./resources/js/store/models/TeamInvite.js ***!
+  \*************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TeamInvite; });
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// Team Invites Model
+ // import Team from './Team';
+// import User from './User';
+
+var TeamInvite =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(TeamInvite, _Model);
+
+  function TeamInvite() {
+    _classCallCheck(this, TeamInvite);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(TeamInvite).apply(this, arguments));
+  }
+
+  _createClass(TeamInvite, null, [{
+    key: "fields",
+    // This is the name used as module name of the Vuex Store.
+    // List of all fields (schema) of the product model. `this.attr` is used
+    // for the generic field type. The argument is the default value.
+    value: function fields() {
+      var data = {
+        email: this.attr(null),
+        team_id: this.attr(null)
+      };
+      return data;
+    }
+  }]);
+
+  return TeamInvite;
+}(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
+
+TeamInvite.entity = 'teamInvites';
+TeamInvite.primaryKey = ['email', 'team_id'];
 
 
 /***/ }),
@@ -36825,6 +37040,219 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 /***/ }),
 
+/***/ "./resources/js/store/modules/teamInvites.js":
+/*!***************************************************!*\
+  !*** ./resources/js/store/modules/teamInvites.js ***!
+  \***************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _models_TeamInvite__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/TeamInvite */ "./resources/js/store/models/TeamInvite.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+ // import User from '../models/User';
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    loading: true
+  },
+  getters: {
+    loadingTeamInvites: function loadingTeamInvites(state) {
+      return state.loading;
+    }
+  },
+  actions: {
+    fetchTeamInvites: function () {
+      var _fetchTeamInvites = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref) {
+        var commit, apiUrl, tryCount, succes, response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                commit = _ref.commit;
+                // Set the state to loading
+                commit('setLoading', true);
+                apiUrl = "/api/team-invites";
+                tryCount = 3;
+                succes = false;
+
+              case 5:
+                if (!(tryCount-- > 0 && !succes)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                _context.prev = 6;
+                _context.next = 9;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
+
+              case 9:
+                response = _context.sent;
+                _models_TeamInvite__WEBPACK_IMPORTED_MODULE_2__["default"].create({
+                  data: response.data
+                });
+                commit('setLoading', false);
+                succes = true;
+                _context.next = 22;
+                break;
+
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in teamInvites.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 22;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 22:
+                _context.next = 5;
+                break;
+
+              case 24:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[6, 15]]);
+      }));
+
+      function fetchTeamInvites(_x) {
+        return _fetchTeamInvites.apply(this, arguments);
+      }
+
+      return fetchTeamInvites;
+    }(),
+    resend: function () {
+      var _resend = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, _ref3) {
+        var commit, email, team_title;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                commit = _ref2.commit;
+                email = _ref3.email, team_title = _ref3.team_title;
+                console.log(email);
+                console.log(team_title); // // Handle the invite in the DB via API
+                // console.log('Sending request to /api/invite-user')
+                // await axios.post(`/api/invite-user`, {
+                //   user: user,
+                //   team: team,
+                //   sender: authUser
+                // }).then(response => {
+                //   console.log(response.data)
+                // }).catch(err =>{
+                //   console.log(err);
+                // })
+
+              case 4:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }));
+
+      function resend(_x2, _x3) {
+        return _resend.apply(this, arguments);
+      }
+
+      return resend;
+    }(),
+    deleteInvite: function () {
+      var _deleteInvite = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref4, _ref5) {
+        var commit, email, team_id;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                commit = _ref4.commit;
+                email = _ref5.email, team_id = _ref5.team_id;
+                console.log(email);
+                console.log(team_id);
+                commit('deleteTeamInvite', {
+                  email: email,
+                  team_id: team_id
+                }); // // Handle the invite in the DB via API
+                // console.log('Sending request to /api/invite-user')
+                // await axios.post(`/api/invite-user`, {
+                //   user: user,
+                //   team: team,
+                //   sender: authUser
+                // }).then(response => {
+                //   console.log(response.data)
+                // }).catch(err =>{
+                //   console.log(err);
+                // })
+
+              case 5:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+
+      function deleteInvite(_x4, _x5) {
+        return _deleteInvite.apply(this, arguments);
+      }
+
+      return deleteInvite;
+    }()
+  },
+  mutations: {
+    //Set the loading status of the app
+    setLoading: function setLoading(state, bool) {
+      state.loading = bool;
+    },
+    addTeamInvite: function addTeamInvite(state, _ref6) {
+      var email = _ref6.email,
+          team_id = _ref6.team_id;
+      _models_TeamInvite__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
+        data: {
+          email: email,
+          team_id: team_id
+        }
+      });
+    },
+    deleteTeamInvite: function deleteTeamInvite(state, _ref7) {
+      var email = _ref7.email,
+          team_id = _ref7.team_id;
+      _models_TeamInvite__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
+        data: {
+          email: email,
+          team_id: team_id
+        }
+      });
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./resources/js/store/modules/teams.js":
 /*!*********************************************!*\
   !*** ./resources/js/store/modules/teams.js ***!
@@ -37057,26 +37485,40 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 commit = _ref2.commit;
                 user = _ref3.user, team = _ref3.team, authUser = _ref3.authUser;
-                // await axios.post(`/api/invite-user`, {
-                //   user: user,
-                //   team: team,
-                //   sender: authUser
-                // }).then(response => {
-                //   console.log(response.data)
-                // }).catch(err =>{
-                //   console.log(err);
-                // })
+                // Handle the invite in Vuex
                 // Check if the user already exists
                 existingUser = _models_User__WEBPACK_IMPORTED_MODULE_3__["default"].query().where('email', user.email).first();
 
                 if (existingUser != null) {
+                  // If the user exists - add them to the team (does not matter if they are already a member of the team)
                   commit('addUserToTeam', {
                     user: existingUser,
                     team: team
                   });
-                }
+                } else {
+                  // If the user does not exist - add a record to the team_invites store
+                  commit('entities/teamInvites/addTeamInvite', {
+                    email: user.email,
+                    team_id: team.id
+                  }, {
+                    root: true
+                  });
+                } // Handle the invite in the DB via API
 
-              case 4:
+
+                console.log('Sending request to /api/invite-user');
+                _context2.next = 7;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/invite-user", {
+                  user: user,
+                  team: team,
+                  sender: authUser
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 7:
               case "end":
                 return _context2.stop();
             }
@@ -37099,8 +37541,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     addUserToTeam: function addUserToTeam(state, _ref4) {
       var user = _ref4.user,
           team = _ref4.team;
-      console.log(user);
-      console.log(team);
       _models_UserTeam__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: {
           user_id: user.id,

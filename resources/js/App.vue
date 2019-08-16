@@ -290,4 +290,20 @@ export default{
         }
     }
 
+    // Icons
+    i {
+        &.green {
+            color: $green;
+        }
+        &.red {
+            color: $red;
+        }
+        &.dark {
+            color: $dark;
+        }
+        &.primary {
+            color: $primary;
+        }
+    }
+
 </style>

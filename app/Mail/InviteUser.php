@@ -30,6 +30,9 @@ class InviteUser extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.inviteUser');
+        return $this->from('david@trendmatch.dk', 'Kollekt App')
+                    ->subject('You are invited to join the team, ' . $this->request->team['title'])
+                    ->view('emails.inviteUser');
+
     }
 }

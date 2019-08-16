@@ -53,6 +53,7 @@ export default {
         submitInvite(e) {
             e.preventDefault()
             this.inviteUserToTeam({user: this.newUser, team: this.theTeam, authUser: this.authUser})
+            this.closeModal()
         }
     }
 }
