@@ -4,7 +4,13 @@
       <router-link to="/collection" class="link"><i class="fas fa-signal-alt-3"></i> Collection</router-link>
       <!-- <router-link to="/catalogue">Catalogue</router-link> -->
       <!-- <router-link class="stick-to-bottom" to="/teams"><i class="fas fa-users"></i> Teams</router-link> -->
-      <router-link to="/teams" class="link"><i class="fas fa-users"></i> Teams</router-link>
+
+      <!-- Admin routes -->
+      <template v-if="authUser != null">
+        <template v-if="authUser.role_id >= 3">
+          <router-link to="/teams" class="link"><i class="fas fa-users"></i> Teams</router-link>
+        </template>
+      </template>
     </div>
     <div class="bottom-items">
       <signout-button class="link"/>
@@ -14,12 +20,18 @@
 
 <script>
 import SignoutButton from './SignoutButton'
+import AuthUser from '../store/models/AuthUser'
 
 export default {
   name: "sidebar",
   components: {
     SignoutButton
-  }
+  },
+  computed: {
+    authUser() {
+        return AuthUser.query().first()
+    },
+  },
 };
 </script>
 

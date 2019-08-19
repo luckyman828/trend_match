@@ -8,7 +8,9 @@
                     <span v-if="comment.votes.length > 0" class="votes bubble" :class="{second: comment.important}">{{comment.votes.length}}</span>
                     <span class="votes pill" v-if="comment.final">Final comment <i class="far fa-comment-check"></i></span>
                     <span class="body">{{comment.comment}}</span>
-                    <span :class="{active: comment.product_final}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
+
+                    <span v-if="authUser.role_id >= 3" :class="{active: comment.product_final}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
+                    <span v-else :class="{active: comment.product_final}" @click="onMarkAsFinal(comment)" class="circle disabled" @mouseover="showTooltip($event, 'Final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
                 </div>
                 <span class="user" v-if="comment.user != null"><span class="team">{{comment.user.teams[0].title}}</span> | {{comment.user.email}},</span>
             </div>
@@ -86,10 +88,12 @@ export default {
             this.newComment.product_final = false
         },
         onMarkAsFinal(comment) {
-            console.log('Comment: ' + comment.id)
-            // comment.product_final = !comment.product_final; // This let's us toggle the comments status
-            comment.product_final = !comment.product_final; // This always sets the comment as final
-            this.markAsFinal({comment: comment})
+            if (this.authUser.role_id >= 3) {
+                console.log('Comment: ' + comment.id)
+                // comment.product_final = !comment.product_final; // This let's us toggle the comments status
+                comment.product_final = !comment.product_final; // This always sets the comment as final
+                this.markAsFinal({comment: comment})
+            }
         },
         showTooltip(event, data) {
             const rect = event.target.getBoundingClientRect()
@@ -122,6 +126,7 @@ export default {
         background: $light1;
         border-radius: 8px;
         padding: 36px;
+        padding-right: 68px;
         max-height: 57vh;
         overflow-y: scroll;
         overflow-x: hidden;
@@ -129,7 +134,7 @@ export default {
     }
     .comment-wrapper {
         margin-bottom: 36px;
-        &:hover .circle {
+        &:hover {
             opacity: 1;
         }
     }
@@ -203,6 +208,9 @@ export default {
             box-shadow: 0 3px 6px rgba(0,0,0,.1);
             background: white;
             opacity: 1;
+        }
+        &.disabled:not(.active) {
+            display: none;
         }
     }
     .pill {

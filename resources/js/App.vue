@@ -31,7 +31,7 @@ export default{
         },
     },
     methods: {
-        ...mapActions(['getAuthUser']),
+        ...mapActions('entities/authUser', ['getAuthUser']),
     },
     created() {
         this.getAuthUser();
@@ -57,7 +57,7 @@ export default{
         padding-top: $navbarHeight;
     }
     .main {
-        min-height: 100vh;
+        min-height: 105vh;
         padding: 20px 60px;
     }
     .container {
@@ -205,6 +205,9 @@ export default{
         }
         &.invisible-button {
             border-color: transparent;
+            &:hover {
+                border-color: inherit;
+            }
         }
     }
     .loading {
@@ -229,6 +232,7 @@ export default{
             display: flex;
             justify-content: flex-start;
             align-items: center;
+            min-height: 45px;
             > * {
                 &.select {
                     padding-left: 16px;

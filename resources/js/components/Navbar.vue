@@ -39,9 +39,9 @@
         </div>
       </template>
       <form class="form-inline my-2 my-lg-0">
-        <button class="btn my-2 my-sm-0 mx-1 csv" type="submit">Export as CSV</button>
+        <!-- <button class="btn my-2 my-sm-0 mx-1 csv" type="submit">Export as CSV</button>
         <button class="btn my-2 my-sm-0 mx-1 feedback" type="submit">Close Feedback</button>
-        <button class="btn my-2 my-sm-0 mx-1 next" type="submit">Go to next stage</button>
+        <button class="btn my-2 my-sm-0 mx-1 next" type="submit">Go to next stage</button> -->
       </form>
     </div>
   </nav>

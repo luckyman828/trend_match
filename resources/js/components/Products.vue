@@ -5,7 +5,7 @@
         <product-single :sticky="sticky" :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut"/>
         <div class="flex-table" :class="{disabled: singleProductToShow.id != null}">
             <div class="header-row flex-table-row">
-                <th class="select dropdown-parent" @click="toggleDropdown($event)">
+                <th class="select dropdown-parent" @click="toggleDropdown($event)" v-if="authUser.role_id > 2">
                     Select <i class="fas fa-chevron-down"></i>
                     <select-dropdown @onSelectByCondition="selectByCondition"/>
                 </th>
@@ -39,7 +39,7 @@
                 <div class="product-row flex-table-row"
                 v-for="(product, index) in products" :key="product.id"
                 :class="[ (product.productFinalAction != null) ? (product.productFinalAction.action == 1) ? 'in' : 'out' : '' ]">
-                    <td class="select">
+                    <td class="select" v-if="authUser.role_id > 2">
                         <label class="checkbox">
                             <input type="checkbox" @change="onSelect(index)" :ref="'checkbox-for-' + index"/>
                             <span class="checkmark"></span>
@@ -54,22 +54,29 @@
                     <td class="square-wrapper nds"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}} / {{teamUsers.length}}</span></td>
                     <td class="square-wrapper comments"><span class="square clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.comments.length}}</span></td>
                     <template v-if="!loadingFinalActions">
-                        <template v-if="!product.productFinalAction">
-                            <td class="action">
-                                <span class="button green" @click="toggleInOut(product, 1)">In <i class="far fa-heart"></i></span>
-                                <span class="button red" @click="toggleInOut(product, 0)">Out <i class="far fa-times-circle"></i></span>
-                                <span class="view-single bind-view-single" @click="onViewSingle(product.id)">View</span>
-                            </td>
+                        <template v-if="authUser.role_id > 2">
+                            <template v-if="!product.productFinalAction">
+                                <td class="action">
+                                    <span class="button green" @click="toggleInOut(product, 1)">In <i class="far fa-heart"></i></span>
+                                    <span class="button red" @click="toggleInOut(product, 0)">Out <i class="far fa-times-circle"></i></span>
+                                    <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
+                                </td>
+                            </template>
+                            <template v-else>
+                                <td class="action">
+                                    <span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product, 1)">
+                                    In  <i class="far fa-heart"></i>
+                                    </span>
+                                    <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product, 0)">
+                                    Out  <i class="far fa-times-circle"></i>
+                                    </span>
+                                    <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
+                                </td>
+                            </template>
                         </template>
                         <template v-else>
                             <td class="action">
-                                <span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product, 1)">
-                                In  <i class="far fa-heart"></i>
-                                </span>
-                                <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product, 0)">
-                                Out  <i class="far fa-times-circle"></i>
-                                </span>
-                                <span class="view-single bind-view-single" @click="onViewSingle(product.id)">View</span>
+                                <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
                             </td>
                         </template>
                     </template>
@@ -347,6 +354,7 @@ export default {
             }
             &.id {
                 min-width: 75px;
+                margin-left: 16px;
             }
             &.image {
                 margin: 8px 0 8px 16px;
@@ -375,6 +383,9 @@ export default {
                 margin-left: auto;
                 padding-left: 16px;
                 min-width: 300px;
+                display: flex;
+                justify-content: flex-end;
+                padding-right: 16px;
             }
         }
     }
@@ -532,11 +543,13 @@ export default {
         line-height: 28px;
         position: relative;
         font-weight: 700;
-        padding-right: 22px;
         color: $dark2;
         border-color: $light2;
         margin: 0;
-        margin-right: 24px;
+        &:not(.invisible-button) {
+            margin-right: 24px;
+            padding-right: 22px;
+        }
         i {
             font-size: 16px;
             position: absolute;

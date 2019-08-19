@@ -52,7 +52,8 @@ export default {
         'categories',
         'selectedCategoriesCount',
         'teams',
-        'teamFilterId'
+        'teamFilterId',
+        'authUser'
     ],
     components: {
       TeamDropdown

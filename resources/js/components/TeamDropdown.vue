@@ -1,5 +1,5 @@
 <template>
-  <div class="team-dropdown dropdown">
+  <div class="team-dropdown dropdown" v-if="authUser != null">
         <button class="btn btn-secondary dropdown-toggle global d-flex justify-content-between" type="button" id="dropdownMenuButton" 
         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <span><img src="/assets/Path5699.svg" alt /></span> {{currentTeam.title}} <img src="/assets/Path26.svg" alt />
@@ -7,13 +7,16 @@
 
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
         <p class="dropdown-item current-item active"> {{currentTeam.title}} </p>
-        <p class="dropdown-item" @click="onSelectTeam(0)">Global</p>
-        <p :class="{active: currentTeam.id == team.id}" class="dropdown-item" v-for="team in teams" :key="team.id" @click="onSelectTeam(team.id)">{{team.title}}</p>
+        <p class="dropdown-item" @click="onSelectTeam(0)" v-if="authUser.role_id > 2">Global</p>
+        <p :class="{active: currentTeam.id == team.id}" class="dropdown-item" v-for="team in availableTeams" :key="team.id" @click="onSelectTeam(team.id)">{{team.title}}</p>
         </div>
     </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
+import AuthUser from '../store/models/AuthUser';
+
 export default {
     name: 'teamDropDown',
     props: [
@@ -24,14 +27,30 @@ export default {
         currentTeam() {
           if (this.teamFilterId > 0 && this.teams.length > 0)
             return this.teams.find(el => el.id == this.teamFilterId)
-            else return {title: 'Global'}
-            // return 'what'
+            else return {title: 'Fetching..'}
+        },
+        authUser() {
+            return AuthUser.query().with('teams').first()
+        },
+        availableTeams() {
+            const authUser = this.authUser
+            let availableTeams = this.teams
+            if (authUser) {
+                if (authUser.role_id < 3)
+                    availableTeams = authUser.teams
+                return availableTeams
+            }
+            
         },
     },
     methods: {
+        ...mapActions('entities/authUser', ['getAuthUser']),
         onSelectTeam(id) {
           this.$emit('onSelectTeam', id)
         }
+    },
+    created() {
+        // this.getAuthUser()
     }
 }
 </script>

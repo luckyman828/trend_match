@@ -7175,7 +7175,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return this.$store.getters.authUser;
     }
   },
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])(['getAuthUser'])),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/authUser', ['getAuthUser'])),
   created: function created() {
     this.getAuthUser();
   }
@@ -7257,13 +7257,29 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'cataloguesTable',
-  props: ['catalogues', 'loading', 'selectedCount'],
+  props: ['catalogues', 'loading', 'selectedCount', 'authUser', 'isLoading'],
   components: {
     Loader: _Loader__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
@@ -7459,7 +7475,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'filters',
-  props: ['categories', 'selectedCategoriesCount', 'teams', 'teamFilterId'],
+  props: ['categories', 'selectedCategoriesCount', 'teams', 'teamFilterId', 'authUser'],
   components: {
     TeamDropdown: _TeamDropdown__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
@@ -7764,6 +7780,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -7847,13 +7865,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     hotkeyHandler: function hotkeyHandler(event) {
-      // console.log(event)
       var key = event.code;
-      if (key == 'Escape') this.onCloseSingle();
-      if (key == 'ArrowRight') this.onNextSingle();
-      if (key == 'ArrowLeft') this.onPrevSingle();
-      if (key == 'KeyI') this.toggleInOut(this.product, 1);
-      if (key == 'KeyO') this.toggleInOut(this.product, 0);
+      if (key == 'Escape') this.onCloseSingle(); // Only do these if the current target is not the comment box
+
+      if (event.target.type != 'textarea') {
+        if (key == 'ArrowRight') this.onNextSingle();
+        if (key == 'ArrowLeft') this.onPrevSingle();
+
+        if (this.authUser.role_id >= 3) {
+          if (key == 'KeyI') this.toggleInOut(this.product, 1);
+          if (key == 'KeyO') this.toggleInOut(this.product, 0);
+        }
+      }
     }
   }),
   created: function created() {
@@ -7893,6 +7916,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
 //
 //
 //
@@ -7998,13 +8023,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return onSubmitComment;
     }(),
     onMarkAsFinal: function onMarkAsFinal(comment) {
-      console.log('Comment: ' + comment.id); // comment.product_final = !comment.product_final; // This let's us toggle the comments status
+      if (this.authUser.role_id >= 3) {
+        console.log('Comment: ' + comment.id); // comment.product_final = !comment.product_final; // This let's us toggle the comments status
 
-      comment.product_final = !comment.product_final; // This always sets the comment as final
+        comment.product_final = !comment.product_final; // This always sets the comment as final
 
-      this.markAsFinal({
-        comment: comment
-      });
+        this.markAsFinal({
+          comment: comment
+        });
+      }
     },
     showTooltip: function showTooltip(event, data) {
       var rect = event.target.getBoundingClientRect(); // Set tooltip position
@@ -8098,6 +8125,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -8557,6 +8591,13 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _SignoutButton__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SignoutButton */ "./resources/js/components/SignoutButton.vue");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -8572,10 +8613,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "sidebar",
   components: {
     SignoutButton: _SignoutButton__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+  computed: {
+    authUser: function authUser() {
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_1__["default"].query().first();
+    }
   }
 });
 
@@ -8622,6 +8669,12 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -8637,6 +8690,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'teamDropDown',
   props: ['teams', 'teamFilterId'],
@@ -8647,15 +8702,28 @@ __webpack_require__.r(__webpack_exports__);
       if (this.teamFilterId > 0 && this.teams.length > 0) return this.teams.find(function (el) {
         return el.id == _this.teamFilterId;
       });else return {
-        title: 'Global' // return 'what'
-
+        title: 'Fetching..'
       };
+    },
+    authUser: function authUser() {
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_1__["default"].query()["with"]('teams').first();
+    },
+    availableTeams: function availableTeams() {
+      var authUser = this.authUser;
+      var availableTeams = this.teams;
+
+      if (authUser) {
+        if (authUser.role_id < 3) availableTeams = authUser.teams;
+        return availableTeams;
+      }
     }
   },
-  methods: {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/authUser', ['getAuthUser']), {
     onSelectTeam: function onSelectTeam(id) {
       this.$emit('onSelectTeam', id);
     }
+  }),
+  created: function created() {// this.getAuthUser()
   }
 });
 
@@ -9116,6 +9184,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../store/models/CommentVote */ "./resources/js/store/models/CommentVote.js");
 /* harmony import */ var _store_models_Category__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../store/models/Category */ "./resources/js/store/models/Category.js");
 /* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -9145,6 +9214,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+
 
 
 
@@ -9211,10 +9281,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         //     product.productFinalAction = {}
 
         product.nds = JSON.parse(JSON.stringify(totalUsers)); // Copy our users into a new variable
+        // C
 
         product.actions.forEach(function (action) {
           // Filter actions by the current team filter
-          if (teamFilterId > 0) {
+          // Check if the action has a user
+          if (teamFilterId > 0 && action.user != null) {
             // Check if the user has a team
             if (action.user.teams[0] != null) {
               // Find the users team
@@ -9418,27 +9490,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         if (currentProductIndex != 0) return products[currentProductIndex - 1].id;else return -1;
       } else return -1;
     },
-    // teamUsers () {
-    //     const teamFilterId = this.teamFilterId
-    //     const allUsers = this.users
-    //     let totalUsers = []
-    //     if (teamFilterId > 0) {
-    //         allUsers.forEach(user => {
-    //             // Make sure the user has any teams
-    //             if (user.teams[0] != null) {
-    //                 // Check that the team has an id 
-    //                 if ('id' in user.teams[0]) {
-    //                     if(user.teams[0].id == teamFilterId) {
-    //                         totalUsers.push(user)
-    //                     }
-    //                 }
-    //             }
-    //         })
-    //     } else {
-    //         totalUsers = this.users
-    //     }
-    //     return totalUsers
-    // },
     teamUsers: function teamUsers() {
       var _this5 = this;
 
@@ -9449,8 +9500,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           return team.id == _this5.teamFilterId;
         });
         if (thisTeam) usersToReturn = thisTeam.users;
-      } else {
+      } else if (this.teamFilterId == 0) {
         usersToReturn = this.users;
+      } else {
+        usersToReturn = [];
       }
 
       return usersToReturn;
@@ -9480,7 +9533,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_15__["default"].query()["with"]('comment').all();
     },
     authUser: function authUser() {
-      return this.$store.getters.authUser;
+      // return this.$store.getters.authUser;
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_18__["default"].query()["with"]('teams').first();
     },
     // userTeams() {
     //     return UserTeam.query().with('team').with('user').all()
@@ -9516,7 +9570,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return teams;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])(['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {
     // ...mapActions('entities/actions', ['updateActions']),
     setSingleProduct: function setSingleProduct(index) {
       this.singleProductID = index;
@@ -9661,9 +9715,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 return this.getAuthUser();
 
               case 3:
-                this.teamFilterId = this.authUser.team_ids;
+                _context.next = 5;
+                return this.fetchTeams({
+                  collection_id: this.collectionId
+                });
 
-              case 4:
+              case 5:
+                _context.next = 7;
+                return this.fetchUserTeams();
+
+              case 7:
+                this.teamFilterId = this.authUser.teams[0].id;
+
+              case 8:
               case "end":
                 return _context.stop();
             }
@@ -9696,15 +9760,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.fetchCollections();
     this.fetchFinalActions({
       collection_id: this.collectionId
-    });
-    this.fetchTeams({
-      collection_id: this.collectionId
-    });
+    }); // this.fetchTeams({collection_id: this.collectionId})
+
     this.fetchCommentVotes({
       collection_id: this.collectionId
     });
-    this.fetchCategories();
-    this.fetchUserTeams();
+    this.fetchCategories(); // this.fetchUserTeams()
   },
   mounted: function mounted() {}
 });
@@ -9731,6 +9792,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
 /* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
 /* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -9750,6 +9812,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+
 
 
 
@@ -9781,13 +9844,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return _store_models_User__WEBPACK_IMPORTED_MODULE_8__["default"].query()["with"]('teams').all();
     },
     authUser: function authUser() {
-      return this.$store.getters.authUser;
+      // return this.$store.getters.authUser;
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"]('teams').first();
     },
     teams: function teams() {
       return _store_models_Team__WEBPACK_IMPORTED_MODULE_7__["default"].query()["with"]('users').all();
+    },
+    isLoading: function isLoading() {
+      var loading = false;
+      if (this.loadingCollections || this.authUser == null) loading = true;
+      return loading;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])(['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {
     onSelect: function onSelect(index) {
       // Check if index already exists in array. If it exists remove it, else add it to array
       var selected = this.selected;
@@ -9819,9 +9888,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 return this.getAuthUser();
 
               case 2:
-                this.teamFilterId = this.authUser.team_ids;
+                _context.next = 4;
+                return this.fetchTeams(1234);
 
-              case 3:
+              case 4:
+                _context.next = 6;
+                return this.fetchUserTeams();
+
+              case 6:
+                this.teamFilterId = this.authUser.teams[0].id;
+
+              case 7:
               case "end":
                 return _context.stop();
             }
@@ -9838,10 +9915,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   created: function created() {
     this.fetchInitialData();
-    this.fetchCollections();
-    this.fetchUserTeams();
-    this.fetchUsers(1234);
-    this.fetchTeams(1234);
+    this.fetchCollections(); // this.fetchUserTeams()
+
+    this.fetchUsers(1234); // this.fetchTeams(1234)
   }
 });
 
@@ -9990,7 +10066,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\nhtml, body, #app {\n  color: #1B1C1D;\n  background: #F9F9F9;\n}\n.app {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05) inset, 5px 0 6px rgba(0, 0, 0, 0.02) inset;\n  max-height: calc(100vh - 70px);\n  overflow: scroll;\n  scroll-behavior: smooth;\n}\n.main-wrapper {\n  padding-left: 200px;\n  padding-top: 70px;\n}\n.main {\n  min-height: 100vh;\n  padding: 20px 60px;\n}\n.container {\n  max-width: 1170px;\n}\nh1 {\n  margin-bottom: 30px;\n}\n.grid-3 {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-gap: 1rem;\n}\n.grid-2 {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  grid-gap: 1rem;\n}\n.card {\n  padding: 1em;\n  border-radius: 6px;\n  margin: 30px 0;\n  border: none;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n}\n.pill {\n  background: #F3F3F3;\n  height: 20px;\n  font-size: 13px;\n  border-radius: 20px;\n  width: 85px;\n  height: 25px;\n  display: inline-block;\n  line-height: 25px;\n  text-align: center;\n}\n.pill.positive {\n  background: rgba(105, 228, 166, 0.35);\n}\n.tabs {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.tabs .tab {\n  display: inline-block;\n  font-size: 18px;\n  opacity: 0.5;\n  padding: 10px 25px;\n  border-bottom: solid 3px transparent;\n  margin-bottom: 8px;\n}\n.tabs .tab.active {\n  opacity: 1;\n  border-color: #3B86FF;\n}\n.tabs .tab:not(.active):hover {\n  border-color: rgba(59, 134, 255, 0.5);\n  cursor: pointer;\n}\n.vdp-datepicker {\n  display: grid;\n  justify-items: end;\n}\n.vdp-datepicker.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.vdp-datepicker > div::after {\n  content: \"\\F078\";\n  font-size: 11px;\n  color: #A8A8A8;\n  display: block;\n  position: absolute;\n  z-index: 1;\n  right: 12px;\n  height: 32px;\n  top: 0;\n  line-height: 32px;\n  font-weight: 900;\n  font-family: \"Font Awesome 5 Pro\";\n}\n.vdp-datepicker input {\n  border: solid 1px #DFDFDF;\n  border-radius: 4px;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  padding-left: 12px;\n  height: 32px;\n  width: 150px;\n  font-size: 14px;\n  cursor: pointer;\n}\n.button {\n  padding: 4px 12px;\n  display: block;\n  text-align: center;\n  border: #1B1C1D solid 2px;\n  margin: 0 4px;\n  cursor: pointer;\n  border-radius: 4px;\n}\n.button.wide {\n  width: 155px;\n  padding: 0;\n}\n.button.active {\n  background: #1B1C1D;\n  color: white;\n}\n.button.green:hover {\n  border-color: #5EE2A0;\n  color: #5EE2A0;\n}\n.button.green.active {\n  border-color: #5EE2A0;\n  background: #5EE2A0;\n  color: white;\n}\n.button.red:hover {\n  border-color: #FF6565;\n  color: #FF6565;\n}\n.button.red.active {\n  border-color: #FF6565;\n  background: #FF6565;\n  color: white;\n}\n.button.primary:hover {\n  border-color: #3B86FF;\n  color: #3B86FF;\n}\n.button.primary.active {\n  border-color: #3B86FF;\n  background: #3B86FF;\n  color: white;\n}\n.button.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.button.invisible-button {\n  border-color: transparent;\n}\n.loading {\n  -webkit-animation: loading 2s;\n          animation: loading 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.flex-table {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled {\n  opacity: 0.5;\n}\n.flex-table .flex-table-row {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-table-row > *.select {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table .header-row {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.flex-table .item-row {\n  border-bottom: solid 1px #F3F3F3;\n}\n.flex-table .item-row:hover {\n  background: #F9F9F9;\n}\n.flex-table th {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\n.flex-table th i {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\n.flex-table th.active i {\n  color: #3B86FF;\n}\n.clickable {\n  cursor: pointer;\n}\nbody::after {\n  content: \"\";\n  display: none;\n  position: fixed;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(27, 28, 29, 0.7);\n  z-index: 110;\n}\nbody.disabled::after {\n  display: block;\n}\ni.green {\n  color: #5EE2A0;\n}\ni.red {\n  color: #FF6565;\n}\ni.dark {\n  color: #1B1C1D;\n}\ni.primary {\n  color: #3B86FF;\n}", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\nhtml, body, #app {\n  color: #1B1C1D;\n  background: #F9F9F9;\n}\n.app {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05) inset, 5px 0 6px rgba(0, 0, 0, 0.02) inset;\n  max-height: calc(100vh - 70px);\n  overflow: scroll;\n  scroll-behavior: smooth;\n}\n.main-wrapper {\n  padding-left: 200px;\n  padding-top: 70px;\n}\n.main {\n  min-height: 105vh;\n  padding: 20px 60px;\n}\n.container {\n  max-width: 1170px;\n}\nh1 {\n  margin-bottom: 30px;\n}\n.grid-3 {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-gap: 1rem;\n}\n.grid-2 {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  grid-gap: 1rem;\n}\n.card {\n  padding: 1em;\n  border-radius: 6px;\n  margin: 30px 0;\n  border: none;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n}\n.pill {\n  background: #F3F3F3;\n  height: 20px;\n  font-size: 13px;\n  border-radius: 20px;\n  width: 85px;\n  height: 25px;\n  display: inline-block;\n  line-height: 25px;\n  text-align: center;\n}\n.pill.positive {\n  background: rgba(105, 228, 166, 0.35);\n}\n.tabs {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.tabs .tab {\n  display: inline-block;\n  font-size: 18px;\n  opacity: 0.5;\n  padding: 10px 25px;\n  border-bottom: solid 3px transparent;\n  margin-bottom: 8px;\n}\n.tabs .tab.active {\n  opacity: 1;\n  border-color: #3B86FF;\n}\n.tabs .tab:not(.active):hover {\n  border-color: rgba(59, 134, 255, 0.5);\n  cursor: pointer;\n}\n.vdp-datepicker {\n  display: grid;\n  justify-items: end;\n}\n.vdp-datepicker.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.vdp-datepicker > div::after {\n  content: \"\\F078\";\n  font-size: 11px;\n  color: #A8A8A8;\n  display: block;\n  position: absolute;\n  z-index: 1;\n  right: 12px;\n  height: 32px;\n  top: 0;\n  line-height: 32px;\n  font-weight: 900;\n  font-family: \"Font Awesome 5 Pro\";\n}\n.vdp-datepicker input {\n  border: solid 1px #DFDFDF;\n  border-radius: 4px;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  padding-left: 12px;\n  height: 32px;\n  width: 150px;\n  font-size: 14px;\n  cursor: pointer;\n}\n.button {\n  padding: 4px 12px;\n  display: block;\n  text-align: center;\n  border: #1B1C1D solid 2px;\n  margin: 0 4px;\n  cursor: pointer;\n  border-radius: 4px;\n}\n.button.wide {\n  width: 155px;\n  padding: 0;\n}\n.button.active {\n  background: #1B1C1D;\n  color: white;\n}\n.button.green:hover {\n  border-color: #5EE2A0;\n  color: #5EE2A0;\n}\n.button.green.active {\n  border-color: #5EE2A0;\n  background: #5EE2A0;\n  color: white;\n}\n.button.red:hover {\n  border-color: #FF6565;\n  color: #FF6565;\n}\n.button.red.active {\n  border-color: #FF6565;\n  background: #FF6565;\n  color: white;\n}\n.button.primary:hover {\n  border-color: #3B86FF;\n  color: #3B86FF;\n}\n.button.primary.active {\n  border-color: #3B86FF;\n  background: #3B86FF;\n  color: white;\n}\n.button.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.button.invisible-button {\n  border-color: transparent;\n}\n.button.invisible-button:hover {\n  border-color: inherit;\n}\n.loading {\n  -webkit-animation: loading 2s;\n          animation: loading 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.flex-table {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled {\n  opacity: 0.5;\n}\n.flex-table .flex-table-row {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n  min-height: 45px;\n}\n.flex-table .flex-table-row > *.select {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table .header-row {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.flex-table .item-row {\n  border-bottom: solid 1px #F3F3F3;\n}\n.flex-table .item-row:hover {\n  background: #F9F9F9;\n}\n.flex-table th {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\n.flex-table th i {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\n.flex-table th.active i {\n  color: #3B86FF;\n}\n.clickable {\n  cursor: pointer;\n}\nbody::after {\n  content: \"\";\n  display: none;\n  position: fixed;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(27, 28, 29, 0.7);\n  z-index: 110;\n}\nbody.disabled::after {\n  display: block;\n}\ni.green {\n  color: #5EE2A0;\n}\ni.red {\n  color: #FF6565;\n}\ni.dark {\n  color: #1B1C1D;\n}\ni.primary {\n  color: #3B86FF;\n}", ""]);
 
 // exports
 
@@ -10009,7 +10085,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".catalogues-table[data-v-f0b881ae] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.clickable[data-v-f0b881ae] {\n  cursor: pointer;\n}\ntable[data-v-f0b881ae] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\ntable.disabled[data-v-f0b881ae] {\n  opacity: 0.5;\n}\ntr > *.action[data-v-f0b881ae] {\n  padding: 0 32px;\n  text-align: right;\n}\ntr[data-v-f0b881ae]:hover {\n  background: #F9F9F9;\n}\nimg[data-v-f0b881ae] {\n  height: 88px;\n  width: 66px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  margin: 8px 0 8px 16px;\n}\ni[data-v-f0b881ae] {\n  margin-right: 12px;\n  font-size: 11px;\n}\ni.fa-arrow-up[data-v-f0b881ae] {\n  color: #5EE2A0;\n}\ni.fa-arrow-down[data-v-f0b881ae] {\n  color: #FF6565;\n}\ntr.header-row[data-v-f0b881ae] {\n  background: white;\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\ntr.catalogue-row[data-v-f0b881ae] {\n  border-bottom: solid 1px #DFDFDF;\n}\ntr.catalogue-row.in[data-v-f0b881ae] > :first-child {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\ntr.catalogue-row.out[data-v-f0b881ae] > :first-child {\n  box-shadow: 4px 0 #FF6565 inset;\n}\nth[data-v-f0b881ae] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\nth[data-v-f0b881ae]:first-child {\n  padding-left: 16px;\n  width: 100px;\n}\nth.id[data-v-f0b881ae] {\n  width: 75px;\n}\nth.title[data-v-f0b881ae] {\n  width: 150px;\n  padding-left: 40px;\n}\nth i[data-v-f0b881ae] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-f0b881ae] {\n  color: #3B86FF;\n}\ntd.select[data-v-f0b881ae] {\n  padding: 20px 0;\n  padding-left: 20px;\n}\ntd.id[data-v-f0b881ae] {\n  white-space: nowrap;\n  max-width: 50px;\n  overflow: hidden;\n}\ntd.title[data-v-f0b881ae] {\n  padding: 0 40px;\n  white-space: nowrap;\n}\ntd.created[data-v-f0b881ae], td.deadline[data-v-f0b881ae] {\n  width: 120px;\n}\ntd.stage[data-v-f0b881ae] {\n  width: 84px;\n}\n.show-more[data-v-f0b881ae] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-f0b881ae] {\n  -webkit-animation: loading-data-v-f0b881ae 2s;\n          animation: loading-data-v-f0b881ae 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-f0b881ae] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-f0b881ae]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-f0b881ae] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-f0b881ae] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-f0b881ae]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae]:after {\n  display: block;\n}\n.square[data-v-f0b881ae] {\n  background: #F3F3F3;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 12px;\n  font-weight: 700;\n}\n.square.sales[data-v-f0b881ae] {\n  background: #3B86FF;\n}\n.square.admin[data-v-f0b881ae] {\n  background: #3C3B54;\n}\n.square i[data-v-f0b881ae] {\n  color: #A8A8A8;\n  margin-right: 16px;\n  font-size: 16px;\n}\n.button[data-v-f0b881ae] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n}\n.button i[data-v-f0b881ae] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-f0b881ae] {\n  font-weight: 900;\n}\n.view-single[data-v-f0b881ae] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-f0b881ae] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-f0b881ae] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
+exports.push([module.i, ".catalogues-table[data-v-f0b881ae] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.clickable[data-v-f0b881ae] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-f0b881ae] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-f0b881ae] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-f0b881ae] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-f0b881ae] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-f0b881ae] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.flex-table .flex-group > td.action[data-v-f0b881ae] {\n  text-align: right;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae]:last-child {\n  margin-right: 16px;\n}\n.show-more[data-v-f0b881ae] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-f0b881ae] {\n  -webkit-animation: loading-data-v-f0b881ae 2s;\n          animation: loading-data-v-f0b881ae 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-f0b881ae] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-f0b881ae]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-f0b881ae] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-f0b881ae] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-f0b881ae]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae]:after {\n  display: block;\n}\n.square[data-v-f0b881ae] {\n  background: #F3F3F3;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 12px;\n  font-weight: 700;\n}\n.square.sales[data-v-f0b881ae] {\n  background: #3B86FF;\n}\n.square.admin[data-v-f0b881ae] {\n  background: #3C3B54;\n}\n.square i[data-v-f0b881ae] {\n  color: #A8A8A8;\n  margin-right: 16px;\n  font-size: 16px;\n}\n.button[data-v-f0b881ae] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n  margin: 0;\n}\n.button i[data-v-f0b881ae] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-f0b881ae] {\n  font-weight: 900;\n}\n.view-single[data-v-f0b881ae] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-f0b881ae] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-f0b881ae] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
 
 // exports
 
@@ -10142,7 +10218,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #F3F3F3;\n  border-radius: 8px;\n  padding: 36px;\n  max-height: 57vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 36px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment[data-v-6d61fa50] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n}\n.user[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-6d61fa50] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-6d61fa50] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-6d61fa50] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-6d61fa50] {\n  left: 18px;\n}\n.circle[data-v-6d61fa50] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.circle i[data-v-6d61fa50] {\n  font-size: 20px;\n}\n.circle[data-v-6d61fa50]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n}\n.circle.active[data-v-6d61fa50] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.pill[data-v-6d61fa50] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #DFDFDF;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #A8A8A8;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #A8A8A8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #F3F3F3;\n  color: #A8A8A8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3B86FF;\n}\nform input[type=submit][data-v-6d61fa50] {\n  -webkit-appearance: none;\n  border: none;\n  height: 32px;\n  border-radius: 4px;\n  margin-top: 12px;\n  background: #3B86FF;\n  color: white;\n  padding: 4px 12px;\n  width: 100%;\n  text-align: center;\n  font-weight: 700;\n  font-size: 12px;\n  margin-bottom: 60px;\n}\nform input[type=submit].disabled[data-v-6d61fa50] {\n  pointer-events: none;\n  opacity: 0.5;\n}", ""]);
+exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #F3F3F3;\n  border-radius: 8px;\n  padding: 36px;\n  padding-right: 68px;\n  max-height: 57vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 36px;\n}\n.comment-wrapper[data-v-6d61fa50]:hover {\n  opacity: 1;\n}\n.comment[data-v-6d61fa50] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n}\n.user[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-6d61fa50] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-6d61fa50] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-6d61fa50] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-6d61fa50] {\n  left: 18px;\n}\n.circle[data-v-6d61fa50] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.circle i[data-v-6d61fa50] {\n  font-size: 20px;\n}\n.circle[data-v-6d61fa50]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n}\n.circle.active[data-v-6d61fa50] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.disabled[data-v-6d61fa50]:not(.active) {\n  display: none;\n}\n.pill[data-v-6d61fa50] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #DFDFDF;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #A8A8A8;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #A8A8A8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #F3F3F3;\n  color: #A8A8A8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3B86FF;\n}\nform input[type=submit][data-v-6d61fa50] {\n  -webkit-appearance: none;\n  border: none;\n  height: 32px;\n  border-radius: 4px;\n  margin-top: 12px;\n  background: #3B86FF;\n  color: white;\n  padding: 4px 12px;\n  width: 100%;\n  text-align: center;\n  font-weight: 700;\n  font-size: 12px;\n  margin-bottom: 60px;\n}\nform input[type=submit].disabled[data-v-6d61fa50] {\n  pointer-events: none;\n  opacity: 0.5;\n}", ""]);
 
 // exports
 
@@ -10199,7 +10275,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1B1C1D;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 0;\n  background: #F9F9F9;\n  width: 100%;\n  height: 130px;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  width: calc(100% - 120px - 200px - 16px);\n  margin-left: 1px;\n  border-radius: 0.25rem 0.25rem 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.flex-table[data-v-57b394cf] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  padding-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf] {\n  min-width: 70px;\n  padding-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.nds[data-v-57b394cf] {\n  min-width: 100px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 80px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: auto;\n  padding-left: 16px;\n  min-width: 300px;\n}\ni[data-v-57b394cf] {\n  margin-right: 12px;\n  font-size: 11px;\n}\ni.fa-arrow-up[data-v-57b394cf] {\n  color: #5EE2A0;\n}\ni.fa-arrow-down[data-v-57b394cf] {\n  color: #FF6565;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #F3F3F3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #FF6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #DFDFDF;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3B86FF;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-57b394cf] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-57b394cf] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-57b394cf]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-57b394cf]:after {\n  display: block;\n}\n.square[data-v-57b394cf] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 600;\n}\n.square i[data-v-57b394cf] {\n  color: #A8A8A8;\n  margin-right: 12px;\n  font-size: 16px;\n}\n.button[data-v-57b394cf] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  padding-right: 22px;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n  margin: 0;\n  margin-right: 24px;\n}\n.button i[data-v-57b394cf] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-57b394cf] {\n  font-weight: 900;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.square-wrapper[data-v-57b394cf] {\n  min-width: 65px;\n}", ""]);
+exports.push([module.i, ".dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1B1C1D;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 0;\n  background: #F9F9F9;\n  width: 100%;\n  height: 130px;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  width: calc(100% - 120px - 200px - 16px);\n  margin-left: 1px;\n  border-radius: 0.25rem 0.25rem 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.flex-table[data-v-57b394cf] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  padding-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf] {\n  min-width: 70px;\n  padding-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.nds[data-v-57b394cf] {\n  min-width: 100px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 80px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: auto;\n  padding-left: 16px;\n  min-width: 300px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  padding-right: 16px;\n}\ni[data-v-57b394cf] {\n  margin-right: 12px;\n  font-size: 11px;\n}\ni.fa-arrow-up[data-v-57b394cf] {\n  color: #5EE2A0;\n}\ni.fa-arrow-down[data-v-57b394cf] {\n  color: #FF6565;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #F3F3F3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #FF6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #DFDFDF;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3B86FF;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-57b394cf] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-57b394cf] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-57b394cf]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-57b394cf]:after {\n  display: block;\n}\n.square[data-v-57b394cf] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 600;\n}\n.square i[data-v-57b394cf] {\n  color: #A8A8A8;\n  margin-right: 12px;\n  font-size: 16px;\n}\n.button[data-v-57b394cf] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n  margin: 0;\n}\n.button[data-v-57b394cf]:not(.invisible-button) {\n  margin-right: 24px;\n  padding-right: 22px;\n}\n.button i[data-v-57b394cf] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-57b394cf] {\n  font-weight: 900;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.square-wrapper[data-v-57b394cf] {\n  min-width: 65px;\n}", ""]);
 
 // exports
 
@@ -13032,276 +13108,305 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "catalogues-table card" },
-    [
-      _c("div", { staticClass: "catalogue-totals" }, [
-        _c("span", [_vm._v(_vm._s(_vm.selectedCount) + " selected")]),
-        _vm._v(" "),
-        _c("span", [_vm._v(_vm._s(_vm.catalogues.length) + " records")])
-      ]),
-      _vm._v(" "),
-      _c(
-        "table",
+  return !_vm.isLoading
+    ? _c(
+        "div",
+        { staticClass: "catalogues-table card" },
         [
-          _c("tr", { staticClass: "header-row" }, [
-            _vm._m(0),
+          _c("div", { staticClass: "catalogue-totals" }, [
+            _c("span", [_vm._v(_vm._s(_vm.selectedCount) + " selected")]),
             _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable id",
-                class: { active: this.sortBy == "id" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("id", true)
-                  }
-                }
-              },
-              [
-                _vm._v("\n                ID "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "id" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable title",
-                class: { active: this.sortBy == "title" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("title", true)
-                  }
-                }
-              },
-              [
-                _vm._v("\n               Catalogue "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "title" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable",
-                class: { active: this.sortBy == "start_time" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("start_time", false)
-                  }
-                }
-              },
-              [
-                _vm._v("\n                Created "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "start_time" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable",
-                class: { active: this.sortBy == "end_time" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("end_time", false)
-                  }
-                }
-              },
-              [
-                _vm._v("\n                Deadline "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "end_time" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable",
-                class: { active: this.sortBy == "phase" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("phase", false)
-                  }
-                }
-              },
-              [
-                _vm._v("\n                Status "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "phase" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _c("th"),
-            _vm._v(" "),
-            _c("th", { staticClass: "action" }, [_vm._v("Action")])
+            _c("span", [_vm._v(_vm._s(_vm.catalogues.length) + " records")])
           ]),
           _vm._v(" "),
-          !_vm.loading
-            ? _vm._l(_vm.cataloguesSorted, function(catalogue, index) {
-                return _c(
-                  "tr",
-                  { key: catalogue.id, staticClass: "catalogue-row" },
-                  [
-                    _c("td", { staticClass: "select" }, [
-                      _c("label", { staticClass: "checkbox" }, [
-                        _c("input", {
-                          attrs: { type: "checkbox" },
-                          on: {
-                            change: function($event) {
-                              return _vm.onSelect(index)
-                            }
-                          }
-                        }),
+          _c(
+            "div",
+            { staticClass: "flex-table" },
+            [
+              _c("div", { staticClass: "header-row flex-table-row" }, [
+                _c("div", { staticClass: "flex-group" }, [
+                  _vm.authUser.role_id >= 3
+                    ? _c("th", { staticClass: "select" }, [
+                        _vm._v("Select "),
+                        _c("i", { staticClass: "fas fa-chevron-down" })
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c(
+                    "th",
+                    {
+                      staticClass: "clickable id",
+                      class: { active: this.sortBy == "id" },
+                      on: {
+                        click: function($event) {
+                          return _vm.onSortBy("id", true)
+                        }
+                      }
+                    },
+                    [
+                      _vm._v("\n                    ID "),
+                      _c("i", {
+                        staticClass: "fas",
+                        class: [
+                          this.sortBy == "id" && !_vm.sortAsc
+                            ? "fa-long-arrow-alt-up"
+                            : "fa-long-arrow-alt-down"
+                        ]
+                      })
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "th",
+                    {
+                      staticClass: "clickable title",
+                      class: { active: this.sortBy == "title" },
+                      on: {
+                        click: function($event) {
+                          return _vm.onSortBy("title", true)
+                        }
+                      }
+                    },
+                    [
+                      _vm._v("\n                Catalogue "),
+                      _c("i", {
+                        staticClass: "fas",
+                        class: [
+                          this.sortBy == "title" && !_vm.sortAsc
+                            ? "fa-long-arrow-alt-up"
+                            : "fa-long-arrow-alt-down"
+                        ]
+                      })
+                    ]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "flex-group" }, [
+                  _c(
+                    "th",
+                    {
+                      staticClass: "clickable",
+                      class: { active: this.sortBy == "start_time" },
+                      on: {
+                        click: function($event) {
+                          return _vm.onSortBy("start_time", false)
+                        }
+                      }
+                    },
+                    [
+                      _vm._v("\n                    Created "),
+                      _c("i", {
+                        staticClass: "fas",
+                        class: [
+                          this.sortBy == "start_time" && !_vm.sortAsc
+                            ? "fa-long-arrow-alt-up"
+                            : "fa-long-arrow-alt-down"
+                        ]
+                      })
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "th",
+                    {
+                      staticClass: "clickable",
+                      class: { active: this.sortBy == "end_time" },
+                      on: {
+                        click: function($event) {
+                          return _vm.onSortBy("end_time", false)
+                        }
+                      }
+                    },
+                    [
+                      _vm._v("\n                    Deadline "),
+                      _c("i", {
+                        staticClass: "fas",
+                        class: [
+                          this.sortBy == "end_time" && !_vm.sortAsc
+                            ? "fa-long-arrow-alt-up"
+                            : "fa-long-arrow-alt-down"
+                        ]
+                      })
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "th",
+                    {
+                      staticClass: "clickable",
+                      class: { active: this.sortBy == "phase" },
+                      on: {
+                        click: function($event) {
+                          return _vm.onSortBy("phase", false)
+                        }
+                      }
+                    },
+                    [
+                      _vm._v("\n                    Status "),
+                      _c("i", {
+                        staticClass: "fas",
+                        class: [
+                          this.sortBy == "phase" && !_vm.sortAsc
+                            ? "fa-long-arrow-alt-up"
+                            : "fa-long-arrow-alt-down"
+                        ]
+                      })
+                    ]
+                  )
+                ]),
+                _vm._v(" "),
+                _vm._m(0)
+              ]),
+              _vm._v(" "),
+              !_vm.loading
+                ? _vm._l(_vm.cataloguesSorted, function(catalogue, index) {
+                    return _c(
+                      "div",
+                      {
+                        key: catalogue.id,
+                        staticClass: "catalogue-row flex-table-row item-row"
+                      },
+                      [
+                        _c("div", { staticClass: "flex-group" }, [
+                          _vm.authUser.role_id >= 3
+                            ? _c("td", { staticClass: "select" }, [
+                                _c("label", { staticClass: "checkbox" }, [
+                                  _c("input", {
+                                    attrs: { type: "checkbox" },
+                                    on: {
+                                      change: function($event) {
+                                        return _vm.onSelect(index)
+                                      }
+                                    }
+                                  }),
+                                  _vm._v(" "),
+                                  _c("span", { staticClass: "checkmark" })
+                                ])
+                              ])
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _c(
+                            "td",
+                            {
+                              staticClass: "id clickable",
+                              on: {
+                                click: function($event) {
+                                  return _vm.viewSingle(
+                                    catalogue.id,
+                                    catalogue.title
+                                  )
+                                }
+                              }
+                            },
+                            [_vm._v(_vm._s(catalogue.id) + ">")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "td",
+                            {
+                              staticClass: "title clickable",
+                              on: {
+                                click: function($event) {
+                                  return _vm.viewSingle(
+                                    catalogue.id,
+                                    catalogue.title
+                                  )
+                                }
+                              }
+                            },
+                            [_vm._v(_vm._s(catalogue.title))]
+                          )
+                        ]),
                         _vm._v(" "),
-                        _c("span", { staticClass: "checkmark" })
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c(
-                      "td",
-                      {
-                        staticClass: "id clickable",
-                        on: {
-                          click: function($event) {
-                            return _vm.viewSingle(catalogue.id, catalogue.title)
-                          }
-                        }
-                      },
-                      [_vm._v(_vm._s(catalogue.id) + ">")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "td",
-                      {
-                        staticClass: "title clickable",
-                        on: {
-                          click: function($event) {
-                            return _vm.viewSingle(catalogue.id, catalogue.title)
-                          }
-                        }
-                      },
-                      [_vm._v(_vm._s(catalogue.title))]
-                    ),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "created" }, [
-                      _c("span", { staticClass: "square" }, [
-                        _vm._v(
-                          _vm._s(
-                            catalogue.start_time != null
-                              ? catalogue.start_time
-                                  .substr(0, catalogue.start_time.indexOf(" "))
-                                  .replace(/\-/g, "/")
-                              : "Unset"
-                          )
-                        )
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "deadline" }, [
-                      _c("span", { staticClass: "square" }, [
-                        _vm._v(
-                          _vm._s(
-                            catalogue.end_time != null
-                              ? catalogue.end_time
-                                  .substr(0, catalogue.end_time.indexOf(" "))
-                                  .replace(/\-/g, "/")
-                              : "Unset"
-                          )
-                        )
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "stage" }, [
-                      _c("span", { staticClass: "square" }, [
-                        _vm._v("STAGE " + _vm._s(catalogue.phase))
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _vm._m(1, true),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "action" }, [
-                      _c(
-                        "span",
-                        {
-                          staticClass: "clickable view-single",
-                          on: {
-                            click: function($event) {
-                              return _vm.viewSingle(
-                                catalogue.id,
-                                catalogue.title
+                        _c("div", { staticClass: "flex-group" }, [
+                          _c("td", { staticClass: "created" }, [
+                            _c("span", { staticClass: "square" }, [
+                              _vm._v(
+                                _vm._s(
+                                  catalogue.start_time != null
+                                    ? catalogue.start_time
+                                        .substr(
+                                          0,
+                                          catalogue.start_time.indexOf(" ")
+                                        )
+                                        .replace(/\-/g, "/")
+                                    : "Unset"
+                                )
                               )
-                            }
-                          }
-                        },
-                        [_vm._v("View")]
-                      )
-                    ])
-                  ]
-                )
-              })
-            : _vm._e()
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "deadline" }, [
+                            _c("span", { staticClass: "square" }, [
+                              _vm._v(
+                                _vm._s(
+                                  catalogue.end_time != null
+                                    ? catalogue.end_time
+                                        .substr(
+                                          0,
+                                          catalogue.end_time.indexOf(" ")
+                                        )
+                                        .replace(/\-/g, "/")
+                                    : "Unset"
+                                )
+                              )
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "stage" }, [
+                            _c("span", { staticClass: "square stage" }, [
+                              _vm._v("STAGE " + _vm._s(catalogue.phase))
+                            ]),
+                            _vm._v(" "),
+                            _c("span", { staticClass: "square status" }, [
+                              _vm._v("tbd")
+                            ])
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "flex-group" }, [
+                          _c("td", { staticClass: "action" }, [
+                            _c("span", { staticClass: "placeholder" }),
+                            _vm._v(" "),
+                            _c(
+                              "span",
+                              {
+                                staticClass:
+                                  "clickable view-single button invisible-button",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.viewSingle(
+                                      catalogue.id,
+                                      catalogue.title
+                                    )
+                                  }
+                                }
+                              },
+                              [_vm._v("View")]
+                            )
+                          ])
+                        ])
+                      ]
+                    )
+                  })
+                : _vm._e()
+            ],
+            2
+          ),
+          _vm._v(" "),
+          _vm.loading ? [_c("Loader")] : _vm._e()
         ],
         2
-      ),
-      _vm._v(" "),
-      _vm.loading ? [_c("Loader")] : _vm._e()
-    ],
-    2
-  )
+      )
+    : _c("div", [_c("Loader")], 1)
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("th", { staticClass: "select" }, [
-      _vm._v("Select "),
-      _c("i", { staticClass: "fas fa-chevron-down" })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", { staticClass: "status" }, [
-      _c("span", { staticClass: "square" }, [_vm._v("tbd")])
+    return _c("div", { staticClass: "flex-group" }, [
+      _c("th", { staticClass: "action" }, [_vm._v("Action")])
     ])
   }
 ]
@@ -13868,7 +13973,7 @@ var render = function() {
               ]
             : _vm._e(),
           _vm._v(" "),
-          _vm._m(1)
+          _c("form", { staticClass: "form-inline my-2 my-lg-0" })
         ],
         2
       )
@@ -13896,36 +14001,6 @@ var staticRenderFns = [
       },
       [_c("div", { staticClass: "navbar-toggler-icon" })]
     )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("form", { staticClass: "form-inline my-2 my-lg-0" }, [
-      _c(
-        "button",
-        { staticClass: "btn my-2 my-sm-0 mx-1 csv", attrs: { type: "submit" } },
-        [_vm._v("Export as CSV")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "btn my-2 my-sm-0 mx-1 feedback",
-          attrs: { type: "submit" }
-        },
-        [_vm._v("Close Feedback")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "btn my-2 my-sm-0 mx-1 next",
-          attrs: { type: "submit" }
-        },
-        [_vm._v("Go to next stage")]
-      )
-    ])
   }
 ]
 render._withStripped = true
@@ -13980,85 +14055,99 @@ var render = function() {
                   "div",
                   { staticClass: "controls" },
                   [
-                    !_vm.product.productFinalAction
+                    _vm.authUser.role_id >= 3
                       ? [
-                          _c(
-                            "span",
-                            {
-                              staticClass: "button green",
-                              on: {
-                                click: function($event) {
-                                  return _vm.toggleInOut(_vm.product, 1)
-                                }
-                              }
-                            },
-                            [
-                              _vm._v("In  "),
-                              _c("i", { staticClass: "far fa-heart" })
-                            ]
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "span",
-                            {
-                              staticClass: "button red",
-                              on: {
-                                click: function($event) {
-                                  return _vm.toggleInOut(_vm.product, 0)
-                                }
-                              }
-                            },
-                            [
-                              _vm._v("Out  "),
-                              _c("i", { staticClass: "far fa-times-circle" })
-                            ]
-                          )
+                          !_vm.product.productFinalAction
+                            ? [
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "button green",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.toggleInOut(_vm.product, 1)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _vm._v("In  "),
+                                    _c("i", { staticClass: "far fa-heart" })
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "button red",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.toggleInOut(_vm.product, 0)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _vm._v("Out  "),
+                                    _c("i", {
+                                      staticClass: "far fa-times-circle"
+                                    })
+                                  ]
+                                )
+                              ]
+                            : [
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "button green",
+                                    class: [
+                                      {
+                                        active:
+                                          _vm.product.productFinalAction
+                                            .action == 1
+                                      }
+                                    ],
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.toggleInOut(_vm.product, 1)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n                                In  "
+                                    ),
+                                    _c("i", { staticClass: "far fa-heart" })
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "button red",
+                                    class: [
+                                      {
+                                        active:
+                                          _vm.product.productFinalAction
+                                            .action == 0
+                                      }
+                                    ],
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.toggleInOut(_vm.product, 0)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n                                Out  "
+                                    ),
+                                    _c("i", {
+                                      staticClass: "far fa-times-circle"
+                                    })
+                                  ]
+                                )
+                              ]
                         ]
-                      : [
-                          _c(
-                            "span",
-                            {
-                              staticClass: "button green",
-                              class: [
-                                {
-                                  active:
-                                    _vm.product.productFinalAction.action == 1
-                                }
-                              ],
-                              on: {
-                                click: function($event) {
-                                  return _vm.toggleInOut(_vm.product, 1)
-                                }
-                              }
-                            },
-                            [
-                              _vm._v("\n                            In  "),
-                              _c("i", { staticClass: "far fa-heart" })
-                            ]
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "span",
-                            {
-                              staticClass: "button red",
-                              class: [
-                                {
-                                  active:
-                                    _vm.product.productFinalAction.action == 0
-                                }
-                              ],
-                              on: {
-                                click: function($event) {
-                                  return _vm.toggleInOut(_vm.product, 0)
-                                }
-                              }
-                            },
-                            [
-                              _vm._v("\n                            Out  "),
-                              _c("i", { staticClass: "far fa-times-circle" })
-                            ]
-                          )
-                        ],
+                      : _vm._e(),
                     _vm._v(" "),
                     _c(
                       "span",
@@ -14402,26 +14491,44 @@ var render = function() {
                   _vm._v(_vm._s(comment.comment))
                 ]),
                 _vm._v(" "),
-                _c(
-                  "span",
-                  {
-                    staticClass: "circle",
-                    class: { active: comment.product_final },
-                    on: {
-                      click: function($event) {
-                        return _vm.onMarkAsFinal(comment)
+                _vm.authUser.role_id >= 3
+                  ? _c(
+                      "span",
+                      {
+                        staticClass: "circle",
+                        class: { active: comment.product_final },
+                        on: {
+                          click: function($event) {
+                            return _vm.onMarkAsFinal(comment)
+                          },
+                          mouseover: function($event) {
+                            return _vm.showTooltip(
+                              $event,
+                              "Choose as final comment"
+                            )
+                          },
+                          mouseleave: _vm.hideTooltip
+                        }
                       },
-                      mouseover: function($event) {
-                        return _vm.showTooltip(
-                          $event,
-                          "Choose as final comment"
-                        )
+                      [_c("i", { staticClass: "far fa-comment-check" })]
+                    )
+                  : _c(
+                      "span",
+                      {
+                        staticClass: "circle disabled",
+                        class: { active: comment.product_final },
+                        on: {
+                          click: function($event) {
+                            return _vm.onMarkAsFinal(comment)
+                          },
+                          mouseover: function($event) {
+                            return _vm.showTooltip($event, "Final comment")
+                          },
+                          mouseleave: _vm.hideTooltip
+                        }
                       },
-                      mouseleave: _vm.hideTooltip
-                    }
-                  },
-                  [_c("i", { staticClass: "far fa-comment-check" })]
-                )
+                      [_c("i", { staticClass: "far fa-comment-check" })]
+                    )
               ]),
               _vm._v(" "),
               comment.user != null
@@ -14743,26 +14850,28 @@ var render = function() {
         },
         [
           _c("div", { staticClass: "header-row flex-table-row" }, [
-            _c(
-              "th",
-              {
-                staticClass: "select dropdown-parent",
-                on: {
-                  click: function($event) {
-                    return _vm.toggleDropdown($event)
-                  }
-                }
-              },
-              [
-                _vm._v("\n                Select "),
-                _c("i", { staticClass: "fas fa-chevron-down" }),
-                _vm._v(" "),
-                _c("select-dropdown", {
-                  on: { onSelectByCondition: _vm.selectByCondition }
-                })
-              ],
-              1
-            ),
+            _vm.authUser.role_id > 2
+              ? _c(
+                  "th",
+                  {
+                    staticClass: "select dropdown-parent",
+                    on: {
+                      click: function($event) {
+                        return _vm.toggleDropdown($event)
+                      }
+                    }
+                  },
+                  [
+                    _vm._v("\n                Select "),
+                    _c("i", { staticClass: "fas fa-chevron-down" }),
+                    _vm._v(" "),
+                    _c("select-dropdown", {
+                      on: { onSelectByCondition: _vm.selectByCondition }
+                    })
+                  ],
+                  1
+                )
+              : _vm._e(),
             _vm._v(" "),
             _c(
               "th",
@@ -14975,22 +15084,24 @@ var render = function() {
                     ]
                   },
                   [
-                    _c("td", { staticClass: "select" }, [
-                      _c("label", { staticClass: "checkbox" }, [
-                        _c("input", {
-                          ref: "checkbox-for-" + index,
-                          refInFor: true,
-                          attrs: { type: "checkbox" },
-                          on: {
-                            change: function($event) {
-                              return _vm.onSelect(index)
-                            }
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("span", { staticClass: "checkmark" })
-                      ])
-                    ]),
+                    _vm.authUser.role_id > 2
+                      ? _c("td", { staticClass: "select" }, [
+                          _c("label", { staticClass: "checkbox" }, [
+                            _c("input", {
+                              ref: "checkbox-for-" + index,
+                              refInFor: true,
+                              attrs: { type: "checkbox" },
+                              on: {
+                                change: function($event) {
+                                  return _vm.onSelect(index)
+                                }
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c("span", { staticClass: "checkmark" })
+                          ])
+                        ])
+                      : _vm._e(),
                     _vm._v(" "),
                     _c(
                       "td",
@@ -15162,117 +15273,157 @@ var render = function() {
                     _vm._v(" "),
                     !_vm.loadingFinalActions
                       ? [
-                          !product.productFinalAction
+                          _vm.authUser.role_id > 2
                             ? [
-                                _c("td", { staticClass: "action" }, [
-                                  _c(
-                                    "span",
-                                    {
-                                      staticClass: "button green",
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.toggleInOut(product, 1)
-                                        }
-                                      }
-                                    },
-                                    [
-                                      _vm._v("In "),
-                                      _c("i", { staticClass: "far fa-heart" })
+                                !product.productFinalAction
+                                  ? [
+                                      _c("td", { staticClass: "action" }, [
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass: "button green",
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.toggleInOut(
+                                                  product,
+                                                  1
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _vm._v("In "),
+                                            _c("i", {
+                                              staticClass: "far fa-heart"
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass: "button red",
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.toggleInOut(
+                                                  product,
+                                                  0
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _vm._v("Out "),
+                                            _c("i", {
+                                              staticClass: "far fa-times-circle"
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass:
+                                              "view-single bind-view-single button invisible-button",
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.onViewSingle(
+                                                  product.id
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [_vm._v("View")]
+                                        )
+                                      ])
                                     ]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "span",
-                                    {
-                                      staticClass: "button red",
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.toggleInOut(product, 0)
-                                        }
-                                      }
-                                    },
-                                    [
-                                      _vm._v("Out "),
-                                      _c("i", {
-                                        staticClass: "far fa-times-circle"
-                                      })
+                                  : [
+                                      _c("td", { staticClass: "action" }, [
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass: "button green",
+                                            class: [
+                                              {
+                                                active:
+                                                  product.productFinalAction
+                                                    .action == 1
+                                              }
+                                            ],
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.toggleInOut(
+                                                  product,
+                                                  1
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _vm._v(
+                                              "\n                                In  "
+                                            ),
+                                            _c("i", {
+                                              staticClass: "far fa-heart"
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass: "button red",
+                                            class: [
+                                              {
+                                                active:
+                                                  product.productFinalAction
+                                                    .action == 0
+                                              }
+                                            ],
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.toggleInOut(
+                                                  product,
+                                                  0
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _vm._v(
+                                              "\n                                Out  "
+                                            ),
+                                            _c("i", {
+                                              staticClass: "far fa-times-circle"
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass:
+                                              "view-single bind-view-single button invisible-button",
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.onViewSingle(
+                                                  product.id
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [_vm._v("View")]
+                                        )
+                                      ])
                                     ]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "span",
-                                    {
-                                      staticClass:
-                                        "view-single bind-view-single",
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.onViewSingle(product.id)
-                                        }
-                                      }
-                                    },
-                                    [_vm._v("View")]
-                                  )
-                                ])
                               ]
                             : [
                                 _c("td", { staticClass: "action" }, [
                                   _c(
                                     "span",
                                     {
-                                      staticClass: "button green",
-                                      class: [
-                                        {
-                                          active:
-                                            product.productFinalAction.action ==
-                                            1
-                                        }
-                                      ],
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.toggleInOut(product, 1)
-                                        }
-                                      }
-                                    },
-                                    [
-                                      _vm._v(
-                                        "\n                            In  "
-                                      ),
-                                      _c("i", { staticClass: "far fa-heart" })
-                                    ]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "span",
-                                    {
-                                      staticClass: "button red",
-                                      class: [
-                                        {
-                                          active:
-                                            product.productFinalAction.action ==
-                                            0
-                                        }
-                                      ],
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.toggleInOut(product, 0)
-                                        }
-                                      }
-                                    },
-                                    [
-                                      _vm._v(
-                                        "\n                            Out  "
-                                      ),
-                                      _c("i", {
-                                        staticClass: "far fa-times-circle"
-                                      })
-                                    ]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "span",
-                                    {
                                       staticClass:
-                                        "view-single bind-view-single",
+                                        "view-single bind-view-single button invisible-button",
                                       on: {
                                         click: function($event) {
                                           return _vm.onViewSingle(product.id)
@@ -15568,12 +15719,24 @@ var render = function() {
           ]
         ),
         _vm._v(" "),
-        _c("router-link", { staticClass: "link", attrs: { to: "/teams" } }, [
-          _c("i", { staticClass: "fas fa-users" }),
-          _vm._v(" Teams")
-        ])
+        _vm.authUser != null
+          ? [
+              _vm.authUser.role_id >= 3
+                ? [
+                    _c(
+                      "router-link",
+                      { staticClass: "link", attrs: { to: "/teams" } },
+                      [
+                        _c("i", { staticClass: "fas fa-users" }),
+                        _vm._v(" Teams")
+                      ]
+                    )
+                  ]
+                : _vm._e()
+            ]
+          : _vm._e()
       ],
-      1
+      2
     ),
     _vm._v(" "),
     _c(
@@ -15657,71 +15820,75 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "team-dropdown dropdown" }, [
-    _c(
-      "button",
-      {
-        staticClass:
-          "btn btn-secondary dropdown-toggle global d-flex justify-content-between",
-        attrs: {
-          type: "button",
-          id: "dropdownMenuButton",
-          "data-toggle": "dropdown",
-          "aria-haspopup": "true",
-          "aria-expanded": "false"
-        }
-      },
-      [
-        _vm._m(0),
-        _vm._v(" " + _vm._s(_vm.currentTeam.title) + " "),
-        _c("img", { attrs: { src: "/assets/Path26.svg", alt: "" } })
-      ]
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      {
-        staticClass: "dropdown-menu dropdown-menu-right",
-        attrs: { "aria-labelledby": "dropdownMenuButton" }
-      },
-      [
-        _c("p", { staticClass: "dropdown-item current-item active" }, [
-          _vm._v(" " + _vm._s(_vm.currentTeam.title) + " ")
-        ]),
-        _vm._v(" "),
+  return _vm.authUser != null
+    ? _c("div", { staticClass: "team-dropdown dropdown" }, [
         _c(
-          "p",
+          "button",
           {
-            staticClass: "dropdown-item",
-            on: {
-              click: function($event) {
-                return _vm.onSelectTeam(0)
-              }
+            staticClass:
+              "btn btn-secondary dropdown-toggle global d-flex justify-content-between",
+            attrs: {
+              type: "button",
+              id: "dropdownMenuButton",
+              "data-toggle": "dropdown",
+              "aria-haspopup": "true",
+              "aria-expanded": "false"
             }
           },
-          [_vm._v("Global")]
+          [
+            _vm._m(0),
+            _vm._v(" " + _vm._s(_vm.currentTeam.title) + " "),
+            _c("img", { attrs: { src: "/assets/Path26.svg", alt: "" } })
+          ]
         ),
         _vm._v(" "),
-        _vm._l(_vm.teams, function(team) {
-          return _c(
-            "p",
-            {
-              key: team.id,
-              staticClass: "dropdown-item",
-              class: { active: _vm.currentTeam.id == team.id },
-              on: {
-                click: function($event) {
-                  return _vm.onSelectTeam(team.id)
-                }
-              }
-            },
-            [_vm._v(_vm._s(team.title))]
-          )
-        })
-      ],
-      2
-    )
-  ])
+        _c(
+          "div",
+          {
+            staticClass: "dropdown-menu dropdown-menu-right",
+            attrs: { "aria-labelledby": "dropdownMenuButton" }
+          },
+          [
+            _c("p", { staticClass: "dropdown-item current-item active" }, [
+              _vm._v(" " + _vm._s(_vm.currentTeam.title) + " ")
+            ]),
+            _vm._v(" "),
+            _vm.authUser.role_id > 2
+              ? _c(
+                  "p",
+                  {
+                    staticClass: "dropdown-item",
+                    on: {
+                      click: function($event) {
+                        return _vm.onSelectTeam(0)
+                      }
+                    }
+                  },
+                  [_vm._v("Global")]
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm._l(_vm.availableTeams, function(team) {
+              return _c(
+                "p",
+                {
+                  key: team.id,
+                  staticClass: "dropdown-item",
+                  class: { active: _vm.currentTeam.id == team.id },
+                  on: {
+                    click: function($event) {
+                      return _vm.onSelectTeam(team.id)
+                    }
+                  }
+                },
+                [_vm._v(_vm._s(team.title))]
+              )
+            })
+          ],
+          2
+        )
+      ])
+    : _vm._e()
 }
 var staticRenderFns = [
   function() {
@@ -16594,7 +16761,12 @@ var render = function() {
       }),
       _vm._v(" "),
       _c("CataloguesTable", {
-        attrs: { catalogues: _vm.collections, loading: _vm.loadingCollections },
+        attrs: {
+          isLoading: _vm.isLoading,
+          authUser: _vm.authUser,
+          catalogues: _vm.collections,
+          loading: _vm.loadingCollections
+        },
         on: { onSelect: _vm.onSelect }
       })
     ],
@@ -32595,7 +32767,16 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 
 
 Vue.use(vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]);
-Vue.component('app', __webpack_require__(/*! ./App.vue */ "./resources/js/App.vue")["default"]); // 1. Define route components.
+Vue.component('app', __webpack_require__(/*! ./App.vue */ "./resources/js/App.vue")["default"]); // Define global variable
+// Vue.mixin({
+//   data: function() {
+//     return {
+//       permissionLevel_write_final_actions: 3,
+//       permissionLevel_see_teams: 3,
+//     }
+//   }
+// })
+// 1. Define route components.
 // These can be imported from other files
 
 
@@ -34662,6 +34843,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_categories__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./modules/categories */ "./resources/js/store/modules/categories.js");
 /* harmony import */ var _models_TeamInvite__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./models/TeamInvite */ "./resources/js/store/models/TeamInvite.js");
 /* harmony import */ var _modules_teamInvites__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./modules/teamInvites */ "./resources/js/store/modules/teamInvites.js");
+/* harmony import */ var _models_AuthUser__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _modules_authUser__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./modules/authUser */ "./resources/js/store/modules/authUser.js");
+
+
 
 
 
@@ -34700,6 +34885,7 @@ database.register(_models_CommentVote__WEBPACK_IMPORTED_MODULE_17__["default"], 
 database.register(_models_UserTeam__WEBPACK_IMPORTED_MODULE_19__["default"], _modules_userTeams__WEBPACK_IMPORTED_MODULE_20__["default"]);
 database.register(_models_Category__WEBPACK_IMPORTED_MODULE_21__["default"], _modules_categories__WEBPACK_IMPORTED_MODULE_22__["default"]);
 database.register(_models_TeamInvite__WEBPACK_IMPORTED_MODULE_23__["default"], _modules_teamInvites__WEBPACK_IMPORTED_MODULE_24__["default"]);
+database.register(_models_AuthUser__WEBPACK_IMPORTED_MODULE_25__["default"], _modules_authUser__WEBPACK_IMPORTED_MODULE_26__["default"]);
 /* harmony default export */ __webpack_exports__["default"] = (database);
 
 /***/ }),
@@ -34806,6 +34992,86 @@ function (_Model) {
 
 Action.entity = 'actions';
 Action.primaryKey = ['user_id', 'product_id'];
+
+
+/***/ }),
+
+/***/ "./resources/js/store/models/AuthUser.js":
+/*!***********************************************!*\
+  !*** ./resources/js/store/models/AuthUser.js ***!
+  \***********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AuthUser; });
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+/* harmony import */ var _Comment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Comment */ "./resources/js/store/models/Comment.js");
+/* harmony import */ var _Country__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Country */ "./resources/js/store/models/Country.js");
+/* harmony import */ var _Team__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var _UserTeam__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./UserTeam */ "./resources/js/store/models/UserTeam.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// User Model
+
+
+
+
+
+
+var AuthUser =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(AuthUser, _Model);
+
+  function AuthUser() {
+    _classCallCheck(this, AuthUser);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(AuthUser).apply(this, arguments));
+  }
+
+  _createClass(AuthUser, null, [{
+    key: "fields",
+    // This is the name used as module name of the Vuex Store.
+    // List of all fields (schema) of the product model. `this.attr` is used
+    // for the generic field type. The argument is the default value.
+    // static primaryKey = 'id'
+    value: function fields() {
+      var data = {
+        id: this.attr(null),
+        email: this.attr(''),
+        name: this.attr(''),
+        country_id: this.attr(''),
+        role_id: this.attr(''),
+        comments: this.hasMany(_Comment__WEBPACK_IMPORTED_MODULE_1__["default"], 'user_id'),
+        country: this.belongsTo(_Country__WEBPACK_IMPORTED_MODULE_2__["default"], 'country_id'),
+        teams: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_3__["default"], _UserTeam__WEBPACK_IMPORTED_MODULE_4__["default"], 'user_id', 'team_id')
+      };
+      return data;
+    }
+  }]);
+
+  return AuthUser;
+}(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
+
+AuthUser.entity = 'authUser';
 
 
 /***/ }),
@@ -35864,71 +36130,73 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _models_AuthUser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../models/AuthUser */ "./resources/js/store/models/AuthUser.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-//import axios from 'axios';
-var state = {
-  user: []
-};
-var getters = {
-  // Get the current state of the user
-  authUser: function authUser(state) {
-    return state.user;
-  }
-};
-var actions = {
-  // Get the authenticated user object.
-  // The auth_user object is passed through the homeController throuhg the auth-middleware
-  getAuthUser: function () {
-    var _getAuthUser = _asyncToGenerator(
-    /*#__PURE__*/
-    _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref) {
-      var commit;
-      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              commit = _ref.commit;
-              _context.t0 = commit;
-              _context.next = 4;
-              return window.auth_user;
+ //import axios from 'axios';
 
-            case 4:
-              _context.t1 = _context.sent;
-              (0, _context.t0)('setAuthUser', _context.t1);
-
-            case 6:
-            case "end":
-              return _context.stop();
-          }
-        }
-      }, _callee);
-    }));
-
-    function getAuthUser(_x) {
-      return _getAuthUser.apply(this, arguments);
-    }
-
-    return getAuthUser;
-  }()
-};
-var mutations = {
-  // Update the user state
-  setAuthUser: function setAuthUser(state, user) {
-    state.user = user;
-  } // When the user state has been updated dispatch an event
-  // This event should be picked up by the products component and trigger the fetch products action in the products module.
-
-};
 /* harmony default export */ __webpack_exports__["default"] = ({
-  state: state,
-  getters: getters,
-  actions: actions,
-  mutations: mutations
+  namespaced: true,
+  state: {
+    user: []
+  },
+  getters: {
+    // Get the current state of the user
+    authUser: function authUser(state) {
+      return state.user;
+    }
+  },
+  actions: {
+    // Get the authenticated user object.
+    // The auth_user object is passed through the homeController throuhg the auth-middleware
+    getAuthUser: function () {
+      var _getAuthUser = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref) {
+        var commit;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                commit = _ref.commit;
+                _context.t0 = commit;
+                _context.next = 4;
+                return window.auth_user;
+
+              case 4:
+                _context.t1 = _context.sent;
+                (0, _context.t0)('setAuthUser', _context.t1);
+
+              case 6:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }));
+
+      function getAuthUser(_x) {
+        return _getAuthUser.apply(this, arguments);
+      }
+
+      return getAuthUser;
+    }()
+  },
+  mutations: {
+    // Update the user state
+    setAuthUser: function setAuthUser(state, user) {
+      state.user = user;
+      _models_AuthUser__WEBPACK_IMPORTED_MODULE_1__["default"].create({
+        data: user
+      });
+    } // When the user state has been updated dispatch an event
+    // This event should be picked up by the products component and trigger the fetch products action in the products module.
+
+  }
 });
 
 /***/ }),

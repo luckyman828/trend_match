@@ -5,17 +5,19 @@
                 <div class="controls-wrapper">
                         <span class="square" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
                     <div class="controls">
-                        <template v-if="!product.productFinalAction">
-                            <span class="button green" @click="toggleInOut(product, 1)">In  <i class="far fa-heart"></i></span>
-                            <span class="button red" @click="toggleInOut(product, 0)">Out  <i class="far fa-times-circle"></i></span>
-                        </template>
-                        <template v-else>
-                            <span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product, 1)">
-                                In  <i class="far fa-heart"></i>
-                                </span>
-                            <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product, 0)">
-                                Out  <i class="far fa-times-circle"></i>
-                                </span>
+                        <template v-if="authUser.role_id >= 3">
+                            <template v-if="!product.productFinalAction">
+                                <span class="button green" @click="toggleInOut(product, 1)">In  <i class="far fa-heart"></i></span>
+                                <span class="button red" @click="toggleInOut(product, 0)">Out  <i class="far fa-times-circle"></i></span>
+                            </template>
+                            <template v-else>
+                                <span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product, 1)">
+                                    In  <i class="far fa-heart"></i>
+                                    </span>
+                                <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product, 0)">
+                                    Out  <i class="far fa-times-circle"></i>
+                                    </span>
+                            </template>
                         </template>
                         <span class="button primary active wide" @click="onPrevSingle()" :class="[{ disabled: prevProductID < 0}]">Previous style</span>
                         <span class="button primary active wide" @click="onNextSingle()" :class="[{ disabled: nextProductID < 0}]">Next style</span>
@@ -180,18 +182,22 @@ export default {
             }
         },
         hotkeyHandler(event) {
-            // console.log(event)
             const key = event.code
             if (key == 'Escape')
                 this.onCloseSingle()
-            if (key == 'ArrowRight')
-                this.onNextSingle()
-            if (key == 'ArrowLeft')
-                this.onPrevSingle()
-            if (key == 'KeyI')
-                this.toggleInOut(this.product, 1)
-            if (key == 'KeyO')
-                this.toggleInOut(this.product, 0)
+            // Only do these if the current target is not the comment box
+            if (event.target.type != 'textarea') {
+                if (key == 'ArrowRight')
+                    this.onNextSingle()
+                if (key == 'ArrowLeft')
+                    this.onPrevSingle()
+                if (this.authUser.role_id >= 3) {
+                    if (key == 'KeyI')
+                        this.toggleInOut(this.product, 1)
+                    if (key == 'KeyO')
+                        this.toggleInOut(this.product, 0)
+                }
+            }
         }
     },
     created() {

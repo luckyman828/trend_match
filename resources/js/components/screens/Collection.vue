@@ -3,7 +3,7 @@
         <h1>Collection</h1>
         <div class="underline"></div>
         <CollectionTopBar :itemsToFilter="collections" :title="'Catalogues'" :teams="teams" :teamFilterId="teamFilterId" @onSelectTeam="filterByTeam"/>
-        <CataloguesTable :catalogues="collections" :loading="loadingCollections" @onSelect="onSelect"/>
+        <CataloguesTable :isLoading="isLoading" :authUser="authUser" :catalogues="collections" :loading="loadingCollections" @onSelect="onSelect"/>
     </div>
 </template>
 
@@ -17,6 +17,7 @@ import Collection from '../../store/models/Collection'
 import Team from '../../store/models/Team'
 import User from '../../store/models/User'
 import UserTeam from '../../store/models/UserTeam';
+import AuthUser from '../../store/models/AuthUser';
 
 export default {
     name: 'collection',
@@ -39,14 +40,21 @@ export default {
             return User.query().with('teams').all()
         },
         authUser() {
-            return this.$store.getters.authUser;
+            // return this.$store.getters.authUser;
+            return AuthUser.query().with('teams').first()
         },
         teams() {
             return Team.query().with('users').all()
         },
+        isLoading () {
+            let loading = false
+            if (this.loadingCollections || this.authUser == null)
+                loading = true
+            return loading
+        }
     },
     methods: {
-        ...mapActions(['getAuthUser']),
+        ...mapActions('entities/authUser', ['getAuthUser']),
         ...mapActions('entities/collections', ['fetchCollections']),
         ...mapActions('entities/teams', ['fetchTeams']),
         ...mapActions('entities/users', ['fetchUsers']),
@@ -66,15 +74,17 @@ export default {
         async fetchInitialData() {
             // Get user
             await this.getAuthUser()
-            this.teamFilterId = this.authUser.team_ids
+            await this.fetchTeams(1234)
+            await this.fetchUserTeams()
+            this.teamFilterId = this.authUser.teams[0].id
         },
     },
     created() {
         this.fetchInitialData()
         this.fetchCollections()
-        this.fetchUserTeams()
+        // this.fetchUserTeams()
         this.fetchUsers(1234)
-        this.fetchTeams(1234)
+        // this.fetchTeams(1234)
     },
 
 }

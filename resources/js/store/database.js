@@ -23,6 +23,8 @@ import Category from './models/Category';
 import categories from './modules/categories';
 import TeamInvite from './models/TeamInvite';
 import teamInvites from './modules/teamInvites';
+import AuthUser from './models/AuthUser';
+import authUser from './modules/authUser';
 
 const database = new Database()
 
@@ -38,5 +40,6 @@ database.register(CommentVote, commentVotes)
 database.register(UserTeam, userTeams)
 database.register(Category, categories)
 database.register(TeamInvite, teamInvites)
+database.register(AuthUser, authUser)
 
 export default database

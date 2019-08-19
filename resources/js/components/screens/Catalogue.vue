@@ -33,6 +33,7 @@ import ProductFinalAction from '../../store/models/ProductFinalAction';
 import CommentVote from '../../store/models/CommentVote';
 import Category from '../../store/models/Category';
 import UserTeam from '../../store/models/UserTeam';
+import AuthUser from '../../store/models/AuthUser';
 
 export default{
     name: 'catalogue',
@@ -86,10 +87,12 @@ export default{
                 // if (product.productFinalAction != null)
                 //     product.productFinalAction = {}
                 product.nds = JSON.parse(JSON.stringify(totalUsers)) // Copy our users into a new variable
+                // C
                 product.actions.forEach(action => {
 
                     // Filter actions by the current team filter
-                    if ( teamFilterId > 0 ) {
+                    // Check if the action has a user
+                    if ( teamFilterId > 0 && action.user != null ) {
                         // Check if the user has a team
                         if (action.user.teams[0] != null) {
                             // Find the users team
@@ -338,35 +341,16 @@ export default{
             }
             else return -1
         },
-        // teamUsers () {
-        //     const teamFilterId = this.teamFilterId
-        //     const allUsers = this.users
-        //     let totalUsers = []
-        //     if (teamFilterId > 0) {
-        //         allUsers.forEach(user => {
-        //             // Make sure the user has any teams
-        //             if (user.teams[0] != null) {
-        //                 // Check that the team has an id 
-        //                 if ('id' in user.teams[0]) {
-        //                     if(user.teams[0].id == teamFilterId) {
-        //                         totalUsers.push(user)
-        //                     }
-        //                 }
-        //             }
-        //         })
-        //     } else {
-        //         totalUsers = this.users
-        //     }
-        //     return totalUsers
-        // },
         teamUsers () {
             let usersToReturn = []
             if (this.teamFilterId > 0) {
                 const thisTeam = this.teams.find(team => team.id == this.teamFilterId)
                 if (thisTeam)
                     usersToReturn = thisTeam.users
-            } else {
+            } else if (this.teamFilterId == 0) {
                 usersToReturn = this.users
+            } else {
+                usersToReturn = []
             }
             return usersToReturn
         },
@@ -396,7 +380,8 @@ export default{
             return CommentVote.query().with('comment').all()
         },
         authUser() {
-            return this.$store.getters.authUser;
+            // return this.$store.getters.authUser;
+            return AuthUser.query().with('teams').first()
         },
         // userTeams() {
         //     return UserTeam.query().with('team').with('user').all()
@@ -431,7 +416,7 @@ export default{
         },
     },
     methods: {
-        ...mapActions(['getAuthUser']),
+        ...mapActions('entities/authUser', ['getAuthUser']),
         ...mapActions('entities/collections', ['fetchCollections']),
         ...mapActions('entities/products', ['fetchProducts']),
         ...mapActions('entities/actions', ['fetchActions']),
@@ -556,7 +541,9 @@ export default{
             
             // Get user
             await this.getAuthUser()
-            this.teamFilterId = this.authUser.team_ids
+            await this.fetchTeams({collection_id: this.collectionId})
+            await this.fetchUserTeams()
+            this.teamFilterId = this.authUser.teams[0].id
         },
     },
     created() {
@@ -568,10 +555,10 @@ export default{
         this.fetchComments({collection_id: this.collectionId})
         this.fetchCollections()
         this.fetchFinalActions({collection_id: this.collectionId})
-        this.fetchTeams({collection_id: this.collectionId})
+        // this.fetchTeams({collection_id: this.collectionId})
         this.fetchCommentVotes({collection_id: this.collectionId})
         this.fetchCategories()
-        this.fetchUserTeams()
+        // this.fetchUserTeams()
     },
     mounted() {
 

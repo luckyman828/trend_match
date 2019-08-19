@@ -1,61 +1,77 @@
 <template>
-    <div class="catalogues-table card">
+    <div class="catalogues-table card" v-if="!isLoading">
         <div class="catalogue-totals">
             <span>{{selectedCount}} selected</span>
             <span>{{catalogues.length}} records</span>
         </div>
-        <table>
-            <tr class="header-row">
-                <th class="select">Select <i class="fas fa-chevron-down"></i></th>
-                <th class="clickable id" :class="{active: this.sortBy == 'id'}" @click="onSortBy('id', true)">
-                    ID <i class="fas" :class="[(this.sortBy == 'id' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
-                </th>
-                <th :class="{active: this.sortBy == 'title'}" class="clickable title" @click="onSortBy('title', true)">
-                   Catalogue <i class="fas" :class="[(this.sortBy == 'title' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
-                </th>
-                <th :class="{active: this.sortBy == 'start_time'}" class="clickable" @click="onSortBy('start_time', false)">
-                    Created <i class="fas" :class="[(this.sortBy == 'start_time' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
-                </th>
-                <th :class="{active: this.sortBy == 'end_time'}" class="clickable" @click="onSortBy('end_time', false)">
-                    Deadline <i class="fas" :class="[(this.sortBy == 'end_time' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
-                </th>
-                <th :class="{active: this.sortBy == 'phase'}" class="clickable" @click="onSortBy('phase', false)">
-                    Status <i class="fas" :class="[(this.sortBy == 'phase' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
-                </th>
-                <th></th>
-                <th class="action">Action</th>
-            </tr>
+        <div class="flex-table">
+            <div class="header-row flex-table-row">
+                <div class="flex-group">
+                    <th v-if="authUser.role_id >= 3" class="select">Select <i class="fas fa-chevron-down"></i></th>
+                    <th class="clickable id" :class="{active: this.sortBy == 'id'}" @click="onSortBy('id', true)">
+                        ID <i class="fas" :class="[(this.sortBy == 'id' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                    </th>
+                    <th :class="{active: this.sortBy == 'title'}" class="clickable title" @click="onSortBy('title', true)">
+                    Catalogue <i class="fas" :class="[(this.sortBy == 'title' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                    </th>
+                </div>
+                <div class="flex-group">
+                    <th :class="{active: this.sortBy == 'start_time'}" class="clickable" @click="onSortBy('start_time', false)">
+                        Created <i class="fas" :class="[(this.sortBy == 'start_time' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                    </th>
+                    <th :class="{active: this.sortBy == 'end_time'}" class="clickable" @click="onSortBy('end_time', false)">
+                        Deadline <i class="fas" :class="[(this.sortBy == 'end_time' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                    </th>
+                    <th :class="{active: this.sortBy == 'phase'}" class="clickable" @click="onSortBy('phase', false)">
+                        Status <i class="fas" :class="[(this.sortBy == 'phase' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                    </th>
+                </div>
+                <div class="flex-group">
+                    <th class="action">Action</th>
+                </div>
+            </div>
             <template v-if="!loading">
-                <tr class="catalogue-row" v-for="(catalogue, index) in cataloguesSorted" :key="catalogue.id">
-                    <td class="select">
-                        <label class="checkbox">
-                            <input type="checkbox" @change="onSelect(index)" />
-                            <span class="checkmark"></span>
-                        </label>
-                    </td>
-                    <td class="id clickable" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.id}}></td>
-                    <td class="title clickable" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.title}}</td>
+                <div class="catalogue-row flex-table-row item-row" v-for="(catalogue, index) in cataloguesSorted" :key="catalogue.id">
+                    <div class="flex-group">
+                        <td v-if="authUser.role_id >= 3" class="select">
+                            <label class="checkbox">
+                                <input type="checkbox" @change="onSelect(index)" />
+                                <span class="checkmark"></span>
+                            </label>
+                        </td>
+                        <td class="id clickable" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.id}}></td>
+                        <td class="title clickable" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.title}}</td>
+                    </div>
+                    <div class="flex-group">
+                        <td class="created"><span class="square">{{
+                            (catalogue.start_time != null) ? catalogue.start_time.substr(0, catalogue.start_time.indexOf(" ")).replace(/\-/g, "/") : 'Unset'
+                        }}</span></td>
+                        <td class="deadline"><span class="square">{{
+                            (catalogue.end_time != null) ? catalogue.end_time.substr(0, catalogue.end_time.indexOf(" ")).replace(/\-/g, "/") : 'Unset'
+                        }}</span></td>
 
-                    <td class="created"><span class="square">{{
-                        (catalogue.start_time != null) ? catalogue.start_time.substr(0, catalogue.start_time.indexOf(" ")).replace(/\-/g, "/") : 'Unset'
-                    }}</span></td>
-                    <td class="deadline"><span class="square">{{
-                        (catalogue.end_time != null) ? catalogue.end_time.substr(0, catalogue.end_time.indexOf(" ")).replace(/\-/g, "/") : 'Unset'
-                    }}</span></td>
-
-                    <td class="stage"><span class="square">STAGE {{catalogue.phase}}</span></td>
-                    <td class="status"><span class="square">tbd</span></td>
-                    <td class="action">
-                        <!-- <span class="button">Action</span>
-                        <span class="button">Action</span> -->
-                        <span class="clickable view-single" @click="viewSingle(catalogue.id, catalogue.title)">View</span>
-                    </td>
-                </tr>
+                        <td class="stage">
+                            <span class="square stage">STAGE {{catalogue.phase}}</span>
+                            <span class="square status">tbd</span>
+                        </td>
+                    </div>
+                    <div class="flex-group">
+                        <td class="action">
+                            <!-- <span class="button">Action</span>
+                            <span class="button">Action</span> -->
+                            <span class="placeholder"></span>
+                            <span class="clickable view-single button invisible-button" @click="viewSingle(catalogue.id, catalogue.title)">View</span>
+                        </td>
+                    </div>
+                </div>
             </template>
-        </table>
+        </div>
         <template v-if="loading">
             <Loader/>
         </template>
+    </div>
+    <div v-else>
+        <Loader/>
     </div>
 </template>
 
@@ -71,6 +87,8 @@ export default {
         'catalogues',
         'loading',
         'selectedCount',
+        'authUser',
+        'isLoading'
     ],
     components: {
         Loader,
@@ -153,103 +171,153 @@ export default {
     .clickable {
         cursor: pointer;
     }
-    table {
-        margin-left: -16px;
-        margin-right: -16px;
-        width: calc(100% + 32px);
-        &.disabled {
-            opacity: .5;
+    // Table
+    .flex-table {
+        .flex-group {
+            display: flex;
+            flex: 1;
+            margin: 0 16px;
+            &:nth-child(1) {
+                flex: 3;
+            }
+            &:nth-child(2) {
+                flex: 3;
+            }
+            &:nth-child(3) {
+                flex: 2;
+                max-width: 300px;
+                min-width: 300px;
+            }
+            > * {
+                flex: 1;
+                margin: 0 8px;
+                &.select {
+                    max-width: 80px;
+                }
+                &.id {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    max-width: 75px;
+                }
+                &.action {
+                    display: flex;
+                    justify-content: space-between;
+                }
+            }
+            > td {
+                &.action {
+                    text-align: right;
+                }
+            }
         }
-    }
-    tr > * {
-        &.action {
-            padding: 0 32px;
-            text-align: right;
-        }
-    }
-    tr:hover {
-        background: $light;
-    }
-    img {
-        height: 88px;
-        width: 66px;
-        object-fit: cover;
-        margin: 8px 0 8px 16px;
-    }
-    i {
-        margin-right: 12px;
-        font-size: 11px;
-        &.fa-arrow-up {
-            color: $green;
-        }
-        &.fa-arrow-down {
-            color: $red;
-        }
-    }
-    tr.header-row {
-        background: white;
-        font-weight: 700;
-        font-size: 12px;
-        height: 45px;
-        border-bottom: solid 2px $light1;
-    }
-    tr.catalogue-row {
-        border-bottom: solid 1px $light2;
-        &.in > :first-child {
-            box-shadow: 4px 0 $green inset
-        }
-        &.out > :first-child {
-            box-shadow: 4px 0 $red inset
-        }
-    }
-    th {
-        text-transform: uppercase;
-        font-size: 12px;
-        font-weight: 600;
-        color: $dark2;
-        &:first-child {
-            padding-left: 16px;
-            width: 100px;
-        }
-        &.id {
-            width: 75px;
-        }
-        &.title {
-            width: 150px;
-            padding-left: 40px;
-        }
-        i {
-            color: $light2;
-            margin: 0;
-            margin-left: 4px;
-        }
-        &.active {
-            i {
-                color: $primary
+        .flex-table-row {
+            > * {
+                flex: 1;
+                margin: 0 8px;
+                &:first-child {
+                    margin-left: 16px;
+                }
+                &:last-child {
+                    margin-right: 16px;
+                }
             }
         }
     }
-    td {
-        &.select {
-            padding: 20px 0;
-            padding-left: 20px;
-        }
-        &.id {
-                white-space: nowrap;
-                max-width: 50px;
-                overflow: hidden;
-        }
-        &.title {
-            padding: 0 40px;
-            white-space: nowrap;
-        }
-        &.created, &.deadline {
-            width: 120px;
-        }
-        &.stage {
-            width: 84px;
-        }
-    }
+
+
+
+
+    // table {
+    //     margin-left: -16px;
+    //     margin-right: -16px;
+    //     width: calc(100% + 32px);
+    //     &.disabled {
+    //         opacity: .5;
+    //     }
+    // }
+    // tr > * {
+    //     &.action {
+    //         padding: 0 32px;
+    //         text-align: right;
+    //     }
+    // }
+    // tr:hover {
+    //     background: $light;
+    // }
+    // i {
+    //     margin-right: 12px;
+    //     font-size: 11px;
+    //     &.fa-arrow-up {
+    //         color: $green;
+    //     }
+    //     &.fa-arrow-down {
+    //         color: $red;
+    //     }
+    // }
+    // tr.header-row {
+    //     background: white;
+    //     font-weight: 700;
+    //     font-size: 12px;
+    //     height: 45px;
+    //     border-bottom: solid 2px $light1;
+    // }
+    // tr.catalogue-row {
+    //     border-bottom: solid 1px $light2;
+    //     &.in > :first-child {
+    //         box-shadow: 4px 0 $green inset
+    //     }
+    //     &.out > :first-child {
+    //         box-shadow: 4px 0 $red inset
+    //     }
+    // }
+    // th {
+    //     text-transform: uppercase;
+    //     font-size: 12px;
+    //     font-weight: 600;
+    //     color: $dark2;
+    //     &:first-child {
+    //         padding-left: 16px;
+    //         width: 100px;
+    //     }
+    //     &.id {
+    //         width: 75px;
+    //     }
+    //     &.title {
+    //         width: 150px;
+    //         padding-left: 40px;
+    //     }
+    //     i {
+    //         color: $light2;
+    //         margin: 0;
+    //         margin-left: 4px;
+    //     }
+    //     &.active {
+    //         i {
+    //             color: $primary
+    //         }
+    //     }
+    // }
+    // td {
+    //     &.select {
+    //         padding: 20px 0;
+    //         padding-left: 20px;
+    //     }
+    //     &.id {
+    //             white-space: nowrap;
+    //             max-width: 50px;
+    //             overflow: hidden;
+    //     }
+    //     &.title {
+    //         padding: 0 40px;
+    //         white-space: nowrap;
+    //     }
+    //     &.created, &.deadline {
+    //         width: 120px;
+    //     }
+    //     &.stage {
+    //         width: 84px;
+    //     }
+    // }
     .show-more {
         width: 100%;
         margin: 16px auto 0;
@@ -345,6 +413,7 @@ export default {
         font-weight: 700;
         color: $dark2;
         border-color: $light2;
+        margin: 0;
         i {
             font-size: 16px;
             position: absolute;
