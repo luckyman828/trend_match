@@ -8220,6 +8220,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 
@@ -8590,8 +8592,14 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _SignoutButton__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SignoutButton */ "./resources/js/components/SignoutButton.vue");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _SignoutButton__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SignoutButton */ "./resources/js/components/SignoutButton.vue");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _store_models_Role__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../store/models/Role */ "./resources/js/store/models/Role.js");
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -8612,17 +8620,59 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "sidebar",
   components: {
-    SignoutButton: _SignoutButton__WEBPACK_IMPORTED_MODULE_0__["default"]
+    SignoutButton: _SignoutButton__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
+  data: function data() {
+    return {
+      drawerExpanded: false
+    };
   },
   computed: {
     authUser: function authUser() {
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_1__["default"].query().first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('role').first();
+    },
+    roles: function roles() {
+      return _store_models_Role__WEBPACK_IMPORTED_MODULE_3__["default"].query().all();
+    },
+    loadingUser: function loadingUser() {
+      var loading = false;
+
+      if (this.authUser == null) {
+        loading = true;
+      } else {
+        if (this.authUser.role == null) loading = true;
+      }
+
+      return loading;
     }
+  },
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/roles', ['fetchRoles'])),
+  created: function created() {
+    this.fetchRoles();
   }
 });
 
@@ -8752,6 +8802,10 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
 //
 //
 //
@@ -9940,6 +9994,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
 /* harmony import */ var _InviteToTeamModal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../InviteToTeamModal */ "./resources/js/components/InviteToTeamModal.vue");
 /* harmony import */ var _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../store/models/TeamInvite */ "./resources/js/store/models/TeamInvite.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -9954,6 +10009,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+
 
 
 
@@ -9983,7 +10039,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/teams', ['loadingTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/userTeams', ['loadingUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/users', ['loadingUsers']), {
     authUser: function authUser() {
-      return this.$store.getters.authUser;
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_8__["default"].query()["with"]('teams')["with"]('role').first();
     },
     teamInvites: function teamInvites() {
       return _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_7__["default"].query().all();
@@ -9992,9 +10048,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_5__["default"].query()["with"]('team')["with"]('user').all();
     },
     users: function users() {
-      return _store_models_User__WEBPACK_IMPORTED_MODULE_4__["default"].query()["with"]('teams').all();
+      return _store_models_User__WEBPACK_IMPORTED_MODULE_4__["default"].query()["with"]('teams')["with"]('role').all();
     },
     teams: function teams() {
+      var _this = this;
+
       // Manually find the teams and the users belonging to each team.
       // This is only necessary because I cannot make the Vuex ORM realtionship work 
       // If you can make it work, please be my guest
@@ -10007,7 +10065,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           if ('id' in user.teams[0]) {
             // If we have a team with an id
             // Set the users role
-            user.role = user.role_id == 1 ? 'Sales' : user.role_id == 2 ? 'Sales Rep' : 'Admin';
+            // user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
             user.teams.forEach(function (userTeam) {
               // Loop through each of the users teams and add the user
               // Find the corresponding team
@@ -10021,7 +10079,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           }
         }
       });
-      return teams;
+
+      if (!this.isLoading) {
+        if (this.authUser.role_id == 2) {
+          // Get the users teams
+          var userTeams = [];
+          teams.forEach(function (team) {
+            if (_this.authUser.teams.find(function (x) {
+              return x.id == team.id;
+            })) userTeams.push(team);
+          });
+          return userTeams;
+        } else if (this.authUser.role_id >= 3) return teams;
+      }
+
+      return [];
+    },
+    isLoading: function isLoading() {
+      var loading = false;
+      if (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.users[0].role == null || this.authUser == null) loading = true;
+      return loading;
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/teamInvites', ['fetchTeamInvites']), {
@@ -10351,7 +10428,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".sidebar[data-v-81fbb27e] {\n  margin: 0;\n  padding: 0;\n  width: 200px;\n  height: calc(100% - 70px);\n  background-color: white;\n  position: fixed;\n  overflow: auto;\n  left: 0;\n  top: 70px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  z-index: 99;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n@media screen and (max-width: 700px) {\n.sidebar[data-v-81fbb27e] {\n    width: 100%;\n    height: auto;\n    position: relative;\n}\n}\n@media screen and (max-width: 400px) {\n.sidebar[data-v-81fbb27e] {\n    text-align: center;\n    float: none;\n}\n}\n.sidebar .stick-to-bottom[data-v-81fbb27e] {\n  position: absolute;\n  left: 0;\n  width: 100%;\n  bottom: 120px;\n}\n.sidebar .link[data-v-81fbb27e] {\n  display: block;\n  color: #a8a8a8;\n  padding: 16px;\n  text-decoration: none;\n  border-left: solid 5px white;\n  cursor: pointer;\n}\n.sidebar .link.router-link-active[data-v-81fbb27e] {\n  background-color: #f9f9f9;\n  color: #1b1c1d;\n  border-left: 5px solid #4facfe;\n}\n.sidebar .link.router-link-active i[data-v-81fbb27e] {\n  color: #3B86FF;\n}\n.sidebar .link[data-v-81fbb27e]:hover {\n  background: #F3F3F3;\n}\n.sidebar .link[data-v-81fbb27e]:hover:not(.router-link-active) {\n  border-color: #F3F3F3;\n}\n.sidebar .link i[data-v-81fbb27e] {\n  margin-right: 8px;\n}\n@media screen and (max-width: 700px) {\n.sidebar .link[data-v-81fbb27e] {\n    float: left;\n}\n}", ""]);
+exports.push([module.i, ".sidebar[data-v-81fbb27e] {\n  margin: 0;\n  padding: 0;\n  width: 200px;\n  height: calc(100% - 70px);\n  background-color: white;\n  position: fixed;\n  left: 0;\n  top: 70px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  z-index: 99;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.sidebar .nav[data-v-81fbb27e] {\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.sidebar .nav > *[data-v-81fbb27e] {\n  width: 100%;\n}\n@media screen and (max-width: 700px) {\n.sidebar[data-v-81fbb27e] {\n    width: 100%;\n    height: auto;\n    position: relative;\n}\n}\n@media screen and (max-width: 400px) {\n.sidebar[data-v-81fbb27e] {\n    text-align: center;\n    float: none;\n}\n}\n.sidebar .stick-to-bottom[data-v-81fbb27e] {\n  position: absolute;\n  left: 0;\n  width: 100%;\n  bottom: 200px;\n}\n.sidebar .link[data-v-81fbb27e] {\n  display: block;\n  color: #a8a8a8;\n  padding: 16px;\n  text-decoration: none;\n  border-left: solid 5px white;\n  cursor: pointer;\n}\n.sidebar .link.router-link-active[data-v-81fbb27e] {\n  background-color: #f9f9f9;\n  color: #1b1c1d;\n  border-left: 5px solid #4facfe;\n}\n.sidebar .link.router-link-active i[data-v-81fbb27e] {\n  color: #3B86FF;\n}\n.sidebar .link[data-v-81fbb27e]:hover {\n  background: #F3F3F3;\n}\n.sidebar .link[data-v-81fbb27e]:hover:not(.router-link-active) {\n  border-color: #F3F3F3;\n}\n.sidebar .link i[data-v-81fbb27e] {\n  margin-right: 8px;\n}\n@media screen and (max-width: 700px) {\n.sidebar .link[data-v-81fbb27e] {\n    float: left;\n}\n}\n.sidebar .bottom-drawer.collapsed .drawer[data-v-81fbb27e] {\n  max-height: 0 !important;\n}\n.sidebar .bottom-drawer .header[data-v-81fbb27e] {\n  padding: 16px;\n  cursor: pointer;\n}\n.sidebar .bottom-drawer .header[data-v-81fbb27e]:hover {\n  background: #F9F9F9;\n}\n.sidebar .bottom-drawer .user[data-v-81fbb27e] {\n  font-size: 14px;\n  font-weight: 500;\n}\n.sidebar .bottom-drawer .role[data-v-81fbb27e] {\n  margin: auto;\n  font-size: 14px;\n  color: #A8A8A8;\n}\n.sidebar .bottom-drawer .drawer[data-v-81fbb27e] {\n  background: #F3F3F3;\n  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.3);\n  height: 200px;\n  max-height: 200px;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.sidebar .bottom-drawer .drawer .link[data-v-81fbb27e] {\n  border-left: none;\n}\n.sidebar .bottom-drawer .drawer .link[data-v-81fbb27e]:hover {\n  background: white;\n}", ""]);
 
 // exports
 
@@ -10408,7 +10485,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".teams-table[data-v-0b6bf463] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.teams-table .team-row .view-single[data-v-0b6bf463] {\n  border-color: transparent;\n}\n.teams-table .team-row.expanded[data-v-0b6bf463] {\n  background: #F3F3F3;\n}\n.teams-table .team-row.expanded .view-single[data-v-0b6bf463] {\n  color: #1B1C1D;\n  background: white;\n}\n.flex-table-row[data-v-0b6bf463] {\n  padding: 12px 0;\n}\n.flex-table-row > *.select[data-v-0b6bf463], .flex-table-row > *[data-v-0b6bf463]:nth-child(1) {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(2) {\n  padding-left: 32px;\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(3) {\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(4) {\n  min-width: 112px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(5) {\n  min-width: 132px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(6) {\n  min-width: 80px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(7) {\n  margin-left: auto;\n  min-width: 80px;\n  padding-left: 16px;\n  padding-right: 32px;\n}\n.flex-table-row > *.action[data-v-0b6bf463] > :first-child {\n  margin-right: 20px;\n}\n.flex-table-row td.title[data-v-0b6bf463] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.flex-table-row td.title .square[data-v-0b6bf463] {\n  margin-left: -32px;\n  color: #1B1C1D;\n  background: none;\n}\n.flex-table-row td.title .square i[data-v-0b6bf463] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  font-size: 12px;\n}\n.flex-table-row.invited-row .name[data-v-0b6bf463], .flex-table-row.invited-row .email[data-v-0b6bf463], .flex-table-row.invited-row .role[data-v-0b6bf463] {\n  opacity: 0.5;\n}\n.flex-table-row i[data-v-0b6bf463] {\n  margin-right: 8px;\n}\ni[data-v-0b6bf463] {\n  font-size: 11px;\n}\n.show-more[data-v-0b6bf463] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-0b6bf463] {\n  -webkit-animation: loading-data-v-0b6bf463 2s;\n          animation: loading-data-v-0b6bf463 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-0b6bf463] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox input[data-v-0b6bf463] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-0b6bf463] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-0b6bf463]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463]:after {\n  display: block;\n}\n.square[data-v-0b6bf463] {\n  background: #F3F3F3;\n  color: white;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 12px;\n  font-weight: 400;\n}\n.square.sales[data-v-0b6bf463] {\n  background: #3B86FF;\n}\n.square.admin[data-v-0b6bf463] {\n  background: #3C3B54;\n}\n.square i[data-v-0b6bf463] {\n  color: #A8A8A8;\n  margin-right: 16px;\n  font-size: 16px;\n}\n.button[data-v-0b6bf463] {\n  display: inline-block;\n  width: 92px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n}\n.button.active i[data-v-0b6bf463] {\n  font-weight: 900;\n}\n.button.remove[data-v-0b6bf463] {\n  color: #FF6565;\n}\n.button.dark[data-v-0b6bf463] {\n  color: #1B1C1D;\n  white-space: nowrap;\n}\n.button.dark[data-v-0b6bf463]:hover {\n  border-bottom: solid #1B1C1D 1px;\n}\n.view-single[data-v-0b6bf463] {\n  font-size: 12px;\n  font-weight: 700;\n  padding: 0 12px;\n  color: #A8A8A8;\n  cursor: pointer;\n}\n.team-totals[data-v-0b6bf463] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.team-totals span[data-v-0b6bf463] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.user-row[data-v-0b6bf463] {\n  background: #F9F9F9;\n}\n.user-row[data-v-0b6bf463]:not(:last-child) {\n  border-bottom: solid 2px white;\n}\n.user-row td[data-v-0b6bf463] {\n  font-size: 14px;\n}\n.user-row td.index[data-v-0b6bf463] {\n  text-align: right;\n  padding-right: 20px;\n}\n.team-users[data-v-0b6bf463] {\n  overflow: hidden;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n}\n.team-users.collapsed[data-v-0b6bf463] {\n  max-height: 0 !important;\n}\n.team-users.expanded + .team-row-wrapper[data-v-0b6bf463] {\n  box-shadow: 0 1px 0 #DFDFDF inset;\n}\n.team-row.expanded td.title .square[data-v-0b6bf463] {\n  background: #DFDFDF;\n  font-weight: 500;\n}\n.team-row.expanded td.title .square i[data-v-0b6bf463] {\n  color: #1B1C1D;\n  -webkit-transform: rotateZ(90deg);\n          transform: rotateZ(90deg);\n}", ""]);
+exports.push([module.i, ".teams-table[data-v-0b6bf463] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.teams-table .team-row .view-single[data-v-0b6bf463] {\n  border-color: transparent;\n}\n.teams-table .team-row.expanded[data-v-0b6bf463] {\n  background: #F3F3F3;\n}\n.teams-table .team-row.expanded .view-single[data-v-0b6bf463] {\n  color: #1B1C1D;\n  background: white;\n}\n.flex-table-row[data-v-0b6bf463] {\n  padding: 12px 0;\n}\n.flex-table-row > *.select[data-v-0b6bf463], .flex-table-row > *[data-v-0b6bf463]:nth-child(1) {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(2) {\n  padding-left: 32px;\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(3) {\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(4) {\n  min-width: 112px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(5) {\n  min-width: 132px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(6) {\n  min-width: 80px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(7) {\n  margin-left: auto;\n  min-width: 80px;\n  padding-left: 16px;\n  padding-right: 32px;\n}\n.flex-table-row > *.action[data-v-0b6bf463] > :first-child {\n  margin-right: 20px;\n}\n.flex-table-row td.title[data-v-0b6bf463] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.flex-table-row td.title .square[data-v-0b6bf463] {\n  margin-left: -32px;\n  color: #1B1C1D;\n  background: none;\n}\n.flex-table-row td.title .square i[data-v-0b6bf463] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  font-size: 12px;\n}\n.flex-table-row.invited-row .name[data-v-0b6bf463], .flex-table-row.invited-row .email[data-v-0b6bf463], .flex-table-row.invited-row .role[data-v-0b6bf463] {\n  opacity: 0.5;\n}\n.flex-table-row.invited-row.add-member[data-v-0b6bf463] {\n  -webkit-box-pack: center;\n          justify-content: center;\n  cursor: pointer;\n}\n.flex-table-row.invited-row.add-member:hover td[data-v-0b6bf463] {\n  border-bottom: solid 1px #1B1C1D;\n}\n.flex-table-row.invited-row.add-member td[data-v-0b6bf463] {\n  color: #3C3B54;\n  font-weight: 500;\n  font-size: 12px;\n  padding: 0;\n  border-bottom: solid 1px transparent;\n}\n.flex-table-row.invited-row.add-member td i[data-v-0b6bf463] {\n  font-size: 13px;\n}\n.flex-table-row i[data-v-0b6bf463] {\n  margin-right: 8px;\n}\ni[data-v-0b6bf463] {\n  font-size: 11px;\n}\n.show-more[data-v-0b6bf463] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-0b6bf463] {\n  -webkit-animation: loading-data-v-0b6bf463 2s;\n          animation: loading-data-v-0b6bf463 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-0b6bf463] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox input[data-v-0b6bf463] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-0b6bf463] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-0b6bf463]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463]:after {\n  display: block;\n}\n.square[data-v-0b6bf463] {\n  background: #F3F3F3;\n  color: white;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 12px;\n  font-weight: 400;\n}\n.square.user-role-1[data-v-0b6bf463] {\n  background: #3B86FF;\n}\n.square.user-role-2[data-v-0b6bf463] {\n  background: #5EE2A0;\n}\n.square.user-role-3[data-v-0b6bf463] {\n  background: #3C3B54;\n}\n.square.user-role-4[data-v-0b6bf463] {\n  background: #FF6565;\n}\n.square i[data-v-0b6bf463] {\n  color: #A8A8A8;\n  margin-right: 16px;\n  font-size: 16px;\n}\n.button[data-v-0b6bf463] {\n  display: inline-block;\n  width: 92px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n}\n.button.active i[data-v-0b6bf463] {\n  font-weight: 900;\n}\n.button.remove[data-v-0b6bf463] {\n  color: #FF6565;\n}\n.button.dark[data-v-0b6bf463] {\n  color: #1B1C1D;\n  white-space: nowrap;\n}\n.button.dark[data-v-0b6bf463]:hover {\n  border: none;\n  border-radius: 0;\n  border-bottom: solid #1B1C1D 1px;\n}\n.view-single[data-v-0b6bf463] {\n  font-size: 12px;\n  font-weight: 700;\n  padding: 0 12px;\n  color: #A8A8A8;\n  cursor: pointer;\n}\n.team-totals[data-v-0b6bf463] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.team-totals span[data-v-0b6bf463] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.user-row[data-v-0b6bf463] {\n  background: #F9F9F9;\n}\n.user-row[data-v-0b6bf463]:not(:last-child) {\n  border-bottom: solid 2px white;\n}\n.user-row td[data-v-0b6bf463] {\n  font-size: 14px;\n}\n.user-row td.index[data-v-0b6bf463] {\n  text-align: right;\n  padding-right: 20px;\n}\n.team-users[data-v-0b6bf463] {\n  overflow: hidden;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n}\n.team-users.collapsed[data-v-0b6bf463] {\n  max-height: 0 !important;\n}\n.team-users.expanded + .team-row-wrapper[data-v-0b6bf463] {\n  box-shadow: 0 1px 0 #DFDFDF inset;\n}\n.team-row.expanded td.title .square[data-v-0b6bf463] {\n  background: #DFDFDF;\n  font-weight: 500;\n}\n.team-row.expanded td.title .square i[data-v-0b6bf463] {\n  color: #1B1C1D;\n  -webkit-transform: rotateZ(90deg);\n          transform: rotateZ(90deg);\n}", ""]);
 
 // exports
 
@@ -15043,29 +15120,38 @@ var render = function() {
               ]
             ),
             _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable action",
-                class: { active: this.sortBy == "productFinalAction" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("productFinalAction", false)
-                  }
-                }
-              },
-              [
-                _vm._v("\n                Action "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "productFinalAction" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
+            _vm.authUser.role_id >= 3
+              ? _c(
+                  "th",
+                  {
+                    staticClass: "clickable action",
+                    class: { active: this.sortBy == "productFinalAction" },
+                    on: {
+                      click: function($event) {
+                        return _vm.onSortBy("productFinalAction", false)
+                      }
+                    }
+                  },
+                  [
+                    _vm._v("\n                Action "),
+                    _c("i", {
+                      staticClass: "fas",
+                      class: [
+                        this.sortBy == "productFinalAction" && !_vm.sortAsc
+                          ? "fa-long-arrow-alt-up"
+                          : "fa-long-arrow-alt-down"
+                      ]
+                    })
                   ]
-                })
-              ]
-            )
+                )
+              : _c(
+                  "th",
+                  {
+                    staticClass: "clickable action",
+                    class: { active: this.sortBy == "productFinalAction" }
+                  },
+                  [_vm._v("Action")]
+                )
           ]),
           _vm._v(" "),
           !_vm.loading
@@ -15706,44 +15792,85 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "vue-component-sidebar sidebar" }, [
-    _c(
-      "div",
-      { staticClass: "top-items" },
-      [
-        _c(
-          "router-link",
-          { staticClass: "link", attrs: { to: "/collection" } },
-          [
-            _c("i", { staticClass: "fas fa-signal-alt-3" }),
-            _vm._v(" Collection")
-          ]
-        ),
-        _vm._v(" "),
-        _vm.authUser != null
-          ? [
-              _vm.authUser.role_id >= 3
-                ? [
-                    _c(
-                      "router-link",
-                      { staticClass: "link", attrs: { to: "/teams" } },
-                      [
-                        _c("i", { staticClass: "fas fa-users" }),
-                        _vm._v(" Teams")
-                      ]
-                    )
-                  ]
-                : _vm._e()
+    _c("div", { staticClass: "nav" }, [
+      _c(
+        "div",
+        { staticClass: "top-items" },
+        [
+          _c(
+            "router-link",
+            { staticClass: "link", attrs: { to: "/collection" } },
+            [
+              _c("i", { staticClass: "fas fa-signal-alt-3" }),
+              _vm._v(" Collection")
             ]
-          : _vm._e()
-      ],
-      2
-    ),
+          ),
+          _vm._v(" "),
+          _vm.authUser != null
+            ? [
+                _vm.authUser.role_id >= 2
+                  ? [
+                      _c(
+                        "router-link",
+                        { staticClass: "link", attrs: { to: "/teams" } },
+                        [
+                          _c("i", { staticClass: "fas fa-users" }),
+                          _vm._v(" Teams")
+                        ]
+                      )
+                    ]
+                  : _vm._e()
+              ]
+            : _vm._e()
+        ],
+        2
+      )
+    ]),
     _vm._v(" "),
     _c(
       "div",
-      { staticClass: "bottom-items" },
-      [_c("signout-button", { staticClass: "link" })],
-      1
+      {
+        staticClass: "bottom-drawer",
+        class: { collapsed: !_vm.drawerExpanded },
+        on: {
+          click: function($event) {
+            _vm.drawerExpanded = !_vm.drawerExpanded
+          }
+        }
+      },
+      [
+        _c(
+          "div",
+          { staticClass: "header" },
+          [
+            !_vm.loadingUser
+              ? [
+                  _c("strong", { staticClass: "user" }, [
+                    _vm._v(_vm._s(_vm.authUser.name))
+                  ]),
+                  _vm._v(" "),
+                  _c("p", { staticClass: "role" }, [
+                    _vm._v(_vm._s(_vm.authUser.role.title))
+                  ])
+                ]
+              : [
+                  _c("strong", { staticClass: "user" }, [
+                    _vm._v("Fetching user")
+                  ]),
+                  _vm._v(" "),
+                  _c("p", { staticClass: "role" }, [_vm._v("Fethcing role")])
+                ]
+          ],
+          2
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "drawer" },
+          [_c("signout-button", { staticClass: "link" })],
+          1
+        )
+      ]
     )
   ])
 }
@@ -16213,9 +16340,9 @@ var render = function() {
                                   "span",
                                   {
                                     staticClass: "square",
-                                    class: user.role.toLowerCase()
+                                    class: "user-role-" + user.role_id
                                   },
-                                  [_vm._v(_vm._s(user.role))]
+                                  [_vm._v(_vm._s(user.role.title))]
                                 )
                               ]),
                               _vm._v(" "),
@@ -16322,7 +16449,21 @@ var render = function() {
                               ])
                             ]
                           )
-                        })
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          {
+                            staticClass:
+                              "user-row item-row sub-item-row flex-table-row invited-row add-member",
+                            on: {
+                              click: function($event) {
+                                return _vm.openInviteToTeam(team)
+                              }
+                            }
+                          },
+                          [_vm._m(4, true)]
+                        )
                       ],
                       2
                     )
@@ -16372,6 +16513,15 @@ var staticRenderFns = [
         _c("i", { staticClass: "far fa-exclamation-triangle" }),
         _vm._v(" invited")
       ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("td", [
+      _c("i", { staticClass: "far fa-user-plus" }),
+      _vm._v("Add Member to team")
     ])
   }
 ]
@@ -16803,15 +16953,11 @@ var render = function() {
       _vm._v(" "),
       _c("div", { staticClass: "underline" }),
       _vm._v(" "),
-      _c("TeamsTopBar", {
-        attrs: { itemsToFilter: _vm.teams, title: "Teams" }
-      }),
-      _vm._v(" "),
       _c("TeamsTable", {
         attrs: {
           teams: _vm.teams,
           users: _vm.users,
-          loading: _vm.loadingTeams,
+          loading: _vm.isLoading,
           authUser: _vm.authUser
         },
         on: {
@@ -32800,6 +32946,11 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
   routes: routes // short for `routes: routes`
 
 });
+router.beforeEach(function (to, from, next) {
+  var accessLevel = window.auth_user.role_id; // Guard paths
+
+  if (to.path == '/teams' && accessLevel < 2) next('/collection');else next();
+});
 var app = new Vue({
   store: _store_index__WEBPACK_IMPORTED_MODULE_0__["default"],
   router: router,
@@ -34845,6 +34996,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_teamInvites__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./modules/teamInvites */ "./resources/js/store/modules/teamInvites.js");
 /* harmony import */ var _models_AuthUser__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./models/AuthUser */ "./resources/js/store/models/AuthUser.js");
 /* harmony import */ var _modules_authUser__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./modules/authUser */ "./resources/js/store/modules/authUser.js");
+/* harmony import */ var _models_Role__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./models/Role */ "./resources/js/store/models/Role.js");
+/* harmony import */ var _modules_roles__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./modules/roles */ "./resources/js/store/modules/roles.js");
+
+
 
 
 
@@ -34886,6 +35041,7 @@ database.register(_models_UserTeam__WEBPACK_IMPORTED_MODULE_19__["default"], _mo
 database.register(_models_Category__WEBPACK_IMPORTED_MODULE_21__["default"], _modules_categories__WEBPACK_IMPORTED_MODULE_22__["default"]);
 database.register(_models_TeamInvite__WEBPACK_IMPORTED_MODULE_23__["default"], _modules_teamInvites__WEBPACK_IMPORTED_MODULE_24__["default"]);
 database.register(_models_AuthUser__WEBPACK_IMPORTED_MODULE_25__["default"], _modules_authUser__WEBPACK_IMPORTED_MODULE_26__["default"]);
+database.register(_models_Role__WEBPACK_IMPORTED_MODULE_27__["default"], _modules_roles__WEBPACK_IMPORTED_MODULE_28__["default"]);
 /* harmony default export */ __webpack_exports__["default"] = (database);
 
 /***/ }),
@@ -35011,6 +35167,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Country__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Country */ "./resources/js/store/models/Country.js");
 /* harmony import */ var _Team__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Team */ "./resources/js/store/models/Team.js");
 /* harmony import */ var _UserTeam__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _Role__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Role */ "./resources/js/store/models/Role.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -35030,6 +35187,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // User Model
+
 
 
 
@@ -35062,6 +35220,7 @@ function (_Model) {
         role_id: this.attr(''),
         comments: this.hasMany(_Comment__WEBPACK_IMPORTED_MODULE_1__["default"], 'user_id'),
         country: this.belongsTo(_Country__WEBPACK_IMPORTED_MODULE_2__["default"], 'country_id'),
+        role: this.belongsTo(_Role__WEBPACK_IMPORTED_MODULE_5__["default"], 'role_id'),
         teams: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_3__["default"], _UserTeam__WEBPACK_IMPORTED_MODULE_4__["default"], 'user_id', 'team_id')
       };
       return data;
@@ -35584,6 +35743,75 @@ ProductFinalAction.primaryKey = 'product_id';
 
 /***/ }),
 
+/***/ "./resources/js/store/models/Role.js":
+/*!*******************************************!*\
+  !*** ./resources/js/store/models/Role.js ***!
+  \*******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Role; });
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+/* harmony import */ var _AuthUser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AuthUser */ "./resources/js/store/models/AuthUser.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// Team Model
+
+
+
+var Role =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(Role, _Model);
+
+  function Role() {
+    _classCallCheck(this, Role);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(Role).apply(this, arguments));
+  }
+
+  _createClass(Role, null, [{
+    key: "fields",
+    // This is the name used as module name of the Vuex Store.
+    // List of all fields (schema) of the product model. `this.attr` is used
+    // for the generic field type. The argument is the default value.
+    // static primaryKey = 'id'
+    value: function fields() {
+      var data = {
+        id: this.attr(null),
+        title: this.attr(''),
+        authUser: this.hasOne(_AuthUser__WEBPACK_IMPORTED_MODULE_1__["default"], 'role_id')
+      };
+      return data;
+    }
+  }]);
+
+  return Role;
+}(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
+
+Role.entity = 'roles';
+
+
+/***/ }),
+
 /***/ "./resources/js/store/models/Team.js":
 /*!*******************************************!*\
   !*** ./resources/js/store/models/Team.js ***!
@@ -35740,6 +35968,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Country__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Country */ "./resources/js/store/models/Country.js");
 /* harmony import */ var _Team__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Team */ "./resources/js/store/models/Team.js");
 /* harmony import */ var _UserTeam__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _Role__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Role */ "./resources/js/store/models/Role.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -35759,6 +35988,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // User Model
+
 
 
 
@@ -35793,6 +36023,7 @@ function (_Model) {
         comments: this.hasMany(_Comment__WEBPACK_IMPORTED_MODULE_1__["default"], 'user_id'),
         country: this.belongsTo(_Country__WEBPACK_IMPORTED_MODULE_2__["default"], 'country_id'),
         // team: this.belongsTo(Team, 'team_ids'),
+        role: this.belongsTo(_Role__WEBPACK_IMPORTED_MODULE_5__["default"], 'role_id'),
         teams: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_3__["default"], _UserTeam__WEBPACK_IMPORTED_MODULE_4__["default"], 'user_id', 'team_id') // userTeam: this.belongsTo(UserTeam, 'team_ids', 'team_id'),
 
       };
@@ -37348,6 +37579,118 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return fetchProducts;
+    }()
+  },
+  mutations: {
+    //Set the loading status of the app
+    setLoading: function setLoading(state, bool) {
+      state.loading = bool;
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/store/modules/roles.js":
+/*!*********************************************!*\
+  !*** ./resources/js/store/modules/roles.js ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _models_Role__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/Role */ "./resources/js/store/models/Role.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    loading: true
+  },
+  getters: {
+    loadingRoles: function loadingRoles(state) {
+      return state.loading;
+    }
+  },
+  actions: {
+    fetchRoles: function () {
+      var _fetchRoles = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref) {
+        var commit, apiUrl, tryCount, succes, response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                commit = _ref.commit;
+                // Set the state to loading
+                commit('setLoading', true);
+                apiUrl = "/api/roles";
+                tryCount = 3;
+                succes = false;
+
+              case 5:
+                if (!(tryCount-- > 0 && !succes)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                _context.prev = 6;
+                _context.next = 9;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
+
+              case 9:
+                response = _context.sent;
+                _models_Role__WEBPACK_IMPORTED_MODULE_2__["default"].create({
+                  data: response.data
+                });
+                commit('setLoading', false);
+                succes = true;
+                _context.next = 22;
+                break;
+
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in teams.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 22;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 22:
+                _context.next = 5;
+                break;
+
+              case 24:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[6, 15]]);
+      }));
+
+      function fetchRoles(_x) {
+        return _fetchRoles.apply(this, arguments);
+      }
+
+      return fetchRoles;
     }()
   },
   mutations: {

@@ -4,6 +4,7 @@ import Comment from './Comment'
 import Country from './Country'
 import Team from './Team'
 import UserTeam from './UserTeam';
+import Role from './Role';
 
 export default class AuthUser extends Model {
   // This is the name used as module name of the Vuex Store.
@@ -22,6 +23,7 @@ export default class AuthUser extends Model {
       role_id: this.attr(''),
       comments: this.hasMany(Comment, 'user_id'),
       country: this.belongsTo(Country, 'country_id'),
+      role: this.belongsTo(Role, 'role_id'),
       teams: this.belongsToMany(Team, UserTeam, 'user_id', 'team_id'),
     }
 

@@ -2,8 +2,8 @@
     <div class="teams">
         <h1>Teams</h1>
         <div class="underline"></div>
-        <TeamsTopBar :itemsToFilter="teams" :title="'Teams'"/>
-        <TeamsTable :teams="teams" :users="users" :loading="loadingTeams" :authUser="authUser" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/>
+        <!-- <TeamsTopBar :itemsToFilter="teams" :title="'Teams'"/> -->
+        <TeamsTable :teams="teams" :users="users" :loading="isLoading" :authUser="authUser" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/>
         <InviteToTeamModal v-if="singleTeam != null" :team="singleTeam" :users="users" :authUser="authUser" @onCloseModal="closeModal"/>
     </div>
 </template>
@@ -17,6 +17,7 @@ import User from '../../store/models/User'
 import UserTeam from '../../store/models/UserTeam'
 import InviteToTeamModal from '../InviteToTeamModal';
 import TeamInvite from '../../store/models/TeamInvite'
+import AuthUser from '../../store/models/AuthUser'
 
 export default {
     name: 'teams',
@@ -42,7 +43,7 @@ export default {
         ...mapGetters('entities/userTeams', ['loadingUserTeams']),
         ...mapGetters('entities/users', ['loadingUsers']),
         authUser() {
-            return this.$store.getters.authUser;
+            return AuthUser.query().with('teams').with('role').first()
         },
         teamInvites() {
             return TeamInvite.query().all()
@@ -51,7 +52,7 @@ export default {
             return UserTeam.query().with('team').with('user').all()
         },
         users () {
-            return User.query().with('teams').all()
+            return User.query().with('teams').with('role').all()
         },
         teams () {
             // Manually find the teams and the users belonging to each team.
@@ -66,7 +67,7 @@ export default {
                     if ('id' in user.teams[0]) {
                         // If we have a team with an id
                         // Set the users role
-                        user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
+                        // user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
                         user.teams.forEach(userTeam => {
                             // Loop through each of the users teams and add the user
                             // Find the corresponding team
@@ -79,8 +80,27 @@ export default {
                     }
                 }
             })
-            return teams
+            if (!this.isLoading) {
+                if (this.authUser.role_id == 2) {
+                    // Get the users teams
+                    let userTeams = []
+                    teams.forEach(team => {
+                        if (this.authUser.teams.find(x => x.id == team.id))
+                            userTeams.push(team)
+                    })
+                    return userTeams
+                }
+                else if (this.authUser.role_id >= 3)
+                    return teams
+            }
+            return []
         },
+        isLoading () {
+            let loading = false
+            if (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.users[0].role == null || this.authUser == null)
+                loading = true
+            return loading
+        }
     },
     methods: {
         ...mapActions(['getAuthUser']),

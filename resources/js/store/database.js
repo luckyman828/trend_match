@@ -25,6 +25,8 @@ import TeamInvite from './models/TeamInvite';
 import teamInvites from './modules/teamInvites';
 import AuthUser from './models/AuthUser';
 import authUser from './modules/authUser';
+import Role from './models/Role';
+import roles from './modules/roles';
 
 const database = new Database()
 
@@ -41,5 +43,6 @@ database.register(UserTeam, userTeams)
 database.register(Category, categories)
 database.register(TeamInvite, teamInvites)
 database.register(AuthUser, authUser)
+database.register(Role, roles)
 
 export default database

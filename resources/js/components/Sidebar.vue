@@ -1,37 +1,79 @@
 <template>
   <div class="vue-component-sidebar sidebar">
-    <div class="top-items">
-      <router-link to="/collection" class="link"><i class="fas fa-signal-alt-3"></i> Collection</router-link>
-      <!-- <router-link to="/catalogue">Catalogue</router-link> -->
-      <!-- <router-link class="stick-to-bottom" to="/teams"><i class="fas fa-users"></i> Teams</router-link> -->
+    <div class="nav">
+      <div class="top-items">
+        <router-link to="/collection" class="link"><i class="fas fa-signal-alt-3"></i> Collection</router-link>
+        <!-- <router-link to="/catalogue">Catalogue</router-link> -->
+        <!-- <router-link class="stick-to-bottom" to="/teams"><i class="fas fa-users"></i> Teams</router-link> -->
 
-      <!-- Admin routes -->
-      <template v-if="authUser != null">
-        <template v-if="authUser.role_id >= 3">
-          <router-link to="/teams" class="link"><i class="fas fa-users"></i> Teams</router-link>
+        <!-- Admin routes -->
+        <template v-if="authUser != null">
+          <template v-if="authUser.role_id >= 2">
+            <router-link to="/teams" class="link"><i class="fas fa-users"></i> Teams</router-link>
+          </template>
         </template>
-      </template>
+      </div>
+      <!-- <div class="bottom-items">
+        <signout-button class="link"/>
+      </div> -->
     </div>
-    <div class="bottom-items">
-      <signout-button class="link"/>
+    <div class="bottom-drawer" @click="drawerExpanded = !drawerExpanded" :class="{collapsed: !drawerExpanded}">
+      <div class="header">
+        <template v-if="!loadingUser">
+          <strong class="user">{{authUser.name}}</strong>
+          <p class="role">{{authUser.role.title}}</p>
+        </template>
+        <template v-else>
+          <strong class="user">Fetching user</strong>
+          <p class="role">Fethcing role</p>
+        </template>
+      </div>
+      <div class="drawer">
+        <signout-button class="link"/>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
+
 import SignoutButton from './SignoutButton'
 import AuthUser from '../store/models/AuthUser'
+import Role from '../store/models/Role'
 
 export default {
   name: "sidebar",
   components: {
     SignoutButton
   },
+  data: function () { return {
+    drawerExpanded: false,
+  }},
   computed: {
     authUser() {
-        return AuthUser.query().first()
+        return AuthUser.query().with('role').first()
     },
+    roles() {
+        return Role.query().all()
+    },
+    loadingUser () {
+      let loading = false
+      if (this.authUser == null) {
+        loading = true
+      } else {
+        if (this.authUser.role == null)
+          loading = true
+      }
+      return loading
+    }
   },
+  methods: {
+    ...mapActions('entities/roles', ['fetchRoles']),
+  },
+  created() {
+    this.fetchRoles()
+  }
 };
 </script>
 
@@ -44,13 +86,20 @@ export default {
   height: calc(100% - 70px);
   background-color: white;
   position: fixed;
-  overflow: auto;
   left: 0;
   top: $navbarHeight;
   display: flex;
   flex-direction: column;
   z-index: 99;
   justify-content: space-between;
+
+  .nav {
+    justify-content: space-between;
+    flex-direction: column;
+    > * {
+      width: 100%;
+    }
+  }
 
   @media screen and (max-width: 700px) {
     width: 100%;
@@ -66,7 +115,7 @@ export default {
     position: absolute;
     left: 0;
     width: 100%;
-    bottom: 120px;
+    bottom: 200px;
   }
   .link {
     display: block;
@@ -96,6 +145,43 @@ export default {
     @media screen and (max-width: 700px) {
       float: left;
     }
+  }
+  .bottom-drawer {
+    &.collapsed {
+      .drawer {
+        max-height: 0 !important;
+      }
+    } 
+    .header {
+      padding: 16px;
+      cursor: pointer;
+      &:hover {
+        background: $light;
+      }
+    }
+    .user {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .role {
+      margin: auto;
+      font-size: 14px;
+      color: $dark2;
+    }
+    .drawer {
+      background: $light1;
+      box-shadow: -2px 0 6px rgba(0,0,0,.30);
+      height: 200px;
+      max-height: 200px;
+      transition: .3s;
+      .link {
+        border-left: none;
+        &:hover {
+          background: white;
+        }
+      }
+    }
+    
   }
 }
 </style>

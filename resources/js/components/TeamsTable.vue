@@ -53,7 +53,7 @@
                             <td class="name">{{ (user.name != null) ? user.name : 'No name set' }}</td>
                             <td class="email">{{user.email}}</td>
                             <td class="collections">-</td>
-                            <td class="role"><span class="square" :class="user.role.toLowerCase()">{{user.role}}</span></td>
+                            <td class="role"><span class="square" :class="'user-role-' + user.role_id">{{user.role.title}}</span></td>
                             <td></td>
                             <td class="action">
                                 <span class="resend"></span>
@@ -72,6 +72,10 @@
                                 <span class="resend button dark invisible-button" @click="resendInvite($event, invited.email, team)"><i class="far fa-paper-plane"></i> Resend invite</span>
                                 <span class="remove button red invisible-button" @click="removeInvite(invited.email, team.id)"><i class="far fa-user-minus"></i> Remove</span>
                             </td>
+                        </div>
+
+                        <div class="user-row item-row sub-item-row flex-table-row invited-row add-member" @click="openInviteToTeam(team)">
+                            <td><i class="far fa-user-plus"></i>Add Member to team</td>
                         </div>
                     </div>
 
@@ -276,6 +280,25 @@ export default {
             .name, .email, .role {
                 opacity: .5;
             }
+            &.add-member {
+                justify-content: center;
+                cursor: pointer;
+                &:hover {
+                    td {
+                        border-bottom: solid 1px $dark;
+                    }
+                }
+                td {
+                    color: $dark05;
+                    font-weight: 500;
+                    font-size: 12px;
+                    padding: 0;
+                    border-bottom: solid 1px transparent;
+                    i {
+                        font-size: 13px;
+                    }
+                }
+            }
         }
         i {
             margin-right: 8px;
@@ -352,11 +375,17 @@ export default {
         border-radius: 4px;
         font-size: 12px;
         font-weight: 400;
-        &.sales {
+        &.user-role-1 {
             background: $primary;
         }
-        &.admin {
+        &.user-role-2 {
+            background: $green;
+        }
+        &.user-role-3 {
             background: $dark05;
+        }
+        &.user-role-4 {
+            background: $red;
         }
         i {
             color: $dark2;
@@ -391,6 +420,8 @@ export default {
             // width: auto;
             white-space: nowrap;
             &:hover {
+                border: none;
+                border-radius: 0;
                 border-bottom: solid $dark 1px;
             }
         }
