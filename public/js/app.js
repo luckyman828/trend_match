@@ -14927,7 +14927,7 @@ var render = function() {
         },
         [
           _c("div", { staticClass: "header-row flex-table-row" }, [
-            _vm.authUser.role_id > 2
+            _vm.authUser.role_id >= 2
               ? _c(
                   "th",
                   {

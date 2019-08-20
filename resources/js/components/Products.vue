@@ -5,7 +5,7 @@
         <product-single :sticky="sticky" :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut"/>
         <div class="flex-table" :class="{disabled: singleProductToShow.id != null}">
             <div class="header-row flex-table-row">
-                <th class="select dropdown-parent" @click="toggleDropdown($event)" v-if="authUser.role_id > 2">
+                <th class="select dropdown-parent" @click="toggleDropdown($event)" v-if="authUser.role_id >= 2">
                     Select <i class="fas fa-chevron-down"></i>
                     <select-dropdown @onSelectByCondition="selectByCondition"/>
                 </th>
