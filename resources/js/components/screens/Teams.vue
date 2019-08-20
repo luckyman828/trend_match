@@ -29,6 +29,7 @@ export default {
     data: function () { return {
         selected: [],
         singleTeam: null,
+        loadingOverwrite: false,
     }},
     watch: {
         singleTeam: function (newVal, oldVal) {
@@ -97,13 +98,14 @@ export default {
         },
         isLoading () {
             let loading = false
-            if (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.users[0].role == null || this.authUser == null)
-                loading = true
+            if (!this.loadingOverwrite)
+                if (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.users[0].role == null || this.authUser == null)
+                    loading = true
             return loading
         }
     },
     methods: {
-        ...mapActions(['getAuthUser']),
+        ...mapActions('entities/authUser', ['getAuthUser']),
         ...mapActions('entities/teams', ['fetchTeams']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/userTeams', ['fetchUserTeams']),
@@ -119,13 +121,34 @@ export default {
         },
         closeModal() {
             this.singleTeam = null;
-        }
+        },
+        async fetchInitialData() {
+            // Get user
+            console.log('Getting initial data')
+            await this.getAuthUser()
+        },
     },
     created () {
-        this.fetchTeams({collection_id: 124124124})
-        this.fetchUsers({collection_id: 124124124})
-        this.fetchUserTeams()
-        this.fetchTeamInvites()
+        this.fetchInitialData()
+        // Fetch data based on the Auth User
+        .then(response => {
+            // Only get data for the users assigned room
+            const room_id = this.authUser.assigned_room_id
+            if (room_id != null) {
+
+                this.fetchTeams(1234)
+                this.fetchUserTeams()
+                if (this.authUser.teams.length > 0)
+                    this.teamFilterId = this.authUser.teams[0].id
+
+                this.fetchUsers({collection_id: 124124124})
+                this.fetchTeamInvites()
+            } else {
+                console.log('no room id!')
+                this.loadingOverwrite = true
+            }
+        })
+        
     }
 }
 </script>

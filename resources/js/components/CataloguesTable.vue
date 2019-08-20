@@ -30,45 +30,45 @@
                     <th class="action">Action</th>
                 </div>
             </div>
-            <template v-if="!loading">
-                <div class="catalogue-row flex-table-row item-row" v-for="(catalogue, index) in cataloguesSorted" :key="catalogue.id">
-                    <div class="flex-group">
-                        <td v-if="authUser.role_id >= 3" class="select">
-                            <label class="checkbox">
-                                <input type="checkbox" @change="onSelect(index)" />
-                                <span class="checkmark"></span>
-                            </label>
-                        </td>
-                        <td class="id clickable" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.id}}></td>
-                        <td class="title clickable" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.title}}</td>
-                    </div>
-                    <div class="flex-group">
-                        <td class="created"><span class="square">{{
-                            (catalogue.start_time != null) ? catalogue.start_time.substr(0, catalogue.start_time.indexOf(" ")).replace(/\-/g, "/") : 'Unset'
-                        }}</span></td>
-                        <td class="deadline"><span class="square">{{
-                            (catalogue.end_time != null) ? catalogue.end_time.substr(0, catalogue.end_time.indexOf(" ")).replace(/\-/g, "/") : 'Unset'
-                        }}</span></td>
 
-                        <td class="stage">
-                            <span class="square stage">STAGE {{catalogue.phase}}</span>
-                            <span class="square status">tbd</span>
-                        </td>
-                    </div>
-                    <div class="flex-group">
-                        <td class="action">
-                            <!-- <span class="button">Action</span>
-                            <span class="button">Action</span> -->
-                            <span class="placeholder"></span>
-                            <span class="clickable view-single button invisible-button" @click="viewSingle(catalogue.id, catalogue.title)">View</span>
-                        </td>
-                    </div>
+            <div v-if="cataloguesSorted.length <= 0" class="catalogue-row flex-table-row item-row">
+                <span style="text-align: center">You don't have access to any catalogues</span>
+            </div>
+
+            <div class="catalogue-row flex-table-row item-row" v-for="(catalogue, index) in cataloguesSorted" :key="catalogue.id">
+                <div class="flex-group">
+                    <td v-if="authUser.role_id >= 3" class="select">
+                        <label class="checkbox">
+                            <input type="checkbox" @change="onSelect(index)" />
+                            <span class="checkmark"></span>
+                        </label>
+                    </td>
+                    <td class="id clickable" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.id}}></td>
+                    <td class="title clickable" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.title}}</td>
                 </div>
-            </template>
+                <div class="flex-group">
+                    <td class="created"><span class="square">{{
+                        (catalogue.start_time != null) ? catalogue.start_time.substr(0, catalogue.start_time.indexOf(" ")).replace(/\-/g, "/") : 'Unset'
+                    }}</span></td>
+                    <td class="deadline"><span class="square">{{
+                        (catalogue.end_time != null) ? catalogue.end_time.substr(0, catalogue.end_time.indexOf(" ")).replace(/\-/g, "/") : 'Unset'
+                    }}</span></td>
+
+                    <td class="stage">
+                        <span class="square stage">STAGE {{catalogue.phase}}</span>
+                        <span class="square status">tbd</span>
+                    </td>
+                </div>
+                <div class="flex-group">
+                    <td class="action">
+                        <!-- <span class="button">Action</span>
+                        <span class="button">Action</span> -->
+                        <span class="placeholder"></span>
+                        <span class="clickable view-single button invisible-button" @click="viewSingle(catalogue.id, catalogue.title)">View</span>
+                    </td>
+                </div>
+            </div>
         </div>
-        <template v-if="loading">
-            <Loader/>
-        </template>
     </div>
     <div v-else>
         <Loader/>

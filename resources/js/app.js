@@ -34,10 +34,10 @@ const routes = [
   })
 
   router.beforeEach((to, from, next) => {
-    const accessLevel = window.auth_user.role_id
+    const authUser = window.auth_user
     // Guard paths
-    if (to.path == '/teams' && accessLevel < 2)
-      next('/collection')
+    if ( ( to.path == '/teams' && authUser.role_id < 2 ) || ( to.name == 'catalogue' && authUser.assigned_room_id == null) )
+        next('/collection')
     else next()
   })
 

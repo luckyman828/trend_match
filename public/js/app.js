@@ -8773,7 +8773,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (this.teamFilterId > 0 && this.teams.length > 0) return this.teams.find(function (el) {
         return el.id == _this.teamFilterId;
       });else return {
-        title: 'Fetching..'
+        title: 'No teams'
       };
     },
     authUser: function authUser() {
@@ -8784,7 +8784,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var availableTeams = this.teams;
 
       if (authUser) {
-        if (authUser.role_id < 3) availableTeams = authUser.teams;
+        if (authUser.role_id <= 2) availableTeams = authUser.teams;
         return availableTeams;
       }
     }
@@ -8823,6 +8823,11 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
+//
 //
 //
 //
@@ -9800,7 +9805,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 return this.fetchUserTeams();
 
               case 7:
-                this.teamFilterId = this.authUser.teams[0].id;
+                if (this.authUser.teams.length > 0) this.teamFilterId = this.authUser.teams[0].id;
 
               case 8:
               case "end":
@@ -9908,7 +9913,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   data: function data() {
     return {
       selected: [],
-      teamFilterId: '-1'
+      teamFilterId: '-1',
+      loadingOverwrite: false
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/collections', ['loadingCollections']), {
@@ -9927,7 +9933,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     isLoading: function isLoading() {
       var loading = false;
-      if (this.loadingCollections || this.authUser == null) loading = true;
+      if (!this.loadingOverwrite) if (this.loadingCollections || this.authUser == null) loading = true;
       return loading;
     }
   }),
@@ -9959,21 +9965,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
+                // Get user
+                console.log('Getting initial data');
+                _context.next = 3;
                 return this.getAuthUser();
 
-              case 2:
-                _context.next = 4;
-                return this.fetchTeams(1234);
-
-              case 4:
-                _context.next = 6;
-                return this.fetchUserTeams();
-
-              case 6:
-                this.teamFilterId = this.authUser.teams[0].id;
-
-              case 7:
+              case 3:
               case "end":
                 return _context.stop();
             }
@@ -9989,10 +9986,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }()
   }),
   created: function created() {
-    this.fetchInitialData();
-    this.fetchCollections(); // this.fetchUserTeams()
+    var _this = this;
 
-    this.fetchUsers(1234); // this.fetchTeams(1234)
+    this.fetchInitialData() // Fetch data based on the Auth User
+    .then(function (response) {
+      // Only get data for the users assigned room
+      var room_id = _this.authUser.assigned_room_id;
+
+      if (room_id != null) {
+        _this.fetchTeams(1234);
+
+        _this.fetchUserTeams();
+
+        if (_this.authUser.teams.length > 0) _this.teamFilterId = _this.authUser.teams[0].id;
+
+        _this.fetchCollections(room_id);
+
+        _this.fetchUsers(1234);
+      } else {
+        _this.loadingOverwrite = true;
+      }
+    });
   }
 });
 
@@ -10007,15 +10021,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
-/* harmony import */ var _TeamsTopBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../TeamsTopBar */ "./resources/js/components/TeamsTopBar.vue");
-/* harmony import */ var _TeamsTable__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../TeamsTable */ "./resources/js/components/TeamsTable.vue");
-/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
-/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
-/* harmony import */ var _InviteToTeamModal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../InviteToTeamModal */ "./resources/js/components/InviteToTeamModal.vue");
-/* harmony import */ var _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../store/models/TeamInvite */ "./resources/js/store/models/TeamInvite.js");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var _TeamsTopBar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../TeamsTopBar */ "./resources/js/components/TeamsTopBar.vue");
+/* harmony import */ var _TeamsTable__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../TeamsTable */ "./resources/js/components/TeamsTable.vue");
+/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
+/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _InviteToTeamModal__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../InviteToTeamModal */ "./resources/js/components/InviteToTeamModal.vue");
+/* harmony import */ var _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../store/models/TeamInvite */ "./resources/js/store/models/TeamInvite.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -10042,14 +10064,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'teams',
   components: {
-    TeamsTopBar: _TeamsTopBar__WEBPACK_IMPORTED_MODULE_2__["default"],
-    TeamsTable: _TeamsTable__WEBPACK_IMPORTED_MODULE_3__["default"],
-    InviteToTeamModal: _InviteToTeamModal__WEBPACK_IMPORTED_MODULE_6__["default"]
+    TeamsTopBar: _TeamsTopBar__WEBPACK_IMPORTED_MODULE_3__["default"],
+    TeamsTable: _TeamsTable__WEBPACK_IMPORTED_MODULE_4__["default"],
+    InviteToTeamModal: _InviteToTeamModal__WEBPACK_IMPORTED_MODULE_7__["default"]
   },
   data: function data() {
     return {
       selected: [],
-      singleTeam: null
+      singleTeam: null,
+      loadingOverwrite: false
     };
   },
   watch: {
@@ -10058,18 +10081,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (newVal != null) document.querySelector('body').classList.add('disabled');else document.querySelector('body').classList.remove('disabled');
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/teams', ['loadingTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/userTeams', ['loadingUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/users', ['loadingUsers']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['loadingTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/userTeams', ['loadingUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/users', ['loadingUsers']), {
     authUser: function authUser() {
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_8__["default"].query()["with"]('teams')["with"]('role').first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_9__["default"].query()["with"]('teams')["with"]('role').first();
     },
     teamInvites: function teamInvites() {
-      return _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_7__["default"].query().all();
+      return _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_8__["default"].query().all();
     },
     userTeams: function userTeams() {
-      return _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_5__["default"].query()["with"]('team')["with"]('user').all();
+      return _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_6__["default"].query()["with"]('team')["with"]('user').all();
     },
     users: function users() {
-      return _store_models_User__WEBPACK_IMPORTED_MODULE_4__["default"].query()["with"]('teams')["with"]('role').all();
+      return _store_models_User__WEBPACK_IMPORTED_MODULE_5__["default"].query()["with"]('teams')["with"]('role').all();
     },
     teams: function teams() {
       var _this = this;
@@ -10077,7 +10100,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // Manually find the teams and the users belonging to each team.
       // This is only necessary because I cannot make the Vuex ORM realtionship work 
       // If you can make it work, please be my guest
-      var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_1__["default"].query()["with"]('users')["with"]('invites').all();
+      var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('users')["with"]('invites').all();
       var users = this.users; // Loop through the users and sort them between the teams
 
       users.forEach(function (user) {
@@ -10118,11 +10141,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     isLoading: function isLoading() {
       var loading = false;
-      if (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.users[0].role == null || this.authUser == null) loading = true;
+      if (!this.loadingOverwrite) if (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.users[0].role == null || this.authUser == null) loading = true;
       return loading;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/teamInvites', ['fetchTeamInvites']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamInvites', ['fetchTeamInvites']), {
     setSelected: function setSelected(index) {
       // Check if index already exists in array. If it exists remove it, else add it to array
       var selected = this.selected;
@@ -10136,17 +10159,60 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     closeModal: function closeModal() {
       this.singleTeam = null;
-    }
+    },
+    fetchInitialData: function () {
+      var _fetchInitialData = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                // Get user
+                console.log('Getting initial data');
+                _context.next = 3;
+                return this.getAuthUser();
+
+              case 3:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function fetchInitialData() {
+        return _fetchInitialData.apply(this, arguments);
+      }
+
+      return fetchInitialData;
+    }()
   }),
   created: function created() {
-    this.fetchTeams({
-      collection_id: 124124124
+    var _this2 = this;
+
+    this.fetchInitialData() // Fetch data based on the Auth User
+    .then(function (response) {
+      // Only get data for the users assigned room
+      var room_id = _this2.authUser.assigned_room_id;
+
+      if (room_id != null) {
+        _this2.fetchTeams(1234);
+
+        _this2.fetchUserTeams();
+
+        if (_this2.authUser.teams.length > 0) _this2.teamFilterId = _this2.authUser.teams[0].id;
+
+        _this2.fetchUsers({
+          collection_id: 124124124
+        });
+
+        _this2.fetchTeamInvites();
+      } else {
+        console.log('no room id!');
+        _this2.loadingOverwrite = true;
+      }
     });
-    this.fetchUsers({
-      collection_id: 124124124
-    });
-    this.fetchUserTeams();
-    this.fetchTeamInvites();
   }
 });
 
@@ -13207,295 +13273,286 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return !_vm.isLoading
-    ? _c(
-        "div",
-        { staticClass: "catalogues-table card" },
-        [
-          _c("div", { staticClass: "catalogue-totals" }, [
-            _c("span", [_vm._v(_vm._s(_vm.selectedCount) + " selected")]),
-            _vm._v(" "),
-            _c("span", [_vm._v(_vm._s(_vm.catalogues.length) + " records")])
-          ]),
+    ? _c("div", { staticClass: "catalogues-table card" }, [
+        _c("div", { staticClass: "catalogue-totals" }, [
+          _c("span", [_vm._v(_vm._s(_vm.selectedCount) + " selected")]),
           _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "flex-table" },
-            [
-              _c("div", { staticClass: "header-row flex-table-row" }, [
-                _c("div", { staticClass: "flex-group" }, [
-                  _vm.authUser.role_id >= 3
-                    ? _c("th", { staticClass: "select" }, [
-                        _vm._v("Select "),
-                        _c("i", { staticClass: "fas fa-chevron-down" })
-                      ])
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c(
-                    "th",
-                    {
-                      staticClass: "clickable id",
-                      class: { active: this.sortBy == "id" },
-                      on: {
-                        click: function($event) {
-                          return _vm.onSortBy("id", true)
-                        }
-                      }
-                    },
-                    [
-                      _vm._v("\n                    ID "),
-                      _c("i", {
-                        staticClass: "fas",
-                        class: [
-                          this.sortBy == "id" && !_vm.sortAsc
-                            ? "fa-long-arrow-alt-up"
-                            : "fa-long-arrow-alt-down"
-                        ]
-                      })
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "th",
-                    {
-                      staticClass: "clickable title",
-                      class: { active: this.sortBy == "title" },
-                      on: {
-                        click: function($event) {
-                          return _vm.onSortBy("title", true)
-                        }
-                      }
-                    },
-                    [
-                      _vm._v("\n                Catalogue "),
-                      _c("i", {
-                        staticClass: "fas",
-                        class: [
-                          this.sortBy == "title" && !_vm.sortAsc
-                            ? "fa-long-arrow-alt-up"
-                            : "fa-long-arrow-alt-down"
-                        ]
-                      })
-                    ]
-                  )
-                ]),
+          _c("span", [_vm._v(_vm._s(_vm.catalogues.length) + " records")])
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "flex-table" },
+          [
+            _c("div", { staticClass: "header-row flex-table-row" }, [
+              _c("div", { staticClass: "flex-group" }, [
+                _vm.authUser.role_id >= 3
+                  ? _c("th", { staticClass: "select" }, [
+                      _vm._v("Select "),
+                      _c("i", { staticClass: "fas fa-chevron-down" })
+                    ])
+                  : _vm._e(),
                 _vm._v(" "),
-                _c("div", { staticClass: "flex-group" }, [
-                  _c(
-                    "th",
-                    {
-                      staticClass: "clickable",
-                      class: { active: this.sortBy == "start_time" },
-                      on: {
-                        click: function($event) {
-                          return _vm.onSortBy("start_time", false)
-                        }
+                _c(
+                  "th",
+                  {
+                    staticClass: "clickable id",
+                    class: { active: this.sortBy == "id" },
+                    on: {
+                      click: function($event) {
+                        return _vm.onSortBy("id", true)
                       }
-                    },
-                    [
-                      _vm._v("\n                    Created "),
-                      _c("i", {
-                        staticClass: "fas",
-                        class: [
-                          this.sortBy == "start_time" && !_vm.sortAsc
-                            ? "fa-long-arrow-alt-up"
-                            : "fa-long-arrow-alt-down"
-                        ]
-                      })
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "th",
-                    {
-                      staticClass: "clickable",
-                      class: { active: this.sortBy == "end_time" },
-                      on: {
-                        click: function($event) {
-                          return _vm.onSortBy("end_time", false)
-                        }
-                      }
-                    },
-                    [
-                      _vm._v("\n                    Deadline "),
-                      _c("i", {
-                        staticClass: "fas",
-                        class: [
-                          this.sortBy == "end_time" && !_vm.sortAsc
-                            ? "fa-long-arrow-alt-up"
-                            : "fa-long-arrow-alt-down"
-                        ]
-                      })
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "th",
-                    {
-                      staticClass: "clickable",
-                      class: { active: this.sortBy == "phase" },
-                      on: {
-                        click: function($event) {
-                          return _vm.onSortBy("phase", false)
-                        }
-                      }
-                    },
-                    [
-                      _vm._v("\n                    Status "),
-                      _c("i", {
-                        staticClass: "fas",
-                        class: [
-                          this.sortBy == "phase" && !_vm.sortAsc
-                            ? "fa-long-arrow-alt-up"
-                            : "fa-long-arrow-alt-down"
-                        ]
-                      })
-                    ]
-                  )
-                ]),
+                    }
+                  },
+                  [
+                    _vm._v("\n                    ID "),
+                    _c("i", {
+                      staticClass: "fas",
+                      class: [
+                        this.sortBy == "id" && !_vm.sortAsc
+                          ? "fa-long-arrow-alt-up"
+                          : "fa-long-arrow-alt-down"
+                      ]
+                    })
+                  ]
+                ),
                 _vm._v(" "),
-                _vm._m(0)
+                _c(
+                  "th",
+                  {
+                    staticClass: "clickable title",
+                    class: { active: this.sortBy == "title" },
+                    on: {
+                      click: function($event) {
+                        return _vm.onSortBy("title", true)
+                      }
+                    }
+                  },
+                  [
+                    _vm._v("\n                Catalogue "),
+                    _c("i", {
+                      staticClass: "fas",
+                      class: [
+                        this.sortBy == "title" && !_vm.sortAsc
+                          ? "fa-long-arrow-alt-up"
+                          : "fa-long-arrow-alt-down"
+                      ]
+                    })
+                  ]
+                )
               ]),
               _vm._v(" "),
-              !_vm.loading
-                ? _vm._l(_vm.cataloguesSorted, function(catalogue, index) {
-                    return _c(
-                      "div",
-                      {
-                        key: catalogue.id,
-                        staticClass: "catalogue-row flex-table-row item-row"
-                      },
-                      [
-                        _c("div", { staticClass: "flex-group" }, [
-                          _vm.authUser.role_id >= 3
-                            ? _c("td", { staticClass: "select" }, [
-                                _c("label", { staticClass: "checkbox" }, [
-                                  _c("input", {
-                                    attrs: { type: "checkbox" },
-                                    on: {
-                                      change: function($event) {
-                                        return _vm.onSelect(index)
-                                      }
-                                    }
-                                  }),
-                                  _vm._v(" "),
-                                  _c("span", { staticClass: "checkmark" })
-                                ])
-                              ])
-                            : _vm._e(),
-                          _vm._v(" "),
-                          _c(
-                            "td",
-                            {
-                              staticClass: "id clickable",
+              _c("div", { staticClass: "flex-group" }, [
+                _c(
+                  "th",
+                  {
+                    staticClass: "clickable",
+                    class: { active: this.sortBy == "start_time" },
+                    on: {
+                      click: function($event) {
+                        return _vm.onSortBy("start_time", false)
+                      }
+                    }
+                  },
+                  [
+                    _vm._v("\n                    Created "),
+                    _c("i", {
+                      staticClass: "fas",
+                      class: [
+                        this.sortBy == "start_time" && !_vm.sortAsc
+                          ? "fa-long-arrow-alt-up"
+                          : "fa-long-arrow-alt-down"
+                      ]
+                    })
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "th",
+                  {
+                    staticClass: "clickable",
+                    class: { active: this.sortBy == "end_time" },
+                    on: {
+                      click: function($event) {
+                        return _vm.onSortBy("end_time", false)
+                      }
+                    }
+                  },
+                  [
+                    _vm._v("\n                    Deadline "),
+                    _c("i", {
+                      staticClass: "fas",
+                      class: [
+                        this.sortBy == "end_time" && !_vm.sortAsc
+                          ? "fa-long-arrow-alt-up"
+                          : "fa-long-arrow-alt-down"
+                      ]
+                    })
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "th",
+                  {
+                    staticClass: "clickable",
+                    class: { active: this.sortBy == "phase" },
+                    on: {
+                      click: function($event) {
+                        return _vm.onSortBy("phase", false)
+                      }
+                    }
+                  },
+                  [
+                    _vm._v("\n                    Status "),
+                    _c("i", {
+                      staticClass: "fas",
+                      class: [
+                        this.sortBy == "phase" && !_vm.sortAsc
+                          ? "fa-long-arrow-alt-up"
+                          : "fa-long-arrow-alt-down"
+                      ]
+                    })
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _vm._m(0)
+            ]),
+            _vm._v(" "),
+            _vm.cataloguesSorted.length <= 0
+              ? _c(
+                  "div",
+                  { staticClass: "catalogue-row flex-table-row item-row" },
+                  [
+                    _c("span", { staticStyle: { "text-align": "center" } }, [
+                      _vm._v("You don't have access to any catalogues")
+                    ])
+                  ]
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm._l(_vm.cataloguesSorted, function(catalogue, index) {
+              return _c(
+                "div",
+                {
+                  key: catalogue.id,
+                  staticClass: "catalogue-row flex-table-row item-row"
+                },
+                [
+                  _c("div", { staticClass: "flex-group" }, [
+                    _vm.authUser.role_id >= 3
+                      ? _c("td", { staticClass: "select" }, [
+                          _c("label", { staticClass: "checkbox" }, [
+                            _c("input", {
+                              attrs: { type: "checkbox" },
                               on: {
-                                click: function($event) {
-                                  return _vm.viewSingle(
-                                    catalogue.id,
-                                    catalogue.title
-                                  )
+                                change: function($event) {
+                                  return _vm.onSelect(index)
                                 }
                               }
-                            },
-                            [_vm._v(_vm._s(catalogue.id) + ">")]
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "td",
-                            {
-                              staticClass: "title clickable",
-                              on: {
-                                click: function($event) {
-                                  return _vm.viewSingle(
-                                    catalogue.id,
-                                    catalogue.title
-                                  )
-                                }
-                              }
-                            },
-                            [_vm._v(_vm._s(catalogue.title))]
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "flex-group" }, [
-                          _c("td", { staticClass: "created" }, [
-                            _c("span", { staticClass: "square" }, [
-                              _vm._v(
-                                _vm._s(
-                                  catalogue.start_time != null
-                                    ? catalogue.start_time
-                                        .substr(
-                                          0,
-                                          catalogue.start_time.indexOf(" ")
-                                        )
-                                        .replace(/\-/g, "/")
-                                    : "Unset"
-                                )
-                              )
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("td", { staticClass: "deadline" }, [
-                            _c("span", { staticClass: "square" }, [
-                              _vm._v(
-                                _vm._s(
-                                  catalogue.end_time != null
-                                    ? catalogue.end_time
-                                        .substr(
-                                          0,
-                                          catalogue.end_time.indexOf(" ")
-                                        )
-                                        .replace(/\-/g, "/")
-                                    : "Unset"
-                                )
-                              )
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("td", { staticClass: "stage" }, [
-                            _c("span", { staticClass: "square stage" }, [
-                              _vm._v("STAGE " + _vm._s(catalogue.phase))
-                            ]),
+                            }),
                             _vm._v(" "),
-                            _c("span", { staticClass: "square status" }, [
-                              _vm._v("tbd")
-                            ])
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "flex-group" }, [
-                          _c("td", { staticClass: "action" }, [
-                            _c("span", { staticClass: "placeholder" }),
-                            _vm._v(" "),
-                            _c(
-                              "span",
-                              {
-                                staticClass:
-                                  "clickable view-single button invisible-button",
-                                on: {
-                                  click: function($event) {
-                                    return _vm.viewSingle(
-                                      catalogue.id,
-                                      catalogue.title
-                                    )
-                                  }
-                                }
-                              },
-                              [_vm._v("View")]
-                            )
+                            _c("span", { staticClass: "checkmark" })
                           ])
                         ])
-                      ]
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c(
+                      "td",
+                      {
+                        staticClass: "id clickable",
+                        on: {
+                          click: function($event) {
+                            return _vm.viewSingle(catalogue.id, catalogue.title)
+                          }
+                        }
+                      },
+                      [_vm._v(_vm._s(catalogue.id) + ">")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "td",
+                      {
+                        staticClass: "title clickable",
+                        on: {
+                          click: function($event) {
+                            return _vm.viewSingle(catalogue.id, catalogue.title)
+                          }
+                        }
+                      },
+                      [_vm._v(_vm._s(catalogue.title))]
                     )
-                  })
-                : _vm._e()
-            ],
-            2
-          ),
-          _vm._v(" "),
-          _vm.loading ? [_c("Loader")] : _vm._e()
-        ],
-        2
-      )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "flex-group" }, [
+                    _c("td", { staticClass: "created" }, [
+                      _c("span", { staticClass: "square" }, [
+                        _vm._v(
+                          _vm._s(
+                            catalogue.start_time != null
+                              ? catalogue.start_time
+                                  .substr(0, catalogue.start_time.indexOf(" "))
+                                  .replace(/\-/g, "/")
+                              : "Unset"
+                          )
+                        )
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", { staticClass: "deadline" }, [
+                      _c("span", { staticClass: "square" }, [
+                        _vm._v(
+                          _vm._s(
+                            catalogue.end_time != null
+                              ? catalogue.end_time
+                                  .substr(0, catalogue.end_time.indexOf(" "))
+                                  .replace(/\-/g, "/")
+                              : "Unset"
+                          )
+                        )
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", { staticClass: "stage" }, [
+                      _c("span", { staticClass: "square stage" }, [
+                        _vm._v("STAGE " + _vm._s(catalogue.phase))
+                      ]),
+                      _vm._v(" "),
+                      _c("span", { staticClass: "square status" }, [
+                        _vm._v("tbd")
+                      ])
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "flex-group" }, [
+                    _c("td", { staticClass: "action" }, [
+                      _c("span", { staticClass: "placeholder" }),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticClass:
+                            "clickable view-single button invisible-button",
+                          on: {
+                            click: function($event) {
+                              return _vm.viewSingle(
+                                catalogue.id,
+                                catalogue.title
+                              )
+                            }
+                          }
+                        },
+                        [_vm._v("View")]
+                      )
+                    ])
+                  ])
+                ]
+              )
+            })
+          ],
+          2
+        )
+      ])
     : _c("div", [_c("Loader")], 1)
 }
 var staticRenderFns = [
@@ -16281,285 +16338,312 @@ var render = function() {
           ]),
           _vm._v(" "),
           !_vm.loading
-            ? _vm._l(_vm.teamsSorted, function(team, index) {
-                return _c(
-                  "div",
-                  { key: team.id, staticClass: "team-row-wrapper" },
-                  [
-                    _c(
+            ? [
+                _vm.teamsSorted <= 0
+                  ? _c(
                       "div",
-                      {
-                        staticClass: "team-row item-row flex-table-row",
-                        class: [
-                          { expanded: _vm.expandedIds.includes(team.id) },
-                          { collapsed: !_vm.expandedIds.includes(team.id) }
-                        ]
-                      },
+                      { staticClass: "team-row item-row flex-table-row" },
                       [
-                        _c("td", { staticClass: "select" }, [
-                          _c("label", { staticClass: "checkbox" }, [
-                            _c("input", {
-                              attrs: { type: "checkbox" },
-                              on: {
-                                change: function($event) {
-                                  return _vm.onSelect(index)
-                                }
-                              }
-                            }),
-                            _vm._v(" "),
-                            _c("span", { staticClass: "checkmark" })
-                          ])
-                        ]),
-                        _vm._v(" "),
                         _c(
-                          "td",
+                          "span",
                           {
-                            staticClass: "title clickable",
-                            on: {
-                              click: function($event) {
-                                return _vm.expandUsers(team)
-                              }
+                            staticStyle: {
+                              display: "block",
+                              margin: "auto",
+                              padding: "0"
                             }
                           },
-                          [
-                            _c("span", { staticClass: "square" }, [
-                              _c("i", { staticClass: "far fa-chevron-right" }),
-                              _vm._v(_vm._s(team.title))
-                            ])
+                          [_vm._v("You dont have access to any teams")]
+                        )
+                      ]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm._l(_vm.teamsSorted, function(team, index) {
+                  return _c(
+                    "div",
+                    { key: team.id, staticClass: "team-row-wrapper" },
+                    [
+                      _c(
+                        "div",
+                        {
+                          staticClass: "team-row item-row flex-table-row",
+                          class: [
+                            { expanded: _vm.expandedIds.includes(team.id) },
+                            { collapsed: !_vm.expandedIds.includes(team.id) }
                           ]
-                        ),
-                        _vm._v(" "),
-                        _c("td", { staticClass: "assigned" }, [
-                          _vm._v(_vm._s(team.expanded))
-                        ]),
-                        _vm._v(" "),
-                        _c("td", { staticClass: "members" }, [
-                          _c("span", [_vm._v(_vm._s(team.users.length))])
-                        ]),
-                        _vm._v(" "),
-                        _vm._m(1, true),
-                        _vm._v(" "),
-                        _vm._m(2, true),
-                        _vm._v(" "),
-                        _c("td", { staticClass: "action" }, [
-                          _vm.expandedIds.includes(team.id)
-                            ? _c(
-                                "span",
-                                {
-                                  staticClass: "button green active",
-                                  on: {
-                                    click: function($event) {
-                                      return _vm.openInviteToTeam(team)
-                                    }
+                        },
+                        [
+                          _c("td", { staticClass: "select" }, [
+                            _c("label", { staticClass: "checkbox" }, [
+                              _c("input", {
+                                attrs: { type: "checkbox" },
+                                on: {
+                                  change: function($event) {
+                                    return _vm.onSelect(index)
                                   }
-                                },
-                                [_vm._v("Add to team")]
-                              )
-                            : _c(
-                                "span",
-                                {
-                                  staticClass: "button",
-                                  on: {
-                                    click: function($event) {
-                                      return _vm.expandUsers(team)
-                                    }
-                                  }
-                                },
-                                [_vm._v("Edit team")]
-                              ),
+                                }
+                              }),
+                              _vm._v(" "),
+                              _c("span", { staticClass: "checkmark" })
+                            ])
+                          ]),
                           _vm._v(" "),
                           _c(
-                            "span",
+                            "td",
                             {
-                              staticClass: "view-single button",
+                              staticClass: "title clickable",
                               on: {
                                 click: function($event) {
                                   return _vm.expandUsers(team)
                                 }
                               }
                             },
-                            [_vm._v("View")]
-                          )
-                        ])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass: "team-users",
-                        class: [
-                          { expanded: _vm.expandedIds.includes(team.id) },
-                          { collapsed: !_vm.expandedIds.includes(team.id) }
-                        ]
-                      },
-                      [
-                        _vm._l(team.users, function(user, index) {
-                          return _c(
-                            "div",
-                            {
-                              key: index,
-                              staticClass:
-                                "user-row item-row sub-item-row flex-table-row"
-                            },
                             [
-                              _c("td", { staticClass: "index" }, [
-                                _vm._v(_vm._s(index + 1))
-                              ]),
-                              _vm._v(" "),
-                              _c("td", { staticClass: "name" }, [
-                                _vm._v(
-                                  _vm._s(
-                                    user.name != null
-                                      ? user.name
-                                      : "No name set"
-                                  )
-                                )
-                              ]),
-                              _vm._v(" "),
-                              _c("td", { staticClass: "email" }, [
-                                _vm._v(_vm._s(user.email))
-                              ]),
-                              _vm._v(" "),
-                              _c("td", { staticClass: "collections" }, [
-                                _vm._v("-")
-                              ]),
-                              _vm._v(" "),
-                              _c("td", { staticClass: "role" }, [
-                                _c(
-                                  "span",
-                                  {
-                                    staticClass: "square",
-                                    class: "user-role-" + user.role_id
-                                  },
-                                  [_vm._v(_vm._s(user.role.title))]
-                                )
-                              ]),
-                              _vm._v(" "),
-                              _c("td"),
-                              _vm._v(" "),
-                              _c("td", { staticClass: "action" }, [
-                                _c("span", { staticClass: "resend" }),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  {
-                                    staticClass:
-                                      "remove button red invisible-button",
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.removeUser(user.id, team.id)
-                                      }
-                                    }
-                                  },
-                                  [
-                                    _c("i", {
-                                      staticClass: "far fa-user-minus"
-                                    }),
-                                    _vm._v(" Remove")
-                                  ]
-                                )
+                              _c("span", { staticClass: "square" }, [
+                                _c("i", {
+                                  staticClass: "far fa-chevron-right"
+                                }),
+                                _vm._v(_vm._s(team.title))
                               ])
                             ]
-                          )
-                        }),
-                        _vm._v(" "),
-                        _vm._l(team.invites, function(invited, index) {
-                          return _c(
-                            "div",
-                            {
-                              key: index + team.users.length + 1,
-                              staticClass:
-                                "user-row item-row sub-item-row flex-table-row invited-row"
-                            },
-                            [
-                              _c("td", { staticClass: "index" }, [
-                                _vm._v(_vm._s(team.users.length + index + 1))
-                              ]),
-                              _vm._v(" "),
-                              _c("td", { staticClass: "name" }, [
-                                _vm._v("No name yet")
-                              ]),
-                              _vm._v(" "),
-                              _c("td", { staticClass: "email" }, [
-                                _vm._v(_vm._s(invited.email))
-                              ]),
-                              _vm._v(" "),
-                              _vm._m(3, true),
-                              _vm._v(" "),
-                              _c("td", { staticClass: "role" }),
-                              _vm._v(" "),
-                              _c("td"),
-                              _vm._v(" "),
-                              _c("td", { staticClass: "action" }, [
-                                _c(
+                          ),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "assigned" }, [
+                            _vm._v(_vm._s(team.expanded))
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "members" }, [
+                            _c("span", [_vm._v(_vm._s(team.users.length))])
+                          ]),
+                          _vm._v(" "),
+                          _vm._m(1, true),
+                          _vm._v(" "),
+                          _vm._m(2, true),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "action" }, [
+                            _vm.expandedIds.includes(team.id)
+                              ? _c(
                                   "span",
                                   {
-                                    staticClass:
-                                      "resend button dark invisible-button",
+                                    staticClass: "button green active",
                                     on: {
                                       click: function($event) {
-                                        return _vm.resendInvite(
-                                          $event,
-                                          invited.email,
-                                          team
-                                        )
+                                        return _vm.openInviteToTeam(team)
                                       }
                                     }
                                   },
-                                  [
-                                    _c("i", {
-                                      staticClass: "far fa-paper-plane"
-                                    }),
-                                    _vm._v(" Resend invite")
-                                  ]
+                                  [_vm._v("Add to team")]
+                                )
+                              : _c(
+                                  "span",
+                                  {
+                                    staticClass: "button",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.expandUsers(team)
+                                      }
+                                    }
+                                  },
+                                  [_vm._v("Edit team")]
                                 ),
+                            _vm._v(" "),
+                            _c(
+                              "span",
+                              {
+                                staticClass: "view-single button",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.expandUsers(team)
+                                  }
+                                }
+                              },
+                              [_vm._v("View")]
+                            )
+                          ])
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        {
+                          staticClass: "team-users",
+                          class: [
+                            { expanded: _vm.expandedIds.includes(team.id) },
+                            { collapsed: !_vm.expandedIds.includes(team.id) }
+                          ]
+                        },
+                        [
+                          _vm._l(team.users, function(user, index) {
+                            return _c(
+                              "div",
+                              {
+                                key: index,
+                                staticClass:
+                                  "user-row item-row sub-item-row flex-table-row"
+                              },
+                              [
+                                _c("td", { staticClass: "index" }, [
+                                  _vm._v(_vm._s(index + 1))
+                                ]),
                                 _vm._v(" "),
-                                _c(
-                                  "span",
-                                  {
-                                    staticClass:
-                                      "remove button red invisible-button",
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.removeInvite(
-                                          invited.email,
-                                          team.id
-                                        )
+                                _c("td", { staticClass: "name" }, [
+                                  _vm._v(
+                                    _vm._s(
+                                      user.name != null
+                                        ? user.name
+                                        : "No name set"
+                                    )
+                                  )
+                                ]),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "email" }, [
+                                  _vm._v(_vm._s(user.email))
+                                ]),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "collections" }, [
+                                  _vm._v("-")
+                                ]),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "role" }, [
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass: "square",
+                                      class: "user-role-" + user.role_id
+                                    },
+                                    [_vm._v(_vm._s(user.role.title))]
+                                  )
+                                ]),
+                                _vm._v(" "),
+                                _c("td"),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "action" }, [
+                                  _c("span", { staticClass: "resend" }),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass:
+                                        "remove button red invisible-button",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.removeUser(
+                                            user.id,
+                                            team.id
+                                          )
+                                        }
                                       }
-                                    }
-                                  },
-                                  [
-                                    _c("i", {
-                                      staticClass: "far fa-user-minus"
-                                    }),
-                                    _vm._v(" Remove")
-                                  ]
-                                )
-                              ])
-                            ]
-                          )
-                        }),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "user-row item-row sub-item-row flex-table-row invited-row add-member",
-                            on: {
-                              click: function($event) {
-                                return _vm.openInviteToTeam(team)
+                                    },
+                                    [
+                                      _c("i", {
+                                        staticClass: "far fa-user-minus"
+                                      }),
+                                      _vm._v(" Remove")
+                                    ]
+                                  )
+                                ])
+                              ]
+                            )
+                          }),
+                          _vm._v(" "),
+                          _vm._l(team.invites, function(invited, index) {
+                            return _c(
+                              "div",
+                              {
+                                key: index + team.users.length + 1,
+                                staticClass:
+                                  "user-row item-row sub-item-row flex-table-row invited-row"
+                              },
+                              [
+                                _c("td", { staticClass: "index" }, [
+                                  _vm._v(_vm._s(team.users.length + index + 1))
+                                ]),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "name" }, [
+                                  _vm._v("No name yet")
+                                ]),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "email" }, [
+                                  _vm._v(_vm._s(invited.email))
+                                ]),
+                                _vm._v(" "),
+                                _vm._m(3, true),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "role" }),
+                                _vm._v(" "),
+                                _c("td"),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "action" }, [
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass:
+                                        "resend button dark invisible-button",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.resendInvite(
+                                            $event,
+                                            invited.email,
+                                            team
+                                          )
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _c("i", {
+                                        staticClass: "far fa-paper-plane"
+                                      }),
+                                      _vm._v(" Resend invite")
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass:
+                                        "remove button red invisible-button",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.removeInvite(
+                                            invited.email,
+                                            team.id
+                                          )
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _c("i", {
+                                        staticClass: "far fa-user-minus"
+                                      }),
+                                      _vm._v(" Remove")
+                                    ]
+                                  )
+                                ])
+                              ]
+                            )
+                          }),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            {
+                              staticClass:
+                                "user-row item-row sub-item-row flex-table-row invited-row add-member",
+                              on: {
+                                click: function($event) {
+                                  return _vm.openInviteToTeam(team)
+                                }
                               }
-                            }
-                          },
-                          [_vm._m(4, true)]
-                        )
-                      ],
-                      2
-                    )
-                  ]
-                )
-              })
+                            },
+                            [_vm._m(4, true)]
+                          )
+                        ],
+                        2
+                      )
+                    ]
+                  )
+                })
+              ]
             : _vm._e()
         ],
         2
@@ -33037,9 +33121,9 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
 
 });
 router.beforeEach(function (to, from, next) {
-  var accessLevel = window.auth_user.role_id; // Guard paths
+  var authUser = window.auth_user; // Guard paths
 
-  if (to.path == '/teams' && accessLevel < 2) next('/collection');else next();
+  if (to.path == '/teams' && authUser.role_id < 2 || to.name == 'catalogue' && authUser.assigned_room_id == null) next('/collection');else next();
 });
 var app = new Vue({
   store: _store_index__WEBPACK_IMPORTED_MODULE_0__["default"],
@@ -35311,7 +35395,8 @@ function (_Model) {
         comments: this.hasMany(_Comment__WEBPACK_IMPORTED_MODULE_1__["default"], 'user_id'),
         country: this.belongsTo(_Country__WEBPACK_IMPORTED_MODULE_2__["default"], 'country_id'),
         role: this.belongsTo(_Role__WEBPACK_IMPORTED_MODULE_5__["default"], 'role_id'),
-        teams: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_3__["default"], _UserTeam__WEBPACK_IMPORTED_MODULE_4__["default"], 'user_id', 'team_id')
+        teams: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_3__["default"], _UserTeam__WEBPACK_IMPORTED_MODULE_4__["default"], 'user_id', 'team_id'),
+        assigned_room_id: this.attr('')
       };
       return data;
     }
@@ -36108,14 +36193,12 @@ function (_Model) {
         email: this.attr(''),
         name: this.attr(''),
         country_id: this.attr(''),
-        // team_ids: this.attr(''),
         role_id: this.attr(''),
         comments: this.hasMany(_Comment__WEBPACK_IMPORTED_MODULE_1__["default"], 'user_id'),
         country: this.belongsTo(_Country__WEBPACK_IMPORTED_MODULE_2__["default"], 'country_id'),
-        // team: this.belongsTo(Team, 'team_ids'),
         role: this.belongsTo(_Role__WEBPACK_IMPORTED_MODULE_5__["default"], 'role_id'),
-        teams: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_3__["default"], _UserTeam__WEBPACK_IMPORTED_MODULE_4__["default"], 'user_id', 'team_id') // userTeam: this.belongsTo(UserTeam, 'team_ids', 'team_id'),
-
+        teams: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_3__["default"], _UserTeam__WEBPACK_IMPORTED_MODULE_4__["default"], 'user_id', 'team_id'),
+        assigned_room_id: this.attr('')
       };
       return data;
     }

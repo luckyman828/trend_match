@@ -26,6 +26,11 @@
                 <th></th>
             </div>
             <template v-if="!loading">
+
+                <div v-if="teamsSorted <= 0" class="team-row item-row flex-table-row">
+                    <span style="display: block; margin: auto; padding: 0;">You dont have access to any teams</span>
+                </div>
+
                 <div class="team-row-wrapper" v-for="(team, index) in teamsSorted" :key="team.id">
 
                     <div class="team-row item-row flex-table-row" :class="[{expanded: expandedIds.includes(team.id)}, {collapsed: !expandedIds.includes(team.id)}]">

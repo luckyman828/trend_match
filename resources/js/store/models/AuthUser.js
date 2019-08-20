@@ -25,6 +25,7 @@ export default class AuthUser extends Model {
       country: this.belongsTo(Country, 'country_id'),
       role: this.belongsTo(Role, 'role_id'),
       teams: this.belongsToMany(Team, UserTeam, 'user_id', 'team_id'),
+      assigned_room_id: this.attr('')
     }
 
     return data

@@ -20,14 +20,12 @@ export default class User extends Model {
       email: this.attr(''),
       name: this.attr(''),
       country_id: this.attr(''),
-      // team_ids: this.attr(''),
       role_id: this.attr(''),
       comments: this.hasMany(Comment, 'user_id'),
       country: this.belongsTo(Country, 'country_id'),
-      // team: this.belongsTo(Team, 'team_ids'),
       role: this.belongsTo(Role, 'role_id'),
       teams: this.belongsToMany(Team, UserTeam, 'user_id', 'team_id'),
-      // userTeam: this.belongsTo(UserTeam, 'team_ids', 'team_id'),
+      assigned_room_id: this.attr('')
     }
 
     return data

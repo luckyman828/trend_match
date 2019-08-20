@@ -30,6 +30,7 @@ export default {
     data: function() { return {
         selected: [],
         teamFilterId: '-1',
+        loadingOverwrite: false,
     }},
     computed: {
         ...mapGetters('entities/collections', ['loadingCollections']),
@@ -48,8 +49,9 @@ export default {
         },
         isLoading () {
             let loading = false
-            if (this.loadingCollections || this.authUser == null)
-                loading = true
+            if (!this.loadingOverwrite)
+                if (this.loadingCollections || this.authUser == null)
+                    loading = true
             return loading
         }
     },
@@ -73,18 +75,28 @@ export default {
         },
         async fetchInitialData() {
             // Get user
+            console.log('Getting initial data')
             await this.getAuthUser()
-            await this.fetchTeams(1234)
-            await this.fetchUserTeams()
-            this.teamFilterId = this.authUser.teams[0].id
         },
     },
     created() {
         this.fetchInitialData()
-        this.fetchCollections()
-        // this.fetchUserTeams()
-        this.fetchUsers(1234)
-        // this.fetchTeams(1234)
+        // Fetch data based on the Auth User
+        .then(response => {
+            // Only get data for the users assigned room
+            const room_id = this.authUser.assigned_room_id
+            if (room_id != null) {
+                this.fetchTeams(1234)
+                this.fetchUserTeams()
+                if (this.authUser.teams.length > 0)
+                    this.teamFilterId = this.authUser.teams[0].id
+                this.fetchCollections(room_id)
+                this.fetchUsers(1234)
+            } else {
+                this.loadingOverwrite = true
+            }
+        })
+        
     },
 
 }

@@ -17,6 +17,6 @@ use Illuminate\Support\Facades\URL;
 //     return view('welcome');
 // });
 
-Auth::routes(['register' => true]);
+Auth::routes(['register' => false]);
 
 Route::get('/', 'HomeController@index')->middleware('auth');

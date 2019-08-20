@@ -27,7 +27,7 @@ export default {
         currentTeam() {
           if (this.teamFilterId > 0 && this.teams.length > 0)
             return this.teams.find(el => el.id == this.teamFilterId)
-            else return {title: 'Fetching..'}
+            else return {title: 'No teams'}
         },
         authUser() {
             return AuthUser.query().with('teams').first()
@@ -36,7 +36,7 @@ export default {
             const authUser = this.authUser
             let availableTeams = this.teams
             if (authUser) {
-                if (authUser.role_id < 3)
+                if (authUser.role_id <= 2)
                     availableTeams = authUser.teams
                 return availableTeams
             }

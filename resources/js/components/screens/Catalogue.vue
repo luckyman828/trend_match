@@ -543,7 +543,8 @@ export default{
             await this.getAuthUser()
             await this.fetchTeams({collection_id: this.collectionId})
             await this.fetchUserTeams()
-            this.teamFilterId = this.authUser.teams[0].id
+            if (this.authUser.teams.length > 0)
+                this.teamFilterId = this.authUser.teams[0].id
         },
     },
     created() {
