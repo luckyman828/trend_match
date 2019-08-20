@@ -32,7 +32,7 @@
                     Comments <i class="fas" :class="[(this.sortBy == 'comments' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
 
-                <th v-if="authUser.role_id >= 3" :class="{active: this.sortBy == 'productFinalAction'}" class="clickable action" @click="onSortBy('productFinalAction', false)">
+                <th v-if="authUser.role_id >= 2" :class="{active: this.sortBy == 'productFinalAction'}" class="clickable action" @click="onSortBy('productFinalAction', false)">
                     Action <i class="fas" :class="[(this.sortBy == 'productFinalAction' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
                 <th v-else :class="{active: this.sortBy == 'productFinalAction'}" class="clickable action">Action</th>
@@ -41,7 +41,7 @@
                 <div class="product-row flex-table-row"
                 v-for="(product, index) in products" :key="product.id"
                 :class="[ (product.productFinalAction != null) ? (product.productFinalAction.action == 1) ? 'in' : 'out' : '' ]">
-                    <td class="select" v-if="authUser.role_id > 2">
+                    <td class="select" v-if="authUser.role_id >= 2">
                         <label class="checkbox">
                             <input type="checkbox" @change="onSelect(index)" :ref="'checkbox-for-' + index"/>
                             <span class="checkmark"></span>
