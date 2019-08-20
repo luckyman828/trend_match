@@ -2,7 +2,7 @@
     <div class="products card" :class="{sticky: sticky}">
         <div class="scroll-bg"></div>
         <product-totals :totalProductCount="totalProductCount" :selectedCount="selectedCount" :products="products"/>
-        <product-single :sticky="sticky" :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut"/>
+        <product-single :loading="loadingSingle" :catalogue="collection" :sticky="sticky" :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut"/>
         <div class="flex-table" :class="{disabled: singleProductToShow.id != null}">
             <div class="header-row flex-table-row">
                 <th class="select dropdown-parent" @click="toggleDropdown($event)" v-if="authUser.role_id >= 2">
@@ -142,6 +142,21 @@ export default {
     }},
     computed: {
         ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
+        loadingSingle() {
+            let loading = false
+            if (this.teamUsers == null) {
+                loading = true
+            }
+            else {
+                if (this.teamUsers[0] == null)
+                    loading = true
+                else {
+                    if (this.teamUsers[0].teams == null)
+                        loading = true
+                }
+            }
+            return loading
+        },
     },
     methods: {
         ...mapActions('entities/actions', ['updateAction']),
@@ -281,7 +296,7 @@ export default {
             if(dropdown != null) {
                 dropdown.classList.toggle('show')
             }
-        }
+        },
     },
     created () {
         document.getElementById('app-component').addEventListener('scroll', this.handleScroll);

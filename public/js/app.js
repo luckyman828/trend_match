@@ -7603,6 +7603,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'loader'
 });
@@ -7687,6 +7689,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _ProductSingleComments__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ProductSingleComments */ "./resources/js/components/ProductSingleComments.vue");
+/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Loader */ "./resources/js/components/Loader.vue");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -7782,13 +7785,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'productSingle',
-  props: ['product', 'authUser', 'nextProductID', 'prevProductID', 'sticky'],
+  props: ['product', 'authUser', 'nextProductID', 'prevProductID', 'sticky', 'catalogue', 'loading'],
   components: {
-    ProductSingleComments: _ProductSingleComments__WEBPACK_IMPORTED_MODULE_1__["default"]
+    ProductSingleComments: _ProductSingleComments__WEBPACK_IMPORTED_MODULE_1__["default"],
+    Loader: _Loader__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   data: function data() {
     return {
@@ -8251,7 +8258,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       sticky: false
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/productFinalActions', ['loadingFinalActions'])),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/productFinalActions', ['loadingFinalActions']), {
+    loadingSingle: function loadingSingle() {
+      var loading = false;
+
+      if (this.teamUsers == null) {
+        loading = true;
+      } else {
+        if (this.teamUsers[0] == null) loading = true;else {
+          if (this.teamUsers[0].teams == null) loading = true;
+        }
+      }
+
+      return loading;
+    }
+  }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/productFinalActions', ['updateFinalAction', 'deleteFinalAction']), {
     // ...mapActions('entities/productFinalActions', ['deleteFinalAction']),
     toggleInOut: function toggleInOut(product, actionType) {
@@ -10238,7 +10259,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "svg[data-v-e79ec684] {\n  height: 50px;\n  width: 100%;\n  margin: 12px 0;\n}", ""]);
+exports.push([module.i, ".loader[data-v-e79ec684] {\n  height: 100%;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n}\nsvg[data-v-e79ec684] {\n  height: 50px;\n  width: 100%;\n  margin: 12px 0;\n}", ""]);
 
 // exports
 
@@ -13886,52 +13907,54 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "svg",
-    {
-      staticClass: "lds-rolling",
-      staticStyle: { background: "none" },
-      attrs: {
-        width: "200px",
-        height: "200px",
-        xmlns: "http://www.w3.org/2000/svg",
-        viewBox: "0 0 100 100",
-        preserveAspectRatio: "xMidYMid"
-      }
-    },
-    [
-      _c(
-        "circle",
-        {
-          attrs: {
-            cx: "50",
-            cy: "50",
-            fill: "none",
-            stroke: "#bbcedd",
-            "stroke-width": "10",
-            r: "35",
-            "stroke-dasharray": "164.93361431346415 56.97787143782138",
-            transform: "rotate(5.81256 50 50)"
-          }
-        },
-        [
-          _c("animateTransform", {
+  return _c("div", { staticClass: "loader" }, [
+    _c(
+      "svg",
+      {
+        staticClass: "lds-rolling",
+        staticStyle: { background: "none" },
+        attrs: {
+          width: "200px",
+          height: "200px",
+          xmlns: "http://www.w3.org/2000/svg",
+          viewBox: "0 0 100 100",
+          preserveAspectRatio: "xMidYMid"
+        }
+      },
+      [
+        _c(
+          "circle",
+          {
             attrs: {
-              attributeName: "transform",
-              type: "rotate",
-              calcMode: "linear",
-              values: "0 50 50;360 50 50",
-              keyTimes: "0;1",
-              dur: "1s",
-              begin: "0s",
-              repeatCount: "indefinite"
+              cx: "50",
+              cy: "50",
+              fill: "none",
+              stroke: "#bbcedd",
+              "stroke-width": "10",
+              r: "35",
+              "stroke-dasharray": "164.93361431346415 56.97787143782138",
+              transform: "rotate(5.81256 50 50)"
             }
-          })
-        ],
-        1
-      )
-    ]
-  )
+          },
+          [
+            _c("animateTransform", {
+              attrs: {
+                attributeName: "transform",
+                type: "rotate",
+                calcMode: "linear",
+                values: "0 50 50;360 50 50",
+                keyTimes: "0;1",
+                dur: "1s",
+                begin: "0s",
+                repeatCount: "indefinite"
+              }
+            })
+          ],
+          1
+        )
+      ]
+    )
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -14113,382 +14136,447 @@ var render = function() {
     [
       Object.keys(_vm.product).length != 0
         ? [
-            _c("div", { staticClass: "card" }, [
-              _c("div", { staticClass: "controls-wrapper" }, [
-                _c(
-                  "span",
-                  {
-                    staticClass: "square",
-                    on: {
-                      click: function($event) {
-                        return _vm.onCloseSingle()
-                      }
-                    }
-                  },
-                  [_c("i", { staticClass: "fal fa-times" })]
-                ),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  { staticClass: "controls" },
-                  [
-                    _vm.authUser.role_id >= 2
-                      ? [
-                          !_vm.product.productFinalAction
-                            ? [
-                                _c(
-                                  "span",
-                                  {
-                                    staticClass: "button green",
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.toggleInOut(_vm.product, 1)
-                                      }
-                                    }
-                                  },
-                                  [
-                                    _vm._v("In  "),
-                                    _c("i", { staticClass: "far fa-heart" })
-                                  ]
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  {
-                                    staticClass: "button red",
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.toggleInOut(_vm.product, 0)
-                                      }
-                                    }
-                                  },
-                                  [
-                                    _vm._v("Out  "),
-                                    _c("i", {
-                                      staticClass: "far fa-times-circle"
-                                    })
-                                  ]
-                                )
-                              ]
-                            : [
-                                _c(
-                                  "span",
-                                  {
-                                    staticClass: "button green",
-                                    class: [
-                                      {
-                                        active:
-                                          _vm.product.productFinalAction
-                                            .action == 1
-                                      }
-                                    ],
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.toggleInOut(_vm.product, 1)
-                                      }
-                                    }
-                                  },
-                                  [
-                                    _vm._v(
-                                      "\n                                In  "
-                                    ),
-                                    _c("i", { staticClass: "far fa-heart" })
-                                  ]
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  {
-                                    staticClass: "button red",
-                                    class: [
-                                      {
-                                        active:
-                                          _vm.product.productFinalAction
-                                            .action == 0
-                                      }
-                                    ],
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.toggleInOut(_vm.product, 0)
-                                      }
-                                    }
-                                  },
-                                  [
-                                    _vm._v(
-                                      "\n                                Out  "
-                                    ),
-                                    _c("i", {
-                                      staticClass: "far fa-times-circle"
-                                    })
-                                  ]
-                                )
-                              ]
-                        ]
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _c(
-                      "span",
-                      {
-                        staticClass: "button primary active wide",
-                        class: [{ disabled: _vm.prevProductID < 0 }],
-                        on: {
-                          click: function($event) {
-                            return _vm.onPrevSingle()
-                          }
-                        }
-                      },
-                      [_vm._v("Previous style")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "span",
-                      {
-                        staticClass: "button primary active wide",
-                        class: [{ disabled: _vm.nextProductID < 0 }],
-                        on: {
-                          click: function($event) {
-                            return _vm.onNextSingle()
-                          }
-                        }
-                      },
-                      [_vm._v("Next style")]
-                    )
-                  ],
-                  2
-                )
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "grid-2 grid-border-between inner" },
-                [
-                  _c("div", [
-                    _c("h3", [_vm._v(_vm._s(_vm.product.title))]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "grid-2" }, [
-                      _c(
-                        "div",
-                        {
-                          staticClass: "image",
-                          on: {
-                            click: function($event) {
-                              return _vm.cycleImage()
+            _c(
+              "div",
+              { staticClass: "card" },
+              [
+                !_vm.loading
+                  ? [
+                      _c("div", { staticClass: "controls-wrapper" }, [
+                        _c(
+                          "span",
+                          {
+                            staticClass: "square",
+                            on: {
+                              click: function($event) {
+                                return _vm.onCloseSingle()
+                              }
                             }
-                          }
-                        },
-                        [
-                          _c("img", {
-                            attrs: {
-                              src:
-                                _vm.product.color_variants[_vm.currentImgIndex]
-                                  .image
-                            }
-                          })
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "description" }, [
-                        _c("strong", [_vm._v("Style number")]),
+                          },
+                          [_c("i", { staticClass: "fal fa-times" })]
+                        ),
                         _vm._v(" "),
-                        _c("p", [_vm._v(_vm._s(_vm.product.datasource_id))]),
-                        _vm._v(" "),
-                        _c("strong", [_vm._v("Category")]),
-                        _vm._v(" "),
-                        _c("p", [
-                          _vm._v(_vm._s(_vm.product.short_description))
-                        ]),
-                        _vm._v(" "),
-                        _c("strong", [_vm._v("Minimum production")]),
-                        _vm._v(" "),
-                        _c("p", [_vm._v(_vm._s(_vm.product.quantity))]),
-                        _vm._v(" "),
-                        _c("strong", [_vm._v("WHS (EUR)")]),
-                        _vm._v(" "),
-                        _c("p", [_vm._v(_vm._s(_vm.product.wholesale_price))]),
-                        _vm._v(" "),
-                        _c("strong", [_vm._v("RRP (EUR)")]),
-                        _vm._v(" "),
-                        _c("p", [
-                          _vm._v(_vm._s(_vm.product.recommended_retail_price))
-                        ]),
-                        _vm._v(" "),
-                        _c("strong", [_vm._v("MU")]),
-                        _vm._v(" "),
-                        _c("p", [_vm._v(_vm._s(_vm.product.mark_up))])
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("strong", [_vm._v("Composition")]),
-                    _vm._v(" "),
-                    _c("p", [_vm._v(_vm._s(_vm.product.composition))]),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "product-variants" },
-                      _vm._l(_vm.product.color_variants, function(
-                        variant,
-                        index
-                      ) {
-                        return _c(
+                        _c(
                           "div",
-                          {
-                            key: index,
-                            staticClass: "product-variant",
-                            class: { active: _vm.currentImgIndex == index },
-                            on: {
-                              click: function($event) {
-                                _vm.currentImgIndex = index
-                              }
-                            }
-                          },
+                          { staticClass: "controls" },
                           [
-                            _c("div", { staticClass: "img-wrapper" }, [
-                              _c("img", { attrs: { src: variant.image } })
-                            ]),
+                            _vm.authUser.role_id >= 2
+                              ? [
+                                  !_vm.product.productFinalAction
+                                    ? [
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass: "button green",
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.toggleInOut(
+                                                  _vm.product,
+                                                  1
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _vm._v("In  "),
+                                            _c("i", {
+                                              staticClass: "far fa-heart"
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass: "button red",
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.toggleInOut(
+                                                  _vm.product,
+                                                  0
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _vm._v("Out  "),
+                                            _c("i", {
+                                              staticClass: "far fa-times-circle"
+                                            })
+                                          ]
+                                        )
+                                      ]
+                                    : [
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass: "button green",
+                                            class: [
+                                              {
+                                                active:
+                                                  _vm.product.productFinalAction
+                                                    .action == 1
+                                              }
+                                            ],
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.toggleInOut(
+                                                  _vm.product,
+                                                  1
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _vm._v(
+                                              "\n                                    In  "
+                                            ),
+                                            _c("i", {
+                                              staticClass: "far fa-heart"
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass: "button red",
+                                            class: [
+                                              {
+                                                active:
+                                                  _vm.product.productFinalAction
+                                                    .action == 0
+                                              }
+                                            ],
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.toggleInOut(
+                                                  _vm.product,
+                                                  0
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _vm._v(
+                                              "\n                                    Out  "
+                                            ),
+                                            _c("i", {
+                                              staticClass: "far fa-times-circle"
+                                            })
+                                          ]
+                                        )
+                                      ]
+                                ]
+                              : _vm._e(),
                             _vm._v(" "),
-                            _c("div", { staticClass: "color-wrapper" }, [
-                              _c("div", { staticClass: "circle-img" }, [
-                                _c("img", { attrs: { src: variant.image } })
-                              ]),
-                              _vm._v(" "),
-                              _c("span", [_vm._v(_vm._s(variant.color))])
-                            ])
-                          ]
-                        )
-                      }),
-                      0
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "tabs-wrapper" }, [
-                      _c("strong", [_vm._v("Distribution")]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "tab-headers" }, [
-                        _c(
-                          "span",
-                          {
-                            staticClass: "tab",
-                            class: { active: _vm.currentTab == "ins" },
-                            on: {
-                              click: function($event) {
-                                return _vm.setCurrentTab("ins")
-                              }
-                            }
-                          },
-                          [
-                            _c("span", { staticClass: "count" }, [
-                              _vm._v(
-                                _vm._s(
-                                  _vm.product.ins.length +
-                                    _vm.product.focus.length
-                                )
-                              )
-                            ]),
-                            _vm._v("In")
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "span",
-                          {
-                            staticClass: "tab",
-                            class: { active: _vm.currentTab == "outs" },
-                            on: {
-                              click: function($event) {
-                                return _vm.setCurrentTab("outs")
-                              }
-                            }
-                          },
-                          [
-                            _c("span", { staticClass: "count" }, [
-                              _vm._v(_vm._s(_vm.product.outs.length))
-                            ]),
-                            _vm._v("Out")
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "span",
-                          {
-                            staticClass: "tab",
-                            class: { active: _vm.currentTab == "nds" },
-                            on: {
-                              click: function($event) {
-                                return _vm.setCurrentTab("nds")
-                              }
-                            }
-                          },
-                          [
-                            _c("span", { staticClass: "count" }, [
-                              _vm._v(_vm._s(_vm.product.nds.length))
-                            ]),
-                            _vm._v("Not decided")
-                          ]
+                            _c(
+                              "span",
+                              {
+                                staticClass: "button primary active wide",
+                                class: [{ disabled: _vm.prevProductID < 0 }],
+                                on: {
+                                  click: function($event) {
+                                    return _vm.onPrevSingle()
+                                  }
+                                }
+                              },
+                              [_vm._v("Previous style")]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "span",
+                              {
+                                staticClass: "button primary active wide",
+                                class: [{ disabled: _vm.nextProductID < 0 }],
+                                on: {
+                                  click: function($event) {
+                                    return _vm.onNextSingle()
+                                  }
+                                }
+                              },
+                              [_vm._v("Next style")]
+                            )
+                          ],
+                          2
                         )
                       ]),
                       _vm._v(" "),
                       _c(
                         "div",
-                        { staticClass: "tab-body" },
+                        { staticClass: "grid-2 grid-border-between inner" },
                         [
-                          _c("strong", { staticClass: "tab-title" }, [
-                            _vm._v(
-                              _vm._s(
-                                _vm.currentTab.substr(
-                                  0,
-                                  _vm.currentTab.length - 1
+                          _c("div", [
+                            _c("h3", [_vm._v(_vm._s(_vm.product.title))]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "grid-2" }, [
+                              _c(
+                                "div",
+                                {
+                                  staticClass: "image",
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.cycleImage()
+                                    }
+                                  }
+                                },
+                                [
+                                  _c("img", {
+                                    attrs: {
+                                      src:
+                                        _vm.product.color_variants[
+                                          _vm.currentImgIndex
+                                        ].image
+                                    }
+                                  })
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c("div", { staticClass: "description" }, [
+                                _c("strong", [_vm._v("Style number")]),
+                                _vm._v(" "),
+                                _c("p", [
+                                  _vm._v(_vm._s(_vm.product.datasource_id))
+                                ]),
+                                _vm._v(" "),
+                                _c("strong", [_vm._v("Category")]),
+                                _vm._v(" "),
+                                _c("p", [
+                                  _vm._v(_vm._s(_vm.product.short_description))
+                                ]),
+                                _vm._v(" "),
+                                _c("strong", [_vm._v("Minimum production")]),
+                                _vm._v(" "),
+                                _c("p", [_vm._v(_vm._s(_vm.product.quantity))]),
+                                _vm._v(" "),
+                                _c("strong", [
+                                  _vm._v(
+                                    "WHS (" +
+                                      _vm._s(_vm.catalogue.currency) +
+                                      ")"
+                                  )
+                                ]),
+                                _vm._v(" "),
+                                _c("p", [
+                                  _vm._v(_vm._s(_vm.product.wholesale_price))
+                                ]),
+                                _vm._v(" "),
+                                _c("strong", [
+                                  _vm._v(
+                                    "RRP (" +
+                                      _vm._s(_vm.catalogue.currency) +
+                                      ")"
+                                  )
+                                ]),
+                                _vm._v(" "),
+                                _c("p", [
+                                  _vm._v(
+                                    _vm._s(_vm.product.recommended_retail_price)
+                                  )
+                                ]),
+                                _vm._v(" "),
+                                _c("strong", [_vm._v("MU")]),
+                                _vm._v(" "),
+                                _c("p", [_vm._v(_vm._s(_vm.product.mark_up))])
+                              ])
+                            ]),
+                            _vm._v(" "),
+                            _c("strong", [_vm._v("Composition")]),
+                            _vm._v(" "),
+                            _c("p", [_vm._v(_vm._s(_vm.product.composition))]),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              { staticClass: "product-variants" },
+                              _vm._l(_vm.product.color_variants, function(
+                                variant,
+                                index
+                              ) {
+                                return _c(
+                                  "div",
+                                  {
+                                    key: index,
+                                    staticClass: "product-variant",
+                                    class: {
+                                      active: _vm.currentImgIndex == index
+                                    },
+                                    on: {
+                                      click: function($event) {
+                                        _vm.currentImgIndex = index
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("div", { staticClass: "img-wrapper" }, [
+                                      _c("img", {
+                                        attrs: { src: variant.image }
+                                      })
+                                    ]),
+                                    _vm._v(" "),
+                                    _c(
+                                      "div",
+                                      { staticClass: "color-wrapper" },
+                                      [
+                                        _c(
+                                          "div",
+                                          { staticClass: "circle-img" },
+                                          [
+                                            _c("img", {
+                                              attrs: { src: variant.image }
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c("span", [
+                                          _vm._v(_vm._s(variant.color))
+                                        ])
+                                      ]
+                                    )
+                                  ]
                                 )
+                              }),
+                              0
+                            ),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "tabs-wrapper" }, [
+                              _c("strong", [_vm._v("Distribution")]),
+                              _vm._v(" "),
+                              _c("div", { staticClass: "tab-headers" }, [
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "tab",
+                                    class: { active: _vm.currentTab == "ins" },
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.setCurrentTab("ins")
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("span", { staticClass: "count" }, [
+                                      _vm._v(
+                                        _vm._s(
+                                          _vm.product.ins.length +
+                                            _vm.product.focus.length
+                                        )
+                                      )
+                                    ]),
+                                    _vm._v("In")
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "tab",
+                                    class: { active: _vm.currentTab == "outs" },
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.setCurrentTab("outs")
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("span", { staticClass: "count" }, [
+                                      _vm._v(_vm._s(_vm.product.outs.length))
+                                    ]),
+                                    _vm._v("Out")
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "tab",
+                                    class: { active: _vm.currentTab == "nds" },
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.setCurrentTab("nds")
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("span", { staticClass: "count" }, [
+                                      _vm._v(_vm._s(_vm.product.nds.length))
+                                    ]),
+                                    _vm._v("Not decided")
+                                  ]
+                                )
+                              ]),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                { staticClass: "tab-body" },
+                                [
+                                  _c("strong", { staticClass: "tab-title" }, [
+                                    _vm._v(
+                                      _vm._s(
+                                        _vm.currentTab.substr(
+                                          0,
+                                          _vm.currentTab.length - 1
+                                        )
+                                      )
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _vm._l(_vm.tabBody, function(user) {
+                                    return _c(
+                                      "p",
+                                      { key: user.id },
+                                      [
+                                        _c("span", { staticClass: "team" }, [
+                                          _vm._v(_vm._s(user.teams[0].title))
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("span", { staticClass: "user" }, [
+                                          _vm._v(_vm._s(user.email))
+                                        ]),
+                                        _vm._v(" "),
+                                        user.focus != null
+                                          ? [
+                                              user.focus
+                                                ? _c(
+                                                    "span",
+                                                    { staticClass: "focus" },
+                                                    [
+                                                      _vm._v("Focus "),
+                                                      _c("i", {
+                                                        staticClass:
+                                                          "fas fa-star"
+                                                      })
+                                                    ]
+                                                  )
+                                                : _vm._e()
+                                            ]
+                                          : _vm._e()
+                                      ],
+                                      2
+                                    )
+                                  })
+                                ],
+                                2
                               )
-                            )
+                            ])
                           ]),
                           _vm._v(" "),
-                          _vm._l(_vm.tabBody, function(user) {
-                            return _c(
-                              "p",
-                              { key: user.id },
-                              [
-                                _c("span", { staticClass: "team" }, [
-                                  _vm._v(_vm._s(user.teams[0].title))
-                                ]),
-                                _vm._v(" "),
-                                _c("span", { staticClass: "user" }, [
-                                  _vm._v(_vm._s(user.email))
-                                ]),
-                                _vm._v(" "),
-                                user.focus != null
-                                  ? [
-                                      user.focus
-                                        ? _c("span", { staticClass: "focus" }, [
-                                            _vm._v("Focus "),
-                                            _c("i", {
-                                              staticClass: "fas fa-star"
-                                            })
-                                          ])
-                                        : _vm._e()
-                                    ]
-                                  : _vm._e()
-                              ],
-                              2
-                            )
+                          _c("ProductSingleComments", {
+                            attrs: {
+                              comments: _vm.product.comments,
+                              authUser: _vm.authUser,
+                              product: _vm.product
+                            }
                           })
                         ],
-                        2
+                        1
                       )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("ProductSingleComments", {
-                    attrs: {
-                      comments: _vm.product.comments,
-                      authUser: _vm.authUser,
-                      product: _vm.product
-                    }
-                  })
-                ],
-                1
-              )
-            ])
+                    ]
+                  : [_c("loader")]
+              ],
+              2
+            )
           ]
-        : void 0
+        : _vm._e()
     ],
     2
   )
@@ -14905,6 +14993,8 @@ var render = function() {
       _vm._v(" "),
       _c("product-single", {
         attrs: {
+          loading: _vm.loadingSingle,
+          catalogue: _vm.collection,
           sticky: _vm.sticky,
           product: _vm.singleProductToShow,
           nextProductID: _vm.nextSingleProductID,
@@ -35357,7 +35447,7 @@ function (_Model) {
         id: this.attr(null),
         room_code: this.attr(''),
         title: this.attr(''),
-        currecy: this.attr(''),
+        currency: this.attr(''),
         phase: this.attr(''),
         catalog_id: this.attr(''),
         start_time: this.attr('unset'),

@@ -2,89 +2,91 @@
     <div class="product-single" :class="[{visible: Object.keys(product).length != 0}, {sticky: sticky}]">
         <template v-if="Object.keys(product).length != 0">
             <div class="card">
-                <div class="controls-wrapper">
-                        <span class="square" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
-                    <div class="controls">
-                        <template v-if="authUser.role_id >= 2">
-                            <template v-if="!product.productFinalAction">
-                                <span class="button green" @click="toggleInOut(product, 1)">In  <i class="far fa-heart"></i></span>
-                                <span class="button red" @click="toggleInOut(product, 0)">Out  <i class="far fa-times-circle"></i></span>
+                <template v-if="!loading">
+                    <div class="controls-wrapper">
+                            <span class="square" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
+                        <div class="controls">
+                            <template v-if="authUser.role_id >= 2">
+                                <template v-if="!product.productFinalAction">
+                                    <span class="button green" @click="toggleInOut(product, 1)">In  <i class="far fa-heart"></i></span>
+                                    <span class="button red" @click="toggleInOut(product, 0)">Out  <i class="far fa-times-circle"></i></span>
+                                </template>
+                                <template v-else>
+                                    <span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product, 1)">
+                                        In  <i class="far fa-heart"></i>
+                                        </span>
+                                    <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product, 0)">
+                                        Out  <i class="far fa-times-circle"></i>
+                                        </span>
+                                </template>
                             </template>
-                            <template v-else>
-                                <span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product, 1)">
-                                    In  <i class="far fa-heart"></i>
-                                    </span>
-                                <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product, 0)">
-                                    Out  <i class="far fa-times-circle"></i>
-                                    </span>
-                            </template>
-                        </template>
-                        <span class="button primary active wide" @click="onPrevSingle()" :class="[{ disabled: prevProductID < 0}]">Previous style</span>
-                        <span class="button primary active wide" @click="onNextSingle()" :class="[{ disabled: nextProductID < 0}]">Next style</span>
-                    </div>
-                </div>
-                <div class="grid-2 grid-border-between inner">
-                    <div>
-                        <h3>{{product.title}}</h3>
-                        <div class="grid-2">
-                            <div class="image" @click="cycleImage()">
-                                <img :src="product.color_variants[currentImgIndex].image">
-                            </div>
-                            <div class="description">
-                                <strong>Style number</strong>
-                                <p>{{product.datasource_id}}</p>
-                                <strong>Category</strong>
-                                <p>{{product.short_description}}</p>
-                                <strong>Minimum production</strong>
-                                <p>{{product.quantity}}</p>
-                                <strong>WHS (EUR)</strong>
-                                <p>{{product.wholesale_price}}</p>
-                                <strong>RRP (EUR)</strong>
-                                <p>{{product.recommended_retail_price}}</p>
-                                <strong>MU</strong>
-                                <p>{{product.mark_up}}</p>
-                            </div>
-                        </div>
-                        <strong>Composition</strong>
-                        <p>{{product.composition}}</p>
-
-                        <div class="product-variants">
-                            <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
-                                <div class="img-wrapper">
-                                    <img :src="variant.image">
-                                </div>
-                                <div class="color-wrapper">
-                                    <div class="circle-img"><img :src="variant.image"></div>
-                                    <span>{{variant.color}}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tabs-wrapper">
-                            <strong>Distribution</strong>
-                            <div class="tab-headers">
-                                <span :class="{active: currentTab == 'ins'}" class="tab" @click="setCurrentTab('ins')"><span class="count">{{product.ins.length + product.focus.length}}</span>In</span>
-                                <span :class="{active: currentTab == 'outs'}" class="tab" @click="setCurrentTab('outs')"><span class="count">{{product.outs.length}}</span>Out</span>
-                                <span :class="{active: currentTab == 'nds'}" class="tab" @click="setCurrentTab('nds')"><span class="count">{{product.nds.length}}</span>Not decided</span>
-                            </div>
-                            <div class="tab-body">
-                                <strong class="tab-title">{{currentTab.substr(0, currentTab.length - 1)}}</strong>
-                                <p v-for="user in tabBody" :key="user.id">
-                                    <span class="team">{{user.teams[0].title}}</span>
-                                    <span class="user">{{user.email}}</span>
-                                    <template v-if="user.focus != null">
-                                        <span class="focus" v-if="user.focus">Focus <i class="fas fa-star"></i></span>
-                                    </template>
-                                </p>
-                            </div>
+                            <span class="button primary active wide" @click="onPrevSingle()" :class="[{ disabled: prevProductID < 0}]">Previous style</span>
+                            <span class="button primary active wide" @click="onNextSingle()" :class="[{ disabled: nextProductID < 0}]">Next style</span>
                         </div>
                     </div>
-                    <ProductSingleComments :comments="product.comments" :authUser="authUser" :product="product"/>
-                </div>
+                    <div class="grid-2 grid-border-between inner">
+                        <div>
+                            <h3>{{product.title}}</h3>
+                            <div class="grid-2">
+                                <div class="image" @click="cycleImage()">
+                                    <img :src="product.color_variants[currentImgIndex].image">
+                                </div>
+                                <div class="description">
+                                    <strong>Style number</strong>
+                                    <p>{{product.datasource_id}}</p>
+                                    <strong>Category</strong>
+                                    <p>{{product.short_description}}</p>
+                                    <strong>Minimum production</strong>
+                                    <p>{{product.quantity}}</p>
+                                    <strong>WHS ({{catalogue.currency}})</strong>
+                                    <p>{{product.wholesale_price}}</p>
+                                    <strong>RRP ({{catalogue.currency}})</strong>
+                                    <p>{{product.recommended_retail_price}}</p>
+                                    <strong>MU</strong>
+                                    <p>{{product.mark_up}}</p>
+                                </div>
+                            </div>
+                            <strong>Composition</strong>
+                            <p>{{product.composition}}</p>
+
+                            <div class="product-variants">
+                                <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
+                                    <div class="img-wrapper">
+                                        <img :src="variant.image">
+                                    </div>
+                                    <div class="color-wrapper">
+                                        <div class="circle-img"><img :src="variant.image"></div>
+                                        <span>{{variant.color}}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tabs-wrapper">
+                                <strong>Distribution</strong>
+                                <div class="tab-headers">
+                                    <span :class="{active: currentTab == 'ins'}" class="tab" @click="setCurrentTab('ins')"><span class="count">{{product.ins.length + product.focus.length}}</span>In</span>
+                                    <span :class="{active: currentTab == 'outs'}" class="tab" @click="setCurrentTab('outs')"><span class="count">{{product.outs.length}}</span>Out</span>
+                                    <span :class="{active: currentTab == 'nds'}" class="tab" @click="setCurrentTab('nds')"><span class="count">{{product.nds.length}}</span>Not decided</span>
+                                </div>
+                                <div class="tab-body">
+                                    <strong class="tab-title">{{currentTab.substr(0, currentTab.length - 1)}}</strong>
+                                    <p v-for="user in tabBody" :key="user.id">
+                                        <span class="team">{{user.teams[0].title}}</span>
+                                        <span class="user">{{user.email}}</span>
+                                        <template v-if="user.focus != null">
+                                            <span class="focus" v-if="user.focus">Focus <i class="fas fa-star"></i></span>
+                                        </template>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <ProductSingleComments :comments="product.comments" :authUser="authUser" :product="product"/>
+                    </div>
+                </template>
+                <template v-else>
+                    <loader/>
+                </template>
             </div>
-        </template>
-        <template v-else>
-            
         </template>
     </div>
 </template>
@@ -92,6 +94,7 @@
 <script>
 import { mapActions } from 'vuex'
 import ProductSingleComments from './ProductSingleComments'
+import Loader from './Loader'
 
 export default {
     name: 'productSingle',
@@ -101,9 +104,12 @@ export default {
         'nextProductID',
         'prevProductID',
         'sticky',
+        'catalogue',
+        'loading',
     ],
     components: {
         ProductSingleComments,
+        Loader,
     },
     data: function () { return {
             comment: {
