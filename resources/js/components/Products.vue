@@ -56,7 +56,7 @@
                     <td class="square-wrapper nds"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}} / {{teamUsers.length}}</span></td>
                     <td class="square-wrapper comments"><span class="square clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.comments.length}}</span></td>
                     <template v-if="!loadingFinalActions">
-                        <template v-if="authUser.role_id > 2">
+                        <template v-if="authUser.role_id >= 2">
                             <template v-if="!product.productFinalAction">
                                 <td class="action">
                                     <span class="button green" @click="toggleInOut(product, 1)">In <i class="far fa-heart"></i></span>
