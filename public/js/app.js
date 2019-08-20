@@ -7872,7 +7872,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         if (key == 'ArrowRight') this.onNextSingle();
         if (key == 'ArrowLeft') this.onPrevSingle();
 
-        if (this.authUser.role_id >= 3) {
+        if (this.authUser.role_id >= 2) {
           if (key == 'KeyI') this.toggleInOut(this.product, 1);
           if (key == 'KeyO') this.toggleInOut(this.product, 0);
         }
@@ -14132,7 +14132,7 @@ var render = function() {
                   "div",
                   { staticClass: "controls" },
                   [
-                    _vm.authUser.role_id >= 3
+                    _vm.authUser.role_id >= 2
                       ? [
                           !_vm.product.productFinalAction
                             ? [
@@ -15359,7 +15359,7 @@ var render = function() {
                     _vm._v(" "),
                     !_vm.loadingFinalActions
                       ? [
-                          _vm.authUser.role_id > 2
+                          _vm.authUser.role_id >= 2
                             ? [
                                 !product.productFinalAction
                                   ? [

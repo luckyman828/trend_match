@@ -5,7 +5,7 @@
                 <div class="controls-wrapper">
                         <span class="square" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
                     <div class="controls">
-                        <template v-if="authUser.role_id >= 3">
+                        <template v-if="authUser.role_id >= 2">
                             <template v-if="!product.productFinalAction">
                                 <span class="button green" @click="toggleInOut(product, 1)">In  <i class="far fa-heart"></i></span>
                                 <span class="button red" @click="toggleInOut(product, 0)">Out  <i class="far fa-times-circle"></i></span>
@@ -191,7 +191,7 @@ export default {
                     this.onNextSingle()
                 if (key == 'ArrowLeft')
                     this.onPrevSingle()
-                if (this.authUser.role_id >= 3) {
+                if (this.authUser.role_id >= 2) {
                     if (key == 'KeyI')
                         this.toggleInOut(this.product, 1)
                     if (key == 'KeyO')
