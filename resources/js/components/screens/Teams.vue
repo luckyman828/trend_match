@@ -4,7 +4,7 @@
         <div class="underline"></div>
         <!-- <TeamsTopBar :itemsToFilter="teams" :title="'Teams'"/> -->
         <TeamsTable :teams="teams" :users="users" :loading="isLoading" :authUser="authUser" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/>
-        <InviteToTeamModal v-if="singleTeam != null" :team="singleTeam" :users="users" :authUser="authUser" @onCloseModal="closeModal"/>
+        <TeamInviteModal v-if="singleTeam != null" :teams="teams" :team="singleTeam" :users="users" :authUser="authUser" @onCloseModal="closeModal"/>
     </div>
 </template>
 
@@ -15,7 +15,7 @@ import TeamsTopBar from '../TeamsTopBar'
 import TeamsTable from '../TeamsTable'
 import User from '../../store/models/User'
 import UserTeam from '../../store/models/UserTeam'
-import InviteToTeamModal from '../InviteToTeamModal';
+import TeamInviteModal from '../TeamInviteModal';
 import TeamInvite from '../../store/models/TeamInvite'
 import AuthUser from '../../store/models/AuthUser'
 
@@ -24,7 +24,7 @@ export default {
     components: {
         TeamsTopBar,
         TeamsTable,
-        InviteToTeamModal
+        TeamInviteModal
     },
     data: function () { return {
         selected: [],
@@ -33,7 +33,6 @@ export default {
     }},
     watch: {
         singleTeam: function (newVal, oldVal) {
-            console.log
             if (newVal != null)
                 document.querySelector('body').classList.add('disabled')
             else document.querySelector('body').classList.remove('disabled')

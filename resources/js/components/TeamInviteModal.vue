@@ -1,12 +1,14 @@
 <template>
   <div class="invite-to-team card modal">
       <span class="circle" @click="closeModal"><i class="fal fa-times"></i></span>
-      <h2>Invite people to <strong>{{team.title}}</strong></h2>
+      <h2>Invite people to <strong>{{theTeam.title}}</strong></h2>
       <p class="info">We'll send an invite via <strong>e-mail</strong> they need to accept</p>
       <form @submit="submitInvite">
-          <label class="team">
+          <label class="team dropdown-parent">
             <input type="text" name="team" :value="theTeam.title" disabled>
             <span class="square"><i class="fas fa-check"></i></span>
+            <span @click="toggleTeamDropdrown" class="open-dropdown" :class="{active: showTeamDropdown}">Change team<i class="far fa-chevron-down"></i></span>
+            <TeamInviteTeamDropdown class="right" v-if="showTeamDropdown" :teams="teams" :currentTeam="theTeam" @onClose="toggleTeamDropdrown" @onSubmit="setTeam"/>
           </label>
           <label>
               Email
@@ -23,20 +25,26 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import TeamInviteTeamDropdown from './TeamInviteTeamDropdown'
 
 export default {
-    name: 'inviteToTeamModal',
+    name: 'teamInviteModal',
     props: [
         'team',
         'users',
         'authUser',
+        'teams',
     ],
+    components: {
+        TeamInviteTeamDropdown
+    },
     data: function () { return {
         newUser: {
             email: '',
             name: ''
         },
-        theTeam: this.team
+        theTeam: this.team,
+        showTeamDropdown: false,
     }},
     computed: {
         submitDisabled () {
@@ -54,6 +62,12 @@ export default {
             e.preventDefault()
             this.inviteUserToTeam({user: this.newUser, team: this.theTeam, authUser: this.authUser})
             this.closeModal()
+        },
+        toggleTeamDropdrown() {
+            this.showTeamDropdown = !this.showTeamDropdown;
+        },
+        setTeam(id) {
+            this.theTeam = this.teams.find(x => x.id == id)
         }
     }
 }
@@ -75,6 +89,9 @@ export default {
         margin: 0;
         background: $light;
     }
+    label.team {
+        position: relative;
+    }
     .circle {
         position: absolute;
         right: 8px;
@@ -82,7 +99,6 @@ export default {
         height: 40px;
         width: 40px;
         display: block;
-        line-height: 44px;
         text-align: center;
         background: $light2;
         border-radius: 20px;
@@ -91,6 +107,7 @@ export default {
         color: $dark05;
         i {
             font-size: 21px;
+            line-height: 40px;
         }
         &:hover {
             color: $red;
@@ -177,6 +194,23 @@ export default {
             &:disabled {
                 background: rgba($dark05, .5)
             }
+        }
+    }
+    .open-dropdown {
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $dark2;
+        font-weight: 700;
+        position: absolute;
+        &.active {
+            color: $dark05;
+        }
+        i {
+            margin-left: 8px;
+        }
+        &:hover {
+            color: $dark05;
         }
     }
 

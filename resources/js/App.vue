@@ -66,15 +66,18 @@ export default{
     h1 {
         margin-bottom: 30px;
     }
-    .grid-3 {
+    .grid-2, .grid-3 {
         display: grid;
+        grid-gap: 17px;
+        &.small-gap {
+            grid-gap: 12px;
+        }
+    }
+    .grid-3 {
         grid-template-columns: repeat(3, 1fr);
-        grid-gap: 1rem;
     }
     .grid-2 {
-        display: grid;
         grid-template-columns: repeat(2, 1fr);
-        grid-gap: 1rem;
     }
     .card {
         padding: 1em;
@@ -82,6 +85,7 @@ export default{
         margin: 30px 0;
         border: none;
         box-shadow: 0 2px 6px rgba(0,0,0,.1);
+        background: white;
     }
     .pill {
         background: $light1;
@@ -148,66 +152,6 @@ export default{
             width: 150px;
             font-size: 14px;
             cursor: pointer;
-        }
-    }
-    .button {
-        padding: 4px 12px;
-        display: block;
-        text-align: center;
-        border: $dark solid 2px;
-        margin: 0 4px;
-        cursor: pointer;
-        border-radius: 4px;
-        &.wide {
-            width: 155px;
-            padding: 0;
-        }
-        &.active {
-            background: $dark;
-            color: white;
-        }
-        &.green {
-            &:hover {
-                border-color: $green;
-                color: $green;
-            }
-            &.active {
-                border-color: $green;
-                background: $green;
-                color: white;
-            }
-        }
-        &.red {
-            &:hover {
-                border-color: $red;
-                color: $red;
-            }
-            &.active {
-                border-color: $red;
-                background: $red;
-                color: white;
-            }
-        }
-        &.primary {
-            &:hover {
-                border-color: $primary;
-                color: $primary;
-            }
-            &.active {
-                border-color: $primary;
-                background: $primary;
-                color: white;
-            }
-        }
-        &.disabled {
-            pointer-events: none;
-            opacity: .5;
-        }
-        &.invisible-button {
-            border-color: transparent;
-            &:hover {
-                border-color: inherit;
-            }
         }
     }
     .loading {
@@ -307,6 +251,44 @@ export default{
         }
         &.primary {
             color: $primary;
+        }
+    }
+
+    // Scrollbar
+    *:not(.app) {
+        /* width */
+        &::-webkit-scrollbar {
+            width: 3px;
+        }
+        /* Track */
+        &::-webkit-scrollbar-track {
+            background: $light2; 
+        }
+        /* Handle */
+        &::-webkit-scrollbar-thumb {
+            background: $dark2;
+            border-radius: 2px;
+            &:hover {
+                background: $dark25;
+            }
+        }
+        .dark > *, .dark {
+            /* width */
+            &::-webkit-scrollbar {
+                width: 5px;
+            }
+            /* Track */
+            &::-webkit-scrollbar-track {
+                background: transparent; 
+            }
+            /* Handle */
+            &::-webkit-scrollbar-thumb {
+                background: white;
+                box-shadow: -2px 0 #333 inset;
+                &:hover {
+                    background: $primary;
+                }
+            }
         }
     }
 

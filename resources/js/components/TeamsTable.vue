@@ -47,8 +47,8 @@
                         <td class="status"><span>N/A</span></td>
                         <td class="action">
                             <span v-if="expandedIds.includes(team.id)" class="button green active"  @click="openInviteToTeam(team)">Add to team</span>
-                            <span v-else class="button"  @click="expandUsers(team)">Edit team</span>
-                            <span class="view-single button" @click="expandUsers(team)">View</span>
+                            <span v-else class="button ghost"  @click="expandUsers(team)">Edit team</span>
+                            <span class="view-single button invisible" @click="expandUsers(team)">View</span>
                         </td>
                     </div>
 
@@ -62,7 +62,7 @@
                             <td></td>
                             <td class="action">
                                 <span class="resend"></span>
-                                <span class="remove button red invisible-button" @click="removeUser(user.id, team.id)"><i class="far fa-user-minus"></i> Remove</span>
+                                <span class="remove button red invisible" @click="removeUser(user.id, team.id)"><i class="far fa-user-minus"></i> Remove</span>
                             </td>
                         </div>
 
@@ -74,8 +74,8 @@
                             <td class="role"></td>
                             <td></td>
                             <td class="action">
-                                <span class="resend button dark invisible-button" @click="resendInvite($event, invited.email, team)"><i class="far fa-paper-plane"></i> Resend invite</span>
-                                <span class="remove button red invisible-button" @click="removeInvite(invited.email, team.id)"><i class="far fa-user-minus"></i> Remove</span>
+                                <span class="resend button dark invisible" @click="resendInvite($event, invited.email, team)"><i class="far fa-paper-plane"></i> Resend invite</span>
+                                <span class="remove button red invisible" @click="removeInvite(invited.email, team.id)"><i class="far fa-user-minus"></i> Remove</span>
                             </td>
                         </div>
 
@@ -398,43 +398,43 @@ export default {
             font-size: 16px;
         }
     }
-    .button {
-        display: inline-block;
-        width: 92px;
-        height: 32px;
-        line-height: 32px;
-        font-size: 12px;
-        border-radius: 4px;
-        padding: 0;
-        line-height: 28px;
-        position: relative;
-        font-weight: 700;
-        color: $dark2;
-        border-color: $light2;
-        &.active {
-            i {
-                font-weight: 900;
-            }
-        }
-        &.remove {
-            color: $red;
-        }
-        &.dark {
-            color: $dark;
-            // border: none;
-            // width: auto;
-            white-space: nowrap;
-            &:hover {
-                border: none;
-                border-radius: 0;
-                border-bottom: solid $dark 1px;
-            }
-        }
-    }
+    // .button {
+    //     display: inline-block;
+    //     min-width: 92px;
+    //     height: 32px;
+    //     line-height: 32px;
+    //     font-size: 12px;
+    //     border-radius: 4px;
+    //     padding: 0;
+    //     line-height: 28px;
+    //     position: relative;
+    //     font-weight: 700;
+    //     color: $dark2;
+    //     border-color: $light2;
+    //     &.active {
+    //         i {
+    //             font-weight: 900;
+    //         }
+    //     }
+    //     &.remove {
+    //         color: $red;
+    //     }
+    //     &.dark {
+    //         color: $dark;
+    //         // border: none;
+    //         // width: auto;
+    //         white-space: nowrap;
+    //         &:hover {
+    //             border: none;
+    //             border-radius: 0;
+    //             border-bottom: solid $dark 1px;
+    //         }
+    //     }
+    // }
     .view-single {
         font-size: 12px;
         font-weight: 700;
-        padding: 0 12px;
+        // padding: 0 12px;
         color: $dark2;
         cursor: pointer;
     }

@@ -6,8 +6,8 @@
         <div class="flex-table" :class="{disabled: singleProductToShow.id != null}">
             <div class="header-row flex-table-row">
                 <th class="select dropdown-parent" @click="toggleDropdown($event)" v-if="authUser.role_id >= 2">
-                    Select <i class="fas fa-chevron-down"></i>
-                    <select-dropdown @onSelectByCondition="selectByCondition"/>
+                    <!-- <select-dropdown @onSelectByCondition="selectByCondition"/> -->
+                    <DropdownCheckbox :buttonText="'Select'" :title="'Select matching:'" :options="[{id: 'no_in', title: 'No IN'}, {id: 'no_comment_no_out', title: 'No COMMENT & no OUT'}]" @submit="selectByCondition"/>
                 </th>
                 <th class="clickable id" :class="{active: this.sortBy == 'datasource_id'}" @click="onSortBy('datasource_id', true)">
                     Id <i class="fas" :class="[(this.sortBy == 'datasource_id' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
@@ -54,22 +54,22 @@
                     <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length + product.focus.length}}</span></td>
                     <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
                     <td class="square-wrapper nds"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}} / {{teamUsers.length}}</span></td>
-                    <td class="square-wrapper comments"><span class="square clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.comments.length}}</span></td>
+                    <td class="square-wrapper comments"><span class="square clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment bind-view-single"></i>{{product.comments.length}}</span></td>
                     <template v-if="!loadingFinalActions">
                         <template v-if="authUser.role_id >= 2">
                             <template v-if="!product.productFinalAction">
                                 <td class="action">
-                                    <span class="button green" @click="toggleInOut(product, 1)">In <i class="far fa-heart"></i></span>
-                                    <span class="button red" @click="toggleInOut(product, 0)">Out <i class="far fa-times-circle"></i></span>
+                                    <span class="button icon-right ghost green-hover" @click="toggleInOut(product, 1)">In <i class="far fa-heart"></i></span>
+                                    <span class="button icon-right ghost red-hover" @click="toggleInOut(product, 0)">Out <i class="far fa-times-circle"></i></span>
                                     <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
                                 </td>
                             </template>
                             <template v-else>
                                 <td class="action">
-                                    <span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product, 1)">
+                                    <span class="button icon-right" :class="[product.productFinalAction.action == 1 ? 'active green' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
                                     In  <i class="far fa-heart"></i>
                                     </span>
-                                    <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product, 0)">
+                                    <span class="button icon-right" :class="[product.productFinalAction.action == 0 ? 'active red' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
                                     Out  <i class="far fa-times-circle"></i>
                                     </span>
                                     <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
@@ -102,6 +102,7 @@ import ProductTotals from './ProductTotals'
 import ProductSingle from './ProductSingle'
 import Tooltip from './Tooltip'
 import SelectDropdown from './SelectDropdown'
+import DropdownCheckbox from './DropdownCheckbox'
 import products from '../store/modules/products';
 
 export default {
@@ -129,6 +130,7 @@ export default {
         ProductSingle,
         Tooltip,
         SelectDropdown,
+        DropdownCheckbox,
     },
     data: function() { return {
         tooltip: {
@@ -187,6 +189,8 @@ export default {
             this.$emit('onSelect', index)
         },
         selectByCondition(condition) {
+            console.log('hello')
+            console.log(condition)
             const selected = this.selectedIds
             const products = this.products
             let index = 0
@@ -394,26 +398,18 @@ export default {
                 min-width: 100px;
             }
             &.comments {
-                min-width: 80px;
+                min-width: 86px;
             }
             &.action {
                 margin-left: auto;
                 padding-left: 16px;
-                min-width: 300px;
-                display: flex;
+                min-width: 330px;
                 justify-content: flex-end;
                 padding-right: 16px;
+                &:not(th) {
+                    display: flex;
+                }
             }
-        }
-    }
-    i {
-        margin-right: 12px;
-        font-size: 11px;
-        &.fa-arrow-up {
-            color: $green;
-        }
-        &.fa-arrow-down {
-            color: $red;
         }
     }
     .header-row {
@@ -452,6 +448,7 @@ export default {
         font-size: 12px;
         font-weight: 600;
         color: $dark2;
+        white-space: nowrap;
         &.id {
             padding-left: 20px;
         }
@@ -550,35 +547,27 @@ export default {
         }
     }
     .button {
-        display: inline-block;
-        width: 86px;
-        height: 32px;
-        line-height: 32px;
-        font-size: 12px;
-        border-radius: 4px;
-        padding: 0;
-        line-height: 28px;
-        position: relative;
-        font-weight: 700;
-        color: $dark2;
-        border-color: $light2;
-        margin: 0;
-        &:not(.invisible-button) {
-            margin-right: 24px;
-            padding-right: 22px;
+        // min-width: 86px;
+        // padding: 0;
+        // position: relative;
+        &:nth-child(1n+2) {
+            margin-left: 20px;
         }
-        i {
-            font-size: 16px;
-            position: absolute;
-            right: 10px;
-            top: 5px;
-            margin: 0;
-        }
-        &.active {
-            i {
-                font-weight: 900;
-            }
-        }
+        // &:not(.view-single) {
+        //     padding-right: 22px;
+        // }
+        // i {
+        //     font-size: 16px;
+        //     position: absolute;
+        //     right: 10px;
+        //     top: 5px;
+        //     margin: 0;
+        // }
+        // &.active {
+        //     i {
+        //         font-weight: 900;
+        //     }
+        // }
     }
     .view-single {
         font-size: 12px;

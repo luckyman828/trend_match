@@ -12,7 +12,7 @@
                     <span v-if="authUser.role_id >= 2" :class="{active: comment.product_final}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
                     <span v-else :class="{active: comment.product_final}" @click="onMarkAsFinal(comment)" class="circle disabled" @mouseover="showTooltip($event, 'Final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
                 </div>
-                <span class="user" v-if="comment.user != null"><span class="team">{{comment.user.teams[0].title}}</span> | {{comment.user.email}},</span>
+                <span class="user" v-if="comment.user != null"><span class="team" v-if="comment.user.teams.length > 0">{{comment.user.teams[0].title}} | </span>{{comment.user.email}},</span>
             </div>
         </div>
         <form @submit="onSubmitComment">
@@ -46,21 +46,22 @@ export default {
         Tooltip,
     },
     data: function () { return {
-            newComment: {
-                user_id: this.authUser.id,
-                product_id: this.product.id,
-                comment: '',
-                important: false,
-                final: false,
-                product_final: false,
-            },
+        newComment: {
             user_id: this.authUser.id,
-            tooltip: {
-                active: false,
-                position: {},
-                type: 'text',
-                data: ''
-            },
+            product_id: this.product.id,
+            comment: '',
+            important: false,
+            final: false,
+            product_final: false,
+        },
+        user_id: this.authUser.id,
+        tooltip: {
+            active: false,
+            position: {},
+            type: 'text',
+            data: ''
+        },
+        scopeToTeam: true,
     }},
     watch: {
         product: function (newVal, oldVal) {
@@ -127,6 +128,7 @@ export default {
         border-radius: 8px;
         padding: 36px;
         padding-right: 68px;
+        height: 57vh;
         max-height: 57vh;
         overflow-y: scroll;
         overflow-x: hidden;

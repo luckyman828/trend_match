@@ -77,12 +77,12 @@
                             </div>
                         </div> --}}
                         <div class="form-group row mb-0">
-                            <button type="submit" class="btn btn-primary submit-login">
+                            <button type="submit" class="button dark submit-login">
                                 {{ __('Login') }}
                             </button>
 
                             @if (Route::has('password.request'))
-                                <a class="btn btn-link forgot-password" href="{{ route('password.request') }}">
+                                <a class="forgot-password" href="{{ route('password.request') }}">
                                     {{ __('Forgot Your Password?') }}
                                 </a>
                             @endif

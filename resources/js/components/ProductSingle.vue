@@ -8,14 +8,14 @@
                         <div class="controls">
                             <template v-if="authUser.role_id >= 2">
                                 <template v-if="!product.productFinalAction">
-                                    <span class="button green" @click="toggleInOut(product, 1)">In  <i class="far fa-heart"></i></span>
-                                    <span class="button red" @click="toggleInOut(product, 0)">Out  <i class="far fa-times-circle"></i></span>
+                                    <span class="button ghost icon-right green-hover" @click="toggleInOut(product, 1)">In  <i class="far fa-heart"></i></span>
+                                    <span class="button ghost icon-right red-hover" @click="toggleInOut(product, 0)">Out  <i class="far fa-times-circle"></i></span>
                                 </template>
                                 <template v-else>
-                                    <span class="button green" :class="[{ active: product.productFinalAction.action == 1}]" @click="toggleInOut(product, 1)">
+                                    <span class="button icon-right" :class="[product.productFinalAction.action == 1 ? 'active green' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
                                         In  <i class="far fa-heart"></i>
                                         </span>
-                                    <span class="button red" :class="[{ active: product.productFinalAction.action == 0}]"  @click="toggleInOut(product, 0)">
+                                    <span class="button icon-right" :class="[product.productFinalAction.action == 1 ? 'active red' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
                                         Out  <i class="far fa-times-circle"></i>
                                         </span>
                                 </template>
@@ -235,10 +235,10 @@ export default {
             right: 76px;
             top: 130px;
             position: fixed;
-            height: calc(100vh - 160px);
+            height: calc(100vh - 130px);
             > .card {
                 height: 100%;
-                overflow-y: scroll;
+                overflow: hidden;
             }
         }
         > .card {
@@ -294,6 +294,13 @@ export default {
             font-size: 22px;
         }
     }
+    .card > .grid-2 {
+        > :first-child {
+            overflow-x: hidden;
+            overflow-y: auto;
+            height: 77vh;
+        }
+    }
     .grid-border-between {
         > :first-child {
             position: relative;
@@ -309,32 +316,55 @@ export default {
             }
         }
     }
+    // .button {
+    //     display: inline-block;
+    //     width: 86px;
+    //     height: 32px;
+    //     line-height: 32px;
+    //     font-size: 12px;
+    //     border-radius: 4px;
+    //     padding: 0;
+    //     line-height: 28px;
+    //     position: relative;
+    //     font-weight: 700;
+    //     padding-right: 22px;
+    //     color: $dark2;
+    //     border-color: $light2;
+    //     i {
+    //         font-size: 16px;
+    //         position: absolute;
+    //         right: 10px;
+    //         top: 5px;
+    //         margin: 0;
+    //     }
+    //     &.active {
+    //         i {
+    //             font-weight: 900;
+    //         }
+    //     }
+    // }
     .button {
-        display: inline-block;
-        width: 86px;
-        height: 32px;
-        line-height: 32px;
-        font-size: 12px;
-        border-radius: 4px;
-        padding: 0;
-        line-height: 28px;
-        position: relative;
-        font-weight: 700;
-        padding-right: 22px;
-        color: $dark2;
-        border-color: $light2;
-        i {
-            font-size: 16px;
-            position: absolute;
-            right: 10px;
-            top: 5px;
-            margin: 0;
+        // min-width: 86px;
+        // padding: 0;
+        // position: relative;
+        &:nth-child(1n+2) {
+            margin-left: 8px;
         }
-        &.active {
-            i {
-                font-weight: 900;
-            }
-        }
+        // &:not(.view-single) {
+        //     padding-right: 22px;
+        // }
+        // i {
+        //     font-size: 16px;
+        //     position: absolute;
+        //     right: 10px;
+        //     top: 5px;
+        //     margin: 0;
+        // }
+        // &.active {
+        //     i {
+        //         font-weight: 900;
+        //     }
+        // }
     }
     .controls-wrapper {
         display: flex;

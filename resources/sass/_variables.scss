@@ -16,8 +16,10 @@ $secondaryLight: rgba($secondary, .35);
 $dark: #1B1C1D;
 $dark05: #3C3B54;
 $dark1: #535353;
+$dark25: #888;
 $dark2: #A8A8A8;
 $darkAlt: #43425D;
+$darkAlt2: #56556E;
 //$darker: mix(black, $dark, 15%);
 $darker: mix(black, $dark, 20%);
 $darker1: mix(black, $dark, 30%);
@@ -31,6 +33,7 @@ $red: #FF6565;
 $orange: #f6993f;
 $yellow: #ffed4a;
 $green: #5EE2A0;
+$yellowGreen: #B5CC18;
 
 // Sidebar
 $sidebarWidth: 200px;

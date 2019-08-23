@@ -1,11 +1,12 @@
 <template>
     <div class="catalogue">
         <template v-if="!loadingCollections">
-            <progress-bar :loading="loadingCollections" :catalogue="collection" :productTotals="productTotals"/>
-            <filters :teams="teams" :teamFilterId="teamFilterId" :categories="categories" :selectedCategoriesCount="selectedCategoryIDs.length" @onSelectTeam="filterByTeam" @onSelectCategory="setSelectedCategory" @onClearFilter="clearSelectedCategories"/>
-            <!-- <product-single :product="singleProductToShow" :nextProductID="nextSingleProductID" :loading="loadingProducts" :authUser="authUser" @closeSingle="setSingleProduct" @nextSingle="setNextSingle"/> -->
+            <catalogueHeader :collection="collection" :startDate="startDate" :endDate="endDate" :productTotals="productTotals"/>
+            <div class="filters">
+                <DropdownCheckbox :buttonText="'categories'" :title="'Filter by category'" :options="categories" class="dropdown-parent left" v-model="selectedCategoryIDs" :config="{button: 'button'}"/>
+                <DropdownRadio :options="teams" :currentOptionId="teamFilterId" class="right" @onSubmit="filterByTeam"/>
+            </div>
             <product-tabs :productTotals="productTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
-            <!-- <products ref="productsComponent" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :prevSingleProductID="prevSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsSorted" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @prevSingle="setPrevSingle"/> -->
             <products ref="productsComponent" :teamFilterId="teamFilterId" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :prevSingleProductID="prevSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsSorted" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @prevSingle="setPrevSingle"/>
             <SelectedController :totalCount="productsSorted.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction" @onClearSelection="clearSelectedProducts"/>
         </template>
@@ -20,10 +21,11 @@ import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
 import Products from '../Products'
 import ProductTabs from '../ProductTabs'
-import ProgressBar from '../ProgressBar'
-import Filters from '../Filters'
+import CatalogueHeader from '../CatalogueHeader'
 import Loader from '../Loader'
 import SelectedController from '../SelectedController'
+import DropdownRadio from '../DropdownRadio'
+import DropdownCheckbox from '../DropdownCheckbox'
 import Comment from '../../store/models/Comment'
 import Product from '../../store/models/Product'
 import User from '../../store/models/User'
@@ -42,9 +44,10 @@ export default{
         Products,
         ProductTabs,
         SelectedController,
-        ProgressBar,
         Loader,
-        Filters,
+        DropdownCheckbox,
+        DropdownRadio,
+        CatalogueHeader
     },
     data: function () { return {
         singleProductID: -1,
@@ -66,6 +69,24 @@ export default{
         },
         collection() {
             return Collection.find(this.collectionId)
+        },
+        startDate () {
+            if (this.collection.start_time != null) {
+                const date = this.collection.start_time
+                const dateEnd = date.indexOf(" ")
+                const newDate = date.substr(0, dateEnd)
+                return newDate.replace('-', '/')
+            }
+            return 'Unset'
+        },
+        endDate () {
+            if (this.collection.end_time != null) {
+                const date = this.collection.end_time
+                const dateEnd = date.indexOf(" ")
+                const newDate = date.substr(0, dateEnd)
+                return newDate.replace('-', '/')
+            }
+            return 'Unset'
         },
         products () {
             const products = Product.query().with(['actions.user.teams']).with(['comments.votes', 'comments.user.teams']).with('productFinalAction').all()
@@ -284,7 +305,10 @@ export default{
                     return this.ins + this.outs
                 },
                 get progress () {
-                    return ( (this.actions / (this.actions + this.nds)) * 100 ).toFixed(0)
+                    let progress = 100
+                    if (this.actions != null || this.nds != null)
+                        progress = parseInt( ( (this.actions / (this.actions + this.nds)) * 100 ).toFixed(0) )
+                    return progress
                 },
                 ins: 0,
                 outs: 0,
@@ -567,6 +591,12 @@ export default{
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
     @import '~@/_variables.scss';
+
+    .filters {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
 </style>

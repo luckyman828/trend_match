@@ -2,8 +2,13 @@
     <div class="collection">
         <h1>Collection</h1>
         <div class="underline"></div>
-        <CollectionTopBar :itemsToFilter="collections" :title="'Catalogues'" :teams="teams" :teamFilterId="teamFilterId" @onSelectTeam="filterByTeam"/>
-        <CataloguesTable :isLoading="isLoading" :authUser="authUser" :catalogues="collections" :loading="loadingCollections" @onSelect="onSelect"/>
+        <div class="filters">
+            <DropdownCheckbox :buttonText="'Collections'" :title="'Filter by collection'" :options="collections" class="dropdown-parent left" v-model="itemFilterIds" :config="{button: 'button'}"/>
+            <DropdownRadio :options="teams" :currentOptionId="teamFilterId" class="right" @onSubmit="filterByTeam">
+                <span>The first option</span>
+            </DropdownRadio>
+        </div>
+        <CataloguesTable :isLoading="isLoading" :authUser="authUser" :catalogues="collections" :loading="loadingCollections" :selected="selected" @onSelect="onSelect"/>
     </div>
 </template>
 
@@ -11,8 +16,9 @@
 import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
 import Loader from '../Loader'
-import CollectionTopBar from '../CollectionTopBar'
 import CataloguesTable from '../CataloguesTable'
+import DropdownRadio from '../DropdownRadio'
+import DropdownCheckbox from '../DropdownCheckbox'
 import Collection from '../../store/models/Collection'
 import Team from '../../store/models/Team'
 import User from '../../store/models/User'
@@ -24,11 +30,13 @@ export default {
     store,
     components: {
         Loader,
-        CollectionTopBar,
         CataloguesTable,
+        DropdownCheckbox,
+        DropdownRadio,
     },
     data: function() { return {
         selected: [],
+        itemFilterIds: [],
         teamFilterId: '-1',
         loadingOverwrite: false,
     }},
@@ -82,12 +90,14 @@ export default {
     created() {
         this.fetchInitialData()
         // Fetch data based on the Auth User
-        .then(response => {
+        .then( async response => {
             // Only get data for the users assigned room
             const room_id = this.authUser.assigned_room_id
             if (room_id != null) {
-                this.fetchTeams(1234)
-                this.fetchUserTeams()
+                await ( 
+                    this.fetchTeams(1234),
+                    this.fetchUserTeams()
+                )
                 if (this.authUser.teams.length > 0)
                     this.teamFilterId = this.authUser.teams[0].id
                 this.fetchCollections(room_id)
@@ -111,6 +121,10 @@ export default {
         width: 100%;
         border-bottom: solid 2px $light2;
         margin-bottom: 20px;
+    }
+    .filters {
+        display: flex;
+        justify-content: space-between;
     }
     
 </style>

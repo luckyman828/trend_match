@@ -86,7 +86,7 @@ export default {
     props: [
         'catalogues',
         'loading',
-        'selectedCount',
+        'selected',
         'authUser',
         'isLoading'
     ],
@@ -98,6 +98,9 @@ export default {
         sortAsc: true
     }},
     computed: {
+        selectedCount() {
+            return this.selected.length
+        },
         cataloguesSorted() {
             const catalogues = this.catalogues
             let key = this.sortBy
@@ -167,6 +170,7 @@ export default {
     .catalogues-table {
         margin-top: 52px;
         padding-top: 0;
+        position: relative;
     }
     .clickable {
         cursor: pointer;
