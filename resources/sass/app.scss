@@ -267,7 +267,7 @@ label {
 
 // DROPDOWN
 .dropdown-wrapper {
-    position: relative;
+    // position: relative;
     display: flex;
     .clear {
         
@@ -316,7 +316,7 @@ label {
     transition: max-height .1s;
     transition-timing-function: ease-out;
     overflow: hidden;
-    background: $light1;
+    background: white;
     border: solid 1px $light2;
     .right & {
         left: auto;
@@ -328,7 +328,10 @@ label {
     }
     .header {
         padding: 12px 8px 8px;
-        border-bottom: solid 2px $light2;
+        // border-bottom: solid 2px $light2;
+        font-size: 14px;
+        font-weight: 400;
+        color: $dark2;
         .close {
             position: absolute;
             right: 8px;
@@ -353,6 +356,9 @@ label {
     }
     &.dark, .dark & {
         background: $darkAlt;
+        .header {
+            color: white;
+        }
         .body {
             background: $darkAlt2;
         }
@@ -360,35 +366,25 @@ label {
 }
 
 // CUSTOM RADIO AND CHECKBOX BUTTONS
-.radio-buttons, .checkbox-buttons {
-    label {
-        padding: 8px 16px;
-        display: flex;
-        align-items: center;
-        font-weight: 400;
-        white-space: nowrap;
-        &:hover {
-            background: $light;
-        }
-    }
-    &:not(.checkbox-buttons) label.active {
-        background: $light1;
-    }
-    .radio-mark, .check-mark {
+.checkbox, .radiobox {
+    .radiomark, .checkmark {
         height: 18px;
         width: 18px;
-        border: solid 1px;
+        border: solid 1px $light2;
         border-radius: 10px;
         display: inline-block;
         margin-right: 8px;
         position: relative;
     }
-    .check-mark {
-        border-radius: 0;
+    .checkmark {
+        height: 24px;
+        width: 24px;
+        border-radius: 4px;
+        margin-left: -4px;
     }
     input {
         display: none;
-        &:checked + .radio-mark, &:checked + .check-mark {
+        &:checked + .radiomark, &:checked + .checkmark {
             &::after {
             content: "";
             display: block;
@@ -402,16 +398,82 @@ label {
             border-radius: 10px;
           }
         }
-        &:checked + .check-mark::after {
-            border-radius: 0;
+        &:checked + .checkmark::after {
+            width: 16px;
+            height: 16px;
+            border-radius: 1px;
         }
     }
     &.dark, .dark & {
+        .radiomark, .checkmark {
+            border-color: white;
+        }
+    }
+}
+
+
+
+.radio-buttons, .checkbox-buttons {
+    label {
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        font-weight: 400;
+        white-space: nowrap;
+        border: solid 1px $light;
+        font-size: 12px;
+        &:hover {
+            background: $light;
+        }
+    }
+    &:not(.checkbox-buttons) label.active {
+        background: $light1;
+    }
+    // .radio-mark, .check-mark {
+    //     height: 18px;
+    //     width: 18px;
+    //     border: solid 1px $light2;
+    //     border-radius: 10px;
+    //     display: inline-block;
+    //     margin-right: 8px;
+    //     position: relative;
+    // }
+    // .check-mark {
+    //     height: 24px;
+    //     width: 24px;
+    //     border-radius: 4px;
+    // }
+    // input {
+    //     display: none;
+    //     &:checked + .radio-mark, &:checked + .check-mark {
+    //         &::after {
+    //         content: "";
+    //         display: block;
+    //         width: 11px;
+    //         height: 11px;
+    //         position: absolute;
+    //         left: 50%;
+    //         top: 50%;
+    //         transform: translate(-50%, -50%);
+    //         background: $primary;
+    //         border-radius: 10px;
+    //       }
+    //     }
+    //     &:checked + .check-mark::after {
+    //         width: 16px;
+    //         height: 16px;
+    //         border-radius: 1px;
+    //     }
+    // }
+    &.dark, .dark & {
         label {
-            border: solid 1px $darkAlt;
+            border-color: $darkAlt;
             &:hover {
                 background: $darkAlt;
             }
         }
+        // .radio-mark, .check-mark {
+        //     border-color: white;
+        // }
     }
 }

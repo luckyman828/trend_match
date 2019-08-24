@@ -41,10 +41,16 @@ Route::middleware('auth:api')->group( function(){
     Route::get('collection/categories', 'CatalogueController@categories');
 
     // xxx ACTIONS xxx
-    // Create new action
-    Route::post('action', 'ActionController@store');
     // Update action
     Route::put('action', 'ActionController@store');
+    // Delete action
+    Route::delete('action', 'ActionController@destroy');
+    // Update many actions
+    Route::put('many-actions', 'ActionController@updateMany');
+    // Create many actions
+    Route::post('many-actions', 'ActionController@storeMany');
+    // Delete many actions
+    Route::delete('many-actions', 'ActionController@destroyMany');
     
     // Update final action
     Route::put('final-action', 'ActionController@storeFinal');
@@ -54,13 +60,8 @@ Route::middleware('auth:api')->group( function(){
     Route::put('many-final-action', 'ActionController@updateManyFinal');
     // Create many final action
     Route::post('many-final-action', 'ActionController@storeManyFinal');
-    // Delete final action
+    // Delete many final action
     Route::delete('many-final-action', 'ActionController@destroyManyFinal');
-    
-    // Update final actions
-    Route::put('actions', 'ActionController@storeMany');
-    // Delete action
-    Route::delete('action/{user_id}/{product_id}', 'ActionController@destroy');
 
     // xxx USERS xxx
     // Get countries

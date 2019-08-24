@@ -3,8 +3,27 @@
         <template v-if="!loadingCollections">
             <catalogueHeader :collection="collection" :startDate="startDate" :endDate="endDate" :productTotals="productTotals"/>
             <div class="filters">
-                <DropdownCheckbox :buttonText="'categories'" :title="'Filter by category'" :options="categories" class="dropdown-parent left" v-model="selectedCategoryIDs" :config="{button: 'button'}"/>
-                <DropdownRadio :options="teams" :currentOptionId="teamFilterId" class="right" @onSubmit="filterByTeam"/>
+                <DropdownCheckbox :buttonText="'categories'" :title="'Filter by category'" :options="categories" class="dropdown-parent left" v-model="selectedCategoryIDs">
+                    <template v-slot:button="slotProps">
+                        <div class="dropdown-button item-filter-button" @click="slotProps.toggle">
+                            <span>Category</span>
+                            <i class="far fa-chevron-down"></i>
+                            <span v-if="selectedCategoryIDs.length > 0" class="bubble">
+                                {{selectedCategoryIDs.length}}
+                            </span>
+                        </div>
+                        <span v-if="selectedCategoryIDs.length > 0" class="clear button invisible primary" @click="slotProps.clear(); selectedCategoryIDs=[]">Clear filter</span>
+                    </template>
+                </DropdownCheckbox>
+                <DropdownRadio :options="teams" :currentOptionId="teamFilterId" :defaultOption="{id: 0, title: 'GLOBAL'}" class="dropdown-parent right" v-model="teamFilterId">
+                    <template v-slot:button="slotProps">
+                        <div class="dropdown-button" @click="slotProps.toggle">
+                            <img src="/assets/Path5699.svg">
+                            <span>{{slotProps.currentOption.title}}</span>
+                            <i class="far fa-chevron-down"></i>
+                        </div>
+                    </template>
+                </DropdownRadio>
             </div>
             <product-tabs :productTotals="productTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
             <products ref="productsComponent" :teamFilterId="teamFilterId" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :prevSingleProductID="prevSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsSorted" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @prevSingle="setPrevSingle"/>
@@ -96,19 +115,38 @@ export default{
             const data = []
             products.forEach(product => {
                 product.color_variants = JSON.parse(product.color_variants)
-                // product.images = []
                 product.ins = []
                 product.outs = []
                 product.focus = []
-                product.userAction = 0
+                product.userAction = null
+                product.commentsScoped = []
 
-                // product.color_variants.forEach(variant => {
-                //     product.images.push(variant)
-                // })
-                // if (product.productFinalAction != null)
-                //     product.productFinalAction = {}
+                // Scope comments to current teamFilter
+                const comments = product.comments
+                if ( teamFilterId > 0 ) {
+                    let commentsScoped = []
+                    // Loop through the comments
+                    comments.forEach(comment => {
+                        // Loop through comments users teams
+                        let pushComment = false
+
+                        // Check if the comment belongs to one of auth users teams
+                        if ( comment.user.teams.find(x => x.id == teamFilterId) )
+                            pushComment = true
+
+                        // Check if the comment is final
+                        if (comment.final || comment.product_final)
+                            pushComment = true
+
+                        if (pushComment)
+                            product.commentsScoped.push(comment)
+                    })
+                }
+                else if ( teamFilterId == 0) {
+                    product.commentsScoped = comments
+                }
+
                 product.nds = JSON.parse(JSON.stringify(totalUsers)) // Copy our users into a new variable
-                // C
                 product.actions.forEach(action => {
 
                     // Filter actions by the current team filter
@@ -139,12 +177,7 @@ export default{
 
                     // Find the action this user has taken
                     if (action.user_id == userId)
-                    {
-                        if (action.action == 0)
-                            product.userAction = 1
-                        if (action.action == 1)
-                            product.userAction = 2
-                    }
+                        product.userAction = action
 
                     let index = product.nds.findIndex(nd => nd.id == action.user_id)
                     if (index > -1) {
@@ -199,7 +232,7 @@ export default{
             let sortAsc = this.sortAsc
             const dataSorted = products.sort((a, b) => {
 
-                if (key == 'productFinalAction') {
+                if (key == 'productFinalAction' || 'userAction') {
                     if (a[key] != null) {
                         if (b[key] != null) {
                             // If A and B has a key
@@ -443,7 +476,7 @@ export default{
         ...mapActions('entities/authUser', ['getAuthUser']),
         ...mapActions('entities/collections', ['fetchCollections']),
         ...mapActions('entities/products', ['fetchProducts']),
-        ...mapActions('entities/actions', ['fetchActions']),
+        ...mapActions('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/comments', ['fetchComments']),
         ...mapActions('entities/actions', ['updateAction']),
@@ -489,19 +522,10 @@ export default{
         clearSelectedCategories() {
             this.selectedCategoryIDs = []
         },
-        // submitSelectedAction(method) {
-        //     const actionType = (method == 'in') ? 1 : 0
-        //     // Submit the selection
-        //     this.selectedProducts.forEach(product => {
-        //         this.updateFinalAction({productToUpdate: product, phase: this.collection.phase, action_code: actionType})
-        //     })
-        //     // Reset the selection
-        //     this.selectedProductIDs = []
-        //     this.clearSelectedProducts()
-        // },
         submitSelectedAction(method) {
             // Find out whether we should update or delete the products final actions
             const phase = this.collection.phase
+            const user_id = this.authUser.id
             const actionType = (method == 'in') ? 1 : 0
             let productsToUpdate = []
             let productsToCreate = []
@@ -509,45 +533,63 @@ export default{
             this.selectedProducts.forEach(product => {
                 const thisProduct = this.products.find(x => x.id == product)
 
-                if (thisProduct.productFinalAction != null) {
-                    // If product has a final action
-                    if (thisProduct.productFinalAction.action != actionType) {
-                        // If the products final action isnt the same as the one we are trying to set
-                        productsToUpdate.push(product)
-                    }
-                } 
-                // If product does not have a final action
-                else productsToCreate.push(product)
+                if (this.authUser.role_id >= 3) {
+                    if (thisProduct.productFinalAction != null) {
+                        // If product has a final action
+                        if (thisProduct.productFinalAction.action != actionType) {
+                            // If the products final action isnt the same as the one we are trying to set
+                            productsToUpdate.push(product)
+                        }
+                    } 
+                    // If product does not have a final action
+                    else productsToCreate.push(product)
+                }
+                else if (this.authUser.role_id >= 2) {
+                    if (thisProduct.userAction != null) {
+                        // If product has a final action
+                        if (thisProduct.userAction.action != actionType) {
+                            // If the products final action isnt the same as the one we are trying to set
+                            productsToUpdate.push(product)
+                        }
+                    } 
+                    // If product does not have a final action
+                    else productsToCreate.push(product)
+                }
 
             })
 
             // Submit the selection
             if (productsToUpdate.length > 0) {
-                this.updateManyFinalAction({productIds: productsToUpdate, phase: phase, action_code: actionType})
+                if (this.authUser.role_id >= 3)
+                    this.updateManyFinalAction({productIds: productsToUpdate, phase: phase, action_code: actionType})
+                else if (this.authUser.role_id >= 2)
+                    this.updateManyActions({productIds: productsToUpdate, user_id: user_id, action_code: actionType})
             }
             if (productsToCreate.length > 0) {
-                this.createManyFinalAction({productIds: productsToCreate, phase: phase, action_code: actionType})
+                if (this.authUser.role_id >= 3)
+                    this.createManyFinalAction({productIds: productsToCreate, phase: phase, action_code: actionType})
+                else if (this.authUser.role_id >= 2)
+                    this.createManyActions({productIds: productsToCreate, user_id: user_id, action_code: actionType})
             }
 
             // Reset the selection
-            this.selectedProductIDs = []
             this.clearSelectedProducts()
         },
-        toggleInOut(product, actionType) {
-            if (product.productFinalAction != null) {
-                // If the product has a final action
-                if(product.productFinalAction.action == actionType) {
-                    // If the products final action is the same as the requested
-                    this.deleteFinalAction({phase: this.collection.phase, productToUpdate: product.id})
-                } else {
-                    // Update action
-                    this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
-                }
-            } else {
-                // Create action
-                this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
-            }
-        },
+        // toggleInOut(product, actionType) {
+        //     if (product.productFinalAction != null) {
+        //         // If the product has a final action
+        //         if(product.productFinalAction.action == actionType) {
+        //             // If the products final action is the same as the requested
+        //             this.deleteFinalAction({phase: this.collection.phase, productToUpdate: product.id})
+        //         } else {
+        //             // Update action
+        //             this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
+        //         }
+        //     } else {
+        //         // Create action
+        //         this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
+        //     }
+        // },
         onSortBy(key, method) {
             if (this.sortBy !== key) {
                 this.sortAsc = method
@@ -567,9 +609,14 @@ export default{
             await this.getAuthUser()
             await this.fetchTeams({collection_id: this.collectionId})
             await this.fetchUserTeams()
-            if (this.authUser.teams.length > 0)
+            if (this.authUser.role_id >= 3)
+                this.teamFilterId = 0
+            else if (this.authUser.teams.length > 0)
                 this.teamFilterId = this.authUser.teams[0].id
         },
+        testFunc() {
+            console.log('test')
+        }
     },
     created() {
         this.fetchInitialData()
@@ -598,5 +645,9 @@ export default{
         display: flex;
         justify-content: space-between;
         margin-bottom: 12px;
+    }
+    .item-filter-button {
+        min-width: 120px;
+        background: $light2;
     }
 </style>

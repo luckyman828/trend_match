@@ -25,18 +25,6 @@
             </div>
 
             <team-dropdown :teams="teams" :teamFilterId="teamFilterId" @onSelectTeam="onSelectTeam"/>
-            <!-- <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle global d-flex justify-content-between" type="button" id="dropdownMenuButton" 
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span><img src="/assets/Path5699.svg" alt /></span> {{currentTeam.title}} <img src="/assets/Path26.svg" alt />
-                </button>
-
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                <p class="dropdown-item current-item active"> {{currentTeam.title}} </p>
-                <p class="dropdown-item" @click="onSelectTeam(0)">Global</p>
-                <p :class="{active: currentTeam.id == team.id}" class="dropdown-item" v-for="team in teams" :key="team.id" @click="onSelectTeam(team.id)">{{team.title}}</p>
-                </div>
-            </div> -->
 
         </div>
 

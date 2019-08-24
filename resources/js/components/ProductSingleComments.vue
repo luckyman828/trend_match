@@ -1,8 +1,14 @@
 <template>
     <div class="comments">
-        <h4>Comments</h4>
+        <div class="header">
+            <h4>Comments</h4>
+            <div class="toggle" @click="fianlOnly = !fianlOnly">
+                <span class="option" :class="{active: !fianlOnly}">All</span>
+                <span class="option" :class="{active: fianlOnly}">Final comment</span>
+            </div>
+        </div>
         <div class="comments-wrapper">
-            <div class="comment-wrapper" v-for="comment in comments" :key="comment.id">
+            <div class="comment-wrapper" v-for="comment in commentsToShow" :key="comment.id">
                 <div class="comment">
                     <span class="important bubble" v-if="comment.important" @mouseover="showTooltip($event, 'Important')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
                     <span v-if="comment.votes.length > 0" class="votes bubble" :class="{second: comment.important}">{{comment.votes.length}}</span>
@@ -61,7 +67,7 @@ export default {
             type: 'text',
             data: ''
         },
-        scopeToTeam: true,
+        fianlOnly: false,
     }},
     watch: {
         product: function (newVal, oldVal) {
@@ -72,7 +78,23 @@ export default {
         },
     },
     computed: {
-        ...mapGetters('entities/comments', ['submittingComment'])
+        ...mapGetters('entities/comments', ['submittingComment']),
+        commentsToShow () {
+            const comments = this.comments
+            let commentsToReturn = []
+            // Scope to team if auth user role is less than 3
+            if (this.fianlOnly) {
+                comments.forEach(comment => {
+                    // Loop through comments users teams
+                    // Check if the comment is final
+                    if (comment.final || comment.product_final)
+                        commentsToReturn.push(comment)
+                })
+            } else {
+                commentsToReturn = comments
+            }
+            return commentsToReturn
+        }
     },
     methods: {
         ...mapActions('entities/comments', ['createComment']),
@@ -122,6 +144,33 @@ export default {
     h4 {
         font-size: 18px;
         font-weight: 400;
+    }
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .toggle {
+        border: solid 1px $light2;
+        border-radius: 50px;
+        user-select: none;
+        cursor: pointer;
+        .option {
+            font-size: 12px;
+            padding: 6px 14px;
+            font-weight: 700;
+            color: $dark2;
+            text-transform: uppercase;
+            display: inline-block;
+            &.active {
+                color: $dark;
+                background: $light2;
+                border-radius: 50px;
+            }
+            // &:first-child {
+            //     margin-right: 8px;
+            // }
+        }
     }
     .comments-wrapper {
         background: $light1;

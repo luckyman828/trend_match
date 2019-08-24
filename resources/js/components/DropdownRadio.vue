@@ -1,11 +1,13 @@
 <template>
     <div class="dropdown-wrapper" v-if="currentOption != null">
 
-        <div class="dropdown-button" @click="collapsed = !collapsed">
+        <!-- <div class="dropdown-button" @click="collapsed = !collapsed">
               <img src="/assets/Path5699.svg">
               <span>{{currentOption.title}}</span>
               <i class="far fa-chevron-down"></i>
-        </div>
+        </div> -->
+
+        <slot name="button" :toggle="toggle" :collapsed="collapsed" :currentOption="currentOption"></slot>
 
         <div class="dropdown radio-dropdown" :class="{collapsed: collapsed}" ref="dropdown">
             <div class="header">
@@ -13,8 +15,10 @@
             </div>
             <div class="body">
                 <div class="radio-buttons">
-                    <label><slot/></label>
-                    <label v-for="(option, index) in options" :key="index" @click="submitDropdown(option.id)" :class="{active: option.id == currentOptionId}">
+                    <label v-if="!options.find(x => x.id == 0) && defaultOption != null" @click="submit(defaultOption.id)" :class="{active: currentOptionId == defaultOption.id}" class="radiobox">
+                        {{defaultOption.title}}
+                    </label>
+                    <label v-for="(option, index) in options" :key="index" @click="submit(option.id)" :class="{active: option.id == currentOptionId}" class="radiobox">
                         {{option.title}}
                     </label>
                 </div>
@@ -29,7 +33,8 @@ export default {
     name: 'dropdownRadio',
     props: [
         'options',
-        'currentOptionId'
+        'currentOptionId',
+        'defaultOption'
     ],
     data: function () { return {
         collapsed: true,
@@ -41,24 +46,25 @@ export default {
                     const found = this.options.find(x => x.id == this.currentOptionId)
                     if (found)
                         return found
-                    else return {title: 'Set team filter'}
+                    else return {title: 'GLOBAL'}
                 }
             }
             else return {title: 'Set team filter'}
         }
     },
     methods: {
-        submitDropdown(id) {
+        submit(id) {
             this.$emit('onSubmit', id)
+            this.$emit('input', id)
             this.collapsed = true;
         },
-        close() {
-            this.collapsed = true;
+        toggle() {
+            this.collapsed = !this.collapsed;
         }
     },
     updated() {
         // Set the height of the component
-        const offset = 10
+        const offset = 0
         const el = this.$refs.dropdown
         const parent = el.closest('.dropdown-wrapper')
         if (parent != null)

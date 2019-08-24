@@ -1,20 +1,7 @@
 <template>
     <div class="dropdown-wrapper" v-if="options != null">
 
-        <template v-if="theConfig.button == 'button'">
-        <div class="dropdown-button" @click="collapsed = !collapsed">
-              <span>{{buttonText}}</span>
-              <i class="far fa-chevron-down"></i>
-              <span v-if="selected.length > 0" class="bubble">
-                  {{selected.length}}
-              </span>
-        </div>
-        <span v-if="selected.length > 0" class="clear button invisible primary" @click="clear">Clear filter</span>
-        </template>
-
-        <template v-else>
-            <span @click="collapsed = !collapsed">{{buttonText}} <i class="fas fa-chevron-down"></i></span>
-        </template>
+        <slot name="button" :toggle="toggle" :clear="clear"></slot>
 
         <div class="dropdown checkbox-dropdown" :class="{collapsed: collapsed}" ref="dropdown">
             <div class="header">
@@ -22,9 +9,9 @@
             </div>
             <div class="body">
                 <div class="checkbox-buttons">
-                    <label v-for="(option, index) in options" :key="index" :class="{active: selected.find(x => x == option.id)}">
+                    <label v-for="(option, index) in options" :key="index" :class="{active: selected.find(x => x == option.id)}" class="checkbox">
                         <input type="checkbox" :value="option.id" v-model="selected" @change="submit(option.id)">
-                        <span class="check-mark"></span>
+                        <span class="checkmark"></span>
                         {{option.title}}
                     </label>
                 </div>
@@ -71,16 +58,18 @@ export default {
             document.querySelectorAll('input[type=checkbox]').forEach(input => {
                 input.checked = false
             })
+        },
+        toggle() {
+            this.collapsed = !this.collapsed
         }
     },
     updated() {
         // Set the height of the component
-        const offset = 10
+        const offset = 0
         const el = this.$refs.dropdown
         const parent = el.closest('.dropdown-parent')
-        console.log(parent);
         if (parent != null)
-            el.style.cssText = `top: ${parent.getBoundingClientRect().height + 10}px; max-height: ${el.scrollHeight}px;`
+            el.style.cssText = `top: ${parent.getBoundingClientRect().height + offset}px; max-height: ${el.scrollHeight}px;`
         else el.style.cssText = `max-height: ${el.scrollHeight}px;`
     },
     destroyed() {

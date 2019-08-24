@@ -3,9 +3,26 @@
         <h1>Collection</h1>
         <div class="underline"></div>
         <div class="filters">
-            <DropdownCheckbox :buttonText="'Collections'" :title="'Filter by collection'" :options="collections" class="dropdown-parent left" v-model="itemFilterIds" :config="{button: 'button'}"/>
-            <DropdownRadio :options="teams" :currentOptionId="teamFilterId" class="right" @onSubmit="filterByTeam">
-                <span>The first option</span>
+            <DropdownCheckbox :title="'Filter by collection'" :options="collections" class="dropdown-parent left" v-model="itemFilterIds">
+                <template v-slot:button="slotProps">
+                    <div class="dropdown-button item-filter-button" @click="slotProps.toggle">
+                        <span>Collection</span>
+                        <i class="far fa-chevron-down"></i>
+                        <span v-if="itemFilterIds.length > 0" class="bubble">
+                            {{itemFilterIds.length}}
+                        </span>
+                    </div>
+                    <span v-if="itemFilterIds.length > 0" class="clear button invisible primary" @click="slotProps.clear(); itemFilterIds=[]">Clear filter</span>
+                </template>
+            </DropdownCheckbox>
+            <DropdownRadio :options="teams" :currentOptionId="teamFilterId" :defaultOption="{id: 0, title: 'GLOBAL'}" class="dropdown-parent right" v-model="teamFilterId">
+                <template v-slot:button="slotProps">
+                    <div class="dropdown-button" @click="slotProps.toggle">
+                        <img src="/assets/Path5699.svg">
+                        <span>{{slotProps.currentOption.title}}</span>
+                        <i class="far fa-chevron-down"></i>
+                    </div>
+                </template>
             </DropdownRadio>
         </div>
         <CataloguesTable :isLoading="isLoading" :authUser="authUser" :catalogues="collections" :loading="loadingCollections" :selected="selected" @onSelect="onSelect"/>
@@ -78,9 +95,9 @@ export default {
         onViewSingle(collectionID) {
             this.$router.push({name: 'catalogue', params: {catalogueId: collectionID}})
         },
-        filterByTeam(id) {
-            this.teamFilterId = id
-        },
+        // filterByTeam(id) {
+        //     this.teamFilterId = id
+        // },
         async fetchInitialData() {
             // Get user
             console.log('Getting initial data')
@@ -98,7 +115,9 @@ export default {
                     this.fetchTeams(1234),
                     this.fetchUserTeams()
                 )
-                if (this.authUser.teams.length > 0)
+                if (this.authUser.role_id >= 3)
+                    this.teamFilterId = 0
+                else if (this.authUser.teams.length > 0)
                     this.teamFilterId = this.authUser.teams[0].id
                 this.fetchCollections(room_id)
                 this.fetchUsers(1234)
@@ -125,6 +144,10 @@ export default {
     .filters {
         display: flex;
         justify-content: space-between;
+    }
+    .item-filter-button {
+        min-width: 120px;
+        background: $light2;
     }
     
 </style>

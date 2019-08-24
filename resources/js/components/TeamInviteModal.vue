@@ -7,8 +7,16 @@
           <label class="team dropdown-parent">
             <input type="text" name="team" :value="theTeam.title" disabled>
             <span class="square"><i class="fas fa-check"></i></span>
-            <span @click="toggleTeamDropdrown" class="open-dropdown" :class="{active: showTeamDropdown}">Change team<i class="far fa-chevron-down"></i></span>
-            <TeamInviteTeamDropdown class="right" v-if="showTeamDropdown" :teams="teams" :currentTeam="theTeam" @onClose="toggleTeamDropdrown" @onSubmit="setTeam"/>
+            <!-- <span @click="toggleTeamDropdrown" class="open-dropdown" :class="{active: showTeamDropdown}">Change team<i class="far fa-chevron-down"></i></span> -->
+            <!-- <TeamInviteTeamDropdown class="right" v-if="showTeamDropdown" :teams="teams" :currentTeam="theTeam" @onClose="toggleTeamDropdrown" @onSubmit="setTeam"> -->
+
+            <!-- </TeamInviteTeamDropdown> -->
+
+            <DropdownRadioSubmit class="right dark" :title="'teams'" :options="teams" :currentOptionId="theTeamId" v-model="theTeamId">
+                <template v-slot:button="slotProps">
+                    <span @click="slotProps.toggle" class="open-dropdown" :class="{active: !slotProps.collapsed}">Change team<i class="far fa-chevron-down"></i></span>
+                </template>
+            </DropdownRadioSubmit>
           </label>
           <label>
               Email
@@ -26,6 +34,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import TeamInviteTeamDropdown from './TeamInviteTeamDropdown'
+import DropdownRadioSubmit from './DropdownRadioSubmit'
 
 export default {
     name: 'teamInviteModal',
@@ -36,14 +45,15 @@ export default {
         'teams',
     ],
     components: {
-        TeamInviteTeamDropdown
+        TeamInviteTeamDropdown,
+        DropdownRadioSubmit
     },
     data: function () { return {
         newUser: {
             email: '',
             name: ''
         },
-        theTeam: this.team,
+        theTeamId: this.team.id,
         showTeamDropdown: false,
     }},
     computed: {
@@ -51,6 +61,9 @@ export default {
             if (this.newUser.email.length > 7)
                 return false
             else return true
+        },
+        theTeam() {
+            return this.teams.find(x => x.id == this.theTeamId)
         }
     },
     methods: {
@@ -67,7 +80,7 @@ export default {
             this.showTeamDropdown = !this.showTeamDropdown;
         },
         setTeam(id) {
-            this.theTeam = this.teams.find(x => x.id == id)
+            this.theTeamId = this.teams.find(x => x.id == id)
         }
     }
 }

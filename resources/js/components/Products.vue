@@ -7,7 +7,12 @@
             <div class="header-row flex-table-row">
                 <th class="select dropdown-parent" @click="toggleDropdown($event)" v-if="authUser.role_id >= 2">
                     <!-- <select-dropdown @onSelectByCondition="selectByCondition"/> -->
-                    <DropdownCheckbox :buttonText="'Select'" :title="'Select matching:'" :options="[{id: 'no_in', title: 'No IN'}, {id: 'no_comment_no_out', title: 'No COMMENT & no OUT'}]" @submit="selectByCondition"/>
+                    <DropdownCheckbox :title="'Select matching:'" :options="[{id: 'no_in', title: 'No IN'}, {id: 'no_comment_no_out', title: 'No COMMENT & no OUT'}]" @submit="selectByCondition">
+                        <!-- <span @click="collapsed = !collapsed">Select <i class="fas fa-chevron-down"></i></span> -->
+                        <template v-slot:button="slotProps">
+                            <span @click="slotProps.toggle">Select <i class="fas fa-chevron-down"></i></span>
+                        </template>
+                    </DropdownCheckbox>
                 </th>
                 <th class="clickable id" :class="{active: this.sortBy == 'datasource_id'}" @click="onSortBy('datasource_id', true)">
                     Id <i class="fas" :class="[(this.sortBy == 'datasource_id' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
@@ -32,15 +37,28 @@
                     Comments <i class="fas" :class="[(this.sortBy == 'comments' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
 
-                <th v-if="authUser.role_id >= 2" :class="{active: this.sortBy == 'productFinalAction'}" class="clickable action" @click="onSortBy('productFinalAction', false)">
-                    Action <i class="fas" :class="[(this.sortBy == 'productFinalAction' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
-                </th>
-                <th v-else :class="{active: this.sortBy == 'productFinalAction'}" class="clickable action">Action</th>
+                <template v-if="authUser.role_id >= 3">
+                    <th :class="{active: this.sortBy == 'productFinalAction'}" class="clickable action" @click="onSortBy('productFinalAction', false)">
+                        Final action <i class="fas" :class="[(this.sortBy == 'productFinalAction' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                    </th>
+                </template>
+                <template v-else-if="authUser.role_id >= 2">
+                    <th :class="{active: this.sortBy == 'userAction'}" class="clickable action" @click="onSortBy('userAction', false)">
+                        Team action <i class="fas" :class="[(this.sortBy == 'userAction' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                    </th>
+                </template>
+                <template v-else>
+                    <th class="action">Action</th>
+                </template>
+<!-- :class="[ (product.productFinalAction != null) ? (product.productFinalAction.action == 1) ? 'in' : 'out' : '' ]" -->
+
             </div>
             <template v-if="!loading">
                 <div class="product-row flex-table-row"
                 v-for="(product, index) in products" :key="product.id"
-                :class="[ (product.productFinalAction != null) ? (product.productFinalAction.action == 1) ? 'in' : 'out' : '' ]">
+                :class="[ 
+                (authUser.role_id >= 3 && product.productFinalAction != null) ? (product.productFinalAction.action == 1) ? 'in' : 'out' 
+                : (authUser.role_id >= 2 && product.userAction != null) ? (product.userAction.action == 0) ? 'out' : 'in' : '' ]">
                     <td class="select" v-if="authUser.role_id >= 2">
                         <label class="checkbox">
                             <input type="checkbox" @change="onSelect(index)" :ref="'checkbox-for-' + index"/>
@@ -54,9 +72,9 @@
                     <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length + product.focus.length}}</span></td>
                     <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
                     <td class="square-wrapper nds"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}} / {{teamUsers.length}}</span></td>
-                    <td class="square-wrapper comments"><span class="square clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment bind-view-single"></i>{{product.comments.length}}</span></td>
+                    <td class="square-wrapper comments"><span class="square clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment bind-view-single"></i>{{product.commentsScoped.length}}</span></td>
                     <template v-if="!loadingFinalActions">
-                        <template v-if="authUser.role_id >= 2">
+                        <template v-if="authUser.role_id >= 3">
                             <template v-if="!product.productFinalAction">
                                 <td class="action">
                                     <span class="button icon-right ghost green-hover" @click="toggleInOut(product, 1)">In <i class="far fa-heart"></i></span>
@@ -76,6 +94,28 @@
                                 </td>
                             </template>
                         </template>
+
+                        <template v-else-if="authUser.role_id >= 2">
+                            <template v-if="!product.userAction">
+                                <td class="action">
+                                    <span class="button icon-right ghost green-hover" @click="toggleInOutUser(product, 1)">In <i class="far fa-heart"></i></span>
+                                    <span class="button icon-right ghost red-hover" @click="toggleInOutUser(product, 0)">Out <i class="far fa-times-circle"></i></span>
+                                    <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
+                                </td>
+                            </template>
+                            <template v-else>
+                                <td class="action">
+                                    <span class="button icon-right" :class="[(product.userAction.action == 1 || product.userAction.action == 2) ? 'active green' : 'ghost green-hover']" @click="toggleInOutUser(product, 1)">
+                                    In  <i class="far fa-heart"></i>
+                                    </span>
+                                    <span class="button icon-right" :class="[product.userAction.action == 0 ? 'active red' : 'ghost red-hover']"  @click="toggleInOutUser(product, 0)">
+                                    Out  <i class="far fa-times-circle"></i>
+                                    </span>
+                                    <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
+                                </td>
+                            </template>
+                        </template>
+
                         <template v-else>
                             <td class="action">
                                 <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
@@ -161,13 +201,14 @@ export default {
         },
     },
     methods: {
-        ...mapActions('entities/actions', ['updateAction']),
+        ...mapActions('entities/actions', ['updateAction', 'deleteAction']),
         ...mapActions('entities/productFinalActions', ['updateFinalAction', 'deleteFinalAction']),
         // ...mapActions('entities/productFinalActions', ['deleteFinalAction']),
         toggleInOut(product, actionType) {
-            if (product.productFinalAction != null) {
+            const actionToSet = product.productFinalAction
+            if (actionToSet != null) {
                 // If the product has a final action
-                if(product.productFinalAction.action == actionType) {
+                if(actionToSet.action == actionType) {
                     // If the products final action is the same as the requested
                     this.deleteFinalAction({phase: this.collection.phase, productToUpdate: product.id})
                 } else {
@@ -177,6 +218,22 @@ export default {
             } else {
                 // Create action
                 this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
+            }
+        },
+        toggleInOutUser(product, actionType) {
+            const actionToSet = product.userAction
+            if (actionToSet != null) {
+                // If the product has a user action
+                if(actionToSet.action == actionType) {
+                    // If the products user action is the same as the requested
+                    this.deleteAction({user_id: this.authUser.id, productToUpdate: product.id})
+                } else {
+                    // Update action
+                    this.updateAction({user_id: this.authUser.id, productToUpdate: product.id, action_code: actionType})
+                }
+            } else {
+                // Create action
+                this.updateAction({user_id: this.authUser.id, productToUpdate: product.id, action_code: actionType})
             }
         },
         onViewSingle(id) {
@@ -403,7 +460,7 @@ export default {
             &.action {
                 margin-left: auto;
                 padding-left: 16px;
-                min-width: 330px;
+                min-width: 320px;
                 justify-content: flex-end;
                 padding-right: 16px;
                 &:not(th) {
@@ -508,31 +565,31 @@ export default {
       width: 0;
     }
 
-    .checkmark {
-      content: "";
-      display: inline-block;
-      vertical-align: text-top;
-      width: 24px;
-      height: 24px;
-      background: white;
-      border: 1px solid #dfdfdf;
-    }
+    // .checkmark {
+    //   content: "";
+    //   display: inline-block;
+    //   vertical-align: text-top;
+    //   width: 24px;
+    //   height: 24px;
+    //   background: white;
+    //   border: 1px solid #dfdfdf;
+    // }
 
-    .checkbox input:checked ~ .checkmark {
-      background: linear-gradient(#3b86ff, #3b86ff) no-repeat;
-      background-position: center;
-      background-size: 16px 16px;
-    }
+    // .checkbox input:checked ~ .checkmark {
+    //   background: linear-gradient(#3b86ff, #3b86ff) no-repeat;
+    //   background-position: center;
+    //   background-size: 16px 16px;
+    // }
 
-    .checkmark::after {
-      content: "";
-      position: absolute;
-      display: none;
-    }
+    // .checkmark::after {
+    //   content: "";
+    //   position: absolute;
+    //   display: none;
+    // }
 
-    .checkbox input:checked ~ .checkmark:after {
-      display: block;
-    }
+    // .checkbox input:checked ~ .checkmark:after {
+    //   display: block;
+    // }
     .square {
         background: $light1;
         color: $dark;

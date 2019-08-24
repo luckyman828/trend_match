@@ -8949,7 +8949,6 @@ label {
 }
 
 .dropdown-wrapper {
-  position: relative;
   display: -webkit-box;
   display: flex;
 }
@@ -9004,7 +9003,7 @@ label {
   -webkit-transition-timing-function: ease-out;
           transition-timing-function: ease-out;
   overflow: hidden;
-  background: #F3F3F3;
+  background: white;
   border: solid 1px #DFDFDF;
 }
 
@@ -9020,7 +9019,9 @@ label {
 
 .dropdown .header {
   padding: 12px 8px 8px;
-  border-bottom: solid 2px #DFDFDF;
+  font-size: 14px;
+  font-weight: 400;
+  color: #A8A8A8;
 }
 
 .dropdown .header .close {
@@ -9053,59 +9054,46 @@ label {
   background: #43425D;
 }
 
+.dropdown.dark .header,
+.dark .dropdown .header {
+  color: white;
+}
+
 .dropdown.dark .body,
 .dark .dropdown .body {
   background: #56556E;
 }
 
-.radio-buttons label,
-.checkbox-buttons label {
-  padding: 8px 16px;
-  display: -webkit-box;
-  display: flex;
-  -webkit-box-align: center;
-          align-items: center;
-  font-weight: 400;
-  white-space: nowrap;
-}
-
-.radio-buttons label:hover,
-.checkbox-buttons label:hover {
-  background: #F9F9F9;
-}
-
-.radio-buttons:not(.checkbox-buttons) label.active,
-.checkbox-buttons:not(.checkbox-buttons) label.active {
-  background: #F3F3F3;
-}
-
-.radio-buttons .radio-mark,
-.radio-buttons .check-mark,
-.checkbox-buttons .radio-mark,
-.checkbox-buttons .check-mark {
+.checkbox .radiomark,
+.checkbox .checkmark,
+.radiobox .radiomark,
+.radiobox .checkmark {
   height: 18px;
   width: 18px;
-  border: solid 1px;
+  border: solid 1px #DFDFDF;
   border-radius: 10px;
   display: inline-block;
   margin-right: 8px;
   position: relative;
 }
 
-.radio-buttons .check-mark,
-.checkbox-buttons .check-mark {
-  border-radius: 0;
+.checkbox .checkmark,
+.radiobox .checkmark {
+  height: 24px;
+  width: 24px;
+  border-radius: 4px;
+  margin-left: -4px;
 }
 
-.radio-buttons input,
-.checkbox-buttons input {
+.checkbox input,
+.radiobox input {
   display: none;
 }
 
-.radio-buttons input:checked + .radio-mark::after,
-.radio-buttons input:checked + .check-mark::after,
-.checkbox-buttons input:checked + .radio-mark::after,
-.checkbox-buttons input:checked + .check-mark::after {
+.checkbox input:checked + .radiomark::after,
+.checkbox input:checked + .checkmark::after,
+.radiobox input:checked + .radiomark::after,
+.radiobox input:checked + .checkmark::after {
   content: "";
   display: block;
   width: 11px;
@@ -9119,16 +9107,52 @@ label {
   border-radius: 10px;
 }
 
-.radio-buttons input:checked + .check-mark::after,
-.checkbox-buttons input:checked + .check-mark::after {
-  border-radius: 0;
+.checkbox input:checked + .checkmark::after,
+.radiobox input:checked + .checkmark::after {
+  width: 16px;
+  height: 16px;
+  border-radius: 1px;
+}
+
+.checkbox.dark .radiomark,
+.checkbox.dark .checkmark,
+.dark .checkbox .radiomark,
+.dark .checkbox .checkmark,
+.radiobox.dark .radiomark,
+.radiobox.dark .checkmark,
+.dark .radiobox .radiomark,
+.dark .radiobox .checkmark {
+  border-color: white;
+}
+
+.radio-buttons label,
+.checkbox-buttons label {
+  padding: 8px;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+          align-items: center;
+  font-weight: 400;
+  white-space: nowrap;
+  border: solid 1px #F9F9F9;
+  font-size: 12px;
+}
+
+.radio-buttons label:hover,
+.checkbox-buttons label:hover {
+  background: #F9F9F9;
+}
+
+.radio-buttons:not(.checkbox-buttons) label.active,
+.checkbox-buttons:not(.checkbox-buttons) label.active {
+  background: #F3F3F3;
 }
 
 .radio-buttons.dark label,
 .dark .radio-buttons label,
 .checkbox-buttons.dark label,
 .dark .checkbox-buttons label {
-  border: solid 1px #43425D;
+  border-color: #43425D;
 }
 
 .radio-buttons.dark label:hover,

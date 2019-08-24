@@ -80,7 +80,7 @@
                                 </div>
                             </div>
                         </div>
-                        <ProductSingleComments :comments="product.comments" :authUser="authUser" :product="product"/>
+                        <ProductSingleComments :comments="product.commentsScoped" :authUser="authUser" :product="product"/>
                     </div>
                 </template>
                 <template v-else>

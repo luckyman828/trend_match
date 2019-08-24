@@ -131,7 +131,6 @@ export default {
         state.loading = bool
       },
       setFinalAction: (state, {productToUpdate, phase, action_code} ) => {
-        console.log('setting action')
         ProductFinalAction.insert({
           data: {
               action: action_code,
@@ -159,7 +158,6 @@ export default {
         })
       },
       deleteFinalAction: (state, {productToUpdate, phase} ) => {
-        console.log('deleting final action')
 
         ProductFinalAction.delete( (record) => {
           return record.product_id == productToUpdate && record.phase == phase

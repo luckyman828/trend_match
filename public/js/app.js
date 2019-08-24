@@ -7418,19 +7418,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'dropdownCheckbox',
   props: ['title', 'options', 'buttonText', 'config'],
@@ -7466,15 +7453,17 @@ __webpack_require__.r(__webpack_exports__);
       document.querySelectorAll('input[type=checkbox]').forEach(function (input) {
         input.checked = false;
       });
+    },
+    toggle: function toggle() {
+      this.collapsed = !this.collapsed;
     }
   },
   updated: function updated() {
     // Set the height of the component
-    var offset = 10;
+    var offset = 0;
     var el = this.$refs.dropdown;
     var parent = el.closest('.dropdown-parent');
-    console.log(parent);
-    if (parent != null) el.style.cssText = "top: ".concat(parent.getBoundingClientRect().height + 10, "px; max-height: ").concat(el.scrollHeight, "px;");else el.style.cssText = "max-height: ".concat(el.scrollHeight, "px;");
+    if (parent != null) el.style.cssText = "top: ".concat(parent.getBoundingClientRect().height + offset, "px; max-height: ").concat(el.scrollHeight, "px;");else el.style.cssText = "max-height: ".concat(el.scrollHeight, "px;");
   },
   destroyed: function destroyed() {}
 });
@@ -7516,9 +7505,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'dropdownRadio',
-  props: ['options', 'currentOptionId'],
+  props: ['options', 'currentOptionId', 'defaultOption'],
   data: function data() {
     return {
       collapsed: true
@@ -7534,7 +7527,7 @@ __webpack_require__.r(__webpack_exports__);
             return x.id == _this.currentOptionId;
           });
           if (found) return found;else return {
-            title: 'Set team filter'
+            title: 'GLOBAL'
           };
         }
       } else return {
@@ -7543,22 +7536,93 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    submitDropdown: function submitDropdown(id) {
+    submit: function submit(id) {
       this.$emit('onSubmit', id);
+      this.$emit('input', id);
       this.collapsed = true;
     },
-    close: function close() {
-      this.collapsed = true;
+    toggle: function toggle() {
+      this.collapsed = !this.collapsed;
     }
   },
   updated: function updated() {
     // Set the height of the component
-    var offset = 10;
+    var offset = 0;
     var el = this.$refs.dropdown;
     var parent = el.closest('.dropdown-wrapper');
     if (parent != null) el.style.cssText = "top: ".concat(parent.getBoundingClientRect().height + offset, "px; max-height: ").concat(el.scrollHeight, "px;");else el.style.cssText = "max-height: ".concat(el.scrollHeight, "px;");
   },
   destroyed: function destroyed() {}
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadioSubmit.vue?vue&type=script&lang=js&":
+/*!******************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DropdownRadioSubmit.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'dropdown',
+  props: ['title', 'options', 'currentOptionId'],
+  data: function data() {
+    return {
+      selection: '',
+      collapsed: true
+    };
+  },
+  methods: {
+    submit: function submit() {
+      this.$emit('input', this.selection);
+      this.toggle();
+    },
+    toggle: function toggle() {
+      this.collapsed = !this.collapsed;
+    }
+  },
+  updated: function updated() {
+    // Set the height of the component
+    var offset = 0;
+    var el = this.$refs.dropdown;
+    var parent = el.closest('.dropdown-parent');
+    if (parent != null) el.style.cssText = "top: ".concat(parent.getBoundingClientRect().height + offset, "px; max-height: ").concat(el.scrollHeight, "px;");else el.style.cssText = "max-height: ".concat(el.scrollHeight, "px;"); // Preset the selection
+
+    document.querySelector('#radio-option-' + this.currentOptionId).checked = true;
+  }
 });
 
 /***/ }),
@@ -7913,6 +7977,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -7938,7 +8008,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         type: 'text',
         data: ''
       },
-      scopeToTeam: true
+      fianlOnly: false
     };
   },
   watch: {
@@ -7949,7 +8019,24 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.newComment.user_id = newVal.id;
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['submittingComment'])),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['submittingComment']), {
+    commentsToShow: function commentsToShow() {
+      var comments = this.comments;
+      var commentsToReturn = []; // Scope to team if auth user role is less than 3
+
+      if (this.fianlOnly) {
+        comments.forEach(function (comment) {
+          // Loop through comments users teams
+          // Check if the comment is final
+          if (comment["final"] || comment.product_final) commentsToReturn.push(comment);
+        });
+      } else {
+        commentsToReturn = comments;
+      }
+
+      return commentsToReturn;
+    }
+  }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['createComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['markAsFinal']), {
     onSubmitComment: function () {
       var _onSubmitComment = _asyncToGenerator(
@@ -8188,6 +8275,46 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -8234,12 +8361,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return loading;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/productFinalActions', ['updateFinalAction', 'deleteFinalAction']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction', 'deleteAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/productFinalActions', ['updateFinalAction', 'deleteFinalAction']), {
     // ...mapActions('entities/productFinalActions', ['deleteFinalAction']),
     toggleInOut: function toggleInOut(product, actionType) {
-      if (product.productFinalAction != null) {
+      var actionToSet = product.productFinalAction;
+
+      if (actionToSet != null) {
         // If the product has a final action
-        if (product.productFinalAction.action == actionType) {
+        if (actionToSet.action == actionType) {
           // If the products final action is the same as the requested
           this.deleteFinalAction({
             phase: this.collection.phase,
@@ -8257,6 +8386,34 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         // Create action
         this.updateFinalAction({
           phase: this.collection.phase,
+          productToUpdate: product.id,
+          action_code: actionType
+        });
+      }
+    },
+    toggleInOutUser: function toggleInOutUser(product, actionType) {
+      var actionToSet = product.userAction;
+
+      if (actionToSet != null) {
+        // If the product has a user action
+        if (actionToSet.action == actionType) {
+          // If the products user action is the same as the requested
+          this.deleteAction({
+            user_id: this.authUser.id,
+            productToUpdate: product.id
+          });
+        } else {
+          // Update action
+          this.updateAction({
+            user_id: this.authUser.id,
+            productToUpdate: product.id,
+            action_code: actionType
+          });
+        }
+      } else {
+        // Create action
+        this.updateAction({
+          user_id: this.authUser.id,
           productToUpdate: product.id,
           action_code: actionType
         });
@@ -8623,6 +8780,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _TeamInviteTeamDropdown__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TeamInviteTeamDropdown */ "./resources/js/components/TeamInviteTeamDropdown.vue");
+/* harmony import */ var _DropdownRadioSubmit__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DropdownRadioSubmit */ "./resources/js/components/DropdownRadioSubmit.vue");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -8652,13 +8810,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'teamInviteModal',
   props: ['team', 'users', 'authUser', 'teams'],
   components: {
-    TeamInviteTeamDropdown: _TeamInviteTeamDropdown__WEBPACK_IMPORTED_MODULE_1__["default"]
+    TeamInviteTeamDropdown: _TeamInviteTeamDropdown__WEBPACK_IMPORTED_MODULE_1__["default"],
+    DropdownRadioSubmit: _DropdownRadioSubmit__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   data: function data() {
     return {
@@ -8666,13 +8834,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         email: '',
         name: ''
       },
-      theTeam: this.team,
+      theTeamId: this.team.id,
       showTeamDropdown: false
     };
   },
   computed: {
     submitDisabled: function submitDisabled() {
       if (this.newUser.email.length > 7) return false;else return true;
+    },
+    theTeam: function theTeam() {
+      var _this = this;
+
+      return this.teams.find(function (x) {
+        return x.id == _this.theTeamId;
+      });
     }
   },
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/userTeams', ['inviteUserToTeam']), {
@@ -8692,7 +8867,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.showTeamDropdown = !this.showTeamDropdown;
     },
     setTeam: function setTeam(id) {
-      this.theTeam = this.teams.find(function (x) {
+      this.theTeamId = this.teams.find(function (x) {
         return x.id == id;
       });
     }
@@ -9271,6 +9446,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -9348,19 +9542,34 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var teamFilterId = this.teamFilterId;
       var data = [];
       products.forEach(function (product) {
-        product.color_variants = JSON.parse(product.color_variants); // product.images = []
-
+        product.color_variants = JSON.parse(product.color_variants);
         product.ins = [];
         product.outs = [];
         product.focus = [];
-        product.userAction = 0; // product.color_variants.forEach(variant => {
-        //     product.images.push(variant)
-        // })
-        // if (product.productFinalAction != null)
-        //     product.productFinalAction = {}
+        product.userAction = null;
+        product.commentsScoped = []; // Scope comments to current teamFilter
+
+        var comments = product.comments;
+
+        if (teamFilterId > 0) {
+          var commentsScoped = []; // Loop through the comments
+
+          comments.forEach(function (comment) {
+            // Loop through comments users teams
+            var pushComment = false; // Check if the comment belongs to one of auth users teams
+
+            if (comment.user.teams.find(function (x) {
+              return x.id == teamFilterId;
+            })) pushComment = true; // Check if the comment is final
+
+            if (comment["final"] || comment.product_final) pushComment = true;
+            if (pushComment) product.commentsScoped.push(comment);
+          });
+        } else if (teamFilterId == 0) {
+          product.commentsScoped = comments;
+        }
 
         product.nds = JSON.parse(JSON.stringify(totalUsers)); // Copy our users into a new variable
-        // C
 
         product.actions.forEach(function (action) {
           // Filter actions by the current team filter
@@ -9386,11 +9595,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           } // Find the action this user has taken
 
 
-          if (action.user_id == userId) {
-            if (action.action == 0) product.userAction = 1;
-            if (action.action == 1) product.userAction = 2;
-          }
-
+          if (action.user_id == userId) product.userAction = action;
           var index = product.nds.findIndex(function (nd) {
             return nd.id == action.user_id;
           });
@@ -9442,7 +9647,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var key = this.sortBy;
       var sortAsc = this.sortAsc;
       var dataSorted = products.sort(function (a, b) {
-        if (key == 'productFinalAction') {
+        if (key == 'productFinalAction' || 'userAction') {
           if (a[key] != null) {
             if (b[key] != null) {
               // If A and B has a key
@@ -9651,7 +9856,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return teams;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {
     // ...mapActions('entities/actions', ['updateActions']),
     setSingleProduct: function setSingleProduct(index) {
       this.singleProductID = index;
@@ -9691,21 +9896,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     clearSelectedCategories: function clearSelectedCategories() {
       this.selectedCategoryIDs = [];
     },
-    // submitSelectedAction(method) {
-    //     const actionType = (method == 'in') ? 1 : 0
-    //     // Submit the selection
-    //     this.selectedProducts.forEach(product => {
-    //         this.updateFinalAction({productToUpdate: product, phase: this.collection.phase, action_code: actionType})
-    //     })
-    //     // Reset the selection
-    //     this.selectedProductIDs = []
-    //     this.clearSelectedProducts()
-    // },
     submitSelectedAction: function submitSelectedAction(method) {
       var _this6 = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
+      var user_id = this.authUser.id;
       var actionType = method == 'in' ? 1 : 0;
       var productsToUpdate = [];
       var productsToCreate = [];
@@ -9714,62 +9910,69 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           return x.id == product;
         });
 
-        if (thisProduct.productFinalAction != null) {
-          // If product has a final action
-          if (thisProduct.productFinalAction.action != actionType) {
-            // If the products final action isnt the same as the one we are trying to set
-            productsToUpdate.push(product);
-          }
-        } // If product does not have a final action
-        else productsToCreate.push(product);
+        if (_this6.authUser.role_id >= 3) {
+          if (thisProduct.productFinalAction != null) {
+            // If product has a final action
+            if (thisProduct.productFinalAction.action != actionType) {
+              // If the products final action isnt the same as the one we are trying to set
+              productsToUpdate.push(product);
+            }
+          } // If product does not have a final action
+          else productsToCreate.push(product);
+        } else if (_this6.authUser.role_id >= 2) {
+          if (thisProduct.userAction != null) {
+            // If product has a final action
+            if (thisProduct.userAction.action != actionType) {
+              // If the products final action isnt the same as the one we are trying to set
+              productsToUpdate.push(product);
+            }
+          } // If product does not have a final action
+          else productsToCreate.push(product);
+        }
       }); // Submit the selection
 
       if (productsToUpdate.length > 0) {
-        this.updateManyFinalAction({
+        if (this.authUser.role_id >= 3) this.updateManyFinalAction({
           productIds: productsToUpdate,
           phase: phase,
+          action_code: actionType
+        });else if (this.authUser.role_id >= 2) this.updateManyActions({
+          productIds: productsToUpdate,
+          user_id: user_id,
           action_code: actionType
         });
       }
 
       if (productsToCreate.length > 0) {
-        this.createManyFinalAction({
+        if (this.authUser.role_id >= 3) this.createManyFinalAction({
           productIds: productsToCreate,
           phase: phase,
+          action_code: actionType
+        });else if (this.authUser.role_id >= 2) this.createManyActions({
+          productIds: productsToCreate,
+          user_id: user_id,
           action_code: actionType
         });
       } // Reset the selection
 
 
-      this.selectedProductIDs = [];
       this.clearSelectedProducts();
     },
-    toggleInOut: function toggleInOut(product, actionType) {
-      if (product.productFinalAction != null) {
-        // If the product has a final action
-        if (product.productFinalAction.action == actionType) {
-          // If the products final action is the same as the requested
-          this.deleteFinalAction({
-            phase: this.collection.phase,
-            productToUpdate: product.id
-          });
-        } else {
-          // Update action
-          this.updateFinalAction({
-            phase: this.collection.phase,
-            productToUpdate: product.id,
-            action_code: actionType
-          });
-        }
-      } else {
-        // Create action
-        this.updateFinalAction({
-          phase: this.collection.phase,
-          productToUpdate: product.id,
-          action_code: actionType
-        });
-      }
-    },
+    // toggleInOut(product, actionType) {
+    //     if (product.productFinalAction != null) {
+    //         // If the product has a final action
+    //         if(product.productFinalAction.action == actionType) {
+    //             // If the products final action is the same as the requested
+    //             this.deleteFinalAction({phase: this.collection.phase, productToUpdate: product.id})
+    //         } else {
+    //             // Update action
+    //             this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
+    //         }
+    //     } else {
+    //         // Create action
+    //         this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
+    //     }
+    // },
     onSortBy: function onSortBy(key, method) {
       if (this.sortBy !== key) {
         this.sortAsc = method;
@@ -9806,7 +10009,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 return this.fetchUserTeams();
 
               case 7:
-                if (this.authUser.teams.length > 0) this.teamFilterId = this.authUser.teams[0].id;
+                if (this.authUser.role_id >= 3) this.teamFilterId = 0;else if (this.authUser.teams.length > 0) this.teamFilterId = this.authUser.teams[0].id;
 
               case 8:
               case "end":
@@ -9821,7 +10024,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
 
       return fetchInitialData;
-    }()
+    }(),
+    testFunc: function testFunc() {
+      console.log('test');
+    }
   }),
   created: function created() {
     this.fetchInitialData(); // Fetch all our data
@@ -9885,6 +10091,23 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -9964,9 +10187,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
       });
     },
-    filterByTeam: function filterByTeam(id) {
-      this.teamFilterId = id;
-    },
+    // filterByTeam(id) {
+    //     this.teamFilterId = id
+    // },
     fetchInitialData: function () {
       var _fetchInitialData = _asyncToGenerator(
       /*#__PURE__*/
@@ -10022,7 +10245,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 return _this.fetchTeams(1234), _this.fetchUserTeams();
 
               case 4:
-                if (_this.authUser.teams.length > 0) _this.teamFilterId = _this.authUser.teams[0].id;
+                if (_this.authUser.role_id >= 3) _this.teamFilterId = 0;else if (_this.authUser.teams.length > 0) _this.teamFilterId = _this.authUser.teams[0].id;
 
                 _this.fetchCollections(room_id);
 
@@ -10351,6 +10574,25 @@ exports.push([module.i, "", ""]);
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadioSubmit.vue?vue&type=style&index=0&scopes=true&lang=scss&":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DropdownRadioSubmit.vue?vue&type=style&index=0&scopes=true&lang=scss& ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Loader.vue?vue&type=style&index=0&id=e79ec684&lang=scss&scoped=true&":
 /*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Loader.vue?vue&type=style&index=0&id=e79ec684&lang=scss&scoped=true& ***!
@@ -10420,7 +10662,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #F3F3F3;\n  border-radius: 8px;\n  padding: 36px;\n  padding-right: 68px;\n  height: 57vh;\n  max-height: 57vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 36px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment[data-v-6d61fa50] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n}\n.user[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-6d61fa50] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-6d61fa50] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-6d61fa50] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-6d61fa50] {\n  left: 18px;\n}\n.circle[data-v-6d61fa50] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.circle i[data-v-6d61fa50] {\n  font-size: 20px;\n}\n.circle[data-v-6d61fa50]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.active[data-v-6d61fa50] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.disabled[data-v-6d61fa50]:not(.active) {\n  display: none;\n}\n.circle.disabled[data-v-6d61fa50] {\n  cursor: auto;\n}\n.pill[data-v-6d61fa50] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #DFDFDF;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #A8A8A8;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #A8A8A8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #F3F3F3;\n  color: #A8A8A8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3B86FF;\n}\nform input[type=submit][data-v-6d61fa50] {\n  -webkit-appearance: none;\n  border: none;\n  height: 32px;\n  border-radius: 4px;\n  margin-top: 12px;\n  background: #3B86FF;\n  color: white;\n  padding: 4px 12px;\n  width: 100%;\n  text-align: center;\n  font-weight: 700;\n  font-size: 12px;\n  margin-bottom: 60px;\n}\nform input[type=submit].disabled[data-v-6d61fa50] {\n  pointer-events: none;\n  opacity: 0.5;\n}", ""]);
+exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.toggle[data-v-6d61fa50] {\n  border: solid 1px #DFDFDF;\n  border-radius: 50px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.toggle .option[data-v-6d61fa50] {\n  font-size: 12px;\n  padding: 6px 14px;\n  font-weight: 700;\n  color: #A8A8A8;\n  text-transform: uppercase;\n  display: inline-block;\n}\n.toggle .option.active[data-v-6d61fa50] {\n  color: #1B1C1D;\n  background: #DFDFDF;\n  border-radius: 50px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #F3F3F3;\n  border-radius: 8px;\n  padding: 36px;\n  padding-right: 68px;\n  height: 57vh;\n  max-height: 57vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 36px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment[data-v-6d61fa50] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n}\n.user[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-6d61fa50] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-6d61fa50] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-6d61fa50] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-6d61fa50] {\n  left: 18px;\n}\n.circle[data-v-6d61fa50] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.circle i[data-v-6d61fa50] {\n  font-size: 20px;\n}\n.circle[data-v-6d61fa50]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.active[data-v-6d61fa50] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.disabled[data-v-6d61fa50]:not(.active) {\n  display: none;\n}\n.circle.disabled[data-v-6d61fa50] {\n  cursor: auto;\n}\n.pill[data-v-6d61fa50] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #DFDFDF;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #A8A8A8;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #A8A8A8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #F3F3F3;\n  color: #A8A8A8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3B86FF;\n}\nform input[type=submit][data-v-6d61fa50] {\n  -webkit-appearance: none;\n  border: none;\n  height: 32px;\n  border-radius: 4px;\n  margin-top: 12px;\n  background: #3B86FF;\n  color: white;\n  padding: 4px 12px;\n  width: 100%;\n  text-align: center;\n  font-weight: 700;\n  font-size: 12px;\n  margin-bottom: 60px;\n}\nform input[type=submit].disabled[data-v-6d61fa50] {\n  pointer-events: none;\n  opacity: 0.5;\n}", ""]);
 
 // exports
 
@@ -10477,7 +10719,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1B1C1D;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 0;\n  background: #F9F9F9;\n  width: 100%;\n  height: 130px;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  width: calc(100% - 120px - 200px - 16px);\n  margin-left: 1px;\n  border-radius: 0.25rem 0.25rem 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.flex-table[data-v-57b394cf] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  padding-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf] {\n  min-width: 70px;\n  padding-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.nds[data-v-57b394cf] {\n  min-width: 100px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 86px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: auto;\n  padding-left: 16px;\n  min-width: 330px;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  padding-right: 16px;\n}\n.flex-table-row > *.action[data-v-57b394cf]:not(th) {\n  display: -webkit-box;\n  display: flex;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #F3F3F3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #FF6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #DFDFDF;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n  white-space: nowrap;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3B86FF;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-57b394cf] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-57b394cf] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-57b394cf]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-57b394cf]:after {\n  display: block;\n}\n.square[data-v-57b394cf] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 600;\n}\n.square i[data-v-57b394cf] {\n  color: #A8A8A8;\n  margin-right: 12px;\n  font-size: 16px;\n}\n.button[data-v-57b394cf]:nth-child(1n+2) {\n  margin-left: 20px;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.square-wrapper[data-v-57b394cf] {\n  min-width: 65px;\n}", ""]);
+exports.push([module.i, ".dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1B1C1D;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 0;\n  background: #F9F9F9;\n  width: 100%;\n  height: 130px;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  width: calc(100% - 120px - 200px - 16px);\n  margin-left: 1px;\n  border-radius: 0.25rem 0.25rem 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.flex-table[data-v-57b394cf] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  padding-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf] {\n  min-width: 70px;\n  padding-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.nds[data-v-57b394cf] {\n  min-width: 100px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 86px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: auto;\n  padding-left: 16px;\n  min-width: 320px;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  padding-right: 16px;\n}\n.flex-table-row > *.action[data-v-57b394cf]:not(th) {\n  display: -webkit-box;\n  display: flex;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #F3F3F3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #FF6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #DFDFDF;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n  white-space: nowrap;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3B86FF;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.square[data-v-57b394cf] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 600;\n}\n.square i[data-v-57b394cf] {\n  color: #A8A8A8;\n  margin-right: 12px;\n  font-size: 16px;\n}\n.button[data-v-57b394cf]:nth-child(1n+2) {\n  margin-left: 20px;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.square-wrapper[data-v-57b394cf] {\n  min-width: 65px;\n}", ""]);
 
 // exports
 
@@ -10667,7 +10909,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".filters[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 12px;\n}", ""]);
+exports.push([module.i, ".filters[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 12px;\n}\n.item-filter-button[data-v-76e8b686] {\n  min-width: 120px;\n  background: #DFDFDF;\n}", ""]);
 
 // exports
 
@@ -10686,7 +10928,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "h1[data-v-4efc625e] {\n  margin-bottom: 16px;\n}\n.underline[data-v-4efc625e] {\n  width: 100%;\n  border-bottom: solid 2px #DFDFDF;\n  margin-bottom: 20px;\n}\n.filters[data-v-4efc625e] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}", ""]);
+exports.push([module.i, "h1[data-v-4efc625e] {\n  margin-bottom: 16px;\n}\n.underline[data-v-4efc625e] {\n  width: 100%;\n  border-bottom: solid 2px #DFDFDF;\n  margin-bottom: 20px;\n}\n.filters[data-v-4efc625e] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.item-filter-button[data-v-4efc625e] {\n  min-width: 120px;\n  background: #DFDFDF;\n}", ""]);
 
 // exports
 
@@ -12080,6 +12322,36 @@ if(false) {}
 
 
 var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownRadio.vue?vue&type=style&index=0&scopes=true&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadio.vue?vue&type=style&index=0&scopes=true&lang=scss&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadioSubmit.vue?vue&type=style&index=0&scopes=true&lang=scss&":
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DropdownRadioSubmit.vue?vue&type=style&index=0&scopes=true&lang=scss& ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownRadioSubmit.vue?vue&type=style&index=0&scopes=true&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadioSubmit.vue?vue&type=style&index=0&scopes=true&lang=scss&");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -13712,62 +13984,7 @@ var render = function() {
         "div",
         { staticClass: "dropdown-wrapper" },
         [
-          _vm.theConfig.button == "button"
-            ? [
-                _c(
-                  "div",
-                  {
-                    staticClass: "dropdown-button",
-                    on: {
-                      click: function($event) {
-                        _vm.collapsed = !_vm.collapsed
-                      }
-                    }
-                  },
-                  [
-                    _c("span", [_vm._v(_vm._s(_vm.buttonText))]),
-                    _vm._v(" "),
-                    _c("i", { staticClass: "far fa-chevron-down" }),
-                    _vm._v(" "),
-                    _vm.selected.length > 0
-                      ? _c("span", { staticClass: "bubble" }, [
-                          _vm._v(
-                            "\n              " +
-                              _vm._s(_vm.selected.length) +
-                              "\n          "
-                          )
-                        ])
-                      : _vm._e()
-                  ]
-                ),
-                _vm._v(" "),
-                _vm.selected.length > 0
-                  ? _c(
-                      "span",
-                      {
-                        staticClass: "clear button invisible primary",
-                        on: { click: _vm.clear }
-                      },
-                      [_vm._v("Clear filter")]
-                    )
-                  : _vm._e()
-              ]
-            : [
-                _c(
-                  "span",
-                  {
-                    on: {
-                      click: function($event) {
-                        _vm.collapsed = !_vm.collapsed
-                      }
-                    }
-                  },
-                  [
-                    _vm._v(_vm._s(_vm.buttonText) + " "),
-                    _c("i", { staticClass: "fas fa-chevron-down" })
-                  ]
-                )
-              ],
+          _vm._t("button", null, { toggle: _vm.toggle, clear: _vm.clear }),
           _vm._v(" "),
           _c(
             "div",
@@ -13790,6 +14007,7 @@ var render = function() {
                       "label",
                       {
                         key: index,
+                        staticClass: "checkbox",
                         class: {
                           active: _vm.selected.find(function(x) {
                             return x == option.id
@@ -13842,7 +14060,7 @@ var render = function() {
                           }
                         }),
                         _vm._v(" "),
-                        _c("span", { staticClass: "check-mark" }),
+                        _c("span", { staticClass: "checkmark" }),
                         _vm._v(
                           "\n                    " +
                             _vm._s(option.title) +
@@ -13884,58 +14102,180 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _vm.currentOption != null
-    ? _c("div", { staticClass: "dropdown-wrapper" }, [
-        _c(
-          "div",
-          {
-            staticClass: "dropdown-button",
-            on: {
-              click: function($event) {
-                _vm.collapsed = !_vm.collapsed
-              }
-            }
-          },
-          [
-            _c("img", { attrs: { src: "/assets/Path5699.svg" } }),
-            _vm._v(" "),
-            _c("span", [_vm._v(_vm._s(_vm.currentOption.title))]),
-            _vm._v(" "),
-            _c("i", { staticClass: "far fa-chevron-down" })
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            ref: "dropdown",
-            staticClass: "dropdown radio-dropdown",
-            class: { collapsed: _vm.collapsed }
-          },
-          [
-            _c("div", { staticClass: "header" }, [
-              _c("span", [_vm._v(_vm._s(_vm.currentOption.title))])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "body" }, [
-              _c(
-                "div",
-                { staticClass: "radio-buttons" },
-                [
-                  _c("label", [_vm._t("default")], 2),
-                  _vm._v(" "),
+    ? _c(
+        "div",
+        { staticClass: "dropdown-wrapper" },
+        [
+          _vm._t("button", null, {
+            toggle: _vm.toggle,
+            collapsed: _vm.collapsed,
+            currentOption: _vm.currentOption
+          }),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              ref: "dropdown",
+              staticClass: "dropdown radio-dropdown",
+              class: { collapsed: _vm.collapsed }
+            },
+            [
+              _c("div", { staticClass: "header" }, [
+                _c("span", [_vm._v(_vm._s(_vm.currentOption.title))])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "body" }, [
+                _c(
+                  "div",
+                  { staticClass: "radio-buttons" },
+                  [
+                    !_vm.options.find(function(x) {
+                      return x.id == 0
+                    }) && _vm.defaultOption != null
+                      ? _c(
+                          "label",
+                          {
+                            staticClass: "radiobox",
+                            class: {
+                              active:
+                                _vm.currentOptionId == _vm.defaultOption.id
+                            },
+                            on: {
+                              click: function($event) {
+                                return _vm.submit(_vm.defaultOption.id)
+                              }
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "\n                    " +
+                                _vm._s(_vm.defaultOption.title) +
+                                "\n                "
+                            )
+                          ]
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm._l(_vm.options, function(option, index) {
+                      return _c(
+                        "label",
+                        {
+                          key: index,
+                          staticClass: "radiobox",
+                          class: { active: option.id == _vm.currentOptionId },
+                          on: {
+                            click: function($event) {
+                              return _vm.submit(option.id)
+                            }
+                          }
+                        },
+                        [
+                          _vm._v(
+                            "\n                    " +
+                              _vm._s(option.title) +
+                              "\n                "
+                          )
+                        ]
+                      )
+                    })
+                  ],
+                  2
+                )
+              ])
+            ]
+          )
+        ],
+        2
+      )
+    : _vm._e()
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadioSubmit.vue?vue&type=template&id=3e76f407&":
+/*!**********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DropdownRadioSubmit.vue?vue&type=template&id=3e76f407& ***!
+  \**********************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm.options != null
+    ? _c(
+        "div",
+        { staticClass: "dropdown-wrapper" },
+        [
+          _vm._t("button", null, {
+            toggle: _vm.toggle,
+            collapsed: _vm.collapsed
+          }),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              ref: "dropdown",
+              staticClass: "team-dropdown dropdown",
+              class: { collapsed: _vm.collapsed }
+            },
+            [
+              _c("div", { staticClass: "header" }, [
+                _c("span", [
+                  _vm._v(_vm._s(_vm.options.length) + " " + _vm._s(_vm.title))
+                ]),
+                _vm._v(" "),
+                _c(
+                  "span",
+                  { staticClass: "close", on: { click: _vm.toggle } },
+                  [_c("i", { staticClass: "fal fa-times" })]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "body" }, [
+                _c(
+                  "div",
+                  { staticClass: "radio-buttons" },
                   _vm._l(_vm.options, function(option, index) {
                     return _c(
                       "label",
-                      {
-                        key: index,
-                        class: { active: option.id == _vm.currentOptionId },
-                        on: {
-                          click: function($event) {
-                            return _vm.submitDropdown(option.id)
-                          }
-                        }
-                      },
+                      { key: index, staticClass: "radiobox" },
                       [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.selection,
+                              expression: "selection"
+                            }
+                          ],
+                          attrs: {
+                            type: "radio",
+                            name: "radio-option",
+                            id: "radio-option-" + option.id
+                          },
+                          domProps: {
+                            value: option.id,
+                            checked: _vm._q(_vm.selection, option.id)
+                          },
+                          on: {
+                            change: function($event) {
+                              _vm.selection = option.id
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("span", { staticClass: "radiomark" }),
                         _vm._v(
                           "\n                    " +
                             _vm._s(option.title) +
@@ -13943,14 +14283,34 @@ var render = function() {
                         )
                       ]
                     )
-                  })
-                ],
-                2
-              )
-            ])
-          ]
-        )
-      ])
+                  }),
+                  0
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "footer" }, [
+                _c("div", { staticClass: "grid-2 small-gap" }, [
+                  _c(
+                    "span",
+                    { staticClass: "button green", on: { click: _vm.submit } },
+                    [_vm._v("Save")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "span",
+                    {
+                      staticClass: "button invisible",
+                      on: { click: _vm.toggle }
+                    },
+                    [_vm._v("Cancel")]
+                  )
+                ])
+              ])
+            ]
+          )
+        ],
+        2
+      )
     : _vm._e()
 }
 var staticRenderFns = []
@@ -14530,7 +14890,7 @@ var render = function() {
                           _vm._v(" "),
                           _c("ProductSingleComments", {
                             attrs: {
-                              comments: _vm.product.comments,
+                              comments: _vm.product.commentsScoped,
                               authUser: _vm.authUser,
                               product: _vm.product
                             }
@@ -14575,12 +14935,39 @@ var render = function() {
     "div",
     { staticClass: "comments" },
     [
-      _c("h4", [_vm._v("Comments")]),
+      _c("div", { staticClass: "header" }, [
+        _c("h4", [_vm._v("Comments")]),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "toggle",
+            on: {
+              click: function($event) {
+                _vm.fianlOnly = !_vm.fianlOnly
+              }
+            }
+          },
+          [
+            _c(
+              "span",
+              { staticClass: "option", class: { active: !_vm.fianlOnly } },
+              [_vm._v("All")]
+            ),
+            _vm._v(" "),
+            _c(
+              "span",
+              { staticClass: "option", class: { active: _vm.fianlOnly } },
+              [_vm._v("Final comment")]
+            )
+          ]
+        )
+      ]),
       _vm._v(" "),
       _c(
         "div",
         { staticClass: "comments-wrapper" },
-        _vm._l(_vm.comments, function(comment) {
+        _vm._l(_vm.commentsToShow, function(comment) {
           return _c(
             "div",
             { key: comment.id, staticClass: "comment-wrapper" },
@@ -14986,241 +15373,290 @@ var render = function() {
           class: { disabled: _vm.singleProductToShow.id != null }
         },
         [
-          _c("div", { staticClass: "header-row flex-table-row" }, [
-            _vm.authUser.role_id >= 2
-              ? _c(
-                  "th",
-                  {
-                    staticClass: "select dropdown-parent",
-                    on: {
-                      click: function($event) {
-                        return _vm.toggleDropdown($event)
+          _c(
+            "div",
+            { staticClass: "header-row flex-table-row" },
+            [
+              _vm.authUser.role_id >= 2
+                ? _c(
+                    "th",
+                    {
+                      staticClass: "select dropdown-parent",
+                      on: {
+                        click: function($event) {
+                          return _vm.toggleDropdown($event)
+                        }
                       }
+                    },
+                    [
+                      _c("DropdownCheckbox", {
+                        attrs: {
+                          title: "Select matching:",
+                          options: [
+                            { id: "no_in", title: "No IN" },
+                            {
+                              id: "no_comment_no_out",
+                              title: "No COMMENT & no OUT"
+                            }
+                          ]
+                        },
+                        on: { submit: _vm.selectByCondition },
+                        scopedSlots: _vm._u(
+                          [
+                            {
+                              key: "button",
+                              fn: function(slotProps) {
+                                return [
+                                  _c(
+                                    "span",
+                                    { on: { click: slotProps.toggle } },
+                                    [
+                                      _vm._v("Select "),
+                                      _c("i", {
+                                        staticClass: "fas fa-chevron-down"
+                                      })
+                                    ]
+                                  )
+                                ]
+                              }
+                            }
+                          ],
+                          null,
+                          false,
+                          3623102719
+                        )
+                      })
+                    ],
+                    1
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _c(
+                "th",
+                {
+                  staticClass: "clickable id",
+                  class: { active: this.sortBy == "datasource_id" },
+                  on: {
+                    click: function($event) {
+                      return _vm.onSortBy("datasource_id", true)
                     }
-                  },
-                  [
-                    _c("DropdownCheckbox", {
-                      attrs: {
-                        buttonText: "Select",
-                        title: "Select matching:",
-                        options: [
-                          { id: "no_in", title: "No IN" },
-                          {
-                            id: "no_comment_no_out",
-                            title: "No COMMENT & no OUT"
+                  }
+                },
+                [
+                  _vm._v("\n                    Id "),
+                  _c("i", {
+                    staticClass: "fas",
+                    class: [
+                      this.sortBy == "datasource_id" && !_vm.sortAsc
+                        ? "fa-long-arrow-alt-up"
+                        : "fa-long-arrow-alt-down"
+                    ]
+                  })
+                ]
+              ),
+              _vm._v(" "),
+              _c("th", { staticClass: "image" }),
+              _vm._v(" "),
+              _c(
+                "th",
+                {
+                  staticClass: "clickable title",
+                  class: { active: this.sortBy == "title" },
+                  on: {
+                    click: function($event) {
+                      return _vm.onSortBy("title", true)
+                    }
+                  }
+                },
+                [
+                  _vm._v("\n                   Product name "),
+                  _c("i", {
+                    staticClass: "fas",
+                    class: [
+                      this.sortBy == "title" && !_vm.sortAsc
+                        ? "fa-long-arrow-alt-up"
+                        : "fa-long-arrow-alt-down"
+                    ]
+                  })
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "th",
+                {
+                  staticClass: "clickable square-wrapper focus",
+                  class: { active: this.sortBy == "focus" },
+                  on: {
+                    click: function($event) {
+                      return _vm.onSortBy("focus", false)
+                    }
+                  }
+                },
+                [
+                  _vm._v("\n                    Focus "),
+                  _c("i", {
+                    staticClass: "fas",
+                    class: [
+                      this.sortBy == "focus" && !_vm.sortAsc
+                        ? "fa-long-arrow-alt-up"
+                        : "fa-long-arrow-alt-down"
+                    ]
+                  })
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "th",
+                {
+                  staticClass: "clickable square-wrapper",
+                  class: { active: this.sortBy == "ins" },
+                  on: {
+                    click: function($event) {
+                      return _vm.onSortBy("ins", false)
+                    }
+                  }
+                },
+                [
+                  _vm._v("\n                    In "),
+                  _c("i", {
+                    staticClass: "fas",
+                    class: [
+                      this.sortBy == "ins" && !_vm.sortAsc
+                        ? "fa-long-arrow-alt-up"
+                        : "fa-long-arrow-alt-down"
+                    ]
+                  })
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "th",
+                {
+                  staticClass: "clickable square-wrapper",
+                  class: { active: this.sortBy == "outs" },
+                  on: {
+                    click: function($event) {
+                      return _vm.onSortBy("outs", false)
+                    }
+                  }
+                },
+                [
+                  _vm._v("\n                    Out "),
+                  _c("i", {
+                    staticClass: "fas",
+                    class: [
+                      this.sortBy == "outs" && !_vm.sortAsc
+                        ? "fa-long-arrow-alt-up"
+                        : "fa-long-arrow-alt-down"
+                    ]
+                  })
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "th",
+                {
+                  staticClass: "clickable square-wrapper nds",
+                  class: { active: this.sortBy == "nds" },
+                  on: {
+                    click: function($event) {
+                      return _vm.onSortBy("nds", false)
+                    }
+                  }
+                },
+                [
+                  _vm._v("\n                    ND "),
+                  _c("i", {
+                    staticClass: "fas",
+                    class: [
+                      this.sortBy == "nds" && !_vm.sortAsc
+                        ? "fa-long-arrow-alt-up"
+                        : "fa-long-arrow-alt-down"
+                    ]
+                  })
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "th",
+                {
+                  staticClass: "clickable square-wrapper comments",
+                  class: { active: this.sortBy == "comments" },
+                  on: {
+                    click: function($event) {
+                      return _vm.onSortBy("comments", false)
+                    }
+                  }
+                },
+                [
+                  _vm._v("\n                    Comments "),
+                  _c("i", {
+                    staticClass: "fas",
+                    class: [
+                      this.sortBy == "comments" && !_vm.sortAsc
+                        ? "fa-long-arrow-alt-up"
+                        : "fa-long-arrow-alt-down"
+                    ]
+                  })
+                ]
+              ),
+              _vm._v(" "),
+              _vm.authUser.role_id >= 3
+                ? [
+                    _c(
+                      "th",
+                      {
+                        staticClass: "clickable action",
+                        class: { active: this.sortBy == "productFinalAction" },
+                        on: {
+                          click: function($event) {
+                            return _vm.onSortBy("productFinalAction", false)
                           }
-                        ]
+                        }
                       },
-                      on: { submit: _vm.selectByCondition }
-                    })
-                  ],
-                  1
-                )
-              : _vm._e(),
-            _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable id",
-                class: { active: this.sortBy == "datasource_id" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("datasource_id", true)
-                  }
-                }
-              },
-              [
-                _vm._v("\n                Id "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "datasource_id" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _c("th", { staticClass: "image" }),
-            _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable title",
-                class: { active: this.sortBy == "title" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("title", true)
-                  }
-                }
-              },
-              [
-                _vm._v("\n               Product name "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "title" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable square-wrapper focus",
-                class: { active: this.sortBy == "focus" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("focus", false)
-                  }
-                }
-              },
-              [
-                _vm._v("\n                Focus "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "focus" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable square-wrapper",
-                class: { active: this.sortBy == "ins" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("ins", false)
-                  }
-                }
-              },
-              [
-                _vm._v("\n                In "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "ins" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable square-wrapper",
-                class: { active: this.sortBy == "outs" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("outs", false)
-                  }
-                }
-              },
-              [
-                _vm._v("\n                Out "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "outs" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable square-wrapper nds",
-                class: { active: this.sortBy == "nds" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("nds", false)
-                  }
-                }
-              },
-              [
-                _vm._v("\n                ND "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "nds" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable square-wrapper comments",
-                class: { active: this.sortBy == "comments" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("comments", false)
-                  }
-                }
-              },
-              [
-                _vm._v("\n                Comments "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "comments" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _vm.authUser.role_id >= 2
-              ? _c(
-                  "th",
-                  {
-                    staticClass: "clickable action",
-                    class: { active: this.sortBy == "productFinalAction" },
-                    on: {
-                      click: function($event) {
-                        return _vm.onSortBy("productFinalAction", false)
-                      }
-                    }
-                  },
-                  [
-                    _vm._v("\n                Action "),
-                    _c("i", {
-                      staticClass: "fas",
-                      class: [
-                        this.sortBy == "productFinalAction" && !_vm.sortAsc
-                          ? "fa-long-arrow-alt-up"
-                          : "fa-long-arrow-alt-down"
+                      [
+                        _vm._v("\n                        Final action "),
+                        _c("i", {
+                          staticClass: "fas",
+                          class: [
+                            this.sortBy == "productFinalAction" && !_vm.sortAsc
+                              ? "fa-long-arrow-alt-up"
+                              : "fa-long-arrow-alt-down"
+                          ]
+                        })
                       ]
-                    })
+                    )
                   ]
-                )
-              : _c(
-                  "th",
-                  {
-                    staticClass: "clickable action",
-                    class: { active: this.sortBy == "productFinalAction" }
-                  },
-                  [_vm._v("Action")]
-                )
-          ]),
+                : _vm.authUser.role_id >= 2
+                ? [
+                    _c(
+                      "th",
+                      {
+                        staticClass: "clickable action",
+                        class: { active: this.sortBy == "userAction" },
+                        on: {
+                          click: function($event) {
+                            return _vm.onSortBy("userAction", false)
+                          }
+                        }
+                      },
+                      [
+                        _vm._v("\n                        Team action "),
+                        _c("i", {
+                          staticClass: "fas",
+                          class: [
+                            this.sortBy == "userAction" && !_vm.sortAsc
+                              ? "fa-long-arrow-alt-up"
+                              : "fa-long-arrow-alt-down"
+                          ]
+                        })
+                      ]
+                    )
+                  ]
+                : [_c("th", { staticClass: "action" }, [_vm._v("Action")])]
+            ],
+            2
+          ),
           _vm._v(" "),
           !_vm.loading
             ? _vm._l(_vm.products, function(product, index) {
@@ -15230,10 +15666,16 @@ var render = function() {
                     key: product.id,
                     staticClass: "product-row flex-table-row",
                     class: [
+                      _vm.authUser.role_id >= 3 &&
                       product.productFinalAction != null
                         ? product.productFinalAction.action == 1
                           ? "in"
                           : "out"
+                        : _vm.authUser.role_id >= 2 &&
+                          product.userAction != null
+                        ? product.userAction.action == 0
+                          ? "out"
+                          : "in"
                         : ""
                     ]
                   },
@@ -15422,14 +15864,14 @@ var render = function() {
                           _c("i", {
                             staticClass: "far fa-comment bind-view-single"
                           }),
-                          _vm._v(_vm._s(product.comments.length))
+                          _vm._v(_vm._s(product.commentsScoped.length))
                         ]
                       )
                     ]),
                     _vm._v(" "),
                     !_vm.loadingFinalActions
                       ? [
-                          _vm.authUser.role_id >= 2
+                          _vm.authUser.role_id >= 3
                             ? [
                                 !product.productFinalAction
                                   ? [
@@ -15518,7 +15960,7 @@ var render = function() {
                                           },
                                           [
                                             _vm._v(
-                                              "\n                                In  "
+                                              "\n                                    In  "
                                             ),
                                             _c("i", {
                                               staticClass: "far fa-heart"
@@ -15547,7 +15989,150 @@ var render = function() {
                                           },
                                           [
                                             _vm._v(
-                                              "\n                                Out  "
+                                              "\n                                    Out  "
+                                            ),
+                                            _c("i", {
+                                              staticClass: "far fa-times-circle"
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass:
+                                              "view-single bind-view-single button invisible-button",
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.onViewSingle(
+                                                  product.id
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [_vm._v("View")]
+                                        )
+                                      ])
+                                    ]
+                              ]
+                            : _vm.authUser.role_id >= 2
+                            ? [
+                                !product.userAction
+                                  ? [
+                                      _c("td", { staticClass: "action" }, [
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass:
+                                              "button icon-right ghost green-hover",
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.toggleInOutUser(
+                                                  product,
+                                                  1
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _vm._v("In "),
+                                            _c("i", {
+                                              staticClass: "far fa-heart"
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass:
+                                              "button icon-right ghost red-hover",
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.toggleInOutUser(
+                                                  product,
+                                                  0
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _vm._v("Out "),
+                                            _c("i", {
+                                              staticClass: "far fa-times-circle"
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass:
+                                              "view-single bind-view-single button invisible-button",
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.onViewSingle(
+                                                  product.id
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [_vm._v("View")]
+                                        )
+                                      ])
+                                    ]
+                                  : [
+                                      _c("td", { staticClass: "action" }, [
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass: "button icon-right",
+                                            class: [
+                                              product.userAction.action == 1 ||
+                                              product.userAction.action == 2
+                                                ? "active green"
+                                                : "ghost green-hover"
+                                            ],
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.toggleInOutUser(
+                                                  product,
+                                                  1
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _vm._v(
+                                              "\n                                    In  "
+                                            ),
+                                            _c("i", {
+                                              staticClass: "far fa-heart"
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass: "button icon-right",
+                                            class: [
+                                              product.userAction.action == 0
+                                                ? "active red"
+                                                : "ghost red-hover"
+                                            ],
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.toggleInOutUser(
+                                                  product,
+                                                  0
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _vm._v(
+                                              "\n                                    Out  "
                                             ),
                                             _c("i", {
                                               staticClass: "far fa-times-circle"
@@ -15968,26 +16553,42 @@ var render = function() {
           _vm._v(" "),
           _vm._m(1),
           _vm._v(" "),
-          _c(
-            "span",
-            {
-              staticClass: "open-dropdown",
-              class: { active: _vm.showTeamDropdown },
-              on: { click: _vm.toggleTeamDropdrown }
+          _c("DropdownRadioSubmit", {
+            staticClass: "right dark",
+            attrs: {
+              title: "teams",
+              options: _vm.teams,
+              currentOptionId: _vm.theTeamId
             },
-            [
-              _vm._v("Change team"),
-              _c("i", { staticClass: "far fa-chevron-down" })
-            ]
-          ),
-          _vm._v(" "),
-          _vm.showTeamDropdown
-            ? _c("TeamInviteTeamDropdown", {
-                staticClass: "right",
-                attrs: { teams: _vm.teams, currentTeam: _vm.theTeam },
-                on: { onClose: _vm.toggleTeamDropdrown, onSubmit: _vm.setTeam }
-              })
-            : _vm._e()
+            scopedSlots: _vm._u([
+              {
+                key: "button",
+                fn: function(slotProps) {
+                  return [
+                    _c(
+                      "span",
+                      {
+                        staticClass: "open-dropdown",
+                        class: { active: !slotProps.collapsed },
+                        on: { click: slotProps.toggle }
+                      },
+                      [
+                        _vm._v("Change team"),
+                        _c("i", { staticClass: "far fa-chevron-down" })
+                      ]
+                    )
+                  ]
+                }
+              }
+            ]),
+            model: {
+              value: _vm.theTeamId,
+              callback: function($$v) {
+                _vm.theTeamId = $$v
+              },
+              expression: "theTeamId"
+            }
+          })
         ],
         1
       ),
@@ -16985,9 +17586,64 @@ var render = function() {
                   attrs: {
                     buttonText: "categories",
                     title: "Filter by category",
-                    options: _vm.categories,
-                    config: { button: "button" }
+                    options: _vm.categories
                   },
+                  scopedSlots: _vm._u(
+                    [
+                      {
+                        key: "button",
+                        fn: function(slotProps) {
+                          return [
+                            _c(
+                              "div",
+                              {
+                                staticClass:
+                                  "dropdown-button item-filter-button",
+                                on: { click: slotProps.toggle }
+                              },
+                              [
+                                _c("span", [_vm._v("Category")]),
+                                _vm._v(" "),
+                                _c("i", { staticClass: "far fa-chevron-down" }),
+                                _vm._v(" "),
+                                _vm.selectedCategoryIDs.length > 0
+                                  ? _c("span", { staticClass: "bubble" }, [
+                                      _vm._v(
+                                        "\n                            " +
+                                          _vm._s(
+                                            _vm.selectedCategoryIDs.length
+                                          ) +
+                                          "\n                        "
+                                      )
+                                    ])
+                                  : _vm._e()
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _vm.selectedCategoryIDs.length > 0
+                              ? _c(
+                                  "span",
+                                  {
+                                    staticClass:
+                                      "clear button invisible primary",
+                                    on: {
+                                      click: function($event) {
+                                        slotProps.clear()
+                                        _vm.selectedCategoryIDs = []
+                                      }
+                                    }
+                                  },
+                                  [_vm._v("Clear filter")]
+                                )
+                              : _vm._e()
+                          ]
+                        }
+                      }
+                    ],
+                    null,
+                    false,
+                    4265017803
+                  ),
                   model: {
                     value: _vm.selectedCategoryIDs,
                     callback: function($$v) {
@@ -16998,12 +17654,51 @@ var render = function() {
                 }),
                 _vm._v(" "),
                 _c("DropdownRadio", {
-                  staticClass: "right",
+                  staticClass: "dropdown-parent right",
                   attrs: {
                     options: _vm.teams,
-                    currentOptionId: _vm.teamFilterId
+                    currentOptionId: _vm.teamFilterId,
+                    defaultOption: { id: 0, title: "GLOBAL" }
                   },
-                  on: { onSubmit: _vm.filterByTeam }
+                  scopedSlots: _vm._u(
+                    [
+                      {
+                        key: "button",
+                        fn: function(slotProps) {
+                          return [
+                            _c(
+                              "div",
+                              {
+                                staticClass: "dropdown-button",
+                                on: { click: slotProps.toggle }
+                              },
+                              [
+                                _c("img", {
+                                  attrs: { src: "/assets/Path5699.svg" }
+                                }),
+                                _vm._v(" "),
+                                _c("span", [
+                                  _vm._v(_vm._s(slotProps.currentOption.title))
+                                ]),
+                                _vm._v(" "),
+                                _c("i", { staticClass: "far fa-chevron-down" })
+                              ]
+                            )
+                          ]
+                        }
+                      }
+                    ],
+                    null,
+                    false,
+                    2039768778
+                  ),
+                  model: {
+                    value: _vm.teamFilterId,
+                    callback: function($$v) {
+                      _vm.teamFilterId = $$v
+                    },
+                    expression: "teamFilterId"
+                  }
                 })
               ],
               1
@@ -17100,12 +17795,54 @@ var render = function() {
         [
           _c("DropdownCheckbox", {
             staticClass: "dropdown-parent left",
-            attrs: {
-              buttonText: "Collections",
-              title: "Filter by collection",
-              options: _vm.collections,
-              config: { button: "button" }
-            },
+            attrs: { title: "Filter by collection", options: _vm.collections },
+            scopedSlots: _vm._u([
+              {
+                key: "button",
+                fn: function(slotProps) {
+                  return [
+                    _c(
+                      "div",
+                      {
+                        staticClass: "dropdown-button item-filter-button",
+                        on: { click: slotProps.toggle }
+                      },
+                      [
+                        _c("span", [_vm._v("Collection")]),
+                        _vm._v(" "),
+                        _c("i", { staticClass: "far fa-chevron-down" }),
+                        _vm._v(" "),
+                        _vm.itemFilterIds.length > 0
+                          ? _c("span", { staticClass: "bubble" }, [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.itemFilterIds.length) +
+                                  "\n                    "
+                              )
+                            ])
+                          : _vm._e()
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _vm.itemFilterIds.length > 0
+                      ? _c(
+                          "span",
+                          {
+                            staticClass: "clear button invisible primary",
+                            on: {
+                              click: function($event) {
+                                slotProps.clear()
+                                _vm.itemFilterIds = []
+                              }
+                            }
+                          },
+                          [_vm._v("Clear filter")]
+                        )
+                      : _vm._e()
+                  ]
+                }
+              }
+            ]),
             model: {
               value: _vm.itemFilterIds,
               callback: function($$v) {
@@ -17115,15 +17852,46 @@ var render = function() {
             }
           }),
           _vm._v(" "),
-          _c(
-            "DropdownRadio",
-            {
-              staticClass: "right",
-              attrs: { options: _vm.teams, currentOptionId: _vm.teamFilterId },
-              on: { onSubmit: _vm.filterByTeam }
+          _c("DropdownRadio", {
+            staticClass: "dropdown-parent right",
+            attrs: {
+              options: _vm.teams,
+              currentOptionId: _vm.teamFilterId,
+              defaultOption: { id: 0, title: "GLOBAL" }
             },
-            [_c("span", [_vm._v("The first option")])]
-          )
+            scopedSlots: _vm._u([
+              {
+                key: "button",
+                fn: function(slotProps) {
+                  return [
+                    _c(
+                      "div",
+                      {
+                        staticClass: "dropdown-button",
+                        on: { click: slotProps.toggle }
+                      },
+                      [
+                        _c("img", { attrs: { src: "/assets/Path5699.svg" } }),
+                        _vm._v(" "),
+                        _c("span", [
+                          _vm._v(_vm._s(slotProps.currentOption.title))
+                        ]),
+                        _vm._v(" "),
+                        _c("i", { staticClass: "far fa-chevron-down" })
+                      ]
+                    )
+                  ]
+                }
+              }
+            ]),
+            model: {
+              value: _vm.teamFilterId,
+              callback: function($$v) {
+                _vm.teamFilterId = $$v
+              },
+              expression: "teamFilterId"
+            }
+          })
         ],
         1
       ),
@@ -33527,6 +34295,93 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/DropdownRadioSubmit.vue":
+/*!*********************************************************!*\
+  !*** ./resources/js/components/DropdownRadioSubmit.vue ***!
+  \*********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _DropdownRadioSubmit_vue_vue_type_template_id_3e76f407___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DropdownRadioSubmit.vue?vue&type=template&id=3e76f407& */ "./resources/js/components/DropdownRadioSubmit.vue?vue&type=template&id=3e76f407&");
+/* harmony import */ var _DropdownRadioSubmit_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DropdownRadioSubmit.vue?vue&type=script&lang=js& */ "./resources/js/components/DropdownRadioSubmit.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _DropdownRadioSubmit_vue_vue_type_style_index_0_scopes_true_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DropdownRadioSubmit.vue?vue&type=style&index=0&scopes=true&lang=scss& */ "./resources/js/components/DropdownRadioSubmit.vue?vue&type=style&index=0&scopes=true&lang=scss&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _DropdownRadioSubmit_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _DropdownRadioSubmit_vue_vue_type_template_id_3e76f407___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _DropdownRadioSubmit_vue_vue_type_template_id_3e76f407___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/DropdownRadioSubmit.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/DropdownRadioSubmit.vue?vue&type=script&lang=js&":
+/*!**********************************************************************************!*\
+  !*** ./resources/js/components/DropdownRadioSubmit.vue?vue&type=script&lang=js& ***!
+  \**********************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadioSubmit_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownRadioSubmit.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadioSubmit.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadioSubmit_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/DropdownRadioSubmit.vue?vue&type=style&index=0&scopes=true&lang=scss&":
+/*!*******************************************************************************************************!*\
+  !*** ./resources/js/components/DropdownRadioSubmit.vue?vue&type=style&index=0&scopes=true&lang=scss& ***!
+  \*******************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadioSubmit_vue_vue_type_style_index_0_scopes_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownRadioSubmit.vue?vue&type=style&index=0&scopes=true&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadioSubmit.vue?vue&type=style&index=0&scopes=true&lang=scss&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadioSubmit_vue_vue_type_style_index_0_scopes_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadioSubmit_vue_vue_type_style_index_0_scopes_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadioSubmit_vue_vue_type_style_index_0_scopes_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadioSubmit_vue_vue_type_style_index_0_scopes_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadioSubmit_vue_vue_type_style_index_0_scopes_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/DropdownRadioSubmit.vue?vue&type=template&id=3e76f407&":
+/*!****************************************************************************************!*\
+  !*** ./resources/js/components/DropdownRadioSubmit.vue?vue&type=template&id=3e76f407& ***!
+  \****************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadioSubmit_vue_vue_type_template_id_3e76f407___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownRadioSubmit.vue?vue&type=template&id=3e76f407& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadioSubmit.vue?vue&type=template&id=3e76f407&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadioSubmit_vue_vue_type_template_id_3e76f407___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadioSubmit_vue_vue_type_template_id_3e76f407___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/Loader.vue":
 /*!********************************************!*\
   !*** ./resources/js/components/Loader.vue ***!
@@ -36445,12 +37300,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 commit = _ref3.commit;
                 user_id = _ref4.user_id, productToUpdate = _ref4.productToUpdate, action_code = _ref4.action_code;
-                console.log("API updating record. Action type: " + action_code + " for user: " + user_id + " and product: " + productToUpdate);
                 commit('setAction', {
                   productToUpdate: productToUpdate,
                   user_id: user_id,
                   action_code: action_code
                 });
+                console.log(' Updating action: ' + user_id + ', ' + productToUpdate + ', ' + action_code);
                 _context2.next = 6;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/action", {
                   action_code: action_code,
@@ -36476,55 +37331,35 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       return updateAction;
     }(),
-    // Update multiple actions for the logged in user
-    updateActions: function () {
-      var _updateActions = _asyncToGenerator(
+    updateManyActions: function () {
+      var _updateManyActions = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref5, _ref6) {
-        var commit, user_id, productsToUpdate, action_code, actionsToInsert;
+        var commit, productIds, user_id, action_code;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 commit = _ref5.commit;
-                user_id = _ref6.user_id, productsToUpdate = _ref6.productsToUpdate, action_code = _ref6.action_code;
-                console.log("API updating records. Action type: " + action_code + " for user: " + user_id + " and product: " + productsToUpdate); // Construct correctly formatted action objects from the received data
-
-                actionsToInsert = [];
-                productsToUpdate.forEach(function (product) {
-                  var data = {
-                    user_id: user_id,
-                    product_id: product,
-                    action: action_code
-                  };
-                  actionsToInsert.push(data);
+                productIds = _ref6.productIds, user_id = _ref6.user_id, action_code = _ref6.action_code;
+                commit('setManyActions', {
+                  productIds: productIds,
+                  user_id: user_id,
+                  action_code: action_code
                 });
-                commit('setActions', {
-                  actionsToInsert: actionsToInsert
-                }); // console.log(actionsToInsert)
-                // let json = JSON.stringify(actionsToInsert)
-                // let post_data={json_data:json}
-                // console.log(post_data);
-
-                actionsToInsert.forEach(function (action) {
-                  var response = axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/actions", {
-                    user_id: action.user_id,
-                    product_id: action.user_id,
-                    action_code: action.action
-                  });
+                console.log('updating actions');
+                _context3.next = 6;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/many-actions", {
+                  product_ids: productIds,
+                  user_id: user_id,
+                  action_code: action_code
+                }).then(function (response) {
                   console.log(response.data);
-                }); // console.log(response.err)
-                // await axios.put(`/api/action`, {
-                //   action_code: action_code,
-                //   user_id: user_id,
-                //   product_id: productToUpdate
-                // }).then(response => {
-                //   console.log(response.data)
-                // }).catch(err =>{
-                //   console.log(err);
-                // })
+                })["catch"](function (err) {
+                  console.log(err);
+                });
 
-              case 7:
+              case 6:
               case "end":
                 return _context3.stop();
             }
@@ -36532,11 +37367,94 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee3);
       }));
 
-      function updateActions(_x5, _x6) {
-        return _updateActions.apply(this, arguments);
+      function updateManyActions(_x5, _x6) {
+        return _updateManyActions.apply(this, arguments);
       }
 
-      return updateActions;
+      return updateManyActions;
+    }(),
+    createManyActions: function () {
+      var _createManyActions = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref7, _ref8) {
+        var commit, productIds, user_id, action_code;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                commit = _ref7.commit;
+                productIds = _ref8.productIds, user_id = _ref8.user_id, action_code = _ref8.action_code;
+                commit('setManyActions', {
+                  productIds: productIds,
+                  user_id: user_id,
+                  action_code: action_code
+                });
+                console.log('creating actions');
+                _context4.next = 6;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/many-actions", {
+                  product_ids: productIds,
+                  user_id: user_id,
+                  action_code: action_code
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 6:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }));
+
+      function createManyActions(_x7, _x8) {
+        return _createManyActions.apply(this, arguments);
+      }
+
+      return createManyActions;
+    }(),
+    deleteAction: function () {
+      var _deleteAction = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5(_ref9, _ref10) {
+        var commit, productToUpdate, user_id;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                commit = _ref9.commit;
+                productToUpdate = _ref10.productToUpdate, user_id = _ref10.user_id;
+                commit('deleteAction', {
+                  productToUpdate: productToUpdate,
+                  user_id: user_id
+                });
+                _context5.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/action", {
+                  data: {
+                    user_id: user_id,
+                    product_id: productToUpdate
+                  }
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5);
+      }));
+
+      function deleteAction(_x9, _x10) {
+        return _deleteAction.apply(this, arguments);
+      }
+
+      return deleteAction;
     }()
   },
   mutations: {
@@ -36544,24 +37462,42 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     setLoading: function setLoading(state, bool) {
       state.loading = bool;
     },
-    setAction: function setAction(state, _ref7) {
-      var productToUpdate = _ref7.productToUpdate,
-          user_id = _ref7.user_id,
-          action_code = _ref7.action_code;
-      console.log('setting action');
-      _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].update({
-        where: function where(action) {
-          return action.product_id === productToUpdate && action.user_id === user_id;
-        },
+    setAction: function setAction(state, _ref11) {
+      var productToUpdate = _ref11.productToUpdate,
+          user_id = _ref11.user_id,
+          action_code = _ref11.action_code;
+      _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: {
-          action: action_code
+          action: action_code,
+          product_id: productToUpdate,
+          user_id: user_id
         }
       });
     },
-    setActions: function setActions(state, _ref8) {
-      var actionsToInsert = _ref8.actionsToInsert;
+    deleteAction: function deleteAction(state, _ref12) {
+      var productToUpdate = _ref12.productToUpdate,
+          user_id = _ref12.user_id;
+      console.log('deleting action');
+      _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (record) {
+        return record.product_id == productToUpdate && record.user_id == user_id;
+      });
+    },
+    setManyActions: function setManyActions(state, _ref13) {
+      var productIds = _ref13.productIds,
+          user_id = _ref13.user_id,
+          action_code = _ref13.action_code;
+      // Prepare the data
+      var data = [];
+      productIds.forEach(function (product) {
+        var productData = {
+          product_id: product,
+          user_id: user_id,
+          action: action_code
+        };
+        data.push(productData);
+      });
       _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
-        data: actionsToInsert
+        data: data
       });
     }
   }
@@ -37650,7 +38586,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var productToUpdate = _ref13.productToUpdate,
           phase = _ref13.phase,
           action_code = _ref13.action_code;
-      console.log('setting action');
       _models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: {
           action: action_code,
@@ -37680,7 +38615,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     deleteFinalAction: function deleteFinalAction(state, _ref15) {
       var productToUpdate = _ref15.productToUpdate,
           phase = _ref15.phase;
-      console.log('deleting final action');
       _models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (record) {
         return record.product_id == productToUpdate && record.phase == phase;
       });

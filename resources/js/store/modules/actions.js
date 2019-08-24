@@ -39,22 +39,13 @@ export default {
               if (tryCount <= 0) throw err
             }
           }
-
-          // console.log(`Getting actions from ${apiUrl}`)
-          // const response = await axios.get(`${apiUrl}`)
-          // .catch(err => {
-          //   console.log('API error in actions.js :')
-          //   console.log(err)
-          // })
-          // Action.create({ data: response.data })
-          // commit('setLoading', false)
       },
 
       // Update the action of for a product for a user
       async updateAction({commit}, {user_id, productToUpdate, action_code}) {
 
-        console.log("API updating record. Action type: " + action_code + " for user: " + user_id + " and product: " + productToUpdate)
         commit('setAction', {productToUpdate, user_id, action_code})
+        console.log(' Updating action: ' + user_id + ', ' + productToUpdate + ', ' + action_code)
 
         await axios.put(`/api/action`, {
           action_code: action_code,
@@ -68,49 +59,58 @@ export default {
 
       },
 
-      // Update multiple actions for the logged in user
-      async updateActions({commit}, {user_id, productsToUpdate, action_code}) {
+      async updateManyActions({commit}, {productIds, user_id, action_code}) {
 
-        console.log("API updating records. Action type: " + action_code + " for user: " + user_id + " and product: " + productsToUpdate)
+        commit('setManyActions', {productIds, user_id, action_code})
+        console.log('updating actions')
 
-        // Construct correctly formatted action objects from the received data
-        const actionsToInsert = []
-        productsToUpdate.forEach(product => {
-          const data = {
-            user_id: user_id,
-            product_id: product,
-            action: action_code
-          }
-          actionsToInsert.push(data)
-        })
-
-        commit('setActions', {actionsToInsert})
-
-        // console.log(actionsToInsert)
-        // let json = JSON.stringify(actionsToInsert)
-        // let post_data={json_data:json}
-        // console.log(post_data);
-        actionsToInsert.forEach(action => {
-          const response = axios.put(`/api/actions`, {
-            user_id: action.user_id,
-            product_id: action.user_id,
-            action_code: action.action
-          })
+        await axios.put(`/api/many-actions`, {
+          product_ids: productIds,
+          user_id: user_id,
+          action_code: action_code
+        }).then(response => {
           console.log(response.data)
+        }).catch(err =>{
+          console.log(err);
         })
-        // console.log(response.err)
 
-        // await axios.put(`/api/action`, {
-        //   action_code: action_code,
-        //   user_id: user_id,
-        //   product_id: productToUpdate
-        // }).then(response => {
-        //   console.log(response.data)
-        // }).catch(err =>{
-        //   console.log(err);
-        // })
+      },
 
-      }
+      async createManyActions({commit}, {productIds, user_id, action_code}) {
+
+        commit('setManyActions', {productIds, user_id, action_code})
+        console.log('creating actions')
+
+        await axios.post(`/api/many-actions`, {
+          product_ids: productIds,
+          user_id: user_id,
+          action_code: action_code
+        }).then(response => {
+          console.log(response.data)
+        }).catch(err =>{
+          console.log(err);
+        })
+
+      },
+
+      async deleteAction({commit}, {productToUpdate, user_id}) {
+
+        commit('deleteAction', {productToUpdate, user_id})
+
+        await axios.delete(`/api/action`, {
+          data: {
+            user_id: user_id,
+            product_id: productToUpdate
+          }
+        }).then(response => {
+          console.log(response.data)
+        }).catch(err =>{
+          console.log(err);
+        })
+
+      },
+
+      
 
     },
 
@@ -121,17 +121,38 @@ export default {
         state.loading = bool
       },
       setAction: (state, {productToUpdate, user_id, action_code} ) => {
-        console.log('setting action')
-        Action.update({
-          where: (action) => {
-            return (action.product_id === productToUpdate && action.user_id === user_id)
-          },
-          data: {action: action_code}
+        Action.insert({
+          data: {
+              action: action_code,
+              product_id: productToUpdate,
+              user_id: user_id,
+            }
         })
       },
-      setActions: (state, {actionsToInsert} ) => {
+      deleteAction: (state, {productToUpdate, user_id} ) => {
+        console.log('deleting action')
+
+        Action.delete( (record) => {
+          return record.product_id == productToUpdate && record.user_id == user_id
+        } )
+
+      },
+      setManyActions: (state, {productIds, user_id, action_code} ) => {
+
+        // Prepare the data
+        let data = []
+        
+        productIds.forEach(product => {
+          const productData = {
+            product_id: product,
+            user_id: user_id,
+            action: action_code 
+          }
+          data.push(productData)
+        })
+
         Action.insert({
-          data: actionsToInsert
+          data: data
         })
       },
         
