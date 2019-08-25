@@ -7417,6 +7417,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'dropdown',
   data: function data() {
@@ -7431,7 +7433,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   updated: function updated() {
     // Set the height of the component
-    var offset = 0;
+    var offset = 4;
     var el = this.$refs.dropdown;
     var parent = el.closest('.dropdown-parent');
     if (parent != null) el.style.cssText = "top: ".concat(parent.getBoundingClientRect().height + offset, "px; max-height: ").concat(el.scrollHeight, "px;");else el.style.cssText = "max-height: ".concat(el.scrollHeight, "px;");
@@ -7449,6 +7451,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
 //
 //
 //
@@ -7516,7 +7520,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   updated: function updated() {
     // Set the height of the component
-    var offset = 0;
+    var offset = 4;
     var el = this.$refs.dropdown;
     var parent = el.closest('.dropdown-parent');
     if (parent != null) el.style.cssText = "top: ".concat(parent.getBoundingClientRect().height + offset, "px; max-height: ").concat(el.scrollHeight, "px;");else el.style.cssText = "max-height: ".concat(el.scrollHeight, "px;");
@@ -7535,6 +7539,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
 //
 //
 //
@@ -7599,7 +7605,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   updated: function updated() {
     // Set the height of the component
-    var offset = 0;
+    var offset = 4;
     var el = this.$refs.dropdown;
     var parent = el.closest('.dropdown-wrapper');
     if (parent != null) el.style.cssText = "top: ".concat(parent.getBoundingClientRect().height + offset, "px; max-height: ").concat(el.scrollHeight, "px;");else el.style.cssText = "max-height: ".concat(el.scrollHeight, "px;");
@@ -13958,26 +13964,28 @@ var render = function() {
           class: { collapsed: _vm.collapsed }
         },
         [
-          _c(
-            "div",
-            { staticClass: "header" },
-            [_vm._t("header", null, { toggle: _vm.toggle })],
-            2
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "body" },
-            [_vm._t("body", null, { toggle: _vm.toggle })],
-            2
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "footer" },
-            [_vm._t("footer", null, { toggle: _vm.toggle })],
-            2
-          )
+          _c("div", { staticClass: "inner" }, [
+            _c(
+              "div",
+              { staticClass: "header" },
+              [_vm._t("header", null, { toggle: _vm.toggle })],
+              2
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "body" },
+              [_vm._t("body", null, { toggle: _vm.toggle })],
+              2
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "footer" },
+              [_vm._t("footer", null, { toggle: _vm.toggle })],
+              2
+            )
+          ])
         ]
       )
     ],
@@ -14029,83 +14037,85 @@ var render = function() {
               class: { collapsed: _vm.collapsed }
             },
             [
-              _c("div", { staticClass: "header" }, [
-                _c("span", [_vm._v(_vm._s(_vm.title))])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "body" }, [
-                _c(
-                  "div",
-                  { staticClass: "checkbox-buttons" },
-                  _vm._l(_vm.options, function(option, index) {
-                    return _c(
-                      "label",
-                      {
-                        key: index,
-                        staticClass: "checkbox",
-                        class: {
-                          active: _vm.selected.find(function(x) {
-                            return x == option.id
-                          })
-                        }
-                      },
-                      [
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.selected,
-                              expression: "selected"
-                            }
-                          ],
-                          attrs: { type: "checkbox" },
-                          domProps: {
-                            value: option.id,
-                            checked: Array.isArray(_vm.selected)
-                              ? _vm._i(_vm.selected, option.id) > -1
-                              : _vm.selected
-                          },
-                          on: {
-                            change: [
-                              function($event) {
-                                var $$a = _vm.selected,
-                                  $$el = $event.target,
-                                  $$c = $$el.checked ? true : false
-                                if (Array.isArray($$a)) {
-                                  var $$v = option.id,
-                                    $$i = _vm._i($$a, $$v)
-                                  if ($$el.checked) {
-                                    $$i < 0 &&
-                                      (_vm.selected = $$a.concat([$$v]))
-                                  } else {
-                                    $$i > -1 &&
-                                      (_vm.selected = $$a
-                                        .slice(0, $$i)
-                                        .concat($$a.slice($$i + 1)))
-                                  }
-                                } else {
-                                  _vm.selected = $$c
-                                }
-                              },
-                              function($event) {
-                                return _vm.submit(option.id)
-                              }
-                            ]
+              _c("div", { staticClass: "inner" }, [
+                _c("div", { staticClass: "header" }, [
+                  _c("span", [_vm._v(_vm._s(_vm.title))])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "body" }, [
+                  _c(
+                    "div",
+                    { staticClass: "checkbox-buttons" },
+                    _vm._l(_vm.options, function(option, index) {
+                      return _c(
+                        "label",
+                        {
+                          key: index,
+                          staticClass: "checkbox",
+                          class: {
+                            active: _vm.selected.find(function(x) {
+                              return x == option.id
+                            })
                           }
-                        }),
-                        _vm._v(" "),
-                        _c("span", { staticClass: "checkmark" }),
-                        _vm._v(
-                          "\n                    " +
-                            _vm._s(option.title) +
-                            "\n                "
-                        )
-                      ]
-                    )
-                  }),
-                  0
-                )
+                        },
+                        [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.selected,
+                                expression: "selected"
+                              }
+                            ],
+                            attrs: { type: "checkbox" },
+                            domProps: {
+                              value: option.id,
+                              checked: Array.isArray(_vm.selected)
+                                ? _vm._i(_vm.selected, option.id) > -1
+                                : _vm.selected
+                            },
+                            on: {
+                              change: [
+                                function($event) {
+                                  var $$a = _vm.selected,
+                                    $$el = $event.target,
+                                    $$c = $$el.checked ? true : false
+                                  if (Array.isArray($$a)) {
+                                    var $$v = option.id,
+                                      $$i = _vm._i($$a, $$v)
+                                    if ($$el.checked) {
+                                      $$i < 0 &&
+                                        (_vm.selected = $$a.concat([$$v]))
+                                    } else {
+                                      $$i > -1 &&
+                                        (_vm.selected = $$a
+                                          .slice(0, $$i)
+                                          .concat($$a.slice($$i + 1)))
+                                    }
+                                  } else {
+                                    _vm.selected = $$c
+                                  }
+                                },
+                                function($event) {
+                                  return _vm.submit(option.id)
+                                }
+                              ]
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("span", { staticClass: "checkmark" }),
+                          _vm._v(
+                            "\n                        " +
+                              _vm._s(option.title) +
+                              "\n                    "
+                          )
+                        ]
+                      )
+                    }),
+                    0
+                  )
+                ])
               ])
             ]
           )
@@ -14163,67 +14173,69 @@ var render = function() {
               class: { collapsed: _vm.collapsed }
             },
             [
-              _c("div", { staticClass: "header" }, [
-                _c("span", [_vm._v(_vm._s(_vm.currentOption.title))])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "body" }, [
-                _c(
-                  "div",
-                  { staticClass: "radio-buttons" },
-                  [
-                    !_vm.options.find(function(x) {
-                      return x.id == 0
-                    }) && _vm.defaultOption != null
-                      ? _c(
+              _c("div", { staticClass: "inner" }, [
+                _c("div", { staticClass: "header" }, [
+                  _c("span", [_vm._v(_vm._s(_vm.currentOption.title))])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "body" }, [
+                  _c(
+                    "div",
+                    { staticClass: "radio-buttons" },
+                    [
+                      !_vm.options.find(function(x) {
+                        return x.id == 0
+                      }) && _vm.defaultOption != null
+                        ? _c(
+                            "label",
+                            {
+                              staticClass: "radiobox",
+                              class: {
+                                active:
+                                  _vm.currentOptionId == _vm.defaultOption.id
+                              },
+                              on: {
+                                click: function($event) {
+                                  return _vm.submit(_vm.defaultOption.id)
+                                }
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.defaultOption.title) +
+                                  "\n                    "
+                              )
+                            ]
+                          )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _vm._l(_vm.options, function(option, index) {
+                        return _c(
                           "label",
                           {
+                            key: index,
                             staticClass: "radiobox",
-                            class: {
-                              active:
-                                _vm.currentOptionId == _vm.defaultOption.id
-                            },
+                            class: { active: option.id == _vm.currentOptionId },
                             on: {
                               click: function($event) {
-                                return _vm.submit(_vm.defaultOption.id)
+                                return _vm.submit(option.id)
                               }
                             }
                           },
                           [
                             _vm._v(
-                              "\n                    " +
-                                _vm._s(_vm.defaultOption.title) +
-                                "\n                "
+                              "\n                        " +
+                                _vm._s(option.title) +
+                                "\n                    "
                             )
                           ]
                         )
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _vm._l(_vm.options, function(option, index) {
-                      return _c(
-                        "label",
-                        {
-                          key: index,
-                          staticClass: "radiobox",
-                          class: { active: option.id == _vm.currentOptionId },
-                          on: {
-                            click: function($event) {
-                              return _vm.submit(option.id)
-                            }
-                          }
-                        },
-                        [
-                          _vm._v(
-                            "\n                    " +
-                              _vm._s(option.title) +
-                              "\n                "
-                          )
-                        ]
-                      )
-                    })
-                  ],
-                  2
-                )
+                      })
+                    ],
+                    2
+                  )
+                ])
               ])
             ]
           )

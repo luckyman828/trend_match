@@ -6,14 +6,16 @@
         </slot>
 
         <div class="dropdown" :class="{collapsed: collapsed}" ref="dropdown">
-            <div class="header">
-                <slot name="header" :toggle="toggle"></slot>
-            </div>
-            <div class="body">
-                <slot name="body" :toggle="toggle"></slot>
-            </div>
-            <div class="footer">
-                <slot name="footer" :toggle="toggle"></slot>
+            <div class="inner">
+                <div class="header">
+                    <slot name="header" :toggle="toggle"></slot>
+                </div>
+                <div class="body">
+                    <slot name="body" :toggle="toggle"></slot>
+                </div>
+                <div class="footer">
+                    <slot name="footer" :toggle="toggle"></slot>
+                </div>
             </div>
         </div>
 
@@ -33,7 +35,7 @@ export default {
     },
     updated() {
         // Set the height of the component
-        const offset = 0
+        const offset = 4
         const el = this.$refs.dropdown
         const parent = el.closest('.dropdown-parent')
         if (parent != null)
@@ -46,5 +48,20 @@ export default {
 <style scopes lang="scss">
 @import '~@/_variables.scss';
 
+    // .dropdown::before {
+    //     content: "";
+    //     height: 12px;
+    //     width: 12px;
+    //     display: block;
+    //     background: blue;
+    //     left: 20px;
+    //     border: solid 2px pink;
+    //     border-right: 0;
+    //     border-bottom: 0;
+    //     top: -7px;
+    //     z-index: 1;
+    //     position: absolute;
+    //     transform: rotateZ(45deg);
+    // }
 
 </style>

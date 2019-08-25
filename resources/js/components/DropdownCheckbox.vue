@@ -6,16 +6,18 @@
         </slot>
 
         <div class="dropdown checkbox-dropdown" :class="{collapsed: collapsed}" ref="dropdown">
-            <div class="header">
-                <span>{{title}}</span>
-            </div>
-            <div class="body">
-                <div class="checkbox-buttons">
-                    <label v-for="(option, index) in options" :key="index" :class="{active: selected.find(x => x == option.id)}" class="checkbox">
-                        <input type="checkbox" :value="option.id" v-model="selected" @change="submit(option.id)">
-                        <span class="checkmark"></span>
-                        {{option.title}}
-                    </label>
+            <div class="inner">
+                <div class="header">
+                    <span>{{title}}</span>
+                </div>
+                <div class="body">
+                    <div class="checkbox-buttons">
+                        <label v-for="(option, index) in options" :key="index" :class="{active: selected.find(x => x == option.id)}" class="checkbox">
+                            <input type="checkbox" :value="option.id" v-model="selected" @change="submit(option.id)">
+                            <span class="checkmark"></span>
+                            {{option.title}}
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -67,7 +69,7 @@ export default {
     },
     updated() {
         // Set the height of the component
-        const offset = 0
+        const offset = 4
         const el = this.$refs.dropdown
         const parent = el.closest('.dropdown-parent')
         if (parent != null)

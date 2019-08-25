@@ -6,17 +6,19 @@
         </slot>
 
         <div class="dropdown radio-dropdown" :class="{collapsed: collapsed}" ref="dropdown">
-            <div class="header">
-                <span>{{currentOption.title}}</span>
-            </div>
-            <div class="body">
-                <div class="radio-buttons">
-                    <label v-if="!options.find(x => x.id == 0) && defaultOption != null" @click="submit(defaultOption.id)" :class="{active: currentOptionId == defaultOption.id}" class="radiobox">
-                        {{defaultOption.title}}
-                    </label>
-                    <label v-for="(option, index) in options" :key="index" @click="submit(option.id)" :class="{active: option.id == currentOptionId}" class="radiobox">
-                        {{option.title}}
-                    </label>
+            <div class="inner">
+                <div class="header">
+                    <span>{{currentOption.title}}</span>
+                </div>
+                <div class="body">
+                    <div class="radio-buttons">
+                        <label v-if="!options.find(x => x.id == 0) && defaultOption != null" @click="submit(defaultOption.id)" :class="{active: currentOptionId == defaultOption.id}" class="radiobox">
+                            {{defaultOption.title}}
+                        </label>
+                        <label v-for="(option, index) in options" :key="index" @click="submit(option.id)" :class="{active: option.id == currentOptionId}" class="radiobox">
+                            {{option.title}}
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -60,7 +62,7 @@ export default {
     },
     updated() {
         // Set the height of the component
-        const offset = 0
+        const offset = 4
         const el = this.$refs.dropdown
         const parent = el.closest('.dropdown-wrapper')
         if (parent != null)
