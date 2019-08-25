@@ -1,13 +1,9 @@
 <template>
     <div class="dropdown-wrapper" v-if="currentOption != null">
 
-        <!-- <div class="dropdown-button" @click="collapsed = !collapsed">
-              <img src="/assets/Path5699.svg">
-              <span>{{currentOption.title}}</span>
-              <i class="far fa-chevron-down"></i>
-        </div> -->
-
-        <slot name="button" :toggle="toggle" :collapsed="collapsed" :currentOption="currentOption"></slot>
+        <slot name="button" :toggle="toggle" :collapsed="collapsed" :currentOption="currentOption">
+            <span class="button" @click="toggle">Open dropdown</span>
+        </slot>
 
         <div class="dropdown radio-dropdown" :class="{collapsed: collapsed}" ref="dropdown">
             <div class="header">

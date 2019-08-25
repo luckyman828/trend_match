@@ -1,7 +1,9 @@
 <template>
     <div class="dropdown-wrapper" v-if="options != null">
 
-        <slot name="button" :toggle="toggle" :clear="clear"></slot>
+        <slot name="button" :toggle="toggle" :clear="clear">
+            <span class="button" @click="toggle">Open dropdown</span>
+        </slot>
 
         <div class="dropdown checkbox-dropdown" :class="{collapsed: collapsed}" ref="dropdown">
             <div class="header">

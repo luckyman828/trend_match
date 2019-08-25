@@ -7,16 +7,27 @@
           <label class="team dropdown-parent">
             <input type="text" name="team" :value="theTeam.title" disabled>
             <span class="square"><i class="fas fa-check"></i></span>
-            <!-- <span @click="toggleTeamDropdrown" class="open-dropdown" :class="{active: showTeamDropdown}">Change team<i class="far fa-chevron-down"></i></span> -->
-            <!-- <TeamInviteTeamDropdown class="right" v-if="showTeamDropdown" :teams="teams" :currentTeam="theTeam" @onClose="toggleTeamDropdrown" @onSubmit="setTeam"> -->
 
-            <!-- </TeamInviteTeamDropdown> -->
-
-            <DropdownRadioSubmit class="right dark" :title="'teams'" :options="teams" :currentOptionId="theTeamId" v-model="theTeamId">
+            <Dropdown class="right dark">
                 <template v-slot:button="slotProps">
                     <span @click="slotProps.toggle" class="open-dropdown" :class="{active: !slotProps.collapsed}">Change team<i class="far fa-chevron-down"></i></span>
                 </template>
-            </DropdownRadioSubmit>
+                <template v-slot:header="slotProps">
+                    <span>{{teams.length}} teams</span>
+                    <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
+                </template>
+                <template v-slot:body>
+                    <RadioButtons :options="teams" :currentOptionId="theTeamId" ref="teamRadio" v-model="theTeamId"/>
+                </template>
+                <template v-slot:footer="slotProps">
+                    <div class="grid-2">
+                        <span class="button green" @click="$refs.teamRadio.submit(); slotProps.toggle()">Save</span>
+                        <span class="button invisible" @click="slotProps.toggle">Cancel</span>
+                    </div>
+                </template>
+            </Dropdown>
+
+
           </label>
           <label>
               Email
@@ -33,8 +44,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import TeamInviteTeamDropdown from './TeamInviteTeamDropdown'
-import DropdownRadioSubmit from './DropdownRadioSubmit'
+import Dropdown from './Dropdown'
+import RadioButtons from './RadioButtons'
 
 export default {
     name: 'teamInviteModal',
@@ -45,8 +56,8 @@ export default {
         'teams',
     ],
     components: {
-        TeamInviteTeamDropdown,
-        DropdownRadioSubmit
+        Dropdown,
+        RadioButtons,
     },
     data: function () { return {
         newUser: {
@@ -76,12 +87,12 @@ export default {
             this.inviteUserToTeam({user: this.newUser, team: this.theTeam, authUser: this.authUser})
             this.closeModal()
         },
-        toggleTeamDropdrown() {
-            this.showTeamDropdown = !this.showTeamDropdown;
-        },
-        setTeam(id) {
-            this.theTeamId = this.teams.find(x => x.id == id)
-        }
+        // toggleTeamDropdrown() {
+        //     this.showTeamDropdown = !this.showTeamDropdown;
+        // },
+        // setTeam(id) {
+        //     this.theTeamId = this.teams.find(x => x.id == id)
+        // },
     }
 }
 </script>

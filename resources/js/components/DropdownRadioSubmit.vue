@@ -1,7 +1,9 @@
 <template>
     <div class="dropdown-wrapper" v-if="options != null">
 
-        <slot name="button" :toggle="toggle" :collapsed="collapsed"></slot>
+        <slot name="button" :toggle="toggle" :collapsed="collapsed">
+            <span class="button" @click="toggle">Open dropdown</span>
+        </slot>
 
         <div class="team-dropdown dropdown" :class="{collapsed: collapsed}" ref="dropdown">
             <div class="header">
@@ -30,7 +32,7 @@
 
 <script>
 export default {
-    name: 'dropdown',
+    name: 'dropdownRadioSubmit',
     props: [
         'title',
         'options',
