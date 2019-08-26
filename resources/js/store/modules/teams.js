@@ -15,40 +15,33 @@ export default {
     },
   
     actions: {
-      async fetchTeams({commit}, {collection_id}) {
+      async fetchTeams({commit}, workspace_id) {
           // Set the state to loading
-          commit('setLoading', true)
-          if (collection_id == null) {
-            collection_id = 1234
-          }
+          if (workspace_id) {
 
-          const apiUrl = `/api/collection/${collection_id}/teams`
-
-          let tryCount = 3
-          let succes = false
-          while(tryCount-- > 0 && !succes) {
-            try {
-              const response = await axios.get(`${apiUrl}`)
-              Team.create({ data: response.data })
-              commit('setLoading', false)
-              succes = true
+            commit('setLoading', true)
+  
+            const apiUrl = `/api/workspace/${workspace_id}/teams`
+            console.log('fetching teams from: ' + apiUrl)
+  
+            let tryCount = 3
+            let succes = false
+            while(tryCount-- > 0 && !succes) {
+              try {
+                const response = await axios.get(`${apiUrl}`)
+                Team.create({ data: response.data })
+                commit('setLoading', false)
+                succes = true
+              }
+              catch (err) {
+                console.log('API error in teams.js :')
+                console.log(err)
+                console.log(`Trying to fetch again. TryCount = ${tryCount}`)
+                if (tryCount <= 0) throw err
+              }
             }
-            catch (err) {
-              console.log('API error in teams.js :')
-              console.log(err)
-              console.log(`Trying to fetch again. TryCount = ${tryCount}`)
-              if (tryCount <= 0) throw err
-            }
-          }
 
-          // console.log(`Getting users from ${apiUrl}`)
-          // const response = await axios.get(`${apiUrl}`) //Get the data from the api
-          // .catch(err => {
-          //   console.log('API error in teams.js :')
-          //   console.log(err)
-          // })
-          // Team.create({ data: response.data })
-          // commit('setLoading', false)
+          }
       }
     },
 

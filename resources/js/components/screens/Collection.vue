@@ -41,6 +41,7 @@ import Team from '../../store/models/Team'
 import User from '../../store/models/User'
 import UserTeam from '../../store/models/UserTeam';
 import AuthUser from '../../store/models/AuthUser';
+import App from '../../App.vue';
 
 export default {
     name: 'collection',
@@ -67,7 +68,11 @@ export default {
         },
         authUser() {
             // return this.$store.getters.authUser;
-            return AuthUser.query().with('teams').first()
+            return AuthUser.query().with('teams').with('workspaces').first()
+        },
+        currentWorkspaceId() {
+            if (this.authUser.workspaces != null)
+                return this.authUser.workspaces[0].id
         },
         teams() {
             return Team.query().with('users').all()
@@ -86,6 +91,8 @@ export default {
         ...mapActions('entities/teams', ['fetchTeams']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/userTeams', ['fetchUserTeams']),
+        ...mapActions('entities/workspaces', ['fetchWorkspaces']),
+        ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
         onSelect(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
             const selected = this.selected
@@ -101,31 +108,33 @@ export default {
         async fetchInitialData() {
             // Get user
             console.log('Getting initial data')
-            await this.getAuthUser()
+            await Promise.all([
+                this.getAuthUser(),
+                this.fetchWorkspaceUsers(),
+                this.fetchWorkspaces(),
+            ]) 
         },
     },
     created() {
         this.fetchInitialData()
         // Fetch data based on the Auth User
         .then( async response => {
-            // Only get data for the users assigned room
-            const room_id = this.authUser.assigned_room_id
-            if (room_id != null) {
-                await ( 
-                    this.fetchTeams(1234),
-                    this.fetchUserTeams()
+            // Only get data for the current workspace
+            if (this.currentWorkspaceId) {
+                await (
+                    this.fetchTeams(this.currentWorkspaceId),
+                    this.fetchUserTeams(this.currentWorkspaceId)
                 )
                 if (this.authUser.role_id >= 3)
                     this.teamFilterId = 0
                 else if (this.authUser.teams.length > 0)
                     this.teamFilterId = this.authUser.teams[0].id
-                this.fetchCollections(room_id)
-                this.fetchUsers(1234)
+                this.fetchCollections(this.currentWorkspaceId)
+                this.fetchUsers(this.currentWorkspaceId)
             } else {
                 this.loadingOverwrite = true
             }
         })
-        
     },
 
 }

@@ -16,11 +16,11 @@ export default {
     },
   
     actions: {
-      async fetchTeamInvites ({commit}) {
+      async fetchTeamInvites ({commit}, workspace_id) {
           // Set the state to loading
           commit('setLoading', true)
           
-          const apiUrl = `/api/team-invites`
+          const apiUrl = `/api/workspace/${workspace_id}/team-invites`
 
           let tryCount = 3
           let succes = false

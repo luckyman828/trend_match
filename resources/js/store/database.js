@@ -27,6 +27,10 @@ import AuthUser from './models/AuthUser';
 import authUser from './modules/authUser';
 import Role from './models/Role';
 import roles from './modules/roles';
+import Workspace from './models/Workspace';
+import workspaces from './modules/workspaces';
+import WorkspaceUser from './models/WorkspaceUser';
+import workspaceUsers from './modules/workspaceUsers';
 
 const database = new Database()
 
@@ -44,5 +48,7 @@ database.register(Category, categories)
 database.register(TeamInvite, teamInvites)
 database.register(AuthUser, authUser)
 database.register(Role, roles)
+database.register(Workspace, workspaces)
+database.register(WorkspaceUser, workspaceUsers)
 
 export default database

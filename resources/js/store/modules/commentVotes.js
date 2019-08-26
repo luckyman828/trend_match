@@ -15,11 +15,11 @@ export default {
     },
   
     actions: {
-      async fetchCommentVotes({commit}, {collection_id}) {
+      async fetchCommentVotes({commit}, file_id) {
           // Set the state to loading
           commit('setLoading', true)
           
-          const apiUrl = `/api/collection/${collection_id}/comment-votes`
+          const apiUrl = `/api/file/${file_id}/comment-votes`
 
           let tryCount = 3
           let succes = false

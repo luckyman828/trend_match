@@ -4,9 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Team extends Model
+class Workspace extends Model
 {
-    // public $incrementing = false;
-    // protected $keyType = 'number';
+    public $incrementing = false;
+    protected $keyType = 'string';
     public $timestamps = false;
 }

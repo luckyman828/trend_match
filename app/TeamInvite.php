@@ -18,4 +18,14 @@ class TeamInvite extends Model
      * @var string
      */
     const UPDATED_AT = null;
+
+    // public function workspace()
+    // {
+    //     return $this->hasOneThrough(Workspace::class, Team::class, 'workspace_id', 'team_id');
+    // }
+    public function team()
+    {
+        return $this->belongsTo(Team::class, 'team_id');
+    }
+
 }

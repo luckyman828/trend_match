@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Str;
+// use App\Workspace;
 
 class User extends Authenticatable
 {
@@ -51,4 +52,9 @@ class User extends Authenticatable
             $user->{$user->getKeyName()} = (string) Str::uuid();
         });
     }
+
+    public function workspaces()
+    {
+        return $this->belongsToMany(Workspace::class, 'workspace_users');
+    } 
 }

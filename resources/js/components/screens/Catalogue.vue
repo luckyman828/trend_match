@@ -83,11 +83,11 @@ export default{
         ...mapGetters('entities/actions', ['loadingActions']),
         ...mapGetters('entities/comments', ['loadingComments']),
         ...mapGetters('entities/collections', ['loadingCollections']),
-        collectionId () {
+        currentFileId () {
             return this.$route.params.catalogueId
         },
         collection() {
-            return Collection.find(this.collectionId)
+            return Collection.find(this.currentFileId)
         },
         startDate () {
             if (this.collection.start_time != null) {
@@ -438,7 +438,7 @@ export default{
         },
         authUser() {
             // return this.$store.getters.authUser;
-            return AuthUser.query().with('teams').first()
+            return AuthUser.query().with('teams').with('workspaces').first()
         },
         // userTeams() {
         //     return UserTeam.query().with('team').with('user').all()
@@ -471,6 +471,10 @@ export default{
             })
             return teams
         },
+        currentWorkspaceId() {
+            if (this.authUser.workspaces != null)
+                return this.authUser.workspaces[0].id
+        },
     },
     methods: {
         ...mapActions('entities/authUser', ['getAuthUser']),
@@ -482,12 +486,11 @@ export default{
         ...mapActions('entities/actions', ['updateAction']),
         ...mapActions('entities/teams', ['fetchTeams']),
         ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
-        // ...mapActions('entities/productFinalActions', ['fetchFinalActions']),
-        // ...mapActions('entities/productFinalActions', ['updateFinalAction']),
         ...mapActions('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']),
         ...mapActions('entities/categories', ['fetchCategories']),
         ...mapActions('entities/userTeams', ['fetchUserTeams']),
-        // ...mapActions('entities/actions', ['updateActions']),
+        ...mapActions('entities/workspaces', ['fetchWorkspaces']),
+        ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
         setSingleProduct(index) {
             this.singleProductID = index
         },
@@ -575,21 +578,6 @@ export default{
             // Reset the selection
             this.clearSelectedProducts()
         },
-        // toggleInOut(product, actionType) {
-        //     if (product.productFinalAction != null) {
-        //         // If the product has a final action
-        //         if(product.productFinalAction.action == actionType) {
-        //             // If the products final action is the same as the requested
-        //             this.deleteFinalAction({phase: this.collection.phase, productToUpdate: product.id})
-        //         } else {
-        //             // Update action
-        //             this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
-        //         }
-        //     } else {
-        //         // Create action
-        //         this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
-        //     }
-        // },
         onSortBy(key, method) {
             if (this.sortBy !== key) {
                 this.sortAsc = method
@@ -602,35 +590,41 @@ export default{
             this.teamFilterId = id
         },
         async fetchInitialData() {
-            // Get catalogue id
-            this.catalogueId = this.$route.params.catalogueId
-            
             // Get user
-            await this.getAuthUser()
-            await this.fetchTeams({collection_id: this.collectionId})
-            await this.fetchUserTeams()
-            if (this.authUser.role_id >= 3)
-                this.teamFilterId = 0
-            else if (this.authUser.teams.length > 0)
-                this.teamFilterId = this.authUser.teams[0].id
+            console.log('Getting initial data')
+            await Promise.all([
+                this.getAuthUser(),
+                this.fetchWorkspaceUsers(),
+                this.fetchWorkspaces(),
+            ])
         },
-        testFunc() {
-            console.log('test')
-        }
     },
     created() {
         this.fetchInitialData()
-        // Fetch all our data
-        this.fetchProducts({collection_id: this.collectionId})
-        this.fetchActions({collection_id: this.collectionId})
-        this.fetchUsers({collection_id: this.collectionId})
-        this.fetchComments({collection_id: this.collectionId})
-        this.fetchCollections()
-        this.fetchFinalActions({collection_id: this.collectionId})
-        // this.fetchTeams({collection_id: this.collectionId})
-        this.fetchCommentVotes({collection_id: this.collectionId})
-        this.fetchCategories()
-        // this.fetchUserTeams()
+        // Fetch data based on the Auth User
+        .then(response => {
+            // Only get data for the current workspace
+            const room_id = this.authUser.assigned_room_id
+            if (this.currentWorkspaceId) {
+
+                this.fetchTeams(this.currentWorkspaceId)
+                this.fetchUserTeams(this.currentWorkspaceId)
+                if (this.authUser.teams.length > 0)
+                    this.teamFilterId = this.authUser.teams[0].id
+
+                this.fetchUsers(this.currentWorkspaceId)
+                this.fetchCollections(this.currentWorkspaceId)
+
+                this.fetchProducts(this.currentFileId)
+                this.fetchActions(this.currentFileId)
+                this.fetchComments(this.currentFileId)
+                this.fetchFinalActions(this.currentFileId)
+                this.fetchCommentVotes(this.currentFileId)
+                this.fetchCategories(this.currentFileId)
+            } else {
+                this.loadingOverwrite = true
+            }
+        })
     },
     mounted() {
 

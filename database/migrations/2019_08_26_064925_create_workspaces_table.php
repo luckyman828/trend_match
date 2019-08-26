@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class TeamInvitesTable extends Migration
+class CreateWorkspacesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class TeamInvitesTable extends Migration
      */
     public function up()
     {
-        Schema::create('team_invites', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->integer('team_id');
+        Schema::create('workspaces', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('name', 64);
         });
     }
 
@@ -26,6 +26,6 @@ class TeamInvitesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('team_invites');
+        Schema::dropIfExists('workspaces');
     }
 }

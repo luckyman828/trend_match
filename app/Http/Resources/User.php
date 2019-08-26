@@ -24,6 +24,7 @@ class User extends JsonResource
             'team_ids' => $this->team_ids,
             'role_id' => $this->role_id,
             'assigned_room_id' => $this->assigned_room_id,
+            // 'workspaces' => $this->workspaces
         ];
     }
 }

@@ -9472,11 +9472,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/collections', ['loadingCollections']), {
-    collectionId: function collectionId() {
+    currentFileId: function currentFileId() {
       return this.$route.params.catalogueId;
     },
     collection: function collection() {
-      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_14__["default"].find(this.collectionId);
+      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_14__["default"].find(this.currentFileId);
     },
     startDate: function startDate() {
       if (this.collection.start_time != null) {
@@ -9783,7 +9783,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     authUser: function authUser() {
       // return this.$store.getters.authUser;
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_19__["default"].query()["with"]('teams').first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_19__["default"].query()["with"]('teams')["with"]('workspaces').first();
     },
     // userTeams() {
     //     return UserTeam.query().with('team').with('user').all()
@@ -9817,10 +9817,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
       });
       return teams;
+    },
+    currentWorkspaceId: function currentWorkspaceId() {
+      if (this.authUser.workspaces != null) return this.authUser.workspaces[0].id;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {
-    // ...mapActions('entities/actions', ['updateActions']),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {
     setSingleProduct: function setSingleProduct(index) {
       this.singleProductID = index;
     },
@@ -9921,21 +9923,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       this.clearSelectedProducts();
     },
-    // toggleInOut(product, actionType) {
-    //     if (product.productFinalAction != null) {
-    //         // If the product has a final action
-    //         if(product.productFinalAction.action == actionType) {
-    //             // If the products final action is the same as the requested
-    //             this.deleteFinalAction({phase: this.collection.phase, productToUpdate: product.id})
-    //         } else {
-    //             // Update action
-    //             this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
-    //         }
-    //     } else {
-    //         // Create action
-    //         this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
-    //     }
-    // },
     onSortBy: function onSortBy(key, method) {
       if (this.sortBy !== key) {
         this.sortAsc = method;
@@ -9955,26 +9942,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                // Get catalogue id
-                this.catalogueId = this.$route.params.catalogueId; // Get user
-
+                // Get user
+                console.log('Getting initial data');
                 _context.next = 3;
-                return this.getAuthUser();
+                return Promise.all([this.getAuthUser(), this.fetchWorkspaceUsers(), this.fetchWorkspaces()]);
 
               case 3:
-                _context.next = 5;
-                return this.fetchTeams({
-                  collection_id: this.collectionId
-                });
-
-              case 5:
-                _context.next = 7;
-                return this.fetchUserTeams();
-
-              case 7:
-                if (this.authUser.role_id >= 3) this.teamFilterId = 0;else if (this.authUser.teams.length > 0) this.teamFilterId = this.authUser.teams[0].id;
-
-              case 8:
               case "end":
                 return _context.stop();
             }
@@ -9987,35 +9960,42 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
 
       return fetchInitialData;
-    }(),
-    testFunc: function testFunc() {
-      console.log('test');
-    }
+    }()
   }),
   created: function created() {
-    this.fetchInitialData(); // Fetch all our data
+    var _this7 = this;
 
-    this.fetchProducts({
-      collection_id: this.collectionId
-    });
-    this.fetchActions({
-      collection_id: this.collectionId
-    });
-    this.fetchUsers({
-      collection_id: this.collectionId
-    });
-    this.fetchComments({
-      collection_id: this.collectionId
-    });
-    this.fetchCollections();
-    this.fetchFinalActions({
-      collection_id: this.collectionId
-    }); // this.fetchTeams({collection_id: this.collectionId})
+    this.fetchInitialData() // Fetch data based on the Auth User
+    .then(function (response) {
+      // Only get data for the current workspace
+      var room_id = _this7.authUser.assigned_room_id;
 
-    this.fetchCommentVotes({
-      collection_id: this.collectionId
+      if (_this7.currentWorkspaceId) {
+        _this7.fetchTeams(_this7.currentWorkspaceId);
+
+        _this7.fetchUserTeams(_this7.currentWorkspaceId);
+
+        if (_this7.authUser.teams.length > 0) _this7.teamFilterId = _this7.authUser.teams[0].id;
+
+        _this7.fetchUsers(_this7.currentWorkspaceId);
+
+        _this7.fetchCollections(_this7.currentWorkspaceId);
+
+        _this7.fetchProducts(_this7.currentFileId);
+
+        _this7.fetchActions(_this7.currentFileId);
+
+        _this7.fetchComments(_this7.currentFileId);
+
+        _this7.fetchFinalActions(_this7.currentFileId);
+
+        _this7.fetchCommentVotes(_this7.currentFileId);
+
+        _this7.fetchCategories(_this7.currentFileId);
+      } else {
+        _this7.loadingOverwrite = true;
+      }
     });
-    this.fetchCategories(); // this.fetchUserTeams()
   },
   mounted: function mounted() {}
 });
@@ -10044,6 +10024,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
 /* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
 /* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _App_vue__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../App.vue */ "./resources/js/App.vue");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -10096,6 +10077,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'collection',
   store: _store__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -10122,7 +10104,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     authUser: function authUser() {
       // return this.$store.getters.authUser;
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_11__["default"].query()["with"]('teams').first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_11__["default"].query()["with"]('teams')["with"]('workspaces').first();
+    },
+    currentWorkspaceId: function currentWorkspaceId() {
+      if (this.authUser.workspaces != null) return this.authUser.workspaces[0].id;
     },
     teams: function teams() {
       return _store_models_Team__WEBPACK_IMPORTED_MODULE_8__["default"].query()["with"]('users').all();
@@ -10133,7 +10118,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return loading;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {
     onSelect: function onSelect(index) {
       // Check if index already exists in array. If it exists remove it, else add it to array
       var selected = this.selected;
@@ -10164,7 +10149,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 // Get user
                 console.log('Getting initial data');
                 _context.next = 3;
-                return this.getAuthUser();
+                return Promise.all([this.getAuthUser(), this.fetchWorkspaceUsers(), this.fetchWorkspaces()]);
 
               case 3:
               case "end":
@@ -10191,36 +10176,32 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _ref = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(response) {
-        var room_id;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                // Only get data for the users assigned room
-                room_id = _this.authUser.assigned_room_id;
-
-                if (!(room_id != null)) {
-                  _context2.next = 9;
+                if (!_this.currentWorkspaceId) {
+                  _context2.next = 8;
                   break;
                 }
 
-                _context2.next = 4;
-                return _this.fetchTeams(1234), _this.fetchUserTeams();
+                _context2.next = 3;
+                return _this.fetchTeams(_this.currentWorkspaceId), _this.fetchUserTeams(_this.currentWorkspaceId);
 
-              case 4:
+              case 3:
                 if (_this.authUser.role_id >= 3) _this.teamFilterId = 0;else if (_this.authUser.teams.length > 0) _this.teamFilterId = _this.authUser.teams[0].id;
 
-                _this.fetchCollections(room_id);
+                _this.fetchCollections(_this.currentWorkspaceId);
 
-                _this.fetchUsers(1234);
+                _this.fetchUsers(_this.currentWorkspaceId);
 
-                _context2.next = 10;
+                _context2.next = 9;
                 break;
 
-              case 9:
+              case 8:
                 _this.loadingOverwrite = true;
 
-              case 10:
+              case 9:
               case "end":
                 return _context2.stop();
             }
@@ -10307,7 +10288,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['loadingTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/userTeams', ['loadingUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/users', ['loadingUsers']), {
     authUser: function authUser() {
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_9__["default"].query()["with"]('teams')["with"]('role').first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_9__["default"].query()["with"]('workspaces')["with"]('teams')["with"]('role').first();
     },
     teamInvites: function teamInvites() {
       return _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_8__["default"].query().all();
@@ -10367,9 +10348,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var loading = false;
       if (!this.loadingOverwrite) if (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.users[0].role == null || this.authUser == null) loading = true;
       return loading;
+    },
+    currentWorkspaceId: function currentWorkspaceId() {
+      if (this.authUser.workspaces != null) return this.authUser.workspaces[0].id;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamInvites', ['fetchTeamInvites']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamInvites', ['fetchTeamInvites']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {
     setSelected: function setSelected(index) {
       // Check if index already exists in array. If it exists remove it, else add it to array
       var selected = this.selected;
@@ -10395,7 +10379,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 // Get user
                 console.log('Getting initial data');
                 _context.next = 3;
-                return this.getAuthUser();
+                return Promise.all([this.getAuthUser(), this.fetchWorkspaceUsers(), this.fetchWorkspaces()]);
 
               case 3:
               case "end":
@@ -10420,20 +10404,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // Only get data for the users assigned room
       var room_id = _this2.authUser.assigned_room_id;
 
-      if (room_id != null) {
-        _this2.fetchTeams(1234);
+      if (_this2.currentWorkspaceId) {
+        _this2.fetchTeams(_this2.currentWorkspaceId);
 
-        _this2.fetchUserTeams();
+        _this2.fetchUserTeams(_this2.currentWorkspaceId);
 
         if (_this2.authUser.teams.length > 0) _this2.teamFilterId = _this2.authUser.teams[0].id;
 
-        _this2.fetchUsers({
-          collection_id: 124124124
-        });
+        _this2.fetchUsers(_this2.currentWorkspaceId);
 
-        _this2.fetchTeamInvites();
+        _this2.fetchTeamInvites(_this2.currentWorkspaceId);
       } else {
-        console.log('no room id!');
         _this2.loadingOverwrite = true;
       }
     });
@@ -36024,6 +36005,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_authUser__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./modules/authUser */ "./resources/js/store/modules/authUser.js");
 /* harmony import */ var _models_Role__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./models/Role */ "./resources/js/store/models/Role.js");
 /* harmony import */ var _modules_roles__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./modules/roles */ "./resources/js/store/modules/roles.js");
+/* harmony import */ var _models_Workspace__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./models/Workspace */ "./resources/js/store/models/Workspace.js");
+/* harmony import */ var _modules_workspaces__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./modules/workspaces */ "./resources/js/store/modules/workspaces.js");
+/* harmony import */ var _models_WorkspaceUser__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./models/WorkspaceUser */ "./resources/js/store/models/WorkspaceUser.js");
+/* harmony import */ var _modules_workspaceUsers__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./modules/workspaceUsers */ "./resources/js/store/modules/workspaceUsers.js");
+
+
+
+
 
 
 
@@ -36068,6 +36057,8 @@ database.register(_models_Category__WEBPACK_IMPORTED_MODULE_21__["default"], _mo
 database.register(_models_TeamInvite__WEBPACK_IMPORTED_MODULE_23__["default"], _modules_teamInvites__WEBPACK_IMPORTED_MODULE_24__["default"]);
 database.register(_models_AuthUser__WEBPACK_IMPORTED_MODULE_25__["default"], _modules_authUser__WEBPACK_IMPORTED_MODULE_26__["default"]);
 database.register(_models_Role__WEBPACK_IMPORTED_MODULE_27__["default"], _modules_roles__WEBPACK_IMPORTED_MODULE_28__["default"]);
+database.register(_models_Workspace__WEBPACK_IMPORTED_MODULE_29__["default"], _modules_workspaces__WEBPACK_IMPORTED_MODULE_30__["default"]);
+database.register(_models_WorkspaceUser__WEBPACK_IMPORTED_MODULE_31__["default"], _modules_workspaceUsers__WEBPACK_IMPORTED_MODULE_32__["default"]);
 /* harmony default export */ __webpack_exports__["default"] = (database);
 
 /***/ }),
@@ -36194,6 +36185,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Team__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Team */ "./resources/js/store/models/Team.js");
 /* harmony import */ var _UserTeam__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./UserTeam */ "./resources/js/store/models/UserTeam.js");
 /* harmony import */ var _Role__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Role */ "./resources/js/store/models/Role.js");
+/* harmony import */ var _Workspace__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Workspace */ "./resources/js/store/models/Workspace.js");
+/* harmony import */ var _WorkspaceUser__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./WorkspaceUser */ "./resources/js/store/models/WorkspaceUser.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -36213,6 +36206,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // User Model
+
+
 
 
 
@@ -36248,6 +36243,8 @@ function (_Model) {
         country: this.belongsTo(_Country__WEBPACK_IMPORTED_MODULE_2__["default"], 'country_id'),
         role: this.belongsTo(_Role__WEBPACK_IMPORTED_MODULE_5__["default"], 'role_id'),
         teams: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_3__["default"], _UserTeam__WEBPACK_IMPORTED_MODULE_4__["default"], 'user_id', 'team_id'),
+        workspaces: this.belongsToMany(_Workspace__WEBPACK_IMPORTED_MODULE_6__["default"], _WorkspaceUser__WEBPACK_IMPORTED_MODULE_7__["default"], 'user_id', 'workspace_id'),
+        workspace_users: this.hasMany(_WorkspaceUser__WEBPACK_IMPORTED_MODULE_7__["default"], 'user_id'),
         assigned_room_id: this.attr('')
       };
       return data;
@@ -37136,6 +37133,151 @@ UserTeam.primaryKey = ['user_id', 'team_id'];
 
 /***/ }),
 
+/***/ "./resources/js/store/models/Workspace.js":
+/*!************************************************!*\
+  !*** ./resources/js/store/models/Workspace.js ***!
+  \************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Workspace; });
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+/* harmony import */ var _User__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./User */ "./resources/js/store/models/User.js");
+/* harmony import */ var _WorkspaceUser__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./WorkspaceUser */ "./resources/js/store/models/WorkspaceUser.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// User Model
+
+
+
+
+var Workspace =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(Workspace, _Model);
+
+  function Workspace() {
+    _classCallCheck(this, Workspace);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(Workspace).apply(this, arguments));
+  }
+
+  _createClass(Workspace, null, [{
+    key: "fields",
+    // This is the name used as module name of the Vuex Store.
+    // List of all fields (schema) of the product model. `this.attr` is used
+    // for the generic field type. The argument is the default value.
+    // static primaryKey = 'id'
+    value: function fields() {
+      var data = {
+        id: this.attr(null),
+        name: this.attr(''),
+        users: this.belongsToMany(_User__WEBPACK_IMPORTED_MODULE_1__["default"], _WorkspaceUser__WEBPACK_IMPORTED_MODULE_2__["default"], 'workspace_id', 'user_id'),
+        workspace_users: this.hasMany(_WorkspaceUser__WEBPACK_IMPORTED_MODULE_2__["default"], 'workspace_id')
+      };
+      return data;
+    }
+  }]);
+
+  return Workspace;
+}(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
+
+Workspace.entity = 'workspaces';
+
+
+/***/ }),
+
+/***/ "./resources/js/store/models/WorkspaceUser.js":
+/*!****************************************************!*\
+  !*** ./resources/js/store/models/WorkspaceUser.js ***!
+  \****************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return WorkspaceUser; });
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+/* harmony import */ var _Workspace__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Workspace */ "./resources/js/store/models/Workspace.js");
+/* harmony import */ var _User__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./User */ "./resources/js/store/models/User.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// Product Model
+
+
+
+
+var WorkspaceUser =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(WorkspaceUser, _Model);
+
+  function WorkspaceUser() {
+    _classCallCheck(this, WorkspaceUser);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(WorkspaceUser).apply(this, arguments));
+  }
+
+  _createClass(WorkspaceUser, null, [{
+    key: "fields",
+    // This is the name used as module name of the Vuex Store.
+    // List of all fields (schema) of the product model. `this.attr` is used
+    // for the generic field type. The argument is the default value.
+    value: function fields() {
+      var data = {
+        workspace_id: this.attr(null),
+        user_id: this.attr(null),
+        permission_level: this.attr(''),
+        workspaces: this.hasMany(_Workspace__WEBPACK_IMPORTED_MODULE_1__["default"], 'id', 'workspace_id'),
+        users: this.hasMany(_User__WEBPACK_IMPORTED_MODULE_2__["default"], 'id', 'user_id')
+      };
+      return data;
+    }
+  }]);
+
+  return WorkspaceUser;
+}(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
+
+WorkspaceUser.entity = 'workspaceUsers';
+WorkspaceUser.primaryKey = ['workspace_id', 'user_id'];
+
+
+/***/ }),
+
 /***/ "./resources/js/store/modules/actions.js":
 /*!***********************************************!*\
   !*** ./resources/js/store/modules/actions.js ***!
@@ -37173,64 +37315,63 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     fetchActions: function () {
       var _fetchActions = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, tryCount, succes, response;
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, file_id) {
+        var commit, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 commit = _ref.commit;
-                collection_id = _ref2.collection_id;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/collection/".concat(collection_id, "/actions");
+                apiUrl = "/api/file/".concat(file_id, "/user-products");
                 tryCount = 3;
                 succes = false;
 
-              case 6:
+              case 5:
                 if (!(tryCount-- > 0 && !succes)) {
-                  _context.next = 25;
+                  _context.next = 24;
                   break;
                 }
 
-                _context.prev = 7;
-                _context.next = 10;
+                _context.prev = 6;
+                _context.next = 9;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 10:
+              case 9:
                 response = _context.sent;
                 _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
                 succes = true;
-                _context.next = 23;
+                _context.next = 22;
                 break;
 
-              case 16:
-                _context.prev = 16;
-                _context.t0 = _context["catch"](7);
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
                 console.log('API error in actions.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
 
                 if (!(tryCount <= 0)) {
-                  _context.next = 23;
+                  _context.next = 22;
                   break;
                 }
 
                 throw _context.t0;
 
-              case 23:
-                _context.next = 6;
+              case 22:
+                _context.next = 5;
                 break;
 
-              case 25:
+              case 24:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[7, 16]]);
+        }, _callee, null, [[6, 15]]);
       }));
 
       function fetchActions(_x, _x2) {
@@ -37243,14 +37384,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     updateAction: function () {
       var _updateAction = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref3, _ref4) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, _ref3) {
         var commit, user_id, productToUpdate, action_code;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                commit = _ref3.commit;
-                user_id = _ref4.user_id, productToUpdate = _ref4.productToUpdate, action_code = _ref4.action_code;
+                commit = _ref2.commit;
+                user_id = _ref3.user_id, productToUpdate = _ref3.productToUpdate, action_code = _ref3.action_code;
                 commit('setAction', {
                   productToUpdate: productToUpdate,
                   user_id: user_id,
@@ -37285,14 +37426,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     updateManyActions: function () {
       var _updateManyActions = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref5, _ref6) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref4, _ref5) {
         var commit, productIds, user_id, action_code;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                commit = _ref5.commit;
-                productIds = _ref6.productIds, user_id = _ref6.user_id, action_code = _ref6.action_code;
+                commit = _ref4.commit;
+                productIds = _ref5.productIds, user_id = _ref5.user_id, action_code = _ref5.action_code;
                 commit('setManyActions', {
                   productIds: productIds,
                   user_id: user_id,
@@ -37327,14 +37468,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     createManyActions: function () {
       var _createManyActions = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref7, _ref8) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref6, _ref7) {
         var commit, productIds, user_id, action_code;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                commit = _ref7.commit;
-                productIds = _ref8.productIds, user_id = _ref8.user_id, action_code = _ref8.action_code;
+                commit = _ref6.commit;
+                productIds = _ref7.productIds, user_id = _ref7.user_id, action_code = _ref7.action_code;
                 commit('setManyActions', {
                   productIds: productIds,
                   user_id: user_id,
@@ -37369,14 +37510,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     deleteAction: function () {
       var _deleteAction = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5(_ref9, _ref10) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5(_ref8, _ref9) {
         var commit, productToUpdate, user_id;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                commit = _ref9.commit;
-                productToUpdate = _ref10.productToUpdate, user_id = _ref10.user_id;
+                commit = _ref8.commit;
+                productToUpdate = _ref9.productToUpdate, user_id = _ref9.user_id;
                 commit('deleteAction', {
                   productToUpdate: productToUpdate,
                   user_id: user_id
@@ -37413,10 +37554,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     setLoading: function setLoading(state, bool) {
       state.loading = bool;
     },
-    setAction: function setAction(state, _ref11) {
-      var productToUpdate = _ref11.productToUpdate,
-          user_id = _ref11.user_id,
-          action_code = _ref11.action_code;
+    setAction: function setAction(state, _ref10) {
+      var productToUpdate = _ref10.productToUpdate,
+          user_id = _ref10.user_id,
+          action_code = _ref10.action_code;
       _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: {
           action: action_code,
@@ -37425,18 +37566,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }
       });
     },
-    deleteAction: function deleteAction(state, _ref12) {
-      var productToUpdate = _ref12.productToUpdate,
-          user_id = _ref12.user_id;
+    deleteAction: function deleteAction(state, _ref11) {
+      var productToUpdate = _ref11.productToUpdate,
+          user_id = _ref11.user_id;
       console.log('deleting action');
       _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (record) {
         return record.product_id == productToUpdate && record.user_id == user_id;
       });
     },
-    setManyActions: function setManyActions(state, _ref13) {
-      var productIds = _ref13.productIds,
-          user_id = _ref13.user_id,
-          action_code = _ref13.action_code;
+    setManyActions: function setManyActions(state, _ref12) {
+      var productIds = _ref12.productIds,
+          user_id = _ref12.user_id,
+          action_code = _ref12.action_code;
       // Prepare the data
       var data = [];
       productIds.forEach(function (product) {
@@ -37686,8 +37827,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     fetchCollections: function () {
       var _fetchCollections = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref) {
-        var commit, catalogue_id, apiUrl, tryCount, succes, response;
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, workspace_id) {
+        var commit, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -37695,58 +37836,57 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit = _ref.commit;
                 // Set the state to loading
                 commit('setLoading', true);
-                catalogue_id = 1;
-                apiUrl = "/api/catalogue/".concat(catalogue_id, "/collections");
+                apiUrl = "/api/workspace/".concat(workspace_id, "/files");
                 tryCount = 3;
                 succes = false;
 
-              case 6:
+              case 5:
                 if (!(tryCount-- > 0 && !succes)) {
-                  _context.next = 25;
+                  _context.next = 24;
                   break;
                 }
 
-                _context.prev = 7;
-                _context.next = 10;
+                _context.prev = 6;
+                _context.next = 9;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 10:
+              case 9:
                 response = _context.sent;
                 _models_Collection__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
                 succes = true;
-                _context.next = 23;
+                _context.next = 22;
                 break;
 
-              case 16:
-                _context.prev = 16;
-                _context.t0 = _context["catch"](7);
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
                 console.log('API error in collections.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
 
                 if (!(tryCount <= 0)) {
-                  _context.next = 23;
+                  _context.next = 22;
                   break;
                 }
 
                 throw _context.t0;
 
-              case 23:
-                _context.next = 6;
+              case 22:
+                _context.next = 5;
                 break;
 
-              case 25:
+              case 24:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[7, 16]]);
+        }, _callee, null, [[6, 15]]);
       }));
 
-      function fetchCollections(_x) {
+      function fetchCollections(_x, _x2) {
         return _fetchCollections.apply(this, arguments);
       }
 
@@ -37799,64 +37939,63 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     fetchCommentVotes: function () {
       var _fetchCommentVotes = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, tryCount, succes, response;
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, file_id) {
+        var commit, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 commit = _ref.commit;
-                collection_id = _ref2.collection_id;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/collection/".concat(collection_id, "/comment-votes");
+                apiUrl = "/api/file/".concat(file_id, "/comment-votes");
                 tryCount = 3;
                 succes = false;
 
-              case 6:
+              case 5:
                 if (!(tryCount-- > 0 && !succes)) {
-                  _context.next = 25;
+                  _context.next = 24;
                   break;
                 }
 
-                _context.prev = 7;
-                _context.next = 10;
+                _context.prev = 6;
+                _context.next = 9;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 10:
+              case 9:
                 response = _context.sent;
                 _models_CommentVote__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
                 succes = true;
-                _context.next = 23;
+                _context.next = 22;
                 break;
 
-              case 16:
-                _context.prev = 16;
-                _context.t0 = _context["catch"](7);
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
                 console.log('API error in commentVotes.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
 
                 if (!(tryCount <= 0)) {
-                  _context.next = 23;
+                  _context.next = 22;
                   break;
                 }
 
                 throw _context.t0;
 
-              case 23:
-                _context.next = 6;
+              case 22:
+                _context.next = 5;
                 break;
 
-              case 25:
+              case 24:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[7, 16]]);
+        }, _callee, null, [[6, 15]]);
       }));
 
       function fetchCommentVotes(_x, _x2) {
@@ -37916,64 +38055,63 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     fetchComments: function () {
       var _fetchComments = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, tryCount, succes, response;
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, file_id) {
+        var commit, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 commit = _ref.commit;
-                collection_id = _ref2.collection_id;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/collection/".concat(collection_id, "/comments");
+                apiUrl = "/api/file/".concat(file_id, "/comments");
                 tryCount = 3;
                 succes = false;
 
-              case 6:
+              case 5:
                 if (!(tryCount-- > 0 && !succes)) {
-                  _context.next = 25;
+                  _context.next = 24;
                   break;
                 }
 
-                _context.prev = 7;
-                _context.next = 10;
+                _context.prev = 6;
+                _context.next = 9;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 10:
+              case 9:
                 response = _context.sent;
                 _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
                 succes = true;
-                _context.next = 23;
+                _context.next = 22;
                 break;
 
-              case 16:
-                _context.prev = 16;
-                _context.t0 = _context["catch"](7);
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
                 console.log('API error in comments.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
 
                 if (!(tryCount <= 0)) {
-                  _context.next = 23;
+                  _context.next = 22;
                   break;
                 }
 
                 throw _context.t0;
 
-              case 23:
-                _context.next = 6;
+              case 22:
+                _context.next = 5;
                 break;
 
-              case 25:
+              case 24:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[7, 16]]);
+        }, _callee, null, [[6, 15]]);
       }));
 
       function fetchComments(_x, _x2) {
@@ -37985,14 +38123,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     createComment: function () {
       var _createComment = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref3, _ref4) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, _ref3) {
         var commit, comment, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                commit = _ref3.commit;
-                comment = _ref4.comment;
+                commit = _ref2.commit;
+                comment = _ref3.comment;
                 commit('setSubmitting', true);
                 _context2.next = 5;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/comment", {
@@ -38032,14 +38170,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     markAsFinal: function () {
       var _markAsFinal = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref5, _ref6) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref4, _ref5) {
         var commit, comment;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                commit = _ref5.commit;
-                comment = _ref6.comment;
+                commit = _ref4.commit;
+                comment = _ref5.comment;
                 console.log('Module updating comment');
                 commit('updateFinal', {
                   comment: comment
@@ -38082,14 +38220,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     setSubmitting: function setSubmitting(state, bool) {
       state.submitting = bool;
     },
-    addComment: function addComment(state, _ref7) {
-      var comment = _ref7.comment;
+    addComment: function addComment(state, _ref6) {
+      var comment = _ref6.comment;
       _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: comment
       });
     },
-    updateFinal: function updateFinal(state, _ref8) {
-      var comment = _ref8.comment;
+    updateFinal: function updateFinal(state, _ref7) {
+      var comment = _ref7.comment;
       // Remove final status from this products comments
       _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].update({
         where: function where(existing_comment) {
@@ -38618,64 +38756,63 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     fetchProducts: function () {
       var _fetchProducts = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, tryCount, succes, response;
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, file_id) {
+        var commit, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 commit = _ref.commit;
-                collection_id = _ref2.collection_id;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/collection/".concat(collection_id, "/products");
+                apiUrl = "/api/file/".concat(file_id, "/products");
                 tryCount = 3;
                 succes = false;
 
-              case 6:
+              case 5:
                 if (!(tryCount-- > 0 && !succes)) {
-                  _context.next = 25;
+                  _context.next = 24;
                   break;
                 }
 
-                _context.prev = 7;
-                _context.next = 10;
+                _context.prev = 6;
+                _context.next = 9;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 10:
+              case 9:
                 response = _context.sent;
                 _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
                 succes = true;
-                _context.next = 23;
+                _context.next = 22;
                 break;
 
-              case 16:
-                _context.prev = 16;
-                _context.t0 = _context["catch"](7);
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
                 console.log('API error in products.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
 
                 if (!(tryCount <= 0)) {
-                  _context.next = 23;
+                  _context.next = 22;
                   break;
                 }
 
                 throw _context.t0;
 
-              case 23:
-                _context.next = 6;
+              case 22:
+                _context.next = 5;
                 break;
 
-              case 25:
+              case 24:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[7, 16]]);
+        }, _callee, null, [[6, 15]]);
       }));
 
       function fetchProducts(_x, _x2) {
@@ -38844,7 +38981,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     fetchTeamInvites: function () {
       var _fetchTeamInvites = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, workspace_id) {
         var commit, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
@@ -38853,7 +38990,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit = _ref.commit;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/team-invites";
+                apiUrl = "/api/workspace/".concat(workspace_id, "/team-invites");
                 tryCount = 3;
                 succes = false;
 
@@ -38903,7 +39040,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee, null, [[6, 15]]);
       }));
 
-      function fetchTeamInvites(_x) {
+      function fetchTeamInvites(_x, _x2) {
         return _fetchTeamInvites.apply(this, arguments);
       }
 
@@ -38948,7 +39085,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee2);
       }));
 
-      function resend(_x2, _x3) {
+      function resend(_x3, _x4) {
         return _resend.apply(this, arguments);
       }
 
@@ -38991,7 +39128,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee3);
       }));
 
-      function deleteInvite(_x4, _x5) {
+      function deleteInvite(_x5, _x6) {
         return _deleteInvite.apply(this, arguments);
       }
 
@@ -39061,22 +39198,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     fetchTeams: function () {
       var _fetchTeams = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, tryCount, succes, response;
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, workspace_id) {
+        var commit, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 commit = _ref.commit;
-                collection_id = _ref2.collection_id;
-                // Set the state to loading
-                commit('setLoading', true);
 
-                if (collection_id == null) {
-                  collection_id = 1234;
+                if (!workspace_id) {
+                  _context.next = 26;
+                  break;
                 }
 
-                apiUrl = "/api/collection/".concat(collection_id, "/teams");
+                commit('setLoading', true);
+                apiUrl = "/api/workspace/".concat(workspace_id, "/teams");
+                console.log('fetching teams from: ' + apiUrl);
                 tryCount = 3;
                 succes = false;
 
@@ -39412,64 +39549,63 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     fetchUsers: function () {
       var _fetchUsers = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, _ref2) {
-        var commit, collection_id, apiUrl, tryCount, succes, response;
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, workspace_id) {
+        var commit, apiUrl, tryCount, succes, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 commit = _ref.commit;
-                collection_id = _ref2.collection_id;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/collection/".concat(collection_id, "/users");
+                apiUrl = "/api/workspace/".concat(workspace_id, "/users");
                 tryCount = 3;
                 succes = false;
 
-              case 6:
+              case 5:
                 if (!(tryCount-- > 0 && !succes)) {
-                  _context.next = 25;
+                  _context.next = 24;
                   break;
                 }
 
-                _context.prev = 7;
-                _context.next = 10;
+                _context.prev = 6;
+                _context.next = 9;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 10:
+              case 9:
                 response = _context.sent;
                 _models_User__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
                 succes = true;
-                _context.next = 23;
+                _context.next = 22;
                 break;
 
-              case 16:
-                _context.prev = 16;
-                _context.t0 = _context["catch"](7);
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
                 console.log('API error in users.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
 
                 if (!(tryCount <= 0)) {
-                  _context.next = 23;
+                  _context.next = 22;
                   break;
                 }
 
                 throw _context.t0;
 
-              case 23:
-                _context.next = 6;
+              case 22:
+                _context.next = 5;
                 break;
 
-              case 25:
+              case 24:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[7, 16]]);
+        }, _callee, null, [[6, 15]]);
       }));
 
       function fetchUsers(_x, _x2) {
@@ -39477,6 +39613,230 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return fetchUsers;
+    }()
+  },
+  mutations: {
+    //Set the loading status of the app
+    setLoading: function setLoading(state, bool) {
+      state.loading = bool;
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/store/modules/workspaceUsers.js":
+/*!******************************************************!*\
+  !*** ./resources/js/store/modules/workspaceUsers.js ***!
+  \******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _models_WorkspaceUser__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/WorkspaceUser */ "./resources/js/store/models/WorkspaceUser.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    loading: true
+  },
+  getters: {
+    loadingWorkspaceUsers: function loadingWorkspaceUsers(state) {
+      return state.loading;
+    }
+  },
+  actions: {
+    fetchWorkspaceUsers: function () {
+      var _fetchWorkspaceUsers = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref) {
+        var commit, apiUrl, tryCount, succes, response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                commit = _ref.commit;
+                // Set the state to loading
+                commit('setLoading', true);
+                apiUrl = "/api/workspace-users";
+                tryCount = 3;
+                succes = false;
+
+              case 5:
+                if (!(tryCount-- > 0 && !succes)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                _context.prev = 6;
+                _context.next = 9;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
+
+              case 9:
+                response = _context.sent;
+                _models_WorkspaceUser__WEBPACK_IMPORTED_MODULE_2__["default"].create({
+                  data: response.data
+                });
+                commit('setLoading', false);
+                succes = true;
+                _context.next = 22;
+                break;
+
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in workspaceUsers.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 22;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 22:
+                _context.next = 5;
+                break;
+
+              case 24:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[6, 15]]);
+      }));
+
+      function fetchWorkspaceUsers(_x) {
+        return _fetchWorkspaceUsers.apply(this, arguments);
+      }
+
+      return fetchWorkspaceUsers;
+    }()
+  },
+  mutations: {
+    //Set the loading status of the app
+    setLoading: function setLoading(state, bool) {
+      state.loading = bool;
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/store/modules/workspaces.js":
+/*!**************************************************!*\
+  !*** ./resources/js/store/modules/workspaces.js ***!
+  \**************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _models_Workspace__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/Workspace */ "./resources/js/store/models/Workspace.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    loading: true
+  },
+  getters: {
+    loadingWorkspaces: function loadingWorkspaces(state) {
+      return state.loading;
+    }
+  },
+  actions: {
+    fetchWorkspaces: function () {
+      var _fetchWorkspaces = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref) {
+        var commit, apiUrl, tryCount, succes, response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                commit = _ref.commit;
+                // Set the state to loading
+                commit('setLoading', true);
+                apiUrl = "/api/workspaces";
+                tryCount = 3;
+                succes = false;
+
+              case 5:
+                if (!(tryCount-- > 0 && !succes)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                _context.prev = 6;
+                _context.next = 9;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
+
+              case 9:
+                response = _context.sent;
+                _models_Workspace__WEBPACK_IMPORTED_MODULE_2__["default"].create({
+                  data: response.data
+                });
+                commit('setLoading', false);
+                succes = true;
+                _context.next = 22;
+                break;
+
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in workspaces.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 22;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 22:
+                _context.next = 5;
+                break;
+
+              case 24:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[6, 15]]);
+      }));
+
+      function fetchWorkspaces(_x) {
+        return _fetchWorkspaces.apply(this, arguments);
+      }
+
+      return fetchWorkspaces;
     }()
   },
   mutations: {

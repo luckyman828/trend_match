@@ -1,5 +1,5 @@
 import axios from 'axios'
-import Product from '../models/Product'
+import WorkspaceUser from '../models/WorkspaceUser';
 
 export default {
     namespaced: true,
@@ -9,36 +9,36 @@ export default {
     },
 
     getters: {
-      loadingProducts: state => {
+      loadingWorkspaceUsers: state => {
         return state.loading
       }
     },
   
     actions: {
-      async fetchProducts({commit}, file_id) {
+      async fetchWorkspaceUsers ({commit}) {
           // Set the state to loading
           commit('setLoading', true)
           
-          const apiUrl = `/api/file/${file_id}/products`
+          const apiUrl = `/api/workspace-users`
 
           let tryCount = 3
           let succes = false
           while(tryCount-- > 0 && !succes) {
             try {
               const response = await axios.get(`${apiUrl}`)
-              Product.create({ data: response.data })
+              WorkspaceUser.create({ data: response.data })
               commit('setLoading', false)
               succes = true
             }
             catch (err) {
-              console.log('API error in products.js :')
+              console.log('API error in workspaceUsers.js :')
               console.log(err)
               console.log(`Trying to fetch again. TryCount = ${tryCount}`)
               if (tryCount <= 0) throw err
             }
           }
-
       }
+
     },
 
     mutations: {
@@ -46,7 +46,8 @@ export default {
       //Set the loading status of the app
       setLoading(state, bool) {
         state.loading = bool
-      }
+      },
+
     }
 
   }

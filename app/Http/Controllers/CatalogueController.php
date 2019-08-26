@@ -104,13 +104,13 @@ class CatalogueController extends Controller
         return UserResource::collection($users);
     }
 
-    public function teams($collection_id)
-    {
-        $teams = Team::get();
+    // public function teams($collection_id)
+    // {
+    //     $teams = Team::get();
 
-        // Return collection of users as a resource
-        return TeamResource::collection($teams);
-    }
+    //     // Return collection of users as a resource
+    //     return TeamResource::collection($teams);
+    // }
 
     public function userTeams()
     {

@@ -19,11 +19,11 @@ export default {
     },
   
     actions: {
-      async fetchComments({commit}, {collection_id}) {
+      async fetchComments({commit}, file_id) {
           // Set the state to loading
           commit('setLoading', true)
           
-          const apiUrl = `/api/collection/${collection_id}/comments`
+          const apiUrl = `/api/file/${file_id}/comments`
 
           let tryCount = 3
           let succes = false

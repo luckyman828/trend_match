@@ -16,5 +16,11 @@ class ProductFinalAction extends Model
         'product_id',
         'phase',
         'action',
-        ];
+    ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
+
 }

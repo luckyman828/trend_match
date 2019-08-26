@@ -17,11 +17,11 @@ export default {
     actions: {
 
       // Get the actions
-      async fetchActions({commit}, {collection_id}) {
+      async fetchActions({commit}, file_id) {
           // Set the state to loading
           commit('setLoading', true)
           
-          const apiUrl = `/api/collection/${collection_id}/actions`
+          const apiUrl = `/api/file/${file_id}/user-products`
 
           let tryCount = 3
           let succes = false

@@ -43,7 +43,7 @@ export default {
         ...mapGetters('entities/userTeams', ['loadingUserTeams']),
         ...mapGetters('entities/users', ['loadingUsers']),
         authUser() {
-            return AuthUser.query().with('teams').with('role').first()
+            return AuthUser.query().with('workspaces').with('teams').with('role').first()
         },
         teamInvites() {
             return TeamInvite.query().all()
@@ -101,7 +101,11 @@ export default {
                 if (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.users[0].role == null || this.authUser == null)
                     loading = true
             return loading
-        }
+        },
+        currentWorkspaceId() {
+            if (this.authUser.workspaces != null)
+                return this.authUser.workspaces[0].id
+        },
     },
     methods: {
         ...mapActions('entities/authUser', ['getAuthUser']),
@@ -109,6 +113,8 @@ export default {
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/userTeams', ['fetchUserTeams']),
         ...mapActions('entities/teamInvites', ['fetchTeamInvites']),
+        ...mapActions('entities/workspaces', ['fetchWorkspaces']),
+        ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
         setSelected(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
             const selected = this.selected
@@ -124,7 +130,11 @@ export default {
         async fetchInitialData() {
             // Get user
             console.log('Getting initial data')
-            await this.getAuthUser()
+            await Promise.all([
+                this.getAuthUser(),
+                this.fetchWorkspaceUsers(),
+                this.fetchWorkspaces(),
+            ])
         },
     },
     created () {
@@ -133,17 +143,16 @@ export default {
         .then(response => {
             // Only get data for the users assigned room
             const room_id = this.authUser.assigned_room_id
-            if (room_id != null) {
+            if (this.currentWorkspaceId) {
 
-                this.fetchTeams(1234)
-                this.fetchUserTeams()
+                this.fetchTeams(this.currentWorkspaceId)
+                this.fetchUserTeams(this.currentWorkspaceId)
                 if (this.authUser.teams.length > 0)
                     this.teamFilterId = this.authUser.teams[0].id
 
-                this.fetchUsers({collection_id: 124124124})
-                this.fetchTeamInvites()
+                this.fetchUsers(this.currentWorkspaceId)
+                this.fetchTeamInvites(this.currentWorkspaceId)
             } else {
-                console.log('no room id!')
                 this.loadingOverwrite = true
             }
         })

@@ -16,6 +16,30 @@ use Illuminate\Http\Request;
 // Private API routes (Passport protected)
 Route::middleware('auth:api')->group( function(){
 
+    // xxx WORKSPACES xxx
+    // List workspaces available to logged in user
+    Route::get('workspaces', 'WorkspaceController@workspaces');
+    // List WorkspaceUsers available to logged in user
+    Route::get('workspace-users', 'WorkspaceController@workspaceUsers');
+    // List workspace teams
+    Route::get('workspace/{workspace_id}/teams', 'WorkspaceController@teams');
+    // List workspace files
+    Route::get('workspace/{workspace_id}/files', 'WorkspaceController@files');
+    // List workspace users
+    Route::get('workspace/{workspace_id}/users', 'WorkspaceController@users');
+
+    // xxx TEAMS xxx
+    // List current workspace team invites
+    Route::get('workspace/{workspace_id}/team-invites', 'TeamController@invites');
+
+    // xxx FILES xxx
+    Route::get('file/{file_id}/products', 'FileController@products');
+    Route::get('file/{file_id}/user-products', 'FileController@userProducts');
+    Route::get('file/{file_id}/comments', 'FileController@comments');
+    Route::get('file/{file_id}/comment-votes', 'FileController@commentVotes');
+    Route::get('file/{file_id}/final-actions', 'FileController@finalActions');
+    
+
     // xxx CATALOGS xxx
     // List catelogues available to logged in user
     Route::get('catalogues', 'CatalogueController@catalogues');

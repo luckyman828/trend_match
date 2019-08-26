@@ -11,4 +11,10 @@ class CommentVote extends Model
     protected $table = 'product_comment_votes';
     protected $primaryKey = ['comment_id', 'user_id'];
     public $timestamps = false;
+
+    public function product()
+    {
+        return $this->hasOneThrough(Product::class, Comment::class, 'id', 'id', 'comment_id', 'product_id');
+    }
+
 }

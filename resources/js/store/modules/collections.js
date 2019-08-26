@@ -16,12 +16,11 @@ export default {
     },
   
     actions: {
-      async fetchCollections({commit}) {
+      async fetchCollections({commit}, workspace_id) {
           // Set the state to loading
           commit('setLoading', true)
-          const catalogue_id = 1
           
-          const apiUrl = `/api/catalogue/${catalogue_id}/collections`
+          const apiUrl = `/api/workspace/${workspace_id}/files`
 
           let tryCount = 3
           let succes = false

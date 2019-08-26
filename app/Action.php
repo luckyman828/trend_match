@@ -24,4 +24,10 @@ class Action extends Model
      * @var string
      */
     const CREATED_AT = null;
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    } 
+
 }

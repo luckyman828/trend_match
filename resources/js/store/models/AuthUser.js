@@ -5,6 +5,8 @@ import Country from './Country'
 import Team from './Team'
 import UserTeam from './UserTeam';
 import Role from './Role';
+import Workspace from './Workspace';
+import WorkspaceUser from './WorkspaceUser';
 
 export default class AuthUser extends Model {
   // This is the name used as module name of the Vuex Store.
@@ -25,6 +27,8 @@ export default class AuthUser extends Model {
       country: this.belongsTo(Country, 'country_id'),
       role: this.belongsTo(Role, 'role_id'),
       teams: this.belongsToMany(Team, UserTeam, 'user_id', 'team_id'),
+      workspaces: this.belongsToMany(Workspace, WorkspaceUser, 'user_id', 'workspace_id'),
+      workspace_users: this.hasMany(WorkspaceUser, 'user_id'),
       assigned_room_id: this.attr('')
     }
 

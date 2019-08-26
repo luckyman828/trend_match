@@ -15,11 +15,11 @@ export default {
     },
   
     actions: {
-      async fetchUsers({commit}, {collection_id}) {
+      async fetchUsers({commit}, workspace_id) {
           // Set the state to loading
           commit('setLoading', true)
           
-          const apiUrl = `/api/collection/${collection_id}/users`
+          const apiUrl = `/api/workspace/${workspace_id}/users`
 
           let tryCount = 3
           let succes = false

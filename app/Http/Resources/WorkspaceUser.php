@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CommentVote extends JsonResource
+class WorkspaceUser extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,5 +16,4 @@ class CommentVote extends JsonResource
     {
         return parent::toArray($request);
     }
-
 }
