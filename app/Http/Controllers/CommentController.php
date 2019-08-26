@@ -26,6 +26,8 @@ class CommentController extends Controller
 
         $comment->user_id = $request->input('user_id');
         $comment->product_id = $request->input('product_id');
+        $comment->team_id = $request->input('team_id');
+        $comment->phase_id = $request->input('phase');
         $comment->comment = $request->input('comment_body');
         $comment->important = $request->input('important');
         $comment->final = $request->input('final');

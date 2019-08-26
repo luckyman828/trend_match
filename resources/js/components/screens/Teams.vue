@@ -30,6 +30,7 @@ export default {
         selected: [],
         singleTeam: null,
         loadingOverwrite: false,
+        unsub: '',
     }},
     watch: {
         singleTeam: function (newVal, oldVal) {
@@ -42,6 +43,7 @@ export default {
         ...mapGetters('entities/teams', ['loadingTeams']),
         ...mapGetters('entities/userTeams', ['loadingUserTeams']),
         ...mapGetters('entities/users', ['loadingUsers']),
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId']),
         authUser() {
             return AuthUser.query().with('workspaces').with('teams').with('role').first()
         },
@@ -67,7 +69,6 @@ export default {
                     if ('id' in user.teams[0]) {
                         // If we have a team with an id
                         // Set the users role
-                        // user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
                         user.teams.forEach(userTeam => {
                             // Loop through each of the users teams and add the user
                             // Find the corresponding team
@@ -102,10 +103,6 @@ export default {
                     loading = true
             return loading
         },
-        currentWorkspaceId() {
-            if (this.authUser.workspaces != null)
-                return this.authUser.workspaces[0].id
-        },
     },
     methods: {
         ...mapActions('entities/authUser', ['getAuthUser']),
@@ -127,36 +124,27 @@ export default {
         closeModal() {
             this.singleTeam = null;
         },
-        async fetchInitialData() {
-            // Get user
-            console.log('Getting initial data')
-            await Promise.all([
-                this.getAuthUser(),
-                this.fetchWorkspaceUsers(),
-                this.fetchWorkspaces(),
-            ])
-        },
+        initRequiresWorkspace() {
+            if (User.all().length <= 0)
+                    this.fetchUsers(this.currentWorkspaceId)
+            if (TeamInvite.all().length <= 0)
+                this.fetchTeamInvites(this.currentWorkspaceId)
+        }
     },
     created () {
-        this.fetchInitialData()
-        // Fetch data based on the Auth User
-        .then(response => {
-            // Only get data for the users assigned room
-            const room_id = this.authUser.assigned_room_id
-            if (this.currentWorkspaceId) {
-
-                this.fetchTeams(this.currentWorkspaceId)
-                this.fetchUserTeams(this.currentWorkspaceId)
-                if (this.authUser.teams.length > 0)
-                    this.teamFilterId = this.authUser.teams[0].id
-
-                this.fetchUsers(this.currentWorkspaceId)
-                this.fetchTeamInvites(this.currentWorkspaceId)
-            } else {
-                this.loadingOverwrite = true
-            }
+        // If we already have a workspace id, fetch the data we are missing
+        if (this.currentWorkspaceId != null)
+            this.initRequiresWorkspace()
+        // Else, wait till a workspace id is set, and then fetch the data
+        this.unsub = this.$store.subscribe((mutation, state) => {
+            if(mutation.type == 'persist/setCurrentWorkspace') {
+                this.initRequiresWorkspace()
+            } 
         })
         
+    },
+    destroyed() {
+        this.unsub()
     }
 }
 </script>

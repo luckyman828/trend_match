@@ -15,7 +15,7 @@
                     <span v-if="itemFilterIds.length > 0" class="clear button invisible primary" @click="slotProps.clear(); itemFilterIds=[]">Clear filter</span>
                 </template>
             </DropdownCheckbox>
-            <DropdownRadio :options="teams" :currentOptionId="teamFilterId" :defaultOption="{id: 0, title: 'GLOBAL'}" class="dropdown-parent right" v-model="teamFilterId">
+            <DropdownRadio :options="teams" :currentOptionId="currentTeamId" :defaultOption="{id: 0, title: 'GLOBAL'}" class="dropdown-parent right" @submit="setCurrentTeam">
                 <template v-slot:button="slotProps">
                     <div class="dropdown-button" @click="slotProps.toggle">
                         <img src="/assets/Path5699.svg">
@@ -41,7 +41,6 @@ import Team from '../../store/models/Team'
 import User from '../../store/models/User'
 import UserTeam from '../../store/models/UserTeam';
 import AuthUser from '../../store/models/AuthUser';
-import App from '../../App.vue';
 
 export default {
     name: 'collection',
@@ -55,11 +54,13 @@ export default {
     data: function() { return {
         selected: [],
         itemFilterIds: [],
-        teamFilterId: '-1',
+        // teamFilterId: '-1',
         loadingOverwrite: false,
+        unsub: '',
     }},
     computed: {
         ...mapGetters('entities/collections', ['loadingCollections']),
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId']),
         collections () {
             return Collection.query().all()
         },
@@ -69,10 +70,6 @@ export default {
         authUser() {
             // return this.$store.getters.authUser;
             return AuthUser.query().with('teams').with('workspaces').first()
-        },
-        currentWorkspaceId() {
-            if (this.authUser.workspaces != null)
-                return this.authUser.workspaces[0].id
         },
         teams() {
             return Team.query().with('users').all()
@@ -93,6 +90,7 @@ export default {
         ...mapActions('entities/userTeams', ['fetchUserTeams']),
         ...mapActions('entities/workspaces', ['fetchWorkspaces']),
         ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
+        ...mapActions('persist', ['setCurrentTeam']),
         onSelect(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
             const selected = this.selected
@@ -102,40 +100,27 @@ export default {
         onViewSingle(collectionID) {
             this.$router.push({name: 'catalogue', params: {catalogueId: collectionID}})
         },
-        // filterByTeam(id) {
-        //     this.teamFilterId = id
-        // },
-        async fetchInitialData() {
-            // Get user
-            console.log('Getting initial data')
-            await Promise.all([
-                this.getAuthUser(),
-                this.fetchWorkspaceUsers(),
-                this.fetchWorkspaces(),
-            ]) 
-        },
+        initRequiresWorkspace() {
+            if (Collection.all().length <= 0)
+                this.fetchCollections(this.currentWorkspaceId)
+            if (User.all().length <= 0)
+                this.fetchUsers(this.currentWorkspaceId)
+        }
     },
     created() {
-        this.fetchInitialData()
-        // Fetch data based on the Auth User
-        .then( async response => {
-            // Only get data for the current workspace
-            if (this.currentWorkspaceId) {
-                await (
-                    this.fetchTeams(this.currentWorkspaceId),
-                    this.fetchUserTeams(this.currentWorkspaceId)
-                )
-                if (this.authUser.role_id >= 3)
-                    this.teamFilterId = 0
-                else if (this.authUser.teams.length > 0)
-                    this.teamFilterId = this.authUser.teams[0].id
-                this.fetchCollections(this.currentWorkspaceId)
-                this.fetchUsers(this.currentWorkspaceId)
-            } else {
-                this.loadingOverwrite = true
-            }
+        // If we already have a workspace id, fetch the data we are missing
+        if (this.currentWorkspaceId != null)
+            this.initRequiresWorkspace()
+        // Else, wait till a workspace id is set, and then fetch the data
+        this.unsub = this.$store.subscribe((mutation, state) => {
+            if(mutation.type == 'persist/setCurrentWorkspace') {
+                this.initRequiresWorkspace()
+            } 
         })
     },
+    destroyed() {
+        this.unsub()
+    }
 
 }
 </script>

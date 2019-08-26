@@ -2,7 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexORM from '@vuex-orm/core'
 import database from './database'
-import authUser from './modules/authUser'
+// import authUser from './modules/authUser'
+import persist from './modules/persist'
 
 // Load Vuex
 Vue.use(Vuex);
@@ -11,7 +12,8 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
     plugins: [VuexORM.install(database)],
     modules: {
-      authUser
+      // authUser
+      persist
     }
   })
   

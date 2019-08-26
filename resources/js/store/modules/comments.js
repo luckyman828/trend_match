@@ -59,6 +59,8 @@ export default {
 
           user_id: comment.user_id,
           product_id: comment.product_id,
+          team_id: comment.team_id,
+          phase: comment.phase,
           comment_body: comment.comment,
           important: comment.important,
           final: comment.final,

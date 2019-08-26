@@ -52,7 +52,7 @@ export default {
     },
     methods: {
         submit(id) {
-            this.$emit('onSubmit', id)
+            this.$emit('submit', id)
             this.$emit('input', id)
             this.collapsed = true;
         },

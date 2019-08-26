@@ -15,7 +15,7 @@
                         <span v-if="selectedCategoryIDs.length > 0" class="clear button invisible primary" @click="slotProps.clear(); selectedCategoryIDs=[]">Clear filter</span>
                     </template>
                 </DropdownCheckbox>
-                <DropdownRadio :options="teams" :currentOptionId="teamFilterId" :defaultOption="{id: 0, title: 'GLOBAL'}" class="dropdown-parent right" v-model="teamFilterId">
+                <DropdownRadio :options="teams" :currentOptionId="currentTeamId" :defaultOption="{id: 0, title: 'GLOBAL'}" class="dropdown-parent right" @submit="setCurrentTeam">
                     <template v-slot:button="slotProps">
                         <div class="dropdown-button" @click="slotProps.toggle">
                             <img src="/assets/Path5699.svg">
@@ -26,7 +26,7 @@
                 </DropdownRadio>
             </div>
             <product-tabs :productTotals="productTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
-            <products ref="productsComponent" :teamFilterId="teamFilterId" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :prevSingleProductID="prevSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsSorted" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @prevSingle="setPrevSingle"/>
+            <products ref="productsComponent" :teamFilterId="currentTeamId" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :prevSingleProductID="prevSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsSorted" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @prevSingle="setPrevSingle"/>
             <SelectedController :totalCount="productsSorted.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction" @onClearSelection="clearSelectedProducts"/>
         </template>
         <template v-if="loadingCollections">
@@ -75,17 +75,19 @@ export default{
         selectedCategoryIDs: [],
         sortBy: 'datasource_id',
         sortAsc: true,
-        teamFilterId: -1,
+        // teamFilterId: -1,
         catalogueId: '',
+        unsub: '',
     }},
     computed: {
         ...mapGetters('entities/products', ['loadingProducts']),
         ...mapGetters('entities/actions', ['loadingActions']),
         ...mapGetters('entities/comments', ['loadingComments']),
         ...mapGetters('entities/collections', ['loadingCollections']),
-        currentFileId () {
-            return this.$route.params.catalogueId
-        },
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId']),
+        // currentFileId () {
+        //     return this.$route.params.catalogueId
+        // },
         collection() {
             return Collection.find(this.currentFileId)
         },
@@ -111,7 +113,7 @@ export default{
             const products = Product.query().with(['actions.user.teams']).with(['comments.votes', 'comments.user.teams']).with('productFinalAction').all()
             const totalUsers = this.teamUsers
             const userId = this.authUser.id
-            const teamFilterId = this.teamFilterId
+            const teamFilterId = this.currentTeamId
             const data = []
             products.forEach(product => {
                 product.color_variants = JSON.parse(product.color_variants)
@@ -400,11 +402,11 @@ export default{
         },
         teamUsers () {
             let usersToReturn = []
-            if (this.teamFilterId > 0) {
-                const thisTeam = this.teams.find(team => team.id == this.teamFilterId)
+            if (this.currentTeamId > 0) {
+                const thisTeam = this.teams.find(team => team.id == this.currentTeamId)
                 if (thisTeam)
                     usersToReturn = thisTeam.users
-            } else if (this.teamFilterId == 0) {
+            } else if (this.currentTeamId == 0) {
                 usersToReturn = this.users
             } else {
                 usersToReturn = []
@@ -416,7 +418,7 @@ export default{
         },
         comments() {
             const comments = Comment.query().with(['votes', 'user.teams']).all()
-            const teamFilterId = this.teamFilterId
+            const teamFilterId = this.currentTeamId
             if (teamFilterId > 0) {
                 let commentsToReturn = []
                 comments.forEach(comment => {
@@ -440,9 +442,6 @@ export default{
             // return this.$store.getters.authUser;
             return AuthUser.query().with('teams').with('workspaces').first()
         },
-        // userTeams() {
-        //     return UserTeam.query().with('team').with('user').all()
-        // },
         users () {
             return User.query().with('teams').all()
         },
@@ -471,10 +470,6 @@ export default{
             })
             return teams
         },
-        currentWorkspaceId() {
-            if (this.authUser.workspaces != null)
-                return this.authUser.workspaces[0].id
-        },
     },
     methods: {
         ...mapActions('entities/authUser', ['getAuthUser']),
@@ -491,6 +486,7 @@ export default{
         ...mapActions('entities/userTeams', ['fetchUserTeams']),
         ...mapActions('entities/workspaces', ['fetchWorkspaces']),
         ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
+        ...mapActions('persist', ['setCurrentTeam', 'setCurrentFileId']),
         setSingleProduct(index) {
             this.singleProductID = index
         },
@@ -586,48 +582,40 @@ export default{
                 this.sortAsc = !this.sortAsc
             }
         },
-        filterByTeam(id) {
-            this.teamFilterId = id
+        initRequiresWorkspace() {
+            if (Collection.all().length <= 0)
+                    this.fetchCollections(this.currentWorkspaceId)
+            if (User.all().length <= 0)
+                this.fetchUsers(this.currentWorkspaceId)
         },
-        async fetchInitialData() {
-            // Get user
-            console.log('Getting initial data')
-            await Promise.all([
-                this.getAuthUser(),
-                this.fetchWorkspaceUsers(),
-                this.fetchWorkspaces(),
-            ])
-        },
+        initRequiresFileId() {
+            this.fetchProducts(this.currentFileId)
+            this.fetchActions(this.currentFileId)
+            this.fetchComments(this.currentFileId)
+            this.fetchFinalActions(this.currentFileId)
+            this.fetchCommentVotes(this.currentFileId)
+            this.fetchCategories(this.currentFileId)
+        }
     },
     created() {
-        this.fetchInitialData()
-        // Fetch data based on the Auth User
-        .then(response => {
-            // Only get data for the current workspace
-            const room_id = this.authUser.assigned_room_id
-            if (this.currentWorkspaceId) {
+        // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
+        const routeFileId = this.$route.params.catalogueId
+        if (this.currentFileId != routeFileId)
+            this.setCurrentFileId(routeFileId),
+            this.initRequiresFileId()
 
-                this.fetchTeams(this.currentWorkspaceId)
-                this.fetchUserTeams(this.currentWorkspaceId)
-                if (this.authUser.teams.length > 0)
-                    this.teamFilterId = this.authUser.teams[0].id
-
-                this.fetchUsers(this.currentWorkspaceId)
-                this.fetchCollections(this.currentWorkspaceId)
-
-                this.fetchProducts(this.currentFileId)
-                this.fetchActions(this.currentFileId)
-                this.fetchComments(this.currentFileId)
-                this.fetchFinalActions(this.currentFileId)
-                this.fetchCommentVotes(this.currentFileId)
-                this.fetchCategories(this.currentFileId)
-            } else {
-                this.loadingOverwrite = true
-            }
+        // If we already have a workspace id, fetch the data we are missing
+        if (this.currentWorkspaceId != null)
+            this.initRequiresWorkspace()
+        // Else, wait till a workspace id is set, and then fetch the data
+        this.unsub = this.$store.subscribe((mutation, state) => {
+            if(mutation.type == 'persist/setCurrentWorkspace') {
+                this.initRequiresWorkspace()
+            } 
         })
     },
-    mounted() {
-
+    destroyed() {
+        this.unsub()
     }
 }
 </script>

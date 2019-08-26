@@ -31,16 +31,22 @@ export default {
     methods: {
         toggle() {
             this.collapsed = !this.collapsed
+        },
+        // Set the height of the component
+        setHeight() {
+            const offset = 4
+            const el = this.$refs.dropdown
+            const parent = el.closest('.dropdown-parent')
+            if (parent != null)
+                el.style.cssText = `top: ${parent.getBoundingClientRect().height + offset}px; max-height: ${el.scrollHeight}px;`
+            else el.style.cssText = `max-height: ${el.scrollHeight}px;`
         }
     },
+    mounted() {
+        this.setHeight()
+    },
     updated() {
-        // Set the height of the component
-        const offset = 4
-        const el = this.$refs.dropdown
-        const parent = el.closest('.dropdown-parent')
-        if (parent != null)
-            el.style.cssText = `top: ${parent.getBoundingClientRect().height + offset}px; max-height: ${el.scrollHeight}px;`
-        else el.style.cssText = `max-height: ${el.scrollHeight}px;`
+        this.setHeight()
     },
 }
 </script>

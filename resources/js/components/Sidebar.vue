@@ -68,12 +68,6 @@ export default {
       return loading
     }
   },
-  methods: {
-    ...mapActions('entities/roles', ['fetchRoles']),
-  },
-  created() {
-    this.fetchRoles()
-  }
 };
 </script>
 

@@ -188,6 +188,7 @@ export default {
             await this.resend({email: email, team: team, authUser: this.authUser}).then(response => succes = response)
             const el = e.target
             if (succes) {
+                el.classList.add('disabled')
                 el.innerHTML = '<i class="green fas fa-check-circle"></i> Invite sent'
             }
             else {

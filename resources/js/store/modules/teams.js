@@ -5,7 +5,7 @@ export default {
     namespaced: true,
 
     state: {
-      loading: true
+      loading: true,
     },
 
     getters: {
@@ -22,7 +22,6 @@ export default {
             commit('setLoading', true)
   
             const apiUrl = `/api/workspace/${workspace_id}/teams`
-            console.log('fetching teams from: ' + apiUrl)
   
             let tryCount = 3
             let succes = false

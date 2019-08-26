@@ -55,6 +55,8 @@ export default {
         newComment: {
             user_id: this.authUser.id,
             product_id: this.product.id,
+            team_id: this.authUser.teams[0].id,
+            phase: 1,
             comment: '',
             important: false,
             final: false,

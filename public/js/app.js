@@ -7136,10 +7136,19 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./store */ "./resources/js/store/index.js");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _components_Sidebar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/Sidebar */ "./resources/js/components/Sidebar.vue");
-/* harmony import */ var _components_Navbar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/Navbar */ "./resources/js/components/Navbar.vue");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./store */ "./resources/js/store/index.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _components_Sidebar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/Sidebar */ "./resources/js/components/Sidebar.vue");
+/* harmony import */ var _components_Navbar__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/Navbar */ "./resources/js/components/Navbar.vue");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -7160,24 +7169,103 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'app',
-  store: _store__WEBPACK_IMPORTED_MODULE_0__["default"],
+  store: _store__WEBPACK_IMPORTED_MODULE_1__["default"],
   components: {
-    Sidebar: _components_Sidebar__WEBPACK_IMPORTED_MODULE_2__["default"],
-    Navbar: _components_Navbar__WEBPACK_IMPORTED_MODULE_3__["default"]
+    Sidebar: _components_Sidebar__WEBPACK_IMPORTED_MODULE_3__["default"],
+    Navbar: _components_Navbar__WEBPACK_IMPORTED_MODULE_4__["default"]
   },
   data: function data() {
-    return {};
+    return {
+      currentWorkspaceId: null
+    };
   },
   computed: {
     authUser: function authUser() {
-      return this.$store.getters.authUser;
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_5__["default"].query()["with"]('teams')["with"]('workspaces').first();
     }
   },
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/authUser', ['getAuthUser'])),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/roles', ['fetchRoles']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentWorkspace', 'setLoadingInit']), {
+    fetchInitialData: function () {
+      var _fetchInitialData = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                // Get user
+                console.log('App: Getting initial data');
+                _context.next = 3;
+                return Promise.all([this.getAuthUser(), this.fetchWorkspaceUsers(), this.fetchWorkspaces()]);
+
+              case 3:
+                this.currentWorkspaceId = this.authUser.workspaces[0].id;
+                _context.next = 6;
+                return this.setCurrentWorkspace(this.currentWorkspaceId);
+
+              case 6:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function fetchInitialData() {
+        return _fetchInitialData.apply(this, arguments);
+      }
+
+      return fetchInitialData;
+    }()
+  }),
   created: function created() {
-    this.getAuthUser();
+    var _this = this;
+
+    this.fetchInitialData() // Fetch data based on the Auth User
+    .then(
+    /*#__PURE__*/
+    function () {
+      var _ref = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(response) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                if (!_this.authUser) {
+                  _context2.next = 7;
+                  break;
+                }
+
+                _context2.next = 3;
+                return _this.fetchTeams(_this.currentWorkspaceId), _this.fetchUserTeams(_this.currentWorkspaceId), _this.fetchRoles();
+
+              case 3:
+                if (_this.authUser.role_id >= 3) _this.setCurrentTeam(0);else if (_this.authUser.teams.length > 0) _this.setCurrentTeam(_this.authUser.teams[0].id);
+
+                _this.setLoadingInit(false);
+
+                _context2.next = 8;
+                break;
+
+              case 7:
+                _this.loadingOverwrite = true;
+
+              case 8:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }));
+
+      return function (_x) {
+        return _ref.apply(this, arguments);
+      };
+    }());
   }
 });
 
@@ -7429,14 +7517,20 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     toggle: function toggle() {
       this.collapsed = !this.collapsed;
+    },
+    // Set the height of the component
+    setHeight: function setHeight() {
+      var offset = 4;
+      var el = this.$refs.dropdown;
+      var parent = el.closest('.dropdown-parent');
+      if (parent != null) el.style.cssText = "top: ".concat(parent.getBoundingClientRect().height + offset, "px; max-height: ").concat(el.scrollHeight, "px;");else el.style.cssText = "max-height: ".concat(el.scrollHeight, "px;");
     }
   },
+  mounted: function mounted() {
+    this.setHeight();
+  },
   updated: function updated() {
-    // Set the height of the component
-    var offset = 4;
-    var el = this.$refs.dropdown;
-    var parent = el.closest('.dropdown-parent');
-    if (parent != null) el.style.cssText = "top: ".concat(parent.getBoundingClientRect().height + offset, "px; max-height: ").concat(el.scrollHeight, "px;");else el.style.cssText = "max-height: ".concat(el.scrollHeight, "px;");
+    this.setHeight();
   }
 });
 
@@ -7595,7 +7689,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     submit: function submit(id) {
-      this.$emit('onSubmit', id);
+      this.$emit('submit', id);
       this.$emit('input', id);
       this.collapsed = true;
     },
@@ -7984,6 +8078,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       newComment: {
         user_id: this.authUser.id,
         product_id: this.product.id,
+        team_id: this.authUser.teams[0].id,
+        phase: 1,
         comment: '',
         important: false,
         "final": false,
@@ -8689,10 +8785,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _SignoutButton__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SignoutButton */ "./resources/js/components/SignoutButton.vue");
 /* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
 /* harmony import */ var _store_models_Role__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../store/models/Role */ "./resources/js/store/models/Role.js");
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 //
 //
 //
@@ -8762,10 +8854,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       return loading;
     }
-  },
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/roles', ['fetchRoles'])),
-  created: function created() {
-    this.fetchRoles();
   }
 });
 
@@ -9123,6 +9211,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 el = e.target;
 
                 if (succes) {
+                  el.classList.add('disabled');
                   el.innerHTML = '<i class="green fas fa-check-circle"></i> Invite sent';
                 } else {
                   el.innerHTML = '<i class="red fas fa-times-circle"></i> Failed';
@@ -9358,33 +9447,25 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../store */ "./resources/js/store/index.js");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _Products__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Products */ "./resources/js/components/Products.vue");
-/* harmony import */ var _ProductTabs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../ProductTabs */ "./resources/js/components/ProductTabs.vue");
-/* harmony import */ var _CatalogueHeader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../CatalogueHeader */ "./resources/js/components/CatalogueHeader.vue");
-/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../Loader */ "./resources/js/components/Loader.vue");
-/* harmony import */ var _SelectedController__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../SelectedController */ "./resources/js/components/SelectedController.vue");
-/* harmony import */ var _DropdownRadio__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../DropdownRadio */ "./resources/js/components/DropdownRadio.vue");
-/* harmony import */ var _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../DropdownCheckbox */ "./resources/js/components/DropdownCheckbox.vue");
-/* harmony import */ var _store_models_Comment__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../store/models/Comment */ "./resources/js/store/models/Comment.js");
-/* harmony import */ var _store_models_Product__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../store/models/Product */ "./resources/js/store/models/Product.js");
-/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
-/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
-/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
-/* harmony import */ var _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../store/models/ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
-/* harmony import */ var _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../store/models/CommentVote */ "./resources/js/store/models/CommentVote.js");
-/* harmony import */ var _store_models_Category__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../store/models/Category */ "./resources/js/store/models/Category.js");
-/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
-
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../store */ "./resources/js/store/index.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Products__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Products */ "./resources/js/components/Products.vue");
+/* harmony import */ var _ProductTabs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../ProductTabs */ "./resources/js/components/ProductTabs.vue");
+/* harmony import */ var _CatalogueHeader__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../CatalogueHeader */ "./resources/js/components/CatalogueHeader.vue");
+/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../Loader */ "./resources/js/components/Loader.vue");
+/* harmony import */ var _SelectedController__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../SelectedController */ "./resources/js/components/SelectedController.vue");
+/* harmony import */ var _DropdownRadio__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../DropdownRadio */ "./resources/js/components/DropdownRadio.vue");
+/* harmony import */ var _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../DropdownCheckbox */ "./resources/js/components/DropdownCheckbox.vue");
+/* harmony import */ var _store_models_Comment__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../store/models/Comment */ "./resources/js/store/models/Comment.js");
+/* harmony import */ var _store_models_Product__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../store/models/Product */ "./resources/js/store/models/Product.js");
+/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
+/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
+/* harmony import */ var _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../store/models/ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
+/* harmony import */ var _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../store/models/CommentVote */ "./resources/js/store/models/CommentVote.js");
+/* harmony import */ var _store_models_Category__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../store/models/Category */ "./resources/js/store/models/Category.js");
+/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
@@ -9449,15 +9530,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'catalogue',
-  store: _store__WEBPACK_IMPORTED_MODULE_1__["default"],
+  store: _store__WEBPACK_IMPORTED_MODULE_0__["default"],
   components: {
-    Products: _Products__WEBPACK_IMPORTED_MODULE_3__["default"],
-    ProductTabs: _ProductTabs__WEBPACK_IMPORTED_MODULE_4__["default"],
-    SelectedController: _SelectedController__WEBPACK_IMPORTED_MODULE_7__["default"],
-    Loader: _Loader__WEBPACK_IMPORTED_MODULE_6__["default"],
-    DropdownCheckbox: _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_9__["default"],
-    DropdownRadio: _DropdownRadio__WEBPACK_IMPORTED_MODULE_8__["default"],
-    CatalogueHeader: _CatalogueHeader__WEBPACK_IMPORTED_MODULE_5__["default"]
+    Products: _Products__WEBPACK_IMPORTED_MODULE_2__["default"],
+    ProductTabs: _ProductTabs__WEBPACK_IMPORTED_MODULE_3__["default"],
+    SelectedController: _SelectedController__WEBPACK_IMPORTED_MODULE_6__["default"],
+    Loader: _Loader__WEBPACK_IMPORTED_MODULE_5__["default"],
+    DropdownCheckbox: _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_8__["default"],
+    DropdownRadio: _DropdownRadio__WEBPACK_IMPORTED_MODULE_7__["default"],
+    CatalogueHeader: _CatalogueHeader__WEBPACK_IMPORTED_MODULE_4__["default"]
   },
   data: function data() {
     return {
@@ -9467,16 +9548,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       selectedCategoryIDs: [],
       sortBy: 'datasource_id',
       sortAsc: true,
-      teamFilterId: -1,
-      catalogueId: ''
+      // teamFilterId: -1,
+      catalogueId: '',
+      unsub: ''
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/collections', ['loadingCollections']), {
-    currentFileId: function currentFileId() {
-      return this.$route.params.catalogueId;
-    },
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId']), {
+    // currentFileId () {
+    //     return this.$route.params.catalogueId
+    // },
     collection: function collection() {
-      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_14__["default"].find(this.currentFileId);
+      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_13__["default"].find(this.currentFileId);
     },
     startDate: function startDate() {
       if (this.collection.start_time != null) {
@@ -9499,10 +9581,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return 'Unset';
     },
     products: function products() {
-      var products = _store_models_Product__WEBPACK_IMPORTED_MODULE_11__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes', 'comments.user.teams'])["with"]('productFinalAction').all();
+      var products = _store_models_Product__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes', 'comments.user.teams'])["with"]('productFinalAction').all();
       var totalUsers = this.teamUsers;
       var userId = this.authUser.id;
-      var teamFilterId = this.teamFilterId;
+      var teamFilterId = this.currentTeamId;
       var data = [];
       products.forEach(function (product) {
         product.color_variants = JSON.parse(product.color_variants);
@@ -9744,12 +9826,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       var usersToReturn = [];
 
-      if (this.teamFilterId > 0) {
+      if (this.currentTeamId > 0) {
         var thisTeam = this.teams.find(function (team) {
-          return team.id == _this5.teamFilterId;
+          return team.id == _this5.currentTeamId;
         });
         if (thisTeam) usersToReturn = thisTeam.users;
-      } else if (this.teamFilterId == 0) {
+      } else if (this.currentTeamId == 0) {
         usersToReturn = this.users;
       } else {
         usersToReturn = [];
@@ -9761,8 +9843,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return this.$store.getters['entities/actions/all']();
     },
     comments: function comments() {
-      var comments = _store_models_Comment__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"](['votes', 'user.teams']).all();
-      var teamFilterId = this.teamFilterId;
+      var comments = _store_models_Comment__WEBPACK_IMPORTED_MODULE_9__["default"].query()["with"](['votes', 'user.teams']).all();
+      var teamFilterId = this.currentTeamId;
 
       if (teamFilterId > 0) {
         var commentsToReturn = [];
@@ -9773,29 +9855,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else return comments;
     },
     categories: function categories() {
-      return _store_models_Category__WEBPACK_IMPORTED_MODULE_17__["default"].query()["with"]('products').all();
+      return _store_models_Category__WEBPACK_IMPORTED_MODULE_16__["default"].query()["with"]('products').all();
     },
     finalActions: function finalActions() {
-      return _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_15__["default"].query().all();
+      return _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_14__["default"].query().all();
     },
     commentVotes: function commentVotes() {
-      return _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_16__["default"].query()["with"]('comment').all();
+      return _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_15__["default"].query()["with"]('comment').all();
     },
     authUser: function authUser() {
       // return this.$store.getters.authUser;
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_19__["default"].query()["with"]('teams')["with"]('workspaces').first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_18__["default"].query()["with"]('teams')["with"]('workspaces').first();
     },
-    // userTeams() {
-    //     return UserTeam.query().with('team').with('user').all()
-    // },
     users: function users() {
-      return _store_models_User__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"]('teams').all();
+      return _store_models_User__WEBPACK_IMPORTED_MODULE_11__["default"].query()["with"]('teams').all();
     },
     teams: function teams() {
       // Manually find the teams and the users belonging to each team.
       // This is only necessary because I cannot make the Vuex ORM realtionship work 
       // If you can make it work, please be my guest
-      var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_13__["default"].query()["with"]('users').all();
+      var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"]('users').all();
       var users = this.users; // Loop through the users and sort them between the teams
 
       users.forEach(function (user) {
@@ -9817,12 +9896,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
       });
       return teams;
-    },
-    currentWorkspaceId: function currentWorkspaceId() {
-      if (this.authUser.workspaces != null) return this.authUser.workspaces[0].id;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentFileId']), {
     setSingleProduct: function setSingleProduct(index) {
       this.singleProductID = index;
     },
@@ -9931,73 +10007,37 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.sortAsc = !this.sortAsc;
       }
     },
-    filterByTeam: function filterByTeam(id) {
-      this.teamFilterId = id;
+    initRequiresWorkspace: function initRequiresWorkspace() {
+      if (_store_models_Collection__WEBPACK_IMPORTED_MODULE_13__["default"].all().length <= 0) this.fetchCollections(this.currentWorkspaceId);
+      if (_store_models_User__WEBPACK_IMPORTED_MODULE_11__["default"].all().length <= 0) this.fetchUsers(this.currentWorkspaceId);
     },
-    fetchInitialData: function () {
-      var _fetchInitialData = _asyncToGenerator(
-      /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                // Get user
-                console.log('Getting initial data');
-                _context.next = 3;
-                return Promise.all([this.getAuthUser(), this.fetchWorkspaceUsers(), this.fetchWorkspaces()]);
-
-              case 3:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-
-      function fetchInitialData() {
-        return _fetchInitialData.apply(this, arguments);
-      }
-
-      return fetchInitialData;
-    }()
+    initRequiresFileId: function initRequiresFileId() {
+      this.fetchProducts(this.currentFileId);
+      this.fetchActions(this.currentFileId);
+      this.fetchComments(this.currentFileId);
+      this.fetchFinalActions(this.currentFileId);
+      this.fetchCommentVotes(this.currentFileId);
+      this.fetchCategories(this.currentFileId);
+    }
   }),
   created: function created() {
     var _this7 = this;
 
-    this.fetchInitialData() // Fetch data based on the Auth User
-    .then(function (response) {
-      // Only get data for the current workspace
-      var room_id = _this7.authUser.assigned_room_id;
+    // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
+    var routeFileId = this.$route.params.catalogueId;
+    if (this.currentFileId != routeFileId) this.setCurrentFileId(routeFileId), this.initRequiresFileId(); // If we already have a workspace id, fetch the data we are missing
 
-      if (_this7.currentWorkspaceId) {
-        _this7.fetchTeams(_this7.currentWorkspaceId);
+    if (this.currentWorkspaceId != null) this.initRequiresWorkspace(); // Else, wait till a workspace id is set, and then fetch the data
 
-        _this7.fetchUserTeams(_this7.currentWorkspaceId);
-
-        if (_this7.authUser.teams.length > 0) _this7.teamFilterId = _this7.authUser.teams[0].id;
-
-        _this7.fetchUsers(_this7.currentWorkspaceId);
-
-        _this7.fetchCollections(_this7.currentWorkspaceId);
-
-        _this7.fetchProducts(_this7.currentFileId);
-
-        _this7.fetchActions(_this7.currentFileId);
-
-        _this7.fetchComments(_this7.currentFileId);
-
-        _this7.fetchFinalActions(_this7.currentFileId);
-
-        _this7.fetchCommentVotes(_this7.currentFileId);
-
-        _this7.fetchCategories(_this7.currentFileId);
-      } else {
-        _this7.loadingOverwrite = true;
+    this.unsub = this.$store.subscribe(function (mutation, state) {
+      if (mutation.type == 'persist/setCurrentWorkspace') {
+        _this7.initRequiresWorkspace();
       }
     });
   },
-  mounted: function mounted() {}
+  destroyed: function destroyed() {
+    this.unsub();
+  }
 });
 
 /***/ }),
@@ -10011,26 +10051,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../store */ "./resources/js/store/index.js");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Loader */ "./resources/js/components/Loader.vue");
-/* harmony import */ var _CataloguesTable__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../CataloguesTable */ "./resources/js/components/CataloguesTable.vue");
-/* harmony import */ var _DropdownRadio__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../DropdownRadio */ "./resources/js/components/DropdownRadio.vue");
-/* harmony import */ var _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../DropdownCheckbox */ "./resources/js/components/DropdownCheckbox.vue");
-/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
-/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
-/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
-/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
-/* harmony import */ var _App_vue__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../App.vue */ "./resources/js/App.vue");
-
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../store */ "./resources/js/store/index.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Loader */ "./resources/js/components/Loader.vue");
+/* harmony import */ var _CataloguesTable__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../CataloguesTable */ "./resources/js/components/CataloguesTable.vue");
+/* harmony import */ var _DropdownRadio__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../DropdownRadio */ "./resources/js/components/DropdownRadio.vue");
+/* harmony import */ var _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../DropdownCheckbox */ "./resources/js/components/DropdownCheckbox.vue");
+/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
+/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
+/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -10077,40 +10108,37 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
-
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'collection',
-  store: _store__WEBPACK_IMPORTED_MODULE_1__["default"],
+  store: _store__WEBPACK_IMPORTED_MODULE_0__["default"],
   components: {
-    Loader: _Loader__WEBPACK_IMPORTED_MODULE_3__["default"],
-    CataloguesTable: _CataloguesTable__WEBPACK_IMPORTED_MODULE_4__["default"],
-    DropdownCheckbox: _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_6__["default"],
-    DropdownRadio: _DropdownRadio__WEBPACK_IMPORTED_MODULE_5__["default"]
+    Loader: _Loader__WEBPACK_IMPORTED_MODULE_2__["default"],
+    CataloguesTable: _CataloguesTable__WEBPACK_IMPORTED_MODULE_3__["default"],
+    DropdownCheckbox: _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_5__["default"],
+    DropdownRadio: _DropdownRadio__WEBPACK_IMPORTED_MODULE_4__["default"]
   },
   data: function data() {
     return {
       selected: [],
       itemFilterIds: [],
-      teamFilterId: '-1',
-      loadingOverwrite: false
+      // teamFilterId: '-1',
+      loadingOverwrite: false,
+      unsub: ''
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/collections', ['loadingCollections']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId']), {
     collections: function collections() {
-      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_7__["default"].query().all();
+      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_6__["default"].query().all();
     },
     users: function users() {
-      return _store_models_User__WEBPACK_IMPORTED_MODULE_9__["default"].query()["with"]('teams').all();
+      return _store_models_User__WEBPACK_IMPORTED_MODULE_8__["default"].query()["with"]('teams').all();
     },
     authUser: function authUser() {
       // return this.$store.getters.authUser;
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_11__["default"].query()["with"]('teams')["with"]('workspaces').first();
-    },
-    currentWorkspaceId: function currentWorkspaceId() {
-      if (this.authUser.workspaces != null) return this.authUser.workspaces[0].id;
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"]('teams')["with"]('workspaces').first();
     },
     teams: function teams() {
-      return _store_models_Team__WEBPACK_IMPORTED_MODULE_8__["default"].query()["with"]('users').all();
+      return _store_models_Team__WEBPACK_IMPORTED_MODULE_7__["default"].query()["with"]('users').all();
     },
     isLoading: function isLoading() {
       var loading = false;
@@ -10118,7 +10146,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return loading;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentTeam']), {
     onSelect: function onSelect(index) {
       // Check if index already exists in array. If it exists remove it, else add it to array
       var selected = this.selected;
@@ -10135,84 +10163,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
       });
     },
-    // filterByTeam(id) {
-    //     this.teamFilterId = id
-    // },
-    fetchInitialData: function () {
-      var _fetchInitialData = _asyncToGenerator(
-      /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                // Get user
-                console.log('Getting initial data');
-                _context.next = 3;
-                return Promise.all([this.getAuthUser(), this.fetchWorkspaceUsers(), this.fetchWorkspaces()]);
-
-              case 3:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-
-      function fetchInitialData() {
-        return _fetchInitialData.apply(this, arguments);
-      }
-
-      return fetchInitialData;
-    }()
+    initRequiresWorkspace: function initRequiresWorkspace() {
+      if (_store_models_Collection__WEBPACK_IMPORTED_MODULE_6__["default"].all().length <= 0) this.fetchCollections(this.currentWorkspaceId);
+      if (_store_models_User__WEBPACK_IMPORTED_MODULE_8__["default"].all().length <= 0) this.fetchUsers(this.currentWorkspaceId);
+    }
   }),
   created: function created() {
     var _this = this;
 
-    this.fetchInitialData() // Fetch data based on the Auth User
-    .then(
-    /*#__PURE__*/
-    function () {
-      var _ref = _asyncToGenerator(
-      /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(response) {
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                if (!_this.currentWorkspaceId) {
-                  _context2.next = 8;
-                  break;
-                }
+    // If we already have a workspace id, fetch the data we are missing
+    if (this.currentWorkspaceId != null) this.initRequiresWorkspace(); // Else, wait till a workspace id is set, and then fetch the data
 
-                _context2.next = 3;
-                return _this.fetchTeams(_this.currentWorkspaceId), _this.fetchUserTeams(_this.currentWorkspaceId);
-
-              case 3:
-                if (_this.authUser.role_id >= 3) _this.teamFilterId = 0;else if (_this.authUser.teams.length > 0) _this.teamFilterId = _this.authUser.teams[0].id;
-
-                _this.fetchCollections(_this.currentWorkspaceId);
-
-                _this.fetchUsers(_this.currentWorkspaceId);
-
-                _context2.next = 9;
-                break;
-
-              case 8:
-                _this.loadingOverwrite = true;
-
-              case 9:
-              case "end":
-                return _context2.stop();
-            }
-          }
-        }, _callee2);
-      }));
-
-      return function (_x) {
-        return _ref.apply(this, arguments);
-      };
-    }());
+    this.unsub = this.$store.subscribe(function (mutation, state) {
+      if (mutation.type == 'persist/setCurrentWorkspace') {
+        _this.initRequiresWorkspace();
+      }
+    });
+  },
+  destroyed: function destroyed() {
+    this.unsub();
   }
 });
 
@@ -10227,23 +10196,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
-/* harmony import */ var _TeamsTopBar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../TeamsTopBar */ "./resources/js/components/TeamsTopBar.vue");
-/* harmony import */ var _TeamsTable__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../TeamsTable */ "./resources/js/components/TeamsTable.vue");
-/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
-/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
-/* harmony import */ var _TeamInviteModal__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../TeamInviteModal */ "./resources/js/components/TeamInviteModal.vue");
-/* harmony import */ var _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../store/models/TeamInvite */ "./resources/js/store/models/TeamInvite.js");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
-
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var _TeamsTopBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../TeamsTopBar */ "./resources/js/components/TeamsTopBar.vue");
+/* harmony import */ var _TeamsTable__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../TeamsTable */ "./resources/js/components/TeamsTable.vue");
+/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
+/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _TeamInviteModal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../TeamInviteModal */ "./resources/js/components/TeamInviteModal.vue");
+/* harmony import */ var _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../store/models/TeamInvite */ "./resources/js/store/models/TeamInvite.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -10270,15 +10231,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'teams',
   components: {
-    TeamsTopBar: _TeamsTopBar__WEBPACK_IMPORTED_MODULE_3__["default"],
-    TeamsTable: _TeamsTable__WEBPACK_IMPORTED_MODULE_4__["default"],
-    TeamInviteModal: _TeamInviteModal__WEBPACK_IMPORTED_MODULE_7__["default"]
+    TeamsTopBar: _TeamsTopBar__WEBPACK_IMPORTED_MODULE_2__["default"],
+    TeamsTable: _TeamsTable__WEBPACK_IMPORTED_MODULE_3__["default"],
+    TeamInviteModal: _TeamInviteModal__WEBPACK_IMPORTED_MODULE_6__["default"]
   },
   data: function data() {
     return {
       selected: [],
       singleTeam: null,
-      loadingOverwrite: false
+      loadingOverwrite: false,
+      unsub: ''
     };
   },
   watch: {
@@ -10286,18 +10248,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (newVal != null) document.querySelector('body').classList.add('disabled');else document.querySelector('body').classList.remove('disabled');
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['loadingTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/userTeams', ['loadingUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/users', ['loadingUsers']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/teams', ['loadingTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/userTeams', ['loadingUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/users', ['loadingUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId']), {
     authUser: function authUser() {
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_9__["default"].query()["with"]('workspaces')["with"]('teams')["with"]('role').first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_8__["default"].query()["with"]('workspaces')["with"]('teams')["with"]('role').first();
     },
     teamInvites: function teamInvites() {
-      return _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_8__["default"].query().all();
+      return _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_7__["default"].query().all();
     },
     userTeams: function userTeams() {
-      return _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_6__["default"].query()["with"]('team')["with"]('user').all();
+      return _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_5__["default"].query()["with"]('team')["with"]('user').all();
     },
     users: function users() {
-      return _store_models_User__WEBPACK_IMPORTED_MODULE_5__["default"].query()["with"]('teams')["with"]('role').all();
+      return _store_models_User__WEBPACK_IMPORTED_MODULE_4__["default"].query()["with"]('teams')["with"]('role').all();
     },
     teams: function teams() {
       var _this = this;
@@ -10305,7 +10267,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // Manually find the teams and the users belonging to each team.
       // This is only necessary because I cannot make the Vuex ORM realtionship work 
       // If you can make it work, please be my guest
-      var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('users')["with"]('invites').all();
+      var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_1__["default"].query()["with"]('users')["with"]('invites').all();
       var users = this.users; // Loop through the users and sort them between the teams
 
       users.forEach(function (user) {
@@ -10314,7 +10276,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           if ('id' in user.teams[0]) {
             // If we have a team with an id
             // Set the users role
-            // user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
             user.teams.forEach(function (userTeam) {
               // Loop through each of the users teams and add the user
               // Find the corresponding team
@@ -10348,12 +10309,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var loading = false;
       if (!this.loadingOverwrite) if (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.users[0].role == null || this.authUser == null) loading = true;
       return loading;
-    },
-    currentWorkspaceId: function currentWorkspaceId() {
-      if (this.authUser.workspaces != null) return this.authUser.workspaces[0].id;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamInvites', ['fetchTeamInvites']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/teamInvites', ['fetchTeamInvites']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {
     setSelected: function setSelected(index) {
       // Check if index already exists in array. If it exists remove it, else add it to array
       var selected = this.selected;
@@ -10368,56 +10326,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     closeModal: function closeModal() {
       this.singleTeam = null;
     },
-    fetchInitialData: function () {
-      var _fetchInitialData = _asyncToGenerator(
-      /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                // Get user
-                console.log('Getting initial data');
-                _context.next = 3;
-                return Promise.all([this.getAuthUser(), this.fetchWorkspaceUsers(), this.fetchWorkspaces()]);
-
-              case 3:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-
-      function fetchInitialData() {
-        return _fetchInitialData.apply(this, arguments);
-      }
-
-      return fetchInitialData;
-    }()
+    initRequiresWorkspace: function initRequiresWorkspace() {
+      if (_store_models_User__WEBPACK_IMPORTED_MODULE_4__["default"].all().length <= 0) this.fetchUsers(this.currentWorkspaceId);
+      if (_store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_7__["default"].all().length <= 0) this.fetchTeamInvites(this.currentWorkspaceId);
+    }
   }),
   created: function created() {
     var _this2 = this;
 
-    this.fetchInitialData() // Fetch data based on the Auth User
-    .then(function (response) {
-      // Only get data for the users assigned room
-      var room_id = _this2.authUser.assigned_room_id;
+    // If we already have a workspace id, fetch the data we are missing
+    if (this.currentWorkspaceId != null) this.initRequiresWorkspace(); // Else, wait till a workspace id is set, and then fetch the data
 
-      if (_this2.currentWorkspaceId) {
-        _this2.fetchTeams(_this2.currentWorkspaceId);
-
-        _this2.fetchUserTeams(_this2.currentWorkspaceId);
-
-        if (_this2.authUser.teams.length > 0) _this2.teamFilterId = _this2.authUser.teams[0].id;
-
-        _this2.fetchUsers(_this2.currentWorkspaceId);
-
-        _this2.fetchTeamInvites(_this2.currentWorkspaceId);
-      } else {
-        _this2.loadingOverwrite = true;
+    this.unsub = this.$store.subscribe(function (mutation, state) {
+      if (mutation.type == 'persist/setCurrentWorkspace') {
+        _this2.initRequiresWorkspace();
       }
     });
+  },
+  destroyed: function destroyed() {
+    this.unsub();
   }
 });
 
@@ -17589,9 +17516,10 @@ var render = function() {
                   staticClass: "dropdown-parent right",
                   attrs: {
                     options: _vm.teams,
-                    currentOptionId: _vm.teamFilterId,
+                    currentOptionId: _vm.currentTeamId,
                     defaultOption: { id: 0, title: "GLOBAL" }
                   },
+                  on: { submit: _vm.setCurrentTeam },
                   scopedSlots: _vm._u(
                     [
                       {
@@ -17623,14 +17551,7 @@ var render = function() {
                     null,
                     false,
                     2039768778
-                  ),
-                  model: {
-                    value: _vm.teamFilterId,
-                    callback: function($$v) {
-                      _vm.teamFilterId = $$v
-                    },
-                    expression: "teamFilterId"
-                  }
+                  )
                 })
               ],
               1
@@ -17647,7 +17568,7 @@ var render = function() {
             _c("products", {
               ref: "productsComponent",
               attrs: {
-                teamFilterId: _vm.teamFilterId,
+                teamFilterId: _vm.currentTeamId,
                 teamUsers: _vm.teamUsers,
                 selectedIds: _vm.selectedProductIDs,
                 sortBy: _vm.sortBy,
@@ -17788,9 +17709,10 @@ var render = function() {
             staticClass: "dropdown-parent right",
             attrs: {
               options: _vm.teams,
-              currentOptionId: _vm.teamFilterId,
+              currentOptionId: _vm.currentTeamId,
               defaultOption: { id: 0, title: "GLOBAL" }
             },
+            on: { submit: _vm.setCurrentTeam },
             scopedSlots: _vm._u([
               {
                 key: "button",
@@ -17815,14 +17737,7 @@ var render = function() {
                   ]
                 }
               }
-            ]),
-            model: {
-              value: _vm.teamFilterId,
-              callback: function($$v) {
-                _vm.teamFilterId = $$v
-              },
-              expression: "teamFilterId"
-            }
+            ])
           })
         ],
         1
@@ -36077,10 +35992,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
 /* harmony import */ var _database__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./database */ "./resources/js/store/database.js");
-/* harmony import */ var _modules_authUser__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/authUser */ "./resources/js/store/modules/authUser.js");
+/* harmony import */ var _modules_persist__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/persist */ "./resources/js/store/modules/persist.js");
 
 
 
+ // import authUser from './modules/authUser'
 
  // Load Vuex
 
@@ -36089,7 +36005,8 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
 var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
   plugins: [_vuex_orm_core__WEBPACK_IMPORTED_MODULE_2__["default"].install(_database__WEBPACK_IMPORTED_MODULE_3__["default"])],
   modules: {
-    authUser: _modules_authUser__WEBPACK_IMPORTED_MODULE_4__["default"]
+    // authUser
+    persist: _modules_persist__WEBPACK_IMPORTED_MODULE_4__["default"]
   }
 });
 /* harmony default export */ __webpack_exports__["default"] = (store);
@@ -38136,6 +38053,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/comment", {
                   user_id: comment.user_id,
                   product_id: comment.product_id,
+                  team_id: comment.team_id,
+                  phase: comment.phase,
                   comment_body: comment.comment,
                   important: comment.important,
                   "final": comment["final"],
@@ -38353,6 +38272,73 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     //Set the loading status of the app
     setLoading: function setLoading(state, bool) {
       state.loading = bool;
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/store/modules/persist.js":
+/*!***********************************************!*\
+  !*** ./resources/js/store/modules/persist.js ***!
+  \***********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    currentTeamId: -1,
+    currentWorkspaceId: null,
+    currentFileId: null,
+    loadingInit: true
+  },
+  getters: {
+    currentTeamId: function currentTeamId(state) {
+      return state.currentTeamId;
+    },
+    currentWorkspaceId: function currentWorkspaceId(state) {
+      return state.currentWorkspaceId;
+    },
+    currentFileId: function currentFileId(state) {
+      return state.currentFileId;
+    },
+    loadingInit: function loadingInit(state) {
+      return state.loadingInit;
+    }
+  },
+  actions: {
+    setCurrentTeam: function setCurrentTeam(_ref, id) {
+      var commit = _ref.commit;
+      commit('setCurrentTeam', id);
+    },
+    setCurrentWorkspace: function setCurrentWorkspace(_ref2, id) {
+      var commit = _ref2.commit;
+      commit('setCurrentWorkspace', id);
+    },
+    setCurrentFileId: function setCurrentFileId(_ref3, id) {
+      var commit = _ref3.commit;
+      commit('setcurrentFileId', id);
+    },
+    setLoadingInit: function setLoadingInit(_ref4, bool) {
+      var commit = _ref4.commit;
+      commit('setLoadingInit', bool);
+    }
+  },
+  mutations: {
+    setCurrentTeam: function setCurrentTeam(state, id) {
+      state.currentTeamId = id;
+    },
+    setCurrentWorkspace: function setCurrentWorkspace(state, id) {
+      state.currentWorkspaceId = id;
+    },
+    setcurrentFileId: function setcurrentFileId(state, id) {
+      state.currentFileId = id;
+    },
+    setLoadingInit: function setLoadingInit(state, bool) {
+      state.loadingInit = bool;
     }
   }
 });
@@ -39207,60 +39193,59 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit = _ref.commit;
 
                 if (!workspace_id) {
-                  _context.next = 26;
+                  _context.next = 25;
                   break;
                 }
 
                 commit('setLoading', true);
                 apiUrl = "/api/workspace/".concat(workspace_id, "/teams");
-                console.log('fetching teams from: ' + apiUrl);
                 tryCount = 3;
                 succes = false;
 
-              case 7:
+              case 6:
                 if (!(tryCount-- > 0 && !succes)) {
-                  _context.next = 26;
+                  _context.next = 25;
                   break;
                 }
 
-                _context.prev = 8;
-                _context.next = 11;
+                _context.prev = 7;
+                _context.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
 
-              case 11:
+              case 10:
                 response = _context.sent;
                 _models_Team__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
                 succes = true;
-                _context.next = 24;
+                _context.next = 23;
                 break;
 
-              case 17:
-                _context.prev = 17;
-                _context.t0 = _context["catch"](8);
+              case 16:
+                _context.prev = 16;
+                _context.t0 = _context["catch"](7);
                 console.log('API error in teams.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
 
                 if (!(tryCount <= 0)) {
-                  _context.next = 24;
+                  _context.next = 23;
                   break;
                 }
 
                 throw _context.t0;
 
-              case 24:
-                _context.next = 7;
+              case 23:
+                _context.next = 6;
                 break;
 
-              case 26:
+              case 25:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[8, 17]]);
+        }, _callee, null, [[7, 16]]);
       }));
 
       function fetchTeams(_x, _x2) {
