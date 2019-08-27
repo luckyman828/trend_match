@@ -31,10 +31,6 @@ export default{
         authUser() {
             return AuthUser.query().with('teams').with('workspaces').first()
         },
-        // currentWorkspaceId() {
-        //     if (this.authUser.workspaces != null)
-        //         return this.authUser.workspaces[0].id
-        // },
     },
     methods: {
         ...mapActions('entities/authUser', ['getAuthUser']),

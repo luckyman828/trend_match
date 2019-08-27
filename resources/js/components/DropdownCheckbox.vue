@@ -12,10 +12,10 @@
                 </div>
                 <div class="body">
                     <div class="checkbox-buttons">
-                        <label v-for="(option, index) in options" :key="index" :class="{active: selected.find(x => x == option.id)}" class="checkbox">
-                            <input type="checkbox" :value="option.id" v-model="selected" @change="submit(option.id)">
+                        <label v-for="(option, index) in options" :key="index" :class="{active: selected.find(x => x == option)}" class="checkbox">
+                            <input type="checkbox" :value="option" v-model="selected" @change="submit(option)">
                             <span class="checkmark"></span>
-                            {{option.title}}
+                            {{option}}
                         </label>
                     </div>
                 </div>

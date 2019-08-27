@@ -7890,6 +7890,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -7956,6 +7971,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     toggleInOut: function toggleInOut(product, actionType) {
       this.$emit('onToggleInOut', product, actionType);
+    },
+    toggleInOutUser: function toggleInOutUser(product, actionType) {
+      this.$emit('onToggleInOutUser', product, actionType);
     },
     setCurrentTab: function setCurrentTab(filter) {
       this.currentTab = filter;
@@ -9368,14 +9386,16 @@ __webpack_require__.r(__webpack_exports__);
         // const uniqueTeams = [...new Set(tooltip.data.map(x => x.team.title))]
         // Create an array of unique teams from the users in data
         var uniqueTeams = [];
+        var noTeam = {
+          title: 'No team',
+          users: [] // if (tooltip.data.length > 0) {
+          //     uniqueTeams.push({
+          //         title: 'NO TEAM',
+          //         users: [],
+          //     })
+          // }
 
-        if (tooltip.data.length > 0) {
-          uniqueTeams.push({
-            title: 'NO TEAM',
-            users: []
-          });
-        }
-
+        };
         var users = tooltip.data;
         users.forEach(function (user) {
           // Check if the user has any teams
@@ -9405,24 +9425,11 @@ __webpack_require__.r(__webpack_exports__);
             }
           } // If the user does not have a team, add them to a "No team" group
           else {
-              uniqueTeams[0].users.push(user);
+              noTeam.users.push(user);
             }
-        }); // uniqueTeams.forEach(team => {
-        //     const thisTeam = {
-        //         name: team,
-        //         users: [],
-        //         teamUsers: tooltip.teams.find(obj => {
-        //             return obj.title == team.toUpperCase()
-        //         })
-        //     }
-        //     tooltip.data.forEach(user => {
-        //         if (user.team.title == team) {
-        //             thisTeam.users.push(user)
-        //         }
-        //     })
-        //     data.push(thisTeam)
-        // })
+        }); // Add a "No team" option to the tooltip if it exists
 
+        if (noTeam.users.length > 0) uniqueTeams.unshift(noTeam);
         return uniqueTeams;
       }
     },
@@ -9546,11 +9553,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       currentProductFilter: 'overview',
       selectedProductIDs: [],
       selectedCategoryIDs: [],
+      selectedCategories: [],
       sortBy: 'datasource_id',
       sortAsc: true,
       // teamFilterId: -1,
       catalogueId: '',
-      unsub: ''
+      unsub: '',
+      test: ''
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId']), {
@@ -9654,15 +9663,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return data;
     },
     productsFilteredByCategory: function productsFilteredByCategory() {
-      var _this = this;
-
       var products = this.products;
-      var categoryIDs = this.selectedCategoryIDs;
+      var categories = this.selectedCategories;
       var productsToReturn = products; // First filter by category
 
-      if (this.selectedCategoryIDs.length > 0) {
+      if (categories.length > 0) {
         var filteredByCategory = productsToReturn.filter(function (product) {
-          return Array.from(_this.selectedCategoryIDs).includes(product.category_id);
+          return Array.from(categories).includes(product.short_description);
         });
         productsToReturn = filteredByCategory;
       }
@@ -9788,14 +9795,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return data;
     },
     singleProductToShow: function singleProductToShow() {
-      var _this2 = this;
+      var _this = this;
 
       var productToReturn = this.singleProductID != -1 ? this.products.find(function (product) {
-        return product.id == _this2.singleProductID;
+        return product.id == _this.singleProductID;
       }) : {};
       return productToReturn;
     },
     nextSingleProductID: function nextSingleProductID() {
+      var _this2 = this;
+
+      var products = this.productsSorted; // Check if we have a single product
+
+      if (this.singleProductID != -1) {
+        var currentProductIndex = products.findIndex(function (product) {
+          return product.id == _this2.singleProductID;
+        }); // Check that the current single product is not the last product
+
+        if (currentProductIndex + 1 < products.length) return products[currentProductIndex + 1].id;else return -1;
+      } else return -1;
+    },
+    prevSingleProductID: function prevSingleProductID() {
       var _this3 = this;
 
       var products = this.productsSorted; // Check if we have a single product
@@ -9803,32 +9823,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (this.singleProductID != -1) {
         var currentProductIndex = products.findIndex(function (product) {
           return product.id == _this3.singleProductID;
-        }); // Check that the current single product is not the last product
-
-        if (currentProductIndex + 1 < products.length) return products[currentProductIndex + 1].id;else return -1;
-      } else return -1;
-    },
-    prevSingleProductID: function prevSingleProductID() {
-      var _this4 = this;
-
-      var products = this.productsSorted; // Check if we have a single product
-
-      if (this.singleProductID != -1) {
-        var currentProductIndex = products.findIndex(function (product) {
-          return product.id == _this4.singleProductID;
         }); // Check that the current single product is not the first product
 
         if (currentProductIndex != 0) return products[currentProductIndex - 1].id;else return -1;
       } else return -1;
     },
     teamUsers: function teamUsers() {
-      var _this5 = this;
+      var _this4 = this;
 
       var usersToReturn = [];
 
       if (this.currentTeamId > 0) {
         var thisTeam = this.teams.find(function (team) {
-          return team.id == _this5.currentTeamId;
+          return team.id == _this4.currentTeamId;
         });
         if (thisTeam) usersToReturn = thisTeam.users;
       } else if (this.currentTeamId == 0) {
@@ -9856,6 +9863,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     categories: function categories() {
       return _store_models_Category__WEBPACK_IMPORTED_MODULE_16__["default"].query()["with"]('products').all();
+    },
+    dynamicCategories: function dynamicCategories() {
+      var products = this.products;
+      var uniqueCategories = [];
+      products.forEach(function (product) {
+        var found = uniqueCategories.includes(product.short_description);
+        if (!found) uniqueCategories.push(product.short_description);
+      });
+      return uniqueCategories;
     },
     finalActions: function finalActions() {
       return _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_14__["default"].query().all();
@@ -9938,7 +9954,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this6 = this;
+      var _this5 = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
@@ -9947,11 +9963,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
-        var thisProduct = _this6.products.find(function (x) {
+        var thisProduct = _this5.products.find(function (x) {
           return x.id == product;
         });
 
-        if (_this6.authUser.role_id >= 3) {
+        if (_this5.authUser.role_id >= 3) {
           if (thisProduct.productFinalAction != null) {
             // If product has a final action
             if (thisProduct.productFinalAction.action != actionType) {
@@ -9960,7 +9976,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             }
           } // If product does not have a final action
           else productsToCreate.push(product);
-        } else if (_this6.authUser.role_id >= 2) {
+        } else if (_this5.authUser.role_id >= 2) {
           if (thisProduct.userAction != null) {
             // If product has a final action
             if (thisProduct.userAction.action != actionType) {
@@ -10021,7 +10037,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   created: function created() {
-    var _this7 = this;
+    var _this6 = this;
 
     // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
     var routeFileId = this.$route.params.catalogueId;
@@ -10031,7 +10047,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     this.unsub = this.$store.subscribe(function (mutation, state) {
       if (mutation.type == 'persist/setCurrentWorkspace') {
-        _this7.initRequiresWorkspace();
+        _this6.initRequiresWorkspace();
       }
     });
   },
@@ -13962,7 +13978,7 @@ var render = function() {
                           staticClass: "checkbox",
                           class: {
                             active: _vm.selected.find(function(x) {
-                              return x == option.id
+                              return x == option
                             })
                           }
                         },
@@ -13978,9 +13994,9 @@ var render = function() {
                             ],
                             attrs: { type: "checkbox" },
                             domProps: {
-                              value: option.id,
+                              value: option,
                               checked: Array.isArray(_vm.selected)
-                                ? _vm._i(_vm.selected, option.id) > -1
+                                ? _vm._i(_vm.selected, option) > -1
                                 : _vm.selected
                             },
                             on: {
@@ -13990,7 +14006,7 @@ var render = function() {
                                     $$el = $event.target,
                                     $$c = $$el.checked ? true : false
                                   if (Array.isArray($$a)) {
-                                    var $$v = option.id,
+                                    var $$v = option,
                                       $$i = _vm._i($$a, $$v)
                                     if ($$el.checked) {
                                       $$i < 0 &&
@@ -14006,7 +14022,7 @@ var render = function() {
                                   }
                                 },
                                 function($event) {
-                                  return _vm.submit(option.id)
+                                  return _vm.submit(option)
                                 }
                               ]
                             }
@@ -14015,7 +14031,7 @@ var render = function() {
                           _c("span", { staticClass: "checkmark" }),
                           _vm._v(
                             "\n                        " +
-                              _vm._s(option.title) +
+                              _vm._s(option) +
                               "\n                    "
                           )
                         ]
@@ -14327,7 +14343,7 @@ var render = function() {
                           "div",
                           { staticClass: "controls" },
                           [
-                            _vm.authUser.role_id >= 2
+                            _vm.authUser.role_id >= 3
                               ? [
                                   !_vm.product.productFinalAction
                                     ? [
@@ -14411,13 +14427,119 @@ var render = function() {
                                             staticClass: "button icon-right",
                                             class: [
                                               _vm.product.productFinalAction
-                                                .action == 1
+                                                .action == 0
                                                 ? "active red"
                                                 : "ghost red-hover"
                                             ],
                                             on: {
                                               click: function($event) {
                                                 return _vm.toggleInOut(
+                                                  _vm.product,
+                                                  0
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _vm._v(
+                                              "\n                                    Out  "
+                                            ),
+                                            _c("i", {
+                                              staticClass: "far fa-times-circle"
+                                            })
+                                          ]
+                                        )
+                                      ]
+                                ]
+                              : _vm.authUser.role_id >= 2
+                              ? [
+                                  !_vm.product.userAction
+                                    ? [
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass:
+                                              "button ghost icon-right green-hover",
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.toggleInOutUser(
+                                                  _vm.product,
+                                                  1
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _vm._v("In  "),
+                                            _c("i", {
+                                              staticClass: "far fa-heart"
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass:
+                                              "button ghost icon-right red-hover",
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.toggleInOutUser(
+                                                  _vm.product,
+                                                  0
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _vm._v("Out  "),
+                                            _c("i", {
+                                              staticClass: "far fa-times-circle"
+                                            })
+                                          ]
+                                        )
+                                      ]
+                                    : [
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass: "button icon-right",
+                                            class: [
+                                              _vm.product.userAction.action == 1
+                                                ? "active green"
+                                                : "ghost green-hover"
+                                            ],
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.toggleInOutUser(
+                                                  _vm.product,
+                                                  1
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _vm._v(
+                                              "\n                                    In  "
+                                            ),
+                                            _c("i", {
+                                              staticClass: "far fa-heart"
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass: "button icon-right",
+                                            class: [
+                                              _vm.product.userAction.action == 1
+                                                ? "active red"
+                                                : "ghost red-hover"
+                                            ],
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.toggleInOutUser(
                                                   _vm.product,
                                                   0
                                                 )
@@ -15201,7 +15323,8 @@ var render = function() {
           closeSingle: _vm.onCloseSingle,
           nextSingle: _vm.onNextSingle,
           prevSingle: _vm.onPrevSingle,
-          onToggleInOut: _vm.toggleInOut
+          onToggleInOut: _vm.toggleInOut,
+          onToggleInOutUser: _vm.toggleInOutUser
         }
       }),
       _vm._v(" "),
@@ -17445,7 +17568,7 @@ var render = function() {
                   attrs: {
                     buttonText: "categories",
                     title: "Filter by category",
-                    options: _vm.categories
+                    options: _vm.dynamicCategories
                   },
                   scopedSlots: _vm._u(
                     [
@@ -17465,12 +17588,12 @@ var render = function() {
                                 _vm._v(" "),
                                 _c("i", { staticClass: "far fa-chevron-down" }),
                                 _vm._v(" "),
-                                _vm.selectedCategoryIDs.length > 0
+                                _vm.selectedCategories.length > 0
                                   ? _c("span", { staticClass: "bubble" }, [
                                       _vm._v(
                                         "\n                            " +
                                           _vm._s(
-                                            _vm.selectedCategoryIDs.length
+                                            _vm.selectedCategories.length
                                           ) +
                                           "\n                        "
                                       )
@@ -17479,7 +17602,7 @@ var render = function() {
                               ]
                             ),
                             _vm._v(" "),
-                            _vm.selectedCategoryIDs.length > 0
+                            _vm.selectedCategories.length > 0
                               ? _c(
                                   "span",
                                   {
@@ -17488,7 +17611,7 @@ var render = function() {
                                     on: {
                                       click: function($event) {
                                         slotProps.clear()
-                                        _vm.selectedCategoryIDs = []
+                                        _vm.selectedCategories = []
                                       }
                                     }
                                   },
@@ -17501,14 +17624,14 @@ var render = function() {
                     ],
                     null,
                     false,
-                    4265017803
+                    3707430251
                   ),
                   model: {
-                    value: _vm.selectedCategoryIDs,
+                    value: _vm.selectedCategories,
                     callback: function($$v) {
-                      _vm.selectedCategoryIDs = $$v
+                      _vm.selectedCategories = $$v
                     },
-                    expression: "selectedCategoryIDs"
+                    expression: "selectedCategories"
                   }
                 }),
                 _vm._v(" "),

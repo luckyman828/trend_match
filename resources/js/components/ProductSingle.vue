@@ -6,7 +6,8 @@
                     <div class="controls-wrapper">
                             <span class="square" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
                         <div class="controls">
-                            <template v-if="authUser.role_id >= 2">
+
+                            <template v-if="authUser.role_id >= 3">
                                 <template v-if="!product.productFinalAction">
                                     <span class="button ghost icon-right green-hover" @click="toggleInOut(product, 1)">In  <i class="far fa-heart"></i></span>
                                     <span class="button ghost icon-right red-hover" @click="toggleInOut(product, 0)">Out  <i class="far fa-times-circle"></i></span>
@@ -15,11 +16,25 @@
                                     <span class="button icon-right" :class="[product.productFinalAction.action == 1 ? 'active green' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
                                         In  <i class="far fa-heart"></i>
                                         </span>
-                                    <span class="button icon-right" :class="[product.productFinalAction.action == 1 ? 'active red' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
+                                    <span class="button icon-right" :class="[product.productFinalAction.action == 0 ? 'active red' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
                                         Out  <i class="far fa-times-circle"></i>
                                         </span>
                                 </template>
                             </template>
+
+                            <template v-else-if="authUser.role_id >= 2">
+                                <template v-if="!product.userAction">
+                                    <span class="button ghost icon-right green-hover" @click="toggleInOutUser(product, 1)">In  <i class="far fa-heart"></i></span>
+                                    <span class="button ghost icon-right red-hover" @click="toggleInOutUser(product, 0)">Out  <i class="far fa-times-circle"></i></span>
+                                </template>
+                                <template v-else>
+                                    <span class="button icon-right" :class="[product.userAction.action == 1 ? 'active green' : 'ghost green-hover']" @click="toggleInOutUser(product, 1)">
+                                        In  <i class="far fa-heart"></i></span>
+                                    <span class="button icon-right" :class="[product.userAction.action == 1 ? 'active red' : 'ghost red-hover']"  @click="toggleInOutUser(product, 0)">
+                                        Out  <i class="far fa-times-circle"></i></span>
+                                </template>
+                            </template>
+
                             <span class="button primary active wide" @click="onPrevSingle()" :class="[{ disabled: prevProductID < 0}]">Previous style</span>
                             <span class="button primary active wide" @click="onNextSingle()" :class="[{ disabled: nextProductID < 0}]">Next style</span>
                         </div>
@@ -168,6 +183,9 @@ export default {
         },
         toggleInOut(product, actionType) {
             this.$emit('onToggleInOut', product, actionType)
+        },
+        toggleInOutUser(product, actionType) {
+            this.$emit('onToggleInOutUser', product, actionType)
         },
         setCurrentTab(filter) {
             this.currentTab = filter

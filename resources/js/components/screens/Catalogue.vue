@@ -3,16 +3,16 @@
         <template v-if="!loadingCollections">
             <catalogueHeader :collection="collection" :startDate="startDate" :endDate="endDate" :productTotals="productTotals"/>
             <div class="filters">
-                <DropdownCheckbox :buttonText="'categories'" :title="'Filter by category'" :options="categories" class="dropdown-parent left" v-model="selectedCategoryIDs">
+                <DropdownCheckbox :buttonText="'categories'" :title="'Filter by category'" :options="dynamicCategories" class="dropdown-parent left" v-model="selectedCategories">
                     <template v-slot:button="slotProps">
                         <div class="dropdown-button item-filter-button" @click="slotProps.toggle">
                             <span>Category</span>
                             <i class="far fa-chevron-down"></i>
-                            <span v-if="selectedCategoryIDs.length > 0" class="bubble">
-                                {{selectedCategoryIDs.length}}
+                            <span v-if="selectedCategories.length > 0" class="bubble">
+                                {{selectedCategories.length}}
                             </span>
                         </div>
-                        <span v-if="selectedCategoryIDs.length > 0" class="clear button invisible primary" @click="slotProps.clear(); selectedCategoryIDs=[]">Clear filter</span>
+                        <span v-if="selectedCategories.length > 0" class="clear button invisible primary" @click="slotProps.clear(); selectedCategories=[]">Clear filter</span>
                     </template>
                 </DropdownCheckbox>
                 <DropdownRadio :options="teams" :currentOptionId="currentTeamId" :defaultOption="{id: 0, title: 'GLOBAL'}" class="dropdown-parent right" @submit="setCurrentTeam">
@@ -73,11 +73,13 @@ export default{
         currentProductFilter: 'overview',
         selectedProductIDs: [],
         selectedCategoryIDs: [],
+        selectedCategories: [],
         sortBy: 'datasource_id',
         sortAsc: true,
         // teamFilterId: -1,
         catalogueId: '',
         unsub: '',
+        test: '',
     }},
     computed: {
         ...mapGetters('entities/products', ['loadingProducts']),
@@ -193,14 +195,14 @@ export default{
 
         productsFilteredByCategory() {
             const products = this.products
-            const categoryIDs = this.selectedCategoryIDs
+            const categories = this.selectedCategories
             let productsToReturn = products
 
             // First filter by category
-            if (this.selectedCategoryIDs.length > 0) {
+            if (categories.length > 0) {
                 
                 const filteredByCategory = productsToReturn.filter(product => {
-                        return Array.from(this.selectedCategoryIDs).includes(product.category_id)
+                        return Array.from(categories).includes(product.short_description)
                 })
                 productsToReturn = filteredByCategory
             }
@@ -431,6 +433,16 @@ export default{
         },
         categories() {
             return Category.query().with('products').all()
+        },
+        dynamicCategories() {
+            const products = this.products
+            let uniqueCategories = []
+            products.forEach(product => {
+                const found = (uniqueCategories.includes(product.short_description))
+                if (!found)
+                    uniqueCategories.push(product.short_description)
+            })
+            return uniqueCategories
         },
         finalActions() {
             return ProductFinalAction.query().all()

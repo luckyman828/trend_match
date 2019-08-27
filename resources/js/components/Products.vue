@@ -2,7 +2,7 @@
     <div class="products card" :class="{sticky: sticky}">
         <div class="scroll-bg"></div>
         <product-totals :totalProductCount="totalProductCount" :selectedCount="selectedCount" :products="products"/>
-        <product-single :loading="loadingSingle" :catalogue="collection" :sticky="sticky" :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut"/>
+        <product-single :loading="loadingSingle" :catalogue="collection" :sticky="sticky" :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut" @onToggleInOutUser="toggleInOutUser"/>
         <div class="flex-table" :class="{disabled: singleProductToShow.id != null}">
             <div class="header-row flex-table-row">
                 <th class="select dropdown-parent" @click="toggleDropdown($event)" v-if="authUser.role_id >= 2">

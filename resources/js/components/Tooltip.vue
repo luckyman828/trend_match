@@ -38,12 +38,16 @@ export default {
                     // const uniqueTeams = [...new Set(tooltip.data.map(x => x.team.title))]
                     // Create an array of unique teams from the users in data
                     let uniqueTeams = []
-                    if (tooltip.data.length > 0) {
-                        uniqueTeams.push({
-                            title: 'NO TEAM',
-                            users: [],
-                        })
+                    let noTeam = {
+                        title: 'No team',
+                        users: []
                     }
+                    // if (tooltip.data.length > 0) {
+                    //     uniqueTeams.push({
+                    //         title: 'NO TEAM',
+                    //         users: [],
+                    //     })
+                    // }
 
                     const users = tooltip.data
                     users.forEach(user => {
@@ -73,25 +77,12 @@ export default {
                         }
                         // If the user does not have a team, add them to a "No team" group
                         else {
-                            uniqueTeams[0].users.push(user)
+                            noTeam.users.push(user)
                         }
                     })
-
-                    // uniqueTeams.forEach(team => {
-                    //     const thisTeam = {
-                    //         name: team,
-                    //         users: [],
-                    //         teamUsers: tooltip.teams.find(obj => {
-                    //             return obj.title == team.toUpperCase()
-                    //         })
-                    //     }
-                    //     tooltip.data.forEach(user => {
-                    //         if (user.team.title == team) {
-                    //             thisTeam.users.push(user)
-                    //         }
-                    //     })
-                    //     data.push(thisTeam)
-                    // })
+                // Add a "No team" option to the tooltip if it exists
+                if (noTeam.users.length > 0)
+                    uniqueTeams.unshift(noTeam)
                 return uniqueTeams
             }
         },
