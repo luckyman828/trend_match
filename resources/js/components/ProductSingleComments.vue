@@ -31,7 +31,7 @@
                     <span class="checkmark" :class="{active: newComment.important}" @mouseover="showTooltip($event, 'Important comment')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
                 </label>
             </div>
-            <input type="submit" value="Submit comment" :class="{disabled: (newComment.comment.length < 1 || submittingComment)}">
+            <input type="submit" class="button primary xl" value="Submit comment" :class="{disabled: (newComment.comment.length < 1 || submittingComment)}">
         </form>
         <Tooltip :tooltip="tooltip"/>
     </div>
@@ -146,11 +146,13 @@ export default {
     h4 {
         font-size: 18px;
         font-weight: 400;
+        margin: 0;
     }
     .header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 8px;
     }
     .toggle {
         border: solid 1px $light2;
@@ -343,24 +345,24 @@ export default {
                 color: $primary;
             }
         }
-        input[type=submit] {
-            -webkit-appearance: none;
-            border: none;
-            height: 32px;
-            border-radius: 4px;
-            margin-top: 12px;
-            background: $primary;
-            color: white;
-            padding: 4px 12px;
-            width: 100%;
-            text-align: center;
-            font-weight: 700;
-            font-size: 12px;
-            margin-bottom: 60px;
-            &.disabled {
-                pointer-events: none;
-                opacity: .5;
-            }
-        }
+        // input[type=submit] {
+        //     -webkit-appearance: none;
+        //     border: none;
+        //     height: 32px;
+        //     border-radius: 4px;
+        //     margin-top: 12px;
+        //     background: $primary;
+        //     color: white;
+        //     padding: 4px 12px;
+        //     width: 100%;
+        //     text-align: center;
+        //     font-weight: 700;
+        //     font-size: 12px;
+        //     margin-bottom: 60px;
+        //     &.disabled {
+        //         pointer-events: none;
+        //         opacity: .5;
+        //     }
+        // }
     }
 </style>

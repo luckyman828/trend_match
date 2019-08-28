@@ -3,7 +3,7 @@
         <h1>Collection</h1>
         <div class="underline"></div>
         <div class="filters">
-            <DropdownCheckbox :title="'Filter by collection'" :options="collections" class="dropdown-parent left" v-model="itemFilterIds">
+            <DropdownCheckbox :title="'Filter by collection'" :options="uniqueCollections" class="dropdown-parent left" v-model="itemFilterIds">
                 <template v-slot:button="slotProps">
                     <div class="dropdown-button item-filter-button" @click="slotProps.toggle">
                         <span>Collection</span>
@@ -63,6 +63,17 @@ export default {
         ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId']),
         collections () {
             return Collection.query().all()
+        },
+        uniqueCollections() {
+            const inputData = this.collections
+            let uniqueData = []
+            inputData.forEach(data => {
+                const filterKey = data.title
+                const found = (uniqueData.includes(filterKey))
+                if (!found)
+                    uniqueData.push(filterKey)
+            })
+            return uniqueData
         },
         users() {
             return User.query().with('teams').all()

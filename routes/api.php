@@ -31,6 +31,8 @@ Route::middleware('auth:api')->group( function(){
     // xxx TEAMS xxx
     // List current workspace team invites
     Route::get('workspace/{workspace_id}/team-invites', 'TeamController@invites');
+    // Create team
+    Route::post('workspace/{workspace_id}/team', 'TeamController@store');
 
     // xxx FILES xxx
     Route::get('file/{file_id}/products', 'FileController@products');

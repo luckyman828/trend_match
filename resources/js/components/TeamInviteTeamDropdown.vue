@@ -70,6 +70,5 @@ export default {
 <style scopes lang="scss">
 @import '~@/_variables.scss';
 
-    .team-dropdown {
-    }
+
 </style>

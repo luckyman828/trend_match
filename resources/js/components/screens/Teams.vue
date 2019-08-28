@@ -4,7 +4,8 @@
         <div class="underline"></div>
         <!-- <TeamsTopBar :itemsToFilter="teams" :title="'Teams'"/> -->
         <TeamsTable :teams="teams" :users="users" :loading="isLoading" :authUser="authUser" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/>
-        <TeamInviteModal v-if="singleTeam != null" :teams="teams" :team="singleTeam" :users="users" :authUser="authUser" @onCloseModal="closeModal"/>
+        <!-- <TeamInviteModal v-if="singleTeam != null" :teams="teams" :team="singleTeam" :users="users" :authUser="authUser" @onCloseModal="closeModal"/> -->
+        <ModalInviteToTeam :teams="teams" :team="singleTeam" :users="users" :authUser="authUser" ref="modal"/>
     </div>
 </template>
 
@@ -13,9 +14,10 @@ import { mapActions, mapGetters } from 'vuex'
 import Team from '../../store/models/Team'
 import TeamsTopBar from '../TeamsTopBar'
 import TeamsTable from '../TeamsTable'
+import ModalInviteToTeam from '../ModalInviteToTeam'
+// import TeamInviteModal from '../TeamInviteModal';
 import User from '../../store/models/User'
 import UserTeam from '../../store/models/UserTeam'
-import TeamInviteModal from '../TeamInviteModal';
 import TeamInvite from '../../store/models/TeamInvite'
 import AuthUser from '../../store/models/AuthUser'
 
@@ -24,7 +26,8 @@ export default {
     components: {
         TeamsTopBar,
         TeamsTable,
-        TeamInviteModal
+        // TeamInviteModal,
+        ModalInviteToTeam,
     },
     data: function () { return {
         selected: [],
@@ -32,13 +35,6 @@ export default {
         loadingOverwrite: false,
         unsub: '',
     }},
-    watch: {
-        singleTeam: function (newVal, oldVal) {
-            if (newVal != null)
-                document.querySelector('body').classList.add('disabled')
-            else document.querySelector('body').classList.remove('disabled')
-        }
-    },
     computed: {
         ...mapGetters('entities/teams', ['loadingTeams']),
         ...mapGetters('entities/userTeams', ['loadingUserTeams']),
@@ -120,15 +116,15 @@ export default {
         },
         openInviteToTeam(team) {
             this.singleTeam = team
-        },
-        closeModal() {
-            this.singleTeam = null;
+            console.log('Teams: Openeing')
+            this.$refs.modal.toggle()
         },
         initRequiresWorkspace() {
             if (User.all().length <= 0)
                     this.fetchUsers(this.currentWorkspaceId)
             if (TeamInvite.all().length <= 0)
                 this.fetchTeamInvites(this.currentWorkspaceId)
+            this.singleTeam = this.teams[0]
         }
     },
     created () {

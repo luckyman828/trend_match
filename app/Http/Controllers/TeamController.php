@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\UserTeam;
 use App\TeamInvite;
 use App\Http\Resources\TeamInvite as TeamInviteResource;
+use App\Team;
+use App\Http\Resources\Team as TeamResource;
 use Illuminate\Database\Eloquent\Builder;
 
 class TeamController extends Controller
@@ -38,4 +40,20 @@ class TeamController extends Controller
         // Return collection of users as a resource
         return TeamInviteResource::collection($team_invites);
     }
+
+    public function store(Request $request, $workspace_id)
+    {
+        // First, check if an action for the following product and phase already exists
+        $existingTeam = Team::where('title', $request->title)->where('workspace_id', $workspace_id)->first();
+
+        $team = ($existingTeam) ? $existingTeam : new Team;
+        
+        $team->title = $request->title;
+        $team->workspace_id = $workspace_id;
+
+        if($team->save()) {
+            return new TeamResource($team);
+        }
+    }
+
 }

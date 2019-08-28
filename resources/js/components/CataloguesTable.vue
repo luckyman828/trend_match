@@ -181,6 +181,7 @@ export default {
             display: flex;
             flex: 1;
             margin: 0 16px;
+            align-items: center;
             &:nth-child(1) {
                 flex: 3;
             }

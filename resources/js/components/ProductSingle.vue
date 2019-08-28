@@ -453,7 +453,7 @@ export default {
             margin-bottom: 12px;
         }
         .team {
-            width: 60px;
+            width: 100px;
             display: inline-block;
             text-transform: uppercase;
             font-size: 10px;

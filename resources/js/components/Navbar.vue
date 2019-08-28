@@ -1,42 +1,64 @@
 <template>
-  <nav class="navbar" style="height: 70px;">
-    <router-link to="/collection" class="navbar-brand">
-      <img src="/images/kollekt-logo-color-1.svg" />
-    </router-link>
-    <div class="collapse navbar-collapse justify-content-end" id="navbarTogglerDemo03" style="padding-left: 100px;">
+    <nav class="navbar" style="height: 70px;">
+        <div class="logo-wrapper">
+            <router-link to="/collection" class="navbar-brand">
+                <img src="/images/kollekt-logo-color-1.svg" />
+            </router-link>
+        </div>
+        <div class="flex-wrapper">
+            <div class="items-left">
 
-      <template v-if="$route.name == 'catalogue'">
-        <!-- <router-link to="/collection">
-        <button class="btn my-2 my-sm-0 align-middle" type="submit">
-          <div class="align-middle backwards-button">
-              <img style="margin-right: 3px" src="/assets/backwards-arrow.svg"/>
-          </div>
-          <p class="mb-0 ml-2 align-middle">Back to Collection</p>
-        </button>
-        </router-link>
+                <template v-if="$route.name == 'catalogue'">
 
-        <div class="mr-auto vl">
-          <nav aria-label="breadcrumb align-middle">
-              <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item">
-                  <router-link to="/collection">Collection</router-link>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page" v-if="$route.params.catalogueTitle != null">{{$route.params.catalogueTitle}}</li>
-                <li class="breadcrumb-item active" aria-current="page" v-else>Current catalogue</li>
-              </ol>
-          </nav>
-        </div> -->
-      </template>
-    </div>
+                </template>
+
+
+            </div>
+            <div class="items-right">
+
+                <template v-if="$route.name == 'teams'">
+                    <span class="button wide primary" @click="$refs.createTeamModal.toggle()">Add team</span>
+                </template>
+
+            </div>
+
+        </div>
+        <ModalCreateTeam ref="createTeamModal"/>
   </nav>
 </template>
 
 <script>
+import Modal from './Modal'
+import ModalCreateTeam from './ModalCreateTeam'
+import Team from '../store/models/Team'
+
 export default {
-  name: "navbar",
-  data() {
-    return {};
-  }
+    name: "navbar",
+    data: function () { return {
+        addTeamName: '',
+    }},
+    components: {
+        Modal,
+        ModalCreateTeam
+    },
+    computed: {
+        addTeamValid () {
+            if (this.teams.length <= 0)
+                return false
+                else
+                    if (this.teams.find(x => x.title.toLowerCase() == this.addTeamName.toLowerCase()))
+                        return false
+            return true
+        },
+        teams () {
+            return Team.all()
+        }
+    },
+    methods: {
+        consoleLog(msg) {
+            console.log(msg)
+        }
+    }
 };
 </script>
 
@@ -45,19 +67,29 @@ export default {
 @import '~@/_variables.scss';
 
 .navbar {
-  background-color: white;
-  z-index: 99;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  align-items: center;
-  padding: 8px 16px;
-  display: flex;
-  img {
-    display: block;
-    height: 100%;
-  }
+    background-color: white;
+    z-index: 100;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    align-items: center;
+    display: flex;
+    .logo-wrapper {
+        min-width: $sidebarWidth;
+        padding-left: 20px;
+    }
+    img {
+        display: block;
+        height: 100%;
+    }
+    .flex-wrapper {
+        width: 100%;
+        padding: 8px 60px;
+        padding-right: 77px;
+        display: flex;
+        justify-content: space-between;
+    }
 }
 
 </style>

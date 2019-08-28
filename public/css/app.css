@@ -8729,6 +8729,10 @@ textarea {
   margin-bottom: 12px;
 }
 
+.login-wrapper .login .login-form h2 strong {
+  font-weight: 500;
+}
+
 .login-wrapper .login .login-form h3 {
   font-size: 16px;
   text-align: center;
@@ -8803,10 +8807,6 @@ textarea {
   box-shadow: none;
 }
 
-label {
-  cursor: pointer;
-}
-
 .dark {
   color: white;
 }
@@ -8830,11 +8830,6 @@ label {
   background: transparent;
 }
 
-.button.wide {
-  width: 155px;
-  padding: 0;
-}
-
 .button.dark,
 .button.dark-hover:hover {
   color: white;
@@ -8848,11 +8843,6 @@ label {
 .button.dark-hover:hover.ghost {
   color: #1B1C1D;
   background: transparent;
-}
-
-.button.active {
-  background: #1B1C1D;
-  color: white;
 }
 
 .button.green,
@@ -8885,20 +8875,35 @@ label {
   background: transparent;
 }
 
-.button.primary.invisible,
-.button.primary .ghost {
-  color: #3B86FF;
-}
-
-.button.primary:hover {
-  border-color: #3B86FF;
-  color: #3B86FF;
-}
-
-.button.primary.active {
+.button.primary,
+.button.primary-hover:hover {
   border-color: #3B86FF;
   background: #3B86FF;
   color: white;
+}
+
+.button.primary.invisible,
+.button.primary.ghost,
+.button.primary-hover:hover.invisible,
+.button.primary-hover:hover.ghost {
+  color: #3B86FF;
+  background: transparent;
+}
+
+.button.invisible {
+  font-weight: 500;
+  background: none;
+  border-color: transparent;
+}
+
+.button.invisible:hover {
+  border-color: inherit;
+}
+
+.button.disabled,
+.button:disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 .button.icon-right,
@@ -8933,19 +8938,103 @@ label {
   margin-right: 12px;
 }
 
-.button.disabled {
-  pointer-events: none;
-  opacity: 0.5;
+.button.wide {
+  width: 155px;
+  padding: 0;
 }
 
-.button.invisible {
+.button.xl {
+  height: 50px;
+  width: 100%;
+  line-height: 50px;
   font-weight: 500;
-  background: none;
-  border-color: transparent;
+  font-size: 14px;
 }
 
-.button.invisible:hover {
-  border-color: inherit;
+.close {
+  -webkit-transition: 0.3s;
+  transition: 0.3s;
+}
+
+.close.circle {
+  height: 40px;
+  width: 40px;
+  display: block;
+  text-align: center;
+  background: #DFDFDF;
+  border-radius: 20px;
+  cursor: pointer;
+  color: #3C3B54;
+}
+
+.close.circle i {
+  font-size: 21px;
+  line-height: 40px;
+}
+
+.close.circle:hover {
+  color: #FF6565;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.overlay {
+  display: none;
+  z-index: 119;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(27, 28, 29, 0.7);
+  cursor: auto;
+}
+
+.overlay.active {
+  display: block;
+}
+
+.overlay.invisible {
+  background: transparent;
+}
+
+.modal-wrapper > .modal {
+  display: none;
+  position: fixed;
+  z-index: 120;
+  left: 50%;
+  top: 5vh;
+  height: 70vh;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  width: 100%;
+  max-width: 646px;
+  margin: 0;
+  background: #F9F9F9;
+}
+
+.modal-wrapper > .modal > .inner {
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+}
+
+.modal-wrapper > .modal > .inner > .header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.modal-wrapper > .modal > .inner > .header .title {
+  margin-bottom: 8px;
+}
+
+.modal-wrapper > .modal > .inner > .header .desc {
+  font-size: 16px;
+  color: #A8A8A8;
+}
+
+.modal-wrapper.active > .modal,
+.modal-wrapper.active > .overlay {
+  display: block;
 }
 
 .dropdown-wrapper {
@@ -8994,7 +9083,7 @@ label {
 .dropdown {
   position: absolute;
   top: 0;
-  z-index: 1;
+  z-index: 120;
   left: 0;
   -webkit-transition: max-height 0.1s;
   transition: max-height 0.1s;
@@ -9192,6 +9281,83 @@ label {
 .checkbox-buttons.dark label:hover,
 .dark .checkbox-buttons label:hover {
   background: #43425D;
+}
+
+form > label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #3C3B54;
+  display: block;
+  width: 100%;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+form > label.team {
+  position: relative;
+  background: #F3F3F3;
+  margin-bottom: 72px;
+  margin-top: 40px;
+  border-radius: 4px;
+}
+
+form > label.team input {
+  background: transparent;
+  border: none;
+  padding-left: 40px;
+}
+
+form > label.team .square {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  background: #3B86FF;
+  color: white;
+  height: 24px;
+  width: 24px;
+  text-align: center;
+}
+
+form > label.team .square i {
+  font-size: 10px;
+  line-height: 24px;
+}
+
+form input {
+  display: block;
+  width: 100%;
+  border: solid 1px #F3F3F3;
+  border-radius: 4px;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 0 12px;
+  line-height: 40px;
+  font-size: 14px;
+  background: white;
+}
+
+form input::-webkit-input-placeholder {
+  color: #DFDFDF;
+}
+
+form input::-moz-placeholder {
+  color: #DFDFDF;
+}
+
+form input:-ms-input-placeholder {
+  color: #DFDFDF;
+}
+
+form input::-ms-input-placeholder {
+  color: #DFDFDF;
+}
+
+form input::placeholder {
+  color: #DFDFDF;
+}
+
+form input[type=submit] {
+  margin-top: 24px;
 }
 
 .fade-enter-active,

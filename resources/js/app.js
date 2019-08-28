@@ -24,8 +24,8 @@ import Teams from './components/screens/Teams'
 
 const routes = [
   { path: '/catalogue/:catalogueId', name: 'catalogue', component: Catalogue },
-  { path: '/collection', component: Collection },
-  { path: '/teams', component: Teams },
+  { path: '/collection', name: 'collection', component: Collection },
+  { path: '/teams', name: 'teams', component: Teams },
   { path: '*', redirect: '/collection'}
 ]
 

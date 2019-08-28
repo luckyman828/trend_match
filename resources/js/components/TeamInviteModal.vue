@@ -170,7 +170,7 @@ export default {
         &.team {
             position: relative;
             background: $light1;
-            margin-bottom: 72px;
+            margin-bottom: 68px;
             margin-top: 40px;
             border-radius: 4px;
             input {
@@ -215,8 +215,11 @@ export default {
             color: white;
             font-weight: 500;
             margin-top: 20px;
+            cursor: pointer;
             &:disabled {
-                background: rgba($dark05, .5)
+                background: rgba($dark05, .5);
+                pointer-events: none;
+                cursor: auto;
             }
         }
     }

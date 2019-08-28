@@ -41,7 +41,32 @@ export default {
             }
 
           }
-      }
+      },
+      async createTeam({commit}, {name, workspace_id}) {
+
+        const data = {
+          title: name
+        }
+        const apiUrl = `/api/workspace/${workspace_id}/team`
+
+        let succes
+        let team_id = null
+        // Handle the invite in the DB via API
+        await axios.post(apiUrl, data
+          ).then(response => {
+          console.log(response.data)
+          team_id = response.data.id
+          succes = true
+        }).catch(err =>{
+          console.log(err);
+          succes = false
+        })
+        
+        commit('createTeam', {name: name, workspace_id: workspace_id, team_id: team_id})
+        
+        return succes
+
+      },
     },
 
     mutations: {
@@ -49,6 +74,16 @@ export default {
       //Set the loading status of the app
       setLoading(state, bool) {
         state.loading = bool
+      },
+      createTeam(state, {name, workspace_id, team_id}) {
+        Team.insert({
+          data: {
+            id: team_id,
+            title: name,
+            workspace_id: workspace_id
+          }
+        })
+        console.log(name + workspace_id + team_id)
       }
     }
 

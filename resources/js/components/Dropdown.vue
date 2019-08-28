@@ -5,6 +5,8 @@
             <span class="button" @click="toggle">Open dropdown</span>
         </slot>
 
+        <div class="overlay invisible" :class="{active: !collapsed}" @click="toggle"></div>
+
         <div class="dropdown" :class="{collapsed: collapsed}" ref="dropdown">
             <div class="inner">
                 <div class="header">
@@ -54,20 +56,5 @@ export default {
 <style scopes lang="scss">
 @import '~@/_variables.scss';
 
-    // .dropdown::before {
-    //     content: "";
-    //     height: 12px;
-    //     width: 12px;
-    //     display: block;
-    //     background: blue;
-    //     left: 20px;
-    //     border: solid 2px pink;
-    //     border-right: 0;
-    //     border-bottom: 0;
-    //     top: -7px;
-    //     z-index: 1;
-    //     position: absolute;
-    //     transform: rotateZ(45deg);
-    // }
 
 </style>

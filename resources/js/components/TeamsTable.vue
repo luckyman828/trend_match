@@ -380,7 +380,7 @@ export default {
         padding: 7px 10px;
         border-radius: 4px;
         font-size: 12px;
-        font-weight: 400;
+        font-weight: 500;
         &.user-role-1 {
             background: $primary;
         }
