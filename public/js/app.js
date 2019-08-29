@@ -7677,7 +7677,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {
     optionsToShow: function optionsToShow() {
-      var optionsToShow = this.options;
+      var optionsToShow = JSON.parse(JSON.stringify(this.options));
       if (this.defaultOption != null) optionsToShow.unshift(this.defaultOption);
       return optionsToShow;
     },
@@ -9602,27 +9602,35 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../store */ "./resources/js/store/index.js");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _Products__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Products */ "./resources/js/components/Products.vue");
-/* harmony import */ var _ProductTabs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../ProductTabs */ "./resources/js/components/ProductTabs.vue");
-/* harmony import */ var _CatalogueHeader__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../CatalogueHeader */ "./resources/js/components/CatalogueHeader.vue");
-/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../Loader */ "./resources/js/components/Loader.vue");
-/* harmony import */ var _SelectedController__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../SelectedController */ "./resources/js/components/SelectedController.vue");
-/* harmony import */ var _DropdownRadio__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../DropdownRadio */ "./resources/js/components/DropdownRadio.vue");
-/* harmony import */ var _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../DropdownCheckbox */ "./resources/js/components/DropdownCheckbox.vue");
-/* harmony import */ var _store_models_Comment__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../store/models/Comment */ "./resources/js/store/models/Comment.js");
-/* harmony import */ var _store_models_Product__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../store/models/Product */ "./resources/js/store/models/Product.js");
-/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
-/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
-/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
-/* harmony import */ var _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../store/models/ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
-/* harmony import */ var _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../store/models/CommentVote */ "./resources/js/store/models/CommentVote.js");
-/* harmony import */ var _store_models_Category__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../store/models/Category */ "./resources/js/store/models/Category.js");
-/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
-/* harmony import */ var _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../../store/models/TeamProduct */ "./resources/js/store/models/TeamProduct.js");
-/* harmony import */ var _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../../store/models/PhaseProduct */ "./resources/js/store/models/PhaseProduct.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../store */ "./resources/js/store/index.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Products__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Products */ "./resources/js/components/Products.vue");
+/* harmony import */ var _ProductTabs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../ProductTabs */ "./resources/js/components/ProductTabs.vue");
+/* harmony import */ var _CatalogueHeader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../CatalogueHeader */ "./resources/js/components/CatalogueHeader.vue");
+/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../Loader */ "./resources/js/components/Loader.vue");
+/* harmony import */ var _SelectedController__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../SelectedController */ "./resources/js/components/SelectedController.vue");
+/* harmony import */ var _DropdownRadio__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../DropdownRadio */ "./resources/js/components/DropdownRadio.vue");
+/* harmony import */ var _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../DropdownCheckbox */ "./resources/js/components/DropdownCheckbox.vue");
+/* harmony import */ var _store_models_Comment__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../store/models/Comment */ "./resources/js/store/models/Comment.js");
+/* harmony import */ var _store_models_Product__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../store/models/Product */ "./resources/js/store/models/Product.js");
+/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
+/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
+/* harmony import */ var _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../store/models/ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
+/* harmony import */ var _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../store/models/CommentVote */ "./resources/js/store/models/CommentVote.js");
+/* harmony import */ var _store_models_Category__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../store/models/Category */ "./resources/js/store/models/Category.js");
+/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../../store/models/TeamProduct */ "./resources/js/store/models/TeamProduct.js");
+/* harmony import */ var _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../../store/models/PhaseProduct */ "./resources/js/store/models/PhaseProduct.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
@@ -9689,15 +9697,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'catalogue',
-  store: _store__WEBPACK_IMPORTED_MODULE_0__["default"],
+  store: _store__WEBPACK_IMPORTED_MODULE_1__["default"],
   components: {
-    Products: _Products__WEBPACK_IMPORTED_MODULE_2__["default"],
-    ProductTabs: _ProductTabs__WEBPACK_IMPORTED_MODULE_3__["default"],
-    SelectedController: _SelectedController__WEBPACK_IMPORTED_MODULE_6__["default"],
-    Loader: _Loader__WEBPACK_IMPORTED_MODULE_5__["default"],
-    DropdownCheckbox: _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_8__["default"],
-    DropdownRadio: _DropdownRadio__WEBPACK_IMPORTED_MODULE_7__["default"],
-    CatalogueHeader: _CatalogueHeader__WEBPACK_IMPORTED_MODULE_4__["default"]
+    Products: _Products__WEBPACK_IMPORTED_MODULE_3__["default"],
+    ProductTabs: _ProductTabs__WEBPACK_IMPORTED_MODULE_4__["default"],
+    SelectedController: _SelectedController__WEBPACK_IMPORTED_MODULE_7__["default"],
+    Loader: _Loader__WEBPACK_IMPORTED_MODULE_6__["default"],
+    DropdownCheckbox: _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_9__["default"],
+    DropdownRadio: _DropdownRadio__WEBPACK_IMPORTED_MODULE_8__["default"],
+    CatalogueHeader: _CatalogueHeader__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
   data: function data() {
     return {
@@ -9714,7 +9722,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       test: ''
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope']), {
     defaultTeam: function defaultTeam() {
       if (this.userPermissionLevel >= 3) return {
         id: 0,
@@ -9722,13 +9730,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       };else return null;
     },
     teamProducts: function teamProducts() {
-      return _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_19__["default"]["with"]('products').all();
+      return _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_20__["default"]["with"]('products').all();
     },
     phaseProducts: function phaseProducts() {
-      return _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_20__["default"]["with"]('products').all();
+      return _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_21__["default"]["with"]('products').all();
     },
     collection: function collection() {
-      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_13__["default"].find(this.currentFileId);
+      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_14__["default"].find(this.currentFileId);
     },
     startDate: function startDate() {
       if (this.collection.start_time != null) {
@@ -9753,7 +9761,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     products: function products() {
       var _this = this;
 
-      var products = _store_models_Product__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes', 'comments.user.teams', 'comments.team'])["with"]('productFinalAction')["with"]('teamActions.team')["with"]('phaseActions').all();
+      var products = _store_models_Product__WEBPACK_IMPORTED_MODULE_11__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes', 'comments.user.teams', 'comments.team'])["with"]('productFinalAction')["with"]('teamActions.team')["with"]('phaseActions').all();
       var totalUsers = this.teamUsers;
       var userId = this.authUser.id;
       var teamFilterId = this.currentTeamId;
@@ -10046,7 +10054,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return this.$store.getters['entities/actions/all']();
     },
     comments: function comments() {
-      var comments = _store_models_Comment__WEBPACK_IMPORTED_MODULE_9__["default"].query()["with"](['votes', 'user.teams']).all();
+      var comments = _store_models_Comment__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"](['votes', 'user.teams']).all();
       var teamFilterId = this.currentTeamId;
 
       if (teamFilterId > 0) {
@@ -10058,7 +10066,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else return comments;
     },
     categories: function categories() {
-      return _store_models_Category__WEBPACK_IMPORTED_MODULE_16__["default"].query()["with"]('products').all();
+      return _store_models_Category__WEBPACK_IMPORTED_MODULE_17__["default"].query()["with"]('products').all();
     },
     dynamicCategories: function dynamicCategories() {
       var products = this.products;
@@ -10070,17 +10078,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return uniqueCategories;
     },
     finalActions: function finalActions() {
-      return _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_14__["default"].query().all();
+      return _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_15__["default"].query().all();
     },
     commentVotes: function commentVotes() {
-      return _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_15__["default"].query()["with"]('comment').all();
+      return _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_16__["default"].query()["with"]('comment').all();
     },
     authUser: function authUser() {
       // return this.$store.getters.authUser;
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_18__["default"].query()["with"]('teams')["with"]('workspaces').first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_19__["default"].query()["with"]('teams')["with"]('workspaces').first();
     },
     users: function users() {
-      return _store_models_User__WEBPACK_IMPORTED_MODULE_11__["default"].query()["with"]('teams').all();
+      return _store_models_User__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"]('teams').all();
     },
     teams: function teams() {
       var _this8 = this;
@@ -10088,7 +10096,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // Manually find the teams and the users belonging to each team.
       // This is only necessary because I cannot make the Vuex ORM realtionship work 
       // If you can make it work, please be my guest
-      var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"]('users')["with"]('invites').all();
+      var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_13__["default"].query()["with"]('users')["with"]('invites').all();
       var users = this.users; // Loop through the users and sort them between the teams
 
       users.forEach(function (user) {
@@ -10127,7 +10135,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return [];
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentFileId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentFileId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']), {
     setSingleProduct: function setSingleProduct(index) {
       this.singleProductID = index;
     },
@@ -10240,12 +10248,49 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.sortAsc = !this.sortAsc;
       }
     },
-    initRequiresWorkspace: function initRequiresWorkspace() {
-      if (_store_models_Collection__WEBPACK_IMPORTED_MODULE_13__["default"].all().length <= 0) this.fetchCollections(this.currentWorkspaceId);
-      if (_store_models_User__WEBPACK_IMPORTED_MODULE_11__["default"].all().length <= 0) this.fetchUsers(this.currentWorkspaceId); // Temp hotfix for team id not being set
+    initRequiresWorkspace: function () {
+      var _initRequiresWorkspace = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (!(_store_models_Collection__WEBPACK_IMPORTED_MODULE_14__["default"].all().length <= 0)) {
+                  _context.next = 3;
+                  break;
+                }
 
-      if (this.authUser.role_id >= 3) this.setCurrentTeam(0);else if (this.authUser.teams.length > 0) this.setCurrentTeam(this.authUser.teams[0].id);
-    },
+                _context.next = 3;
+                return this.fetchCollections(this.currentWorkspaceId);
+
+              case 3:
+                if (!(_store_models_User__WEBPACK_IMPORTED_MODULE_12__["default"].all().length <= 0)) {
+                  _context.next = 6;
+                  break;
+                }
+
+                _context.next = 6;
+                return this.fetchUsers(this.currentWorkspaceId);
+
+              case 6:
+                // Temp hotfix for team id not being set
+                if (this.authUser.role_id >= 3) this.setCurrentTeam(0);else if (this.authUser.teams != null) if (this.authUser.teams.length > 0) this.setCurrentTeam(this.authUser.teams[0].id);
+
+              case 7:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function initRequiresWorkspace() {
+        return _initRequiresWorkspace.apply(this, arguments);
+      }
+
+      return initRequiresWorkspace;
+    }(),
     initRequiresFileId: function initRequiresFileId() {
       this.fetchProducts(this.currentFileId);
       this.fetchActions(this.currentFileId);
@@ -10981,7 +11026,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "span[data-v-9a749a7c] {\n  display: inline-block;\n  font-size: 14px;\n  font-weight: 700;\n}\nspan[data-v-9a749a7c]:first-child {\n  margin-right: 12px;\n}\n.selected-controller[data-v-9a749a7c] {\n  position: fixed;\n  bottom: 20px;\n  left: calc(50% + 100px);\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);\n  -webkit-transform: translateX(-50%) translateY(calc(100% + 20px));\n          transform: translateX(-50%) translateY(calc(100% + 20px));\n  margin: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  background: #F3F3F3;\n  padding: 28px 32px 20px;\n}\n.selected-controller.active[data-v-9a749a7c] {\n  -webkit-transform: translateX(-50%) translateY(0);\n          transform: translateX(-50%) translateY(0);\n}\n.clear-selection[data-v-9a749a7c] {\n  position: absolute;\n  z-index: 1;\n  top: 8px;\n  color: #FF6565;\n  cursor: pointer;\n  font-size: 12px;\n}\n.clear-selection[data-v-9a749a7c]:hover {\n  opacity: 0.8;\n}\n.button[data-v-9a749a7c] {\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  padding-right: 22px;\n  color: #1B1C1D;\n  border-color: white;\n  background: white;\n}\n.button.green[data-v-9a749a7c] {\n  width: 155px;\n  background: #5EE2A0;\n  color: white;\n  border-color: #5EE2A0;\n  padding: 0;\n}\n.button.green.disabled[data-v-9a749a7c] {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.button i[data-v-9a749a7c] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-9a749a7c] {\n  font-weight: 900;\n}", ""]);
+exports.push([module.i, "span[data-v-9a749a7c] {\n  display: inline-block;\n  font-size: 14px;\n  font-weight: 700;\n}\nspan[data-v-9a749a7c]:first-child {\n  margin-right: 12px;\n}\n.selected-controller[data-v-9a749a7c] {\n  position: fixed;\n  bottom: 20px;\n  left: calc(50% + 100px);\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);\n  -webkit-transform: translateX(-50%) translateY(calc(100% + 20px));\n          transform: translateX(-50%) translateY(calc(100% + 20px));\n  margin: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  background: #F3F3F3;\n  padding: 28px 32px 20px;\n}\n.selected-controller.active[data-v-9a749a7c] {\n  -webkit-transform: translateX(-50%) translateY(0);\n          transform: translateX(-50%) translateY(0);\n}\n.clear-selection[data-v-9a749a7c] {\n  position: absolute;\n  z-index: 1;\n  top: 8px;\n  color: #FF6565;\n  cursor: pointer;\n  font-size: 12px;\n}\n.clear-selection[data-v-9a749a7c]:hover {\n  opacity: 0.8;\n}\n.button[data-v-9a749a7c] {\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  padding-right: 22px;\n}\n.button.submit[data-v-9a749a7c] {\n  width: 155px;\n  background: #5EE2A0;\n  color: white;\n  border-color: #5EE2A0;\n  padding: 0;\n}\n.button.submit.disabled[data-v-9a749a7c] {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.button i[data-v-9a749a7c] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-9a749a7c] {\n  font-weight: 900;\n}", ""]);
 
 // exports
 
@@ -16799,8 +16844,11 @@ var render = function() {
         _c(
           "span",
           {
-            staticClass: "button",
-            class: { active: _vm.method == "in" },
+            staticClass: "button green-hover",
+            class: [
+              { active: _vm.method == "in" },
+              { green: _vm.method == "in" }
+            ],
             on: {
               click: function($event) {
                 return _vm.setMethod("in")
@@ -16813,8 +16861,11 @@ var render = function() {
         _c(
           "span",
           {
-            staticClass: "button",
-            class: { active: _vm.method == "out" },
+            staticClass: "button red-hover",
+            class: [
+              { active: _vm.method == "out" },
+              { red: _vm.method == "out" }
+            ],
             on: {
               click: function($event) {
                 return _vm.setMethod("out")
@@ -16827,7 +16878,7 @@ var render = function() {
         _c(
           "span",
           {
-            staticClass: "button green",
+            staticClass: "button green submit",
             class: { disabled: _vm.method == "" },
             on: {
               click: function($event) {

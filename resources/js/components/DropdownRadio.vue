@@ -36,7 +36,7 @@ export default {
     }},
     computed: {
         optionsToShow () {
-            const optionsToShow = this.options
+            const optionsToShow = JSON.parse(JSON.stringify(this.options))
             if (this.defaultOption != null)
                 optionsToShow.unshift(this.defaultOption)
             return optionsToShow

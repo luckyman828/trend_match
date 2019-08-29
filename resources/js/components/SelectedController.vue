@@ -2,9 +2,9 @@
     <div class="card selected-controller" :class="{active: selected.length}">
         <div class="inner">
             <span>{{selected.length}} of {{totalCount}} selected</span>
-            <span :class="{active: method == 'in'}" class="button" @click="setMethod('in')">In <i class="far fa-heart"></i></span>
-            <span :class="{active: method == 'out'}" class="button" @click="setMethod('out')">Out <i class="far fa-times-circle"></i></span>
-            <span :class="{disabled: method == ''}" class="button green" @click="onSubmitAction()">Choose action</span>
+            <span :class="[{active: method == 'in'}, {green: method == 'in'}]" class="button green-hover" @click="setMethod('in')">In <i class="far fa-heart"></i></span>
+            <span :class="[{active: method == 'out'}, {red: method == 'out'}]" class="button red-hover" @click="setMethod('out')">Out <i class="far fa-times-circle"></i></span>
+            <span :class="{disabled: method == ''}" class="button green submit" @click="onSubmitAction()">Choose action</span>
         </div>
         <span class="clear-selection" @click="clearSelection">Clear selection</span>
     </div>
@@ -84,10 +84,10 @@ export default {
         position: relative;
         font-weight: 700;
         padding-right: 22px;
-        color: $dark;
-        border-color: white;
-        background: white;
-        &.green {
+        // color: $dark;
+        // border-color: white;
+        // background: white;
+        &.submit {
             width: 155px;
             background: $green;
             color: white;

@@ -116,7 +116,7 @@ class ActionController extends Controller
     public function destroyPhase(Request $request)
     {
         // First, check if an action for the following product and phase already exists
-        $existingAction = TeamProduct::where('product_id', $request->product_id)->where('phase_id', $request->phase_id)->first();
+        $existingAction = PhaseProduct::where('product_id', $request->product_id)->where('phase_id', $request->phase_id)->first();
 
         if( $existingAction->delete() ) {
             return new PhaseProductResource($existingAction);
