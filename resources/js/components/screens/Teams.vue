@@ -126,12 +126,6 @@ export default {
             if (TeamInvite.all().length <= 0)
                 this.fetchTeamInvites(this.currentWorkspaceId)
             this.singleTeam = this.teams[0]
-
-            // Temp hotfix for team id not being set
-            if (this.authUser.role_id >= 3)
-                this.setCurrentTeam(0)
-            else if (this.authUser.teams.length > 0)
-                this.setCurrentTeam(this.authUser.teams[0].id)
         }
     },
     created () {

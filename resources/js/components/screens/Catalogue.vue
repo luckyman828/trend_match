@@ -635,13 +635,6 @@ export default{
                 await this.fetchCollections(this.currentWorkspaceId)
             if (User.all().length <= 0)
                 await this.fetchUsers(this.currentWorkspaceId)
-                
-            // Temp hotfix for team id not being set
-            if (this.authUser.role_id >= 3)
-                this.setCurrentTeam(0)
-            else if (this.authUser.teams != null)
-                if (this.authUser.teams.length > 0)
-                    this.setCurrentTeam(this.authUser.teams[0].id)
         },
         initRequiresFileId() {
             this.fetchProducts(this.currentFileId)

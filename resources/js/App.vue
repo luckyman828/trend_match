@@ -64,6 +64,16 @@ export default{
                     this.setCurrentTeam(this.authUser.teams[0].id)
         }
     },
+    watch : {
+        authUser(newVal) {
+            if (newVal.teams != null)
+                if (newVal.teams.length > 0) {
+                    if (this.authUser.role_id >= 3)
+                        this.setCurrentTeam(0)
+                    else this.setCurrentTeam(this.authUser.teams[0].id)
+                }
+        }
+    },
     created() {
         this.fetchInitialData()
         // Fetch data based on the Auth User
@@ -87,7 +97,6 @@ export default{
                 this.loadingOverwrite = true
             }
         })
-        const vuexHook = Query.on('afterCreate', this.testFunc )
     },
 }
 </script>
