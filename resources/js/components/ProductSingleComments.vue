@@ -163,12 +163,14 @@ export default {
             this.tooltip.active = false;
         },
     },
-    updated() {
-        this.newComment.team_id = this.currentTeamId
+    mounted() {
         if (this.actionScope == 'phaseAction')
             this.finalOnly = true
         else
             this.finalOnly = false
+    },
+    updated() {
+        this.newComment.team_id = this.currentTeamId
     }
 }
 </script>

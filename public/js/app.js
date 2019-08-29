@@ -8485,9 +8485,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.tooltip.active = false;
     }
   }),
+  mounted: function mounted() {
+    if (this.actionScope == 'phaseAction') this.finalOnly = true;else this.finalOnly = false;
+  },
   updated: function updated() {
     this.newComment.team_id = this.currentTeamId;
-    if (this.actionScope == 'phaseAction') this.finalOnly = true;else this.finalOnly = false;
   }
 });
 
