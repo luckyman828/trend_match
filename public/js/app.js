@@ -8374,6 +8374,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -8425,7 +8434,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           if (comment.team_final || comment.phase_final) commentsToReturn.push(comment); // Check if the auth user made the comment
 
           comment.userComment = false;
-          if (comment.user_id == _this.authUser.id && comment.team_id == _this.currentTeamId) comment.userComment = true, commentsToReturn.push(comment);
+
+          if (comment.user_id == _this.authUser.id && comment.team_id == _this.currentTeamId) {
+            comment.userComment = true; // Check if the comment is already in the array
+
+            if (!commentsToReturn.find(function (x) {
+              return x.id == comment.id;
+            })) commentsToReturn.push(comment);
+          }
         });
       } else {
         commentsToReturn = comments;
@@ -8442,7 +8458,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return commentsToReturn;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['createComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['markAsFinal']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']), {
     onSubmitComment: function () {
       var _onSubmitComment = _asyncToGenerator(
       /*#__PURE__*/
@@ -8482,13 +8498,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     onMarkAsFinal: function onMarkAsFinal(comment) {
       if (this.actionScope == 'phaseAction') {
         comment.phase_final = !comment.phase_final;
+        this.markAsPhaseFinal({
+          comment: comment
+        });
       } else if (this.actionScope == 'teamAction') {
         comment.team_final = !comment.team_final;
+        this.markAsTeamFinal({
+          comment: comment
+        });
       }
-
-      this.markAsFinal({
-        comment: comment
-      });
     },
     showTooltip: function showTooltip(event, data) {
       var rect = event.target.getBoundingClientRect(); // Set tooltip position
@@ -9815,9 +9833,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
             if (comment.user != null) if (comment.user.teams != null) if (comment.user.teams.find(function (x) {
               return x.id == teamFilterId;
-            })) pushComment = true; // Check if the comment is final
+            })) pushComment = true; // Check if the comment is final or global
 
-            if (comment["final"] || comment.product_final) pushComment = true;
+            if (comment.team_final || comment.phase_final || comment.team_id == 0) pushComment = true;
             if (pushComment) product.commentsScoped.push(comment);
           });
         } else if (teamFilterId == 0) {
@@ -10925,7 +10943,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.toggle[data-v-6d61fa50] {\n  border: solid 1px #DFDFDF;\n  border-radius: 50px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.toggle .option[data-v-6d61fa50] {\n  font-size: 12px;\n  padding: 6px 14px;\n  font-weight: 700;\n  color: #A8A8A8;\n  text-transform: uppercase;\n  display: inline-block;\n}\n.toggle .option.active[data-v-6d61fa50] {\n  color: #1B1C1D;\n  background: #DFDFDF;\n  border-radius: 50px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #F3F3F3;\n  border-radius: 8px;\n  padding: 36px;\n  padding-right: 68px;\n  height: 57vh;\n  max-height: 57vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 36px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment-wrapper.own[data-v-6d61fa50] {\n  text-align: right;\n}\n.comment-wrapper.own .comment[data-v-6d61fa50] {\n  background: #3B86FF;\n  color: white;\n}\n.comment[data-v-6d61fa50] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n}\n.user[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-6d61fa50] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-6d61fa50] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-6d61fa50] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-6d61fa50] {\n  left: 18px;\n}\n.circle[data-v-6d61fa50] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.circle i[data-v-6d61fa50] {\n  font-size: 20px;\n}\n.circle[data-v-6d61fa50]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.active[data-v-6d61fa50] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.disabled[data-v-6d61fa50]:not(.active) {\n  display: none;\n}\n.circle.disabled[data-v-6d61fa50] {\n  cursor: auto;\n}\n.pill[data-v-6d61fa50] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #DFDFDF;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #A8A8A8;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #A8A8A8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #F3F3F3;\n  color: #A8A8A8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3B86FF;\n}", ""]);
+exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.toggle[data-v-6d61fa50] {\n  border: solid 1px #DFDFDF;\n  border-radius: 50px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.toggle .option[data-v-6d61fa50] {\n  font-size: 12px;\n  padding: 6px 14px;\n  font-weight: 700;\n  color: #A8A8A8;\n  text-transform: uppercase;\n  display: inline-block;\n}\n.toggle .option.active[data-v-6d61fa50] {\n  color: #1B1C1D;\n  background: #DFDFDF;\n  border-radius: 50px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #F3F3F3;\n  border-radius: 8px;\n  padding: 36px 24px;\n  height: 57vh;\n  max-height: 57vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 24px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment-wrapper.own[data-v-6d61fa50] {\n  text-align: right;\n}\n.comment[data-v-6d61fa50] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n  margin-right: 56px;\n}\n.own-team .comment[data-v-6d61fa50] {\n  background: rgba(59, 134, 255, 0.7);\n  color: white;\n}\n.own .comment[data-v-6d61fa50] {\n  background: #3B86FF;\n  color: white;\n  text-align: left;\n  margin-right: 0;\n  margin-left: 56px;\n}\n.user[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-6d61fa50] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-6d61fa50] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-6d61fa50] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-6d61fa50] {\n  left: 18px;\n}\n.circle[data-v-6d61fa50] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.comment-wrapper.own .circle[data-v-6d61fa50] {\n  right: auto;\n  left: -56px;\n}\n.circle i[data-v-6d61fa50] {\n  font-size: 20px;\n}\n.circle[data-v-6d61fa50]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.active[data-v-6d61fa50] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.disabled[data-v-6d61fa50]:not(.active) {\n  display: none;\n}\n.circle.disabled[data-v-6d61fa50] {\n  cursor: auto;\n}\n.pill[data-v-6d61fa50] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\n.pill.phase-final[data-v-6d61fa50] {\n  background: #3B86FF;\n  color: white;\n}\n.pill[data-v-6d61fa50]:nth-child(2) {\n  right: 100px;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #DFDFDF;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #A8A8A8;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #A8A8A8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #F3F3F3;\n  color: #A8A8A8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3B86FF;\n}", ""]);
 
 // exports
 
@@ -15646,12 +15664,54 @@ var render = function() {
                       )
                     : _vm._e(),
                   _vm._v(" "),
-                  comment.team_final && !comment.user_final
-                    ? _c("span", { staticClass: "votes pill" }, [
-                        _vm._v("Final comment "),
-                        _c("i", { staticClass: "far fa-comment-check" })
-                      ])
-                    : _vm._e(),
+                  _c(
+                    "div",
+                    { staticClass: "pill-wrapper" },
+                    [
+                      comment.phase_final && _vm.actionScope != "phaseAction"
+                        ? _c(
+                            "span",
+                            { staticClass: "votes phase-final pill" },
+                            [
+                              _vm._v("Phase final "),
+                              _c("i", { staticClass: "far fa-comment-check" })
+                            ]
+                          )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _vm.actionScope == "teamAction"
+                        ? [
+                            comment.team_final &&
+                            comment.team_id != _vm.currentTeamId
+                              ? _c(
+                                  "span",
+                                  { staticClass: "votes team-final pill" },
+                                  [
+                                    _vm._v("Team final "),
+                                    _c("i", {
+                                      staticClass: "far fa-comment-check"
+                                    })
+                                  ]
+                                )
+                              : _vm._e()
+                          ]
+                        : [
+                            comment.team_final
+                              ? _c(
+                                  "span",
+                                  { staticClass: "votes team-final pill" },
+                                  [
+                                    _vm._v("Team final "),
+                                    _c("i", {
+                                      staticClass: "far fa-comment-check"
+                                    })
+                                  ]
+                                )
+                              : _vm._e()
+                          ]
+                    ],
+                    2
+                  ),
                   _vm._v(" "),
                   _c("span", { staticClass: "body" }, [
                     _vm._v(_vm._s(comment.comment))
@@ -15659,14 +15719,12 @@ var render = function() {
                   _vm._v(" "),
                   _vm.userPermissionLevel >= 2
                     ? [
-                        _vm.actionScope == "phaseAction" ||
-                        (_vm.actionScope == "teamAction" &&
-                          comment.team_id == _vm.currentTeamId)
+                        _vm.actionScope == "phaseAction"
                           ? _c(
                               "span",
                               {
                                 staticClass: "circle",
-                                class: { active: comment.user_final },
+                                class: { active: comment.phase_final },
                                 on: {
                                   click: function($event) {
                                     return _vm.onMarkAsFinal(comment)
@@ -15674,7 +15732,33 @@ var render = function() {
                                   mouseover: function($event) {
                                     return _vm.showTooltip(
                                       $event,
-                                      "Choose as final comment"
+                                      "Choose as phase final comment"
+                                    )
+                                  },
+                                  mouseleave: _vm.hideTooltip
+                                }
+                              },
+                              [_c("i", { staticClass: "far fa-comment-check" })]
+                            )
+                          : _vm.actionScope == "teamAction" &&
+                            comment.team_id == _vm.currentTeamId
+                          ? _c(
+                              "span",
+                              {
+                                staticClass: "circle",
+                                class: {
+                                  active:
+                                    comment.team_final &&
+                                    comment.team_id == _vm.currentTeamId
+                                },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.onMarkAsFinal(comment)
+                                  },
+                                  mouseover: function($event) {
+                                    return _vm.showTooltip(
+                                      $event,
+                                      "Choose as team final comment"
                                     )
                                   },
                                   mouseleave: _vm.hideTooltip
@@ -38842,8 +38926,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit('setSubmitting', true);
                 team_id = '0';
                 if (comment.team_id) team_id = comment.team_id;
-                console.log(comment);
-                _context2.next = 8;
+                _context2.next = 7;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/comment", {
                   user_id: comment.user_id,
                   product_id: comment.product_id,
@@ -38855,7 +38938,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   phase_final: comment.phase_final
                 });
 
-              case 8:
+              case 7:
                 response = _context2.sent;
                 // Get and set the comment id equal to the id given by the database
                 comment.id = response.data.id;
@@ -38865,7 +38948,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 console.log(response.data);
                 commit('setSubmitting', false);
 
-              case 13:
+              case 12:
               case "end":
                 return _context2.stop();
             }
@@ -38880,8 +38963,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return createComment;
     }(),
     // Update the action of for a product for a user
-    markAsFinal: function () {
-      var _markAsFinal = _asyncToGenerator(
+    markAsTeamFinal: function () {
+      var _markAsTeamFinal = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref4, _ref5) {
         var commit, comment;
@@ -38894,19 +38977,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit('updateFinal', {
                   comment: comment
                 });
-                console.log(comment);
-                _context3.next = 6;
+                _context3.next = 5;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/comment/update-final", {
                   id: comment.id,
-                  team_final: comment.team_final,
-                  phase_final: comment.phase_final
+                  team_final: comment.team_final
                 }).then(function (response) {
                   console.log(response.data);
                 })["catch"](function (err) {
                   console.log(err);
                 });
 
-              case 6:
+              case 5:
               case "end":
                 return _context3.stop();
             }
@@ -38914,11 +38995,50 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee3);
       }));
 
-      function markAsFinal(_x5, _x6) {
-        return _markAsFinal.apply(this, arguments);
+      function markAsTeamFinal(_x5, _x6) {
+        return _markAsTeamFinal.apply(this, arguments);
       }
 
-      return markAsFinal;
+      return markAsTeamFinal;
+    }(),
+    // Update the action of for a product for a user
+    markAsPhaseFinal: function () {
+      var _markAsPhaseFinal = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref6, _ref7) {
+        var commit, comment;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                commit = _ref6.commit;
+                comment = _ref7.comment;
+                commit('updateFinal', {
+                  comment: comment
+                });
+                _context4.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/comment/update-final", {
+                  id: comment.id,
+                  phase_final: comment.phase_final
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }));
+
+      function markAsPhaseFinal(_x7, _x8) {
+        return _markAsPhaseFinal.apply(this, arguments);
+      }
+
+      return markAsPhaseFinal;
     }()
   },
   mutations: {
@@ -38929,14 +39049,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     setSubmitting: function setSubmitting(state, bool) {
       state.submitting = bool;
     },
-    addComment: function addComment(state, _ref6) {
-      var comment = _ref6.comment;
+    addComment: function addComment(state, _ref8) {
+      var comment = _ref8.comment;
       _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: comment
       });
     },
-    updateFinal: function updateFinal(state, _ref7) {
-      var comment = _ref7.comment;
+    updateFinal: function updateFinal(state, _ref9) {
+      var comment = _ref9.comment;
       // Remove final status from this products comments
       if (comment.team_final) _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].update({
         where: function where(existing_comment) {

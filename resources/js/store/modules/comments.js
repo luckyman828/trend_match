@@ -50,8 +50,6 @@ export default {
         if (comment.team_id)
           team_id = comment.team_id
 
-        console.log(comment)
-
         const response = await axios.post(`/api/comment`, {
 
           user_id: comment.user_id,
@@ -74,15 +72,28 @@ export default {
 
       },
       // Update the action of for a product for a user
-        async markAsFinal({commit}, {comment}) {
+        async markAsTeamFinal({commit}, {comment}) {
           commit('updateFinal', {comment: comment})
-
-          console.log(comment)
     
           await axios.put(`/api/comment/update-final`, {
 
             id: comment.id,
             team_final: comment.team_final,
+
+          }).then(response => {
+            console.log(response.data)
+          }).catch(err =>{
+            console.log(err);
+          })
+ 
+        },
+        // Update the action of for a product for a user
+        async markAsPhaseFinal({commit}, {comment}) {
+          commit('updateFinal', {comment: comment})
+    
+          await axios.put(`/api/comment/update-final`, {
+
+            id: comment.id,
             phase_final: comment.phase_final,
 
           }).then(response => {

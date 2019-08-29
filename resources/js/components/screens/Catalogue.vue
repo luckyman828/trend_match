@@ -154,8 +154,8 @@ export default{
                                 if ( comment.user.teams.find(x => x.id == teamFilterId) )
                                     pushComment = true
 
-                        // Check if the comment is final
-                        if (comment.final || comment.product_final)
+                        // Check if the comment is final or global
+                        if (comment.team_final || comment.phase_final || comment.team_id == 0)
                             pushComment = true
 
                         if (pushComment)

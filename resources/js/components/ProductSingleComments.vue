@@ -12,14 +12,23 @@
                 <div class="comment">
                     <span class="important bubble" v-if="comment.important" @mouseover="showTooltip($event, 'Important')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
                     <span v-if="comment.votes.length > 0" class="votes bubble" :class="{second: comment.important}">{{comment.votes.length}}</span>
-                    <span class="votes pill" v-if="comment.team_final && !comment.user_final">Final comment <i class="far fa-comment-check"></i></span>
+                    <div class="pill-wrapper">
+                        <span class="votes phase-final pill" v-if="comment.phase_final && actionScope != 'phaseAction'">Phase final <i class="far fa-comment-check"></i></span>
+                        <template v-if="actionScope == 'teamAction'">
+                            <span class="votes team-final pill" v-if="comment.team_final && comment.team_id != currentTeamId">Team final <i class="far fa-comment-check"></i></span>
+                        </template>
+                        <template v-else>
+                            <span class="votes team-final pill" v-if="comment.team_final">Team final <i class="far fa-comment-check"></i></span>
+                        </template>
+                    </div>
                     <span class="body">{{comment.comment}}</span>
 
                     <!-- <span v-if="authUser.role_id >= 2" :class="{active: comment.product_final}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
                     <span v-else :class="{active: comment.team_final}" @click="onMarkAsFinal(comment)" class="circle disabled" @mouseover="showTooltip($event, 'Final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span> -->
                      <template v-if="userPermissionLevel >= 2">
                         <!-- <span v-if="actionScope == 'phaseAction'" :class="{active: comment.user_final}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span> -->
-                        <span v-if="actionScope == 'phaseAction' || (actionScope == 'teamAction' && comment.team_id == currentTeamId)" :class="{active: comment.user_final}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
+                        <span v-if="actionScope == 'phaseAction'" :class="{active: comment.phase_final}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as phase final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
+                        <span v-else-if="actionScope == 'teamAction' && comment.team_id == currentTeamId" :class="{active: comment.team_final && comment.team_id == currentTeamId}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as team final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
                      </template>
                 </div>
                 <span class="user" v-if="comment.user != null">
@@ -106,9 +115,12 @@ export default {
 
                     // Check if the auth user made the comment
                     comment.userComment = false
-                    if (comment.user_id == this.authUser.id && comment.team_id == this.currentTeamId)
-                        comment.userComment = true,
-                        commentsToReturn.push(comment)
+                    if (comment.user_id == this.authUser.id && comment.team_id == this.currentTeamId) {
+                        comment.userComment = true
+                        // Check if the comment is already in the array
+                        if (!commentsToReturn.find(x => x.id == comment.id))
+                            commentsToReturn.push(comment)
+                    }
                 })
             } else {
                 commentsToReturn = comments
@@ -129,8 +141,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('entities/comments', ['createComment']),
-        ...mapActions('entities/comments', ['markAsFinal']),
+        ...mapActions('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']),
         async onSubmitComment(e) {
             e.preventDefault()
             console.log('submitting comment to store')
@@ -145,11 +156,12 @@ export default {
         onMarkAsFinal(comment) {
             if (this.actionScope == 'phaseAction') {
                 comment.phase_final = !comment.phase_final
+                this.markAsPhaseFinal({comment: comment})
             }
             else if (this.actionScope == 'teamAction') {
                 comment.team_final = !comment.team_final
+                this.markAsTeamFinal({comment: comment})
             }
-            this.markAsFinal({comment: comment})
         },
         showTooltip(event, data) {
             const rect = event.target.getBoundingClientRect()
@@ -219,8 +231,7 @@ export default {
     .comments-wrapper {
         background: $light1;
         border-radius: 8px;
-        padding: 36px;
-        padding-right: 68px;
+        padding: 36px 24px;
         height: 57vh;
         max-height: 57vh;
         overflow-y: scroll;
@@ -228,16 +239,12 @@ export default {
         box-sizing: border-box;
     }
     .comment-wrapper {
-        margin-bottom: 36px;
+        margin-bottom: 24px;
         &:hover .circle {
             opacity: 1;
         }
         &.own {
             text-align: right;
-            .comment {
-                background: $primary;
-                color: white;
-            }
         }
     }
     .comment {
@@ -248,6 +255,18 @@ export default {
         display: inline-block;
         clear: both;
         min-width: 170px;
+        margin-right: 56px;
+        .own-team & {
+            background: rgba($primary, 70%);
+            color: white;
+        }
+        .own & {
+            background: $primary;
+            color: white;
+            text-align: left;
+            margin-right: 0;
+            margin-left: 56px;
+        }
     }
     .user {
         display: block;
@@ -297,6 +316,10 @@ export default {
         transition: .3s;
         opacity: 0;
         cursor: pointer;
+        .comment-wrapper.own & {
+            right: auto;
+            left: -56px;
+        }
         i {
             font-size: 20px;
         }
@@ -334,6 +357,13 @@ export default {
         box-shadow: 0 3px 6px rgba(0,0,0,.1);
         background: $light1;
         font-weight: 500;
+        &.phase-final {
+            background: $primary;
+            color: white;
+        }
+        &:nth-child(2) {
+            right: 100px;
+        }
     }
     form {
         margin-top: 12px;

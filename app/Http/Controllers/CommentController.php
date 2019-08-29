@@ -50,9 +50,14 @@ class CommentController extends Controller
             $oldTeamFinal->team_final = 0;
             $oldTeamFinal->save();
         }
+
+        if ($request->phase_final) {
+            $comment->phase_final = $request->input('phase_final');
+        }
+        if ($request->team_final) {
+            $comment->team_final = $request->input('team_final');
+        }
         
-        $comment->team_final = $request->input('team_final');
-        $comment->phase_final = $request->input('phase_final');
         
         if($comment->save()) {
             return new CommentResource($comment);
