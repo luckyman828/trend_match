@@ -10111,7 +10111,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
 
       if (!this.isLoading) {
-        if (this.authUser.role_id == 2) {
+        if (this.authUser.role_id >= 3) return teams;else {
           // Get the users teams
           var userTeams = [];
           teams.forEach(function (team) {
@@ -10120,7 +10120,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             })) userTeams.push(team);
           });
           return userTeams;
-        } else if (this.authUser.role_id >= 3) return teams;
+        }
       }
 
       return [];
@@ -10417,7 +10417,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
 
       if (!this.isLoading) {
-        if (this.authUser.role_id == 2) {
+        if (this.authUser.role_id >= 3) return teams;else {
           // Get the users teams
           var userTeams = [];
           teams.forEach(function (team) {
@@ -10426,7 +10426,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             })) userTeams.push(team);
           });
           return userTeams;
-        } else if (this.authUser.role_id >= 3) return teams;
+        }
       }
 
       return [];

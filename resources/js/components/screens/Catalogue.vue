@@ -510,7 +510,9 @@ export default{
                 }
             })
             if (!this.isLoading) {
-                if (this.authUser.role_id == 2) {
+                if (this.authUser.role_id >= 3)
+                    return teams
+                else {
                     // Get the users teams
                     let userTeams = []
                     teams.forEach(team => {
@@ -519,8 +521,6 @@ export default{
                     })
                     return userTeams
                 }
-                else if (this.authUser.role_id >= 3)
-                    return teams
             }
             return []
         },
