@@ -10242,7 +10242,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     initRequiresWorkspace: function initRequiresWorkspace() {
       if (_store_models_Collection__WEBPACK_IMPORTED_MODULE_13__["default"].all().length <= 0) this.fetchCollections(this.currentWorkspaceId);
-      if (_store_models_User__WEBPACK_IMPORTED_MODULE_11__["default"].all().length <= 0) this.fetchUsers(this.currentWorkspaceId);
+      if (_store_models_User__WEBPACK_IMPORTED_MODULE_11__["default"].all().length <= 0) this.fetchUsers(this.currentWorkspaceId); // Temp hotfix for team id not being set
+
+      if (this.authUser.role_id >= 3) this.setCurrentTeam(0);else if (this.authUser.teams.length > 0) this.setCurrentTeam(this.authUser.teams[0].id);
     },
     initRequiresFileId: function initRequiresFileId() {
       this.fetchProducts(this.currentFileId);
@@ -10457,7 +10459,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     initRequiresWorkspace: function initRequiresWorkspace() {
       if (_store_models_Collection__WEBPACK_IMPORTED_MODULE_6__["default"].all().length <= 0) this.fetchCollections(this.currentWorkspaceId);
-      if (_store_models_User__WEBPACK_IMPORTED_MODULE_8__["default"].all().length <= 0) this.fetchUsers(this.currentWorkspaceId);
+      if (_store_models_User__WEBPACK_IMPORTED_MODULE_8__["default"].all().length <= 0) this.fetchUsers(this.currentWorkspaceId); // Temp hotfix for team id not being set
+
+      if (this.authUser.role_id >= 3) this.setCurrentTeam(0);else if (this.authUser.teams.length > 0) this.setCurrentTeam(this.authUser.teams[0].id);
     }
   }),
   created: function created() {
@@ -10601,7 +10605,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return loading;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/teamInvites', ['fetchTeamInvites']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/teamInvites', ['fetchTeamInvites']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('persist', ['setCurrentTeam']), {
     setSelected: function setSelected(index) {
       // Check if index already exists in array. If it exists remove it, else add it to array
       var selected = this.selected;
@@ -10618,7 +10622,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     initRequiresWorkspace: function initRequiresWorkspace() {
       if (_store_models_User__WEBPACK_IMPORTED_MODULE_5__["default"].all().length <= 0) this.fetchUsers(this.currentWorkspaceId);
       if (_store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_7__["default"].all().length <= 0) this.fetchTeamInvites(this.currentWorkspaceId);
-      this.singleTeam = this.teams[0];
+      this.singleTeam = this.teams[0]; // Temp hotfix for team id not being set
+
+      if (this.authUser.role_id >= 3) this.setCurrentTeam(0);else if (this.authUser.teams.length > 0) this.setCurrentTeam(this.authUser.teams[0].id);
     }
   }),
   created: function created() {

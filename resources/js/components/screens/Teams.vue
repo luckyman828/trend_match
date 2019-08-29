@@ -108,6 +108,7 @@ export default {
         ...mapActions('entities/teamInvites', ['fetchTeamInvites']),
         ...mapActions('entities/workspaces', ['fetchWorkspaces']),
         ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
+        ...mapActions('persist', ['setCurrentTeam']),
         setSelected(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
             const selected = this.selected
@@ -125,6 +126,12 @@ export default {
             if (TeamInvite.all().length <= 0)
                 this.fetchTeamInvites(this.currentWorkspaceId)
             this.singleTeam = this.teams[0]
+
+            // Temp hotfix for team id not being set
+            if (this.authUser.role_id >= 3)
+                this.setCurrentTeam(0)
+            else if (this.authUser.teams.length > 0)
+                this.setCurrentTeam(this.authUser.teams[0].id)
         }
     },
     created () {
