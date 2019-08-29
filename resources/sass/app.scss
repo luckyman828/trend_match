@@ -533,6 +533,7 @@ input, button, select, optgroup, textarea {
         white-space: nowrap;
         border: solid 1px $light;
         font-size: 12px;
+        cursor: pointer;
         &:hover {
             background: $light;
         }

@@ -40,6 +40,8 @@ Route::middleware('auth:api')->group( function(){
     Route::get('file/{file_id}/comments', 'FileController@comments');
     Route::get('file/{file_id}/comment-votes', 'FileController@commentVotes');
     Route::get('file/{file_id}/final-actions', 'FileController@finalActions');
+    Route::get('file/{file_id}/team-products', 'FileController@teamProducts');
+    Route::get('file/{file_id}/phase-products', 'FileController@phaseProducts');
     
 
     // xxx CATALOGS xxx
@@ -89,6 +91,28 @@ Route::middleware('auth:api')->group( function(){
     // Delete many final action
     Route::delete('many-final-action', 'ActionController@destroyManyFinal');
 
+    // Update team product
+    Route::put('team-product', 'ActionController@storeTeam');
+    // Delete team product
+    Route::delete('team-product', 'ActionController@destroyTeam');
+    // Update many team product
+    Route::put('many-team-products', 'ActionController@updateManyTeam');
+    // Create many team product
+    Route::post('many-team-products', 'ActionController@storeManyTeam');
+    // Delete many team product
+    Route::delete('many-team-products', 'ActionController@destroyManyTeam');
+
+    // Update phase product
+    Route::put('phase-product', 'ActionController@storePhase');
+    // Delete phase product
+    Route::delete('phase-product', 'ActionController@destroyPhase');
+    // Update many phase product
+    Route::put('many-phase-products', 'ActionController@updateManyPhase');
+    // Create many phase product
+    Route::post('many-phase-products', 'ActionController@storeManyPhase');
+    // Delete many phase product
+    Route::delete('many-phase-products', 'ActionController@destroyManyPhase');
+
     // xxx USERS xxx
     // Get countries
     // Route::get('countries', 'UserController@countries');
@@ -101,7 +125,7 @@ Route::middleware('auth:api')->group( function(){
     // Edit comment
     Route::put('comment', 'CommentController@store');
     // Update comment
-    Route::put('comment/update', 'CommentController@update');
+    Route::put('comment/update-final', 'CommentController@updateFinal');
 
     // xxx Team Invites xxx
     // List team invites

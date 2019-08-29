@@ -15,7 +15,7 @@
                     <span v-if="itemFilterIds.length > 0" class="clear button invisible primary" @click="slotProps.clear(); itemFilterIds=[]">Clear filter</span>
                 </template>
             </DropdownCheckbox>
-            <DropdownRadio :options="teams" :currentOptionId="currentTeamId" :defaultOption="{id: 0, title: 'GLOBAL'}" class="dropdown-parent right" @submit="setCurrentTeam">
+            <DropdownRadio :options="teams" :currentOptionId="currentTeamId" :defaultOption="defaultTeam" class="dropdown-parent right" @submit="setCurrentTeam">
                 <template v-slot:button="slotProps">
                     <div class="dropdown-button" @click="slotProps.toggle">
                         <img src="/assets/Path5699.svg">
@@ -60,7 +60,12 @@ export default {
     }},
     computed: {
         ...mapGetters('entities/collections', ['loadingCollections']),
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId']),
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'userPermissionLevel']),
+        defaultTeam() {
+            if (this.userPermissionLevel >= 3)
+                return {id: 0, title: 'Global'}
+            else return null
+        },
         collections () {
             return Collection.query().all()
         },
@@ -83,7 +88,44 @@ export default {
             return AuthUser.query().with('teams').with('workspaces').first()
         },
         teams() {
-            return Team.query().with('users').all()
+            // Manually find the teams and the users belonging to each team.
+            // This is only necessary because I cannot make the Vuex ORM realtionship work 
+            // If you can make it work, please be my guest
+            const teams = Team.query().with('users').with('invites').all()
+            const users = this.users
+            // Loop through the users and sort them between the teams
+            users.forEach(user => {
+                // First check that the user has a team and that the team has an id
+                if (user.teams[0] != null) {
+                    if ('id' in user.teams[0]) {
+                        // If we have a team with an id
+                        // Set the users role
+                        user.teams.forEach(userTeam => {
+                            // Loop through each of the users teams and add the user
+                            // Find the corresponding team
+                            const foundTeam = teams.find(team => team.id == userTeam.id)
+                            // Check that the user doesnt already exist in this team
+                            if ( !foundTeam.users.includes(user) )
+                                // Push the user to the team if the user is not already a member
+                                foundTeam.users.push(user)
+                        })
+                    }
+                }
+            })
+            if (!this.isLoading) {
+                if (this.authUser.role_id == 2) {
+                    // Get the users teams
+                    let userTeams = []
+                    teams.forEach(team => {
+                        if (this.authUser.teams.find(x => x.id == team.id))
+                            userTeams.push(team)
+                    })
+                    return userTeams
+                }
+                else if (this.authUser.role_id >= 3)
+                    return teams
+            }
+            return []
         },
         isLoading () {
             let loading = false

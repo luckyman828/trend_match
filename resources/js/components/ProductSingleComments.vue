@@ -2,9 +2,9 @@
     <div class="comments">
         <div class="header">
             <h4>Comments</h4>
-            <div class="toggle" @click="fianlOnly = !fianlOnly">
-                <span class="option" :class="{active: !fianlOnly}">All</span>
-                <span class="option" :class="{active: fianlOnly}">Final comment</span>
+            <div class="toggle" @click="finalOnly = !finalOnly">
+                <span class="option" :class="{active: !finalOnly}">All</span>
+                <span class="option" :class="{active: finalOnly}">Final comment</span>
             </div>
         </div>
         <div class="comments-wrapper">
@@ -12,13 +12,22 @@
                 <div class="comment">
                     <span class="important bubble" v-if="comment.important" @mouseover="showTooltip($event, 'Important')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
                     <span v-if="comment.votes.length > 0" class="votes bubble" :class="{second: comment.important}">{{comment.votes.length}}</span>
-                    <span class="votes pill" v-if="comment.final">Final comment <i class="far fa-comment-check"></i></span>
+                    <span class="votes pill" v-if="comment.team_final && !comment.user_final">Final comment <i class="far fa-comment-check"></i></span>
                     <span class="body">{{comment.comment}}</span>
 
-                    <span v-if="authUser.role_id >= 2" :class="{active: comment.product_final}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
-                    <span v-else :class="{active: comment.product_final}" @click="onMarkAsFinal(comment)" class="circle disabled" @mouseover="showTooltip($event, 'Final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
+                    <!-- <span v-if="authUser.role_id >= 2" :class="{active: comment.product_final}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
+                    <span v-else :class="{active: comment.team_final}" @click="onMarkAsFinal(comment)" class="circle disabled" @mouseover="showTooltip($event, 'Final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span> -->
+                     <span :class="{active: comment.user_final}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
                 </div>
-                <span class="user" v-if="comment.user != null"><span class="team" v-if="comment.user.teams.length > 0">{{comment.user.teams[0].title}} | </span>{{comment.user.email}},</span>
+                <span class="user" v-if="comment.user != null">
+                    <span class="team" v-if="comment.team_id > 0">
+                        <template v-if="comment.team">
+                            {{comment.team.title}} | 
+                        </template>
+                    </span>
+                    <span class="team" v-else>Global | </span>
+                    {{comment.user.email}}
+                </span>
             </div>
         </div>
         <form @submit="onSubmitComment">
@@ -55,12 +64,12 @@ export default {
         newComment: {
             user_id: this.authUser.id,
             product_id: this.product.id,
-            team_id: this.authUser.teams[0].id,
+            team_id: this.currentTeamId,
             phase: 1,
             comment: '',
             important: false,
-            final: false,
-            product_final: false,
+            team_final: false,
+            phase_final: false,
         },
         user_id: this.authUser.id,
         tooltip: {
@@ -69,7 +78,7 @@ export default {
             type: 'text',
             data: ''
         },
-        fianlOnly: false,
+        finalOnly: true,
     }},
     watch: {
         product: function (newVal, oldVal) {
@@ -81,20 +90,36 @@ export default {
     },
     computed: {
         ...mapGetters('entities/comments', ['submittingComment']),
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']),
         commentsToShow () {
             const comments = this.comments
             let commentsToReturn = []
             // Scope to team if auth user role is less than 3
-            if (this.fianlOnly) {
+            if (this.finalOnly) {
                 comments.forEach(comment => {
-                    // Loop through comments users teams
                     // Check if the comment is final
-                    if (comment.final || comment.product_final)
+                    if (comment.team_final || comment.phase_final)
                         commentsToReturn.push(comment)
                 })
             } else {
                 commentsToReturn = comments
             }
+            commentsToReturn.forEach(comment => {
+                comment.userComment = false
+                comment.user_final = false
+                // Check if the auth user made the comment
+                if (comment.user_id == this.authUser.id)
+                    comment.userComment = true
+                // Check if the comment is the auth users final comment
+                if (comment.team_final || comment.phase_final) {
+                    if (this.actionScope == 'phaseAction')
+                        if (comment.user_id == this.authUser.id)
+                            comment.user_final = true
+                    if (this.actionScope == 'teamAction')
+                        if (comment.team_id == this.currentTeamId)
+                            comment.user_final = true
+                }
+            })
             return commentsToReturn
         }
     },
@@ -113,12 +138,12 @@ export default {
             this.newComment.product_final = false
         },
         onMarkAsFinal(comment) {
-            if (this.authUser.role_id >= 2) {
-                console.log('Comment: ' + comment.id)
-                // comment.product_final = !comment.product_final; // This let's us toggle the comments status
-                comment.product_final = !comment.product_final; // This always sets the comment as final
-                this.markAsFinal({comment: comment})
-            }
+            if (this.actionScope == 'phaseAction')
+                comment.phase_final = !comment.phase_final
+            else 
+                comment.team_final = !comment.team_final
+
+            this.markAsFinal({comment: comment})
         },
         showTooltip(event, data) {
             const rect = event.target.getBoundingClientRect()
@@ -137,6 +162,9 @@ export default {
         hideTooltip() {
             this.tooltip.active = false;
         },
+    },
+    updated() {
+        this.newComment.team_id = this.currentTeamId
     }
 }
 </script>

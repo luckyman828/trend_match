@@ -9257,6 +9257,7 @@ textarea {
   white-space: nowrap;
   border: solid 1px #F9F9F9;
   font-size: 12px;
+  cursor: pointer;
 }
 
 .radio-buttons label:hover,

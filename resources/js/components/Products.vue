@@ -2,12 +2,12 @@
     <div class="products card" :class="{sticky: sticky}">
         <div class="scroll-bg"></div>
         <product-totals :totalProductCount="totalProductCount" :selectedCount="selectedCount" :products="products"/>
-        <product-single :loading="loadingSingle" :catalogue="collection" :sticky="sticky" :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut" @onToggleInOutUser="toggleInOutUser"/>
+        <product-single :loading="loadingSingle" :catalogue="collection" :sticky="sticky" :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut"/>
         <div class="flex-table" :class="{disabled: singleProductToShow.id != null}">
             <div class="header-row flex-table-row">
                 <th class="select dropdown-parent" @click="toggleDropdown($event)" v-if="authUser.role_id >= 2">
                     <!-- <select-dropdown @onSelectByCondition="selectByCondition"/> -->
-                    <DropdownCheckbox :title="'Select matching:'" :options="[{id: 'no_in', title: 'No IN'}, {id: 'no_comment_no_out', title: 'No COMMENT & no OUT'}]" @submit="selectByCondition">
+                    <DropdownCheckbox :title="'Select matching:'" :options="['No IN', 'No COMMENT & no OUT']" @submit="selectByCondition">
                         <!-- <span @click="collapsed = !collapsed">Select <i class="fas fa-chevron-down"></i></span> -->
                         <template v-slot:button="slotProps">
                             <span @click="slotProps.toggle">Select <i class="fas fa-chevron-down"></i></span>
@@ -37,28 +37,17 @@
                     Comments <i class="fas" :class="[(this.sortBy == 'comments' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
 
-                <template v-if="authUser.role_id >= 3">
-                    <th :class="{active: this.sortBy == 'productFinalAction'}" class="clickable action" @click="onSortBy('productFinalAction', false)">
-                        Final action <i class="fas" :class="[(this.sortBy == 'productFinalAction' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                <template v-if="userPermissionLevel >= 2">
+                    <th :class="{active: this.sortBy == actionScope}" class="clickable action" @click="onSortBy(actionScope, false)">
+                        {{actionScopeName}} <i class="fas" :class="[(this.sortBy == actionScope && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                     </th>
                 </template>
-                <template v-else-if="authUser.role_id >= 2">
-                    <th :class="{active: this.sortBy == 'userAction'}" class="clickable action" @click="onSortBy('userAction', false)">
-                        Team action <i class="fas" :class="[(this.sortBy == 'userAction' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
-                    </th>
-                </template>
-                <template v-else>
-                    <th class="action">Action</th>
-                </template>
-<!-- :class="[ (product.productFinalAction != null) ? (product.productFinalAction.action == 1) ? 'in' : 'out' : '' ]" -->
 
             </div>
             <template v-if="!loading">
                 <div class="product-row flex-table-row"
                 v-for="(product, index) in products" :key="product.id"
-                :class="[ 
-                (authUser.role_id >= 3 && product.productFinalAction != null) ? (product.productFinalAction.action == 1) ? 'in' : 'out' 
-                : (authUser.role_id >= 2 && product.userAction != null) ? (product.userAction.action == 0) ? 'out' : 'in' : '' ]">
+                :class="[(product[actionScope] != null) ? (product[actionScope].action == 0) ? 'out' : 'in' : '']">
                     <td class="select" v-if="authUser.role_id >= 2">
                         <label class="checkbox">
                             <input type="checkbox" @change="onSelect(index)" :ref="'checkbox-for-' + index"/>
@@ -66,65 +55,39 @@
                         </label>
                     </td>
                     <td class="id clickable bind-view-single" @click="onViewSingle(product.id)">{{product.datasource_id}}</td>
-                    <td class="image clickable" @click="onViewSingle(product.id)"><img class="bind-view-single" :src="product.color_variants[0].image"></td>
+                    <td class="image clickable" @click="onViewSingle(product.id)"><img class="bind-view-single" :src="`https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${product.color_variants[0].blob_id}_thumbnail.jpg`"></td>
                     <td class="title clickable" @click="onViewSingle(product.id)"><span class="bind-view-single">{{product.title}}</span></td>
-                    <td class="square-wrapper focus"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
-                    <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length + product.focus.length}}</span></td>
-                    <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
-                    <td class="square-wrapper nds"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}} / {{teamUsers.length}}</span></td>
-                    <td class="square-wrapper comments"><span class="square clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment bind-view-single"></i>{{product.commentsScoped.length}}</span></td>
-                    <template v-if="!loadingFinalActions">
-                        <template v-if="authUser.role_id >= 3">
-                            <template v-if="!product.productFinalAction">
-                                <td class="action">
-                                    <span class="button icon-right ghost green-hover" @click="toggleInOut(product, 1)">In <i class="far fa-heart"></i></span>
-                                    <span class="button icon-right ghost red-hover" @click="toggleInOut(product, 0)">Out <i class="far fa-times-circle"></i></span>
-                                    <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
-                                </td>
-                            </template>
-                            <template v-else>
-                                <td class="action">
-                                    <span class="button icon-right" :class="[product.productFinalAction.action == 1 ? 'active green' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
-                                    In  <i class="far fa-heart"></i>
-                                    </span>
-                                    <span class="button icon-right" :class="[product.productFinalAction.action == 0 ? 'active red' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
-                                    Out  <i class="far fa-times-circle"></i>
-                                    </span>
-                                    <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
-                                </td>
-                            </template>
-                        </template>
-
-                        <template v-else-if="authUser.role_id >= 2">
-                            <template v-if="!product.userAction">
-                                <td class="action">
-                                    <span class="button icon-right ghost green-hover" @click="toggleInOutUser(product, 1)">In <i class="far fa-heart"></i></span>
-                                    <span class="button icon-right ghost red-hover" @click="toggleInOutUser(product, 0)">Out <i class="far fa-times-circle"></i></span>
-                                    <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
-                                </td>
-                            </template>
-                            <template v-else>
-                                <td class="action">
-                                    <span class="button icon-right" :class="[(product.userAction.action == 1 || product.userAction.action == 2) ? 'active green' : 'ghost green-hover']" @click="toggleInOutUser(product, 1)">
-                                    In  <i class="far fa-heart"></i>
-                                    </span>
-                                    <span class="button icon-right" :class="[product.userAction.action == 0 ? 'active red' : 'ghost red-hover']"  @click="toggleInOutUser(product, 0)">
-                                    Out  <i class="far fa-times-circle"></i>
-                                    </span>
-                                    <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
-                                </td>
-                            </template>
-                        </template>
-
-                        <template v-else>
-                            <td class="action">
-                                <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
-                            </td>
-                        </template>
+                    <template v-if="currentTeamId == 0">
+                        <td class="square-wrapper focus"><span class="square clickable" @mouseover="showTooltip($event, 'teams', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
+                        <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'teams', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length + product.focus.length}}</span></td>
+                        <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'teams', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
+                        <td class="square-wrapper nds"><span class="square clickable" @mouseover="showTooltip($event, 'teams', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}} /{{teams.length}}</span></td>
                     </template>
                     <template v-else>
-                        <td><span><Loader/></span></td>
+                        <td class="square-wrapper focus"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
+                        <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length + product.focus.length}}</span></td>
+                        <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
+                        <td class="square-wrapper nds"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}} /{{teamUsers.length}}</span></td>
                     </template>
+                    <td class="square-wrapper comments"><span class="square clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment bind-view-single"></i>{{product.commentsScoped.length}}</span></td>
+
+                    <template v-if="authUser.role_id >= 2">
+                            <td class="action">
+                                <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
+                                In  <i class="far fa-heart"></i>
+                                </span>
+                                <span class="button icon-right" :class="(product[actionScope] != null) ? (product[actionScope].action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover'"  @click="toggleInOut(product, 0)">
+                                Out  <i class="far fa-times-circle"></i>
+                                </span>
+                                <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
+                            </td>
+                    </template>
+                    <template v-else>
+                        <td class="action">
+                            <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
+                        </td>
+                    </template>
+
                 </div>
             </template>
         </div>
@@ -184,56 +147,57 @@ export default {
     }},
     computed: {
         ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']),
         loadingSingle() {
             let loading = false
-            if (this.teamUsers == null) {
-                loading = true
-            }
-            else {
-                if (this.teamUsers[0] == null)
-                    loading = true
-                else {
-                    if (this.teamUsers[0].teams == null)
-                        loading = true
-                }
-            }
+            // if (this.teamUsers == null) {
+            //     loading = true
+            // }
+            // else {
+            //     if (this.teamUsers[0] == null)
+            //         loading = true
+            //     else {
+            //         if (this.teamUsers[0].teams == null)
+            //             loading = true
+            //     }
+            // }
             return loading
         },
     },
     methods: {
+        // ...mapActions('entities/productFinalActions', ['updateFinalAction', 'deleteFinalAction']),
         ...mapActions('entities/actions', ['updateAction', 'deleteAction']),
-        ...mapActions('entities/productFinalActions', ['updateFinalAction', 'deleteFinalAction']),
+        ...mapActions('entities/teamProducts', ['deleteTeamProduct', 'updateTeamProduct']),
+        ...mapActions('entities/phaseProducts', ['deletePhaseProduct', 'updatePhaseProduct']),
         // ...mapActions('entities/productFinalActions', ['deleteFinalAction']),
-        toggleInOut(product, actionType) {
-            const actionToSet = product.productFinalAction
-            if (actionToSet != null) {
-                // If the product has a final action
-                if(actionToSet.action == actionType) {
-                    // If the products final action is the same as the requested
-                    this.deleteFinalAction({phase: this.collection.phase, productToUpdate: product.id})
+        toggleInOut(product, action) {
+            if (product[this.actionScope] != null) {
+                // If the product has an action
+                if(product[this.actionScope].action == action) {
+                    // DELETE ACTION
+                    if (this.actionScope == 'userAction')
+                        this.deleteAction({user_id: this.authUser.id, productToUpdate: product.id})
+                    if (this.actionScope == 'teamAction')
+                        this.deleteTeamProduct({team_id: this.currentTeamId, product_id: product.id, phase_id: 1})
+                    if (this.actionScope == 'phaseAction')
+                        this.deletePhaseProduct({product_id: product.id, phase_id: 1})
                 } else {
-                    // Update action
-                    this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
+                    // UPDATE ACTION
+                    if (this.actionScope == 'userAction')
+                        this.updateAction({user_id: this.authUser.id, productToUpdate: product.id, action_code: actionType})
+                    if (this.actionScope == 'teamAction')
+                        this.updateTeamProduct({team_id: this.currentTeamId, product_id: product.id, phase_id: 1, action: action})
+                    if (this.actionScope == 'phaseAction')
+                        this.updatePhaseProduct({product_id: product.id, phase_id: 1, action: action})
                 }
             } else {
-                // Create action
-                this.updateFinalAction({phase: this.collection.phase, productToUpdate: product.id, action_code: actionType})
-            }
-        },
-        toggleInOutUser(product, actionType) {
-            const actionToSet = product.userAction
-            if (actionToSet != null) {
-                // If the product has a user action
-                if(actionToSet.action == actionType) {
-                    // If the products user action is the same as the requested
-                    this.deleteAction({user_id: this.authUser.id, productToUpdate: product.id})
-                } else {
-                    // Update action
+                // CREATE ACTION
+                if (this.actionScope == 'userAction')
                     this.updateAction({user_id: this.authUser.id, productToUpdate: product.id, action_code: actionType})
-                }
-            } else {
-                // Create action
-                this.updateAction({user_id: this.authUser.id, productToUpdate: product.id, action_code: actionType})
+                if (this.actionScope == 'teamAction')
+                    this.updateTeamProduct({team_id: this.currentTeamId, product_id: product.id, phase_id: 1, action: action})
+                if (this.actionScope == 'phaseAction')
+                    this.updatePhaseProduct({product_id: product.id, phase_id: 1, action: action})
             }
         },
         onViewSingle(id) {
@@ -246,14 +210,12 @@ export default {
             this.$emit('onSelect', index)
         },
         selectByCondition(condition) {
-            console.log('hello')
-            console.log(condition)
             const selected = this.selectedIds
             const products = this.products
             let index = 0
             products.forEach(product => {
 
-                if (condition == 'no_in') {
+                if (condition == 'No IN') {
                     if (product.ins.length < 1) {
                         // Get the index of the selected product
                         const found = selected.findIndex(el => el == index)
@@ -265,7 +227,7 @@ export default {
                         // console.log(this.$refs['checkbox-for-' + index][0].checked)
                     }
                 }
-                if (condition == 'no_comment_no_out') {
+                if (condition == 'No COMMENT & no OUT') {
                     if (product.comments.length < 1 && product.outs.length < 1) {
                         // Get the index of the selected product
                         const found = selected.findIndex(el => el == index)

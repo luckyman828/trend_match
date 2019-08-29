@@ -41,30 +41,27 @@ export default {
               if (tryCount <= 0) throw err
             }
           }
-
-          // console.log(`Getting comments from ${apiUrl}`)
-          // const response = await axios.get(`${apiUrl}`) //Get the data from the api
-          // .catch(err => {
-          //   console.log('API error in comments.js :')
-          //   console.log(err)
-          // })
-          // Comment.create({ data: response.data })
-          // commit('setLoading', false)
       },
       async createComment({commit}, {comment}) {
 
         commit('setSubmitting', true)
 
+        let team_id = '0'
+        if (comment.team_id)
+          team_id = comment.team_id
+
+        console.log(comment)
+
         const response = await axios.post(`/api/comment`, {
 
           user_id: comment.user_id,
           product_id: comment.product_id,
-          team_id: comment.team_id,
-          phase: comment.phase,
+          team_id: team_id,
+          phase_id: comment.phase,
           comment_body: comment.comment,
           important: comment.important,
-          final: comment.final,
-          product_final: comment.product_final,
+          team_final: comment.team_final,
+          phase_final: comment.phase_final,
 
         })
 
@@ -78,19 +75,15 @@ export default {
       },
       // Update the action of for a product for a user
         async markAsFinal({commit}, {comment}) {
- 
-          console.log('Module updating comment')
           commit('updateFinal', {comment: comment})
+
+          console.log(comment)
     
-          await axios.put(`/api/comment/update`, {
+          await axios.put(`/api/comment/update-final`, {
 
             id: comment.id,
-            user_id: comment.user_id,
-            product_id: comment.product_id,
-            comment_body: comment.comment,
-            important: comment.important,
-            final: comment.final,
-            product_final: comment.product_final,
+            team_final: comment.team_final,
+            phase_final: comment.phase_final,
 
           }).then(response => {
             console.log(response.data)
@@ -117,12 +110,20 @@ export default {
       },
       updateFinal: (state, {comment} ) => {
         // Remove final status from this products comments
-        Comment.update({
-          where: (existing_comment) => {
-            return (existing_comment.product_final && existing_comment.product_id === comment.product_id)
-          },
-          data: {product_final: 0}
-        })
+        if (comment.team_final)
+          Comment.update({
+            where: (existing_comment) => {
+              return (existing_comment.product_id === comment.product_id && existing_comment.team_id === comment.team_id && existing_comment.team_final)
+            },
+            data: {team_final: 0}
+          })
+        if (comment.phase_final)
+          Comment.update({
+            where: (existing_comment) => {
+              return (existing_comment.product_id === comment.product_id && existing_comment.phase_final)
+            },
+            data: {phase_final: 0}
+          })
         // Set new comment as final
         Comment.update({
           data: comment

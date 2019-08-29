@@ -31,6 +31,10 @@ import Workspace from './models/Workspace';
 import workspaces from './modules/workspaces';
 import WorkspaceUser from './models/WorkspaceUser';
 import workspaceUsers from './modules/workspaceUsers';
+import TeamProduct from './models/TeamProduct';
+import teamProducts from './modules/teamProducts';
+import PhaseProduct from './models/PhaseProduct';
+import phaseProducts from './modules/phaseProducts';
 
 const database = new Database()
 
@@ -50,5 +54,7 @@ database.register(AuthUser, authUser)
 database.register(Role, roles)
 database.register(Workspace, workspaces)
 database.register(WorkspaceUser, workspaceUsers)
+database.register(TeamProduct, teamProducts)
+database.register(PhaseProduct, phaseProducts)
 
 export default database

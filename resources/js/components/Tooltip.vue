@@ -10,9 +10,15 @@
             </div>
             </template>
 
-            <template v-if="tooltip.type == 'teams'">
+            <template v-if="tooltip.type == 'userTeams'">
             <div class="tooltip-row" v-for="(team, index) in teams" :key="index">
                 <span class="team">{{team.title}} <span class="count">{{team.users.length}}</span></span>
+            </div>
+            </template>
+
+            <template v-if="tooltip.type == 'teams'">
+            <div class="tooltip-row" v-for="(team, index) in tooltip.data" :key="index">
+                <span class="team">{{team.title}}</span>
             </div>
             </template>
 
@@ -33,7 +39,7 @@ export default {
         teams () {
             const tooltip = this.tooltip
             const data = []
-            if (tooltip.type == 'teams') {
+            if (tooltip.type == 'userTeams') {
 
                     // const uniqueTeams = [...new Set(tooltip.data.map(x => x.team.title))]
                     // Create an array of unique teams from the users in data

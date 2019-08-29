@@ -7143,6 +7143,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_Sidebar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/Sidebar */ "./resources/js/components/Sidebar.vue");
 /* harmony import */ var _components_Navbar__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/Navbar */ "./resources/js/components/Navbar.vue");
 /* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -7170,6 +7171,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'app',
   store: _store__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -7178,16 +7180,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     Navbar: _components_Navbar__WEBPACK_IMPORTED_MODULE_4__["default"]
   },
   data: function data() {
-    return {
-      currentWorkspaceId: null
+    return {// currentWorkspaceId: null,
     };
   },
-  computed: {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['userPermissionLevel', 'currentWorkspaceId']), {
     authUser: function authUser() {
       return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_5__["default"].query()["with"]('teams')["with"]('workspaces').first();
     }
-  },
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/roles', ['fetchRoles']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentWorkspace', 'setLoadingInit']), {
+  }),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/roles', ['fetchRoles']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']), {
     fetchInitialData: function () {
       var _fetchInitialData = _asyncToGenerator(
       /*#__PURE__*/
@@ -7202,11 +7203,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 return Promise.all([this.getAuthUser(), this.fetchWorkspaceUsers(), this.fetchWorkspaces()]);
 
               case 3:
-                this.currentWorkspaceId = this.authUser.workspaces[0].id;
-                _context.next = 6;
-                return this.setCurrentWorkspace(this.currentWorkspaceId);
+                this.setUserPermissionLevel(this.authUser.role_id);
+                this.setCurrentWorkspace(this.authUser.workspaces[0].id); // this.currentWorkspaceId = this.authUser.workspaces[0].id
 
-              case 6:
+              case 5:
               case "end":
                 return _context.stop();
             }
@@ -7219,7 +7219,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
 
       return fetchInitialData;
-    }()
+    }(),
+    testFunc: function testFunc(model) {
+      if (model.constructor.name == 'Team') if (this.authUser.role_id >= 3) this.setCurrentTeam(0);else if (this.authUser.teams.length > 0) this.setCurrentTeam(this.authUser.teams[0].id);
+    }
   }),
   created: function created() {
     var _this = this;
@@ -7235,26 +7238,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
+                // Only get data for the current workspace
+                console.log(_this.userPermissionLevel);
+
                 if (!_this.authUser) {
-                  _context2.next = 7;
+                  _context2.next = 8;
                   break;
                 }
 
-                _context2.next = 3;
+                _context2.next = 4;
                 return _this.fetchTeams(_this.currentWorkspaceId), _this.fetchUserTeams(_this.currentWorkspaceId), _this.fetchRoles();
 
-              case 3:
+              case 4:
                 if (_this.authUser.role_id >= 3) _this.setCurrentTeam(0);else if (_this.authUser.teams.length > 0) _this.setCurrentTeam(_this.authUser.teams[0].id);
 
                 _this.setLoadingInit(false);
 
-                _context2.next = 8;
+                _context2.next = 9;
                 break;
 
-              case 7:
+              case 8:
                 _this.loadingOverwrite = true;
 
-              case 8:
+              case 9:
               case "end":
                 return _context2.stop();
             }
@@ -7266,6 +7272,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return _ref.apply(this, arguments);
       };
     }());
+    var vuexHook = _vuex_orm_core__WEBPACK_IMPORTED_MODULE_6__["Query"].on('afterCreate', this.testFunc);
   }
 });
 
@@ -7660,9 +7667,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'dropdownRadio',
   props: ['options', 'currentOptionId', 'defaultOption'],
@@ -7672,20 +7676,25 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   computed: {
+    optionsToShow: function optionsToShow() {
+      var optionsToShow = this.options;
+      if (this.defaultOption != null) optionsToShow.unshift(this.defaultOption);
+      return optionsToShow;
+    },
     currentOption: function currentOption() {
       var _this = this;
 
-      if (this.options[0] != null) {
-        if (this.options[0].title != null) {
-          var found = this.options.find(function (x) {
+      if (this.optionsToShow[0] != null) {
+        if (this.optionsToShow[0].title != null) {
+          var found = this.optionsToShow.find(function (x) {
             return x.id == _this.currentOptionId;
           });
           if (found) return found;else return {
-            title: 'GLOBAL'
+            title: 'Set filter'
           };
         }
       } else return {
-        title: 'Set team filter'
+        title: 'Fetcing..'
       };
     }
   },
@@ -8167,15 +8176,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -8188,20 +8188,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
-      comment: {
-        user_id: '',
-        product_id: '',
-        comment: '',
-        important: false,
-        "final": false,
-        product_final: false
-      },
+      // comment: {
+      //     user_id: '',
+      //     product_id: '',
+      //     comment: '',
+      //     important: false,
+      //     final: false,
+      //     product_final: false,
+      // },
       user_id: this.authUser.id,
       currentTab: 'ins',
       currentImgIndex: 0
     };
   },
-  computed: {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']), {
     tabBody: function tabBody() {
       if (this.currentTab == 'ins') {
         // return this.productActionUsers.focus.push(this.productActionUsers.ins)
@@ -8217,15 +8217,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return actions;
       } else return this.product[this.currentTab];
     }
-  },
-  watch: {
-    product: function product(newVal, oldVal) {
-      this.comment.product_id = newVal.id;
-    },
-    authUser: function authUser(newVal, oldVal) {
-      this.comment.user_id = newVal.id;
-    }
-  },
+  }),
+  // watch: {
+  //     product: function (newVal, oldVal) {
+  //         this.comment.product_id = newVal.id
+  //     },
+  //     authUser: function (newVal, oldVal) {
+  //         this.comment.user_id = newVal.id
+  //     },
+  // },
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['createComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['markAsFinal']), {
     onCloseSingle: function onCloseSingle() {
       this.currentImgIndex = 0; // Emit event to parent
@@ -8240,11 +8240,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.currentImgIndex = 0;
       this.$emit('prevSingle');
     },
-    toggleInOut: function toggleInOut(product, actionType) {
-      this.$emit('onToggleInOut', product, actionType);
-    },
-    toggleInOutUser: function toggleInOutUser(product, actionType) {
-      this.$emit('onToggleInOutUser', product, actionType);
+    toggleInOut: function toggleInOut(product, action) {
+      this.$emit('onToggleInOut', product, action);
     },
     setCurrentTab: function setCurrentTab(filter) {
       this.currentTab = filter;
@@ -8354,6 +8351,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -8367,12 +8373,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       newComment: {
         user_id: this.authUser.id,
         product_id: this.product.id,
-        team_id: this.authUser.teams[0].id,
+        team_id: this.currentTeamId,
         phase: 1,
         comment: '',
         important: false,
-        "final": false,
-        product_final: false
+        team_final: false,
+        phase_final: false
       },
       user_id: this.authUser.id,
       tooltip: {
@@ -8381,7 +8387,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         type: 'text',
         data: ''
       },
-      fianlOnly: false
+      finalOnly: true
     };
   },
   watch: {
@@ -8392,21 +8398,33 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.newComment.user_id = newVal.id;
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['submittingComment']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['submittingComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']), {
     commentsToShow: function commentsToShow() {
+      var _this = this;
+
       var comments = this.comments;
       var commentsToReturn = []; // Scope to team if auth user role is less than 3
 
-      if (this.fianlOnly) {
+      if (this.finalOnly) {
         comments.forEach(function (comment) {
-          // Loop through comments users teams
           // Check if the comment is final
-          if (comment["final"] || comment.product_final) commentsToReturn.push(comment);
+          if (comment.team_final || comment.phase_final) commentsToReturn.push(comment);
         });
       } else {
         commentsToReturn = comments;
       }
 
+      commentsToReturn.forEach(function (comment) {
+        comment.userComment = false;
+        comment.user_final = false; // Check if the auth user made the comment
+
+        if (comment.user_id == _this.authUser.id) comment.userComment = true; // Check if the comment is the auth users final comment
+
+        if (comment.team_final || comment.phase_final) {
+          if (_this.actionScope == 'phaseAction') if (comment.user_id == _this.authUser.id) comment.user_final = true;
+          if (_this.actionScope == 'teamAction') if (comment.team_id == _this.currentTeamId) comment.user_final = true;
+        }
+      });
       return commentsToReturn;
     }
   }),
@@ -8448,15 +8466,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return onSubmitComment;
     }(),
     onMarkAsFinal: function onMarkAsFinal(comment) {
-      if (this.authUser.role_id >= 2) {
-        console.log('Comment: ' + comment.id); // comment.product_final = !comment.product_final; // This let's us toggle the comments status
-
-        comment.product_final = !comment.product_final; // This always sets the comment as final
-
-        this.markAsFinal({
-          comment: comment
-        });
-      }
+      if (this.actionScope == 'phaseAction') comment.phase_final = !comment.phase_final;else comment.team_final = !comment.team_final;
+      this.markAsFinal({
+        comment: comment
+      });
     },
     showTooltip: function showTooltip(event, data) {
       var rect = event.target.getBoundingClientRect(); // Set tooltip position
@@ -8471,7 +8484,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     hideTooltip: function hideTooltip() {
       this.tooltip.active = false;
     }
-  })
+  }),
+  updated: function updated() {
+    this.newComment.team_id = this.currentTeamId;
+  }
 });
 
 /***/ }),
@@ -8651,43 +8667,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -8719,76 +8698,79 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       sticky: false
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/productFinalActions', ['loadingFinalActions']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/productFinalActions', ['loadingFinalActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']), {
     loadingSingle: function loadingSingle() {
-      var loading = false;
-
-      if (this.teamUsers == null) {
-        loading = true;
-      } else {
-        if (this.teamUsers[0] == null) loading = true;else {
-          if (this.teamUsers[0].teams == null) loading = true;
-        }
-      }
+      var loading = false; // if (this.teamUsers == null) {
+      //     loading = true
+      // }
+      // else {
+      //     if (this.teamUsers[0] == null)
+      //         loading = true
+      //     else {
+      //         if (this.teamUsers[0].teams == null)
+      //             loading = true
+      //     }
+      // }
 
       return loading;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction', 'deleteAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/productFinalActions', ['updateFinalAction', 'deleteFinalAction']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction', 'deleteAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['deleteTeamProduct', 'updateTeamProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['deletePhaseProduct', 'updatePhaseProduct']), {
     // ...mapActions('entities/productFinalActions', ['deleteFinalAction']),
-    toggleInOut: function toggleInOut(product, actionType) {
-      var actionToSet = product.productFinalAction;
-
-      if (actionToSet != null) {
-        // If the product has a final action
-        if (actionToSet.action == actionType) {
-          // If the products final action is the same as the requested
-          this.deleteFinalAction({
-            phase: this.collection.phase,
-            productToUpdate: product.id
-          });
-        } else {
-          // Update action
-          this.updateFinalAction({
-            phase: this.collection.phase,
-            productToUpdate: product.id,
-            action_code: actionType
-          });
-        }
-      } else {
-        // Create action
-        this.updateFinalAction({
-          phase: this.collection.phase,
-          productToUpdate: product.id,
-          action_code: actionType
-        });
-      }
-    },
-    toggleInOutUser: function toggleInOutUser(product, actionType) {
-      var actionToSet = product.userAction;
-
-      if (actionToSet != null) {
-        // If the product has a user action
-        if (actionToSet.action == actionType) {
-          // If the products user action is the same as the requested
-          this.deleteAction({
+    toggleInOut: function toggleInOut(product, action) {
+      if (product[this.actionScope] != null) {
+        // If the product has an action
+        if (product[this.actionScope].action == action) {
+          // DELETE ACTION
+          if (this.actionScope == 'userAction') this.deleteAction({
             user_id: this.authUser.id,
             productToUpdate: product.id
           });
+          if (this.actionScope == 'teamAction') this.deleteTeamProduct({
+            team_id: this.currentTeamId,
+            product_id: product.id,
+            phase_id: 1
+          });
+          if (this.actionScope == 'phaseAction') this.deletePhaseProduct({
+            product_id: product.id,
+            phase_id: 1
+          });
         } else {
-          // Update action
-          this.updateAction({
+          // UPDATE ACTION
+          if (this.actionScope == 'userAction') this.updateAction({
             user_id: this.authUser.id,
             productToUpdate: product.id,
             action_code: actionType
           });
+          if (this.actionScope == 'teamAction') this.updateTeamProduct({
+            team_id: this.currentTeamId,
+            product_id: product.id,
+            phase_id: 1,
+            action: action
+          });
+          if (this.actionScope == 'phaseAction') this.updatePhaseProduct({
+            product_id: product.id,
+            phase_id: 1,
+            action: action
+          });
         }
       } else {
-        // Create action
-        this.updateAction({
+        // CREATE ACTION
+        if (this.actionScope == 'userAction') this.updateAction({
           user_id: this.authUser.id,
           productToUpdate: product.id,
           action_code: actionType
+        });
+        if (this.actionScope == 'teamAction') this.updateTeamProduct({
+          team_id: this.currentTeamId,
+          product_id: product.id,
+          phase_id: 1,
+          action: action
+        });
+        if (this.actionScope == 'phaseAction') this.updatePhaseProduct({
+          product_id: product.id,
+          phase_id: 1,
+          action: action
         });
       }
     },
@@ -8803,13 +8785,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     selectByCondition: function selectByCondition(condition) {
       var _this = this;
 
-      console.log('hello');
-      console.log(condition);
       var selected = this.selectedIds;
       var products = this.products;
       var index = 0;
       products.forEach(function (product) {
-        if (condition == 'no_in') {
+        if (condition == 'No IN') {
           if (product.ins.length < 1) {
             // Get the index of the selected product
             var found = selected.findIndex(function (el) {
@@ -8822,7 +8802,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           }
         }
 
-        if (condition == 'no_comment_no_out') {
+        if (condition == 'No COMMENT & no OUT') {
           if (product.comments.length < 1 && product.outs.length < 1) {
             // Get the index of the selected product
             var _found = selected.findIndex(function (el) {
@@ -9535,6 +9515,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'tooltip',
   props: ['tooltip'],
@@ -9543,7 +9529,7 @@ __webpack_require__.r(__webpack_exports__);
       var tooltip = this.tooltip;
       var data = [];
 
-      if (tooltip.type == 'teams') {
+      if (tooltip.type == 'userTeams') {
         // const uniqueTeams = [...new Set(tooltip.data.map(x => x.team.title))]
         // Create an array of unique teams from the users in data
         var uniqueTeams = [];
@@ -9634,6 +9620,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_models_Category__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../store/models/Category */ "./resources/js/store/models/Category.js");
 /* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
 /* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../../store/models/TeamProduct */ "./resources/js/store/models/TeamProduct.js");
+/* harmony import */ var _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../../store/models/PhaseProduct */ "./resources/js/store/models/PhaseProduct.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
@@ -9696,6 +9684,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'catalogue',
   store: _store__WEBPACK_IMPORTED_MODULE_0__["default"],
@@ -9723,10 +9713,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       test: ''
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId']), {
-    // currentFileId () {
-    //     return this.$route.params.catalogueId
-    // },
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope']), {
+    defaultTeam: function defaultTeam() {
+      if (this.userPermissionLevel >= 3) return {
+        id: 0,
+        title: 'Global'
+      };else return null;
+    },
+    teamProducts: function teamProducts() {
+      return _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_19__["default"]["with"]('products').all();
+    },
+    phaseProducts: function phaseProducts() {
+      return _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_20__["default"]["with"]('products').all();
+    },
     collection: function collection() {
       return _store_models_Collection__WEBPACK_IMPORTED_MODULE_13__["default"].find(this.currentFileId);
     },
@@ -9751,7 +9750,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return 'Unset';
     },
     products: function products() {
-      var products = _store_models_Product__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes', 'comments.user.teams'])["with"]('productFinalAction').all();
+      var _this = this;
+
+      var products = _store_models_Product__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes', 'comments.user.teams', 'comments.team'])["with"]('productFinalAction')["with"]('teamActions.team')["with"]('phaseActions').all();
       var totalUsers = this.teamUsers;
       var userId = this.authUser.id;
       var teamFilterId = this.currentTeamId;
@@ -9761,8 +9762,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         product.ins = [];
         product.outs = [];
         product.focus = [];
-        product.userAction = null;
-        product.commentsScoped = []; // Scope comments to current teamFilter
+        product.nds = [];
+        product.userAction = product.actions.find(function (x) {
+          return x.user_id == _this.authUser.id;
+        });
+        product.commentsScoped = [];
+        product.teamAction = product.teamActions.find(function (x) {
+          return x.team_id == _this.currentTeamId;
+        });
+        product.phaseAction = product.phaseActions.find(function (x) {
+          return x.phase_id == 1;
+        }); // Scope comments to current teamFilter
 
         var comments = product.comments;
 
@@ -9782,43 +9792,63 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           });
         } else if (teamFilterId == 0) {
           product.commentsScoped = comments;
+        } // Filter actions by the current team filter
+        // Check if the action has a user
+
+
+        if (teamFilterId > 0 && product.actions != null) {
+          product.scope = 'user scope';
+          product.nds = JSON.parse(JSON.stringify(totalUsers)); // Copy our users into a new variable
+
+          product.actions.forEach(function (action) {
+            if (action.user != null) {
+              // Check if the user has a team
+              if (action.user.teams[0] != null) {
+                // Find the users team
+                if (action.user.teams.findIndex(function (x) {
+                  return x.id == teamFilterId;
+                }) > -1) {
+                  // if (action.user.teams[0].id == teamFilterId) {
+                  if (action.action == 0) product.outs.push(action.user);
+                  if (action.action == 1) product.ins.push(action.user);
+                  if (action.action == 2) product.focus.push(action.user);
+                }
+              } // Find Not decided
+
+
+              var index = product.nds.findIndex(function (nd) {
+                return nd.id == action.user_id;
+              });
+
+              if (index > -1) {
+                product.nds.splice(index, 1);
+              }
+            }
+          }); // Filter actions by teams if GLOBAL scope is set (= 0)
+        } else if (teamFilterId == 0 && product.teamActions != null) {
+          product.scope = 'team scope';
+          product.nds = JSON.parse(JSON.stringify(_this.teams)); // Copy our users into a new variable
+
+          product.teamActions.forEach(function (action) {
+            if (action.team != null) {
+              if (action.action == 0) product.outs.push(action.team);
+              if (action.action == 1) product.ins.push(action.team);
+              if (action.action == 2) product.focus.push(action.team);
+            } // Find Not decided
+
+
+            var index = product.nds.findIndex(function (nd) {
+              return nd.id == action.team_id;
+            });
+
+            if (index > -1) {
+              product.nds.splice(index, 1);
+            }
+          });
+        } else {
+          product.scope = 'no scope 360';
         }
 
-        product.nds = JSON.parse(JSON.stringify(totalUsers)); // Copy our users into a new variable
-
-        product.actions.forEach(function (action) {
-          // Filter actions by the current team filter
-          // Check if the action has a user
-          if (teamFilterId > 0 && action.user != null) {
-            // Check if the user has a team
-            if (action.user.teams[0] != null) {
-              // Find the users team
-              if (action.user.teams.findIndex(function (x) {
-                return x.id == teamFilterId;
-              }) > -1) {
-                // if (action.user.teams[0].id == teamFilterId) {
-                if (action.action == 0) product.outs.push(action.user);
-                if (action.action == 1) product.ins.push(action.user);
-                if (action.action == 2) product.focus.push(action.user);
-              }
-            } // Dont filter by team, id no current team is set
-
-          } else {
-            if (action.action == 0) product.outs.push(action.user);
-            if (action.action == 1) product.ins.push(action.user);
-            if (action.action == 2) product.focus.push(action.user);
-          } // Find the action this user has taken
-
-
-          if (action.user_id == userId) product.userAction = action;
-          var index = product.nds.findIndex(function (nd) {
-            return nd.id == action.user_id;
-          });
-
-          if (index > -1) {
-            product.nds.splice(index, 1);
-          }
-        });
         data.push(product);
       });
       return data;
@@ -9838,6 +9868,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return productsToReturn;
     },
     productsFiltered: function productsFiltered() {
+      var _this2 = this;
+
       var method = this.currentProductFilter == 'ins' ? 1 : this.currentProductFilter == 'outs' ? 0 : this.currentProductFilter == 'nds' ? 2 : -1;
       var products = this.productsFilteredByCategory;
       var productsToReturn = products; // filter by in/out
@@ -9845,9 +9877,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (method > -1) {
         var filteredByAction = productsToReturn.filter(function (product) {
           if (method != 2) {
-            if (product.productFinalAction != null) return product.productFinalAction.action == method;
+            if (product[_this2.actionScope] != null) return product[_this2.actionScope].action == method;
           } else {
-            return product.productFinalAction == null;
+            return product[_this2.actionScope] == null;
           }
         });
         productsToReturn = filteredByAction;
@@ -9860,7 +9892,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var key = this.sortBy;
       var sortAsc = this.sortAsc;
       var dataSorted = products.sort(function (a, b) {
-        if (key == 'productFinalAction' || 'userAction') {
+        if (key == 'userAction' || 'teamAction' || 'phaseAction' || 'productFinalAction' || 'userAction') {
           if (a[key] != null) {
             if (b[key] != null) {
               // If A and B has a key
@@ -9922,6 +9954,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return selectedProducts;
     },
     productTotals: function productTotals() {
+      var _this3 = this;
+
       var products = this.productsFilteredByCategory;
       var data = {
         get actions() {
@@ -9949,54 +9983,54 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         data.outs += product.outs.length;
         data.nds += product.nds.length;
 
-        if (product.productFinalAction != null) {
-          if (product.productFinalAction.action == 1) data["final"].ins++;else if (product.productFinalAction.action == 0) data["final"].outs++;
+        if (product[_this3.actionScope] != null) {
+          if (product[_this3.actionScope].action == 1) data["final"].ins++;else if (product[_this3.actionScope].action == 0) data["final"].outs++;
         } else data["final"].nds++;
       });
       return data;
     },
     singleProductToShow: function singleProductToShow() {
-      var _this = this;
+      var _this4 = this;
 
       var productToReturn = this.singleProductID != -1 ? this.products.find(function (product) {
-        return product.id == _this.singleProductID;
+        return product.id == _this4.singleProductID;
       }) : {};
       return productToReturn;
     },
     nextSingleProductID: function nextSingleProductID() {
-      var _this2 = this;
+      var _this5 = this;
 
       var products = this.productsSorted; // Check if we have a single product
 
       if (this.singleProductID != -1) {
         var currentProductIndex = products.findIndex(function (product) {
-          return product.id == _this2.singleProductID;
+          return product.id == _this5.singleProductID;
         }); // Check that the current single product is not the last product
 
         if (currentProductIndex + 1 < products.length) return products[currentProductIndex + 1].id;else return -1;
       } else return -1;
     },
     prevSingleProductID: function prevSingleProductID() {
-      var _this3 = this;
+      var _this6 = this;
 
       var products = this.productsSorted; // Check if we have a single product
 
       if (this.singleProductID != -1) {
         var currentProductIndex = products.findIndex(function (product) {
-          return product.id == _this3.singleProductID;
+          return product.id == _this6.singleProductID;
         }); // Check that the current single product is not the first product
 
         if (currentProductIndex != 0) return products[currentProductIndex - 1].id;else return -1;
       } else return -1;
     },
     teamUsers: function teamUsers() {
-      var _this4 = this;
+      var _this7 = this;
 
       var usersToReturn = [];
 
       if (this.currentTeamId > 0) {
         var thisTeam = this.teams.find(function (team) {
-          return team.id == _this4.currentTeamId;
+          return team.id == _this7.currentTeamId;
         });
         if (thisTeam) usersToReturn = thisTeam.users;
       } else if (this.currentTeamId == 0) {
@@ -10048,10 +10082,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return _store_models_User__WEBPACK_IMPORTED_MODULE_11__["default"].query()["with"]('teams').all();
     },
     teams: function teams() {
+      var _this8 = this;
+
       // Manually find the teams and the users belonging to each team.
       // This is only necessary because I cannot make the Vuex ORM realtionship work 
       // If you can make it work, please be my guest
-      var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"]('users').all();
+      var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"]('users')["with"]('invites').all();
       var users = this.users; // Loop through the users and sort them between the teams
 
       users.forEach(function (user) {
@@ -10060,22 +10096,37 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           if ('id' in user.teams[0]) {
             // If we have a team with an id
             // Set the users role
-            user.role = user.role_id == 1 ? 'Sales' : user.role_id == 2 ? 'Sales Rep' : 'Admin';
             user.teams.forEach(function (userTeam) {
               // Loop through each of the users teams and add the user
               // Find the corresponding team
               var foundTeam = teams.find(function (team) {
                 return team.id == userTeam.id;
-              });
-              foundTeam.users.push(user);
+              }); // Check that the user doesnt already exist in this team
+
+              if (!foundTeam.users.includes(user)) // Push the user to the team if the user is not already a member
+                foundTeam.users.push(user);
             });
           }
         }
       });
-      return teams;
+
+      if (!this.isLoading) {
+        if (this.authUser.role_id == 2) {
+          // Get the users teams
+          var userTeams = [];
+          teams.forEach(function (team) {
+            if (_this8.authUser.teams.find(function (x) {
+              return x.id == team.id;
+            })) userTeams.push(team);
+          });
+          return userTeams;
+        } else if (this.authUser.role_id >= 3) return teams;
+      }
+
+      return [];
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentFileId']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentFileId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']), {
     setSingleProduct: function setSingleProduct(index) {
       this.singleProductID = index;
     },
@@ -10115,61 +10166,65 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this5 = this;
+      var _this9 = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
       var user_id = this.authUser.id;
+      var actionScope = this.actionScope;
       var actionType = method == 'in' ? 1 : 0;
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
-        var thisProduct = _this5.products.find(function (x) {
+        var thisProduct = _this9.products.find(function (x) {
           return x.id == product;
         });
 
-        if (_this5.authUser.role_id >= 3) {
-          if (thisProduct.productFinalAction != null) {
-            // If product has a final action
-            if (thisProduct.productFinalAction.action != actionType) {
-              // If the products final action isnt the same as the one we are trying to set
-              productsToUpdate.push(product);
-            }
-          } // If product does not have a final action
-          else productsToCreate.push(product);
-        } else if (_this5.authUser.role_id >= 2) {
-          if (thisProduct.userAction != null) {
-            // If product has a final action
-            if (thisProduct.userAction.action != actionType) {
-              // If the products final action isnt the same as the one we are trying to set
-              productsToUpdate.push(product);
-            }
-          } // If product does not have a final action
-          else productsToCreate.push(product);
-        }
+        if (thisProduct[actionScope] != null) {
+          // If product has a final action
+          if (thisProduct[actionScope].action != actionType) {
+            // If the products final action isnt the same as the one we are trying to set
+            productsToUpdate.push(product);
+          }
+        } // If product does not have a final action
+        else productsToCreate.push(product);
       }); // Submit the selection
 
       if (productsToUpdate.length > 0) {
-        if (this.authUser.role_id >= 3) this.updateManyFinalAction({
-          productIds: productsToUpdate,
-          phase: phase,
-          action_code: actionType
-        });else if (this.authUser.role_id >= 2) this.updateManyActions({
+        if (this.actionScope == 'userAction') this.updateManyActions({
           productIds: productsToUpdate,
           user_id: user_id,
           action_code: actionType
+        });
+        if (this.actionScope == 'teamAction') this.updateManyTeamProducts({
+          team_id: this.currentTeamId,
+          product_ids: productsToUpdate,
+          phase_id: 1,
+          action: actionType
+        });
+        if (this.actionScope == 'phaseAction') this.updateManyPhaseProducts({
+          product_ids: productsToUpdate,
+          phase_id: 1,
+          action: actionType
         });
       }
 
       if (productsToCreate.length > 0) {
-        if (this.authUser.role_id >= 3) this.createManyFinalAction({
-          productIds: productsToCreate,
-          phase: phase,
-          action_code: actionType
-        });else if (this.authUser.role_id >= 2) this.createManyActions({
+        if (this.actionScope == 'userAction') this.createManyActions({
           productIds: productsToCreate,
           user_id: user_id,
           action_code: actionType
+        });
+        if (this.actionScope == 'teamAction') this.updateManyTeamProducts({
+          team_id: this.currentTeamId,
+          product_ids: productsToCreate,
+          phase_id: 1,
+          action: actionType
+        });
+        if (this.actionScope == 'phaseAction') this.updateManyPhaseProducts({
+          product_ids: productsToCreate,
+          phase_id: 1,
+          action: actionType
         });
       } // Reset the selection
 
@@ -10195,10 +10250,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fetchFinalActions(this.currentFileId);
       this.fetchCommentVotes(this.currentFileId);
       this.fetchCategories(this.currentFileId);
+      this.fetchTeamProducts(this.currentFileId);
+      this.fetchPhaseProducts(this.currentFileId);
     }
   }),
   created: function created() {
-    var _this6 = this;
+    var _this10 = this;
 
     // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
     var routeFileId = this.$route.params.catalogueId;
@@ -10208,7 +10265,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     this.unsub = this.$store.subscribe(function (mutation, state) {
       if (mutation.type == 'persist/setCurrentWorkspace') {
-        _this6.initRequiresWorkspace();
+        _this10.initRequiresWorkspace();
       }
     });
   },
@@ -10303,7 +10360,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       unsub: ''
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'userPermissionLevel']), {
+    defaultTeam: function defaultTeam() {
+      if (this.userPermissionLevel >= 3) return {
+        id: 0,
+        title: 'Global'
+      };else return null;
+    },
     collections: function collections() {
       return _store_models_Collection__WEBPACK_IMPORTED_MODULE_6__["default"].query().all();
     },
@@ -10325,7 +10388,48 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"]('teams')["with"]('workspaces').first();
     },
     teams: function teams() {
-      return _store_models_Team__WEBPACK_IMPORTED_MODULE_7__["default"].query()["with"]('users').all();
+      var _this = this;
+
+      // Manually find the teams and the users belonging to each team.
+      // This is only necessary because I cannot make the Vuex ORM realtionship work 
+      // If you can make it work, please be my guest
+      var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_7__["default"].query()["with"]('users')["with"]('invites').all();
+      var users = this.users; // Loop through the users and sort them between the teams
+
+      users.forEach(function (user) {
+        // First check that the user has a team and that the team has an id
+        if (user.teams[0] != null) {
+          if ('id' in user.teams[0]) {
+            // If we have a team with an id
+            // Set the users role
+            user.teams.forEach(function (userTeam) {
+              // Loop through each of the users teams and add the user
+              // Find the corresponding team
+              var foundTeam = teams.find(function (team) {
+                return team.id == userTeam.id;
+              }); // Check that the user doesnt already exist in this team
+
+              if (!foundTeam.users.includes(user)) // Push the user to the team if the user is not already a member
+                foundTeam.users.push(user);
+            });
+          }
+        }
+      });
+
+      if (!this.isLoading) {
+        if (this.authUser.role_id == 2) {
+          // Get the users teams
+          var userTeams = [];
+          teams.forEach(function (team) {
+            if (_this.authUser.teams.find(function (x) {
+              return x.id == team.id;
+            })) userTeams.push(team);
+          });
+          return userTeams;
+        } else if (this.authUser.role_id >= 3) return teams;
+      }
+
+      return [];
     },
     isLoading: function isLoading() {
       var loading = false;
@@ -10356,14 +10460,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   created: function created() {
-    var _this = this;
+    var _this2 = this;
 
     // If we already have a workspace id, fetch the data we are missing
     if (this.currentWorkspaceId != null) this.initRequiresWorkspace(); // Else, wait till a workspace id is set, and then fetch the data
 
     this.unsub = this.$store.subscribe(function (mutation, state) {
       if (mutation.type == 'persist/setCurrentWorkspace') {
-        _this.initRequiresWorkspace();
+        _this2.initRequiresWorkspace();
       }
     });
   },
@@ -14330,58 +14434,29 @@ var render = function() {
                   _c(
                     "div",
                     { staticClass: "radio-buttons" },
-                    [
-                      !_vm.options.find(function(x) {
-                        return x.id == 0
-                      }) && _vm.defaultOption != null
-                        ? _c(
-                            "label",
-                            {
-                              staticClass: "radiobox",
-                              class: {
-                                active:
-                                  _vm.currentOptionId == _vm.defaultOption.id
-                              },
-                              on: {
-                                click: function($event) {
-                                  return _vm.submit(_vm.defaultOption.id)
-                                }
-                              }
-                            },
-                            [
-                              _vm._v(
-                                "\n                        " +
-                                  _vm._s(_vm.defaultOption.title) +
-                                  "\n                    "
-                              )
-                            ]
-                          )
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _vm._l(_vm.options, function(option, index) {
-                        return _c(
-                          "label",
-                          {
-                            key: index,
-                            staticClass: "radiobox",
-                            class: { active: option.id == _vm.currentOptionId },
-                            on: {
-                              click: function($event) {
-                                return _vm.submit(option.id)
-                              }
+                    _vm._l(_vm.optionsToShow, function(option, index) {
+                      return _c(
+                        "label",
+                        {
+                          key: index,
+                          staticClass: "radiobox",
+                          class: { active: option.id == _vm.currentOptionId },
+                          on: {
+                            click: function($event) {
+                              return _vm.submit(option.id)
                             }
-                          },
-                          [
-                            _vm._v(
-                              "\n                        " +
-                                _vm._s(option.title) +
-                                "\n                    "
-                            )
-                          ]
-                        )
-                      })
-                    ],
-                    2
+                          }
+                        },
+                        [
+                          _vm._v(
+                            "\n                        " +
+                              _vm._s(option.title) +
+                              "\n                    "
+                          )
+                        ]
+                      )
+                    }),
+                    0
                   )
                 ])
               ])
@@ -14990,219 +15065,60 @@ var render = function() {
                           "div",
                           { staticClass: "controls" },
                           [
-                            _vm.authUser.role_id >= 3
+                            _vm.authUser.role_id >= 2
                               ? [
-                                  !_vm.product.productFinalAction
-                                    ? [
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass:
-                                              "button ghost icon-right green-hover",
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.toggleInOut(
-                                                  _vm.product,
-                                                  1
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v("In  "),
-                                            _c("i", {
-                                              staticClass: "far fa-heart"
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass:
-                                              "button ghost icon-right red-hover",
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.toggleInOut(
-                                                  _vm.product,
-                                                  0
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v("Out  "),
-                                            _c("i", {
-                                              staticClass: "far fa-times-circle"
-                                            })
-                                          ]
-                                        )
-                                      ]
-                                    : [
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass: "button icon-right",
-                                            class: [
-                                              _vm.product.productFinalAction
-                                                .action == 1
-                                                ? "active green"
-                                                : "ghost green-hover"
-                                            ],
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.toggleInOut(
-                                                  _vm.product,
-                                                  1
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v(
-                                              "\n                                    In  "
-                                            ),
-                                            _c("i", {
-                                              staticClass: "far fa-heart"
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass: "button icon-right",
-                                            class: [
-                                              _vm.product.productFinalAction
-                                                .action == 0
-                                                ? "active red"
-                                                : "ghost red-hover"
-                                            ],
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.toggleInOut(
-                                                  _vm.product,
-                                                  0
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v(
-                                              "\n                                    Out  "
-                                            ),
-                                            _c("i", {
-                                              staticClass: "far fa-times-circle"
-                                            })
-                                          ]
-                                        )
-                                      ]
-                                ]
-                              : _vm.authUser.role_id >= 2
-                              ? [
-                                  !_vm.product.userAction
-                                    ? [
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass:
-                                              "button ghost icon-right green-hover",
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.toggleInOutUser(
-                                                  _vm.product,
-                                                  1
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v("In  "),
-                                            _c("i", {
-                                              staticClass: "far fa-heart"
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass:
-                                              "button ghost icon-right red-hover",
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.toggleInOutUser(
-                                                  _vm.product,
-                                                  0
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v("Out  "),
-                                            _c("i", {
-                                              staticClass: "far fa-times-circle"
-                                            })
-                                          ]
-                                        )
-                                      ]
-                                    : [
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass: "button icon-right",
-                                            class: [
-                                              _vm.product.userAction.action == 1
-                                                ? "active green"
-                                                : "ghost green-hover"
-                                            ],
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.toggleInOutUser(
-                                                  _vm.product,
-                                                  1
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v(
-                                              "\n                                    In  "
-                                            ),
-                                            _c("i", {
-                                              staticClass: "far fa-heart"
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass: "button icon-right",
-                                            class: [
-                                              _vm.product.userAction.action == 1
-                                                ? "active red"
-                                                : "ghost red-hover"
-                                            ],
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.toggleInOutUser(
-                                                  _vm.product,
-                                                  0
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v(
-                                              "\n                                    Out  "
-                                            ),
-                                            _c("i", {
-                                              staticClass: "far fa-times-circle"
-                                            })
-                                          ]
-                                        )
-                                      ]
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass: "button icon-right",
+                                      class: [
+                                        _vm.product[_vm.actionScope] != null
+                                          ? _vm.product[_vm.actionScope]
+                                              .action != 0
+                                            ? "active green"
+                                            : "ghost green-hover"
+                                          : "ghost green-hover"
+                                      ],
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.toggleInOut(_vm.product, 1)
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _vm._v(
+                                        "\n                            In  "
+                                      ),
+                                      _c("i", { staticClass: "far fa-heart" })
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass: "button icon-right",
+                                      class:
+                                        _vm.product[_vm.actionScope] != null
+                                          ? _vm.product[_vm.actionScope]
+                                              .action == 0
+                                            ? "active red"
+                                            : "ghost red-hover"
+                                          : "ghost red-hover",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.toggleInOut(_vm.product, 0)
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _vm._v(
+                                        "\n                            Out  "
+                                      ),
+                                      _c("i", {
+                                        staticClass: "far fa-times-circle"
+                                      })
+                                    ]
+                                  )
                                 ]
                               : _vm._e(),
                             _vm._v(" "),
@@ -15260,9 +15176,11 @@ var render = function() {
                                   _c("img", {
                                     attrs: {
                                       src:
+                                        "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/" +
                                         _vm.product.color_variants[
                                           _vm.currentImgIndex
-                                        ].image
+                                        ].blob_id +
+                                        "_thumbnail.jpg"
                                     }
                                   })
                                 ]
@@ -15456,40 +15374,85 @@ var render = function() {
                                     )
                                   ]),
                                   _vm._v(" "),
-                                  _vm._l(_vm.tabBody, function(user) {
-                                    return _c(
-                                      "p",
-                                      { key: user.id },
-                                      [
-                                        _c("span", { staticClass: "team" }, [
-                                          _vm._v(_vm._s(user.teams[0].title))
-                                        ]),
-                                        _vm._v(" "),
-                                        _c("span", { staticClass: "user" }, [
-                                          _vm._v(_vm._s(user.email))
-                                        ]),
-                                        _vm._v(" "),
-                                        user.focus != null
-                                          ? [
-                                              user.focus
-                                                ? _c(
-                                                    "span",
-                                                    { staticClass: "focus" },
-                                                    [
-                                                      _vm._v("Focus "),
-                                                      _c("i", {
-                                                        staticClass:
-                                                          "fas fa-star"
-                                                      })
-                                                    ]
-                                                  )
-                                                : _vm._e()
-                                            ]
-                                          : _vm._e()
-                                      ],
-                                      2
-                                    )
-                                  })
+                                  _vm.currentTeamId == 0
+                                    ? _vm._l(_vm.tabBody, function(team) {
+                                        return _c(
+                                          "p",
+                                          { key: team.id },
+                                          [
+                                            _c(
+                                              "span",
+                                              { staticClass: "user" },
+                                              [_vm._v(_vm._s(team.title))]
+                                            ),
+                                            _vm._v(" "),
+                                            team.focus != null
+                                              ? [
+                                                  team.focus
+                                                    ? _c(
+                                                        "span",
+                                                        {
+                                                          staticClass: "focus"
+                                                        },
+                                                        [
+                                                          _vm._v("Focus "),
+                                                          _c("i", {
+                                                            staticClass:
+                                                              "fas fa-star"
+                                                          })
+                                                        ]
+                                                      )
+                                                    : _vm._e()
+                                                ]
+                                              : _vm._e()
+                                          ],
+                                          2
+                                        )
+                                      })
+                                    : _vm._l(_vm.tabBody, function(user) {
+                                        return _c(
+                                          "p",
+                                          { key: user.id },
+                                          [
+                                            _c(
+                                              "span",
+                                              { staticClass: "team" },
+                                              [
+                                                _vm._v(
+                                                  _vm._s(user.teams[0].title)
+                                                )
+                                              ]
+                                            ),
+                                            _vm._v(" "),
+                                            _c(
+                                              "span",
+                                              { staticClass: "user" },
+                                              [_vm._v(_vm._s(user.email))]
+                                            ),
+                                            _vm._v(" "),
+                                            user.focus != null
+                                              ? [
+                                                  user.focus
+                                                    ? _c(
+                                                        "span",
+                                                        {
+                                                          staticClass: "focus"
+                                                        },
+                                                        [
+                                                          _vm._v("Focus "),
+                                                          _c("i", {
+                                                            staticClass:
+                                                              "fas fa-star"
+                                                          })
+                                                        ]
+                                                      )
+                                                    : _vm._e()
+                                                ]
+                                              : _vm._e()
+                                          ],
+                                          2
+                                        )
+                                      })
                                 ],
                                 2
                               )
@@ -15552,20 +15515,20 @@ var render = function() {
             staticClass: "toggle",
             on: {
               click: function($event) {
-                _vm.fianlOnly = !_vm.fianlOnly
+                _vm.finalOnly = !_vm.finalOnly
               }
             }
           },
           [
             _c(
               "span",
-              { staticClass: "option", class: { active: !_vm.fianlOnly } },
+              { staticClass: "option", class: { active: !_vm.finalOnly } },
               [_vm._v("All")]
             ),
             _vm._v(" "),
             _c(
               "span",
-              { staticClass: "option", class: { active: _vm.fianlOnly } },
+              { staticClass: "option", class: { active: _vm.finalOnly } },
               [_vm._v("Final comment")]
             )
           ]
@@ -15608,7 +15571,7 @@ var render = function() {
                     )
                   : _vm._e(),
                 _vm._v(" "),
-                comment.final
+                comment.team_final && !comment.user_final
                   ? _c("span", { staticClass: "votes pill" }, [
                       _vm._v("Final comment "),
                       _c("i", { staticClass: "far fa-comment-check" })
@@ -15619,54 +15582,55 @@ var render = function() {
                   _vm._v(_vm._s(comment.comment))
                 ]),
                 _vm._v(" "),
-                _vm.authUser.role_id >= 2
-                  ? _c(
-                      "span",
-                      {
-                        staticClass: "circle",
-                        class: { active: comment.product_final },
-                        on: {
-                          click: function($event) {
-                            return _vm.onMarkAsFinal(comment)
-                          },
-                          mouseover: function($event) {
-                            return _vm.showTooltip(
-                              $event,
-                              "Choose as final comment"
-                            )
-                          },
-                          mouseleave: _vm.hideTooltip
-                        }
+                _c(
+                  "span",
+                  {
+                    staticClass: "circle",
+                    class: { active: comment.user_final },
+                    on: {
+                      click: function($event) {
+                        return _vm.onMarkAsFinal(comment)
                       },
-                      [_c("i", { staticClass: "far fa-comment-check" })]
-                    )
-                  : _c(
-                      "span",
-                      {
-                        staticClass: "circle disabled",
-                        class: { active: comment.product_final },
-                        on: {
-                          click: function($event) {
-                            return _vm.onMarkAsFinal(comment)
-                          },
-                          mouseover: function($event) {
-                            return _vm.showTooltip($event, "Final comment")
-                          },
-                          mouseleave: _vm.hideTooltip
-                        }
+                      mouseover: function($event) {
+                        return _vm.showTooltip(
+                          $event,
+                          "Choose as final comment"
+                        )
                       },
-                      [_c("i", { staticClass: "far fa-comment-check" })]
-                    )
+                      mouseleave: _vm.hideTooltip
+                    }
+                  },
+                  [_c("i", { staticClass: "far fa-comment-check" })]
+                )
               ]),
               _vm._v(" "),
               comment.user != null
                 ? _c("span", { staticClass: "user" }, [
-                    comment.user.teams.length > 0
-                      ? _c("span", { staticClass: "team" }, [
-                          _vm._v(_vm._s(comment.user.teams[0].title) + " | ")
-                        ])
-                      : _vm._e(),
-                    _vm._v(_vm._s(comment.user.email) + ",")
+                    comment.team_id > 0
+                      ? _c(
+                          "span",
+                          { staticClass: "team" },
+                          [
+                            comment.team
+                              ? [
+                                  _vm._v(
+                                    "\n                        " +
+                                      _vm._s(comment.team.title) +
+                                      " | \n                    "
+                                  )
+                                ]
+                              : _vm._e()
+                          ],
+                          2
+                        )
+                      : _c("span", { staticClass: "team" }, [
+                          _vm._v("Global | ")
+                        ]),
+                    _vm._v(
+                      "\n                " +
+                        _vm._s(comment.user.email) +
+                        "\n            "
+                    )
                   ])
                 : _vm._e()
             ]
@@ -15971,8 +15935,7 @@ var render = function() {
           closeSingle: _vm.onCloseSingle,
           nextSingle: _vm.onNextSingle,
           prevSingle: _vm.onPrevSingle,
-          onToggleInOut: _vm.toggleInOut,
-          onToggleInOutUser: _vm.toggleInOutUser
+          onToggleInOut: _vm.toggleInOut
         }
       }),
       _vm._v(" "),
@@ -16002,13 +15965,7 @@ var render = function() {
                       _c("DropdownCheckbox", {
                         attrs: {
                           title: "Select matching:",
-                          options: [
-                            { id: "no_in", title: "No IN" },
-                            {
-                              id: "no_comment_no_out",
-                              title: "No COMMENT & no OUT"
-                            }
-                          ]
+                          options: ["No IN", "No COMMENT & no OUT"]
                         },
                         on: { submit: _vm.selectByCondition },
                         scopedSlots: _vm._u(
@@ -16053,7 +16010,7 @@ var render = function() {
                   }
                 },
                 [
-                  _vm._v("\n                    Id "),
+                  _vm._v("\n                Id "),
                   _c("i", {
                     staticClass: "fas",
                     class: [
@@ -16079,7 +16036,7 @@ var render = function() {
                   }
                 },
                 [
-                  _vm._v("\n                   Product name "),
+                  _vm._v("\n               Product name "),
                   _c("i", {
                     staticClass: "fas",
                     class: [
@@ -16103,7 +16060,7 @@ var render = function() {
                   }
                 },
                 [
-                  _vm._v("\n                    Focus "),
+                  _vm._v("\n                Focus "),
                   _c("i", {
                     staticClass: "fas",
                     class: [
@@ -16127,7 +16084,7 @@ var render = function() {
                   }
                 },
                 [
-                  _vm._v("\n                    In "),
+                  _vm._v("\n                In "),
                   _c("i", {
                     staticClass: "fas",
                     class: [
@@ -16151,7 +16108,7 @@ var render = function() {
                   }
                 },
                 [
-                  _vm._v("\n                    Out "),
+                  _vm._v("\n                Out "),
                   _c("i", {
                     staticClass: "fas",
                     class: [
@@ -16175,7 +16132,7 @@ var render = function() {
                   }
                 },
                 [
-                  _vm._v("\n                    ND "),
+                  _vm._v("\n                ND "),
                   _c("i", {
                     staticClass: "fas",
                     class: [
@@ -16199,7 +16156,7 @@ var render = function() {
                   }
                 },
                 [
-                  _vm._v("\n                    Comments "),
+                  _vm._v("\n                Comments "),
                   _c("i", {
                     staticClass: "fas",
                     class: [
@@ -16211,25 +16168,29 @@ var render = function() {
                 ]
               ),
               _vm._v(" "),
-              _vm.authUser.role_id >= 3
+              _vm.userPermissionLevel >= 2
                 ? [
                     _c(
                       "th",
                       {
                         staticClass: "clickable action",
-                        class: { active: this.sortBy == "productFinalAction" },
+                        class: { active: this.sortBy == _vm.actionScope },
                         on: {
                           click: function($event) {
-                            return _vm.onSortBy("productFinalAction", false)
+                            return _vm.onSortBy(_vm.actionScope, false)
                           }
                         }
                       },
                       [
-                        _vm._v("\n                        Final action "),
+                        _vm._v(
+                          "\n                    " +
+                            _vm._s(_vm.actionScopeName) +
+                            " "
+                        ),
                         _c("i", {
                           staticClass: "fas",
                           class: [
-                            this.sortBy == "productFinalAction" && !_vm.sortAsc
+                            this.sortBy == _vm.actionScope && !_vm.sortAsc
                               ? "fa-long-arrow-alt-up"
                               : "fa-long-arrow-alt-down"
                           ]
@@ -16237,33 +16198,7 @@ var render = function() {
                       ]
                     )
                   ]
-                : _vm.authUser.role_id >= 2
-                ? [
-                    _c(
-                      "th",
-                      {
-                        staticClass: "clickable action",
-                        class: { active: this.sortBy == "userAction" },
-                        on: {
-                          click: function($event) {
-                            return _vm.onSortBy("userAction", false)
-                          }
-                        }
-                      },
-                      [
-                        _vm._v("\n                        Team action "),
-                        _c("i", {
-                          staticClass: "fas",
-                          class: [
-                            this.sortBy == "userAction" && !_vm.sortAsc
-                              ? "fa-long-arrow-alt-up"
-                              : "fa-long-arrow-alt-down"
-                          ]
-                        })
-                      ]
-                    )
-                  ]
-                : [_c("th", { staticClass: "action" }, [_vm._v("Action")])]
+                : _vm._e()
             ],
             2
           ),
@@ -16276,14 +16211,8 @@ var render = function() {
                     key: product.id,
                     staticClass: "product-row flex-table-row",
                     class: [
-                      _vm.authUser.role_id >= 3 &&
-                      product.productFinalAction != null
-                        ? product.productFinalAction.action == 1
-                          ? "in"
-                          : "out"
-                        : _vm.authUser.role_id >= 2 &&
-                          product.userAction != null
-                        ? product.userAction.action == 0
+                      product[_vm.actionScope] != null
+                        ? product[_vm.actionScope].action == 0
                           ? "out"
                           : "in"
                         : ""
@@ -16335,7 +16264,12 @@ var render = function() {
                       [
                         _c("img", {
                           staticClass: "bind-view-single",
-                          attrs: { src: product.color_variants[0].image }
+                          attrs: {
+                            src:
+                              "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/" +
+                              product.color_variants[0].blob_id +
+                              "_thumbnail.jpg"
+                          }
                         })
                       ]
                     ),
@@ -16357,107 +16291,221 @@ var render = function() {
                       ]
                     ),
                     _vm._v(" "),
-                    _c("td", { staticClass: "square-wrapper focus" }, [
-                      _c(
-                        "span",
-                        {
-                          staticClass: "square clickable",
-                          on: {
-                            mouseover: function($event) {
-                              return _vm.showTooltip(
-                                $event,
-                                "users",
-                                "Focus",
-                                product.focus
-                              )
-                            },
-                            mouseleave: _vm.hideTooltip
-                          }
-                        },
-                        [
-                          _c("i", { staticClass: "far fa-star" }),
-                          _vm._v(_vm._s(product.focus.length))
+                    _vm.currentTeamId == 0
+                      ? [
+                          _c("td", { staticClass: "square-wrapper focus" }, [
+                            _c(
+                              "span",
+                              {
+                                staticClass: "square clickable",
+                                on: {
+                                  mouseover: function($event) {
+                                    return _vm.showTooltip(
+                                      $event,
+                                      "teams",
+                                      "Focus",
+                                      product.focus
+                                    )
+                                  },
+                                  mouseleave: _vm.hideTooltip
+                                }
+                              },
+                              [
+                                _c("i", { staticClass: "far fa-star" }),
+                                _vm._v(_vm._s(product.focus.length))
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "square-wrapper" }, [
+                            _c(
+                              "span",
+                              {
+                                staticClass: "square clickable",
+                                on: {
+                                  mouseover: function($event) {
+                                    _vm.showTooltip(
+                                      $event,
+                                      "teams",
+                                      "In",
+                                      product.focus.concat(product.ins)
+                                    )
+                                  },
+                                  mouseleave: _vm.hideTooltip
+                                }
+                              },
+                              [
+                                _c("i", { staticClass: "far fa-heart" }),
+                                _vm._v(
+                                  _vm._s(
+                                    product.ins.length + product.focus.length
+                                  )
+                                )
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "square-wrapper" }, [
+                            _c(
+                              "span",
+                              {
+                                staticClass: "square clickable",
+                                on: {
+                                  mouseover: function($event) {
+                                    return _vm.showTooltip(
+                                      $event,
+                                      "teams",
+                                      "Out",
+                                      product.outs
+                                    )
+                                  },
+                                  mouseleave: _vm.hideTooltip
+                                }
+                              },
+                              [
+                                _c("i", { staticClass: "far fa-times-circle" }),
+                                _vm._v(_vm._s(product.outs.length))
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "square-wrapper nds" }, [
+                            _c(
+                              "span",
+                              {
+                                staticClass: "square clickable",
+                                on: {
+                                  mouseover: function($event) {
+                                    return _vm.showTooltip(
+                                      $event,
+                                      "teams",
+                                      "Not decided",
+                                      product.nds
+                                    )
+                                  },
+                                  mouseleave: _vm.hideTooltip
+                                }
+                              },
+                              [
+                                _c("i", {
+                                  staticClass: "far fa-question-circle"
+                                }),
+                                _vm._v(
+                                  _vm._s(product.nds.length) +
+                                    " /" +
+                                    _vm._s(_vm.teams.length)
+                                )
+                              ]
+                            )
+                          ])
                         ]
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "square-wrapper" }, [
-                      _c(
-                        "span",
-                        {
-                          staticClass: "square clickable",
-                          on: {
-                            mouseover: function($event) {
-                              _vm.showTooltip(
-                                $event,
-                                "users",
-                                "In",
-                                product.focus.concat(product.ins)
-                              )
-                            },
-                            mouseleave: _vm.hideTooltip
-                          }
-                        },
-                        [
-                          _c("i", { staticClass: "far fa-heart" }),
-                          _vm._v(
-                            _vm._s(product.ins.length + product.focus.length)
-                          )
-                        ]
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "square-wrapper" }, [
-                      _c(
-                        "span",
-                        {
-                          staticClass: "square clickable",
-                          on: {
-                            mouseover: function($event) {
-                              return _vm.showTooltip(
-                                $event,
-                                "users",
-                                "Out",
-                                product.outs
-                              )
-                            },
-                            mouseleave: _vm.hideTooltip
-                          }
-                        },
-                        [
-                          _c("i", { staticClass: "far fa-times-circle" }),
-                          _vm._v(_vm._s(product.outs.length))
-                        ]
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "square-wrapper nds" }, [
-                      _c(
-                        "span",
-                        {
-                          staticClass: "square clickable",
-                          on: {
-                            mouseover: function($event) {
-                              return _vm.showTooltip(
-                                $event,
-                                "users",
-                                "Not decided",
-                                product.nds
-                              )
-                            },
-                            mouseleave: _vm.hideTooltip
-                          }
-                        },
-                        [
-                          _c("i", { staticClass: "far fa-question-circle" }),
-                          _vm._v(
-                            _vm._s(product.nds.length) +
-                              " / " +
-                              _vm._s(_vm.teamUsers.length)
-                          )
-                        ]
-                      )
-                    ]),
+                      : [
+                          _c("td", { staticClass: "square-wrapper focus" }, [
+                            _c(
+                              "span",
+                              {
+                                staticClass: "square clickable",
+                                on: {
+                                  mouseover: function($event) {
+                                    return _vm.showTooltip(
+                                      $event,
+                                      "users",
+                                      "Focus",
+                                      product.focus
+                                    )
+                                  },
+                                  mouseleave: _vm.hideTooltip
+                                }
+                              },
+                              [
+                                _c("i", { staticClass: "far fa-star" }),
+                                _vm._v(_vm._s(product.focus.length))
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "square-wrapper" }, [
+                            _c(
+                              "span",
+                              {
+                                staticClass: "square clickable",
+                                on: {
+                                  mouseover: function($event) {
+                                    _vm.showTooltip(
+                                      $event,
+                                      "users",
+                                      "In",
+                                      product.focus.concat(product.ins)
+                                    )
+                                  },
+                                  mouseleave: _vm.hideTooltip
+                                }
+                              },
+                              [
+                                _c("i", { staticClass: "far fa-heart" }),
+                                _vm._v(
+                                  _vm._s(
+                                    product.ins.length + product.focus.length
+                                  )
+                                )
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "square-wrapper" }, [
+                            _c(
+                              "span",
+                              {
+                                staticClass: "square clickable",
+                                on: {
+                                  mouseover: function($event) {
+                                    return _vm.showTooltip(
+                                      $event,
+                                      "users",
+                                      "Out",
+                                      product.outs
+                                    )
+                                  },
+                                  mouseleave: _vm.hideTooltip
+                                }
+                              },
+                              [
+                                _c("i", { staticClass: "far fa-times-circle" }),
+                                _vm._v(_vm._s(product.outs.length))
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "square-wrapper nds" }, [
+                            _c(
+                              "span",
+                              {
+                                staticClass: "square clickable",
+                                on: {
+                                  mouseover: function($event) {
+                                    return _vm.showTooltip(
+                                      $event,
+                                      "users",
+                                      "Not decided",
+                                      product.nds
+                                    )
+                                  },
+                                  mouseleave: _vm.hideTooltip
+                                }
+                              },
+                              [
+                                _c("i", {
+                                  staticClass: "far fa-question-circle"
+                                }),
+                                _vm._v(
+                                  _vm._s(product.nds.length) +
+                                    " /" +
+                                    _vm._s(_vm.teamUsers.length)
+                                )
+                              ]
+                            )
+                          ])
+                        ],
                     _vm._v(" "),
                     _c("td", { staticClass: "square-wrapper comments" }, [
                       _c(
@@ -16479,314 +16527,86 @@ var render = function() {
                       )
                     ]),
                     _vm._v(" "),
-                    !_vm.loadingFinalActions
+                    _vm.authUser.role_id >= 2
                       ? [
-                          _vm.authUser.role_id >= 3
-                            ? [
-                                !product.productFinalAction
-                                  ? [
-                                      _c("td", { staticClass: "action" }, [
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass:
-                                              "button icon-right ghost green-hover",
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.toggleInOut(
-                                                  product,
-                                                  1
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v("In "),
-                                            _c("i", {
-                                              staticClass: "far fa-heart"
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass:
-                                              "button icon-right ghost red-hover",
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.toggleInOut(
-                                                  product,
-                                                  0
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v("Out "),
-                                            _c("i", {
-                                              staticClass: "far fa-times-circle"
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass:
-                                              "view-single bind-view-single button invisible-button",
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.onViewSingle(
-                                                  product.id
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [_vm._v("View")]
-                                        )
-                                      ])
-                                    ]
-                                  : [
-                                      _c("td", { staticClass: "action" }, [
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass: "button icon-right",
-                                            class: [
-                                              product.productFinalAction
-                                                .action == 1
-                                                ? "active green"
-                                                : "ghost green-hover"
-                                            ],
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.toggleInOut(
-                                                  product,
-                                                  1
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v(
-                                              "\n                                    In  "
-                                            ),
-                                            _c("i", {
-                                              staticClass: "far fa-heart"
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass: "button icon-right",
-                                            class: [
-                                              product.productFinalAction
-                                                .action == 0
-                                                ? "active red"
-                                                : "ghost red-hover"
-                                            ],
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.toggleInOut(
-                                                  product,
-                                                  0
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v(
-                                              "\n                                    Out  "
-                                            ),
-                                            _c("i", {
-                                              staticClass: "far fa-times-circle"
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass:
-                                              "view-single bind-view-single button invisible-button",
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.onViewSingle(
-                                                  product.id
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [_vm._v("View")]
-                                        )
-                                      ])
-                                    ]
+                          _c("td", { staticClass: "action" }, [
+                            _c(
+                              "span",
+                              {
+                                staticClass: "button icon-right",
+                                class: [
+                                  product[_vm.actionScope] != null
+                                    ? product[_vm.actionScope].action != 0
+                                      ? "active green"
+                                      : "ghost green-hover"
+                                    : "ghost green-hover"
+                                ],
+                                on: {
+                                  click: function($event) {
+                                    return _vm.toggleInOut(product, 1)
+                                  }
+                                }
+                              },
+                              [
+                                _vm._v("\n                            In  "),
+                                _c("i", { staticClass: "far fa-heart" })
                               ]
-                            : _vm.authUser.role_id >= 2
-                            ? [
-                                !product.userAction
-                                  ? [
-                                      _c("td", { staticClass: "action" }, [
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass:
-                                              "button icon-right ghost green-hover",
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.toggleInOutUser(
-                                                  product,
-                                                  1
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v("In "),
-                                            _c("i", {
-                                              staticClass: "far fa-heart"
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass:
-                                              "button icon-right ghost red-hover",
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.toggleInOutUser(
-                                                  product,
-                                                  0
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v("Out "),
-                                            _c("i", {
-                                              staticClass: "far fa-times-circle"
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass:
-                                              "view-single bind-view-single button invisible-button",
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.onViewSingle(
-                                                  product.id
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [_vm._v("View")]
-                                        )
-                                      ])
-                                    ]
-                                  : [
-                                      _c("td", { staticClass: "action" }, [
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass: "button icon-right",
-                                            class: [
-                                              product.userAction.action == 1 ||
-                                              product.userAction.action == 2
-                                                ? "active green"
-                                                : "ghost green-hover"
-                                            ],
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.toggleInOutUser(
-                                                  product,
-                                                  1
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v(
-                                              "\n                                    In  "
-                                            ),
-                                            _c("i", {
-                                              staticClass: "far fa-heart"
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass: "button icon-right",
-                                            class: [
-                                              product.userAction.action == 0
-                                                ? "active red"
-                                                : "ghost red-hover"
-                                            ],
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.toggleInOutUser(
-                                                  product,
-                                                  0
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _vm._v(
-                                              "\n                                    Out  "
-                                            ),
-                                            _c("i", {
-                                              staticClass: "far fa-times-circle"
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass:
-                                              "view-single bind-view-single button invisible-button",
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.onViewSingle(
-                                                  product.id
-                                                )
-                                              }
-                                            }
-                                          },
-                                          [_vm._v("View")]
-                                        )
-                                      ])
-                                    ]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "span",
+                              {
+                                staticClass: "button icon-right",
+                                class:
+                                  product[_vm.actionScope] != null
+                                    ? product[_vm.actionScope].action == 0
+                                      ? "active red"
+                                      : "ghost red-hover"
+                                    : "ghost red-hover",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.toggleInOut(product, 0)
+                                  }
+                                }
+                              },
+                              [
+                                _vm._v("\n                            Out  "),
+                                _c("i", { staticClass: "far fa-times-circle" })
                               ]
-                            : [
-                                _c("td", { staticClass: "action" }, [
-                                  _c(
-                                    "span",
-                                    {
-                                      staticClass:
-                                        "view-single bind-view-single button invisible-button",
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.onViewSingle(product.id)
-                                        }
-                                      }
-                                    },
-                                    [_vm._v("View")]
-                                  )
-                                ])
-                              ]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "span",
+                              {
+                                staticClass:
+                                  "view-single bind-view-single button invisible-button",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.onViewSingle(product.id)
+                                  }
+                                }
+                              },
+                              [_vm._v("View")]
+                            )
+                          ])
                         ]
-                      : [_c("td", [_c("span", [_c("Loader")], 1)])]
+                      : [
+                          _c("td", { staticClass: "action" }, [
+                            _c(
+                              "span",
+                              {
+                                staticClass:
+                                  "view-single bind-view-single button invisible-button",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.onViewSingle(product.id)
+                                  }
+                                }
+                              },
+                              [_vm._v("View")]
+                            )
+                          ])
+                        ]
                   ],
                   2
                 )
@@ -17915,7 +17735,7 @@ var render = function() {
                   })
                 : _vm._e(),
               _vm._v(" "),
-              _vm.tooltip.type == "teams"
+              _vm.tooltip.type == "userTeams"
                 ? _vm._l(_vm.teams, function(team, index) {
                     return _c(
                       "div",
@@ -17926,6 +17746,20 @@ var render = function() {
                           _c("span", { staticClass: "count" }, [
                             _vm._v(_vm._s(team.users.length))
                           ])
+                        ])
+                      ]
+                    )
+                  })
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.tooltip.type == "teams"
+                ? _vm._l(_vm.tooltip.data, function(team, index) {
+                    return _c(
+                      "div",
+                      { key: index, staticClass: "tooltip-row" },
+                      [
+                        _c("span", { staticClass: "team" }, [
+                          _vm._v(_vm._s(team.title))
                         ])
                       ]
                     )
@@ -18060,7 +17894,7 @@ var render = function() {
                   attrs: {
                     options: _vm.teams,
                     currentOptionId: _vm.currentTeamId,
-                    defaultOption: { id: 0, title: "GLOBAL" }
+                    defaultOption: _vm.defaultTeam
                   },
                   on: { submit: _vm.setCurrentTeam },
                   scopedSlots: _vm._u(
@@ -18256,7 +18090,7 @@ var render = function() {
             attrs: {
               options: _vm.teams,
               currentOptionId: _vm.currentTeamId,
-              defaultOption: { id: 0, title: "GLOBAL" }
+              defaultOption: _vm.defaultTeam
             },
             on: { submit: _vm.setCurrentTeam },
             scopedSlots: _vm._u([
@@ -36626,6 +36460,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_workspaces__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./modules/workspaces */ "./resources/js/store/modules/workspaces.js");
 /* harmony import */ var _models_WorkspaceUser__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./models/WorkspaceUser */ "./resources/js/store/models/WorkspaceUser.js");
 /* harmony import */ var _modules_workspaceUsers__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./modules/workspaceUsers */ "./resources/js/store/modules/workspaceUsers.js");
+/* harmony import */ var _models_TeamProduct__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./models/TeamProduct */ "./resources/js/store/models/TeamProduct.js");
+/* harmony import */ var _modules_teamProducts__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./modules/teamProducts */ "./resources/js/store/modules/teamProducts.js");
+/* harmony import */ var _models_PhaseProduct__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./models/PhaseProduct */ "./resources/js/store/models/PhaseProduct.js");
+/* harmony import */ var _modules_phaseProducts__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./modules/phaseProducts */ "./resources/js/store/modules/phaseProducts.js");
+
+
+
+
 
 
 
@@ -36676,6 +36518,8 @@ database.register(_models_AuthUser__WEBPACK_IMPORTED_MODULE_25__["default"], _mo
 database.register(_models_Role__WEBPACK_IMPORTED_MODULE_27__["default"], _modules_roles__WEBPACK_IMPORTED_MODULE_28__["default"]);
 database.register(_models_Workspace__WEBPACK_IMPORTED_MODULE_29__["default"], _modules_workspaces__WEBPACK_IMPORTED_MODULE_30__["default"]);
 database.register(_models_WorkspaceUser__WEBPACK_IMPORTED_MODULE_31__["default"], _modules_workspaceUsers__WEBPACK_IMPORTED_MODULE_32__["default"]);
+database.register(_models_TeamProduct__WEBPACK_IMPORTED_MODULE_33__["default"], _modules_teamProducts__WEBPACK_IMPORTED_MODULE_34__["default"]);
+database.register(_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_35__["default"], _modules_phaseProducts__WEBPACK_IMPORTED_MODULE_36__["default"]);
 /* harmony default export */ __webpack_exports__["default"] = (database);
 
 /***/ }),
@@ -37031,6 +36875,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
 /* harmony import */ var _User__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./User */ "./resources/js/store/models/User.js");
 /* harmony import */ var _CommentVote__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CommentVote */ "./resources/js/store/models/CommentVote.js");
+/* harmony import */ var _Team__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Team */ "./resources/js/store/models/Team.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -37050,6 +36895,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // Product Model
+
 
 
 
@@ -37075,11 +36921,16 @@ function (_Model) {
         id: this.attr(null),
         user_id: this.attr(''),
         product_id: this.attr(''),
+        team_id: this.attr(''),
+        phase_id: this.attr(''),
         comment: this.attr(''),
         important: this.attr(''),
-        "final": this.attr(''),
-        product_final: this.attr(''),
+        team_final: this.attr(false),
+        phase_final: this.attr(false),
+        // final: this.attr(''),
+        // product_final: this.attr(''),
         user: this.belongsTo(_User__WEBPACK_IMPORTED_MODULE_1__["default"], 'user_id'),
+        team: this.belongsTo(_Team__WEBPACK_IMPORTED_MODULE_3__["default"], 'team_id'),
         votes: this.hasMany(_CommentVote__WEBPACK_IMPORTED_MODULE_2__["default"], 'comment_id')
       };
       return data;
@@ -37231,20 +37082,18 @@ Country.entity = 'countries';
 
 /***/ }),
 
-/***/ "./resources/js/store/models/Product.js":
-/*!**********************************************!*\
-  !*** ./resources/js/store/models/Product.js ***!
-  \**********************************************/
+/***/ "./resources/js/store/models/PhaseProduct.js":
+/*!***************************************************!*\
+  !*** ./resources/js/store/models/PhaseProduct.js ***!
+  \***************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Product; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return PhaseProduct; });
 /* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
-/* harmony import */ var _Comment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Comment */ "./resources/js/store/models/Comment.js");
-/* harmony import */ var _Action__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Action */ "./resources/js/store/models/Action.js");
-/* harmony import */ var _ProductFinalAction__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
+/* harmony import */ var _Product__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Product */ "./resources/js/store/models/Product.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -37264,6 +37113,82 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // Product Model
+
+
+
+var PhaseProduct =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(PhaseProduct, _Model);
+
+  function PhaseProduct() {
+    _classCallCheck(this, PhaseProduct);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(PhaseProduct).apply(this, arguments));
+  }
+
+  _createClass(PhaseProduct, null, [{
+    key: "fields",
+    // This is the name used as module name of the Vuex Store.
+    // List of all fields (schema) of the product model. `this.attr` is used
+    // for the generic field type. The argument is the default value.
+    value: function fields() {
+      var data = {
+        phase_id: this.attr(''),
+        product_id: this.attr(''),
+        action: this.attr(''),
+        products: this.hasMany(_Product__WEBPACK_IMPORTED_MODULE_1__["default"], 'id', 'product_id')
+      };
+      return data;
+    }
+  }]);
+
+  return PhaseProduct;
+}(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
+
+PhaseProduct.entity = 'phaseProducts';
+PhaseProduct.primaryKey = ['phase_id', 'product_id'];
+
+
+/***/ }),
+
+/***/ "./resources/js/store/models/Product.js":
+/*!**********************************************!*\
+  !*** ./resources/js/store/models/Product.js ***!
+  \**********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Product; });
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+/* harmony import */ var _Comment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Comment */ "./resources/js/store/models/Comment.js");
+/* harmony import */ var _Action__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Action */ "./resources/js/store/models/Action.js");
+/* harmony import */ var _ProductFinalAction__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
+/* harmony import */ var _TeamProduct__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./TeamProduct */ "./resources/js/store/models/TeamProduct.js");
+/* harmony import */ var _PhaseProduct__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./PhaseProduct */ "./resources/js/store/models/PhaseProduct.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// Product Model
+
+
 
 
 
@@ -37305,7 +37230,9 @@ function (_Model) {
         color_variants: this.attr(''),
         comments: this.hasMany(_Comment__WEBPACK_IMPORTED_MODULE_1__["default"], 'product_id'),
         actions: this.hasMany(_Action__WEBPACK_IMPORTED_MODULE_2__["default"], 'product_id'),
-        productFinalAction: this.hasOne(_ProductFinalAction__WEBPACK_IMPORTED_MODULE_3__["default"], 'product_id')
+        productFinalAction: this.hasOne(_ProductFinalAction__WEBPACK_IMPORTED_MODULE_3__["default"], 'product_id'),
+        teamActions: this.hasMany(_TeamProduct__WEBPACK_IMPORTED_MODULE_4__["default"], 'product_id'),
+        phaseActions: this.hasMany(_PhaseProduct__WEBPACK_IMPORTED_MODULE_5__["default"], 'product_id')
       };
       return data;
     }
@@ -37592,6 +37519,77 @@ function (_Model) {
 
 TeamInvite.entity = 'teamInvites';
 TeamInvite.primaryKey = ['email', 'team_id'];
+
+
+/***/ }),
+
+/***/ "./resources/js/store/models/TeamProduct.js":
+/*!**************************************************!*\
+  !*** ./resources/js/store/models/TeamProduct.js ***!
+  \**************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TeamProduct; });
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+/* harmony import */ var _Team__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Team */ "./resources/js/store/models/Team.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// Product Model
+
+
+
+var TeamProduct =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(TeamProduct, _Model);
+
+  function TeamProduct() {
+    _classCallCheck(this, TeamProduct);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(TeamProduct).apply(this, arguments));
+  }
+
+  _createClass(TeamProduct, null, [{
+    key: "fields",
+    // This is the name used as module name of the Vuex Store.
+    // List of all fields (schema) of the product model. `this.attr` is used
+    // for the generic field type. The argument is the default value.
+    value: function fields() {
+      var data = {
+        team_id: this.attr(''),
+        product_id: this.attr(''),
+        phase_id: this.attr(''),
+        action: this.attr(''),
+        team: this.belongsTo(_Team__WEBPACK_IMPORTED_MODULE_1__["default"], 'team_id')
+      };
+      return data;
+    }
+  }]);
+
+  return TeamProduct;
+}(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
+
+TeamProduct.entity = 'teamProducts';
+TeamProduct.primaryKey = ['team_id', 'product_id', 'phase_id'];
 
 
 /***/ }),
@@ -38743,7 +38741,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _createComment = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, _ref3) {
-        var commit, comment, response;
+        var commit, comment, team_id, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -38751,19 +38749,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit = _ref2.commit;
                 comment = _ref3.comment;
                 commit('setSubmitting', true);
-                _context2.next = 5;
+                team_id = '0';
+                if (comment.team_id) team_id = comment.team_id;
+                console.log(comment);
+                _context2.next = 8;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/comment", {
                   user_id: comment.user_id,
                   product_id: comment.product_id,
-                  team_id: comment.team_id,
-                  phase: comment.phase,
+                  team_id: team_id,
+                  phase_id: comment.phase,
                   comment_body: comment.comment,
                   important: comment.important,
-                  "final": comment["final"],
-                  product_final: comment.product_final
+                  team_final: comment.team_final,
+                  phase_final: comment.phase_final
                 });
 
-              case 5:
+              case 8:
                 response = _context2.sent;
                 // Get and set the comment id equal to the id given by the database
                 comment.id = response.data.id;
@@ -38773,7 +38774,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 console.log(response.data);
                 commit('setSubmitting', false);
 
-              case 10:
+              case 13:
               case "end":
                 return _context2.stop();
             }
@@ -38799,19 +38800,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 commit = _ref4.commit;
                 comment = _ref5.comment;
-                console.log('Module updating comment');
                 commit('updateFinal', {
                   comment: comment
                 });
+                console.log(comment);
                 _context3.next = 6;
-                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/comment/update", {
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/comment/update-final", {
                   id: comment.id,
-                  user_id: comment.user_id,
-                  product_id: comment.product_id,
-                  comment_body: comment.comment,
-                  important: comment.important,
-                  "final": comment["final"],
-                  product_final: comment.product_final
+                  team_final: comment.team_final,
+                  phase_final: comment.phase_final
                 }).then(function (response) {
                   console.log(response.data);
                 })["catch"](function (err) {
@@ -38850,12 +38847,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     updateFinal: function updateFinal(state, _ref7) {
       var comment = _ref7.comment;
       // Remove final status from this products comments
-      _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].update({
+      if (comment.team_final) _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].update({
         where: function where(existing_comment) {
-          return existing_comment.product_final && existing_comment.product_id === comment.product_id;
+          return existing_comment.product_id === comment.product_id && existing_comment.team_id === comment.team_id && existing_comment.team_final;
         },
         data: {
-          product_final: 0
+          team_final: 0
+        }
+      });
+      if (comment.phase_final) _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].update({
+        where: function where(existing_comment) {
+          return existing_comment.product_id === comment.product_id && existing_comment.phase_final;
+        },
+        data: {
+          phase_final: 0
         }
       }); // Set new comment as final
 
@@ -38995,7 +39000,9 @@ __webpack_require__.r(__webpack_exports__);
     currentTeamId: -1,
     currentWorkspaceId: null,
     currentFileId: null,
-    loadingInit: true
+    userPermissionLevel: 1,
+    loadingInit: true //   actionScope: 'userAction',
+
   },
   getters: {
     currentTeamId: function currentTeamId(state) {
@@ -39007,8 +39014,17 @@ __webpack_require__.r(__webpack_exports__);
     currentFileId: function currentFileId(state) {
       return state.currentFileId;
     },
+    userPermissionLevel: function userPermissionLevel(state) {
+      return state.userPermissionLevel;
+    },
     loadingInit: function loadingInit(state) {
       return state.loadingInit;
+    },
+    actionScope: function actionScope(state) {
+      if (state.userPermissionLevel >= 3) return 'phaseAction';else if (state.userPermissionLevel >= 2) return 'teamAction';else return 'userAction';
+    },
+    actionScopeName: function actionScopeName(state) {
+      if (state.userPermissionLevel >= 3) return 'Phase action';else if (state.userPermissionLevel >= 2) return 'Team action';else return 'Your action';
     }
   },
   actions: {
@@ -39024,8 +39040,12 @@ __webpack_require__.r(__webpack_exports__);
       var commit = _ref3.commit;
       commit('setcurrentFileId', id);
     },
-    setLoadingInit: function setLoadingInit(_ref4, bool) {
+    setUserPermissionLevel: function setUserPermissionLevel(_ref4, id) {
       var commit = _ref4.commit;
+      commit('setUserPermissionLevel', id);
+    },
+    setLoadingInit: function setLoadingInit(_ref5, bool) {
+      var commit = _ref5.commit;
       commit('setLoadingInit', bool);
     }
   },
@@ -39039,8 +39059,325 @@ __webpack_require__.r(__webpack_exports__);
     setcurrentFileId: function setcurrentFileId(state, id) {
       state.currentFileId = id;
     },
+    setUserPermissionLevel: function setUserPermissionLevel(state, permissionLevel) {
+      state.userPermissionLevel = permissionLevel;
+    },
     setLoadingInit: function setLoadingInit(state, bool) {
       state.loadingInit = bool;
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/store/modules/phaseProducts.js":
+/*!*****************************************************!*\
+  !*** ./resources/js/store/modules/phaseProducts.js ***!
+  \*****************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _models_PhaseProduct__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/PhaseProduct */ "./resources/js/store/models/PhaseProduct.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    loading: true
+  },
+  getters: {
+    loadingPhaseProduct: function loadingPhaseProduct(state) {
+      return state.loading;
+    }
+  },
+  actions: {
+    fetchPhaseProducts: function () {
+      var _fetchPhaseProducts = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, file_id) {
+        var commit, apiUrl, tryCount, succes, response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                commit = _ref.commit;
+                // Set the state to loading
+                commit('setLoading', true);
+                apiUrl = "/api/file/".concat(file_id, "/phase-products");
+                tryCount = 3;
+                succes = false;
+
+              case 5:
+                if (!(tryCount-- > 0 && !succes)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                _context.prev = 6;
+                _context.next = 9;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
+
+              case 9:
+                response = _context.sent;
+                _models_PhaseProduct__WEBPACK_IMPORTED_MODULE_2__["default"].create({
+                  data: response.data
+                });
+                commit('setLoading', false);
+                succes = true;
+                _context.next = 22;
+                break;
+
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in haseProducts.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 22;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 22:
+                _context.next = 5;
+                break;
+
+              case 24:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[6, 15]]);
+      }));
+
+      function fetchPhaseProducts(_x, _x2) {
+        return _fetchPhaseProducts.apply(this, arguments);
+      }
+
+      return fetchPhaseProducts;
+    }(),
+    // Update the action of for a product for a user
+    updatePhaseProduct: function () {
+      var _updatePhaseProduct = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, _ref3) {
+        var commit, product_id, phase_id, action;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                commit = _ref2.commit;
+                product_id = _ref3.product_id, phase_id = _ref3.phase_id, action = _ref3.action;
+                commit('setPhaseProduct', {
+                  product_id: product_id,
+                  phase_id: phase_id,
+                  action: action
+                });
+                _context2.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/phase-product", {
+                  product_id: product_id,
+                  phase_id: phase_id,
+                  action: action
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }));
+
+      function updatePhaseProduct(_x3, _x4) {
+        return _updatePhaseProduct.apply(this, arguments);
+      }
+
+      return updatePhaseProduct;
+    }(),
+    updateManyPhaseProducts: function () {
+      var _updateManyPhaseProducts = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref4, _ref5) {
+        var commit, product_ids, phase_id, action;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                commit = _ref4.commit;
+                product_ids = _ref5.product_ids, phase_id = _ref5.phase_id, action = _ref5.action;
+                commit('setManyPhaseProducts', {
+                  product_ids: product_ids,
+                  phase_id: phase_id,
+                  action: action
+                });
+                _context3.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/many-phase-products", {
+                  product_ids: product_ids,
+                  phase_id: phase_id,
+                  action: action
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+
+      function updateManyPhaseProducts(_x5, _x6) {
+        return _updateManyPhaseProducts.apply(this, arguments);
+      }
+
+      return updateManyPhaseProducts;
+    }(),
+    createManyPhaseProducts: function () {
+      var _createManyPhaseProducts = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref6, _ref7) {
+        var commit, product_ids, phase_id, action;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                commit = _ref6.commit;
+                product_ids = _ref7.product_ids, phase_id = _ref7.phase_id, action = _ref7.action;
+                commit('setManyPhaseProducts', {
+                  product_ids: product_ids,
+                  phase_id: phase_id,
+                  action: action
+                });
+                _context4.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/many-phase-products", {
+                  product_ids: product_ids,
+                  phase_id: phase_id,
+                  action: action
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }));
+
+      function createManyPhaseProducts(_x7, _x8) {
+        return _createManyPhaseProducts.apply(this, arguments);
+      }
+
+      return createManyPhaseProducts;
+    }(),
+    deletePhaseProduct: function () {
+      var _deletePhaseProduct = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5(_ref8, _ref9) {
+        var commit, product_id, phase_id;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                commit = _ref8.commit;
+                product_id = _ref9.product_id, phase_id = _ref9.phase_id;
+                commit('deletePhaseProduct', {
+                  product_id: product_id,
+                  phase_id: phase_id
+                });
+                _context5.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/phase-product", {
+                  data: {
+                    product_id: product_id,
+                    phase_id: phase_id
+                  }
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5);
+      }));
+
+      function deletePhaseProduct(_x9, _x10) {
+        return _deletePhaseProduct.apply(this, arguments);
+      }
+
+      return deletePhaseProduct;
+    }()
+  },
+  mutations: {
+    //Set the loading status of the app
+    setLoading: function setLoading(state, bool) {
+      state.loading = bool;
+    },
+    setPhaseProduct: function setPhaseProduct(state, _ref10) {
+      var product_id = _ref10.product_id,
+          phase_id = _ref10.phase_id,
+          action = _ref10.action;
+      _models_PhaseProduct__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
+        data: {
+          product_id: product_id,
+          phase_id: phase_id,
+          action: action
+        }
+      });
+    },
+    setManyPhaseProducts: function setManyPhaseProducts(state, _ref11) {
+      var product_ids = _ref11.product_ids,
+          phase_id = _ref11.phase_id,
+          action = _ref11.action;
+      // Prepare the data
+      var data = [];
+      product_ids.forEach(function (product_id) {
+        var productData = {
+          product_id: product_id,
+          phase_id: phase_id,
+          action: action
+        };
+        data.push(productData);
+      });
+      _models_PhaseProduct__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
+        data: data
+      });
+    },
+    deletePhaseProduct: function deletePhaseProduct(state, _ref12) {
+      var product_id = _ref12.product_id,
+          phase_id = _ref12.phase_id;
+      _models_PhaseProduct__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (record) {
+        return record.product_id == product_id && record.phase_id == phase_id;
+      });
     }
   }
 });
@@ -39843,6 +40180,333 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           team_id = _ref7.team_id;
       _models_TeamInvite__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (invite) {
         return invite.email == email && invite.team_id == team_id;
+      });
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/store/modules/teamProducts.js":
+/*!****************************************************!*\
+  !*** ./resources/js/store/modules/teamProducts.js ***!
+  \****************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _models_TeamProduct__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/TeamProduct */ "./resources/js/store/models/TeamProduct.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    loading: true
+  },
+  getters: {
+    loadingTeamProducts: function loadingTeamProducts(state) {
+      return state.loading;
+    }
+  },
+  actions: {
+    fetchTeamProducts: function () {
+      var _fetchTeamProducts = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, file_id) {
+        var commit, apiUrl, tryCount, succes, response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                commit = _ref.commit;
+                // Set the state to loading
+                commit('setLoading', true);
+                apiUrl = "/api/file/".concat(file_id, "/team-products");
+                tryCount = 3;
+                succes = false;
+
+              case 5:
+                if (!(tryCount-- > 0 && !succes)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                _context.prev = 6;
+                _context.next = 9;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
+
+              case 9:
+                response = _context.sent;
+                _models_TeamProduct__WEBPACK_IMPORTED_MODULE_2__["default"].create({
+                  data: response.data
+                });
+                commit('setLoading', false);
+                succes = true;
+                _context.next = 22;
+                break;
+
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in teamProduct.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 22;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 22:
+                _context.next = 5;
+                break;
+
+              case 24:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[6, 15]]);
+      }));
+
+      function fetchTeamProducts(_x, _x2) {
+        return _fetchTeamProducts.apply(this, arguments);
+      }
+
+      return fetchTeamProducts;
+    }(),
+    // Update the action of for a product for a user
+    updateTeamProduct: function () {
+      var _updateTeamProduct = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, _ref3) {
+        var commit, team_id, product_id, phase_id, action;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                commit = _ref2.commit;
+                team_id = _ref3.team_id, product_id = _ref3.product_id, phase_id = _ref3.phase_id, action = _ref3.action;
+                commit('setTeamProduct', {
+                  team_id: team_id,
+                  product_id: product_id,
+                  phase_id: phase_id,
+                  action: action
+                });
+                _context2.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/team-product", {
+                  team_id: team_id,
+                  product_id: product_id,
+                  phase_id: phase_id,
+                  action: action
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }));
+
+      function updateTeamProduct(_x3, _x4) {
+        return _updateTeamProduct.apply(this, arguments);
+      }
+
+      return updateTeamProduct;
+    }(),
+    updateManyTeamProducts: function () {
+      var _updateManyTeamProducts = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref4, _ref5) {
+        var commit, team_id, product_ids, phase_id, action;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                commit = _ref4.commit;
+                team_id = _ref5.team_id, product_ids = _ref5.product_ids, phase_id = _ref5.phase_id, action = _ref5.action;
+                commit('setManyTeamProducts', {
+                  team_id: team_id,
+                  product_ids: product_ids,
+                  phase_id: phase_id,
+                  action: action
+                });
+                _context3.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/many-team-products", {
+                  team_id: team_id,
+                  product_ids: product_ids,
+                  phase_id: phase_id,
+                  action: action
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+
+      function updateManyTeamProducts(_x5, _x6) {
+        return _updateManyTeamProducts.apply(this, arguments);
+      }
+
+      return updateManyTeamProducts;
+    }(),
+    createManyTeamProducts: function () {
+      var _createManyTeamProducts = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref6, _ref7) {
+        var commit, team_id, product_ids, phase_id, action;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                commit = _ref6.commit;
+                team_id = _ref7.team_id, product_ids = _ref7.product_ids, phase_id = _ref7.phase_id, action = _ref7.action;
+                commit('setManyTeamProducts', {
+                  team_id: team_id,
+                  product_ids: product_ids,
+                  phase_id: phase_id,
+                  action: action
+                });
+                _context4.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/many-team-products", {
+                  team_id: team_id,
+                  product_ids: product_ids,
+                  phase_id: phase_id,
+                  action: action
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }));
+
+      function createManyTeamProducts(_x7, _x8) {
+        return _createManyTeamProducts.apply(this, arguments);
+      }
+
+      return createManyTeamProducts;
+    }(),
+    deleteTeamProduct: function () {
+      var _deleteTeamProduct = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5(_ref8, _ref9) {
+        var commit, team_id, product_id, phase_id;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                commit = _ref8.commit;
+                team_id = _ref9.team_id, product_id = _ref9.product_id, phase_id = _ref9.phase_id;
+                commit('deleteTeamProduct', {
+                  team_id: team_id,
+                  product_id: product_id,
+                  phase_id: phase_id
+                });
+                _context5.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/team-product", {
+                  data: {
+                    team_id: team_id,
+                    product_id: product_id,
+                    phase_id: phase_id
+                  }
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5);
+      }));
+
+      function deleteTeamProduct(_x9, _x10) {
+        return _deleteTeamProduct.apply(this, arguments);
+      }
+
+      return deleteTeamProduct;
+    }()
+  },
+  mutations: {
+    //Set the loading status of the app
+    setLoading: function setLoading(state, bool) {
+      state.loading = bool;
+    },
+    setTeamProduct: function setTeamProduct(state, _ref10) {
+      var team_id = _ref10.team_id,
+          product_id = _ref10.product_id,
+          phase_id = _ref10.phase_id,
+          action = _ref10.action;
+      _models_TeamProduct__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
+        data: {
+          team_id: team_id,
+          product_id: product_id,
+          phase_id: phase_id,
+          action: action
+        }
+      });
+    },
+    setManyTeamProducts: function setManyTeamProducts(state, _ref11) {
+      var team_id = _ref11.team_id,
+          product_ids = _ref11.product_ids,
+          phase_id = _ref11.phase_id,
+          action = _ref11.action;
+      // Prepare the data
+      var data = [];
+      product_ids.forEach(function (product_id) {
+        var productData = {
+          team_id: team_id,
+          product_id: product_id,
+          phase_id: phase_id,
+          action: action
+        };
+        data.push(productData);
+      });
+      _models_TeamProduct__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
+        data: data
+      });
+    },
+    deleteTeamProduct: function deleteTeamProduct(state, _ref12) {
+      var team_id = _ref12.team_id,
+          product_id = _ref12.product_id,
+          phase_id = _ref12.phase_id;
+      _models_TeamProduct__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (record) {
+        return record.team_id == team_id && record.product_id == product_id && record.phase_id == phase_id;
       });
     }
   }

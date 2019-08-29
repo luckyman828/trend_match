@@ -16,6 +16,7 @@ import { mapActions, mapGetters } from 'vuex'
 import Sidebar from './components/Sidebar'
 import Navbar from './components/Navbar'
 import AuthUser from './store/models/AuthUser';
+import { Query } from '@vuex-orm/core';
 
 export default{
     name: 'app',
@@ -25,9 +26,10 @@ export default{
         Navbar,
     },
     data: function () { return {
-        currentWorkspaceId: null,
+        // currentWorkspaceId: null,
     }},
     computed: {
+        ...mapGetters('persist', ['userPermissionLevel', 'currentWorkspaceId']),
         authUser() {
             return AuthUser.query().with('teams').with('workspaces').first()
         },
@@ -41,7 +43,7 @@ export default{
         ...mapActions('entities/workspaces', ['fetchWorkspaces']),
         ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
         ...mapActions('entities/roles', ['fetchRoles']),
-        ...mapActions('persist', ['setCurrentTeam', 'setCurrentWorkspace', 'setLoadingInit']),
+        ...mapActions('persist', ['setCurrentTeam', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']),
         async fetchInitialData() {
             // Get user
             console.log('App: Getting initial data')
@@ -50,21 +52,31 @@ export default{
                 this.fetchWorkspaceUsers(),
                 this.fetchWorkspaces(),
             ])
-            this.currentWorkspaceId = this.authUser.workspaces[0].id
-            await this.setCurrentWorkspace(this.currentWorkspaceId)
+            this.setUserPermissionLevel(this.authUser.role_id)
+            this.setCurrentWorkspace(this.authUser.workspaces[0].id)
+            // this.currentWorkspaceId = this.authUser.workspaces[0].id
         },
+        testFunc(model) {
+            if(model.constructor.name == 'Team')
+                if (this.authUser.role_id >= 3)
+                    this.setCurrentTeam(0)
+                else if (this.authUser.teams.length > 0)
+                    this.setCurrentTeam(this.authUser.teams[0].id)
+        }
     },
     created() {
         this.fetchInitialData()
         // Fetch data based on the Auth User
         .then( async response => {
             // Only get data for the current workspace
+            console.log(this.userPermissionLevel)
             if (this.authUser) {
                 await (
                     this.fetchTeams(this.currentWorkspaceId),
                     this.fetchUserTeams(this.currentWorkspaceId),
                     this.fetchRoles()
                 )
+                
                 if (this.authUser.role_id >= 3)
                     this.setCurrentTeam(0)
                 else if (this.authUser.teams.length > 0)
@@ -75,6 +87,7 @@ export default{
                 this.loadingOverwrite = true
             }
         })
+        const vuexHook = Query.on('afterCreate', this.testFunc )
     },
 }
 </script>

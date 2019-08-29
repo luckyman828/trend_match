@@ -14,6 +14,10 @@ use App\ProductFinalAction;
 use App\Http\Resources\ProductFinalAction as ProductFinalActionResource;
 use App\CommentVote;
 use App\Http\Resources\CommentVote as CommentVoteResource;
+use App\PhaseProduct;
+use App\Http\Resources\PhaseProduct as PhaseProductResource;
+use App\TeamProduct;
+use App\Http\Resources\TeamProduct as TeamProductResource;
 
 class FileController extends Controller
 {
@@ -64,6 +68,27 @@ class FileController extends Controller
 
         // Return collection of users as a resource
         return ProductFinalActionResource::collection($final_actions);
+    }
+    // Return all team actions for the specified collection
+    public function teamProducts($file_id)
+    {
+        $data = TeamProduct::whereHas('product', function (Builder $query) use($file_id) {
+            $query->where('collection_id', $file_id);
+        })->get();
+
+        // Return collection of users as a resource
+        return TeamProductResource::collection($data);
+    }
+
+    // Return all phase actions for the specified collection
+    public function phaseProducts($file_id)
+    {
+        $data = PhaseProduct::whereHas('product', function (Builder $query) use($file_id) {
+            $query->where('collection_id', $file_id);
+        })->get();
+
+        // Return collection of users as a resource
+        return PhaseProductResource::collection($data);
     }
 
     

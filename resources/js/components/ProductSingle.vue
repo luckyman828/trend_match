@@ -7,32 +7,13 @@
                             <span class="square" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
                         <div class="controls">
 
-                            <template v-if="authUser.role_id >= 3">
-                                <template v-if="!product.productFinalAction">
-                                    <span class="button ghost icon-right green-hover" @click="toggleInOut(product, 1)">In  <i class="far fa-heart"></i></span>
-                                    <span class="button ghost icon-right red-hover" @click="toggleInOut(product, 0)">Out  <i class="far fa-times-circle"></i></span>
-                                </template>
-                                <template v-else>
-                                    <span class="button icon-right" :class="[product.productFinalAction.action == 1 ? 'active green' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
-                                        In  <i class="far fa-heart"></i>
-                                        </span>
-                                    <span class="button icon-right" :class="[product.productFinalAction.action == 0 ? 'active red' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
-                                        Out  <i class="far fa-times-circle"></i>
-                                        </span>
-                                </template>
-                            </template>
-
-                            <template v-else-if="authUser.role_id >= 2">
-                                <template v-if="!product.userAction">
-                                    <span class="button ghost icon-right green-hover" @click="toggleInOutUser(product, 1)">In  <i class="far fa-heart"></i></span>
-                                    <span class="button ghost icon-right red-hover" @click="toggleInOutUser(product, 0)">Out  <i class="far fa-times-circle"></i></span>
-                                </template>
-                                <template v-else>
-                                    <span class="button icon-right" :class="[product.userAction.action == 1 ? 'active green' : 'ghost green-hover']" @click="toggleInOutUser(product, 1)">
-                                        In  <i class="far fa-heart"></i></span>
-                                    <span class="button icon-right" :class="[product.userAction.action == 1 ? 'active red' : 'ghost red-hover']"  @click="toggleInOutUser(product, 0)">
-                                        Out  <i class="far fa-times-circle"></i></span>
-                                </template>
+                            <template v-if="authUser.role_id >= 2">
+                                <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
+                                In  <i class="far fa-heart"></i>
+                                </span>
+                                <span class="button icon-right" :class="(product[actionScope] != null) ? (product[actionScope].action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover'"  @click="toggleInOut(product, 0)">
+                                Out  <i class="far fa-times-circle"></i>
+                                </span>
                             </template>
 
                             <span class="button primary active wide" @click="onPrevSingle()" :class="[{ disabled: prevProductID < 0}]">Previous style</span>
@@ -44,7 +25,7 @@
                             <h3>{{product.title}}</h3>
                             <div class="grid-2">
                                 <div class="image" @click="cycleImage()">
-                                    <img :src="product.color_variants[currentImgIndex].image">
+                                    <img :src="`https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${product.color_variants[currentImgIndex].blob_id}_thumbnail.jpg`">
                                 </div>
                                 <div class="description">
                                     <strong>Style number</strong>
@@ -85,13 +66,23 @@
                                 </div>
                                 <div class="tab-body">
                                     <strong class="tab-title">{{currentTab.substr(0, currentTab.length - 1)}}</strong>
-                                    <p v-for="user in tabBody" :key="user.id">
-                                        <span class="team">{{user.teams[0].title}}</span>
-                                        <span class="user">{{user.email}}</span>
-                                        <template v-if="user.focus != null">
-                                            <span class="focus" v-if="user.focus">Focus <i class="fas fa-star"></i></span>
-                                        </template>
-                                    </p>
+                                    <template v-if="currentTeamId == 0">
+                                        <p v-for="team in tabBody" :key="team.id">
+                                            <span class="user">{{team.title}}</span>
+                                            <template v-if="team.focus != null">
+                                                <span class="focus" v-if="team.focus">Focus <i class="fas fa-star"></i></span>
+                                            </template>
+                                        </p>
+                                    </template>
+                                    <template v-else>
+                                        <p v-for="user in tabBody" :key="user.id">
+                                            <span class="team">{{user.teams[0].title}}</span>
+                                            <span class="user">{{user.email}}</span>
+                                            <template v-if="user.focus != null">
+                                                <span class="focus" v-if="user.focus">Focus <i class="fas fa-star"></i></span>
+                                            </template>
+                                        </p>
+                                    </template>
                                 </div>
                             </div>
                         </div>
@@ -107,7 +98,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import ProductSingleComments from './ProductSingleComments'
 import Loader from './Loader'
 
@@ -127,19 +118,20 @@ export default {
         Loader,
     },
     data: function () { return {
-            comment: {
-                user_id: '',
-                product_id: '',
-                comment: '',
-                important: false,
-                final: false,
-                product_final: false,
-            },
+            // comment: {
+            //     user_id: '',
+            //     product_id: '',
+            //     comment: '',
+            //     important: false,
+            //     final: false,
+            //     product_final: false,
+            // },
             user_id: this.authUser.id,
             currentTab: 'ins',
             currentImgIndex: 0,
     }},
     computed: {
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']),
         tabBody () {
             if(this.currentTab == 'ins') {
                 // return this.productActionUsers.focus.push(this.productActionUsers.ins)
@@ -157,14 +149,14 @@ export default {
             else return this.product[this.currentTab]
         },
     },
-    watch: {
-        product: function (newVal, oldVal) {
-            this.comment.product_id = newVal.id
-        },
-        authUser: function (newVal, oldVal) {
-            this.comment.user_id = newVal.id
-        },
-    },
+    // watch: {
+    //     product: function (newVal, oldVal) {
+    //         this.comment.product_id = newVal.id
+    //     },
+    //     authUser: function (newVal, oldVal) {
+    //         this.comment.user_id = newVal.id
+    //     },
+    // },
     methods: {
         ...mapActions('entities/comments', ['createComment']),
         ...mapActions('entities/comments', ['markAsFinal']),
@@ -181,11 +173,8 @@ export default {
             this.currentImgIndex = 0
             this.$emit('prevSingle')
         },
-        toggleInOut(product, actionType) {
-            this.$emit('onToggleInOut', product, actionType)
-        },
-        toggleInOutUser(product, actionType) {
-            this.$emit('onToggleInOutUser', product, actionType)
+        toggleInOut(product, action) {
+            this.$emit('onToggleInOut', product, action)
         },
         setCurrentTab(filter) {
             this.currentTab = filter

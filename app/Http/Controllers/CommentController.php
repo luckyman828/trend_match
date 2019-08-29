@@ -17,58 +17,44 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        $comment = $request->isMethod('put')
-        // If request is put
-        ? Comment::findOrFail($request->comment_id)
-
-        // Else (it is create) define a new comment
-        : new Comment;
-
+        $existingComment = Comment::find($request->comment_id);
+        $comment = ($existingComment) ? $existingComment : new Comment;
+   
         $comment->user_id = $request->input('user_id');
         $comment->product_id = $request->input('product_id');
         $comment->team_id = $request->input('team_id');
-        $comment->phase_id = $request->input('phase');
+        $comment->phase_id = $request->input('phase_id');
         $comment->comment = $request->input('comment_body');
         $comment->important = $request->input('important');
-        $comment->final = $request->input('final');
-        $comment->product_final = $request->input('product_final');
+        $comment->team_final = $request->input('team_final');
+        $comment->phase_final = $request->input('phase_final');
 
         if($comment->save()) {
             return new CommentResource($comment);
         }
     }
 
-    public function update(Request $request)
+    public function updateFinal(Request $request)
     {
         // Remove final from other comments from the same product
+        $comment = Comment::findOrFail($request->id);
+        return $request;
 
-        $oldFinal = Comment::where('product_id', $request->product_id)->where('product_final', 1)->first();
+        $oldPhaseFinal = ($request->phase_final) ? Comment::where('product_id', $comment->product_id)->where('phase_final', 1)->first() : false;
+        $oldTeamFinal = ($request->team_final) ? Comment::where('product_id', $comment->product_id)->where('team_id', $comment->team_id)->where('team_final', 1)->first() : false;
 
-        if($oldFinal) {
-
-            $oldFinal->product_final = 0;
-            
-            $oldFinal->save();
+        if($oldPhaseFinal) {
+            $oldPhaseFinal->phase_final = 0;
+            $oldPhaseFinal->save();
         }
-
-        // First, check if the comment already exists
-        $existingComment = Comment::find($request->id);
-
-        // If the comment exists, select that one, otherwise, create a new comment
-        $comment = ($existingComment) ? $existingComment : new Comment;
-        // $comment = ($existingComment) ? $existingComment : "creating new comment";
-        // return $comment;
+        if($oldTeamFinal) {
+            $oldTeamFinal->team_final = 0;
+            $oldTeamFinal->save();
+        }
         
-        $comment->id = $request->input('id');
-        $comment->user_id = $request->input('user_id');
-        $comment->product_id = $request->input('product_id');
-        $comment->comment = $request->input('comment_body');
-        $comment->important = $request->input('important');
-        $comment->final = $request->input('final');
-        $comment->product_final = $request->input('product_final');
-
-        // return $comment;
-
+        $comment->team_final = $request->input('team_final');
+        $comment->phase_final = $request->input('phase_final');
+        
         if($comment->save()) {
             return new CommentResource($comment);
         }

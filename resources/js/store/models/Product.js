@@ -3,6 +3,8 @@ import { Model } from '@vuex-orm/core'
 import Comment from './Comment';
 import Action from './Action';
 import ProductFinalAction from './ProductFinalAction';
+import TeamProduct from './TeamProduct';
+import PhaseProduct from './PhaseProduct';
 
 export default class Product extends Model {
   // This is the name used as module name of the Vuex Store.
@@ -31,6 +33,8 @@ export default class Product extends Model {
       comments: this.hasMany(Comment, 'product_id'),
       actions: this.hasMany(Action, 'product_id'),
       productFinalAction: this.hasOne(ProductFinalAction, 'product_id'),
+      teamActions: this.hasMany(TeamProduct, 'product_id'),
+      phaseActions: this.hasMany(PhaseProduct, 'product_id'),
     }
 
     return data

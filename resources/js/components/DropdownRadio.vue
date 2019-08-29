@@ -12,10 +12,7 @@
                 </div>
                 <div class="body">
                     <div class="radio-buttons">
-                        <label v-if="!options.find(x => x.id == 0) && defaultOption != null" @click="submit(defaultOption.id)" :class="{active: currentOptionId == defaultOption.id}" class="radiobox">
-                            {{defaultOption.title}}
-                        </label>
-                        <label v-for="(option, index) in options" :key="index" @click="submit(option.id)" :class="{active: option.id == currentOptionId}" class="radiobox">
+                        <label v-for="(option, index) in optionsToShow" :key="index" @click="submit(option.id)" :class="{active: option.id == currentOptionId}" class="radiobox">
                             {{option.title}}
                         </label>
                     </div>
@@ -38,16 +35,22 @@ export default {
         collapsed: true,
     }},
     computed: {
+        optionsToShow () {
+            const optionsToShow = this.options
+            if (this.defaultOption != null)
+                optionsToShow.unshift(this.defaultOption)
+            return optionsToShow
+        },
         currentOption () {
-            if (this.options[0] != null) {
-                if (this.options[0].title != null) {
-                    const found = this.options.find(x => x.id == this.currentOptionId)
+            if (this.optionsToShow[0] != null) {
+                if (this.optionsToShow[0].title != null) {
+                    const found = this.optionsToShow.find(x => x.id == this.currentOptionId)
                     if (found)
                         return found
-                    else return {title: 'GLOBAL'}
+                    else return {title: 'Set filter'}
                 }
             }
-            else return {title: 'Set team filter'}
+            else return {title: 'Fetcing..'}
         }
     },
     methods: {

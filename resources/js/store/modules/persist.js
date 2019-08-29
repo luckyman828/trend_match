@@ -6,7 +6,9 @@ export default {
       currentTeamId: -1,
       currentWorkspaceId: null,
       currentFileId: null,
+      userPermissionLevel: 1,
       loadingInit: true,
+    //   actionScope: 'userAction',
     },
 
     getters: {
@@ -19,8 +21,25 @@ export default {
         currentFileId: state => {
             return state.currentFileId
         },
+        userPermissionLevel: state => {
+            return state.userPermissionLevel
+        },
         loadingInit: state => {
             return state.loadingInit
+        },
+        actionScope: state => {
+            if (state.userPermissionLevel >= 3 )
+                return 'phaseAction'
+            else if (state.userPermissionLevel >= 2)
+                return 'teamAction'
+            else return 'userAction'
+        },
+        actionScopeName: state => {
+            if (state.userPermissionLevel >= 3 )
+                return 'Phase action'
+            else if (state.userPermissionLevel >= 2)
+                return 'Team action'
+            else return 'Your action'
         }
     },
   
@@ -35,9 +54,13 @@ export default {
         setCurrentFileId({commit}, id) {
             commit('setcurrentFileId', id)
         },
+        setUserPermissionLevel({commit}, id) {
+            commit('setUserPermissionLevel', id)
+        },
         setLoadingInit({commit}, bool) {
             commit('setLoadingInit', bool)
         },
+        
       
     },
 
@@ -51,6 +74,9 @@ export default {
         },
         setcurrentFileId(state, id) {
             state.currentFileId = id
+        },
+        setUserPermissionLevel(state, permissionLevel) {
+            state.userPermissionLevel = permissionLevel
         },
         setLoadingInit(state, bool) {
             state.loadingInit = bool

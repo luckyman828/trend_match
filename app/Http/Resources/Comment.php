@@ -14,16 +14,16 @@ class Comment extends JsonResource
      */
     public function toArray($request)
     {
-        // return parent::toArray($request);
+        return parent::toArray($request);
 
-        return [
-            'id' => $this->id,
-            'user_id' => $this->user_id,
-            'product_id' => $this->product_id,
-            'comment' => $this->comment,
-            'important' => $this->important,
-            'final' => $this->final,
-            'product_final' => $this->product_final,
-        ];
+        // return [
+        //     'id' => $this->id,
+        //     'user_id' => $this->user_id,
+        //     'product_id' => $this->product_id,
+        //     'comment' => $this->comment,
+        //     'important' => $this->important,
+        //     'final' => $this->final,
+        //     'product_final' => $this->product_final,
+        // ];
     }
 }

@@ -15,7 +15,7 @@
                         <span v-if="selectedCategories.length > 0" class="clear button invisible primary" @click="slotProps.clear(); selectedCategories=[]">Clear filter</span>
                     </template>
                 </DropdownCheckbox>
-                <DropdownRadio :options="teams" :currentOptionId="currentTeamId" :defaultOption="{id: 0, title: 'GLOBAL'}" class="dropdown-parent right" @submit="setCurrentTeam">
+                <DropdownRadio :options="teams" :currentOptionId="currentTeamId" :defaultOption="defaultTeam" class="dropdown-parent right" @submit="setCurrentTeam">
                     <template v-slot:button="slotProps">
                         <div class="dropdown-button" @click="slotProps.toggle">
                             <img src="/assets/Path5699.svg">
@@ -55,6 +55,8 @@ import CommentVote from '../../store/models/CommentVote';
 import Category from '../../store/models/Category';
 import UserTeam from '../../store/models/UserTeam';
 import AuthUser from '../../store/models/AuthUser';
+import TeamProduct from '../../store/models/TeamProduct';
+import PhaseProduct from '../../store/models/PhaseProduct';
 
 export default{
     name: 'catalogue',
@@ -86,10 +88,18 @@ export default{
         ...mapGetters('entities/actions', ['loadingActions']),
         ...mapGetters('entities/comments', ['loadingComments']),
         ...mapGetters('entities/collections', ['loadingCollections']),
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId']),
-        // currentFileId () {
-        //     return this.$route.params.catalogueId
-        // },
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope']),
+        defaultTeam() {
+            if (this.userPermissionLevel >= 3)
+                return {id: 0, title: 'Global'}
+            else return null
+        },
+        teamProducts() {
+            return TeamProduct.with('products').all()
+        },
+        phaseProducts() {
+            return PhaseProduct.with('products').all()
+        },
         collection() {
             return Collection.find(this.currentFileId)
         },
@@ -112,7 +122,8 @@ export default{
             return 'Unset'
         },
         products () {
-            const products = Product.query().with(['actions.user.teams']).with(['comments.votes', 'comments.user.teams']).with('productFinalAction').all()
+            const products = Product.query().with(['actions.user.teams']).with(['comments.votes', 'comments.user.teams', 'comments.team']).with('productFinalAction')
+            .with('teamActions.team').with('phaseActions').all()
             const totalUsers = this.teamUsers
             const userId = this.authUser.id
             const teamFilterId = this.currentTeamId
@@ -122,8 +133,11 @@ export default{
                 product.ins = []
                 product.outs = []
                 product.focus = []
-                product.userAction = null
+                product.nds = []
+                product.userAction = product.actions.find(x => x.user_id == this.authUser.id)
                 product.commentsScoped = []
+                product.teamAction = product.teamActions.find(x => x.team_id == this.currentTeamId)
+                product.phaseAction = product.phaseActions.find(x => x.phase_id == 1)
 
                 // Scope comments to current teamFilter
                 const comments = product.comments
@@ -150,49 +164,62 @@ export default{
                     product.commentsScoped = comments
                 }
 
-                product.nds = JSON.parse(JSON.stringify(totalUsers)) // Copy our users into a new variable
-                product.actions.forEach(action => {
-
-                    // Filter actions by the current team filter
-                    // Check if the action has a user
-                    if ( teamFilterId > 0 && action.user != null ) {
-                        // Check if the user has a team
-                        if (action.user.teams[0] != null) {
-                            // Find the users team
-                            if ( action.user.teams.findIndex(x => x.id == teamFilterId) > -1 ) {
-                            // if (action.user.teams[0].id == teamFilterId) {
-                                if (action.action == 0)
-                                    product.outs.push(action.user)
-                                if (action.action == 1)
-                                    product.ins.push(action.user)
-                                if (action.action == 2)
-                                    product.focus.push(action.user)
+                // Filter actions by the current team filter
+                // Check if the action has a user
+                if ( teamFilterId > 0 && product.actions != null) {
+                    product.scope = 'user scope'
+                    product.nds = JSON.parse(JSON.stringify(totalUsers)) // Copy our users into a new variable
+                    product.actions.forEach(action => {
+                        if (action.user != null) {
+                            // Check if the user has a team
+                            if (action.user.teams[0] != null) {
+                                // Find the users team
+                                if ( action.user.teams.findIndex(x => x.id == teamFilterId) > -1 ) {
+                                // if (action.user.teams[0].id == teamFilterId) {
+                                    if (action.action == 0)
+                                        product.outs.push(action.user)
+                                    if (action.action == 1)
+                                        product.ins.push(action.user)
+                                    if (action.action == 2)
+                                        product.focus.push(action.user)
+                                }
+                            }
+                            // Find Not decided
+                            let index = product.nds.findIndex(nd => nd.id == action.user_id)
+                            if (index > -1) {
+                                product.nds.splice(index,1)
                             }
                         }
-                    // Dont filter by team, id no current team is set
-                    } else {
-                        if (action.action == 0)
-                            product.outs.push(action.user)
-                        if (action.action == 1)
-                            product.ins.push(action.user)
-                        if (action.action == 2)
-                            product.focus.push(action.user)
-                    }
 
-                    // Find the action this user has taken
-                    if (action.user_id == userId)
-                        product.userAction = action
 
-                    let index = product.nds.findIndex(nd => nd.id == action.user_id)
-                    if (index > -1) {
-                        product.nds.splice(index,1)
-                    }
-                })
+                    })
+                // Filter actions by teams if GLOBAL scope is set (= 0)
+                } else if ( teamFilterId == 0 && product.teamActions != null) {
+                    product.scope = 'team scope'
+                    product.nds = JSON.parse(JSON.stringify(this.teams)) // Copy our users into a new variable
+                    product.teamActions.forEach(action => {
+                        if (action.team != null) {
+
+                            if (action.action == 0)
+                                product.outs.push(action.team)
+                            if (action.action == 1)
+                                product.ins.push(action.team)
+                            if (action.action == 2)
+                                product.focus.push(action.team)
+                        }
+                        // Find Not decided
+                        let index = product.nds.findIndex(nd => nd.id == action.team_id)
+                        if (index > -1) {
+                            product.nds.splice(index,1)
+                        }
+                    })
+                } else {
+                    product.scope = 'no scope 360'
+                }
                 data.push(product)
             })
             return data
         },
-
         productsFilteredByCategory() {
             const products = this.products
             const categories = this.selectedCategories
@@ -218,10 +245,10 @@ export default{
             if (method > -1) {
                 const filteredByAction = productsToReturn.filter(product => {
                     if (method != 2) {
-                        if (product.productFinalAction != null)
-                        return product.productFinalAction.action == method
+                        if (product[this.actionScope] != null)
+                        return product[this.actionScope].action == method
                     } else {
-                        return product.productFinalAction == null
+                        return product[this.actionScope] == null
                     }
                 })
                 productsToReturn = filteredByAction
@@ -236,7 +263,7 @@ export default{
             let sortAsc = this.sortAsc
             const dataSorted = products.sort((a, b) => {
 
-                if (key == 'productFinalAction' || 'userAction') {
+                if (key == 'userAction' || 'teamAction' || 'phaseAction' || 'productFinalAction' || 'userAction') {
                     if (a[key] != null) {
                         if (b[key] != null) {
                             // If A and B has a key
@@ -362,10 +389,10 @@ export default{
                     data.outs += product.outs.length
                     data.nds += product.nds.length
 
-                if (product.productFinalAction != null) {
-                    if (product.productFinalAction.action == 1)
+                if (product[this.actionScope] != null) {
+                    if (product[this.actionScope].action == 1)
                         data.final.ins ++
-                    else if (product.productFinalAction.action == 0)
+                    else if (product[this.actionScope].action == 0)
                         data.final.outs ++
                 }
                 else data.final.nds ++
@@ -461,7 +488,7 @@ export default{
             // Manually find the teams and the users belonging to each team.
             // This is only necessary because I cannot make the Vuex ORM realtionship work 
             // If you can make it work, please be my guest
-            const teams = Team.query().with('users').all()
+            const teams = Team.query().with('users').with('invites').all()
             const users = this.users
             // Loop through the users and sort them between the teams
             users.forEach(user => {
@@ -470,17 +497,32 @@ export default{
                     if ('id' in user.teams[0]) {
                         // If we have a team with an id
                         // Set the users role
-                        user.role = (user.role_id == 1) ? 'Sales' : (user.role_id == 2) ? 'Sales Rep' : 'Admin'
                         user.teams.forEach(userTeam => {
                             // Loop through each of the users teams and add the user
                             // Find the corresponding team
                             const foundTeam = teams.find(team => team.id == userTeam.id)
-                            foundTeam.users.push(user)
+                            // Check that the user doesnt already exist in this team
+                            if ( !foundTeam.users.includes(user) )
+                                // Push the user to the team if the user is not already a member
+                                foundTeam.users.push(user)
                         })
                     }
                 }
             })
-            return teams
+            if (!this.isLoading) {
+                if (this.authUser.role_id == 2) {
+                    // Get the users teams
+                    let userTeams = []
+                    teams.forEach(team => {
+                        if (this.authUser.teams.find(x => x.id == team.id))
+                            userTeams.push(team)
+                    })
+                    return userTeams
+                }
+                else if (this.authUser.role_id >= 3)
+                    return teams
+            }
+            return []
         },
     },
     methods: {
@@ -499,6 +541,8 @@ export default{
         ...mapActions('entities/workspaces', ['fetchWorkspaces']),
         ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
         ...mapActions('persist', ['setCurrentTeam', 'setCurrentFileId']),
+        ...mapActions('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']),
+        ...mapActions('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']),
         setSingleProduct(index) {
             this.singleProductID = index
         },
@@ -537,6 +581,7 @@ export default{
             // Find out whether we should update or delete the products final actions
             const phase = this.collection.phase
             const user_id = this.authUser.id
+            const actionScope = this.actionScope
             const actionType = (method == 'in') ? 1 : 0
             let productsToUpdate = []
             let productsToCreate = []
@@ -544,43 +589,34 @@ export default{
             this.selectedProducts.forEach(product => {
                 const thisProduct = this.products.find(x => x.id == product)
 
-                if (this.authUser.role_id >= 3) {
-                    if (thisProduct.productFinalAction != null) {
-                        // If product has a final action
-                        if (thisProduct.productFinalAction.action != actionType) {
-                            // If the products final action isnt the same as the one we are trying to set
-                            productsToUpdate.push(product)
-                        }
-                    } 
-                    // If product does not have a final action
-                    else productsToCreate.push(product)
-                }
-                else if (this.authUser.role_id >= 2) {
-                    if (thisProduct.userAction != null) {
-                        // If product has a final action
-                        if (thisProduct.userAction.action != actionType) {
-                            // If the products final action isnt the same as the one we are trying to set
-                            productsToUpdate.push(product)
-                        }
-                    } 
-                    // If product does not have a final action
-                    else productsToCreate.push(product)
-                }
+                if (thisProduct[actionScope] != null) {
+                    // If product has a final action
+                    if (thisProduct[actionScope].action != actionType) {
+                        // If the products final action isnt the same as the one we are trying to set
+                        productsToUpdate.push(product)
+                    }
+                } 
+                // If product does not have a final action
+                else productsToCreate.push(product)
 
             })
 
             // Submit the selection
             if (productsToUpdate.length > 0) {
-                if (this.authUser.role_id >= 3)
-                    this.updateManyFinalAction({productIds: productsToUpdate, phase: phase, action_code: actionType})
-                else if (this.authUser.role_id >= 2)
+                if (this.actionScope == 'userAction')
                     this.updateManyActions({productIds: productsToUpdate, user_id: user_id, action_code: actionType})
+                if (this.actionScope == 'teamAction')
+                    this.updateManyTeamProducts({team_id: this.currentTeamId, product_ids: productsToUpdate, phase_id: 1, action: actionType})
+                if (this.actionScope == 'phaseAction')
+                    this.updateManyPhaseProducts({product_ids: productsToUpdate, phase_id: 1, action: actionType})
             }
             if (productsToCreate.length > 0) {
-                if (this.authUser.role_id >= 3)
-                    this.createManyFinalAction({productIds: productsToCreate, phase: phase, action_code: actionType})
-                else if (this.authUser.role_id >= 2)
+                if (this.actionScope == 'userAction')
                     this.createManyActions({productIds: productsToCreate, user_id: user_id, action_code: actionType})
+                if (this.actionScope == 'teamAction')
+                    this.updateManyTeamProducts({team_id: this.currentTeamId, product_ids: productsToCreate, phase_id: 1, action: actionType})
+                if (this.actionScope == 'phaseAction')
+                    this.updateManyPhaseProducts({product_ids: productsToCreate, phase_id: 1, action: actionType})
             }
 
             // Reset the selection
@@ -607,6 +643,8 @@ export default{
             this.fetchFinalActions(this.currentFileId)
             this.fetchCommentVotes(this.currentFileId)
             this.fetchCategories(this.currentFileId)
+            this.fetchTeamProducts(this.currentFileId)
+            this.fetchPhaseProducts(this.currentFileId)
         }
     },
     created() {
