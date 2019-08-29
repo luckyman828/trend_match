@@ -72,7 +72,6 @@ export default{
                         this.setCurrentTeam(0)
                     }
                     else {
-                        console.log(newVal)
                         this.setCurrentTeam(this.authUser.teams[0].id)
                         this.setLoadingInit(false)
                     }

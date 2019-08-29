@@ -7231,7 +7231,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           if (this.authUser.role_id >= 3) {
             this.setCurrentTeam(0);
           } else {
-            console.log(newVal);
             this.setCurrentTeam(this.authUser.teams[0].id);
             this.setLoadingInit(false);
           }
@@ -8372,6 +8371,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -8402,14 +8404,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       finalOnly: true
     };
   },
-  watch: {
-    product: function product(newVal, oldVal) {
-      this.newComment.product_id = newVal.id;
-    },
-    authUser: function authUser(newVal, oldVal) {
-      this.newComment.user_id = newVal.id;
-    }
-  },
+  // watch: {
+  //     product: function (newVal, oldVal) {
+  //         this.newComment.product_id = newVal.id
+  //     },
+  //     authUser: function (newVal, oldVal) {
+  //         this.newComment.user_id = newVal.id
+  //     },
+  // },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['submittingComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']), {
     commentsToShow: function commentsToShow() {
       var _this = this;
@@ -8420,17 +8422,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (this.finalOnly) {
         comments.forEach(function (comment) {
           // Check if the comment is final
-          if (comment.team_final || comment.phase_final) commentsToReturn.push(comment);
+          if (comment.team_final || comment.phase_final) commentsToReturn.push(comment); // Check if the auth user made the comment
+
+          comment.userComment = false;
+          if (comment.user_id == _this.authUser.id && comment.team_id == _this.currentTeamId) comment.userComment = true, commentsToReturn.push(comment);
         });
       } else {
         commentsToReturn = comments;
       }
 
       commentsToReturn.forEach(function (comment) {
-        comment.userComment = false;
-        comment.user_final = false; // Check if the auth user made the comment
-
-        if (comment.user_id == _this.authUser.id) comment.userComment = true; // Check if the comment is the auth users final comment
+        comment.user_final = false; // Check if the comment is the auth users final comment
 
         if (comment.team_final || comment.phase_final) {
           if (_this.actionScope == 'phaseAction') if (comment.user_id == _this.authUser.id) comment.user_final = true;
@@ -8478,7 +8480,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return onSubmitComment;
     }(),
     onMarkAsFinal: function onMarkAsFinal(comment) {
-      if (this.actionScope == 'phaseAction') comment.phase_final = !comment.phase_final;else comment.team_final = !comment.team_final;
+      if (this.actionScope == 'phaseAction') {
+        comment.phase_final = !comment.phase_final;
+      } else if (this.actionScope == 'teamAction') {
+        comment.team_final = !comment.team_final;
+      }
+
       this.markAsFinal({
         comment: comment
       });
@@ -10918,7 +10925,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.toggle[data-v-6d61fa50] {\n  border: solid 1px #DFDFDF;\n  border-radius: 50px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.toggle .option[data-v-6d61fa50] {\n  font-size: 12px;\n  padding: 6px 14px;\n  font-weight: 700;\n  color: #A8A8A8;\n  text-transform: uppercase;\n  display: inline-block;\n}\n.toggle .option.active[data-v-6d61fa50] {\n  color: #1B1C1D;\n  background: #DFDFDF;\n  border-radius: 50px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #F3F3F3;\n  border-radius: 8px;\n  padding: 36px;\n  padding-right: 68px;\n  height: 57vh;\n  max-height: 57vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 36px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment[data-v-6d61fa50] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n}\n.user[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-6d61fa50] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-6d61fa50] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-6d61fa50] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-6d61fa50] {\n  left: 18px;\n}\n.circle[data-v-6d61fa50] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.circle i[data-v-6d61fa50] {\n  font-size: 20px;\n}\n.circle[data-v-6d61fa50]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.active[data-v-6d61fa50] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.disabled[data-v-6d61fa50]:not(.active) {\n  display: none;\n}\n.circle.disabled[data-v-6d61fa50] {\n  cursor: auto;\n}\n.pill[data-v-6d61fa50] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #DFDFDF;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #A8A8A8;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #A8A8A8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #F3F3F3;\n  color: #A8A8A8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3B86FF;\n}", ""]);
+exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.toggle[data-v-6d61fa50] {\n  border: solid 1px #DFDFDF;\n  border-radius: 50px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.toggle .option[data-v-6d61fa50] {\n  font-size: 12px;\n  padding: 6px 14px;\n  font-weight: 700;\n  color: #A8A8A8;\n  text-transform: uppercase;\n  display: inline-block;\n}\n.toggle .option.active[data-v-6d61fa50] {\n  color: #1B1C1D;\n  background: #DFDFDF;\n  border-radius: 50px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #F3F3F3;\n  border-radius: 8px;\n  padding: 36px;\n  padding-right: 68px;\n  height: 57vh;\n  max-height: 57vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 36px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment-wrapper.own[data-v-6d61fa50] {\n  text-align: right;\n}\n.comment-wrapper.own .comment[data-v-6d61fa50] {\n  background: #3B86FF;\n  color: white;\n}\n.comment[data-v-6d61fa50] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n}\n.user[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-6d61fa50] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-6d61fa50] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-6d61fa50] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-6d61fa50] {\n  left: 18px;\n}\n.circle[data-v-6d61fa50] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.circle i[data-v-6d61fa50] {\n  font-size: 20px;\n}\n.circle[data-v-6d61fa50]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.active[data-v-6d61fa50] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.disabled[data-v-6d61fa50]:not(.active) {\n  display: none;\n}\n.circle.disabled[data-v-6d61fa50] {\n  cursor: auto;\n}\n.pill[data-v-6d61fa50] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #DFDFDF;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #A8A8A8;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #A8A8A8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #F3F3F3;\n  color: #A8A8A8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3B86FF;\n}", ""]);
 
 // exports
 
@@ -15599,68 +15606,88 @@ var render = function() {
         _vm._l(_vm.commentsToShow, function(comment) {
           return _c(
             "div",
-            { key: comment.id, staticClass: "comment-wrapper" },
+            {
+              key: comment.id,
+              staticClass: "comment-wrapper",
+              class: [
+                { "own-team": comment.team_id == _vm.currentTeamId },
+                { own: comment.user_id == _vm.authUser.id }
+              ]
+            },
             [
-              _c("div", { staticClass: "comment" }, [
-                comment.important
-                  ? _c(
-                      "span",
-                      {
-                        staticClass: "important bubble",
-                        on: {
-                          mouseover: function($event) {
-                            return _vm.showTooltip($event, "Important")
-                          },
-                          mouseleave: _vm.hideTooltip
-                        }
-                      },
-                      [_c("i", { staticClass: "fas fa-exclamation" })]
-                    )
-                  : _vm._e(),
-                _vm._v(" "),
-                comment.votes.length > 0
-                  ? _c(
-                      "span",
-                      {
-                        staticClass: "votes bubble",
-                        class: { second: comment.important }
-                      },
-                      [_vm._v(_vm._s(comment.votes.length))]
-                    )
-                  : _vm._e(),
-                _vm._v(" "),
-                comment.team_final && !comment.user_final
-                  ? _c("span", { staticClass: "votes pill" }, [
-                      _vm._v("Final comment "),
-                      _c("i", { staticClass: "far fa-comment-check" })
-                    ])
-                  : _vm._e(),
-                _vm._v(" "),
-                _c("span", { staticClass: "body" }, [
-                  _vm._v(_vm._s(comment.comment))
-                ]),
-                _vm._v(" "),
-                _c(
-                  "span",
-                  {
-                    staticClass: "circle",
-                    class: { active: comment.user_final },
-                    on: {
-                      click: function($event) {
-                        return _vm.onMarkAsFinal(comment)
-                      },
-                      mouseover: function($event) {
-                        return _vm.showTooltip(
-                          $event,
-                          "Choose as final comment"
-                        )
-                      },
-                      mouseleave: _vm.hideTooltip
-                    }
-                  },
-                  [_c("i", { staticClass: "far fa-comment-check" })]
-                )
-              ]),
+              _c(
+                "div",
+                { staticClass: "comment" },
+                [
+                  comment.important
+                    ? _c(
+                        "span",
+                        {
+                          staticClass: "important bubble",
+                          on: {
+                            mouseover: function($event) {
+                              return _vm.showTooltip($event, "Important")
+                            },
+                            mouseleave: _vm.hideTooltip
+                          }
+                        },
+                        [_c("i", { staticClass: "fas fa-exclamation" })]
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  comment.votes.length > 0
+                    ? _c(
+                        "span",
+                        {
+                          staticClass: "votes bubble",
+                          class: { second: comment.important }
+                        },
+                        [_vm._v(_vm._s(comment.votes.length))]
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  comment.team_final && !comment.user_final
+                    ? _c("span", { staticClass: "votes pill" }, [
+                        _vm._v("Final comment "),
+                        _c("i", { staticClass: "far fa-comment-check" })
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "body" }, [
+                    _vm._v(_vm._s(comment.comment))
+                  ]),
+                  _vm._v(" "),
+                  _vm.userPermissionLevel >= 2
+                    ? [
+                        _vm.actionScope == "phaseAction" ||
+                        (_vm.actionScope == "teamAction" &&
+                          comment.team_id == _vm.currentTeamId)
+                          ? _c(
+                              "span",
+                              {
+                                staticClass: "circle",
+                                class: { active: comment.user_final },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.onMarkAsFinal(comment)
+                                  },
+                                  mouseover: function($event) {
+                                    return _vm.showTooltip(
+                                      $event,
+                                      "Choose as final comment"
+                                    )
+                                  },
+                                  mouseleave: _vm.hideTooltip
+                                }
+                              },
+                              [_c("i", { staticClass: "far fa-comment-check" })]
+                            )
+                          : _vm._e()
+                      ]
+                    : _vm._e()
+                ],
+                2
+              ),
               _vm._v(" "),
               comment.user != null
                 ? _c("span", { staticClass: "user" }, [
