@@ -66,12 +66,18 @@ export default{
     },
     watch : {
         authUser(newVal) {
-            if (newVal.teams != null)
+            if (newVal.teams != null) {
                 if (newVal.teams.length > 0) {
-                    if (this.authUser.role_id >= 3)
+                    if (this.authUser.role_id >= 3) {
                         this.setCurrentTeam(0)
-                    else this.setCurrentTeam(this.authUser.teams[0].id)
+                    }
+                    else {
+                        console.log(newVal)
+                        this.setCurrentTeam(this.authUser.teams[0].id)
+                        this.setLoadingInit(false)
+                    }
                 }
+            }
         }
     },
     created() {
@@ -91,7 +97,7 @@ export default{
                     this.setCurrentTeam(0)
                 else if (this.authUser.teams.length > 0)
                     this.setCurrentTeam(this.authUser.teams[0].id)
-                this.setLoadingInit(false)
+                // this.setLoadingInit(false)
                 
             } else {
                 this.loadingOverwrite = true

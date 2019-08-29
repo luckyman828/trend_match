@@ -7226,8 +7226,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   watch: {
     authUser: function authUser(newVal) {
-      if (newVal.teams != null) if (newVal.teams.length > 0) {
-        if (this.authUser.role_id >= 3) this.setCurrentTeam(0);else this.setCurrentTeam(this.authUser.teams[0].id);
+      if (newVal.teams != null) {
+        if (newVal.teams.length > 0) {
+          if (this.authUser.role_id >= 3) {
+            this.setCurrentTeam(0);
+          } else {
+            console.log(newVal);
+            this.setCurrentTeam(this.authUser.teams[0].id);
+            this.setLoadingInit(false);
+          }
+        }
       }
     }
   },
@@ -7249,7 +7257,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 console.log(_this.userPermissionLevel);
 
                 if (!_this.authUser) {
-                  _context2.next = 8;
+                  _context2.next = 7;
                   break;
                 }
 
@@ -7257,17 +7265,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 return _this.fetchTeams(_this.currentWorkspaceId), _this.fetchUserTeams(_this.currentWorkspaceId), _this.fetchRoles();
 
               case 4:
-                if (_this.authUser.role_id >= 3) _this.setCurrentTeam(0);else if (_this.authUser.teams.length > 0) _this.setCurrentTeam(_this.authUser.teams[0].id);
+                if (_this.authUser.role_id >= 3) _this.setCurrentTeam(0);else if (_this.authUser.teams.length > 0) _this.setCurrentTeam(_this.authUser.teams[0].id); // this.setLoadingInit(false)
 
-                _this.setLoadingInit(false);
-
-                _context2.next = 9;
+                _context2.next = 8;
                 break;
 
-              case 8:
+              case 7:
                 _this.loadingOverwrite = true;
 
-              case 9:
+              case 8:
               case "end":
                 return _context2.stop();
             }
@@ -9800,7 +9806,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             // Loop through comments users teams
             var pushComment = false; // Check if the comment belongs to one of auth users teams
 
-            if (comment.user.teams.find(function (x) {
+            if (comment.user != null) if (comment.user.teams != null) if (comment.user.teams.find(function (x) {
               return x.id == teamFilterId;
             })) pushComment = true; // Check if the comment is final
 
@@ -34083,15 +34089,14 @@ module.exports = g;
 /*!******************************!*\
   !*** ./resources/js/App.vue ***!
   \******************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _App_vue_vue_type_template_id_f348271a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./App.vue?vue&type=template&id=f348271a& */ "./resources/js/App.vue?vue&type=template&id=f348271a&");
 /* harmony import */ var _App_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./App.vue?vue&type=script&lang=js& */ "./resources/js/App.vue?vue&type=script&lang=js&");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _App_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _App_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _App_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./App.vue?vue&type=style&index=0&lang=scss& */ "./resources/js/App.vue?vue&type=style&index=0&lang=scss&");
+/* empty/unused harmony star reexport *//* harmony import */ var _App_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./App.vue?vue&type=style&index=0&lang=scss& */ "./resources/js/App.vue?vue&type=style&index=0&lang=scss&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -34123,7 +34128,7 @@ component.options.__file = "resources/js/App.vue"
 /*!*******************************************************!*\
   !*** ./resources/js/App.vue?vue&type=script&lang=js& ***!
   \*******************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

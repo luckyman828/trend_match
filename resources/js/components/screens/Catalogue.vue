@@ -149,8 +149,10 @@ export default{
                         let pushComment = false
 
                         // Check if the comment belongs to one of auth users teams
-                        if ( comment.user.teams.find(x => x.id == teamFilterId) )
-                            pushComment = true
+                        if (comment.user != null)
+                            if (comment.user.teams != null)
+                                if ( comment.user.teams.find(x => x.id == teamFilterId) )
+                                    pushComment = true
 
                         // Check if the comment is final
                         if (comment.final || comment.product_final)
