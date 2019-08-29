@@ -8487,6 +8487,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   updated: function updated() {
     this.newComment.team_id = this.currentTeamId;
+    if (this.actionScope == 'phaseAction') this.finalOnly = true;else this.finalOnly = false;
   }
 });
 
@@ -10215,13 +10216,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           user_id: user_id,
           action_code: actionType
         });
-        if (this.actionScope == 'teamAction') this.updateManyTeamProducts({
+        if (this.actionScope == 'teamAction') this.createManyTeamProducts({
           team_id: this.currentTeamId,
           product_ids: productsToCreate,
           phase_id: 1,
           action: actionType
         });
-        if (this.actionScope == 'phaseAction') this.updateManyPhaseProducts({
+        if (this.actionScope == 'phaseAction') this.createManyPhaseProducts({
           product_ids: productsToCreate,
           phase_id: 1,
           action: actionType

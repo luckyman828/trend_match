@@ -614,9 +614,9 @@ export default{
                 if (this.actionScope == 'userAction')
                     this.createManyActions({productIds: productsToCreate, user_id: user_id, action_code: actionType})
                 if (this.actionScope == 'teamAction')
-                    this.updateManyTeamProducts({team_id: this.currentTeamId, product_ids: productsToCreate, phase_id: 1, action: actionType})
+                    this.createManyTeamProducts({team_id: this.currentTeamId, product_ids: productsToCreate, phase_id: 1, action: actionType})
                 if (this.actionScope == 'phaseAction')
-                    this.updateManyPhaseProducts({product_ids: productsToCreate, phase_id: 1, action: actionType})
+                    this.createManyPhaseProducts({product_ids: productsToCreate, phase_id: 1, action: actionType})
             }
 
             // Reset the selection

@@ -167,6 +167,7 @@ class ActionController extends Controller
         $count = 0;
         $starttime = microtime(true);
         $dataToInsert = [];
+        $request;
 
         foreach($request->product_ids as $product_id){
             

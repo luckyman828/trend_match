@@ -165,6 +165,10 @@ export default {
     },
     updated() {
         this.newComment.team_id = this.currentTeamId
+        if (this.actionScope == 'phaseAction')
+            this.finalOnly = true
+        else
+            this.finalOnly = false
     }
 }
 </script>

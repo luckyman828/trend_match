@@ -38,7 +38,6 @@ class CommentController extends Controller
     {
         // Remove final from other comments from the same product
         $comment = Comment::findOrFail($request->id);
-        return $request;
 
         $oldPhaseFinal = ($request->phase_final) ? Comment::where('product_id', $comment->product_id)->where('phase_final', 1)->first() : false;
         $oldTeamFinal = ($request->team_final) ? Comment::where('product_id', $comment->product_id)->where('team_id', $comment->team_id)->where('team_final', 1)->first() : false;
