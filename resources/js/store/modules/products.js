@@ -5,12 +5,16 @@ export default {
     namespaced: true,
 
     state: {
-      loading: true
+      loading: true,
+      currentSingleProductId: -1
     },
 
     getters: {
       loadingProducts: state => {
         return state.loading
+      },
+      currentSingleProductId: state => {
+        return state.currentSingleProductId
       }
     },
   

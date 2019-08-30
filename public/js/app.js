@@ -8479,8 +8479,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 // Reset comment
                 this.newComment.comment = '';
                 this.newComment.important = false;
-                this.newComment["final"] = false;
-                this.newComment.product_final = false;
+                this.newComment.team_final = false;
+                this.newComment.phase_final = false;
 
               case 8:
               case "end":
@@ -8527,7 +8527,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     if (this.actionScope == 'phaseAction') this.finalOnly = true;else this.finalOnly = false;
   },
   updated: function updated() {
-    this.newComment.team_id = this.currentTeamId;
+    if (this.actionScope == 'phaseAction') {
+      this.newComment.team_id = 0;
+    } else {
+      this.newComment.team_id = this.currentTeamId;
+    }
   }
 });
 
@@ -9961,7 +9965,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var key = this.sortBy;
       var sortMethod;
 
-      if (key in ['userAction', 'teamAction', 'phaseAction', 'productFinalAction', 'userAction']) {
+      if (['userAction', 'teamAction', 'phaseAction', 'productFinalAction', 'userAction'].includes(key)) {
         sortMethod = 'action';
       } else if (key == 'focus') {
         sortMethod = 'focus';
@@ -15884,9 +15888,6 @@ var render = function() {
                   !$event.type.indexOf("key") &&
                   _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
                 ) {
-                  return null
-                }
-                if (!$event.ctrlKey) {
                   return null
                 }
                 return _vm.onSubmitComment($event)
@@ -40038,11 +40039,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 /* harmony default export */ __webpack_exports__["default"] = ({
   namespaced: true,
   state: {
-    loading: true
+    loading: true,
+    currentSingleProductId: -1
   },
   getters: {
     loadingProducts: function loadingProducts(state) {
       return state.loading;
+    },
+    currentSingleProductId: function currentSingleProductId(state) {
+      return state.currentSingleProductId;
     }
   },
   actions: {

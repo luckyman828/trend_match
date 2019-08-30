@@ -265,7 +265,7 @@ export default{
         sortMethod () {
             let key = this.sortBy
             let sortMethod
-            if (key in ['userAction', 'teamAction', 'phaseAction', 'productFinalAction', 'userAction'] ) {
+            if (['userAction', 'teamAction', 'phaseAction', 'productFinalAction', 'userAction'].includes(key) ) {
                 sortMethod = 'action'
             }
             else if (key == 'focus') {

@@ -45,7 +45,7 @@
         <form @submit="onSubmitComment">
             <div class="input-wrapper">
                 <i class="far fa-comment"></i>
-                <textarea @keyup.ctrl.enter="onSubmitComment" name="comment" id="comment-input" placeholder="Write a comment.." v-model="newComment.comment" 
+                <textarea @keyup.enter="onSubmitComment" name="comment" id="comment-input" placeholder="Write a comment.." v-model="newComment.comment" 
                 oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
                 <label>
                     <input type="checkbox" v-model="newComment.important" name="comment-important">
@@ -150,8 +150,8 @@ export default {
             // Reset comment
             this.newComment.comment = ''
             this.newComment.important = false
-            this.newComment.final = false
-            this.newComment.product_final = false
+            this.newComment.team_final = false
+            this.newComment.phase_final = false
         },
         onMarkAsFinal(comment) {
             if (this.actionScope == 'phaseAction') {
@@ -188,7 +188,11 @@ export default {
             this.finalOnly = false
     },
     updated() {
-        this.newComment.team_id = this.currentTeamId
+        if (this.actionScope == 'phaseAction') {
+            this.newComment.team_id = 0
+        } else {
+            this.newComment.team_id = this.currentTeamId
+        }
     }
 }
 </script>
