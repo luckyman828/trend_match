@@ -21,11 +21,14 @@ Vue.component('app', require('./App.vue').default);
 import Collection from './components/screens/Collection'
 import Catalogue from './components/screens/Catalogue'
 import Teams from './components/screens/Teams'
+import TeamsLoader from './components/screens/loaders/TeamsLoader'
+import FileLoader from './components/screens/loaders/FileLoader'
+import FolderLoader from './components/screens/loaders/FolderLoader'
 
 const routes = [
-  { path: '/catalogue/:catalogueId', name: 'catalogue', component: Catalogue },
-  { path: '/collection', name: 'collection', component: Collection },
-  { path: '/teams', name: 'teams', component: Teams },
+  { path: '/catalogue/:catalogueId', name: 'catalogue', component: FileLoader },
+  { path: '/collection', name: 'collection', component: FolderLoader },
+  { path: '/teams', name: 'teams', component: TeamsLoader },
   { path: '*', redirect: '/collection'}
 ]
 

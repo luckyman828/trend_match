@@ -88,6 +88,7 @@ export default{
         ...mapGetters('entities/actions', ['loadingActions']),
         ...mapGetters('entities/comments', ['loadingComments']),
         ...mapGetters('entities/collections', ['loadingCollections']),
+        ...mapGetters('entities/teams', ['theTeams']),
         ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope']),
         defaultTeam() {
             if (this.userPermissionLevel >= 3)
