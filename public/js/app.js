@@ -9839,7 +9839,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
         product.phaseAction = product.phaseActions.find(function (x) {
           return x.phase_id == 1;
-        }); // Scope comments to current teamFilter
+        });
+        product.aa = _this.sortBy;
+        product.ab = _typeof(product[_this.sortBy]) == 'object';
+        product.ac = _typeof(product[_this.sortBy]); // Scope comments to current teamFilter
 
         var comments = product.comments;
 
@@ -9954,12 +9957,33 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       return productsToReturn;
     },
+    sortMethod: function sortMethod() {
+      var key = this.sortBy;
+      var sortMethod;
+
+      if (key in ['userAction', 'teamAction', 'phaseAction', 'productFinalAction', 'userAction']) {
+        sortMethod = 'action';
+      } else if (key == 'focus') {
+        sortMethod = 'focus';
+      } else if (key == 'ins') {
+        sortMethod = 'ins';
+      } else {
+        if (_typeof(this.products[0][key]) == 'object') {
+          sortMethod = 'object';
+        } else {
+          sortMethod = 'key';
+        }
+      }
+
+      return sortMethod;
+    },
     productsSorted: function productsSorted() {
       var products = this.productsFiltered;
       var key = this.sortBy;
       var sortAsc = this.sortAsc;
+      var sortMethod = this.sortMethod;
       var dataSorted = products.sort(function (a, b) {
-        if (key == 'userAction' || 'teamAction' || 'phaseAction' || 'productFinalAction' || 'userAction') {
+        if (sortMethod == 'action') {
           if (a[key] != null) {
             if (b[key] != null) {
               // If A and B has a key
@@ -9975,7 +9999,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             // Neither A nor B has a key
             return 0;
           }
-        } else if (key == 'focus') {
+        } else if (sortMethod == 'focus') {
           // First sort by focus
           if (a[key].length != b[key].length) {
             if (sortAsc) return a[key].length > b[key].length ? 1 : -1;else return a[key].length < b[key].length ? 1 : -1; // Then sort by ins
@@ -9984,7 +10008,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           } else {
             if (sortAsc) return a.ins.length > b.ins.length ? 1 : -1;else return a.ins.length < b.ins.length ? 1 : -1;
           }
-        } else if (key == 'ins') {
+        } else if (sortMethod == 'in') {
           // First sort by focus
           var aInLength = a[key].length + a.focus.length;
           var bInLength = b[key].length + b.focus.length;
@@ -9997,16 +10021,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             if (sortAsc) return a.focus.length > b.focus.length ? 1 : -1;else return a.focus.length < b.focus.length ? 1 : -1;
           }
         } else {
-          if (_typeof(products[0][key]) == 'object') {
+          if (sortMethod == 'object') {
             // Sort by key length
             if (a[key].length == b[key].length) {
               return 0;
-            } else if (sortAsc) return a[key].length > b[key].length ? 1 : -1;else return a[key].length < b[key].length ? 1 : -1;
+            } else if (sortAsc) {
+              return a[key].length > b[key].length ? 1 : -1;
+            } else return a[key].length < b[key].length ? 1 : -1;
           } // If the keys aren't objects, finalActions or strings - sort by the key
           else {
               if (a[key] == b[key]) {
                 return 0;
-              } else if (sortAsc) return a[key] > b[key] ? 1 : -1;else return a[key] < b[key] ? 1 : -1;
+              } else if (sortAsc) {
+                return a[key] > b[key] ? 1 : -1;
+              } else return a[key] < b[key] ? 1 : -1;
             }
         }
       });

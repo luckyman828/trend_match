@@ -138,6 +138,9 @@ export default{
                 product.commentsScoped = []
                 product.teamAction = product.teamActions.find(x => x.team_id == this.currentTeamId)
                 product.phaseAction = product.phaseActions.find(x => x.phase_id == 1)
+                product.aa = this.sortBy
+                product.ab = (typeof product[this.sortBy] == 'object')
+                product.ac = typeof product[this.sortBy]
 
                 // Scope comments to current teamFilter
                 const comments = product.comments
@@ -259,13 +262,36 @@ export default{
             
             return productsToReturn
         },
+        sortMethod () {
+            let key = this.sortBy
+            let sortMethod
+            if (key in ['userAction', 'teamAction', 'phaseAction', 'productFinalAction', 'userAction'] ) {
+                sortMethod = 'action'
+            }
+            else if (key == 'focus') {
+                sortMethod = 'focus'
+            }
+            else if (key == 'ins') {
+                sortMethod = 'ins'
+            }
+            else {
+                if ( typeof this.products[0][key] == 'object' ) {
+                    sortMethod = 'object'
+                }
+                else {
+                    sortMethod = 'key'
+                }
+            }
+            return sortMethod
+        },
         productsSorted() {
             const products = this.productsFiltered
             let key = this.sortBy
             let sortAsc = this.sortAsc
+            const sortMethod = this.sortMethod
             const dataSorted = products.sort((a, b) => {
 
-                if (key == 'userAction' || 'teamAction' || 'phaseAction' || 'productFinalAction' || 'userAction') {
+                if (sortMethod == 'action') {
                     if (a[key] != null) {
                         if (b[key] != null) {
                             // If A and B has a key
@@ -289,7 +315,7 @@ export default{
                     }
                 }
 
-                else if (key == 'focus') {
+                else if ( sortMethod == 'focus' ) {
                     // First sort by focus
                     if ( a[key].length != b[key].length ) {
 
@@ -307,7 +333,7 @@ export default{
                     }
                 }
 
-                else if (key == 'ins') {
+                else if ( sortMethod == 'in' ) {
                     // First sort by focus
                     const aInLength = a[key].length + a.focus.length
                     const bInLength = b[key].length + b.focus.length
@@ -330,14 +356,15 @@ export default{
                 
                 else {
 
-                    if ( typeof products[0][key] == 'object' ) {
+                    if ( sortMethod == 'object' ) {
 
                         // Sort by key length
                         if ( a[key].length == b[key].length ) {
                             return 0
-                        } else if (sortAsc)
+                        } else if (sortAsc) {
                             return (a[key].length > b[key].length) ? 1 : -1
-                            else return (a[key].length < b[key].length) ? 1 : -1
+                        }
+                        else return (a[key].length < b[key].length) ? 1 : -1
 
                     }
 
@@ -346,9 +373,10 @@ export default{
 
                         if ( a[key] == b[key] ) {
                             return 0
-                        } else if (sortAsc)
+                        } else if (sortAsc) {
                             return (a[key] > b[key]) ? 1 : -1
-                            else return (a[key] < b[key]) ? 1 : -1
+                        }
+                        else return (a[key] < b[key]) ? 1 : -1
                     }
 
                 }
