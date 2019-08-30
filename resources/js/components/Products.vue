@@ -6,13 +6,25 @@
         <div class="flex-table" :class="{disabled: singleProductToShow.id != null}">
             <div class="header-row flex-table-row">
                 <th class="select dropdown-parent" @click="toggleDropdown($event)" v-if="authUser.role_id >= 2">
-                    <!-- <select-dropdown @onSelectByCondition="selectByCondition"/> -->
-                    <DropdownCheckbox :title="'Select matching:'" :options="['No IN', 'No COMMENT & no OUT']" @submit="selectByCondition">
-                        <!-- <span @click="collapsed = !collapsed">Select <i class="fas fa-chevron-down"></i></span> -->
+                    <!-- <DropdownCheckbox :title="'Select matching:'" :options="['No IN', 'No COMMENT & no OUT']" @submit="selectByCondition">
                         <template v-slot:button="slotProps">
                             <span @click="slotProps.toggle">Select <i class="fas fa-chevron-down"></i></span>
                         </template>
-                    </DropdownCheckbox>
+                    </DropdownCheckbox> -->
+                    <DropdownRadio class="dropdown-parent left" :title="'Select by condition'" :currentOptionId="currentTeamId" :options="[{title: 'No IN', id: 'No IN'}, {title: 'No COMMENT & no OUT', id: 'No COMMENT & no OUT'}]" @submit="selectByCondition">
+                        <template v-slot:button="slotProps">
+                            <span @click="slotProps.toggle">Select <i class="fas fa-chevron-down"></i></span>
+                        </template>
+                    </DropdownRadio>
+                    <!-- <DropdownRadio :options="teams" :currentOptionId="currentTeamId" class="dropdown-parent right">
+                        <template v-slot:button="slotProps">
+                            <div class="dropdown-button" @click="slotProps.toggle">
+                                <img src="/assets/Path5699.svg">
+                                <span>{{slotProps.currentOption.title}}</span>
+                                <i class="far fa-chevron-down"></i>
+                            </div>
+                        </template>
+                    </DropdownRadio> -->
                 </th>
                 <th class="clickable id" :class="{active: this.sortBy == 'datasource_id'}" @click="onSortBy('datasource_id', true)">
                     Id <i class="fas" :class="[(this.sortBy == 'datasource_id' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
@@ -41,6 +53,9 @@
                     <th :class="{active: this.sortBy == actionScope}" class="clickable action" @click="onSortBy(actionScope, false)">
                         {{actionScopeName}} <i class="fas" :class="[(this.sortBy == actionScope && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                     </th>
+                </template>
+                <template v-else>
+                    <th class="action"></th>
                 </template>
 
             </div>
@@ -106,6 +121,7 @@ import ProductSingle from './ProductSingle'
 import Tooltip from './Tooltip'
 import SelectDropdown from './SelectDropdown'
 import DropdownCheckbox from './DropdownCheckbox'
+import DropdownRadio from './DropdownRadio'
 import products from '../store/modules/products';
 
 export default {
@@ -134,6 +150,7 @@ export default {
         Tooltip,
         SelectDropdown,
         DropdownCheckbox,
+        DropdownRadio,
     },
     data: function() { return {
         tooltip: {

@@ -8,7 +8,8 @@
         <div class="dropdown radio-dropdown" :class="{collapsed: collapsed}" ref="dropdown">
             <div class="inner">
                 <div class="header">
-                    <span>{{currentOption.title}}</span>
+                    <span v-if="title">{{title}}</span>
+                    <span v-else>{{currentOption.title}}</span>
                 </div>
                 <div class="body">
                     <div class="radio-buttons">
@@ -29,7 +30,8 @@ export default {
     props: [
         'options',
         'currentOptionId',
-        'defaultOption'
+        'defaultOption',
+        'title'
     ],
     data: function () { return {
         collapsed: true,
