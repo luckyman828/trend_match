@@ -359,6 +359,7 @@ export default {
     }
     .products {
         margin-top: 0;
+        position: relative;
         &.sticky {
             margin-top: 90px;
             .scroll-bg {
@@ -544,31 +545,6 @@ export default {
       width: 0;
     }
 
-    // .checkmark {
-    //   content: "";
-    //   display: inline-block;
-    //   vertical-align: text-top;
-    //   width: 24px;
-    //   height: 24px;
-    //   background: white;
-    //   border: 1px solid #dfdfdf;
-    // }
-
-    // .checkbox input:checked ~ .checkmark {
-    //   background: linear-gradient(#3b86ff, #3b86ff) no-repeat;
-    //   background-position: center;
-    //   background-size: 16px 16px;
-    // }
-
-    // .checkmark::after {
-    //   content: "";
-    //   position: absolute;
-    //   display: none;
-    // }
-
-    // .checkbox input:checked ~ .checkmark:after {
-    //   display: block;
-    // }
     .square {
         background: $light1;
         color: $dark;
@@ -583,27 +559,9 @@ export default {
         }
     }
     .button {
-        // min-width: 86px;
-        // padding: 0;
-        // position: relative;
         &:nth-child(1n+2) {
             margin-left: 20px;
         }
-        // &:not(.view-single) {
-        //     padding-right: 22px;
-        // }
-        // i {
-        //     font-size: 16px;
-        //     position: absolute;
-        //     right: 10px;
-        //     top: 5px;
-        //     margin: 0;
-        // }
-        // &.active {
-        //     i {
-        //         font-weight: 900;
-        //     }
-        // }
     }
     .view-single {
         font-size: 12px;
