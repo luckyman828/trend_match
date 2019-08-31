@@ -138,3 +138,7 @@ Route::middleware('auth:api')->group( function(){
 
 
 });
+
+// Public requests
+// xxxx CLUBHOUSE WEBHOOK xxx
+Route::post('clubhouse', 'ClubhouseController@index');
