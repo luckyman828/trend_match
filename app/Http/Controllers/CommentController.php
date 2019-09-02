@@ -17,8 +17,24 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
+        // Make sure that no multiple comments are made final
+        $oldPhaseFinal = ($request->phase_final == true) ? Comment::where('product_id', $request->product_id)->where('phase_final', true)->first() : false;
+        $oldTeamFinal = ($request->team_final == true) ? Comment::where('product_id', $request->product_id)->where('team_id', $request->team_id)->where('team_final', true)->first() : false;
+
+        if($oldPhaseFinal) {
+            $oldPhaseFinal->phase_final = 0;
+            $oldPhaseFinal->save();
+        }
+        if($oldTeamFinal) {
+            $oldTeamFinal->team_final = 0;
+            $oldTeamFinal->save();
+        }
+
+
+        // Check if the comment already exists. If it does - update it
         $existingComment = Comment::find($request->comment_id);
         $comment = ($existingComment) ? $existingComment : new Comment;
+        
    
         $comment->user_id = $request->input('user_id');
         $comment->product_id = $request->input('product_id');

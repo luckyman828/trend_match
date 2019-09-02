@@ -8413,14 +8413,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       finalOnly: true
     };
   },
-  // watch: {
-  //     product: function (newVal, oldVal) {
-  //         this.newComment.product_id = newVal.id
-  //     },
-  //     authUser: function (newVal, oldVal) {
-  //         this.newComment.user_id = newVal.id
-  //     },
-  // },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['submittingComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']), {
     commentsToShow: function commentsToShow() {
       var _this = this;
@@ -8526,10 +8518,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     if (this.actionScope == 'phaseAction') this.finalOnly = true;else this.finalOnly = false;
   },
   updated: function updated() {
+    // Set comment scope
     if (this.actionScope == 'phaseAction') {
       this.newComment.team_id = 0;
     } else {
       this.newComment.team_id = this.currentTeamId;
+    } // Set comment final per default
+
+
+    if (this.userPermissionLevel >= 3) {
+      this.newComment.phase_final = true;
+    } else if (this.userPermissionLevel >= 2) {
+      this.newComment.team_final = true;
     }
   }
 });
@@ -39686,6 +39686,24 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     addComment: function addComment(state, _ref8) {
       var comment = _ref8.comment;
+      // Remove existing final status if the new comment is set as final
+      if (comment.team_final) _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].update({
+        where: function where(existing_comment) {
+          return existing_comment.product_id === comment.product_id && existing_comment.team_id === comment.team_id && existing_comment.team_final;
+        },
+        data: {
+          team_final: 0
+        }
+      });
+      if (comment.phase_final) _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].update({
+        where: function where(existing_comment) {
+          return existing_comment.product_id === comment.product_id && existing_comment.phase_final;
+        },
+        data: {
+          phase_final: 0
+        }
+      }); // Submit new comment
+
       _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: comment
       });

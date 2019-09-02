@@ -115,6 +115,22 @@ export default {
         state.submitting = bool
       },
       addComment: (state, {comment} ) => {
+        // Remove existing final status if the new comment is set as final
+        if (comment.team_final)
+          Comment.update({
+            where: (existing_comment) => {
+              return (existing_comment.product_id === comment.product_id && existing_comment.team_id === comment.team_id && existing_comment.team_final)
+            },
+            data: {team_final: 0}
+          })
+        if (comment.phase_final)
+          Comment.update({
+            where: (existing_comment) => {
+              return (existing_comment.product_id === comment.product_id && existing_comment.phase_final)
+            },
+            data: {phase_final: 0}
+          })
+        // Submit new comment
         Comment.insert({
           data: comment
         })

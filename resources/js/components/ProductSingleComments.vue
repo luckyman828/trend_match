@@ -92,14 +92,6 @@ export default {
         },
         finalOnly: true,
     }},
-    // watch: {
-    //     product: function (newVal, oldVal) {
-    //         this.newComment.product_id = newVal.id
-    //     },
-    //     authUser: function (newVal, oldVal) {
-    //         this.newComment.user_id = newVal.id
-    //     },
-    // },
     computed: {
         ...mapGetters('entities/comments', ['submittingComment']),
         ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']),
@@ -188,11 +180,19 @@ export default {
             this.finalOnly = false
     },
     updated() {
+        // Set comment scope
         if (this.actionScope == 'phaseAction') {
             this.newComment.team_id = 0
         } else {
             this.newComment.team_id = this.currentTeamId
         }
+        // Set comment final per default
+        if (this.userPermissionLevel >= 3) {
+            this.newComment.phase_final = true
+        } else if (this.userPermissionLevel >= 2) {
+            this.newComment.team_final = true
+        }
+
     }
 }
 </script>
