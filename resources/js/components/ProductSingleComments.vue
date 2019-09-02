@@ -34,11 +34,13 @@
                 <span class="user" v-if="comment.user != null">
                     <span class="team" v-if="comment.team_id > 0">
                         <template v-if="comment.team">
-                            {{comment.team.title}} | 
+                            {{comment.team.title}}
                         </template>
                     </span>
-                    <span class="team" v-else>Global | </span>
-                    {{comment.user.email}}
+                    <span class="team" v-else>Global</span>
+                    <template v-if="userPermissionLevel >= 2">
+                        | {{comment.user.email}}
+                    </template>
                 </span>
             </div>
         </div>

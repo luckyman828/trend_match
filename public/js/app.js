@@ -8383,6 +8383,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -15969,33 +15971,43 @@ var render = function() {
               ),
               _vm._v(" "),
               comment.user != null
-                ? _c("span", { staticClass: "user" }, [
-                    comment.team_id > 0
-                      ? _c(
-                          "span",
-                          { staticClass: "team" },
-                          [
-                            comment.team
-                              ? [
-                                  _vm._v(
-                                    "\n                        " +
-                                      _vm._s(comment.team.title) +
-                                      " | \n                    "
-                                  )
-                                ]
-                              : _vm._e()
-                          ],
-                          2
-                        )
-                      : _c("span", { staticClass: "team" }, [
-                          _vm._v("Global | ")
-                        ]),
-                    _vm._v(
-                      "\n                " +
-                        _vm._s(comment.user.email) +
-                        "\n            "
-                    )
-                  ])
+                ? _c(
+                    "span",
+                    { staticClass: "user" },
+                    [
+                      comment.team_id > 0
+                        ? _c(
+                            "span",
+                            { staticClass: "team" },
+                            [
+                              comment.team
+                                ? [
+                                    _vm._v(
+                                      "\n                        " +
+                                        _vm._s(comment.team.title) +
+                                        "\n                    "
+                                    )
+                                  ]
+                                : _vm._e()
+                            ],
+                            2
+                          )
+                        : _c("span", { staticClass: "team" }, [
+                            _vm._v("Global")
+                          ]),
+                      _vm._v(" "),
+                      _vm.userPermissionLevel >= 2
+                        ? [
+                            _vm._v(
+                              "\n                    | " +
+                                _vm._s(comment.user.email) +
+                                "\n                "
+                            )
+                          ]
+                        : _vm._e()
+                    ],
+                    2
+                  )
                 : _vm._e()
             ]
           )
