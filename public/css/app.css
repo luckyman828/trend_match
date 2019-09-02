@@ -8890,6 +8890,21 @@ textarea {
   background: transparent;
 }
 
+.button.light,
+.button.light-hover:hover {
+  border-color: #F3F3F3;
+  background: #F3F3F3;
+  color: #3C3B54;
+}
+
+.button.light.invisible,
+.button.light.ghost,
+.button.light-hover:hover.invisible,
+.button.light-hover:hover.ghost {
+  color: #F3F3F3;
+  background: transparent;
+}
+
 .button.invisible {
   font-weight: 500;
   background: none;
@@ -8917,8 +8932,8 @@ textarea {
   line-height: 28px;
 }
 
-.active .button.icon-right i,
-.active .button.icon-left i {
+.button.icon-right.active i,
+.button.icon-left.active i {
   font-weight: 900;
 }
 
@@ -8935,7 +8950,7 @@ textarea {
 }
 
 .button.icon-left i {
-  margin-right: 12px;
+  margin-right: 8px;
 }
 
 .button.wide {
@@ -8999,17 +9014,18 @@ textarea {
 
 .modal-wrapper > .modal {
   display: none;
-  position: fixed;
+  position: absolute;
   z-index: 120;
-  left: 50%;
+  left: 50vw;
   top: 5vh;
-  height: 70vh;
+  min-height: 70vh;
   -webkit-transform: translateX(-50%);
           transform: translateX(-50%);
   width: 100%;
   max-width: 646px;
   margin: 0;
   background: #F9F9F9;
+  margin-bottom: 5vh;
 }
 
 .modal-wrapper > .modal > .inner {
@@ -9284,7 +9300,8 @@ textarea {
   background: #43425D;
 }
 
-form > label {
+form > label,
+.form-group > label {
   font-size: 12px;
   font-weight: 500;
   color: #3C3B54;
@@ -9294,7 +9311,8 @@ form > label {
   cursor: pointer;
 }
 
-form > label.team {
+form > label.team,
+.form-group > label.team {
   position: relative;
   background: #F3F3F3;
   margin-bottom: 72px;
@@ -9302,13 +9320,15 @@ form > label.team {
   border-radius: 4px;
 }
 
-form > label.team input {
+form > label.team input,
+.form-group > label.team input {
   background: transparent;
   border: none;
   padding-left: 40px;
 }
 
-form > label.team .square {
+form > label.team .square,
+.form-group > label.team .square {
   position: absolute;
   left: 8px;
   top: 8px;
@@ -9319,12 +9339,18 @@ form > label.team .square {
   text-align: center;
 }
 
-form > label.team .square i {
+form > label.team .square i,
+.form-group > label.team .square i {
   font-size: 10px;
   line-height: 24px;
 }
 
-form input {
+form > label > input,
+label:not(.radiobox) form > label,
+label:not(.checkbox) form > label,
+.form-group > label > input,
+label:not(.radiobox) .form-group > label,
+label:not(.checkbox) .form-group > label {
   display: block;
   width: 100%;
   border: solid 1px #F3F3F3;
@@ -9337,27 +9363,57 @@ form input {
   background: white;
 }
 
-form input::-webkit-input-placeholder {
+form > label > input::-webkit-input-placeholder,
+label:not(.radiobox) form > label::-webkit-input-placeholder,
+label:not(.checkbox) form > label::-webkit-input-placeholder,
+.form-group > label > input::-webkit-input-placeholder,
+label:not(.radiobox) .form-group > label::-webkit-input-placeholder,
+label:not(.checkbox) .form-group > label::-webkit-input-placeholder {
   color: #DFDFDF;
 }
 
-form input::-moz-placeholder {
+form > label > input::-moz-placeholder,
+label:not(.radiobox) form > label::-moz-placeholder,
+label:not(.checkbox) form > label::-moz-placeholder,
+.form-group > label > input::-moz-placeholder,
+label:not(.radiobox) .form-group > label::-moz-placeholder,
+label:not(.checkbox) .form-group > label::-moz-placeholder {
   color: #DFDFDF;
 }
 
-form input:-ms-input-placeholder {
+form > label > input:-ms-input-placeholder,
+label:not(.radiobox) form > label:-ms-input-placeholder,
+label:not(.checkbox) form > label:-ms-input-placeholder,
+.form-group > label > input:-ms-input-placeholder,
+label:not(.radiobox) .form-group > label:-ms-input-placeholder,
+label:not(.checkbox) .form-group > label:-ms-input-placeholder {
   color: #DFDFDF;
 }
 
-form input::-ms-input-placeholder {
+form > label > input::-ms-input-placeholder,
+label:not(.radiobox) form > label::-ms-input-placeholder,
+label:not(.checkbox) form > label::-ms-input-placeholder,
+.form-group > label > input::-ms-input-placeholder,
+label:not(.radiobox) .form-group > label::-ms-input-placeholder,
+label:not(.checkbox) .form-group > label::-ms-input-placeholder {
   color: #DFDFDF;
 }
 
-form input::placeholder {
+form > label > input::placeholder,
+label:not(.radiobox) form > label::placeholder,
+label:not(.checkbox) form > label::placeholder,
+.form-group > label > input::placeholder,
+label:not(.radiobox) .form-group > label::placeholder,
+label:not(.checkbox) .form-group > label::placeholder {
   color: #DFDFDF;
 }
 
-form input[type=submit] {
+form > label > input[type=submit],
+label:not(.radiobox) form > label[type=submit],
+label:not(.checkbox) form > label[type=submit],
+.form-group > label > input[type=submit],
+label:not(.radiobox) .form-group > label[type=submit],
+label:not(.checkbox) .form-group > label[type=submit] {
   margin-top: 24px;
 }
 

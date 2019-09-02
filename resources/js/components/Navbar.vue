@@ -16,7 +16,7 @@
             </div>
             <div class="items-right">
 
-                <template v-if="$route.name == 'teams'">
+                <template v-if="$route.name == 'teams' && userPermissionLevel >= adminPermissionLevel">
                     <span class="button wide primary" @click="$refs.createTeamModal.toggle()">Add team</span>
                 </template>
 
@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import Modal from './Modal'
 import ModalCreateTeam from './ModalCreateTeam'
 import Team from '../store/models/Team'
@@ -42,6 +43,7 @@ export default {
         ModalCreateTeam
     },
     computed: {
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'adminPermissionLevel', 'actionScope', 'actionScopeName']),
         addTeamValid () {
             if (this.teams.length <= 0)
                 return false

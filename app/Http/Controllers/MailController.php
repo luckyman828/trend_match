@@ -58,6 +58,57 @@ class MailController extends Controller
 
         }
     }
+
+    public function inviteUsers(Request $request)
+    {
+        $usersToAdd = [];
+        $usersToInvite = [];
+        
+        foreach ($request->users as $user) {
+            
+            // First check if the invited e-mail already has a user
+            $existingUser = User::where('email', $user['email'])->first();
+            if ($existingUser) {
+                // If the user exists
+                // Check if the user is already a member of the team
+                $alreadyMember = UserTeam::find(['user_id' => $existingUser->id, 'team_id' => $request->team['id']]);
+                if (!$alreadyMember) {
+                    // If the user is not currently a member of the team - add the user to the team
+                    // Construct a new UserTeam model object
+                    $userTeam = [
+                        'user_id' => $existingUser->id,
+                        'team_id' => $request->team['id'],
+                    ];
+                    // Add the user to the array of users to be invited
+                    array_push($usersToAdd, $userTeam);
+                }
+            } else {
+                // If the user does not exist
+
+                // Create an entry in the team_invite table
+                // Check if the email is already invited to this team
+                $alreadyInvited = TeamInvite::find(['email' => $user['email'], 'team_id' => $request->team['id']]);
+                if (!$alreadyInvited) {
+                    // If the user is not already invited, invite the user
+                    $teamInvite = [
+                        'email' => $user['email'],
+                        'team_id' => $request->team['id'],
+                    ];
+                    // Add the invite to the table
+                    array_push($usersToInvite, $teamInvite);
+
+                    // Send an email invite to the user
+                    Mail::to($user['email'])->send(new InviteUser($request));
+                }
+
+            }
+        }
+        UserTeam::insert($usersToAdd);
+        TeamInvite::insert($usersToInvite);
+
+        return 'succes';
+    }
+
     public function resendInvite(Request $request)
     {
         Mail::to($request->user['email'])->send(new InviteUser($request));

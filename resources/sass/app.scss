@@ -216,6 +216,15 @@ input, button, select, optgroup, textarea {
             background: transparent;
         }
     }
+    &.light, &.light-hover:hover {
+        border-color: $light1;
+        background: $light1;
+        color: $dark05;
+        &.invisible, &.ghost {
+            color: $light1;
+            background: transparent;
+        }
+    }
     &.invisible {
         font-weight: 500;
         background: none;
@@ -233,7 +242,9 @@ input, button, select, optgroup, textarea {
         i {
             font-size: 14px;
             line-height: 28px;
-            .active & {
+        }
+        &.active {
+            i {
                 font-weight: 900;
             }
         }
@@ -248,7 +259,7 @@ input, button, select, optgroup, textarea {
     &.icon-left {
         text-align: left;
         i {
-            margin-right: 12px;
+            margin-right: 8px;
         }
     }
     // -- SIZES --
@@ -311,16 +322,17 @@ input, button, select, optgroup, textarea {
 .modal-wrapper {
     > .modal {
         display: none;
-        position: fixed;
+        position: absolute;
         z-index: 120;
-        left: 50%;
+        left: 50vw;
         top: 5vh;
-        height: 70vh;
+        min-height: 70vh;
         transform: translateX(-50%);
         width: 100%;
         max-width: 646px;
         margin: 0;
         background: $light;
+        margin-bottom: 5vh;
         > .inner {
             width: 100%;
             max-width: 400px;
@@ -553,7 +565,7 @@ input, button, select, optgroup, textarea {
 
 // FORMS & INPUT
 
-form {
+form, .form-group {
     > label {
         font-size: 12px;
         font-weight: 500;
@@ -588,23 +600,23 @@ form {
                 }
             }
         }
-    }
-    input {
-        display: block;
-        width: 100%;
-        border: solid 1px $light1;
-        border-radius: 4px;
-        height: 40px;
-        box-sizing: border-box;
-        padding: 0 12px;
-        line-height: 40px;
-        font-size: 14px;
-        background: white;
-        &::placeholder {
-            color: $light2;
-        }
-        &[type=submit] {
-            margin-top: 24px;
+        > input, label:not(.radiobox) & , label:not(.checkbox) & {
+            display: block;
+            width: 100%;
+            border: solid 1px $light1;
+            border-radius: 4px;
+            height: 40px;
+            box-sizing: border-box;
+            padding: 0 12px;
+            line-height: 40px;
+            font-size: 14px;
+            background: white;
+            &::placeholder {
+                color: $light2;
+            }
+            &[type=submit] {
+                margin-top: 24px;
+            }
         }
     }
 }

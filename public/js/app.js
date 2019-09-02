@@ -7731,6 +7731,64 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Input/CheckboxButtons.vue?vue&type=script&lang=js&":
+/*!********************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Input/CheckboxButtons.vue?vue&type=script&lang=js& ***!
+  \********************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'checkboxButtons',
+  props: ['options', 'optionNameKey', 'optionValueKey'],
+  data: function data() {
+    return {
+      selected: [],
+      collapsed: true
+    };
+  },
+  computed: {},
+  methods: {
+    submit: function submit() {
+      this.$emit('input', this.selected);
+      this.$emit('submit', this.selected);
+    },
+    change: function change() {
+      this.$emit('change', this.selected);
+    },
+    clear: function clear() {
+      this.selected = [];
+      document.querySelectorAll('input[type=checkbox]').forEach(function (input) {
+        input.checked = false;
+      });
+    }
+  },
+  updated: function updated() {},
+  destroyed: function destroyed() {}
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Loader.vue?vue&type=script&lang=js&":
 /*!*****************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Loader.vue?vue&type=script&lang=js& ***!
@@ -7883,7 +7941,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Dropdown */ "./resources/js/components/Dropdown.vue");
 /* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./RadioButtons */ "./resources/js/components/RadioButtons.vue");
-/* harmony import */ var _Modal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Modal */ "./resources/js/components/Modal.vue");
+/* harmony import */ var _Input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Input/CheckboxButtons */ "./resources/js/components/Input/CheckboxButtons.vue");
+/* harmony import */ var _Modal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Modal */ "./resources/js/components/Modal.vue");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -7935,6 +7994,50 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -7945,21 +8048,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   components: {
     Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_1__["default"],
     RadioButtons: _RadioButtons__WEBPACK_IMPORTED_MODULE_2__["default"],
-    Modal: _Modal__WEBPACK_IMPORTED_MODULE_3__["default"]
+    Modal: _Modal__WEBPACK_IMPORTED_MODULE_4__["default"],
+    CheckboxButtons: _Input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_3__["default"]
   },
   data: function data() {
     return {
-      newUser: {
+      newUsers: [{
         email: '',
         name: ''
-      },
+      }],
       selectedTeamId: null,
-      showTeamDropdown: false
+      selectedUserIds: []
     };
   },
   computed: {
     submitDisabled: function submitDisabled() {
-      if (this.newUser.email.length > 7) return false;else return true;
+      if (this.newUsers[0].email.length > 7) return false;else return true;
     },
     selectedTeam: function selectedTeam() {
       var _this = this;
@@ -7967,6 +8071,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return this.teams.find(function (x) {
         return x.id == _this.selectedTeamId;
       });
+    },
+    multipleUsers: function multipleUsers() {
+      if (this.selectedUserIds.length > 0) return true;else return false;
     }
   },
   watch: {
@@ -7974,7 +8081,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (newTeam) this.selectedTeamId = newTeam.id;
     }
   },
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/userTeams', ['inviteUserToTeam']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/userTeams', ['inviteUsersToTeam']), {
     toggle: function toggle() {
       this.$refs.modal.toggle();
     },
@@ -7983,12 +8090,45 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     submitInvite: function submitInvite(e) {
       e.preventDefault();
-      this.inviteUserToTeam({
-        user: this.newUser,
+      this.inviteUsersToTeam({
+        users: this.newUsers,
         team: this.selectedTeam,
         authUser: this.authUser
       });
       this.close();
+    },
+    setNewUsers: function setNewUsers(users) {
+      var _this2 = this;
+
+      var count = 0;
+      users.forEach(function (user) {
+        // Edit the first new user to have the email of the first added user
+        if (count == 0) {
+          _this2.newUsers[0].email = user;
+        } else {
+          _this2.newUsers.push({
+            email: user,
+            name: ''
+          });
+        }
+
+        count++;
+      });
+    },
+    deleteUser: function deleteUser(index) {
+      // Make sure we don't delete the last user
+      if (this.newUsers.length <= 1) {
+        this.newUsers[0].email = '';
+        this.newUsers[0].name = '';
+      } else {
+        this.newUsers.splice(index, 1);
+      }
+    },
+    addUser: function addUser() {
+      this.newUsers.push({
+        email: '',
+        name: ''
+      });
     }
   })
 });
@@ -8004,9 +8144,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Modal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Modal */ "./resources/js/components/Modal.vue");
-/* harmony import */ var _ModalCreateTeam__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ModalCreateTeam */ "./resources/js/components/ModalCreateTeam.vue");
-/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../store/models/Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Modal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Modal */ "./resources/js/components/Modal.vue");
+/* harmony import */ var _ModalCreateTeam__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ModalCreateTeam */ "./resources/js/components/ModalCreateTeam.vue");
+/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../store/models/Team */ "./resources/js/store/models/Team.js");
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -8036,6 +8181,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 
 
 
@@ -8047,10 +8193,10 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   components: {
-    Modal: _Modal__WEBPACK_IMPORTED_MODULE_0__["default"],
-    ModalCreateTeam: _ModalCreateTeam__WEBPACK_IMPORTED_MODULE_1__["default"]
+    Modal: _Modal__WEBPACK_IMPORTED_MODULE_1__["default"],
+    ModalCreateTeam: _ModalCreateTeam__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
-  computed: {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'adminPermissionLevel', 'actionScope', 'actionScopeName']), {
     addTeamValid: function addTeamValid() {
       var _this = this;
 
@@ -8060,9 +8206,9 @@ __webpack_require__.r(__webpack_exports__);
       return true;
     },
     teams: function teams() {
-      return _store_models_Team__WEBPACK_IMPORTED_MODULE_2__["default"].all();
+      return _store_models_Team__WEBPACK_IMPORTED_MODULE_3__["default"].all();
     }
-  },
+  }),
   methods: {
     consoleLog: function consoleLog(msg) {
       console.log(msg);
@@ -8994,9 +9140,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'radioButtons',
-  props: ['options', 'currentOptionId'],
+  props: ['options', 'optionNameKey', 'optionValueKey', 'currentOptionId'],
   data: function data() {
     return {
       selection: null
@@ -9009,11 +9160,10 @@ __webpack_require__.r(__webpack_exports__);
   },
   updated: function updated() {
     // Preset the selection
-    console.log('Updated. Selection: ' + !this.selection);
-    if (!this.selection) document.querySelector('#radio-option-' + this.currentOptionId).checked = true;
+    if (!this.selection) if (this.currentOptionId) document.querySelector('#radio-option-' + this.currentOptionId).checked = true;
   },
   mounted: function mounted() {
-    document.querySelector('#radio-option-' + this.currentOptionId).checked = true;
+    if (this.currentOptionId) document.querySelector('#radio-option-' + this.currentOptionId).checked = true;
   }
 });
 
@@ -10979,6 +11129,25 @@ exports.push([module.i, "", ""]);
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Input/CheckboxButtons.vue?vue&type=style&index=0&id=108e2bfe&scoped=true&lang=scss&":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Input/CheckboxButtons.vue?vue&type=style&index=0&id=108e2bfe&scoped=true&lang=scss& ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".header[data-v-108e2bfe] {\n  text-align: center;\n}\n.bubble[data-v-108e2bfe] {\n  position: absolute;\n  left: -10px;\n  top: -10px;\n  width: 20px;\n  height: 20px;\n  line-height: 20px;\n  background: #F3F3F3;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  text-align: center;\n  border-radius: 10px;\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Loader.vue?vue&type=style&index=0&id=e79ec684&lang=scss&scoped=true&":
 /*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Loader.vue?vue&type=style&index=0&id=e79ec684&lang=scss&scoped=true& ***!
@@ -11029,7 +11198,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "label.team[data-v-95e58d5a] {\n  position: relative;\n}\nlabel.team .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 8px;\n  top: 8px;\n  background: #3B86FF;\n  color: white;\n  height: 24px;\n  width: 24px;\n  text-align: center;\n}\nlabel.team .square i[data-v-95e58d5a] {\n  font-size: 10px;\n  line-height: 24px;\n}\n.open-dropdown[data-v-95e58d5a] {\n  position: absolute;\n  right: 8px;\n  top: 50%;\n  -webkit-transform: translateY(-50%);\n          transform: translateY(-50%);\n  font-weight: 500;\n  color: #A8A8A8;\n}\n.open-dropdown.active[data-v-95e58d5a] {\n  color: #1B1C1D;\n}\n.open-dropdown[data-v-95e58d5a]:hover {\n  color: #535353;\n}\n.open-dropdown i[data-v-95e58d5a] {\n  margin-left: 8px;\n}", ""]);
+exports.push([module.i, "label.team[data-v-95e58d5a] {\n  position: relative;\n}\nlabel.team .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 8px;\n  top: 8px;\n  background: #3B86FF;\n  color: white;\n  height: 24px;\n  width: 24px;\n  text-align: center;\n}\nlabel.team .square i[data-v-95e58d5a] {\n  font-size: 10px;\n  line-height: 24px;\n}\n.open-dropdown[data-v-95e58d5a] {\n  position: absolute;\n  right: 8px;\n  bottom: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n}\n.open-dropdown.active[data-v-95e58d5a] {\n  color: #1B1C1D;\n}\n.open-dropdown[data-v-95e58d5a]:hover {\n  color: #535353;\n}\n.open-dropdown i[data-v-95e58d5a] {\n  margin-left: 8px;\n}\nh4[data-v-95e58d5a] {\n  font-size: 16px;\n  color: #A8A8A8;\n  margin: 0;\n  font-weight: 500;\n  margin-bottom: 16px;\n}\nlabel.team[data-v-95e58d5a] {\n  margin-bottom: calc(24px + 1em);\n}\n.user[data-v-95e58d5a] {\n  margin-bottom: calc(32px + 2em - 2px);\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.user[data-v-95e58d5a]:last-child {\n  margin-bottom: calc(20px + 2em - 2px);\n}\n.user .flex-wrapper[data-v-95e58d5a] {\n  opacity: 0;\n}\n.user.card[data-v-95e58d5a] {\n  margin-top: -14px;\n  margin-left: -1em;\n  margin-right: -1em;\n  width: calc(100% + 2em);\n  margin-bottom: 32px;\n}\n.user.card .flex-wrapper[data-v-95e58d5a] {\n  opacity: 1;\n}\n.user.card[data-v-95e58d5a]:last-child {\n  margin-bottom: 20px;\n}\nform[data-v-95e58d5a] {\n  margin-bottom: 60px;\n}\n.flex-wrapper[data-v-95e58d5a] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.add-more[data-v-95e58d5a] {\n  margin-bottom: 24px;\n}", ""]);
 
 // exports
 
@@ -12790,6 +12959,36 @@ options.transform = transform
 options.insertInto = undefined;
 
 var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Input/CheckboxButtons.vue?vue&type=style&index=0&id=108e2bfe&scoped=true&lang=scss&":
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Input/CheckboxButtons.vue?vue&type=style&index=0&id=108e2bfe&scoped=true&lang=scss& ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/src??ref--7-2!../../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../../node_modules/vue-loader/lib??vue-loader-options!./CheckboxButtons.vue?vue&type=style&index=0&id=108e2bfe&scoped=true&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Input/CheckboxButtons.vue?vue&type=style&index=0&id=108e2bfe&scoped=true&lang=scss&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -14751,6 +14950,150 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Input/CheckboxButtons.vue?vue&type=template&id=108e2bfe&scoped=true&":
+/*!************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Input/CheckboxButtons.vue?vue&type=template&id=108e2bfe&scoped=true& ***!
+  \************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "checkbox-buttons" },
+    _vm._l(_vm.options, function(option, index) {
+      return _c(
+        "label",
+        {
+          key: index,
+          staticClass: "checkbox",
+          class: {
+            active: _vm.selected.find(function(x) {
+              return x == option
+            })
+          }
+        },
+        [
+          _vm.optionValueKey
+            ? _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.selected,
+                    expression: "selected"
+                  }
+                ],
+                attrs: { type: "checkbox" },
+                domProps: {
+                  value: option[_vm.optionValueKey],
+                  checked: Array.isArray(_vm.selected)
+                    ? _vm._i(_vm.selected, option[_vm.optionValueKey]) > -1
+                    : _vm.selected
+                },
+                on: {
+                  change: [
+                    function($event) {
+                      var $$a = _vm.selected,
+                        $$el = $event.target,
+                        $$c = $$el.checked ? true : false
+                      if (Array.isArray($$a)) {
+                        var $$v = option[_vm.optionValueKey],
+                          $$i = _vm._i($$a, $$v)
+                        if ($$el.checked) {
+                          $$i < 0 && (_vm.selected = $$a.concat([$$v]))
+                        } else {
+                          $$i > -1 &&
+                            (_vm.selected = $$a
+                              .slice(0, $$i)
+                              .concat($$a.slice($$i + 1)))
+                        }
+                      } else {
+                        _vm.selected = $$c
+                      }
+                    },
+                    function($event) {
+                      return _vm.change()
+                    }
+                  ]
+                }
+              })
+            : _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.selected,
+                    expression: "selected"
+                  }
+                ],
+                attrs: { type: "checkbox" },
+                domProps: {
+                  value: option,
+                  checked: Array.isArray(_vm.selected)
+                    ? _vm._i(_vm.selected, option) > -1
+                    : _vm.selected
+                },
+                on: {
+                  change: [
+                    function($event) {
+                      var $$a = _vm.selected,
+                        $$el = $event.target,
+                        $$c = $$el.checked ? true : false
+                      if (Array.isArray($$a)) {
+                        var $$v = option,
+                          $$i = _vm._i($$a, $$v)
+                        if ($$el.checked) {
+                          $$i < 0 && (_vm.selected = $$a.concat([$$v]))
+                        } else {
+                          $$i > -1 &&
+                            (_vm.selected = $$a
+                              .slice(0, $$i)
+                              .concat($$a.slice($$i + 1)))
+                        }
+                      } else {
+                        _vm.selected = $$c
+                      }
+                    },
+                    function($event) {
+                      return _vm.change()
+                    }
+                  ]
+                }
+              }),
+          _vm._v(" "),
+          _c("span", { staticClass: "checkmark" }),
+          _vm._v(" "),
+          _vm.optionNameKey
+            ? [
+                _vm._v(
+                  "\n            " +
+                    _vm._s(option[_vm.optionNameKey]) +
+                    "\n        "
+                )
+              ]
+            : [_vm._v("\n            " + _vm._s(option) + "\n        ")]
+        ],
+        2
+      )
+    }),
+    0
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Loader.vue?vue&type=template&id=e79ec684&scoped=true&":
 /*!*********************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Loader.vue?vue&type=template&id=e79ec684&scoped=true& ***!
@@ -15074,6 +15417,8 @@ var render = function() {
                                       ref: "teamRadio",
                                       attrs: {
                                         options: _vm.teams,
+                                        optionNameKey: "title",
+                                        optionValueKey: "id",
                                         currentOptionId: _vm.selectedTeamId
                                       },
                                       model: {
@@ -15128,72 +15473,289 @@ var render = function() {
                       1
                     ),
                     _vm._v(" "),
-                    _c("label", [
-                      _vm._v("\n                Email\n                "),
-                      _c("input", {
-                        directives: [
+                    _c(
+                      "div",
+                      { staticClass: "users" },
+                      _vm._l(_vm.newUsers, function(user, index) {
+                        return _c(
+                          "div",
                           {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.newUser.email,
-                            expression: "newUser.email"
-                          }
-                        ],
-                        attrs: {
-                          type: "email",
-                          name: "email",
-                          id: "invite-email",
-                          placeholder: "example@mail.com"
-                        },
-                        domProps: { value: _vm.newUser.email },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(_vm.newUser, "email", $event.target.value)
-                          }
-                        }
-                      })
-                    ]),
+                            key: index,
+                            staticClass: "form-group user",
+                            class: [
+                              index != 0 || user.email.length >= 3 ? "card" : ""
+                            ]
+                          },
+                          [
+                            _c("div", { staticClass: "flex-wrapper header" }, [
+                              _c("h4", [_vm._v("User " + _vm._s(index + 1))]),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticClass:
+                                    "button icon-left light dark-hover",
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.deleteUser(index)
+                                    }
+                                  }
+                                },
+                                [
+                                  _c("i", { staticClass: "far fa-trash" }),
+                                  _vm._v("Delete")
+                                ]
+                              )
+                            ]),
+                            _vm._v(" "),
+                            _c(
+                              "label",
+                              { staticClass: "dropdown-parent" },
+                              [
+                                _vm._v(
+                                  "\n                        Email\n                        "
+                                ),
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.newUsers[index].email,
+                                      expression: "newUsers[index].email"
+                                    }
+                                  ],
+                                  attrs: {
+                                    type: "email",
+                                    name: "email",
+                                    id: "invite-email-" + index,
+                                    placeholder: "example@mail.com"
+                                  },
+                                  domProps: {
+                                    value: _vm.newUsers[index].email
+                                  },
+                                  on: {
+                                    input: function($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.$set(
+                                        _vm.newUsers[index],
+                                        "email",
+                                        $event.target.value
+                                      )
+                                    }
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _c("Dropdown", {
+                                  staticClass: "right dark",
+                                  scopedSlots: _vm._u(
+                                    [
+                                      {
+                                        key: "button",
+                                        fn: function(slotProps) {
+                                          return [
+                                            _c(
+                                              "span",
+                                              {
+                                                staticClass: "open-dropdown",
+                                                class: {
+                                                  active: !slotProps.collapsed
+                                                },
+                                                on: { click: slotProps.toggle }
+                                              },
+                                              [
+                                                _vm._v(
+                                                  "\n                                    or Choose from Users\n                                    "
+                                                ),
+                                                _c("i", {
+                                                  staticClass:
+                                                    "far fa-chevron-down"
+                                                })
+                                              ]
+                                            )
+                                          ]
+                                        }
+                                      },
+                                      {
+                                        key: "header",
+                                        fn: function(slotProps) {
+                                          return [
+                                            _c("span", [
+                                              _vm._v(
+                                                _vm._s(_vm.users.length) +
+                                                  " users"
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c(
+                                              "span",
+                                              {
+                                                staticClass: "close",
+                                                on: { click: slotProps.toggle }
+                                              },
+                                              [
+                                                _c("i", {
+                                                  staticClass: "fal fa-times"
+                                                })
+                                              ]
+                                            )
+                                          ]
+                                        }
+                                      },
+                                      {
+                                        key: "body",
+                                        fn: function() {
+                                          return [
+                                            _c("RadioButtons", {
+                                              ref: "userSelect",
+                                              refInFor: true,
+                                              attrs: {
+                                                options: _vm.users,
+                                                optionNameKey: "email",
+                                                optionValueKey: "email"
+                                              },
+                                              model: {
+                                                value:
+                                                  _vm.newUsers[index].email,
+                                                callback: function($$v) {
+                                                  _vm.$set(
+                                                    _vm.newUsers[index],
+                                                    "email",
+                                                    $$v
+                                                  )
+                                                },
+                                                expression:
+                                                  "newUsers[index].email"
+                                              }
+                                            })
+                                          ]
+                                        },
+                                        proxy: true
+                                      },
+                                      {
+                                        key: "footer",
+                                        fn: function(slotProps) {
+                                          return [
+                                            _c(
+                                              "div",
+                                              { staticClass: "grid-2" },
+                                              [
+                                                _c(
+                                                  "span",
+                                                  {
+                                                    staticClass: "button green",
+                                                    on: {
+                                                      click: function($event) {
+                                                        _vm.$refs.userSelect[
+                                                          index
+                                                        ].submit()
+                                                        slotProps.toggle()
+                                                      }
+                                                    }
+                                                  },
+                                                  [_vm._v("Save")]
+                                                ),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "span",
+                                                  {
+                                                    staticClass:
+                                                      "button invisible",
+                                                    on: {
+                                                      click: slotProps.toggle
+                                                    }
+                                                  },
+                                                  [_vm._v("Cancel")]
+                                                )
+                                              ]
+                                            )
+                                          ]
+                                        }
+                                      }
+                                    ],
+                                    null,
+                                    true
+                                  )
+                                })
+                              ],
+                              1
+                            ),
+                            _vm._v(" "),
+                            _c("label", [
+                              _vm._v(
+                                "\n                        Name (optional)\n                        "
+                              ),
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.newUsers[index].name,
+                                    expression: "newUsers[index].name"
+                                  }
+                                ],
+                                attrs: {
+                                  type: "text",
+                                  name: "name",
+                                  id: "invite-name",
+                                  placeholder: "Optional"
+                                },
+                                domProps: { value: _vm.newUsers[index].name },
+                                on: {
+                                  input: function($event) {
+                                    if ($event.target.composing) {
+                                      return
+                                    }
+                                    _vm.$set(
+                                      _vm.newUsers[index],
+                                      "name",
+                                      $event.target.value
+                                    )
+                                  }
+                                }
+                              })
+                            ])
+                          ]
+                        )
+                      }),
+                      0
+                    ),
                     _vm._v(" "),
-                    _c("label", [
-                      _vm._v(
-                        "\n                Name (optional)\n                "
-                      ),
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.newUser.name,
-                            expression: "newUser.name"
-                          }
-                        ],
-                        attrs: {
-                          type: "text",
-                          name: "name",
-                          id: "invite-name",
-                          placeholder: "Optional"
+                    _c("div", { staticClass: "add-more" }, [
+                      _c(
+                        "span",
+                        {
+                          staticClass: "button light icon-left dark-hover",
+                          on: { click: _vm.addUser }
                         },
-                        domProps: { value: _vm.newUser.name },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(_vm.newUser, "name", $event.target.value)
-                          }
-                        }
-                      })
+                        [
+                          _c("i", { staticClass: "far fa-user-plus" }),
+                          _vm._v("Add another")
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticClass: "button light icon-left dark-hover",
+                          on: { click: _vm.addUser }
+                        },
+                        [
+                          _c("i", { staticClass: "far fa-users" }),
+                          _vm._v("Add many")
+                        ]
+                      )
                     ]),
                     _vm._v(" "),
                     _c("input", {
                       staticClass: "button dark xl",
-                      attrs: {
-                        type: "submit",
-                        value: "Add email",
-                        disabled: _vm.submitDisabled
+                      attrs: { type: "submit", disabled: _vm.submitDisabled },
+                      domProps: {
+                        value:
+                          _vm.newUsers.length > 1
+                            ? "Send " + _vm.newUsers.length + " invites"
+                            : "Send invite"
                       }
                     })
                   ])
@@ -15258,7 +15820,8 @@ var render = function() {
           "div",
           { staticClass: "items-right" },
           [
-            _vm.$route.name == "teams"
+            _vm.$route.name == "teams" &&
+            _vm.userPermissionLevel >= _vm.adminPermissionLevel
               ? [
                   _c(
                     "span",
@@ -17065,35 +17628,49 @@ var render = function() {
     "div",
     { staticClass: "radio-buttons" },
     _vm._l(_vm.options, function(option, index) {
-      return _c("label", { key: index, staticClass: "radiobox" }, [
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.selection,
-              expression: "selection"
+      return _c(
+        "label",
+        { key: index, staticClass: "radiobox" },
+        [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.selection,
+                expression: "selection"
+              }
+            ],
+            attrs: {
+              type: "radio",
+              name: "radio-option",
+              id: "radio-option-" + option.id
+            },
+            domProps: {
+              value: option[_vm.optionValueKey],
+              checked: _vm._q(_vm.selection, option[_vm.optionValueKey])
+            },
+            on: {
+              change: function($event) {
+                _vm.selection = option[_vm.optionValueKey]
+              }
             }
-          ],
-          attrs: {
-            type: "radio",
-            name: "radio-option",
-            id: "radio-option-" + option.id
-          },
-          domProps: {
-            value: option.id,
-            checked: _vm._q(_vm.selection, option.id)
-          },
-          on: {
-            change: function($event) {
-              _vm.selection = option.id
-            }
-          }
-        }),
-        _vm._v(" "),
-        _c("span", { staticClass: "radiomark" }),
-        _vm._v("\n        " + _vm._s(option.title) + "\n    ")
-      ])
+          }),
+          _vm._v(" "),
+          _c("span", { staticClass: "radiomark" }),
+          _vm._v(" "),
+          _vm.optionNameKey
+            ? [
+                _vm._v(
+                  "\n            " +
+                    _vm._s(option[_vm.optionNameKey]) +
+                    "\n        "
+                )
+              ]
+            : [_vm._v("\n            " + _vm._s(option) + "\n        ")]
+        ],
+        2
+      )
     }),
     0
   )
@@ -35136,6 +35713,93 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/Input/CheckboxButtons.vue":
+/*!***********************************************************!*\
+  !*** ./resources/js/components/Input/CheckboxButtons.vue ***!
+  \***********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _CheckboxButtons_vue_vue_type_template_id_108e2bfe_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CheckboxButtons.vue?vue&type=template&id=108e2bfe&scoped=true& */ "./resources/js/components/Input/CheckboxButtons.vue?vue&type=template&id=108e2bfe&scoped=true&");
+/* harmony import */ var _CheckboxButtons_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CheckboxButtons.vue?vue&type=script&lang=js& */ "./resources/js/components/Input/CheckboxButtons.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _CheckboxButtons_vue_vue_type_style_index_0_id_108e2bfe_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CheckboxButtons.vue?vue&type=style&index=0&id=108e2bfe&scoped=true&lang=scss& */ "./resources/js/components/Input/CheckboxButtons.vue?vue&type=style&index=0&id=108e2bfe&scoped=true&lang=scss&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _CheckboxButtons_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _CheckboxButtons_vue_vue_type_template_id_108e2bfe_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _CheckboxButtons_vue_vue_type_template_id_108e2bfe_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "108e2bfe",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/Input/CheckboxButtons.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/Input/CheckboxButtons.vue?vue&type=script&lang=js&":
+/*!************************************************************************************!*\
+  !*** ./resources/js/components/Input/CheckboxButtons.vue?vue&type=script&lang=js& ***!
+  \************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./CheckboxButtons.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Input/CheckboxButtons.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/Input/CheckboxButtons.vue?vue&type=style&index=0&id=108e2bfe&scoped=true&lang=scss&":
+/*!*********************************************************************************************************************!*\
+  !*** ./resources/js/components/Input/CheckboxButtons.vue?vue&type=style&index=0&id=108e2bfe&scoped=true&lang=scss& ***!
+  \*********************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_style_index_0_id_108e2bfe_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader!../../../../node_modules/css-loader!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/src??ref--7-2!../../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../../node_modules/vue-loader/lib??vue-loader-options!./CheckboxButtons.vue?vue&type=style&index=0&id=108e2bfe&scoped=true&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Input/CheckboxButtons.vue?vue&type=style&index=0&id=108e2bfe&scoped=true&lang=scss&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_style_index_0_id_108e2bfe_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_style_index_0_id_108e2bfe_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_style_index_0_id_108e2bfe_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_style_index_0_id_108e2bfe_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_style_index_0_id_108e2bfe_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/Input/CheckboxButtons.vue?vue&type=template&id=108e2bfe&scoped=true&":
+/*!******************************************************************************************************!*\
+  !*** ./resources/js/components/Input/CheckboxButtons.vue?vue&type=template&id=108e2bfe&scoped=true& ***!
+  \******************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_template_id_108e2bfe_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./CheckboxButtons.vue?vue&type=template&id=108e2bfe&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Input/CheckboxButtons.vue?vue&type=template&id=108e2bfe&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_template_id_108e2bfe_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_template_id_108e2bfe_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/Loader.vue":
 /*!********************************************!*\
   !*** ./resources/js/components/Loader.vue ***!
@@ -41805,30 +42469,45 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       return inviteUserToTeam;
     }(),
-    removeUserFromTeam: function () {
-      var _removeUserFromTeam = _asyncToGenerator(
+    inviteUsersToTeam: function () {
+      var _inviteUsersToTeam = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref4, _ref5) {
-        var commit, user_id, team_id;
+        var commit, users, team, authUser;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 commit = _ref4.commit;
-                user_id = _ref5.user_id, team_id = _ref5.team_id;
-                // If the user does not exist - add a record to the team_invites store
-                commit('removeUser', {
-                  user_id: user_id,
-                  team_id: team_id
+                users = _ref5.users, team = _ref5.team, authUser = _ref5.authUser;
+                // Handle the invite in Vuex
+                // Check if the user already exists
+                users.forEach(function (user) {
+                  var existingUser = _models_User__WEBPACK_IMPORTED_MODULE_3__["default"].query().where('email', user.email).first();
+
+                  if (existingUser != null) {
+                    // If the user exists - add them to the team (does not matter if they are already a member of the team)
+                    commit('addUserToTeam', {
+                      user: existingUser,
+                      team: team
+                    });
+                  } else {
+                    // If the user does not exist - add a record to the team_invites store
+                    commit('entities/teamInvites/addTeamInvite', {
+                      email: user.email,
+                      team_id: team.id
+                    }, {
+                      root: true
+                    });
+                  }
                 }); // Handle the invite in the DB via API
 
                 console.log('Sending request to /api/invite-user');
                 _context3.next = 6;
-                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/user-team", {
-                  data: {
-                    user_id: user_id,
-                    team_id: team_id
-                  }
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/invite-users", {
+                  users: users,
+                  team: team,
+                  sender: authUser
                 }).then(function (response) {
                   console.log(response.data);
                 })["catch"](function (err) {
@@ -41843,7 +42522,51 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee3);
       }));
 
-      function removeUserFromTeam(_x4, _x5) {
+      function inviteUsersToTeam(_x4, _x5) {
+        return _inviteUsersToTeam.apply(this, arguments);
+      }
+
+      return inviteUsersToTeam;
+    }(),
+    removeUserFromTeam: function () {
+      var _removeUserFromTeam = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref6, _ref7) {
+        var commit, user_id, team_id;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                commit = _ref6.commit;
+                user_id = _ref7.user_id, team_id = _ref7.team_id;
+                // If the user does not exist - add a record to the team_invites store
+                commit('removeUser', {
+                  user_id: user_id,
+                  team_id: team_id
+                }); // Handle the invite in the DB via API
+
+                console.log('Sending request to /api/invite-user');
+                _context4.next = 6;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/user-team", {
+                  data: {
+                    user_id: user_id,
+                    team_id: team_id
+                  }
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 6:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }));
+
+      function removeUserFromTeam(_x6, _x7) {
         return _removeUserFromTeam.apply(this, arguments);
       }
 
@@ -41855,9 +42578,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     setLoading: function setLoading(state, bool) {
       state.loading = bool;
     },
-    addUserToTeam: function addUserToTeam(state, _ref6) {
-      var user = _ref6.user,
-          team = _ref6.team;
+    addUserToTeam: function addUserToTeam(state, _ref8) {
+      var user = _ref8.user,
+          team = _ref8.team;
       _models_UserTeam__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: {
           user_id: user.id,
@@ -41865,9 +42588,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }
       });
     },
-    removeUser: function removeUser(state, _ref7) {
-      var user_id = _ref7.user_id,
-          team_id = _ref7.team_id;
+    removeUser: function removeUser(state, _ref9) {
+      var user_id = _ref9.user_id,
+          team_id = _ref9.team_id;
       _models_UserTeam__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (x) {
         return x.user_id == user_id && x.team_id == team_id;
       });

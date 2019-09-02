@@ -29,9 +29,28 @@
 
 
           </label>
-          <label>
+          <label class="dropdown-parent">
               Email
               <input type="email" name="email" id="invite-email" placeholder="example@mail.com" v-model="newUser.email">
+
+              <Dropdown class="right dark">
+                <template v-slot:button="slotProps">
+                    <span @click="slotProps.toggle" class="open-dropdown" :class="{active: !slotProps.collapsed}">Change team<i class="far fa-chevron-down"></i></span>
+                </template>
+                <template v-slot:header="slotProps">
+                    <span>{{teams.length}} teams</span>
+                    <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
+                </template>
+                <template v-slot:body>
+                    <RadioButtons :options="teams" :currentOptionId="theTeamId" ref="teamRadio" v-model="theTeamId"/>
+                </template>
+                <template v-slot:footer="slotProps">
+                    <div class="grid-2">
+                        <span class="button green" @click="$refs.teamRadio.submit(); slotProps.toggle()">Save</span>
+                        <span class="button invisible" @click="slotProps.toggle">Cancel</span>
+                    </div>
+                </template>
+            </Dropdown>
           </label>
           <label>
               Name (optional)

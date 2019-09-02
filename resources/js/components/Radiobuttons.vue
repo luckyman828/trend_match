@@ -2,9 +2,14 @@
 
     <div class="radio-buttons">
         <label v-for="(option, index) in options" :key="index" class="radiobox">
-            <input type="radio" name="radio-option" :id="'radio-option-' + option.id" :value="option.id" v-model="selection">
+            <input type="radio" name="radio-option" :id="'radio-option-' + option.id" :value="option[optionValueKey]" v-model="selection">
             <span class="radiomark"></span>
-            {{option.title}}
+            <template v-if="optionNameKey">
+                {{option[optionNameKey]}}
+            </template>
+            <template v-else>
+                {{option}}
+            </template>
         </label>
     </div>
 
@@ -15,6 +20,8 @@ export default {
     name: 'radioButtons',
     props: [
         'options',
+        'optionNameKey',
+        'optionValueKey',
         'currentOptionId'
     ],
     data: function () { return {
@@ -27,12 +34,13 @@ export default {
     },
     updated() {
         // Preset the selection
-        console.log('Updated. Selection: ' + !this.selection)
         if ( !this.selection )
-            document.querySelector('#radio-option-' + this.currentOptionId).checked = true
+            if (this.currentOptionId)
+                document.querySelector('#radio-option-' + this.currentOptionId).checked = true
     },
     mounted() {
-        document.querySelector('#radio-option-' + this.currentOptionId).checked = true
+        if (this.currentOptionId)
+            document.querySelector('#radio-option-' + this.currentOptionId).checked = true
     }
 }
 </script>

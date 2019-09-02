@@ -117,6 +117,7 @@ Route::middleware('auth:api')->group( function(){
     // Get countries
     // Route::get('countries', 'UserController@countries');
     Route::post('invite-user', 'MailController@inviteUser');
+    Route::post('invite-users', 'MailController@inviteUsers');
     Route::get('roles', 'UserController@roles');
 
     // xxx Comments xxx
