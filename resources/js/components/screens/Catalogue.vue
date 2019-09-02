@@ -89,7 +89,7 @@ export default{
         ...mapGetters('entities/comments', ['loadingComments']),
         ...mapGetters('entities/collections', ['loadingCollections']),
         ...mapGetters('entities/teams', ['theTeams']),
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope']),
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel']),
         defaultTeam() {
             if (this.userPermissionLevel >= 3)
                 return {id: 0, title: 'Global'}
@@ -145,8 +145,15 @@ export default{
 
                 // Scope comments to current teamFilter
                 const comments = product.comments
-                if ( teamFilterId > 0 ) {
-                    let commentsScoped = []
+                let commentsScoped = []
+                // If the user is a buyer function, only return global comments
+                if (this.userPermissionLevel == this.viewAdminPermissionLevel) {
+                    comments.forEach(comment => {
+                        if (comment.team_id == 0)
+                            product.commentsScoped.push(comment)
+                    })
+                }
+                else if ( teamFilterId > 0 ) {
                     // Loop through the comments
                     comments.forEach(comment => {
                         // Loop through comments users teams
@@ -516,45 +523,48 @@ export default{
             return User.query().with('teams').all()
         },
         teams () {
-            // Manually find the teams and the users belonging to each team.
-            // This is only necessary because I cannot make the Vuex ORM realtionship work 
-            // If you can make it work, please be my guest
-            const teams = Team.query().with('users').with('invites').all()
-            const users = this.users
-            // Loop through the users and sort them between the teams
-            users.forEach(user => {
-                // First check that the user has a team and that the team has an id
-                if (user.teams[0] != null) {
-                    if ('id' in user.teams[0]) {
-                        // If we have a team with an id
-                        // Set the users role
-                        user.teams.forEach(userTeam => {
-                            // Loop through each of the users teams and add the user
-                            // Find the corresponding team
-                            const foundTeam = teams.find(team => team.id == userTeam.id)
-                            // Check that the user doesnt already exist in this team
-                            if ( !foundTeam.users.includes(user) )
-                                // Push the user to the team if the user is not already a member
-                                foundTeam.users.push(user)
-                        })
-                    }
-                }
-            })
-            if (!this.isLoading) {
-                if (this.authUser.role_id >= 3)
-                    return teams
-                else {
-                    // Get the users teams
-                    let userTeams = []
-                    teams.forEach(team => {
-                        if (this.authUser.teams.find(x => x.id == team.id))
-                            userTeams.push(team)
-                    })
-                    return userTeams
-                }
-            }
-            return []
+            return this.$store.getters['entities/teams/teams']
         },
+        // teams () {
+        //     // Manually find the teams and the users belonging to each team.
+        //     // This is only necessary because I cannot make the Vuex ORM realtionship work 
+        //     // If you can make it work, please be my guest
+        //     const teams = Team.query().with('users').with('invites').all()
+        //     const users = this.users
+        //     // Loop through the users and sort them between the teams
+        //     users.forEach(user => {
+        //         // First check that the user has a team and that the team has an id
+        //         if (user.teams[0] != null) {
+        //             if ('id' in user.teams[0]) {
+        //                 // If we have a team with an id
+        //                 // Set the users role
+        //                 user.teams.forEach(userTeam => {
+        //                     // Loop through each of the users teams and add the user
+        //                     // Find the corresponding team
+        //                     const foundTeam = teams.find(team => team.id == userTeam.id)
+        //                     // Check that the user doesnt already exist in this team
+        //                     if ( !foundTeam.users.includes(user) )
+        //                         // Push the user to the team if the user is not already a member
+        //                         foundTeam.users.push(user)
+        //                 })
+        //             }
+        //         }
+        //     })
+        //     if (!this.isLoading) {
+        //         if (this.authUser.role_id >= 3)
+        //             return teams
+        //         else {
+        //             // Get the users teams
+        //             let userTeams = []
+        //             teams.forEach(team => {
+        //                 if (this.authUser.teams.find(x => x.id == team.id))
+        //                     userTeams.push(team)
+        //             })
+        //             return userTeams
+        //         }
+        //     }
+        //     return []
+        // },
     },
     methods: {
         ...mapActions('entities/authUser', ['getAuthUser']),

@@ -8727,6 +8727,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -8760,7 +8768,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       sticky: false
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/productFinalActions', ['loadingFinalActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/productFinalActions', ['loadingFinalActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']), {
     loadingSingle: function loadingSingle() {
       var loading = false; // if (this.teamUsers == null) {
       //     loading = true
@@ -9783,7 +9791,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       test: ''
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/teams', ['theTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/teams', ['theTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel']), {
     defaultTeam: function defaultTeam() {
       if (this.userPermissionLevel >= 3) return {
         id: 0,
@@ -9848,10 +9856,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         product.ac = _typeof(product[_this.sortBy]); // Scope comments to current teamFilter
 
         var comments = product.comments;
+        var commentsScoped = []; // If the user is a buyer function, only return global comments
 
-        if (teamFilterId > 0) {
-          var commentsScoped = []; // Loop through the comments
-
+        if (_this.userPermissionLevel == _this.viewAdminPermissionLevel) {
+          comments.forEach(function (comment) {
+            if (comment.team_id == 0) product.commentsScoped.push(comment);
+          });
+        } else if (teamFilterId > 0) {
+          // Loop through the comments
           comments.forEach(function (comment) {
             // Loop through comments users teams
             var pushComment = false; // Check if the comment belongs to one of auth users teams
@@ -10180,48 +10192,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return _store_models_User__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"]('teams').all();
     },
     teams: function teams() {
-      var _this8 = this;
-
-      // Manually find the teams and the users belonging to each team.
-      // This is only necessary because I cannot make the Vuex ORM realtionship work 
-      // If you can make it work, please be my guest
-      var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_13__["default"].query()["with"]('users')["with"]('invites').all();
-      var users = this.users; // Loop through the users and sort them between the teams
-
-      users.forEach(function (user) {
-        // First check that the user has a team and that the team has an id
-        if (user.teams[0] != null) {
-          if ('id' in user.teams[0]) {
-            // If we have a team with an id
-            // Set the users role
-            user.teams.forEach(function (userTeam) {
-              // Loop through each of the users teams and add the user
-              // Find the corresponding team
-              var foundTeam = teams.find(function (team) {
-                return team.id == userTeam.id;
-              }); // Check that the user doesnt already exist in this team
-
-              if (!foundTeam.users.includes(user)) // Push the user to the team if the user is not already a member
-                foundTeam.users.push(user);
-            });
-          }
-        }
-      });
-
-      if (!this.isLoading) {
-        if (this.authUser.role_id >= 3) return teams;else {
-          // Get the users teams
-          var userTeams = [];
-          teams.forEach(function (team) {
-            if (_this8.authUser.teams.find(function (x) {
-              return x.id == team.id;
-            })) userTeams.push(team);
-          });
-          return userTeams;
-        }
-      }
-
-      return [];
+      return this.$store.getters['entities/teams/teams'];
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentFileId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']), {
@@ -10264,7 +10235,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this9 = this;
+      var _this8 = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
@@ -10274,7 +10245,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
-        var thisProduct = _this9.products.find(function (x) {
+        var thisProduct = _this8.products.find(function (x) {
           return x.id == product;
         });
 
@@ -10388,7 +10359,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   created: function created() {
-    var _this10 = this;
+    var _this9 = this;
 
     // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
     var routeFileId = this.$route.params.catalogueId;
@@ -10398,7 +10369,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     this.unsub = this.$store.subscribe(function (mutation, state) {
       if (mutation.type == 'persist/setCurrentWorkspace') {
-        _this10.initRequiresWorkspace();
+        _this9.initRequiresWorkspace();
       }
     });
   },
@@ -10521,49 +10492,48 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"]('teams')["with"]('workspaces').first();
     },
     teams: function teams() {
-      var _this = this;
-
-      // Manually find the teams and the users belonging to each team.
-      // This is only necessary because I cannot make the Vuex ORM realtionship work 
-      // If you can make it work, please be my guest
-      var teams = _store_models_Team__WEBPACK_IMPORTED_MODULE_7__["default"].query()["with"]('users')["with"]('invites').all();
-      var users = this.users; // Loop through the users and sort them between the teams
-
-      users.forEach(function (user) {
-        // First check that the user has a team and that the team has an id
-        if (user.teams[0] != null) {
-          if ('id' in user.teams[0]) {
-            // If we have a team with an id
-            // Set the users role
-            user.teams.forEach(function (userTeam) {
-              // Loop through each of the users teams and add the user
-              // Find the corresponding team
-              var foundTeam = teams.find(function (team) {
-                return team.id == userTeam.id;
-              }); // Check that the user doesnt already exist in this team
-
-              if (!foundTeam.users.includes(user)) // Push the user to the team if the user is not already a member
-                foundTeam.users.push(user);
-            });
-          }
-        }
-      });
-
-      if (!this.isLoading) {
-        if (this.authUser.role_id >= 3) return teams;else {
-          // Get the users teams
-          var userTeams = [];
-          teams.forEach(function (team) {
-            if (_this.authUser.teams.find(function (x) {
-              return x.id == team.id;
-            })) userTeams.push(team);
-          });
-          return userTeams;
-        }
-      }
-
-      return [];
+      return this.$store.getters['entities/teams/teams'];
     },
+    // teams() {
+    //     // Manually find the teams and the users belonging to each team.
+    //     // This is only necessary because I cannot make the Vuex ORM realtionship work 
+    //     // If you can make it work, please be my guest
+    //     const teams = Team.query().with('users').with('invites').all()
+    //     const users = this.users
+    //     // Loop through the users and sort them between the teams
+    //     users.forEach(user => {
+    //         // First check that the user has a team and that the team has an id
+    //         if (user.teams[0] != null) {
+    //             if ('id' in user.teams[0]) {
+    //                 // If we have a team with an id
+    //                 // Set the users role
+    //                 user.teams.forEach(userTeam => {
+    //                     // Loop through each of the users teams and add the user
+    //                     // Find the corresponding team
+    //                     const foundTeam = teams.find(team => team.id == userTeam.id)
+    //                     // Check that the user doesnt already exist in this team
+    //                     if ( !foundTeam.users.includes(user) )
+    //                         // Push the user to the team if the user is not already a member
+    //                         foundTeam.users.push(user)
+    //                 })
+    //             }
+    //         }
+    //     })
+    //     if (!this.isLoading) {
+    //         if (this.authUser.role_id >= 3)
+    //             return teams
+    //         else {
+    //             // Get the users teams
+    //             let userTeams = []
+    //             teams.forEach(team => {
+    //                 if (this.authUser.teams.find(x => x.id == team.id))
+    //                     userTeams.push(team)
+    //             })
+    //             return userTeams
+    //         }
+    //     }
+    //     return []
+    // },
     isLoading: function isLoading() {
       var loading = false;
       if (!this.loadingOverwrite) if (this.loadingCollections || this.authUser == null) loading = true;
@@ -10593,14 +10563,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   created: function created() {
-    var _this2 = this;
+    var _this = this;
 
     // If we already have a workspace id, fetch the data we are missing
     if (this.currentWorkspaceId != null) this.initRequiresWorkspace(); // Else, wait till a workspace id is set, and then fetch the data
 
     this.unsub = this.$store.subscribe(function (mutation, state) {
       if (mutation.type == 'persist/setCurrentWorkspace') {
-        _this2.initRequiresWorkspace();
+        _this.initRequiresWorkspace();
       }
     });
   },
@@ -15382,7 +15352,8 @@ var render = function() {
                                               .action != 0
                                             ? "active green"
                                             : "ghost green-hover"
-                                          : "ghost green-hover"
+                                          : "ghost green-hover",
+                                        { disabled: _vm.authUser.role_id == 3 }
                                       ],
                                       on: {
                                         click: function($event) {
@@ -15402,13 +15373,15 @@ var render = function() {
                                     "span",
                                     {
                                       staticClass: "button icon-right",
-                                      class:
+                                      class: [
                                         _vm.product[_vm.actionScope] != null
                                           ? _vm.product[_vm.actionScope]
                                               .action == 0
                                             ? "active red"
                                             : "ghost red-hover"
                                           : "ghost red-hover",
+                                        { disabled: _vm.authUser.role_id == 3 }
+                                      ],
                                       on: {
                                         click: function($event) {
                                           return _vm.toggleInOut(_vm.product, 0)
@@ -16444,101 +16417,105 @@ var render = function() {
                 ]
               ),
               _vm._v(" "),
-              _c(
-                "th",
-                {
-                  staticClass: "clickable square-wrapper focus",
-                  class: { active: this.sortBy == "focus" },
-                  on: {
-                    click: function($event) {
-                      return _vm.onSortBy("focus", false)
-                    }
-                  }
-                },
-                [
-                  _vm._v("\n                Focus "),
-                  _c("i", {
-                    staticClass: "fas",
-                    class: [
-                      this.sortBy == "focus" && !_vm.sortAsc
-                        ? "fa-long-arrow-alt-up"
-                        : "fa-long-arrow-alt-down"
-                    ]
-                  })
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "th",
-                {
-                  staticClass: "clickable square-wrapper",
-                  class: { active: this.sortBy == "ins" },
-                  on: {
-                    click: function($event) {
-                      return _vm.onSortBy("ins", false)
-                    }
-                  }
-                },
-                [
-                  _vm._v("\n                In "),
-                  _c("i", {
-                    staticClass: "fas",
-                    class: [
-                      this.sortBy == "ins" && !_vm.sortAsc
-                        ? "fa-long-arrow-alt-up"
-                        : "fa-long-arrow-alt-down"
-                    ]
-                  })
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "th",
-                {
-                  staticClass: "clickable square-wrapper",
-                  class: { active: this.sortBy == "outs" },
-                  on: {
-                    click: function($event) {
-                      return _vm.onSortBy("outs", false)
-                    }
-                  }
-                },
-                [
-                  _vm._v("\n                Out "),
-                  _c("i", {
-                    staticClass: "fas",
-                    class: [
-                      this.sortBy == "outs" && !_vm.sortAsc
-                        ? "fa-long-arrow-alt-up"
-                        : "fa-long-arrow-alt-down"
-                    ]
-                  })
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "th",
-                {
-                  staticClass: "clickable square-wrapper nds",
-                  class: { active: this.sortBy == "nds" },
-                  on: {
-                    click: function($event) {
-                      return _vm.onSortBy("nds", false)
-                    }
-                  }
-                },
-                [
-                  _vm._v("\n                ND "),
-                  _c("i", {
-                    staticClass: "fas",
-                    class: [
-                      this.sortBy == "nds" && !_vm.sortAsc
-                        ? "fa-long-arrow-alt-up"
-                        : "fa-long-arrow-alt-down"
-                    ]
-                  })
-                ]
-              ),
+              _vm.userPermissionLevel != _vm.viewAdminPermissionLevel
+                ? [
+                    _c(
+                      "th",
+                      {
+                        staticClass: "clickable square-wrapper focus",
+                        class: { active: this.sortBy == "focus" },
+                        on: {
+                          click: function($event) {
+                            return _vm.onSortBy("focus", false)
+                          }
+                        }
+                      },
+                      [
+                        _vm._v("\n                    Focus "),
+                        _c("i", {
+                          staticClass: "fas",
+                          class: [
+                            this.sortBy == "focus" && !_vm.sortAsc
+                              ? "fa-long-arrow-alt-up"
+                              : "fa-long-arrow-alt-down"
+                          ]
+                        })
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "th",
+                      {
+                        staticClass: "clickable square-wrapper",
+                        class: { active: this.sortBy == "ins" },
+                        on: {
+                          click: function($event) {
+                            return _vm.onSortBy("ins", false)
+                          }
+                        }
+                      },
+                      [
+                        _vm._v("\n                    In "),
+                        _c("i", {
+                          staticClass: "fas",
+                          class: [
+                            this.sortBy == "ins" && !_vm.sortAsc
+                              ? "fa-long-arrow-alt-up"
+                              : "fa-long-arrow-alt-down"
+                          ]
+                        })
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "th",
+                      {
+                        staticClass: "clickable square-wrapper",
+                        class: { active: this.sortBy == "outs" },
+                        on: {
+                          click: function($event) {
+                            return _vm.onSortBy("outs", false)
+                          }
+                        }
+                      },
+                      [
+                        _vm._v("\n                    Out "),
+                        _c("i", {
+                          staticClass: "fas",
+                          class: [
+                            this.sortBy == "outs" && !_vm.sortAsc
+                              ? "fa-long-arrow-alt-up"
+                              : "fa-long-arrow-alt-down"
+                          ]
+                        })
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "th",
+                      {
+                        staticClass: "clickable square-wrapper nds",
+                        class: { active: this.sortBy == "nds" },
+                        on: {
+                          click: function($event) {
+                            return _vm.onSortBy("nds", false)
+                          }
+                        }
+                      },
+                      [
+                        _vm._v("\n                    ND "),
+                        _c("i", {
+                          staticClass: "fas",
+                          class: [
+                            this.sortBy == "nds" && !_vm.sortAsc
+                              ? "fa-long-arrow-alt-up"
+                              : "fa-long-arrow-alt-down"
+                          ]
+                        })
+                      ]
+                    )
+                  ]
+                : _vm._e(),
               _vm._v(" "),
               _c(
                 "th",
@@ -16687,221 +16664,247 @@ var render = function() {
                       ]
                     ),
                     _vm._v(" "),
-                    _vm.currentTeamId == 0
+                    _vm.userPermissionLevel != _vm.viewAdminPermissionLevel
                       ? [
-                          _c("td", { staticClass: "square-wrapper focus" }, [
-                            _c(
-                              "span",
-                              {
-                                staticClass: "square clickable",
-                                on: {
-                                  mouseover: function($event) {
-                                    return _vm.showTooltip(
-                                      $event,
-                                      "teams",
-                                      "Focus",
-                                      product.focus
+                          _vm.currentTeamId == 0
+                            ? [
+                                _c(
+                                  "td",
+                                  { staticClass: "square-wrapper focus" },
+                                  [
+                                    _c(
+                                      "span",
+                                      {
+                                        staticClass: "square clickable",
+                                        on: {
+                                          mouseover: function($event) {
+                                            return _vm.showTooltip(
+                                              $event,
+                                              "teams",
+                                              "Focus",
+                                              product.focus
+                                            )
+                                          },
+                                          mouseleave: _vm.hideTooltip
+                                        }
+                                      },
+                                      [
+                                        _c("i", { staticClass: "far fa-star" }),
+                                        _vm._v(_vm._s(product.focus.length))
+                                      ]
                                     )
-                                  },
-                                  mouseleave: _vm.hideTooltip
-                                }
-                              },
-                              [
-                                _c("i", { staticClass: "far fa-star" }),
-                                _vm._v(_vm._s(product.focus.length))
-                              ]
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c("td", { staticClass: "square-wrapper" }, [
-                            _c(
-                              "span",
-                              {
-                                staticClass: "square clickable",
-                                on: {
-                                  mouseover: function($event) {
-                                    _vm.showTooltip(
-                                      $event,
-                                      "teams",
-                                      "In",
-                                      product.focus.concat(product.ins)
-                                    )
-                                  },
-                                  mouseleave: _vm.hideTooltip
-                                }
-                              },
-                              [
-                                _c("i", { staticClass: "far fa-heart" }),
-                                _vm._v(
-                                  _vm._s(
-                                    product.ins.length + product.focus.length
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "square-wrapper" }, [
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass: "square clickable",
+                                      on: {
+                                        mouseover: function($event) {
+                                          _vm.showTooltip(
+                                            $event,
+                                            "teams",
+                                            "In",
+                                            product.focus.concat(product.ins)
+                                          )
+                                        },
+                                        mouseleave: _vm.hideTooltip
+                                      }
+                                    },
+                                    [
+                                      _c("i", { staticClass: "far fa-heart" }),
+                                      _vm._v(
+                                        _vm._s(
+                                          product.ins.length +
+                                            product.focus.length
+                                        )
+                                      )
+                                    ]
                                   )
+                                ]),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "square-wrapper" }, [
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass: "square clickable",
+                                      on: {
+                                        mouseover: function($event) {
+                                          return _vm.showTooltip(
+                                            $event,
+                                            "teams",
+                                            "Out",
+                                            product.outs
+                                          )
+                                        },
+                                        mouseleave: _vm.hideTooltip
+                                      }
+                                    },
+                                    [
+                                      _c("i", {
+                                        staticClass: "far fa-times-circle"
+                                      }),
+                                      _vm._v(_vm._s(product.outs.length))
+                                    ]
+                                  )
+                                ]),
+                                _vm._v(" "),
+                                _c(
+                                  "td",
+                                  { staticClass: "square-wrapper nds" },
+                                  [
+                                    _c(
+                                      "span",
+                                      {
+                                        staticClass: "square clickable",
+                                        on: {
+                                          mouseover: function($event) {
+                                            return _vm.showTooltip(
+                                              $event,
+                                              "teams",
+                                              "Not decided",
+                                              product.nds
+                                            )
+                                          },
+                                          mouseleave: _vm.hideTooltip
+                                        }
+                                      },
+                                      [
+                                        _c("i", {
+                                          staticClass: "far fa-question-circle"
+                                        }),
+                                        _vm._v(
+                                          _vm._s(product.nds.length) +
+                                            " /" +
+                                            _vm._s(_vm.teams.length)
+                                        )
+                                      ]
+                                    )
+                                  ]
                                 )
                               ]
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c("td", { staticClass: "square-wrapper" }, [
-                            _c(
-                              "span",
-                              {
-                                staticClass: "square clickable",
-                                on: {
-                                  mouseover: function($event) {
-                                    return _vm.showTooltip(
-                                      $event,
-                                      "teams",
-                                      "Out",
-                                      product.outs
+                            : [
+                                _c(
+                                  "td",
+                                  { staticClass: "square-wrapper focus" },
+                                  [
+                                    _c(
+                                      "span",
+                                      {
+                                        staticClass: "square clickable",
+                                        on: {
+                                          mouseover: function($event) {
+                                            return _vm.showTooltip(
+                                              $event,
+                                              "users",
+                                              "Focus",
+                                              product.focus
+                                            )
+                                          },
+                                          mouseleave: _vm.hideTooltip
+                                        }
+                                      },
+                                      [
+                                        _c("i", { staticClass: "far fa-star" }),
+                                        _vm._v(_vm._s(product.focus.length))
+                                      ]
                                     )
-                                  },
-                                  mouseleave: _vm.hideTooltip
-                                }
-                              },
-                              [
-                                _c("i", { staticClass: "far fa-times-circle" }),
-                                _vm._v(_vm._s(product.outs.length))
-                              ]
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c("td", { staticClass: "square-wrapper nds" }, [
-                            _c(
-                              "span",
-                              {
-                                staticClass: "square clickable",
-                                on: {
-                                  mouseover: function($event) {
-                                    return _vm.showTooltip(
-                                      $event,
-                                      "teams",
-                                      "Not decided",
-                                      product.nds
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "square-wrapper" }, [
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass: "square clickable",
+                                      on: {
+                                        mouseover: function($event) {
+                                          _vm.showTooltip(
+                                            $event,
+                                            "users",
+                                            "In",
+                                            product.focus.concat(product.ins)
+                                          )
+                                        },
+                                        mouseleave: _vm.hideTooltip
+                                      }
+                                    },
+                                    [
+                                      _c("i", { staticClass: "far fa-heart" }),
+                                      _vm._v(
+                                        _vm._s(
+                                          product.ins.length +
+                                            product.focus.length
+                                        )
+                                      )
+                                    ]
+                                  )
+                                ]),
+                                _vm._v(" "),
+                                _c("td", { staticClass: "square-wrapper" }, [
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass: "square clickable",
+                                      on: {
+                                        mouseover: function($event) {
+                                          return _vm.showTooltip(
+                                            $event,
+                                            "users",
+                                            "Out",
+                                            product.outs
+                                          )
+                                        },
+                                        mouseleave: _vm.hideTooltip
+                                      }
+                                    },
+                                    [
+                                      _c("i", {
+                                        staticClass: "far fa-times-circle"
+                                      }),
+                                      _vm._v(_vm._s(product.outs.length))
+                                    ]
+                                  )
+                                ]),
+                                _vm._v(" "),
+                                _c(
+                                  "td",
+                                  { staticClass: "square-wrapper nds" },
+                                  [
+                                    _c(
+                                      "span",
+                                      {
+                                        staticClass: "square clickable",
+                                        on: {
+                                          mouseover: function($event) {
+                                            return _vm.showTooltip(
+                                              $event,
+                                              "users",
+                                              "Not decided",
+                                              product.nds
+                                            )
+                                          },
+                                          mouseleave: _vm.hideTooltip
+                                        }
+                                      },
+                                      [
+                                        _c("i", {
+                                          staticClass: "far fa-question-circle"
+                                        }),
+                                        _vm._v(
+                                          _vm._s(product.nds.length) +
+                                            " /" +
+                                            _vm._s(_vm.teamUsers.length)
+                                        )
+                                      ]
                                     )
-                                  },
-                                  mouseleave: _vm.hideTooltip
-                                }
-                              },
-                              [
-                                _c("i", {
-                                  staticClass: "far fa-question-circle"
-                                }),
-                                _vm._v(
-                                  _vm._s(product.nds.length) +
-                                    " /" +
-                                    _vm._s(_vm.teams.length)
+                                  ]
                                 )
                               ]
-                            )
-                          ])
                         ]
-                      : [
-                          _c("td", { staticClass: "square-wrapper focus" }, [
-                            _c(
-                              "span",
-                              {
-                                staticClass: "square clickable",
-                                on: {
-                                  mouseover: function($event) {
-                                    return _vm.showTooltip(
-                                      $event,
-                                      "users",
-                                      "Focus",
-                                      product.focus
-                                    )
-                                  },
-                                  mouseleave: _vm.hideTooltip
-                                }
-                              },
-                              [
-                                _c("i", { staticClass: "far fa-star" }),
-                                _vm._v(_vm._s(product.focus.length))
-                              ]
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c("td", { staticClass: "square-wrapper" }, [
-                            _c(
-                              "span",
-                              {
-                                staticClass: "square clickable",
-                                on: {
-                                  mouseover: function($event) {
-                                    _vm.showTooltip(
-                                      $event,
-                                      "users",
-                                      "In",
-                                      product.focus.concat(product.ins)
-                                    )
-                                  },
-                                  mouseleave: _vm.hideTooltip
-                                }
-                              },
-                              [
-                                _c("i", { staticClass: "far fa-heart" }),
-                                _vm._v(
-                                  _vm._s(
-                                    product.ins.length + product.focus.length
-                                  )
-                                )
-                              ]
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c("td", { staticClass: "square-wrapper" }, [
-                            _c(
-                              "span",
-                              {
-                                staticClass: "square clickable",
-                                on: {
-                                  mouseover: function($event) {
-                                    return _vm.showTooltip(
-                                      $event,
-                                      "users",
-                                      "Out",
-                                      product.outs
-                                    )
-                                  },
-                                  mouseleave: _vm.hideTooltip
-                                }
-                              },
-                              [
-                                _c("i", { staticClass: "far fa-times-circle" }),
-                                _vm._v(_vm._s(product.outs.length))
-                              ]
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c("td", { staticClass: "square-wrapper nds" }, [
-                            _c(
-                              "span",
-                              {
-                                staticClass: "square clickable",
-                                on: {
-                                  mouseover: function($event) {
-                                    return _vm.showTooltip(
-                                      $event,
-                                      "users",
-                                      "Not decided",
-                                      product.nds
-                                    )
-                                  },
-                                  mouseleave: _vm.hideTooltip
-                                }
-                              },
-                              [
-                                _c("i", {
-                                  staticClass: "far fa-question-circle"
-                                }),
-                                _vm._v(
-                                  _vm._s(product.nds.length) +
-                                    " /" +
-                                    _vm._s(_vm.teamUsers.length)
-                                )
-                              ]
-                            )
-                          ])
-                        ],
+                      : _vm._e(),
                     _vm._v(" "),
                     _c("td", { staticClass: "square-wrapper comments" }, [
                       _c(
@@ -16935,7 +16938,8 @@ var render = function() {
                                     ? product[_vm.actionScope].action != 0
                                       ? "active green"
                                       : "ghost green-hover"
-                                    : "ghost green-hover"
+                                    : "ghost green-hover",
+                                  { disabled: _vm.authUser.role_id == 3 }
                                 ],
                                 on: {
                                   click: function($event) {
@@ -16953,12 +16957,14 @@ var render = function() {
                               "span",
                               {
                                 staticClass: "button icon-right",
-                                class:
+                                class: [
                                   product[_vm.actionScope] != null
                                     ? product[_vm.actionScope].action == 0
                                       ? "active red"
                                       : "ghost red-hover"
                                     : "ghost red-hover",
+                                  { disabled: _vm.authUser.role_id == 3 }
+                                ],
                                 on: {
                                   click: function($event) {
                                     return _vm.toggleInOut(product, 0)
@@ -39835,10 +39841,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _models_Team__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../models/Team */ "./resources/js/store/models/Team.js");
-/* harmony import */ var _models_User__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../models/User */ "./resources/js/store/models/User.js");
-/* harmony import */ var _models_AuthUser__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/AuthUser */ "./resources/js/store/models/AuthUser.js");
-
-
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   namespaced: true,
@@ -39848,6 +39850,7 @@ __webpack_require__.r(__webpack_exports__);
     currentFileId: null,
     userPermissionLevel: 1,
     loadingInit: true,
+    viewAdminPermissionLevel: 3,
     adminPermissionLevel: 4
   },
   getters: {
@@ -39869,14 +39872,19 @@ __webpack_require__.r(__webpack_exports__);
     adminPermissionLevel: function adminPermissionLevel(state) {
       return state.adminPermissionLevel;
     },
+    viewAdminPermissionLevel: function viewAdminPermissionLevel(state) {
+      return state.viewAdminPermissionLevel;
+    },
     test: function test(state) {
       return state.adminLevel;
     },
     actionScope: function actionScope(state) {
-      if (state.userPermissionLevel >= state.adminPermissionLevel) return 'phaseAction';else if (state.userPermissionLevel >= 2) return 'teamAction';else return 'userAction';
+      if (state.userPermissionLevel >= state.adminPermissionLevel || state.userPermissionLevel == state.viewAdminPermissionLevel) // buyer
+        return 'phaseAction';else if (state.userPermissionLevel >= 2) return 'teamAction';else return 'userAction';
     },
     actionScopeName: function actionScopeName(state) {
-      if (state.userPermissionLevel >= state.adminPermissionLevel) return 'Phase action';else if (state.userPermissionLevel >= 2) return 'Team action';else return 'Your action';
+      if (state.userPermissionLevel >= state.adminPermissionLevel || state.userPermissionLevel == state.viewAdminPermissionLevel) // buyer
+        return 'Phase action';else if (state.userPermissionLevel >= 2) return 'Team action';else return 'Your action';
     }
   },
   actions: {

@@ -1,6 +1,4 @@
 import Team from '../models/Team'
-import User from '../models/User'
-import AuthUser from '../models/AuthUser'
 
 export default {
     namespaced: true,
@@ -11,6 +9,7 @@ export default {
       currentFileId: null,
       userPermissionLevel: 1,
       loadingInit: true,
+      viewAdminPermissionLevel: 3,
       adminPermissionLevel: 4,
     },
 
@@ -21,16 +20,17 @@ export default {
         userPermissionLevel: state => { return state.userPermissionLevel },
         loadingInit: state => { return state.loadingInit },
         adminPermissionLevel: state => { return state.adminPermissionLevel },
+        viewAdminPermissionLevel: state => { return state.viewAdminPermissionLevel },
         test: state => { return state.adminLevel },
         actionScope: state => {
-            if (state.userPermissionLevel >= state.adminPermissionLevel )
+            if ( (state.userPermissionLevel >= state.adminPermissionLevel) || (state.userPermissionLevel == state.viewAdminPermissionLevel) ) // buyer
                 return 'phaseAction'
             else if (state.userPermissionLevel >= 2)
                 return 'teamAction'
             else return 'userAction'
         },
         actionScopeName: state => {
-            if (state.userPermissionLevel >= state.adminPermissionLevel )
+            if (state.userPermissionLevel >= state.adminPermissionLevel || state.userPermissionLevel == state.viewAdminPermissionLevel ) // buyer
                 return 'Phase action'
             else if (state.userPermissionLevel >= 2)
                 return 'Team action'

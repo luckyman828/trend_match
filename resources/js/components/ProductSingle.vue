@@ -8,10 +8,10 @@
                         <div class="controls">
 
                             <template v-if="authUser.role_id >= 2">
-                                <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
+                                <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 1)">
                                 In  <i class="far fa-heart"></i>
                                 </span>
-                                <span class="button icon-right" :class="(product[actionScope] != null) ? (product[actionScope].action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover'"  @click="toggleInOut(product, 0)">
+                                <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {'disabled': authUser.role_id == 3}]"  @click="toggleInOut(product, 0)">
                                 Out  <i class="far fa-times-circle"></i>
                                 </span>
                             </template>
