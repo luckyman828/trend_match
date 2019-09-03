@@ -3,27 +3,43 @@
         <template v-if="!loadingCollections">
             <catalogueHeader :collection="collection" :startDate="startDate" :endDate="endDate" :productTotals="productTotals"/>
             <div class="filters">
-                <DropdownCheckbox :buttonText="'categories'" :title="'Filter by category'" :options="dynamicCategories" class="dropdown-parent left" v-model="selectedCategories">
+                <Dropdown class="dropdown-parent">
                     <template v-slot:button="slotProps">
                         <div class="dropdown-button item-filter-button" @click="slotProps.toggle">
-                            <span>Category</span>
+                            <span>Category </span>
                             <i class="far fa-chevron-down"></i>
                             <span v-if="selectedCategories.length > 0" class="bubble">
                                 {{selectedCategories.length}}
                             </span>
                         </div>
-                        <span v-if="selectedCategories.length > 0" class="clear button invisible primary" @click="slotProps.clear(); selectedCategories=[]">Clear filter</span>
+                        <span v-if="selectedCategories.length > 0" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]">Clear filter</span>
                     </template>
-                </DropdownCheckbox>
-                <DropdownRadio :options="teams" :currentOptionId="currentTeamId" :defaultOption="defaultTeam" class="dropdown-parent right" @submit="setCurrentTeam">
+                    <template v-slot:header="slotProps">
+                        <span>Filter by category</span>
+                        <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
+                    </template>
+                    <template v-slot:body>
+                        <CheckboxButtons :options="dynamicCategories" ref="filterSelect" v-model="selectedCategories" @change="$refs.filterSelect.submit()"/>
+                    </template>
+                </Dropdown>
+
+                <Dropdown class="dropdown-parent right" ref="countryDropdown">
                     <template v-slot:button="slotProps">
                         <div class="dropdown-button" @click="slotProps.toggle">
                             <img src="/assets/Path5699.svg">
-                            <span>{{slotProps.currentOption.title}}</span>
+                            <span v-if="currentTeamId > 0">{{teams.find(x => x.id == currentTeamId).title}}</span>
+                            <span v-else-if="currentTeamId == 0">Global</span>
+                            <span v-else>No team available</span>
                             <i class="far fa-chevron-down"></i>
                         </div>
                     </template>
-                </DropdownRadio>
+                    <template v-slot:header="slotProps">
+                        <span>Switch team</span>
+                    </template>
+                    <template v-slot:body>
+                        <RadioButtons :options="teams" :currentOptionId="currentTeamId" :optionNameKey="'title'" :optionValueKey="'id'" ref="countryRadio" @change="setCurrentTeam($event); $refs.countryDropdown.toggle()"/>
+                    </template>
+                </Dropdown>
             </div>
             <product-tabs :productTotals="productTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
             <products ref="productsComponent" :teamFilterId="currentTeamId" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :prevSingleProductID="prevSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsSorted" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @prevSingle="setPrevSingle"/>
@@ -43,8 +59,10 @@ import ProductTabs from '../ProductTabs'
 import CatalogueHeader from '../CatalogueHeader'
 import Loader from '../Loader'
 import SelectedController from '../SelectedController'
-import DropdownRadio from '../DropdownRadio'
-import DropdownCheckbox from '../DropdownCheckbox'
+import CheckboxButtons from '../input/CheckboxButtons'
+import RadioButtons from '../RadioButtons'
+import Dropdown from '../Dropdown'
+
 import Comment from '../../store/models/Comment'
 import Product from '../../store/models/Product'
 import User from '../../store/models/User'
@@ -66,9 +84,10 @@ export default{
         ProductTabs,
         SelectedController,
         Loader,
-        DropdownCheckbox,
-        DropdownRadio,
-        CatalogueHeader
+        CatalogueHeader,
+        CheckboxButtons,
+        Dropdown,
+        RadioButtons,
     },
     data: function () { return {
         singleProductID: -1,

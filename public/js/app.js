@@ -7537,12 +7537,42 @@ __webpack_require__.r(__webpack_exports__);
     toggle: function toggle() {
       this.collapsed = !this.collapsed;
     },
+    getPosition: function getPosition(element) {
+      var xPosition = 0;
+      var yPosition = 0;
+
+      while (element) {
+        xPosition += element.offsetLeft - element.scrollLeft + element.clientLeft;
+        yPosition += element.offsetTop - element.scrollTop + element.clientTop;
+        element = element.offsetParent;
+      }
+
+      return {
+        x: xPosition,
+        y: yPosition
+      };
+    },
     // Set the height of the component
     setHeight: function setHeight() {
       var offset = 4;
       var el = this.$refs.dropdown;
       var parent = el.closest('.dropdown-parent');
-      if (parent != null) el.style.cssText = "top: ".concat(parent.getBoundingClientRect().height + offset, "px; max-height: ").concat(el.scrollHeight, "px;");else el.style.cssText = "max-height: ".concat(el.scrollHeight, "px;");
+      var wrapper = this.$refs.wrapper;
+      var parentPos = this.getPosition(parent);
+      var parentTop = parentPos.y;
+      var parentLeft = parentPos.x;
+      var parentHeight = parent.getBoundingClientRect().height;
+      var parentWidth = parent.getBoundingClientRect().width;
+      var elHeight = el.getBoundingClientRect().height;
+      var elWidth = el.getBoundingClientRect().width; // Align the dropdown after the parent
+
+      if (parent != null) {
+        console.log('Top: ' + parentTop);
+        console.log('Left: ' + parentLeft); // Top + Right align
+
+        if (wrapper.classList.contains('right')) el.style.cssText = "top: ".concat(parentTop + parentHeight + offset, "px; left: ").concat(parentLeft + parentWidth - elWidth + offset, "px ;max-height: ").concat(el.scrollHeight, "px;"); // Top + Left align
+        else el.style.cssText = "top: ".concat(parentTop + parentHeight + offset, "px; left: ").concat(parentLeft - offset, "px ;max-height: ").concat(el.scrollHeight, "px;");
+      } else el.style.cssText = "max-height: ".concat(el.scrollHeight, "px;");
     }
   },
   mounted: function mounted() {
@@ -7551,182 +7581,6 @@ __webpack_require__.r(__webpack_exports__);
   updated: function updated() {
     this.setHeight();
   }
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownCheckbox.vue?vue&type=script&lang=js&":
-/*!***************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DropdownCheckbox.vue?vue&type=script&lang=js& ***!
-  \***************************************************************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-/* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'dropdownCheckbox',
-  props: ['title', 'options', 'buttonText', 'config'],
-  data: function data() {
-    return {
-      selected: [],
-      collapsed: true
-    };
-  },
-  computed: {
-    theConfig: function theConfig() {
-      var config = {
-        button: 'plain'
-      };
-
-      if (this.config != null) {
-        config = this.config;
-      }
-
-      return config;
-    }
-  },
-  methods: {
-    submit: function submit(value) {
-      this.$emit('input', this.selected);
-      this.$emit('submit', value);
-    },
-    close: function close() {
-      this.collapsed = true;
-    },
-    clear: function clear() {
-      this.selected = [];
-      document.querySelectorAll('input[type=checkbox]').forEach(function (input) {
-        input.checked = false;
-      });
-    },
-    toggle: function toggle() {
-      this.collapsed = !this.collapsed;
-    }
-  },
-  updated: function updated() {
-    // Set the height of the component
-    var offset = 4;
-    var el = this.$refs.dropdown;
-    var parent = el.closest('.dropdown-parent');
-    if (parent != null) el.style.cssText = "top: ".concat(parent.getBoundingClientRect().height + offset, "px; max-height: ").concat(el.scrollHeight, "px;");else el.style.cssText = "max-height: ".concat(el.scrollHeight, "px;");
-  },
-  destroyed: function destroyed() {}
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadio.vue?vue&type=script&lang=js&":
-/*!************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DropdownRadio.vue?vue&type=script&lang=js& ***!
-  \************************************************************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-/* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'dropdownRadio',
-  props: ['options', 'currentOptionId', 'defaultOption', 'title'],
-  data: function data() {
-    return {
-      collapsed: true
-    };
-  },
-  computed: {
-    optionsToShow: function optionsToShow() {
-      var optionsToShow = JSON.parse(JSON.stringify(this.options));
-      if (this.defaultOption != null) optionsToShow.unshift(this.defaultOption);
-      return optionsToShow;
-    },
-    currentOption: function currentOption() {
-      var _this = this;
-
-      if (this.optionsToShow[0] != null) {
-        if (this.optionsToShow[0].title != null) {
-          var found = this.optionsToShow.find(function (x) {
-            return x.id == _this.currentOptionId;
-          });
-          if (found) return found;else return {
-            title: 'Set filter'
-          };
-        }
-      } else return {
-        title: 'Fetcing..'
-      };
-    }
-  },
-  methods: {
-    submit: function submit(id) {
-      this.$emit('submit', id);
-      this.$emit('input', id);
-      this.collapsed = true;
-    },
-    toggle: function toggle() {
-      this.collapsed = !this.collapsed;
-    }
-  },
-  updated: function updated() {
-    // Set the height of the component
-    var offset = 4;
-    var el = this.$refs.dropdown;
-    var parent = el.closest('.dropdown-wrapper');
-    if (parent != null) el.style.cssText = "top: ".concat(parent.getBoundingClientRect().height + offset, "px; max-height: ").concat(el.scrollHeight, "px;");else el.style.cssText = "max-height: ".concat(el.scrollHeight, "px;");
-  },
-  destroyed: function destroyed() {}
 });
 
 /***/ }),
@@ -7781,6 +7635,7 @@ __webpack_require__.r(__webpack_exports__);
       document.querySelectorAll('input[type=checkbox]').forEach(function (input) {
         input.checked = false;
       });
+      this.$emit('input', this.selected);
     }
   },
   updated: function updated() {},
@@ -7851,7 +7706,18 @@ __webpack_require__.r(__webpack_exports__);
     },
     toggleAlt: function toggleAlt() {
       this.$refs.modalWrapper.classList.toggle('active');
+    },
+    setPos: function setPos() {
+      var el = this.$refs.modal;
+      var elWidth = el.getBoundingClientRect().width;
+      el.style.cssText = "left: calc(50vw - ".concat(elWidth / 2, "px);");
     }
+  },
+  mounted: function mounted() {
+    this.setPos();
+  },
+  updated: function updated() {
+    this.setPos();
   }
 });
 
@@ -8794,24 +8660,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ProductSingle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ProductSingle */ "./resources/js/components/ProductSingle.vue");
 /* harmony import */ var _Tooltip__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tooltip */ "./resources/js/components/Tooltip.vue");
 /* harmony import */ var _SelectDropdown__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./SelectDropdown */ "./resources/js/components/SelectDropdown.vue");
-/* harmony import */ var _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./DropdownCheckbox */ "./resources/js/components/DropdownCheckbox.vue");
-/* harmony import */ var _DropdownRadio__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./DropdownRadio */ "./resources/js/components/DropdownRadio.vue");
+/* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./RadioButtons */ "./resources/js/components/RadioButtons.vue");
+/* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Dropdown */ "./resources/js/components/Dropdown.vue");
 /* harmony import */ var _store_modules_products__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../store/modules/products */ "./resources/js/store/modules/products.js");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -8942,8 +8797,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     ProductSingle: _ProductSingle__WEBPACK_IMPORTED_MODULE_3__["default"],
     Tooltip: _Tooltip__WEBPACK_IMPORTED_MODULE_4__["default"],
     SelectDropdown: _SelectDropdown__WEBPACK_IMPORTED_MODULE_5__["default"],
-    DropdownCheckbox: _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_6__["default"],
-    DropdownRadio: _DropdownRadio__WEBPACK_IMPORTED_MODULE_7__["default"]
+    Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_7__["default"],
+    RadioButtons: _RadioButtons__WEBPACK_IMPORTED_MODULE_6__["default"]
   },
   data: function data() {
     return {
@@ -9186,6 +9041,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'radioButtons',
   props: ['options', 'optionNameKey', 'optionValueKey', 'currentOptionId'],
@@ -9194,9 +9050,53 @@ __webpack_require__.r(__webpack_exports__);
       selection: null
     };
   },
+  computed: {
+    currentOption: function currentOption() {
+      var _this = this;
+
+      if (this.selection != null) {
+        if (this.optionValueKey != null) {
+          if (this.options.find(function (x) {
+            return x[_this.optionValueKey] == _this.selection;
+          })) {
+            if (this.optionNameKey != null) {
+              return this.options.find(function (x) {
+                return x[_this.optionValueKey] == _this.selection;
+              })[this.optionNameKey];
+            } else return this.selection;
+          } else return 'select b';
+        } else {
+          if (this.options.find(function (x) {
+            return x == _this.selection;
+          })) {
+            if (this.optionNameKey != null) {
+              return this.options.find(function (x) {
+                return x == _this.selection;
+              })[this.optionNameKey];
+            } else return this.selection;
+          } else return 'select a';
+        }
+      } else return 'nothing';
+    }
+  },
   methods: {
     submit: function submit() {
       this.$emit('input', this.selection);
+      this.$emit('submit', this.selection);
+    },
+    change: function change() {
+      this.$emit('change', this.selection);
+    },
+    click: function click() {
+      this.$emit('onClick', this.selection);
+    },
+    clear: function clear() {
+      console.log('clear!');
+      this.selection = [];
+      document.querySelectorAll('input[type=radio]').forEach(function (input) {
+        input.checked = false;
+      });
+      this.$emit('input', this.selected);
     }
   },
   updated: function updated() {
@@ -9204,7 +9104,7 @@ __webpack_require__.r(__webpack_exports__);
     if (!this.selection) if (this.currentOptionId) document.querySelector('#radio-option-' + this.currentOptionId).checked = true;
   },
   mounted: function mounted() {
-    if (this.currentOptionId) document.querySelector('#radio-option-' + this.currentOptionId).checked = true;
+    if (this.currentOptionId) if (document.querySelector('#radio-option-' + this.currentOptionId)) document.querySelector('#radio-option-' + this.currentOptionId).checked = true;
   }
 });
 
@@ -9435,7 +9335,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Loader */ "./resources/js/components/Loader.vue");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Dropdown */ "./resources/js/components/Dropdown.vue");
+/* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./RadioButtons */ "./resources/js/components/RadioButtons.vue");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _store_models_Role__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../store/models/Role */ "./resources/js/store/models/Role.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -9541,22 +9444,55 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'teamsTable',
   props: ['teams', 'loading', 'authUser', 'collection', 'selectedCount', 'users', 'authUser'],
   components: {
-    Loader: _Loader__WEBPACK_IMPORTED_MODULE_1__["default"]
+    Loader: _Loader__WEBPACK_IMPORTED_MODULE_1__["default"],
+    Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_2__["default"],
+    RadioButtons: _RadioButtons__WEBPACK_IMPORTED_MODULE_3__["default"]
   },
   data: function data() {
     return {
       sortBy: 'id',
       sortAsc: true,
-      expandedIds: []
+      expandedIds: [],
+      editUser: {
+        permission_level: ''
+      }
     };
   },
-  computed: {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_4__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']), {
+    roles: function roles() {
+      var _this = this;
+
+      return _store_models_Role__WEBPACK_IMPORTED_MODULE_5__["default"].all().filter(function (role) {
+        return role.id <= _this.userPermissionLevel;
+      });
+    },
     teamsSorted: function teamsSorted() {
       var teams = this.teams;
       teams.forEach(function (team) {
@@ -9574,8 +9510,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       return dataSorted;
     }
-  },
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teamInvites', ['deleteInvite', 'resend']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['removeUserFromTeam']), {
+  }),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_4__["mapActions"])('entities/teamInvites', ['deleteInvite', 'resend']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_4__["mapActions"])('entities/userTeams', ['removeUserFromTeam']), {
     onSelect: function onSelect(index) {
       this.$emit('onSelect', index);
     },
@@ -9855,6 +9791,65 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/input/CheckboxButtons.vue?vue&type=script&lang=js&":
+/*!********************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/input/CheckboxButtons.vue?vue&type=script&lang=js& ***!
+  \********************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'checkboxButtons',
+  props: ['options', 'optionNameKey', 'optionValueKey'],
+  data: function data() {
+    return {
+      selected: [],
+      collapsed: true
+    };
+  },
+  computed: {},
+  methods: {
+    submit: function submit() {
+      this.$emit('input', this.selected);
+      this.$emit('submit', this.selected);
+    },
+    change: function change() {
+      this.$emit('change', this.selected);
+    },
+    clear: function clear() {
+      this.selected = [];
+      document.querySelectorAll('input[type=checkbox]').forEach(function (input) {
+        input.checked = false;
+      });
+      this.$emit('input', this.selected);
+    }
+  },
+  updated: function updated() {},
+  destroyed: function destroyed() {}
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/screens/Catalogue.vue?vue&type=script&lang=js&":
 /*!****************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/screens/Catalogue.vue?vue&type=script&lang=js& ***!
@@ -9873,20 +9868,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _CatalogueHeader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../CatalogueHeader */ "./resources/js/components/CatalogueHeader.vue");
 /* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../Loader */ "./resources/js/components/Loader.vue");
 /* harmony import */ var _SelectedController__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../SelectedController */ "./resources/js/components/SelectedController.vue");
-/* harmony import */ var _DropdownRadio__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../DropdownRadio */ "./resources/js/components/DropdownRadio.vue");
-/* harmony import */ var _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../DropdownCheckbox */ "./resources/js/components/DropdownCheckbox.vue");
-/* harmony import */ var _store_models_Comment__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../store/models/Comment */ "./resources/js/store/models/Comment.js");
-/* harmony import */ var _store_models_Product__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../store/models/Product */ "./resources/js/store/models/Product.js");
-/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
-/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
-/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
-/* harmony import */ var _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../store/models/ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
-/* harmony import */ var _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../store/models/CommentVote */ "./resources/js/store/models/CommentVote.js");
-/* harmony import */ var _store_models_Category__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../store/models/Category */ "./resources/js/store/models/Category.js");
-/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
-/* harmony import */ var _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../../store/models/TeamProduct */ "./resources/js/store/models/TeamProduct.js");
-/* harmony import */ var _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../../store/models/PhaseProduct */ "./resources/js/store/models/PhaseProduct.js");
+/* harmony import */ var _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../input/CheckboxButtons */ "./resources/js/components/input/CheckboxButtons.vue");
+/* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../RadioButtons */ "./resources/js/components/RadioButtons.vue");
+/* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../Dropdown */ "./resources/js/components/Dropdown.vue");
+/* harmony import */ var _store_models_Comment__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../store/models/Comment */ "./resources/js/store/models/Comment.js");
+/* harmony import */ var _store_models_Product__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../store/models/Product */ "./resources/js/store/models/Product.js");
+/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
+/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
+/* harmony import */ var _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../store/models/ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
+/* harmony import */ var _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../store/models/CommentVote */ "./resources/js/store/models/CommentVote.js");
+/* harmony import */ var _store_models_Category__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../store/models/Category */ "./resources/js/store/models/Category.js");
+/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../../store/models/TeamProduct */ "./resources/js/store/models/TeamProduct.js");
+/* harmony import */ var _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ../../store/models/PhaseProduct */ "./resources/js/store/models/PhaseProduct.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -9936,6 +9932,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -9965,9 +9978,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     ProductTabs: _ProductTabs__WEBPACK_IMPORTED_MODULE_4__["default"],
     SelectedController: _SelectedController__WEBPACK_IMPORTED_MODULE_7__["default"],
     Loader: _Loader__WEBPACK_IMPORTED_MODULE_6__["default"],
-    DropdownCheckbox: _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_9__["default"],
-    DropdownRadio: _DropdownRadio__WEBPACK_IMPORTED_MODULE_8__["default"],
-    CatalogueHeader: _CatalogueHeader__WEBPACK_IMPORTED_MODULE_5__["default"]
+    CatalogueHeader: _CatalogueHeader__WEBPACK_IMPORTED_MODULE_5__["default"],
+    CheckboxButtons: _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_8__["default"],
+    Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_10__["default"],
+    RadioButtons: _RadioButtons__WEBPACK_IMPORTED_MODULE_9__["default"]
   },
   data: function data() {
     return {
@@ -9992,13 +10006,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       };else return null;
     },
     teamProducts: function teamProducts() {
-      return _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_20__["default"]["with"]('products').all();
+      return _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_21__["default"]["with"]('products').all();
     },
     phaseProducts: function phaseProducts() {
-      return _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_21__["default"]["with"]('products').all();
+      return _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_22__["default"]["with"]('products').all();
     },
     collection: function collection() {
-      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_14__["default"].find(this.currentFileId);
+      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_15__["default"].find(this.currentFileId);
     },
     startDate: function startDate() {
       if (this.collection.start_time != null) {
@@ -10023,7 +10037,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     products: function products() {
       var _this = this;
 
-      var products = _store_models_Product__WEBPACK_IMPORTED_MODULE_11__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes', 'comments.user.teams', 'comments.team'])["with"]('productFinalAction')["with"]('teamActions.team')["with"]('phaseActions').all();
+      var products = _store_models_Product__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes', 'comments.user.teams', 'comments.team'])["with"]('productFinalAction')["with"]('teamActions.team')["with"]('phaseActions').all();
       var totalUsers = this.teamUsers;
       var userId = this.authUser.id;
       var teamFilterId = this.currentTeamId;
@@ -10347,7 +10361,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return this.$store.getters['entities/actions/all']();
     },
     comments: function comments() {
-      var comments = _store_models_Comment__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"](['votes', 'user.teams']).all();
+      var comments = _store_models_Comment__WEBPACK_IMPORTED_MODULE_11__["default"].query()["with"](['votes', 'user.teams']).all();
       var teamFilterId = this.currentTeamId;
 
       if (teamFilterId > 0) {
@@ -10359,7 +10373,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else return comments;
     },
     categories: function categories() {
-      return _store_models_Category__WEBPACK_IMPORTED_MODULE_17__["default"].query()["with"]('products').all();
+      return _store_models_Category__WEBPACK_IMPORTED_MODULE_18__["default"].query()["with"]('products').all();
     },
     dynamicCategories: function dynamicCategories() {
       var products = this.products;
@@ -10371,17 +10385,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return uniqueCategories;
     },
     finalActions: function finalActions() {
-      return _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_15__["default"].query().all();
+      return _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_16__["default"].query().all();
     },
     commentVotes: function commentVotes() {
-      return _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_16__["default"].query()["with"]('comment').all();
+      return _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_17__["default"].query()["with"]('comment').all();
     },
     authUser: function authUser() {
       // return this.$store.getters.authUser;
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_19__["default"].query()["with"]('teams')["with"]('workspaces').first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_20__["default"].query()["with"]('teams')["with"]('workspaces').first();
     },
     users: function users() {
-      return _store_models_User__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"]('teams').all();
+      return _store_models_User__WEBPACK_IMPORTED_MODULE_13__["default"].query()["with"]('teams').all();
     },
     teams: function teams() {
       return this.$store.getters['entities/teams/teams'];
@@ -10508,7 +10522,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (!(_store_models_Collection__WEBPACK_IMPORTED_MODULE_14__["default"].all().length <= 0)) {
+                if (!(_store_models_Collection__WEBPACK_IMPORTED_MODULE_15__["default"].all().length <= 0)) {
                   _context.next = 3;
                   break;
                 }
@@ -10517,7 +10531,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 return this.fetchCollections(this.currentWorkspaceId);
 
               case 3:
-                if (!(_store_models_User__WEBPACK_IMPORTED_MODULE_12__["default"].all().length <= 0)) {
+                if (!(_store_models_User__WEBPACK_IMPORTED_MODULE_13__["default"].all().length <= 0)) {
                   _context.next = 6;
                   break;
                 }
@@ -10585,13 +10599,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Loader */ "./resources/js/components/Loader.vue");
 /* harmony import */ var _CataloguesTable__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../CataloguesTable */ "./resources/js/components/CataloguesTable.vue");
-/* harmony import */ var _DropdownRadio__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../DropdownRadio */ "./resources/js/components/DropdownRadio.vue");
-/* harmony import */ var _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../DropdownCheckbox */ "./resources/js/components/DropdownCheckbox.vue");
-/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
-/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
-/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
-/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../RadioButtons */ "./resources/js/components/RadioButtons.vue");
+/* harmony import */ var _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../input/CheckboxButtons */ "./resources/js/components/input/CheckboxButtons.vue");
+/* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../Dropdown */ "./resources/js/components/Dropdown.vue");
+/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
+/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
+/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -10627,6 +10642,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -10644,8 +10676,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   components: {
     Loader: _Loader__WEBPACK_IMPORTED_MODULE_2__["default"],
     CataloguesTable: _CataloguesTable__WEBPACK_IMPORTED_MODULE_3__["default"],
-    DropdownCheckbox: _DropdownCheckbox__WEBPACK_IMPORTED_MODULE_5__["default"],
-    DropdownRadio: _DropdownRadio__WEBPACK_IMPORTED_MODULE_4__["default"]
+    Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_6__["default"],
+    CheckboxButtons: _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_5__["default"],
+    RadioButtons: _RadioButtons__WEBPACK_IMPORTED_MODULE_4__["default"]
   },
   data: function data() {
     return {
@@ -10656,7 +10689,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       unsub: ''
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'userPermissionLevel']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel']), {
     defaultTeam: function defaultTeam() {
       if (this.userPermissionLevel >= 3) return {
         id: 0,
@@ -10664,7 +10697,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       };else return null;
     },
     collections: function collections() {
-      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_6__["default"].query().all();
+      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_7__["default"].query().all();
     },
     uniqueCollections: function uniqueCollections() {
       var inputData = this.collections;
@@ -10677,11 +10710,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return uniqueData;
     },
     users: function users() {
-      return _store_models_User__WEBPACK_IMPORTED_MODULE_8__["default"].query()["with"]('teams').all();
+      return _store_models_User__WEBPACK_IMPORTED_MODULE_9__["default"].query()["with"]('teams').all();
     },
     authUser: function authUser() {
       // return this.$store.getters.authUser;
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"]('teams')["with"]('workspaces').first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_11__["default"].query()["with"]('teams')["with"]('workspaces').first();
     },
     teams: function teams() {
       return this.$store.getters['entities/teams/teams'];
@@ -10710,8 +10743,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     initRequiresWorkspace: function initRequiresWorkspace() {
-      if (_store_models_Collection__WEBPACK_IMPORTED_MODULE_6__["default"].all().length <= 0) this.fetchCollections(this.currentWorkspaceId);
-      if (_store_models_User__WEBPACK_IMPORTED_MODULE_8__["default"].all().length <= 0) this.fetchUsers(this.currentWorkspaceId);
+      if (_store_models_Collection__WEBPACK_IMPORTED_MODULE_7__["default"].all().length <= 0) this.fetchCollections(this.currentWorkspaceId);
+      if (_store_models_User__WEBPACK_IMPORTED_MODULE_9__["default"].all().length <= 0) this.fetchUsers(this.currentWorkspaceId);
     }
   }),
   created: function created() {
@@ -10765,12 +10798,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 
 
 
- // import TeamInviteModal from '../TeamInviteModal';
 
 
 
@@ -10781,7 +10812,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   components: {
     TeamsTopBar: _TeamsTopBar__WEBPACK_IMPORTED_MODULE_2__["default"],
     TeamsTable: _TeamsTable__WEBPACK_IMPORTED_MODULE_3__["default"],
-    // TeamInviteModal,
     ModalInviteToTeam: _ModalInviteToTeam__WEBPACK_IMPORTED_MODULE_4__["default"]
   },
   data: function data() {
@@ -11084,45 +11114,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownCheckbox.vue?vue&type=style&index=0&id=0c861b5f&scoped=true&lang=scss&":
-/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DropdownCheckbox.vue?vue&type=style&index=0&id=0c861b5f&scoped=true&lang=scss& ***!
-  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".header[data-v-0c861b5f] {\n  text-align: center;\n}\n.bubble[data-v-0c861b5f] {\n  position: absolute;\n  left: -10px;\n  top: -10px;\n  width: 20px;\n  height: 20px;\n  line-height: 20px;\n  background: #F3F3F3;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  text-align: center;\n  border-radius: 10px;\n}", ""]);
-
-// exports
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadio.vue?vue&type=style&index=0&scopes=true&lang=scss&":
-/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DropdownRadio.vue?vue&type=style&index=0&scopes=true&lang=scss& ***!
-  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
+exports.push([module.i, ".dropdown {\n  position: fixed;\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n}", ""]);
 
 // exports
 
@@ -11426,7 +11418,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".teams-table[data-v-0b6bf463] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.teams-table .team-row .view-single[data-v-0b6bf463] {\n  border-color: transparent;\n}\n.teams-table .team-row.expanded[data-v-0b6bf463] {\n  background: #F3F3F3;\n}\n.teams-table .team-row.expanded .view-single[data-v-0b6bf463] {\n  color: #1B1C1D;\n  background: white;\n}\n.flex-table-row[data-v-0b6bf463] {\n  padding: 12px 0;\n}\n.flex-table-row > *.select[data-v-0b6bf463], .flex-table-row > *[data-v-0b6bf463]:nth-child(1) {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(2) {\n  padding-left: 32px;\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(3) {\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(4) {\n  min-width: 112px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(5) {\n  min-width: 132px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(6) {\n  min-width: 80px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(7) {\n  margin-left: auto;\n  min-width: 80px;\n  padding-left: 16px;\n  padding-right: 32px;\n}\n.flex-table-row > *.action[data-v-0b6bf463] > :first-child {\n  margin-right: 20px;\n}\n.flex-table-row td.title[data-v-0b6bf463] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.flex-table-row td.title .square[data-v-0b6bf463] {\n  margin-left: -32px;\n  color: #1B1C1D;\n  background: none;\n}\n.flex-table-row td.title .square i[data-v-0b6bf463] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  font-size: 12px;\n}\n.flex-table-row.invited-row .name[data-v-0b6bf463], .flex-table-row.invited-row .email[data-v-0b6bf463], .flex-table-row.invited-row .role[data-v-0b6bf463] {\n  opacity: 0.5;\n}\n.flex-table-row.invited-row.add-member[data-v-0b6bf463] {\n  -webkit-box-pack: center;\n          justify-content: center;\n  cursor: pointer;\n}\n.flex-table-row.invited-row.add-member:hover td[data-v-0b6bf463] {\n  border-bottom: solid 1px #1B1C1D;\n}\n.flex-table-row.invited-row.add-member td[data-v-0b6bf463] {\n  color: #3C3B54;\n  font-weight: 500;\n  font-size: 12px;\n  padding: 0;\n  border-bottom: solid 1px transparent;\n}\n.flex-table-row.invited-row.add-member td i[data-v-0b6bf463] {\n  font-size: 13px;\n}\n.flex-table-row i[data-v-0b6bf463] {\n  margin-right: 8px;\n}\ni[data-v-0b6bf463] {\n  font-size: 11px;\n}\n.show-more[data-v-0b6bf463] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-0b6bf463] {\n  -webkit-animation: loading-data-v-0b6bf463 2s;\n          animation: loading-data-v-0b6bf463 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-0b6bf463] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox input[data-v-0b6bf463] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-0b6bf463] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-0b6bf463]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463]:after {\n  display: block;\n}\n.view-single[data-v-0b6bf463] {\n  font-size: 12px;\n  font-weight: 700;\n  color: #A8A8A8;\n  cursor: pointer;\n}\n.team-totals[data-v-0b6bf463] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.team-totals span[data-v-0b6bf463] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.user-row[data-v-0b6bf463] {\n  background: #F9F9F9;\n}\n.user-row[data-v-0b6bf463]:not(:last-child) {\n  border-bottom: solid 2px white;\n}\n.user-row td[data-v-0b6bf463] {\n  font-size: 14px;\n}\n.user-row td.index[data-v-0b6bf463] {\n  text-align: right;\n  padding-right: 20px;\n}\n.team-users[data-v-0b6bf463] {\n  overflow: hidden;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n}\n.team-users.collapsed[data-v-0b6bf463] {\n  max-height: 0 !important;\n}\n.team-users.expanded + .team-row-wrapper[data-v-0b6bf463] {\n  box-shadow: 0 1px 0 #DFDFDF inset;\n}\n.team-row.expanded td.title .button i[data-v-0b6bf463] {\n  -webkit-transform: rotateZ(90deg);\n          transform: rotateZ(90deg);\n}", ""]);
+exports.push([module.i, ".teams-table[data-v-0b6bf463] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.teams-table .team-row .view-single[data-v-0b6bf463] {\n  border-color: transparent;\n}\n.teams-table .team-row.expanded[data-v-0b6bf463] {\n  background: #F3F3F3;\n}\n.teams-table .team-row.expanded .view-single[data-v-0b6bf463] {\n  color: #1B1C1D;\n  background: white;\n}\n.flex-table-row[data-v-0b6bf463] {\n  padding: 12px 0;\n}\n.flex-table-row > *.select[data-v-0b6bf463], .flex-table-row > *[data-v-0b6bf463]:nth-child(1) {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(2) {\n  padding-left: 32px;\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(3) {\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(4) {\n  min-width: 112px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(5) {\n  min-width: 132px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(6) {\n  min-width: 80px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(7) {\n  margin-left: auto;\n  min-width: 80px;\n  padding-left: 16px;\n  padding-right: 32px;\n}\n.flex-table-row > *.action[data-v-0b6bf463] > :first-child {\n  margin-right: 20px;\n}\n.flex-table-row td.title[data-v-0b6bf463] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.flex-table-row td.title .square[data-v-0b6bf463] {\n  margin-left: -32px;\n  color: #1B1C1D;\n  background: none;\n}\n.flex-table-row td.title .square i[data-v-0b6bf463] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  font-size: 12px;\n}\n.flex-table-row.invited-row .name[data-v-0b6bf463], .flex-table-row.invited-row .email[data-v-0b6bf463], .flex-table-row.invited-row .role[data-v-0b6bf463] {\n  opacity: 0.5;\n}\n.flex-table-row.invited-row.add-member[data-v-0b6bf463] {\n  -webkit-box-pack: center;\n          justify-content: center;\n  cursor: pointer;\n}\n.flex-table-row.invited-row.add-member:hover td[data-v-0b6bf463] {\n  border-bottom: solid 1px #1B1C1D;\n}\n.flex-table-row.invited-row.add-member td[data-v-0b6bf463] {\n  color: #3C3B54;\n  font-weight: 500;\n  font-size: 12px;\n  padding: 0;\n  border-bottom: solid 1px transparent;\n}\n.flex-table-row.invited-row.add-member td i[data-v-0b6bf463] {\n  font-size: 13px;\n}\ni[data-v-0b6bf463] {\n  font-size: 11px;\n}\n.show-more[data-v-0b6bf463] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-0b6bf463] {\n  -webkit-animation: loading-data-v-0b6bf463 2s;\n          animation: loading-data-v-0b6bf463 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-0b6bf463] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox input[data-v-0b6bf463] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-0b6bf463] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-0b6bf463]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463]:after {\n  display: block;\n}\n.view-single[data-v-0b6bf463] {\n  font-size: 12px;\n  font-weight: 700;\n  color: #A8A8A8;\n  cursor: pointer;\n}\n.team-totals[data-v-0b6bf463] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.team-totals span[data-v-0b6bf463] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.user-row[data-v-0b6bf463] {\n  background: #F9F9F9;\n}\n.user-row[data-v-0b6bf463]:not(:last-child) {\n  border-bottom: solid 2px white;\n}\n.user-row td[data-v-0b6bf463] {\n  font-size: 14px;\n}\n.user-row td.index[data-v-0b6bf463] {\n  text-align: right;\n  padding-right: 20px;\n}\n.team-users[data-v-0b6bf463] {\n  overflow: hidden;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n}\n.team-users.collapsed[data-v-0b6bf463] {\n  max-height: 0 !important;\n}\n.team-users.expanded + .team-row-wrapper[data-v-0b6bf463] {\n  box-shadow: 0 1px 0 #DFDFDF inset;\n}\n.team-row.expanded td.title .button i[data-v-0b6bf463] {\n  -webkit-transform: rotateZ(90deg);\n          transform: rotateZ(90deg);\n}", ""]);
 
 // exports
 
@@ -11465,6 +11457,25 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 // module
 exports.push([module.i, ".vue-component-tooltip[data-v-09733fe8] {\n  background: #43425D;\n  border: solid 1px #43425D;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  position: fixed;\n  z-index: 9;\n  color: white;\n  border-radius: 4px;\n}\n.vue-component-tooltip.teams[data-v-09733fe8] {\n  width: 140px;\n}\n.vue-component-tooltip.users[data-v-09733fe8] {\n  width: 200px;\n}\n.vue-component-tooltip.text[data-v-09733fe8] {\n  padding: 8px;\n  position: fixed;\n}\n.header[data-v-09733fe8] {\n  text-align: center;\n  padding: 10px 0;\n  color: #A8A8A8;\n  font-size: 14px;\n  font-weight: 400;\n}\n.tooltip-row[data-v-09733fe8] {\n  font-size: 12px;\n  padding: 8px;\n  background: rgba(255, 255, 255, 0.1);\n}\n.tooltip-row[data-v-09733fe8]:nth-child(even) {\n  background: rgba(255, 255, 255, 0.2);\n}\n.tooltip-row .team[data-v-09733fe8] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.tooltip-row .count[data-v-09733fe8] {\n  font-weight: 700;\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/input/CheckboxButtons.vue?vue&type=style&index=0&id=d2d067c4&scoped=true&lang=scss&":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/input/CheckboxButtons.vue?vue&type=style&index=0&id=d2d067c4&scoped=true&lang=scss& ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".header[data-v-d2d067c4] {\n  text-align: center;\n}\n.bubble[data-v-d2d067c4] {\n  position: absolute;\n  left: -10px;\n  top: -10px;\n  width: 20px;\n  height: 20px;\n  line-height: 20px;\n  background: #F3F3F3;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  text-align: center;\n  border-radius: 10px;\n}", ""]);
 
 // exports
 
@@ -12906,66 +12917,6 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownCheckbox.vue?vue&type=style&index=0&id=0c861b5f&scoped=true&lang=scss&":
-/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DropdownCheckbox.vue?vue&type=style&index=0&id=0c861b5f&scoped=true&lang=scss& ***!
-  \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownCheckbox.vue?vue&type=style&index=0&id=0c861b5f&scoped=true&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownCheckbox.vue?vue&type=style&index=0&id=0c861b5f&scoped=true&lang=scss&");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadio.vue?vue&type=style&index=0&scopes=true&lang=scss&":
-/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DropdownRadio.vue?vue&type=style&index=0&scopes=true&lang=scss& ***!
-  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownRadio.vue?vue&type=style&index=0&scopes=true&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadio.vue?vue&type=style&index=0&scopes=true&lang=scss&");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Input/CheckboxButtons.vue?vue&type=style&index=0&id=108e2bfe&scoped=true&lang=scss&":
 /*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Input/CheckboxButtons.vue?vue&type=style&index=0&id=108e2bfe&scoped=true&lang=scss& ***!
@@ -13499,6 +13450,36 @@ options.transform = transform
 options.insertInto = undefined;
 
 var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/input/CheckboxButtons.vue?vue&type=style&index=0&id=d2d067c4&scoped=true&lang=scss&":
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/input/CheckboxButtons.vue?vue&type=style&index=0&id=d2d067c4&scoped=true&lang=scss& ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/src??ref--7-2!../../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../../node_modules/vue-loader/lib??vue-loader-options!./CheckboxButtons.vue?vue&type=style&index=0&id=d2d067c4&scoped=true&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/input/CheckboxButtons.vue?vue&type=style&index=0&id=d2d067c4&scoped=true&lang=scss&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -14664,17 +14645,9 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "dropdown-wrapper" },
+    { ref: "wrapper", staticClass: "dropdown-wrapper" },
     [
-      _vm._t(
-        "button",
-        [
-          _c("span", { staticClass: "button", on: { click: _vm.toggle } }, [
-            _vm._v("Open dropdown")
-          ])
-        ],
-        { toggle: _vm.toggle, collapsed: _vm.collapsed }
-      ),
+      _vm._t("button", null, { toggle: _vm.toggle, collapsed: _vm.collapsed }),
       _vm._v(" "),
       _c("div", {
         staticClass: "overlay invisible",
@@ -14717,231 +14690,6 @@ var render = function() {
     ],
     2
   )
-}
-var staticRenderFns = []
-render._withStripped = true
-
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownCheckbox.vue?vue&type=template&id=0c861b5f&scoped=true&":
-/*!*******************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DropdownCheckbox.vue?vue&type=template&id=0c861b5f&scoped=true& ***!
-  \*******************************************************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _vm.options != null
-    ? _c(
-        "div",
-        { staticClass: "dropdown-wrapper" },
-        [
-          _vm._t(
-            "button",
-            [
-              _c("span", { staticClass: "button", on: { click: _vm.toggle } }, [
-                _vm._v("Open dropdown")
-              ])
-            ],
-            { toggle: _vm.toggle, clear: _vm.clear }
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              ref: "dropdown",
-              staticClass: "dropdown checkbox-dropdown",
-              class: { collapsed: _vm.collapsed }
-            },
-            [
-              _c("div", { staticClass: "inner" }, [
-                _c("div", { staticClass: "header" }, [
-                  _c("span", [_vm._v(_vm._s(_vm.title))])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "body" }, [
-                  _c(
-                    "div",
-                    { staticClass: "checkbox-buttons" },
-                    _vm._l(_vm.options, function(option, index) {
-                      return _c(
-                        "label",
-                        {
-                          key: index,
-                          staticClass: "checkbox",
-                          class: {
-                            active: _vm.selected.find(function(x) {
-                              return x == option
-                            })
-                          }
-                        },
-                        [
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.selected,
-                                expression: "selected"
-                              }
-                            ],
-                            attrs: { type: "checkbox" },
-                            domProps: {
-                              value: option,
-                              checked: Array.isArray(_vm.selected)
-                                ? _vm._i(_vm.selected, option) > -1
-                                : _vm.selected
-                            },
-                            on: {
-                              change: [
-                                function($event) {
-                                  var $$a = _vm.selected,
-                                    $$el = $event.target,
-                                    $$c = $$el.checked ? true : false
-                                  if (Array.isArray($$a)) {
-                                    var $$v = option,
-                                      $$i = _vm._i($$a, $$v)
-                                    if ($$el.checked) {
-                                      $$i < 0 &&
-                                        (_vm.selected = $$a.concat([$$v]))
-                                    } else {
-                                      $$i > -1 &&
-                                        (_vm.selected = $$a
-                                          .slice(0, $$i)
-                                          .concat($$a.slice($$i + 1)))
-                                    }
-                                  } else {
-                                    _vm.selected = $$c
-                                  }
-                                },
-                                function($event) {
-                                  return _vm.submit(option)
-                                }
-                              ]
-                            }
-                          }),
-                          _vm._v(" "),
-                          _c("span", { staticClass: "checkmark" }),
-                          _vm._v(
-                            "\n                        " +
-                              _vm._s(option) +
-                              "\n                    "
-                          )
-                        ]
-                      )
-                    }),
-                    0
-                  )
-                ])
-              ])
-            ]
-          )
-        ],
-        2
-      )
-    : _vm._e()
-}
-var staticRenderFns = []
-render._withStripped = true
-
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadio.vue?vue&type=template&id=cc54cde2&":
-/*!****************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DropdownRadio.vue?vue&type=template&id=cc54cde2& ***!
-  \****************************************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _vm.currentOption != null
-    ? _c(
-        "div",
-        { staticClass: "dropdown-wrapper" },
-        [
-          _vm._t(
-            "button",
-            [
-              _c("span", { staticClass: "button", on: { click: _vm.toggle } }, [
-                _vm._v("Open dropdown")
-              ])
-            ],
-            {
-              toggle: _vm.toggle,
-              collapsed: _vm.collapsed,
-              currentOption: _vm.currentOption
-            }
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              ref: "dropdown",
-              staticClass: "dropdown radio-dropdown",
-              class: { collapsed: _vm.collapsed }
-            },
-            [
-              _c("div", { staticClass: "inner" }, [
-                _c("div", { staticClass: "header" }, [
-                  _vm.title
-                    ? _c("span", [_vm._v(_vm._s(_vm.title))])
-                    : _c("span", [_vm._v(_vm._s(_vm.currentOption.title))])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "body" }, [
-                  _c(
-                    "div",
-                    { staticClass: "radio-buttons" },
-                    _vm._l(_vm.optionsToShow, function(option, index) {
-                      return _c(
-                        "label",
-                        {
-                          key: index,
-                          staticClass: "radiobox",
-                          class: { active: option.id == _vm.currentOptionId },
-                          on: {
-                            click: function($event) {
-                              return _vm.submit(option.id)
-                            }
-                          }
-                        },
-                        [
-                          _vm._v(
-                            "\n                        " +
-                              _vm._s(option.title) +
-                              "\n                    "
-                          )
-                        ]
-                      )
-                    }),
-                    0
-                  )
-                ])
-              ])
-            ]
-          )
-        ],
-        2
-      )
-    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -15183,7 +14931,7 @@ var render = function() {
   return _c("div", { ref: "modalWrapper", staticClass: "modal-wrapper" }, [
     _c("div", { staticClass: "overlay", on: { click: _vm.close } }),
     _vm._v(" "),
-    _c("div", { staticClass: "modal card" }, [
+    _c("div", { ref: "modal", staticClass: "modal card" }, [
       _c("span", { staticClass: "close circle", on: { click: _vm.close } }, [
         _c("i", { staticClass: "fal fa-times" })
       ]),
@@ -17085,20 +16833,8 @@ var render = function() {
                       }
                     },
                     [
-                      _c("DropdownRadio", {
-                        staticClass: "dropdown-parent left",
-                        attrs: {
-                          title: "Select by condition",
-                          currentOptionId: _vm.currentTeamId,
-                          options: [
-                            { title: "No IN", id: "No IN" },
-                            {
-                              title: "No COMMENT & no OUT",
-                              id: "No COMMENT & no OUT"
-                            }
-                          ]
-                        },
-                        on: { submit: _vm.selectByCondition },
+                      _c("Dropdown", {
+                        ref: "multiSelectDropdown",
                         scopedSlots: _vm._u(
                           [
                             {
@@ -17117,11 +16853,40 @@ var render = function() {
                                   )
                                 ]
                               }
+                            },
+                            {
+                              key: "body",
+                              fn: function(slotProps) {
+                                return [
+                                  _c("RadioButtons", {
+                                    ref: "multiSelect",
+                                    staticClass: "no-marks",
+                                    attrs: {
+                                      options: [
+                                        { title: "No IN", id: "No IN" },
+                                        {
+                                          title: "No COMMENT & no OUT",
+                                          id: "No COMMENT & no OUT"
+                                        }
+                                      ],
+                                      optionNameKey: "title",
+                                      optionValueKey: "id"
+                                    },
+                                    on: {
+                                      change: function($event) {
+                                        _vm.selectByCondition($event)
+                                        _vm.$refs.multiSelect.clear()
+                                        _vm.$refs.multiSelectDropdown.toggle()
+                                      }
+                                    }
+                                  })
+                                ]
+                              }
                             }
                           ],
                           null,
                           false,
-                          3623102719
+                          3536152542
                         )
                       })
                     ],
@@ -17819,30 +17584,67 @@ var render = function() {
         "label",
         { key: index, staticClass: "radiobox" },
         [
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.selection,
-                expression: "selection"
-              }
-            ],
-            attrs: {
-              type: "radio",
-              name: "radio-option",
-              id: "radio-option-" + option.id
-            },
-            domProps: {
-              value: option[_vm.optionValueKey],
-              checked: _vm._q(_vm.selection, option[_vm.optionValueKey])
-            },
-            on: {
-              change: function($event) {
-                _vm.selection = option[_vm.optionValueKey]
-              }
-            }
-          }),
+          _vm.optionValueKey
+            ? _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.selection,
+                    expression: "selection"
+                  }
+                ],
+                attrs: {
+                  type: "radio",
+                  name: "radio-option",
+                  id: "radio-option-" + option.id
+                },
+                domProps: {
+                  value: option[_vm.optionValueKey],
+                  checked: _vm._q(_vm.selection, option[_vm.optionValueKey])
+                },
+                on: {
+                  change: [
+                    function($event) {
+                      _vm.selection = option[_vm.optionValueKey]
+                    },
+                    function($event) {
+                      return _vm.change()
+                    }
+                  ],
+                  click: _vm.click
+                }
+              })
+            : _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.selection,
+                    expression: "selection"
+                  }
+                ],
+                attrs: {
+                  type: "radio",
+                  name: "radio-option",
+                  id: "radio-option-" + option.id
+                },
+                domProps: {
+                  value: option[_vm.optionValueKey],
+                  checked: _vm._q(_vm.selection, option[_vm.optionValueKey])
+                },
+                on: {
+                  change: [
+                    function($event) {
+                      _vm.selection = option[_vm.optionValueKey]
+                    },
+                    function($event) {
+                      return _vm.change()
+                    }
+                  ],
+                  click: _vm.click
+                }
+              }),
           _vm._v(" "),
           _c("span", { staticClass: "radiomark" }),
           _vm._v(" "),
@@ -18536,16 +18338,148 @@ var render = function() {
                                   _vm._v("-")
                                 ]),
                                 _vm._v(" "),
-                                _c("td", { staticClass: "role" }, [
-                                  _c(
-                                    "span",
-                                    {
-                                      staticClass: "square",
-                                      class: "role-" + user.role_id
-                                    },
-                                    [_vm._v(_vm._s(user.role.title))]
-                                  )
-                                ]),
+                                _c(
+                                  "td",
+                                  { staticClass: "role dropdown-parent" },
+                                  [
+                                    _c(
+                                      "span",
+                                      {
+                                        staticClass: "square clickable",
+                                        class: "role-" + user.role_id,
+                                        on: {
+                                          click: function($event) {
+                                            ;(_vm.editUser = user),
+                                              _vm.$refs.roleDropdown[
+                                                index
+                                              ].toggle()
+                                          }
+                                        }
+                                      },
+                                      [_vm._v(_vm._s(user.role.title))]
+                                    ),
+                                    _vm._v(" "),
+                                    _c("Dropdown", {
+                                      ref: "roleDropdown",
+                                      refInFor: true,
+                                      staticClass: "left dark",
+                                      scopedSlots: _vm._u(
+                                        [
+                                          {
+                                            key: "button",
+                                            fn: function(slotProps) {
+                                              return [_c("span")]
+                                            }
+                                          },
+                                          {
+                                            key: "header",
+                                            fn: function(slotProps) {
+                                              return [
+                                                _c("span", [
+                                                  _vm._v("Change role")
+                                                ]),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "span",
+                                                  {
+                                                    staticClass: "close",
+                                                    on: {
+                                                      click: slotProps.toggle
+                                                    }
+                                                  },
+                                                  [
+                                                    _c("i", {
+                                                      staticClass:
+                                                        "fal fa-times"
+                                                    })
+                                                  ]
+                                                )
+                                              ]
+                                            }
+                                          },
+                                          {
+                                            key: "body",
+                                            fn: function() {
+                                              return [
+                                                _c("RadioButtons", {
+                                                  ref: "roleRadio",
+                                                  refInFor: true,
+                                                  attrs: {
+                                                    options: _vm.roles,
+                                                    optionNameKey: "title",
+                                                    optionValueKey: "id"
+                                                  },
+                                                  model: {
+                                                    value:
+                                                      _vm.editUser
+                                                        .permission_level,
+                                                    callback: function($$v) {
+                                                      _vm.$set(
+                                                        _vm.editUser,
+                                                        "permission_level",
+                                                        $$v
+                                                      )
+                                                    },
+                                                    expression:
+                                                      "editUser.permission_level"
+                                                  }
+                                                })
+                                              ]
+                                            },
+                                            proxy: true
+                                          },
+                                          {
+                                            key: "footer",
+                                            fn: function(slotProps) {
+                                              return [
+                                                _c(
+                                                  "div",
+                                                  { staticClass: "grid-2" },
+                                                  [
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
+                                                          "button green",
+                                                        on: {
+                                                          click: function(
+                                                            $event
+                                                          ) {
+                                                            _vm.$refs.roleRadio[
+                                                              index
+                                                            ].submit()
+                                                            slotProps.toggle()
+                                                          }
+                                                        }
+                                                      },
+                                                      [_vm._v("Save")]
+                                                    ),
+                                                    _vm._v(" "),
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
+                                                          "button invisible",
+                                                        on: {
+                                                          click:
+                                                            slotProps.toggle
+                                                        }
+                                                      },
+                                                      [_vm._v("Cancel")]
+                                                    )
+                                                  ]
+                                                )
+                                              ]
+                                            }
+                                          }
+                                        ],
+                                        null,
+                                        true
+                                      )
+                                    })
+                                  ],
+                                  1
+                                ),
                                 _vm._v(" "),
                                 _c("td"),
                                 _vm._v(" "),
@@ -18991,6 +18925,150 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/input/CheckboxButtons.vue?vue&type=template&id=d2d067c4&scoped=true&":
+/*!************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/input/CheckboxButtons.vue?vue&type=template&id=d2d067c4&scoped=true& ***!
+  \************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "checkbox-buttons" },
+    _vm._l(_vm.options, function(option, index) {
+      return _c(
+        "label",
+        {
+          key: index,
+          staticClass: "checkbox",
+          class: {
+            active: _vm.selected.find(function(x) {
+              return x == option
+            })
+          }
+        },
+        [
+          _vm.optionValueKey
+            ? _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.selected,
+                    expression: "selected"
+                  }
+                ],
+                attrs: { type: "checkbox" },
+                domProps: {
+                  value: option[_vm.optionValueKey],
+                  checked: Array.isArray(_vm.selected)
+                    ? _vm._i(_vm.selected, option[_vm.optionValueKey]) > -1
+                    : _vm.selected
+                },
+                on: {
+                  change: [
+                    function($event) {
+                      var $$a = _vm.selected,
+                        $$el = $event.target,
+                        $$c = $$el.checked ? true : false
+                      if (Array.isArray($$a)) {
+                        var $$v = option[_vm.optionValueKey],
+                          $$i = _vm._i($$a, $$v)
+                        if ($$el.checked) {
+                          $$i < 0 && (_vm.selected = $$a.concat([$$v]))
+                        } else {
+                          $$i > -1 &&
+                            (_vm.selected = $$a
+                              .slice(0, $$i)
+                              .concat($$a.slice($$i + 1)))
+                        }
+                      } else {
+                        _vm.selected = $$c
+                      }
+                    },
+                    function($event) {
+                      return _vm.change()
+                    }
+                  ]
+                }
+              })
+            : _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.selected,
+                    expression: "selected"
+                  }
+                ],
+                attrs: { type: "checkbox" },
+                domProps: {
+                  value: option,
+                  checked: Array.isArray(_vm.selected)
+                    ? _vm._i(_vm.selected, option) > -1
+                    : _vm.selected
+                },
+                on: {
+                  change: [
+                    function($event) {
+                      var $$a = _vm.selected,
+                        $$el = $event.target,
+                        $$c = $$el.checked ? true : false
+                      if (Array.isArray($$a)) {
+                        var $$v = option,
+                          $$i = _vm._i($$a, $$v)
+                        if ($$el.checked) {
+                          $$i < 0 && (_vm.selected = $$a.concat([$$v]))
+                        } else {
+                          $$i > -1 &&
+                            (_vm.selected = $$a
+                              .slice(0, $$i)
+                              .concat($$a.slice($$i + 1)))
+                        }
+                      } else {
+                        _vm.selected = $$c
+                      }
+                    },
+                    function($event) {
+                      return _vm.change()
+                    }
+                  ]
+                }
+              }),
+          _vm._v(" "),
+          _c("span", { staticClass: "checkmark" }),
+          _vm._v(" "),
+          _vm.optionNameKey
+            ? [
+                _vm._v(
+                  "\n            " +
+                    _vm._s(option[_vm.optionNameKey]) +
+                    "\n        "
+                )
+              ]
+            : [_vm._v("\n            " + _vm._s(option) + "\n        ")]
+        ],
+        2
+      )
+    }),
+    0
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/screens/Catalogue.vue?vue&type=template&id=76e8b686&scoped=true&":
 /*!********************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/screens/Catalogue.vue?vue&type=template&id=76e8b686&scoped=true& ***!
@@ -19025,13 +19103,8 @@ var render = function() {
               "div",
               { staticClass: "filters" },
               [
-                _c("DropdownCheckbox", {
-                  staticClass: "dropdown-parent left",
-                  attrs: {
-                    buttonText: "categories",
-                    title: "Filter by category",
-                    options: _vm.dynamicCategories
-                  },
+                _c("Dropdown", {
+                  staticClass: "dropdown-parent",
                   scopedSlots: _vm._u(
                     [
                       {
@@ -19046,7 +19119,7 @@ var render = function() {
                                 on: { click: slotProps.toggle }
                               },
                               [
-                                _c("span", [_vm._v("Category")]),
+                                _c("span", [_vm._v("Category ")]),
                                 _vm._v(" "),
                                 _c("i", { staticClass: "far fa-chevron-down" }),
                                 _vm._v(" "),
@@ -19072,7 +19145,7 @@ var render = function() {
                                       "clear button invisible primary",
                                     on: {
                                       click: function($event) {
-                                        slotProps.clear()
+                                        _vm.$refs.filterSelect.clear()
                                         _vm.selectedCategories = []
                                       }
                                     }
@@ -19082,29 +19155,58 @@ var render = function() {
                               : _vm._e()
                           ]
                         }
+                      },
+                      {
+                        key: "header",
+                        fn: function(slotProps) {
+                          return [
+                            _c("span", [_vm._v("Filter by category")]),
+                            _vm._v(" "),
+                            _c(
+                              "span",
+                              {
+                                staticClass: "close",
+                                on: { click: slotProps.toggle }
+                              },
+                              [_c("i", { staticClass: "fal fa-times" })]
+                            )
+                          ]
+                        }
+                      },
+                      {
+                        key: "body",
+                        fn: function() {
+                          return [
+                            _c("CheckboxButtons", {
+                              ref: "filterSelect",
+                              attrs: { options: _vm.dynamicCategories },
+                              on: {
+                                change: function($event) {
+                                  return _vm.$refs.filterSelect.submit()
+                                }
+                              },
+                              model: {
+                                value: _vm.selectedCategories,
+                                callback: function($$v) {
+                                  _vm.selectedCategories = $$v
+                                },
+                                expression: "selectedCategories"
+                              }
+                            })
+                          ]
+                        },
+                        proxy: true
                       }
                     ],
                     null,
                     false,
-                    3707430251
-                  ),
-                  model: {
-                    value: _vm.selectedCategories,
-                    callback: function($$v) {
-                      _vm.selectedCategories = $$v
-                    },
-                    expression: "selectedCategories"
-                  }
+                    534097708
+                  )
                 }),
                 _vm._v(" "),
-                _c("DropdownRadio", {
+                _c("Dropdown", {
+                  ref: "countryDropdown",
                   staticClass: "dropdown-parent right",
-                  attrs: {
-                    options: _vm.teams,
-                    currentOptionId: _vm.currentTeamId,
-                    defaultOption: _vm.defaultTeam
-                  },
-                  on: { submit: _vm.setCurrentTeam },
                   scopedSlots: _vm._u(
                     [
                       {
@@ -19122,20 +19224,59 @@ var render = function() {
                                   attrs: { src: "/assets/Path5699.svg" }
                                 }),
                                 _vm._v(" "),
-                                _c("span", [
-                                  _vm._v(_vm._s(slotProps.currentOption.title))
-                                ]),
+                                _vm.currentTeamId > 0
+                                  ? _c("span", [
+                                      _vm._v(
+                                        _vm._s(
+                                          _vm.teams.find(function(x) {
+                                            return x.id == _vm.currentTeamId
+                                          }).title
+                                        )
+                                      )
+                                    ])
+                                  : _vm.currentTeamId == 0
+                                  ? _c("span", [_vm._v("Global")])
+                                  : _c("span", [_vm._v("No team available")]),
                                 _vm._v(" "),
                                 _c("i", { staticClass: "far fa-chevron-down" })
                               ]
                             )
                           ]
                         }
+                      },
+                      {
+                        key: "header",
+                        fn: function(slotProps) {
+                          return [_c("span", [_vm._v("Switch team")])]
+                        }
+                      },
+                      {
+                        key: "body",
+                        fn: function() {
+                          return [
+                            _c("RadioButtons", {
+                              ref: "countryRadio",
+                              attrs: {
+                                options: _vm.teams,
+                                currentOptionId: _vm.currentTeamId,
+                                optionNameKey: "title",
+                                optionValueKey: "id"
+                              },
+                              on: {
+                                change: function($event) {
+                                  _vm.setCurrentTeam($event)
+                                  _vm.$refs.countryDropdown.toggle()
+                                }
+                              }
+                            })
+                          ]
+                        },
+                        proxy: true
                       }
                     ],
                     null,
                     false,
-                    2039768778
+                    1430962770
                   )
                 })
               ],
@@ -19231,12 +19372,8 @@ var render = function() {
         "div",
         { staticClass: "filters" },
         [
-          _c("DropdownCheckbox", {
-            staticClass: "dropdown-parent left",
-            attrs: {
-              title: "Filter by collection",
-              options: _vm.uniqueCollections
-            },
+          _c("Dropdown", {
+            staticClass: "dropdown-parent",
             scopedSlots: _vm._u([
               {
                 key: "button",
@@ -19272,8 +19409,7 @@ var render = function() {
                             staticClass: "clear button invisible primary",
                             on: {
                               click: function($event) {
-                                slotProps.clear()
-                                _vm.itemFilterIds = []
+                                return _vm.$refs.filterSelect.clear()
                               }
                             }
                           },
@@ -19282,25 +19418,51 @@ var render = function() {
                       : _vm._e()
                   ]
                 }
-              }
-            ]),
-            model: {
-              value: _vm.itemFilterIds,
-              callback: function($$v) {
-                _vm.itemFilterIds = $$v
               },
-              expression: "itemFilterIds"
-            }
+              {
+                key: "header",
+                fn: function(slotProps) {
+                  return [
+                    _c("span", [_vm._v("Filter by collection")]),
+                    _vm._v(" "),
+                    _c(
+                      "span",
+                      { staticClass: "close", on: { click: slotProps.toggle } },
+                      [_c("i", { staticClass: "fal fa-times" })]
+                    )
+                  ]
+                }
+              },
+              {
+                key: "body",
+                fn: function() {
+                  return [
+                    _c("CheckboxButtons", {
+                      ref: "filterSelect",
+                      attrs: { options: _vm.uniqueCollections },
+                      on: {
+                        change: function($event) {
+                          return _vm.$refs.filterSelect.submit()
+                        }
+                      },
+                      model: {
+                        value: _vm.itemFilterIds,
+                        callback: function($$v) {
+                          _vm.itemFilterIds = $$v
+                        },
+                        expression: "itemFilterIds"
+                      }
+                    })
+                  ]
+                },
+                proxy: true
+              }
+            ])
           }),
           _vm._v(" "),
-          _c("DropdownRadio", {
+          _c("Dropdown", {
+            ref: "countryDropdown",
             staticClass: "dropdown-parent right",
-            attrs: {
-              options: _vm.teams,
-              currentOptionId: _vm.currentTeamId,
-              defaultOption: _vm.defaultTeam
-            },
-            on: { submit: _vm.setCurrentTeam },
             scopedSlots: _vm._u([
               {
                 key: "button",
@@ -19315,15 +19477,54 @@ var render = function() {
                       [
                         _c("img", { attrs: { src: "/assets/Path5699.svg" } }),
                         _vm._v(" "),
-                        _c("span", [
-                          _vm._v(_vm._s(slotProps.currentOption.title))
-                        ]),
+                        _vm.currentTeamId > 0
+                          ? _c("span", [
+                              _vm._v(
+                                _vm._s(
+                                  _vm.teams.find(function(x) {
+                                    return x.id == _vm.currentTeamId
+                                  }).title
+                                )
+                              )
+                            ])
+                          : _vm.currentTeamId == 0
+                          ? _c("span", [_vm._v("Global")])
+                          : _c("span", [_vm._v("No team available")]),
                         _vm._v(" "),
                         _c("i", { staticClass: "far fa-chevron-down" })
                       ]
                     )
                   ]
                 }
+              },
+              {
+                key: "header",
+                fn: function(slotProps) {
+                  return [_c("span", [_vm._v("Switch team")])]
+                }
+              },
+              {
+                key: "body",
+                fn: function() {
+                  return [
+                    _c("RadioButtons", {
+                      ref: "countryRadio",
+                      attrs: {
+                        options: _vm.teams,
+                        currentOptionId: _vm.currentTeamId,
+                        optionNameKey: "title",
+                        optionValueKey: "id"
+                      },
+                      on: {
+                        change: function($event) {
+                          _vm.setCurrentTeam($event)
+                          _vm.$refs.countryDropdown.toggle()
+                        }
+                      }
+                    })
+                  ]
+                },
+                proxy: true
               }
             ])
           })
@@ -35749,180 +35950,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/DropdownCheckbox.vue":
-/*!******************************************************!*\
-  !*** ./resources/js/components/DropdownCheckbox.vue ***!
-  \******************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _DropdownCheckbox_vue_vue_type_template_id_0c861b5f_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DropdownCheckbox.vue?vue&type=template&id=0c861b5f&scoped=true& */ "./resources/js/components/DropdownCheckbox.vue?vue&type=template&id=0c861b5f&scoped=true&");
-/* harmony import */ var _DropdownCheckbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DropdownCheckbox.vue?vue&type=script&lang=js& */ "./resources/js/components/DropdownCheckbox.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _DropdownCheckbox_vue_vue_type_style_index_0_id_0c861b5f_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DropdownCheckbox.vue?vue&type=style&index=0&id=0c861b5f&scoped=true&lang=scss& */ "./resources/js/components/DropdownCheckbox.vue?vue&type=style&index=0&id=0c861b5f&scoped=true&lang=scss&");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-
-/* normalize component */
-
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
-  _DropdownCheckbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _DropdownCheckbox_vue_vue_type_template_id_0c861b5f_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _DropdownCheckbox_vue_vue_type_template_id_0c861b5f_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
-  false,
-  null,
-  "0c861b5f",
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/js/components/DropdownCheckbox.vue"
-/* harmony default export */ __webpack_exports__["default"] = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/js/components/DropdownCheckbox.vue?vue&type=script&lang=js&":
-/*!*******************************************************************************!*\
-  !*** ./resources/js/components/DropdownCheckbox.vue?vue&type=script&lang=js& ***!
-  \*******************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownCheckbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownCheckbox.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownCheckbox.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownCheckbox_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/js/components/DropdownCheckbox.vue?vue&type=style&index=0&id=0c861b5f&scoped=true&lang=scss&":
-/*!****************************************************************************************************************!*\
-  !*** ./resources/js/components/DropdownCheckbox.vue?vue&type=style&index=0&id=0c861b5f&scoped=true&lang=scss& ***!
-  \****************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownCheckbox_vue_vue_type_style_index_0_id_0c861b5f_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownCheckbox.vue?vue&type=style&index=0&id=0c861b5f&scoped=true&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownCheckbox.vue?vue&type=style&index=0&id=0c861b5f&scoped=true&lang=scss&");
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownCheckbox_vue_vue_type_style_index_0_id_0c861b5f_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownCheckbox_vue_vue_type_style_index_0_id_0c861b5f_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownCheckbox_vue_vue_type_style_index_0_id_0c861b5f_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownCheckbox_vue_vue_type_style_index_0_id_0c861b5f_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
- /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownCheckbox_vue_vue_type_style_index_0_id_0c861b5f_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
-
-/***/ }),
-
-/***/ "./resources/js/components/DropdownCheckbox.vue?vue&type=template&id=0c861b5f&scoped=true&":
-/*!*************************************************************************************************!*\
-  !*** ./resources/js/components/DropdownCheckbox.vue?vue&type=template&id=0c861b5f&scoped=true& ***!
-  \*************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownCheckbox_vue_vue_type_template_id_0c861b5f_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownCheckbox.vue?vue&type=template&id=0c861b5f&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownCheckbox.vue?vue&type=template&id=0c861b5f&scoped=true&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownCheckbox_vue_vue_type_template_id_0c861b5f_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownCheckbox_vue_vue_type_template_id_0c861b5f_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
-
-
-
-/***/ }),
-
-/***/ "./resources/js/components/DropdownRadio.vue":
-/*!***************************************************!*\
-  !*** ./resources/js/components/DropdownRadio.vue ***!
-  \***************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _DropdownRadio_vue_vue_type_template_id_cc54cde2___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DropdownRadio.vue?vue&type=template&id=cc54cde2& */ "./resources/js/components/DropdownRadio.vue?vue&type=template&id=cc54cde2&");
-/* harmony import */ var _DropdownRadio_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DropdownRadio.vue?vue&type=script&lang=js& */ "./resources/js/components/DropdownRadio.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _DropdownRadio_vue_vue_type_style_index_0_scopes_true_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DropdownRadio.vue?vue&type=style&index=0&scopes=true&lang=scss& */ "./resources/js/components/DropdownRadio.vue?vue&type=style&index=0&scopes=true&lang=scss&");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-
-/* normalize component */
-
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
-  _DropdownRadio_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _DropdownRadio_vue_vue_type_template_id_cc54cde2___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _DropdownRadio_vue_vue_type_template_id_cc54cde2___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
-  false,
-  null,
-  null,
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/js/components/DropdownRadio.vue"
-/* harmony default export */ __webpack_exports__["default"] = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/js/components/DropdownRadio.vue?vue&type=script&lang=js&":
-/*!****************************************************************************!*\
-  !*** ./resources/js/components/DropdownRadio.vue?vue&type=script&lang=js& ***!
-  \****************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadio_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownRadio.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadio.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadio_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/js/components/DropdownRadio.vue?vue&type=style&index=0&scopes=true&lang=scss&":
-/*!*************************************************************************************************!*\
-  !*** ./resources/js/components/DropdownRadio.vue?vue&type=style&index=0&scopes=true&lang=scss& ***!
-  \*************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadio_vue_vue_type_style_index_0_scopes_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownRadio.vue?vue&type=style&index=0&scopes=true&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadio.vue?vue&type=style&index=0&scopes=true&lang=scss&");
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadio_vue_vue_type_style_index_0_scopes_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadio_vue_vue_type_style_index_0_scopes_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadio_vue_vue_type_style_index_0_scopes_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadio_vue_vue_type_style_index_0_scopes_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
- /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadio_vue_vue_type_style_index_0_scopes_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
-
-/***/ }),
-
-/***/ "./resources/js/components/DropdownRadio.vue?vue&type=template&id=cc54cde2&":
-/*!**********************************************************************************!*\
-  !*** ./resources/js/components/DropdownRadio.vue?vue&type=template&id=cc54cde2& ***!
-  \**********************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadio_vue_vue_type_template_id_cc54cde2___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownRadio.vue?vue&type=template&id=cc54cde2& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownRadio.vue?vue&type=template&id=cc54cde2&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadio_vue_vue_type_template_id_cc54cde2___WEBPACK_IMPORTED_MODULE_0__["render"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownRadio_vue_vue_type_template_id_cc54cde2___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
-
-
-
-/***/ }),
-
 /***/ "./resources/js/components/Input/CheckboxButtons.vue":
 /*!***********************************************************!*\
   !*** ./resources/js/components/Input/CheckboxButtons.vue ***!
@@ -37553,6 +37580,93 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Tooltip_vue_vue_type_template_id_09733fe8_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Tooltip_vue_vue_type_template_id_09733fe8_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/input/CheckboxButtons.vue":
+/*!***********************************************************!*\
+  !*** ./resources/js/components/input/CheckboxButtons.vue ***!
+  \***********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _CheckboxButtons_vue_vue_type_template_id_d2d067c4_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CheckboxButtons.vue?vue&type=template&id=d2d067c4&scoped=true& */ "./resources/js/components/input/CheckboxButtons.vue?vue&type=template&id=d2d067c4&scoped=true&");
+/* harmony import */ var _CheckboxButtons_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CheckboxButtons.vue?vue&type=script&lang=js& */ "./resources/js/components/input/CheckboxButtons.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _CheckboxButtons_vue_vue_type_style_index_0_id_d2d067c4_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CheckboxButtons.vue?vue&type=style&index=0&id=d2d067c4&scoped=true&lang=scss& */ "./resources/js/components/input/CheckboxButtons.vue?vue&type=style&index=0&id=d2d067c4&scoped=true&lang=scss&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _CheckboxButtons_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _CheckboxButtons_vue_vue_type_template_id_d2d067c4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _CheckboxButtons_vue_vue_type_template_id_d2d067c4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "d2d067c4",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/input/CheckboxButtons.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/input/CheckboxButtons.vue?vue&type=script&lang=js&":
+/*!************************************************************************************!*\
+  !*** ./resources/js/components/input/CheckboxButtons.vue?vue&type=script&lang=js& ***!
+  \************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./CheckboxButtons.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/input/CheckboxButtons.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/input/CheckboxButtons.vue?vue&type=style&index=0&id=d2d067c4&scoped=true&lang=scss&":
+/*!*********************************************************************************************************************!*\
+  !*** ./resources/js/components/input/CheckboxButtons.vue?vue&type=style&index=0&id=d2d067c4&scoped=true&lang=scss& ***!
+  \*********************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_style_index_0_id_d2d067c4_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/style-loader!../../../../node_modules/css-loader!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/postcss-loader/src??ref--7-2!../../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../../node_modules/vue-loader/lib??vue-loader-options!./CheckboxButtons.vue?vue&type=style&index=0&id=d2d067c4&scoped=true&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/input/CheckboxButtons.vue?vue&type=style&index=0&id=d2d067c4&scoped=true&lang=scss&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_style_index_0_id_d2d067c4_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_style_index_0_id_d2d067c4_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_style_index_0_id_d2d067c4_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_style_index_0_id_d2d067c4_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_style_index_0_id_d2d067c4_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/input/CheckboxButtons.vue?vue&type=template&id=d2d067c4&scoped=true&":
+/*!******************************************************************************************************!*\
+  !*** ./resources/js/components/input/CheckboxButtons.vue?vue&type=template&id=d2d067c4&scoped=true& ***!
+  \******************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_template_id_d2d067c4_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./CheckboxButtons.vue?vue&type=template&id=d2d067c4&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/input/CheckboxButtons.vue?vue&type=template&id=d2d067c4&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_template_id_d2d067c4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CheckboxButtons_vue_vue_type_template_id_d2d067c4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

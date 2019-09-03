@@ -3,7 +3,7 @@
         <h1>Collection</h1>
         <div class="underline"></div>
         <div class="filters">
-            <DropdownCheckbox :title="'Filter by collection'" :options="uniqueCollections" class="dropdown-parent left" v-model="itemFilterIds">
+            <Dropdown class="dropdown-parent">
                 <template v-slot:button="slotProps">
                     <div class="dropdown-button item-filter-button" @click="slotProps.toggle">
                         <span>Collection</span>
@@ -12,18 +12,34 @@
                             {{itemFilterIds.length}}
                         </span>
                     </div>
-                    <span v-if="itemFilterIds.length > 0" class="clear button invisible primary" @click="slotProps.clear(); itemFilterIds=[]">Clear filter</span>
+                    <span v-if="itemFilterIds.length > 0" class="clear button invisible primary" @click="$refs.filterSelect.clear()">Clear filter</span>
                 </template>
-            </DropdownCheckbox>
-            <DropdownRadio :options="teams" :currentOptionId="currentTeamId" :defaultOption="defaultTeam" class="dropdown-parent right" @submit="setCurrentTeam">
+                <template v-slot:header="slotProps">
+                    <span>Filter by collection</span>
+                    <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
+                </template>
+                <template v-slot:body>
+                    <CheckboxButtons :options="uniqueCollections" ref="filterSelect" v-model="itemFilterIds" @change="$refs.filterSelect.submit()"/>
+                </template>
+            </Dropdown>
+
+            <Dropdown class="dropdown-parent right" ref="countryDropdown">
                 <template v-slot:button="slotProps">
                     <div class="dropdown-button" @click="slotProps.toggle">
                         <img src="/assets/Path5699.svg">
-                        <span>{{slotProps.currentOption.title}}</span>
+                        <span v-if="currentTeamId > 0">{{teams.find(x => x.id == currentTeamId).title}}</span>
+                        <span v-else-if="currentTeamId == 0">Global</span>
+                        <span v-else>No team available</span>
                         <i class="far fa-chevron-down"></i>
                     </div>
                 </template>
-            </DropdownRadio>
+                <template v-slot:header="slotProps">
+                    <span>Switch team</span>
+                </template>
+                <template v-slot:body>
+                    <RadioButtons :options="teams" :currentOptionId="currentTeamId" :optionNameKey="'title'" :optionValueKey="'id'" ref="countryRadio" @change="setCurrentTeam($event); $refs.countryDropdown.toggle()"/>
+                </template>
+            </Dropdown>
         </div>
         <CataloguesTable :isLoading="isLoading" :authUser="authUser" :catalogues="collections" :loading="loadingCollections" :selected="selected" @onSelect="onSelect"/>
     </div>
@@ -34,8 +50,10 @@ import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
 import Loader from '../Loader'
 import CataloguesTable from '../CataloguesTable'
-import DropdownRadio from '../DropdownRadio'
-import DropdownCheckbox from '../DropdownCheckbox'
+import RadioButtons from '../RadioButtons'
+import CheckboxButtons from '../input/CheckboxButtons'
+import Dropdown from '../Dropdown'
+
 import Collection from '../../store/models/Collection'
 import Team from '../../store/models/Team'
 import User from '../../store/models/User'
@@ -48,8 +66,9 @@ export default {
     components: {
         Loader,
         CataloguesTable,
-        DropdownCheckbox,
-        DropdownRadio,
+        Dropdown,
+        CheckboxButtons,
+        RadioButtons
     },
     data: function() { return {
         selected: [],
@@ -60,7 +79,7 @@ export default {
     }},
     computed: {
         ...mapGetters('entities/collections', ['loadingCollections']),
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'userPermissionLevel']),
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel']),
         defaultTeam() {
             if (this.userPermissionLevel >= 3)
                 return {id: 0, title: 'Global'}

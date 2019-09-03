@@ -58,7 +58,25 @@
                             <td class="name">{{ (user.name != null) ? user.name : 'No name set' }}</td>
                             <td class="email">{{user.email}}</td>
                             <td class="collections">-</td>
-                            <td class="role"><span class="square" :class="'role-' + user.role_id">{{user.role.title}}</span></td>
+                            <td class="role dropdown-parent">
+                                <span class="square clickable" :class="'role-' + user.role_id" @click="editUser = user, $refs.roleDropdown[index].toggle()">{{user.role.title}}</span>
+                                <Dropdown class="left dark" ref="roleDropdown">
+                                    <template v-slot:button="slotProps"><span></span></template>
+                                    <template v-slot:header="slotProps">
+                                        <span>Change role</span>
+                                        <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
+                                    </template>
+                                    <template v-slot:body>
+                                        <RadioButtons :options="roles" :optionNameKey="'title'" :optionValueKey="'id'" ref="roleRadio" v-model="editUser.permission_level"/>
+                                    </template>
+                                    <template v-slot:footer="slotProps">
+                                        <div class="grid-2">
+                                            <span class="button green" @click="$refs.roleRadio[index].submit(); slotProps.toggle()">Save</span>
+                                            <span class="button invisible" @click="slotProps.toggle">Cancel</span>
+                                        </div>
+                                    </template>
+                                </Dropdown>
+                            </td>
                             <td></td>
                             <td class="action">
                                 <span class="resend"></span>
@@ -95,7 +113,10 @@
 
 <script>
 import Loader from './Loader'
+import Dropdown from './Dropdown'
+import RadioButtons from './RadioButtons'
 import { mapActions, mapGetters } from 'vuex'
+import Role from '../store/models/Role'
 
 export default {
     name: 'teamsTable',
@@ -110,13 +131,22 @@ export default {
     ],
     components: {
         Loader,
+        Dropdown,
+        RadioButtons,
     },
     data: function() { return {
         sortBy: 'id',
         sortAsc: true,
         expandedIds: [],
+        editUser: {
+            permission_level: '',
+        }
     }},
     computed: {
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']),
+        roles () {
+            return Role.all().filter(role => role.id <= this.userPermissionLevel)
+        },
         teamsSorted() {
             const teams = this.teams
             teams.forEach(team => {
@@ -307,7 +337,7 @@ export default {
             }
         }
         i {
-            margin-right: 8px;
+            // margin-right: 8px;
         }
     }
     i {
@@ -374,33 +404,9 @@ export default {
     .checkbox input:checked ~ .checkmark:after {
       display: block;
     }
-    // .square {
-    //     padding: 7px 10px;
-    //     border-radius: 4px;
-    //     font-size: 12px;
-    //     font-weight: 500;
-    //     &.user-role-1 {
-    //         background: $primary;
-    //     }
-    //     &.user-role-2 {
-    //         background: $green;
-    //     }
-    //     &.user-role-3 {
-    //         background: $dark05;
-    //     }
-    //     &.user-role-4 {
-    //         background: $red;
-    //     }
-    //     i {
-    //         color: $dark2;
-    //         margin-right: 16px;
-    //         font-size: 16px;
-    //     }
-    // }
     .view-single {
         font-size: 12px;
         font-weight: 700;
-        // padding: 0 12px;
         color: $dark2;
         cursor: pointer;
     }
@@ -454,5 +460,8 @@ export default {
                 }
             }
         }
+    }
+    .dropdown {
+        // position: fixed;
     }
 </style>

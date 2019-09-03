@@ -9136,8 +9136,6 @@ textarea {
   left: 50vw;
   top: 5vh;
   min-height: 70vh;
-  -webkit-transform: translateX(-50%);
-          transform: translateX(-50%);
   width: 100%;
   max-width: 646px;
   margin: 0;
@@ -9207,6 +9205,19 @@ textarea {
   margin-left: -8px;
 }
 
+.dropdown-button > .bubble {
+  position: absolute;
+  left: -10px;
+  top: -10px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  background: #F3F3F3;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  border-radius: 10px;
+}
+
 .dropdown-button i {
   color: #A8A8A8;
   position: absolute;
@@ -9239,7 +9250,7 @@ textarea {
   width: 13px;
   display: block;
   background: white;
-  left: 20px;
+  left: 28px;
   border: solid 1px #DFDFDF;
   border-right: 0;
   border-bottom: 0;
@@ -9258,7 +9269,7 @@ textarea {
 
 .right .dropdown::before {
   left: auto;
-  right: 20px;
+  right: 28px;
 }
 
 .dropdown.collapsed {
@@ -9280,6 +9291,8 @@ textarea {
   height: 24px;
   width: 24px;
   text-align: center;
+  z-index: 1;
+  cursor: pointer;
 }
 
 .dropdown .header .close i {
@@ -9396,6 +9409,18 @@ textarea {
 .radio-buttons label:hover,
 .checkbox-buttons label:hover {
   background: #F9F9F9;
+}
+
+.radio-buttons.no-marks .label,
+.checkbox-buttons.no-marks .label {
+  padding-left: 12px;
+}
+
+.radio-buttons.no-marks .radiomark,
+.radio-buttons.no-marks .checkmark,
+.checkbox-buttons.no-marks .radiomark,
+.checkbox-buttons.no-marks .checkmark {
+  display: none;
 }
 
 .radio-buttons:not(.checkbox-buttons) label.active,

@@ -43,6 +43,7 @@ export default {
             document.querySelectorAll('input[type=checkbox]').forEach(input => {
                 input.checked = false
             })
+            this.$emit('input', this.selected)
         },
     },
     updated() {

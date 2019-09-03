@@ -3,7 +3,7 @@
 
         <div class="overlay" @click="close"></div>
 
-        <div class="modal card">
+        <div class="modal card" ref="modal">
             <span class="close circle" @click="close"><i class="fal fa-times"></i></span>
             <div class="inner">
                 <div class="header"><slot name="header" :toggle="toggle"></slot></div>
@@ -36,8 +36,20 @@ export default {
         },
         toggleAlt() {
             this.$refs.modalWrapper.classList.toggle('active')
+        },
+        setPos() {
+            const el = this.$refs.modal
+            const elWidth = el.getBoundingClientRect().width
+
+            el.style.cssText = `left: calc(50vw - ${elWidth / 2}px);`
         }
-    }
+    },
+    mounted() {
+        this.setPos()
+    },
+    updated() {
+        this.setPos()
+    },
 }
 </script>
 

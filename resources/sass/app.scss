@@ -357,7 +357,6 @@ input, button, select, optgroup, textarea {
         left: 50vw;
         top: 5vh;
         min-height: 70vh;
-        transform: translateX(-50%);
         width: 100%;
         max-width: 646px;
         margin: 0;
@@ -392,9 +391,6 @@ input, button, select, optgroup, textarea {
 .dropdown-wrapper {
     // position: relative;
     display: flex;
-    .clear {
-        
-    }
 }
 .dropdown-parent {
     position: relative;
@@ -407,6 +403,18 @@ input, button, select, optgroup, textarea {
         display: inline-block;
         margin-right: 8px;
         margin-left: -8px;
+    }
+    > .bubble {
+        position: absolute;
+        left: -10px;
+        top: -10px;
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+        background: $light1;
+        box-shadow: 0 3px 6px rgba(black, 10%);
+        text-align: center;
+        border-radius: 10px;
     }
     cursor: pointer;
     position: relative;
@@ -449,7 +457,7 @@ input, button, select, optgroup, textarea {
         width: 13px;
         display: block;
         background: white;
-        left: 20px;
+        left: 28px;
         border: solid 1px $light2;
         border-right: 0;
         border-bottom: 0;
@@ -464,7 +472,7 @@ input, button, select, optgroup, textarea {
         right: 0;
         &::before { // Arrow
             left: auto;
-            right: 20px;
+            right: 28px;
         }
     }
     &.collapsed {
@@ -484,6 +492,8 @@ input, button, select, optgroup, textarea {
             height: 24px;
             width: 24px;
             text-align: center;
+            z-index: 1;
+            cursor: pointer;        
             i {
                 line-height: 24px;
                 font-size: 12px;
@@ -578,6 +588,14 @@ input, button, select, optgroup, textarea {
         cursor: pointer;
         &:hover {
             background: $light;
+        }
+    }
+    &.no-marks {
+        .label {
+            padding-left: 12px;
+        }
+        .radiomark, .checkmark {
+            display: none;
         }
     }
     &:not(.checkbox-buttons) label.active {

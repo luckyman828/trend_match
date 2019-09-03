@@ -4,7 +4,6 @@
         <div class="underline"></div>
         <!-- <TeamsTopBar :itemsToFilter="teams" :title="'Teams'"/> -->
         <TeamsTable :teams="teams" :users="users" :loading="isLoading" :authUser="authUser" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/>
-        <!-- <TeamInviteModal v-if="singleTeam != null" :teams="teams" :team="singleTeam" :users="users" :authUser="authUser" @onCloseModal="closeModal"/> -->
         <ModalInviteToTeam :teams="teams" :team="singleTeam" :users="users" :authUser="authUser" ref="modal"/>
     </div>
 </template>
@@ -15,7 +14,6 @@ import Team from '../../store/models/Team'
 import TeamsTopBar from '../TeamsTopBar'
 import TeamsTable from '../TeamsTable'
 import ModalInviteToTeam from '../ModalInviteToTeam'
-// import TeamInviteModal from '../TeamInviteModal';
 import User from '../../store/models/User'
 import UserTeam from '../../store/models/UserTeam'
 import TeamInvite from '../../store/models/TeamInvite'
@@ -26,7 +24,6 @@ export default {
     components: {
         TeamsTopBar,
         TeamsTable,
-        // TeamInviteModal,
         ModalInviteToTeam,
     },
     data: function () { return {
