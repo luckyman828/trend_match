@@ -8811,27 +8811,45 @@ textarea {
   color: white;
 }
 
-.button {
-  padding: 0 12px;
-  display: inline-block;
-  text-align: center;
+.button,
+.square {
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
   font-size: 12px;
-  font-weight: 700;
+  padding: 0 12px;
+  text-align: center;
+  display: inline-block;
+  color: #A8A8A8;
+  border-radius: 4px;
+}
+
+.button:not(.square),
+.square:not(.square) {
   height: 32px;
   line-height: 28px;
   cursor: pointer;
-  border-radius: 4px;
   min-width: 92px;
   border: solid 2px #DFDFDF;
-  color: #A8A8A8;
+  font-weight: 700;
 }
 
-.button.ghost {
+.button:not(.button),
+.square:not(.button) {
+  height: 24px;
+  line-height: 24px;
+}
+
+.button.ghost,
+.square.ghost {
   background: transparent;
 }
 
 .button.dark,
-.button.dark-hover:hover {
+.button.dark-hover:hover,
+.button.role-2,
+.square.dark,
+.square.dark-hover:hover,
+.square.role-2 {
   color: white;
   border-color: #3C3B54;
   background: #3C3B54;
@@ -8840,13 +8858,25 @@ textarea {
 .button.dark.invisible,
 .button.dark.ghost,
 .button.dark-hover:hover.invisible,
-.button.dark-hover:hover.ghost {
+.button.dark-hover:hover.ghost,
+.button.role-2.invisible,
+.button.role-2.ghost,
+.square.dark.invisible,
+.square.dark.ghost,
+.square.dark-hover:hover.invisible,
+.square.dark-hover:hover.ghost,
+.square.role-2.invisible,
+.square.role-2.ghost {
   color: #1B1C1D;
   background: transparent;
 }
 
 .button.green,
-.button.green-hover:hover {
+.button.green-hover:hover,
+.button.role-4,
+.square.green,
+.square.green-hover:hover,
+.square.role-4 {
   border-color: #5EE2A0;
   background: #5EE2A0;
   color: white;
@@ -8855,13 +8885,25 @@ textarea {
 .button.green.invisible,
 .button.green.ghost,
 .button.green-hover:hover.invisible,
-.button.green-hover:hover.ghost {
+.button.green-hover:hover.ghost,
+.button.role-4.invisible,
+.button.role-4.ghost,
+.square.green.invisible,
+.square.green.ghost,
+.square.green-hover:hover.invisible,
+.square.green-hover:hover.ghost,
+.square.role-4.invisible,
+.square.role-4.ghost {
   color: #5EE2A0;
   background: transparent;
 }
 
 .button.red,
-.button.red-hover:hover {
+.button.red-hover:hover,
+.button.role-5,
+.square.red,
+.square.red-hover:hover,
+.square.role-5 {
   border-color: #FF6565;
   background: #FF6565;
   color: white;
@@ -8870,13 +8912,25 @@ textarea {
 .button.red.invisible,
 .button.red.ghost,
 .button.red-hover:hover.invisible,
-.button.red-hover:hover.ghost {
+.button.red-hover:hover.ghost,
+.button.role-5.invisible,
+.button.role-5.ghost,
+.square.red.invisible,
+.square.red.ghost,
+.square.red-hover:hover.invisible,
+.square.red-hover:hover.ghost,
+.square.role-5.invisible,
+.square.role-5.ghost {
   color: #FF6565;
   background: transparent;
 }
 
 .button.primary,
-.button.primary-hover:hover {
+.button.primary-hover:hover,
+.button.role-1,
+.square.primary,
+.square.primary-hover:hover,
+.square.role-1 {
   border-color: #3B86FF;
   background: #3B86FF;
   color: white;
@@ -8885,13 +8939,23 @@ textarea {
 .button.primary.invisible,
 .button.primary.ghost,
 .button.primary-hover:hover.invisible,
-.button.primary-hover:hover.ghost {
+.button.primary-hover:hover.ghost,
+.button.role-1.invisible,
+.button.role-1.ghost,
+.square.primary.invisible,
+.square.primary.ghost,
+.square.primary-hover:hover.invisible,
+.square.primary-hover:hover.ghost,
+.square.role-1.invisible,
+.square.role-1.ghost {
   color: #3B86FF;
   background: transparent;
 }
 
 .button.light,
-.button.light-hover:hover {
+.button.light-hover:hover,
+.square.light,
+.square.light-hover:hover {
   border-color: #F3F3F3;
   background: #F3F3F3;
   color: #3C3B54;
@@ -8900,65 +8964,118 @@ textarea {
 .button.light.invisible,
 .button.light.ghost,
 .button.light-hover:hover.invisible,
-.button.light-hover:hover.ghost {
+.button.light-hover:hover.ghost,
+.square.light.invisible,
+.square.light.ghost,
+.square.light-hover:hover.invisible,
+.square.light-hover:hover.ghost {
   color: #F3F3F3;
   background: transparent;
 }
 
-.button.invisible {
+.button.light-2,
+.button.light-2-hover:hover,
+.button.role-3,
+.square.light-2,
+.square.light-2-hover:hover,
+.square.role-3 {
+  border-color: #DFDFDF;
+  background: #DFDFDF;
+  color: #3C3B54;
+}
+
+.button.light-2.invisible,
+.button.light-2.ghost,
+.button.light-2-hover:hover.invisible,
+.button.light-2-hover:hover.ghost,
+.button.role-3.invisible,
+.button.role-3.ghost,
+.square.light-2.invisible,
+.square.light-2.ghost,
+.square.light-2-hover:hover.invisible,
+.square.light-2-hover:hover.ghost,
+.square.role-3.invisible,
+.square.role-3.ghost {
+  color: #DFDFDF;
+  background: transparent;
+}
+
+.button.invisible,
+.square.invisible {
   font-weight: 500;
   background: none;
   border-color: transparent;
 }
 
-.button.invisible:hover {
+.button.invisible:hover,
+.square.invisible:hover {
   border-color: inherit;
 }
 
 .button.disabled,
-.button:disabled {
+.button:disabled,
+.square.disabled,
+.square:disabled {
   pointer-events: none;
   opacity: 0.5;
 }
 
 .button.icon-right,
-.button.icon-left {
+.button.icon-left,
+.square.icon-right,
+.square.icon-left {
   min-width: 76px;
 }
 
 .button.icon-right i,
-.button.icon-left i {
+.button.icon-left i,
+.square.icon-right i,
+.square.icon-left i {
   font-size: 14px;
   line-height: 28px;
 }
 
 .button.icon-right.active i,
-.button.icon-left.active i {
+.button.icon-left.active i,
+.square.icon-right.active i,
+.square.icon-left.active i {
   font-weight: 900;
 }
 
-.button.icon-right {
+.button.icon-right,
+.square.icon-right {
   text-align: right;
 }
 
-.button.icon-right i {
+.button.icon-right i,
+.square.icon-right i {
   margin-left: 12px;
 }
 
-.button.icon-left {
+.button.icon-left,
+.square.icon-left {
   text-align: left;
 }
 
-.button.icon-left i {
+.button.icon-left i,
+.square.icon-left i {
   margin-right: 8px;
 }
 
-.button.wide {
+.button.tiny,
+.square.tiny {
+  min-width: 0;
+  padding: 0;
+}
+
+.button.wide,
+.square.wide {
   width: 155px;
   padding: 0;
 }
 
-.button.xl {
+.button.xl,
+.square.xl {
   height: 50px;
   width: 100%;
   line-height: 50px;
@@ -9159,7 +9276,7 @@ textarea {
 .dropdown .header .close {
   position: absolute;
   right: 8px;
-  top: 8px;
+  top: 12px;
   height: 24px;
   width: 24px;
   text-align: center;

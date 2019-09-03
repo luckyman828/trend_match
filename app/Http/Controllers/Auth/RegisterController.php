@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\User;
 use App\Http\Controllers\Controller;
+use App\Team;
 use App\TeamInvite;
 use App\UserTeam;
+use App\WorkspaceUser;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -76,7 +78,14 @@ class RegisterController extends Controller
         // Find the teams that the user may have been invited to
         $teamInvites = TeamInvite::where('email', $newUser->email)->get();
         if ($teamInvites) {
+            $permission_level_to_set = 1;
+            $workspace_to_set = '';
             foreach( $teamInvites as $invite) {
+                // Get the users permissionlevel
+                if ($invite->permission_level > $permission_level_to_set) {
+                    $permission_level_to_set = $invite->permission_level;
+                }
+                // Add the user to the teams they are invited to
                 $user_team = new UserTeam;
                 $user_team->user_id = $newUser->id;
                 $user_team->team_id = $invite->team_id;
@@ -84,7 +93,20 @@ class RegisterController extends Controller
                 $user_team->save();
                 // Delete the invites
                 $invite->delete();
+
             }
+            // Add the user to the workspace they were invited to
+            $team = Team::find($teamInvites[0]->team_id);
+            $workspace_to_set = $team->workspace_id;
+            $workspace_user = new WorkspaceUser;
+            $workspace_user->workspace_id = $workspace_to_set;
+            $workspace_user->user_id = $newUser->id;
+            $workspace_user->permission_level = $permission_level_to_set;
+            $workspace_user->save();
+            
+            // set the permission level for the new user
+            $newUser->role_id = $permission_level_to_set;
+            $newUser->save();
         }
 
 

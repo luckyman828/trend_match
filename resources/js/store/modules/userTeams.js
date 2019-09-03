@@ -74,10 +74,10 @@ export default {
           const existingUser = User.query().where('email', user.email).first()
           if (existingUser != null) {
             // If the user exists - add them to the team (does not matter if they are already a member of the team)
-            commit('addUserToTeam', {user: existingUser, team: team})
+            commit('addUserToTeam', {user: existingUser, team: team, permission_level: user.role})
           } else {
             // If the user does not exist - add a record to the team_invites store
-            commit('entities/teamInvites/addTeamInvite', {email: user.email, team_id: team.id}, {root: true})
+            commit('entities/teamInvites/addTeamInvite', {email: user.email, team_id: team.id, permission_level: user.role}, {root: true})
           }
         })
 
@@ -86,7 +86,7 @@ export default {
         await axios.post(`/api/invite-users`, {
           users: users,
           team: team,
-          sender: authUser
+          sender: authUser,
         }).then(response => {
           console.log(response.data)
         }).catch(err =>{
@@ -124,11 +124,12 @@ export default {
         state.loading = bool
       },
   
-      addUserToTeam(state, {user, team}) {
+      addUserToTeam(state, {user, team, permission_level}) {
         UserTeam.insert({
           data: {
               user_id: user.id,
               team_id: team.id,
+              permission_level: permission_level,
             }
         })
       },

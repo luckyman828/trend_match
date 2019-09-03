@@ -387,24 +387,24 @@ export default {
     .checkbox input:checked ~ .checkmark:after {
       display: block;
     }
-    .square {
-        background: $light1;
-        padding: 7px 10px;
-        border-radius: 4px;
-        font-size: 12px;
-        font-weight: 700;
-        &.sales {
-            background: $primary;
-        }
-        &.admin {
-            background: $dark05;
-        }
-        i {
-            color: $dark2;
-            margin-right: 16px;
-            font-size: 16px;
-        }
-    }
+    // .square {
+    //     background: $light1;
+    //     padding: 7px 10px;
+    //     border-radius: 4px;
+    //     font-size: 12px;
+    //     font-weight: 700;
+    //     &.sales {
+    //         background: $primary;
+    //     }
+    //     &.admin {
+    //         background: $dark05;
+    //     }
+    //     i {
+    //         color: $dark2;
+    //         margin-right: 16px;
+    //         font-size: 16px;
+    //     }
+    // }
     .button {
         display: inline-block;
         width: 86px;

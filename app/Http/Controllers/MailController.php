@@ -64,6 +64,7 @@ class MailController extends Controller
         $usersToAdd = [];
         $usersToInvite = [];
         
+        $index = 0;
         foreach ($request->users as $user) {
             
             // First check if the invited e-mail already has a user
@@ -78,6 +79,7 @@ class MailController extends Controller
                     $userTeam = [
                         'user_id' => $existingUser->id,
                         'team_id' => $request->team['id'],
+                        'permission_level' => $user['permission_level']
                     ];
                     // Add the user to the array of users to be invited
                     array_push($usersToAdd, $userTeam);
@@ -93,15 +95,25 @@ class MailController extends Controller
                     $teamInvite = [
                         'email' => $user['email'],
                         'team_id' => $request->team['id'],
+                        'permission_level' => $user['permission_level']
                     ];
                     // Add the invite to the table
                     array_push($usersToInvite, $teamInvite);
 
+                    // Construct a single user request object to be used in the email
+                    $data = [
+                        'user' => $user,
+                        'team' => $request->team,
+                        'sender' => $request->sender
+
+                    ];
+
                     // Send an email invite to the user
-                    Mail::to($user['email'])->send(new InviteUser($request));
+                    Mail::to($user['email'])->send(new InviteUser($data));
                 }
 
             }
+            $index++;
         }
         UserTeam::insert($usersToAdd);
         TeamInvite::insert($usersToInvite);

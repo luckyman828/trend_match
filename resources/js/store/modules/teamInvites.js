@@ -92,11 +92,12 @@ export default {
         state.loading = bool
       },
   
-      addTeamInvite(state, {email, team_id}) {
+      addTeamInvite(state, {email, team_id, permission_level}) {
         TeamInvite.insert({
           data: {
               email: email,
               team_id: team_id,
+              permission_level: permission_level,
             }
         })
       },

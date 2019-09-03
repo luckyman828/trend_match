@@ -7943,6 +7943,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./RadioButtons */ "./resources/js/components/RadioButtons.vue");
 /* harmony import */ var _Input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Input/CheckboxButtons */ "./resources/js/components/Input/CheckboxButtons.vue");
 /* harmony import */ var _Modal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Modal */ "./resources/js/components/Modal.vue");
+/* harmony import */ var _store_models_Role__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../store/models/Role */ "./resources/js/store/models/Role.js");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -8037,6 +8038,31 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -8055,13 +8081,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     return {
       newUsers: [{
         email: '',
-        name: ''
+        name: '',
+        permission_level: 1
       }],
       selectedTeamId: null,
       selectedUserIds: []
     };
   },
   computed: {
+    roles: function roles() {
+      return _store_models_Role__WEBPACK_IMPORTED_MODULE_5__["default"].all();
+    },
     submitDisabled: function submitDisabled() {
       if (this.newUsers[0].email.length > 7) return false;else return true;
     },
@@ -8095,6 +8125,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         team: this.selectedTeam,
         authUser: this.authUser
       });
+      this.newUsers = [{
+        email: '',
+        name: '',
+        permission_level: 1
+      }];
       this.close();
     },
     setNewUsers: function setNewUsers(users) {
@@ -8108,7 +8143,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         } else {
           _this2.newUsers.push({
             email: user,
-            name: ''
+            name: '',
+            permission_level: 1
           });
         }
 
@@ -8127,7 +8163,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     addUser: function addUser() {
       this.newUsers.push({
         email: '',
-        name: ''
+        name: '',
+        permission_level: 1
       });
     }
   })
@@ -10002,10 +10039,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
         product.phaseAction = product.phaseActions.find(function (x) {
           return x.phase_id == 1;
-        });
-        product.aa = _this.sortBy;
-        product.ab = _typeof(product[_this.sortBy]) == 'object';
-        product.ac = _typeof(product[_this.sortBy]); // Scope comments to current teamFilter
+        }); // Scope comments to current teamFilter
 
         var comments = product.comments;
         var commentsScoped = []; // If the user is a buyer function, only return global comments
@@ -10128,17 +10162,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var key = this.sortBy;
       var sortMethod;
 
-      if (['userAction', 'teamAction', 'phaseAction', 'productFinalAction', 'userAction'].includes(key)) {
-        sortMethod = 'action';
-      } else if (key == 'focus') {
-        sortMethod = 'focus';
-      } else if (key == 'ins') {
-        sortMethod = 'ins';
-      } else {
-        if (_typeof(this.products[0][key]) == 'object') {
-          sortMethod = 'object';
+      if (!this.loadingProducts) {
+        if (['userAction', 'teamAction', 'phaseAction', 'productFinalAction', 'userAction'].includes(key)) {
+          sortMethod = 'action';
+        } else if (key == 'focus') {
+          sortMethod = 'focus';
+        } else if (key == 'ins') {
+          sortMethod = 'ins';
         } else {
-          sortMethod = 'key';
+          if (_typeof(this.products[0][key]) == 'object') {
+            sortMethod = 'object';
+          } else {
+            sortMethod = 'key';
+          }
         }
       }
 
@@ -10646,46 +10682,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     teams: function teams() {
       return this.$store.getters['entities/teams/teams'];
     },
-    // teams() {
-    //     // Manually find the teams and the users belonging to each team.
-    //     // This is only necessary because I cannot make the Vuex ORM realtionship work 
-    //     // If you can make it work, please be my guest
-    //     const teams = Team.query().with('users').with('invites').all()
-    //     const users = this.users
-    //     // Loop through the users and sort them between the teams
-    //     users.forEach(user => {
-    //         // First check that the user has a team and that the team has an id
-    //         if (user.teams[0] != null) {
-    //             if ('id' in user.teams[0]) {
-    //                 // If we have a team with an id
-    //                 // Set the users role
-    //                 user.teams.forEach(userTeam => {
-    //                     // Loop through each of the users teams and add the user
-    //                     // Find the corresponding team
-    //                     const foundTeam = teams.find(team => team.id == userTeam.id)
-    //                     // Check that the user doesnt already exist in this team
-    //                     if ( !foundTeam.users.includes(user) )
-    //                         // Push the user to the team if the user is not already a member
-    //                         foundTeam.users.push(user)
-    //                 })
-    //             }
-    //         }
-    //     })
-    //     if (!this.isLoading) {
-    //         if (this.authUser.role_id >= 3)
-    //             return teams
-    //         else {
-    //             // Get the users teams
-    //             let userTeams = []
-    //             teams.forEach(team => {
-    //                 if (this.authUser.teams.find(x => x.id == team.id))
-    //                     userTeams.push(team)
-    //             })
-    //             return userTeams
-    //         }
-    //     }
-    //     return []
-    // },
     isLoading: function isLoading() {
       var loading = false;
       if (!this.loadingOverwrite) if (this.loadingCollections || this.authUser == null) loading = true;
@@ -11065,7 +11061,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".catalogues-table[data-v-f0b881ae] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.clickable[data-v-f0b881ae] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-f0b881ae] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-f0b881ae] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-f0b881ae] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-f0b881ae] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-f0b881ae] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.flex-table .flex-group > td.action[data-v-f0b881ae] {\n  text-align: right;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae]:last-child {\n  margin-right: 16px;\n}\n.show-more[data-v-f0b881ae] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-f0b881ae] {\n  -webkit-animation: loading-data-v-f0b881ae 2s;\n          animation: loading-data-v-f0b881ae 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-f0b881ae] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-f0b881ae]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-f0b881ae] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-f0b881ae] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-f0b881ae]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae]:after {\n  display: block;\n}\n.square[data-v-f0b881ae] {\n  background: #F3F3F3;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 12px;\n  font-weight: 700;\n}\n.square.sales[data-v-f0b881ae] {\n  background: #3B86FF;\n}\n.square.admin[data-v-f0b881ae] {\n  background: #3C3B54;\n}\n.square i[data-v-f0b881ae] {\n  color: #A8A8A8;\n  margin-right: 16px;\n  font-size: 16px;\n}\n.button[data-v-f0b881ae] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n  margin: 0;\n}\n.button i[data-v-f0b881ae] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-f0b881ae] {\n  font-weight: 900;\n}\n.view-single[data-v-f0b881ae] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-f0b881ae] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-f0b881ae] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
+exports.push([module.i, ".catalogues-table[data-v-f0b881ae] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.clickable[data-v-f0b881ae] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-f0b881ae] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-f0b881ae] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-f0b881ae] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-f0b881ae] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-f0b881ae] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.flex-table .flex-group > td.action[data-v-f0b881ae] {\n  text-align: right;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae]:last-child {\n  margin-right: 16px;\n}\n.show-more[data-v-f0b881ae] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-f0b881ae] {\n  -webkit-animation: loading-data-v-f0b881ae 2s;\n          animation: loading-data-v-f0b881ae 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-f0b881ae] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-f0b881ae]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-f0b881ae] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-f0b881ae] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-f0b881ae]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae]:after {\n  display: block;\n}\n.button[data-v-f0b881ae] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n  margin: 0;\n}\n.button i[data-v-f0b881ae] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-f0b881ae] {\n  font-weight: 900;\n}\n.view-single[data-v-f0b881ae] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-f0b881ae] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-f0b881ae] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
 
 // exports
 
@@ -11198,7 +11194,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "label.team[data-v-95e58d5a] {\n  position: relative;\n}\nlabel.team .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 8px;\n  top: 8px;\n  background: #3B86FF;\n  color: white;\n  height: 24px;\n  width: 24px;\n  text-align: center;\n}\nlabel.team .square i[data-v-95e58d5a] {\n  font-size: 10px;\n  line-height: 24px;\n}\n.open-dropdown[data-v-95e58d5a] {\n  position: absolute;\n  right: 8px;\n  bottom: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n}\n.open-dropdown.active[data-v-95e58d5a] {\n  color: #1B1C1D;\n}\n.open-dropdown[data-v-95e58d5a]:hover {\n  color: #535353;\n}\n.open-dropdown i[data-v-95e58d5a] {\n  margin-left: 8px;\n}\nh4[data-v-95e58d5a] {\n  font-size: 16px;\n  color: #A8A8A8;\n  margin: 0;\n  font-weight: 500;\n  margin-bottom: 16px;\n}\nlabel.team[data-v-95e58d5a] {\n  margin-bottom: calc(24px + 1em);\n}\n.user[data-v-95e58d5a] {\n  margin-bottom: calc(32px + 2em - 2px);\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.user[data-v-95e58d5a]:last-child {\n  margin-bottom: calc(20px + 2em - 2px);\n}\n.user .flex-wrapper[data-v-95e58d5a] {\n  opacity: 0;\n}\n.user.card[data-v-95e58d5a] {\n  margin-top: -14px;\n  margin-left: -1em;\n  margin-right: -1em;\n  width: calc(100% + 2em);\n  margin-bottom: 32px;\n}\n.user.card .flex-wrapper[data-v-95e58d5a] {\n  opacity: 1;\n}\n.user.card[data-v-95e58d5a]:last-child {\n  margin-bottom: 20px;\n}\nform[data-v-95e58d5a] {\n  margin-bottom: 60px;\n}\n.flex-wrapper[data-v-95e58d5a] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.add-more[data-v-95e58d5a] {\n  margin-bottom: 24px;\n}", ""]);
+exports.push([module.i, "label.team[data-v-95e58d5a] {\n  position: relative;\n}\nlabel.team .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 8px;\n  top: 8px;\n  background: #3B86FF;\n  color: white;\n  height: 24px;\n  width: 24px;\n  text-align: center;\n}\nlabel.team .square i[data-v-95e58d5a] {\n  font-size: 10px;\n  line-height: 24px;\n}\n.open-dropdown[data-v-95e58d5a] {\n  position: absolute;\n  right: 8px;\n  bottom: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n}\n.open-dropdown.active[data-v-95e58d5a] {\n  color: #1B1C1D;\n}\n.open-dropdown[data-v-95e58d5a]:hover {\n  color: #535353;\n}\n.open-dropdown i[data-v-95e58d5a] {\n  margin-left: 8px;\n}\nh4[data-v-95e58d5a] {\n  font-size: 16px;\n  color: #A8A8A8;\n  margin: 0;\n  font-weight: 500;\n  margin-bottom: 16px;\n}\nlabel.team[data-v-95e58d5a] {\n  margin-bottom: calc(24px + 1em);\n}\n.user[data-v-95e58d5a] {\n  margin-bottom: calc(32px + 2em - 2px);\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.user[data-v-95e58d5a]:last-child {\n  margin-bottom: calc(20px + 2em - 2px);\n}\n.user .flex-wrapper[data-v-95e58d5a] {\n  opacity: 0;\n}\n.user.card[data-v-95e58d5a] {\n  margin-top: -14px;\n  margin-left: -1em;\n  margin-right: -1em;\n  width: calc(100% + 2em);\n  margin-bottom: 32px;\n}\n.user.card .flex-wrapper[data-v-95e58d5a] {\n  opacity: 1;\n}\n.user.card[data-v-95e58d5a]:last-child {\n  margin-bottom: 20px;\n}\nform[data-v-95e58d5a] {\n  margin-bottom: 60px;\n}\n.flex-wrapper[data-v-95e58d5a] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.add-more[data-v-95e58d5a] {\n  margin-bottom: 24px;\n}\nlabel.role input[data-v-95e58d5a] {\n  color: transparent;\n}\nlabel.role .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 12px;\n  bottom: 8px;\n}", ""]);
 
 // exports
 
@@ -11312,7 +11308,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1B1C1D;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n  position: relative;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 0;\n  background: #F9F9F9;\n  width: 100%;\n  height: 130px;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  width: calc(100% - 120px - 200px - 16px);\n  margin-left: 1px;\n  border-radius: 0.25rem 0.25rem 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.flex-table[data-v-57b394cf] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  padding-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf] {\n  min-width: 70px;\n  padding-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.nds[data-v-57b394cf] {\n  min-width: 100px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 86px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: auto;\n  padding-left: 16px;\n  min-width: 320px;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  padding-right: 16px;\n}\n.flex-table-row > *.action[data-v-57b394cf]:not(th) {\n  display: -webkit-box;\n  display: flex;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #F3F3F3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #FF6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #DFDFDF;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n  white-space: nowrap;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3B86FF;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.square[data-v-57b394cf] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 600;\n}\n.square i[data-v-57b394cf] {\n  color: #A8A8A8;\n  margin-right: 12px;\n  font-size: 16px;\n}\n.button[data-v-57b394cf]:nth-child(1n+2) {\n  margin-left: 20px;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.square-wrapper[data-v-57b394cf] {\n  min-width: 65px;\n}", ""]);
+exports.push([module.i, ".dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1B1C1D;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n  position: relative;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 0;\n  background: #F9F9F9;\n  width: 100%;\n  height: 130px;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  width: calc(100% - 120px - 200px - 16px);\n  margin-left: 1px;\n  border-radius: 0.25rem 0.25rem 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.flex-table[data-v-57b394cf] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  padding-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf] {\n  min-width: 70px;\n  padding-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.nds[data-v-57b394cf] {\n  min-width: 100px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 86px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: auto;\n  padding-left: 16px;\n  min-width: 320px;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  padding-right: 16px;\n}\n.flex-table-row > *.action[data-v-57b394cf]:not(th) {\n  display: -webkit-box;\n  display: flex;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #F3F3F3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #FF6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #DFDFDF;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n  white-space: nowrap;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3B86FF;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.square[data-v-57b394cf] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 600;\n}\n.square i[data-v-57b394cf] {\n  color: #A8A8A8;\n  margin-right: 12px;\n  font-size: 16px;\n}\n.button[data-v-57b394cf]:nth-child(1n+2) {\n  margin-left: 20px;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.square-wrapper[data-v-57b394cf] {\n  min-width: 65px;\n}", ""]);
 
 // exports
 
@@ -11426,7 +11422,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".teams-table[data-v-0b6bf463] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.teams-table .team-row .view-single[data-v-0b6bf463] {\n  border-color: transparent;\n}\n.teams-table .team-row.expanded[data-v-0b6bf463] {\n  background: #F3F3F3;\n}\n.teams-table .team-row.expanded .view-single[data-v-0b6bf463] {\n  color: #1B1C1D;\n  background: white;\n}\n.flex-table-row[data-v-0b6bf463] {\n  padding: 12px 0;\n}\n.flex-table-row > *.select[data-v-0b6bf463], .flex-table-row > *[data-v-0b6bf463]:nth-child(1) {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(2) {\n  padding-left: 32px;\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(3) {\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(4) {\n  min-width: 112px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(5) {\n  min-width: 132px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(6) {\n  min-width: 80px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(7) {\n  margin-left: auto;\n  min-width: 80px;\n  padding-left: 16px;\n  padding-right: 32px;\n}\n.flex-table-row > *.action[data-v-0b6bf463] > :first-child {\n  margin-right: 20px;\n}\n.flex-table-row td.title[data-v-0b6bf463] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.flex-table-row td.title .square[data-v-0b6bf463] {\n  margin-left: -32px;\n  color: #1B1C1D;\n  background: none;\n}\n.flex-table-row td.title .square i[data-v-0b6bf463] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  font-size: 12px;\n}\n.flex-table-row.invited-row .name[data-v-0b6bf463], .flex-table-row.invited-row .email[data-v-0b6bf463], .flex-table-row.invited-row .role[data-v-0b6bf463] {\n  opacity: 0.5;\n}\n.flex-table-row.invited-row.add-member[data-v-0b6bf463] {\n  -webkit-box-pack: center;\n          justify-content: center;\n  cursor: pointer;\n}\n.flex-table-row.invited-row.add-member:hover td[data-v-0b6bf463] {\n  border-bottom: solid 1px #1B1C1D;\n}\n.flex-table-row.invited-row.add-member td[data-v-0b6bf463] {\n  color: #3C3B54;\n  font-weight: 500;\n  font-size: 12px;\n  padding: 0;\n  border-bottom: solid 1px transparent;\n}\n.flex-table-row.invited-row.add-member td i[data-v-0b6bf463] {\n  font-size: 13px;\n}\n.flex-table-row i[data-v-0b6bf463] {\n  margin-right: 8px;\n}\ni[data-v-0b6bf463] {\n  font-size: 11px;\n}\n.show-more[data-v-0b6bf463] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-0b6bf463] {\n  -webkit-animation: loading-data-v-0b6bf463 2s;\n          animation: loading-data-v-0b6bf463 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-0b6bf463] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox input[data-v-0b6bf463] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-0b6bf463] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-0b6bf463]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463]:after {\n  display: block;\n}\n.square[data-v-0b6bf463] {\n  background: #F3F3F3;\n  color: white;\n  padding: 7px 10px;\n  border-radius: 4px;\n  font-size: 12px;\n  font-weight: 500;\n}\n.square.user-role-1[data-v-0b6bf463] {\n  background: #3B86FF;\n}\n.square.user-role-2[data-v-0b6bf463] {\n  background: #5EE2A0;\n}\n.square.user-role-3[data-v-0b6bf463] {\n  background: #3C3B54;\n}\n.square.user-role-4[data-v-0b6bf463] {\n  background: #FF6565;\n}\n.square i[data-v-0b6bf463] {\n  color: #A8A8A8;\n  margin-right: 16px;\n  font-size: 16px;\n}\n.view-single[data-v-0b6bf463] {\n  font-size: 12px;\n  font-weight: 700;\n  color: #A8A8A8;\n  cursor: pointer;\n}\n.team-totals[data-v-0b6bf463] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.team-totals span[data-v-0b6bf463] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.user-row[data-v-0b6bf463] {\n  background: #F9F9F9;\n}\n.user-row[data-v-0b6bf463]:not(:last-child) {\n  border-bottom: solid 2px white;\n}\n.user-row td[data-v-0b6bf463] {\n  font-size: 14px;\n}\n.user-row td.index[data-v-0b6bf463] {\n  text-align: right;\n  padding-right: 20px;\n}\n.team-users[data-v-0b6bf463] {\n  overflow: hidden;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n}\n.team-users.collapsed[data-v-0b6bf463] {\n  max-height: 0 !important;\n}\n.team-users.expanded + .team-row-wrapper[data-v-0b6bf463] {\n  box-shadow: 0 1px 0 #DFDFDF inset;\n}\n.team-row.expanded td.title .square[data-v-0b6bf463] {\n  background: #DFDFDF;\n  font-weight: 500;\n}\n.team-row.expanded td.title .square i[data-v-0b6bf463] {\n  color: #1B1C1D;\n  -webkit-transform: rotateZ(90deg);\n          transform: rotateZ(90deg);\n}", ""]);
+exports.push([module.i, ".teams-table[data-v-0b6bf463] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.teams-table .team-row .view-single[data-v-0b6bf463] {\n  border-color: transparent;\n}\n.teams-table .team-row.expanded[data-v-0b6bf463] {\n  background: #F3F3F3;\n}\n.teams-table .team-row.expanded .view-single[data-v-0b6bf463] {\n  color: #1B1C1D;\n  background: white;\n}\n.flex-table-row[data-v-0b6bf463] {\n  padding: 12px 0;\n}\n.flex-table-row > *.select[data-v-0b6bf463], .flex-table-row > *[data-v-0b6bf463]:nth-child(1) {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(2) {\n  padding-left: 32px;\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(3) {\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(4) {\n  min-width: 112px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(5) {\n  min-width: 132px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(6) {\n  min-width: 80px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(7) {\n  margin-left: auto;\n  min-width: 80px;\n  padding-left: 16px;\n  padding-right: 32px;\n}\n.flex-table-row > *.action[data-v-0b6bf463] > :first-child {\n  margin-right: 20px;\n}\n.flex-table-row td.title[data-v-0b6bf463] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.flex-table-row td.title .square[data-v-0b6bf463] {\n  margin-left: -32px;\n  color: #1B1C1D;\n  background: none;\n}\n.flex-table-row td.title .square i[data-v-0b6bf463] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  font-size: 12px;\n}\n.flex-table-row.invited-row .name[data-v-0b6bf463], .flex-table-row.invited-row .email[data-v-0b6bf463], .flex-table-row.invited-row .role[data-v-0b6bf463] {\n  opacity: 0.5;\n}\n.flex-table-row.invited-row.add-member[data-v-0b6bf463] {\n  -webkit-box-pack: center;\n          justify-content: center;\n  cursor: pointer;\n}\n.flex-table-row.invited-row.add-member:hover td[data-v-0b6bf463] {\n  border-bottom: solid 1px #1B1C1D;\n}\n.flex-table-row.invited-row.add-member td[data-v-0b6bf463] {\n  color: #3C3B54;\n  font-weight: 500;\n  font-size: 12px;\n  padding: 0;\n  border-bottom: solid 1px transparent;\n}\n.flex-table-row.invited-row.add-member td i[data-v-0b6bf463] {\n  font-size: 13px;\n}\n.flex-table-row i[data-v-0b6bf463] {\n  margin-right: 8px;\n}\ni[data-v-0b6bf463] {\n  font-size: 11px;\n}\n.show-more[data-v-0b6bf463] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-0b6bf463] {\n  -webkit-animation: loading-data-v-0b6bf463 2s;\n          animation: loading-data-v-0b6bf463 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-0b6bf463] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox input[data-v-0b6bf463] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-0b6bf463] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-0b6bf463]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463]:after {\n  display: block;\n}\n.view-single[data-v-0b6bf463] {\n  font-size: 12px;\n  font-weight: 700;\n  color: #A8A8A8;\n  cursor: pointer;\n}\n.team-totals[data-v-0b6bf463] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.team-totals span[data-v-0b6bf463] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.user-row[data-v-0b6bf463] {\n  background: #F9F9F9;\n}\n.user-row[data-v-0b6bf463]:not(:last-child) {\n  border-bottom: solid 2px white;\n}\n.user-row td[data-v-0b6bf463] {\n  font-size: 14px;\n}\n.user-row td.index[data-v-0b6bf463] {\n  text-align: right;\n  padding-right: 20px;\n}\n.team-users[data-v-0b6bf463] {\n  overflow: hidden;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n}\n.team-users.collapsed[data-v-0b6bf463] {\n  max-height: 0 !important;\n}\n.team-users.expanded + .team-row-wrapper[data-v-0b6bf463] {\n  box-shadow: 0 1px 0 #DFDFDF inset;\n}\n.team-row.expanded td.title .button i[data-v-0b6bf463] {\n  -webkit-transform: rotateZ(90deg);\n          transform: rotateZ(90deg);\n}", ""]);
 
 // exports
 
@@ -15359,7 +15355,7 @@ var render = function() {
                           domProps: { value: _vm.selectedTeam.title }
                         }),
                         _vm._v(" "),
-                        _c("span", { staticClass: "square" }, [
+                        _c("span", { staticClass: "square tiny" }, [
                           _c("i", { staticClass: "fas fa-check" })
                         ]),
                         _vm._v(" "),
@@ -15715,7 +15711,194 @@ var render = function() {
                                   }
                                 }
                               })
-                            ])
+                            ]),
+                            _vm._v(" "),
+                            _c(
+                              "label",
+                              { staticClass: "dropdown-parent role" },
+                              [
+                                _vm._v(
+                                  "\n                        Role\n                        "
+                                ),
+                                _c("input", {
+                                  attrs: {
+                                    type: "text",
+                                    name: "role",
+                                    id: "invite-role"
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "role square",
+                                    class:
+                                      "role-" +
+                                      [_vm.newUsers[index].permission_level],
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.$refs.roleDropdown[
+                                          index
+                                        ].toggle()
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      _vm._s(
+                                        _vm.roles[
+                                          Number([
+                                            _vm.newUsers[index].permission_level
+                                          ]) - 1
+                                        ].title
+                                          .charAt(0)
+                                          .toUpperCase() +
+                                          _vm.roles[
+                                            Number([
+                                              _vm.newUsers[index]
+                                                .permission_level
+                                            ]) - 1
+                                          ].title.slice(1)
+                                      )
+                                    )
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c("Dropdown", {
+                                  ref: "roleDropdown",
+                                  refInFor: true,
+                                  staticClass: "right dark",
+                                  scopedSlots: _vm._u(
+                                    [
+                                      {
+                                        key: "button",
+                                        fn: function(slotProps) {
+                                          return [
+                                            _c(
+                                              "span",
+                                              {
+                                                staticClass: "open-dropdown",
+                                                class: {
+                                                  active: !slotProps.collapsed
+                                                },
+                                                on: { click: slotProps.toggle }
+                                              },
+                                              [
+                                                _vm._v("Change role"),
+                                                _c("i", {
+                                                  staticClass:
+                                                    "far fa-chevron-down"
+                                                })
+                                              ]
+                                            )
+                                          ]
+                                        }
+                                      },
+                                      {
+                                        key: "header",
+                                        fn: function(slotProps) {
+                                          return [
+                                            _c("span", [
+                                              _vm._v(
+                                                _vm._s(_vm.roles.length) +
+                                                  " roles"
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c(
+                                              "span",
+                                              {
+                                                staticClass: "close",
+                                                on: { click: slotProps.toggle }
+                                              },
+                                              [
+                                                _c("i", {
+                                                  staticClass: "fal fa-times"
+                                                })
+                                              ]
+                                            )
+                                          ]
+                                        }
+                                      },
+                                      {
+                                        key: "body",
+                                        fn: function() {
+                                          return [
+                                            _c("RadioButtons", {
+                                              ref: "roleRadio",
+                                              refInFor: true,
+                                              attrs: {
+                                                options: _vm.roles,
+                                                optionNameKey: "title",
+                                                optionValueKey: "id"
+                                              },
+                                              model: {
+                                                value:
+                                                  _vm.newUsers[index]
+                                                    .permission_level,
+                                                callback: function($$v) {
+                                                  _vm.$set(
+                                                    _vm.newUsers[index],
+                                                    "permission_level",
+                                                    $$v
+                                                  )
+                                                },
+                                                expression:
+                                                  "newUsers[index].permission_level"
+                                              }
+                                            })
+                                          ]
+                                        },
+                                        proxy: true
+                                      },
+                                      {
+                                        key: "footer",
+                                        fn: function(slotProps) {
+                                          return [
+                                            _c(
+                                              "div",
+                                              { staticClass: "grid-2" },
+                                              [
+                                                _c(
+                                                  "span",
+                                                  {
+                                                    staticClass: "button green",
+                                                    on: {
+                                                      click: function($event) {
+                                                        _vm.$refs.roleRadio[
+                                                          index
+                                                        ].submit()
+                                                        slotProps.toggle()
+                                                      }
+                                                    }
+                                                  },
+                                                  [_vm._v("Save")]
+                                                ),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "span",
+                                                  {
+                                                    staticClass:
+                                                      "button invisible",
+                                                    on: {
+                                                      click: slotProps.toggle
+                                                    }
+                                                  },
+                                                  [_vm._v("Cancel")]
+                                                )
+                                              ]
+                                            )
+                                          ]
+                                        }
+                                      }
+                                    ],
+                                    null,
+                                    true
+                                  )
+                                })
+                              ],
+                              1
+                            )
                           ]
                         )
                       }),
@@ -18187,6 +18370,8 @@ var render = function() {
                       _c(
                         "div",
                         {
+                          ref: "teamRow",
+                          refInFor: true,
                           staticClass: "team-row item-row flex-table-row",
                           class: [
                             { expanded: _vm.expandedIds.includes(team.id) },
@@ -18220,12 +18405,21 @@ var render = function() {
                               }
                             },
                             [
-                              _c("span", { staticClass: "square" }, [
-                                _c("i", {
-                                  staticClass: "far fa-chevron-right"
-                                }),
-                                _vm._v(_vm._s(team.title))
-                              ])
+                              _c(
+                                "span",
+                                {
+                                  staticClass: "button icon-left",
+                                  class: _vm.expandedIds.includes(team.id)
+                                    ? "light-2"
+                                    : "invisible"
+                                },
+                                [
+                                  _c("i", {
+                                    staticClass: "far fa-chevron-right"
+                                  }),
+                                  _vm._v(_vm._s(team.title))
+                                ]
+                              )
                             ]
                           ),
                           _vm._v(" "),
@@ -18234,7 +18428,20 @@ var render = function() {
                           ]),
                           _vm._v(" "),
                           _c("td", { staticClass: "members" }, [
-                            _c("span", [_vm._v(_vm._s(team.users.length))])
+                            _c(
+                              "span",
+                              [
+                                _vm._v(_vm._s(team.users.length)),
+                                team.invites.length > 0
+                                  ? [
+                                      _vm._v(
+                                        " (" + _vm._s(team.invites.length) + ")"
+                                      )
+                                    ]
+                                  : _vm._e()
+                              ],
+                              2
+                            )
                           ]),
                           _vm._v(" "),
                           _vm._m(1, true),
@@ -18330,7 +18537,7 @@ var render = function() {
                                     "span",
                                     {
                                       staticClass: "square",
-                                      class: "user-role-" + user.role_id
+                                      class: "role-" + user.role_id
                                     },
                                     [_vm._v(_vm._s(user.role.title))]
                                   )
@@ -35217,12 +35424,9 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./store/index */ "./resources/js/store/index.js");
 /* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
-/* harmony import */ var _components_screens_Collection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/screens/Collection */ "./resources/js/components/screens/Collection.vue");
-/* harmony import */ var _components_screens_Catalogue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/screens/Catalogue */ "./resources/js/components/screens/Catalogue.vue");
-/* harmony import */ var _components_screens_Teams__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/screens/Teams */ "./resources/js/components/screens/Teams.vue");
-/* harmony import */ var _components_screens_loaders_TeamsLoader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/screens/loaders/TeamsLoader */ "./resources/js/components/screens/loaders/TeamsLoader.vue");
-/* harmony import */ var _components_screens_loaders_FileLoader__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/screens/loaders/FileLoader */ "./resources/js/components/screens/loaders/FileLoader.vue");
-/* harmony import */ var _components_screens_loaders_FolderLoader__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/screens/loaders/FolderLoader */ "./resources/js/components/screens/loaders/FolderLoader.vue");
+/* harmony import */ var _components_screens_loaders_TeamsLoader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/screens/loaders/TeamsLoader */ "./resources/js/components/screens/loaders/TeamsLoader.vue");
+/* harmony import */ var _components_screens_loaders_FileLoader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/screens/loaders/FileLoader */ "./resources/js/components/screens/loaders/FileLoader.vue");
+/* harmony import */ var _components_screens_loaders_FolderLoader__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/screens/loaders/FolderLoader */ "./resources/js/components/screens/loaders/FolderLoader.vue");
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 
 
@@ -35238,9 +35442,9 @@ Vue.component('app', __webpack_require__(/*! ./App.vue */ "./resources/js/App.vu
 // })
 // 1. Define route components.
 // These can be imported from other files
-
-
-
+// import Collection from './components/screens/Collection'
+// import Catalogue from './components/screens/Catalogue'
+// import Teams from './components/screens/Teams'
 
 
 
@@ -35248,27 +35452,29 @@ Vue.component('app', __webpack_require__(/*! ./App.vue */ "./resources/js/App.vu
 var routes = [{
   path: '/catalogue/:catalogueId',
   name: 'catalogue',
-  component: _components_screens_loaders_FileLoader__WEBPACK_IMPORTED_MODULE_6__["default"]
+  component: _components_screens_loaders_FileLoader__WEBPACK_IMPORTED_MODULE_3__["default"]
 }, {
   path: '/collection',
   name: 'collection',
-  component: _components_screens_loaders_FolderLoader__WEBPACK_IMPORTED_MODULE_7__["default"]
+  component: _components_screens_loaders_FolderLoader__WEBPACK_IMPORTED_MODULE_4__["default"]
 }, {
   path: '/teams',
   name: 'teams',
-  component: _components_screens_loaders_TeamsLoader__WEBPACK_IMPORTED_MODULE_5__["default"]
+  component: _components_screens_loaders_TeamsLoader__WEBPACK_IMPORTED_MODULE_2__["default"]
 }, {
   path: '*',
   redirect: '/collection'
 }];
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
   routes: routes // short for `routes: routes`
+  // mode: 'history' // remove '#' from urls. To enable this we need some server configuration
+  // link here: https://router.vuejs.org/guide/essentials/history-mode.html#example-server-configurations
 
 });
 router.beforeEach(function (to, from, next) {
   var authUser = window.auth_user; // Guard paths
 
-  if (to.path == '/teams' && authUser.role_id < 2 || to.name == 'catalogue' && authUser.assigned_room_id == null) next('/collection');else next();
+  if (to.path == '/teams' && authUser.role_id < 2) next('/collection'), console.log('acces denied');else next();
 });
 var app = new Vue({
   store: _store_index__WEBPACK_IMPORTED_MODULE_0__["default"],
@@ -40534,8 +40740,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _models_Team__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../models/Team */ "./resources/js/store/models/Team.js");
-
 /* harmony default export */ __webpack_exports__["default"] = ({
   namespaced: true,
   state: {
@@ -41725,11 +41929,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     addTeamInvite: function addTeamInvite(state, _ref6) {
       var email = _ref6.email,
-          team_id = _ref6.team_id;
+          team_id = _ref6.team_id,
+          permission_level = _ref6.permission_level;
       _models_TeamInvite__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: {
           email: email,
-          team_id: team_id
+          team_id: team_id,
+          permission_level: permission_level
         }
       });
     },
@@ -42489,13 +42695,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                     // If the user exists - add them to the team (does not matter if they are already a member of the team)
                     commit('addUserToTeam', {
                       user: existingUser,
-                      team: team
+                      team: team,
+                      permission_level: user.role
                     });
                   } else {
                     // If the user does not exist - add a record to the team_invites store
                     commit('entities/teamInvites/addTeamInvite', {
                       email: user.email,
-                      team_id: team.id
+                      team_id: team.id,
+                      permission_level: user.role
                     }, {
                       root: true
                     });
@@ -42580,11 +42788,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     addUserToTeam: function addUserToTeam(state, _ref8) {
       var user = _ref8.user,
-          team = _ref8.team;
+          team = _ref8.team,
+          permission_level = _ref8.permission_level;
       _models_UserTeam__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: {
           user_id: user.id,
-          team_id: team.id
+          team_id: team.id,
+          permission_level: permission_level
         }
       });
     },

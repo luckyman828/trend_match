@@ -12,15 +12,16 @@ class InviteUser extends Mailable
     use Queueable, SerializesModels;
 
     public $request;
+    public $data;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($request)
+    public function __construct($data)
     {
-        $this->request = $request;
+        $this->data = $data;
     }
 
     /**
@@ -31,8 +32,9 @@ class InviteUser extends Mailable
     public function build()
     {
         return $this->from('david@trendmatch.dk', 'Kollekt App')
-                    ->subject('You are invited to join the team, ' . $this->request->team['title'])
-                    ->view('emails.inviteUser');
+                    // ->subject('You are invited to join the team, ' . $this->request->team['title'])
+                    ->subject('You are invited to join a team')
+                    ->view('emails.inviteUser')->with(['data', $this->data]);
 
     }
 }

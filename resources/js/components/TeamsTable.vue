@@ -33,16 +33,16 @@
 
                 <div class="team-row-wrapper" v-for="(team, index) in teamsSorted" :key="team.id">
 
-                    <div class="team-row item-row flex-table-row" :class="[{expanded: expandedIds.includes(team.id)}, {collapsed: !expandedIds.includes(team.id)}]">
+                    <div class="team-row item-row flex-table-row" ref="teamRow" :class="[{expanded: expandedIds.includes(team.id)}, {collapsed: !expandedIds.includes(team.id)}]">
                         <td class="select">
                             <label class="checkbox">
                                 <input type="checkbox" @change="onSelect(index)" />
                                 <span class="checkmark"></span>
                             </label>
                         </td>
-                        <td class="title clickable" @click="expandUsers(team)"><span class="square"><i class="far fa-chevron-right"></i>{{team.title}}</span></td>
+                        <td class="title clickable" @click="expandUsers(team)"><span :class="(expandedIds.includes(team.id)) ? 'light-2' : 'invisible'" class="button icon-left"><i class="far fa-chevron-right"></i>{{team.title}}</span></td>
                         <td class="assigned">{{team.expanded}}</td>
-                        <td class="members"><span>{{team.users.length}}</span></td>
+                        <td class="members"><span>{{team.users.length}}<template v-if="team.invites.length > 0"> ({{team.invites.length}})</template></span></td>
                         <td class="collections"><span>N/A</span></td>
                         <td class="status"><span>N/A</span></td>
                         <td class="action">
@@ -58,7 +58,7 @@
                             <td class="name">{{ (user.name != null) ? user.name : 'No name set' }}</td>
                             <td class="email">{{user.email}}</td>
                             <td class="collections">-</td>
-                            <td class="role"><span class="square" :class="'user-role-' + user.role_id">{{user.role.title}}</span></td>
+                            <td class="role"><span class="square" :class="'role-' + user.role_id">{{user.role.title}}</span></td>
                             <td></td>
                             <td class="action">
                                 <span class="resend"></span>
@@ -374,62 +374,27 @@ export default {
     .checkbox input:checked ~ .checkmark:after {
       display: block;
     }
-    .square {
-        background: $light1;
-        color: white;
-        padding: 7px 10px;
-        border-radius: 4px;
-        font-size: 12px;
-        font-weight: 500;
-        &.user-role-1 {
-            background: $primary;
-        }
-        &.user-role-2 {
-            background: $green;
-        }
-        &.user-role-3 {
-            background: $dark05;
-        }
-        &.user-role-4 {
-            background: $red;
-        }
-        i {
-            color: $dark2;
-            margin-right: 16px;
-            font-size: 16px;
-        }
-    }
-    // .button {
-    //     display: inline-block;
-    //     min-width: 92px;
-    //     height: 32px;
-    //     line-height: 32px;
-    //     font-size: 12px;
+    // .square {
+    //     padding: 7px 10px;
     //     border-radius: 4px;
-    //     padding: 0;
-    //     line-height: 28px;
-    //     position: relative;
-    //     font-weight: 700;
-    //     color: $dark2;
-    //     border-color: $light2;
-    //     &.active {
-    //         i {
-    //             font-weight: 900;
-    //         }
+    //     font-size: 12px;
+    //     font-weight: 500;
+    //     &.user-role-1 {
+    //         background: $primary;
     //     }
-    //     &.remove {
-    //         color: $red;
+    //     &.user-role-2 {
+    //         background: $green;
     //     }
-    //     &.dark {
-    //         color: $dark;
-    //         // border: none;
-    //         // width: auto;
-    //         white-space: nowrap;
-    //         &:hover {
-    //             border: none;
-    //             border-radius: 0;
-    //             border-bottom: solid $dark 1px;
-    //         }
+    //     &.user-role-3 {
+    //         background: $dark05;
+    //     }
+    //     &.user-role-4 {
+    //         background: $red;
+    //     }
+    //     i {
+    //         color: $dark2;
+    //         margin-right: 16px;
+    //         font-size: 16px;
     //     }
     // }
     .view-single {
@@ -479,11 +444,11 @@ export default {
     .team-row {
         &.expanded {
             td.title {
-                .square {
-                    background: $light2;
-                    font-weight: 500;
+                .button {
+                    // background: $light2;
+                    // font-weight: 500;
                     i {
-                        color: $dark;
+                        // color: $dark;
                         transform: rotateZ(90deg);
                     }
                 }

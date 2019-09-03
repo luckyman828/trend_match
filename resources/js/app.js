@@ -18,9 +18,9 @@ Vue.component('app', require('./App.vue').default);
 
 // 1. Define route components.
 // These can be imported from other files
-import Collection from './components/screens/Collection'
-import Catalogue from './components/screens/Catalogue'
-import Teams from './components/screens/Teams'
+// import Collection from './components/screens/Collection'
+// import Catalogue from './components/screens/Catalogue'
+// import Teams from './components/screens/Teams'
 import TeamsLoader from './components/screens/loaders/TeamsLoader'
 import FileLoader from './components/screens/loaders/FileLoader'
 import FolderLoader from './components/screens/loaders/FolderLoader'
@@ -33,14 +33,17 @@ const routes = [
 ]
 
   const router = new VueRouter({
-    routes // short for `routes: routes`
+    routes, // short for `routes: routes`
+    // mode: 'history' // remove '#' from urls. To enable this we need some server configuration
+    // link here: https://router.vuejs.org/guide/essentials/history-mode.html#example-server-configurations
   })
 
   router.beforeEach((to, from, next) => {
     const authUser = window.auth_user
     // Guard paths
-    if ( ( to.path == '/teams' && authUser.role_id < 2 ) || ( to.name == 'catalogue' && authUser.assigned_room_id == null) )
-        next('/collection')
+    if ( ( to.path == '/teams' && authUser.role_id < 2 ) )
+        next('/collection'),
+        console.log('acces denied')
     else next()
   })
 

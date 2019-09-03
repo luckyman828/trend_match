@@ -139,9 +139,6 @@ export default{
                 product.commentsScoped = []
                 product.teamAction = product.teamActions.find(x => x.team_id == this.currentTeamId)
                 product.phaseAction = product.phaseActions.find(x => x.phase_id == 1)
-                product.aa = this.sortBy
-                product.ab = (typeof product[this.sortBy] == 'object')
-                product.ac = typeof product[this.sortBy]
 
                 // Scope comments to current teamFilter
                 const comments = product.comments
@@ -273,21 +270,23 @@ export default{
         sortMethod () {
             let key = this.sortBy
             let sortMethod
-            if (['userAction', 'teamAction', 'phaseAction', 'productFinalAction', 'userAction'].includes(key) ) {
-                sortMethod = 'action'
-            }
-            else if (key == 'focus') {
-                sortMethod = 'focus'
-            }
-            else if (key == 'ins') {
-                sortMethod = 'ins'
-            }
-            else {
-                if ( typeof this.products[0][key] == 'object' ) {
-                    sortMethod = 'object'
+            if (!this.loadingProducts) {
+                if (['userAction', 'teamAction', 'phaseAction', 'productFinalAction', 'userAction'].includes(key) ) {
+                    sortMethod = 'action'
+                }
+                else if (key == 'focus') {
+                    sortMethod = 'focus'
+                }
+                else if (key == 'ins') {
+                    sortMethod = 'ins'
                 }
                 else {
-                    sortMethod = 'key'
+                    if ( typeof this.products[0][key] == 'object' ) {
+                        sortMethod = 'object'
+                    }
+                    else {
+                        sortMethod = 'key'
+                    }
                 }
             }
             return sortMethod

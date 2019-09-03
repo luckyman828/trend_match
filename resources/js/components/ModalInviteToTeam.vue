@@ -9,7 +9,7 @@
 
                 <label class="team dropdown-parent">
                     <input type="text" name="team" :value="selectedTeam.title" disabled>
-                    <span class="square"><i class="fas fa-check"></i></span>
+                    <span class="square tiny"><i class="fas fa-check"></i></span>
 
                     <Dropdown class="right dark">
                         <template v-slot:button="slotProps">
@@ -57,7 +57,6 @@
                                     <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
                                 </template>
                                 <template v-slot:body>
-                                    <!-- <CheckboxButtons :options="users" :optionNameKey="'email'" :optionValueKey="'email'" ref="userSelect" @submit="setNewUsers"/> -->
                                     <RadioButtons :options="users" :optionNameKey="'email'" :optionValueKey="'email'" ref="userSelect" v-model="newUsers[index].email"/>
                                 </template>
                                 <template v-slot:footer="slotProps">
@@ -72,6 +71,31 @@
                         <label>
                             Name (optional)
                             <input type="text" name="name" id="invite-name" placeholder="Optional" v-model="newUsers[index].name">
+                        </label>
+
+                        <label class="dropdown-parent role">
+                            Role
+                            <input type="text" name="role" id="invite-role">
+                            <span @click="$refs.roleDropdown[index].toggle()" class="role square" :class="'role-' + [newUsers[index].permission_level]">{{(roles[(Number([newUsers[index].permission_level])-1)].title).charAt(0).toUpperCase() + (roles[(Number([newUsers[index].permission_level])-1)].title).slice(1)}}</span>
+
+                            <Dropdown class="right dark" ref="roleDropdown">
+                                <template v-slot:button="slotProps">
+                                    <span @click="slotProps.toggle" class="open-dropdown" :class="{active: !slotProps.collapsed}">Change role<i class="far fa-chevron-down"></i></span>
+                                </template>
+                                <template v-slot:header="slotProps">
+                                    <span>{{roles.length}} roles</span>
+                                    <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
+                                </template>
+                                <template v-slot:body>
+                                    <RadioButtons :options="roles" :optionNameKey="'title'" :optionValueKey="'id'" ref="roleRadio" v-model="newUsers[index].permission_level"/>
+                                </template>
+                                <template v-slot:footer="slotProps">
+                                    <div class="grid-2">
+                                        <span class="button green" @click="$refs.roleRadio[index].submit(); slotProps.toggle()">Save</span>
+                                        <span class="button invisible" @click="slotProps.toggle">Cancel</span>
+                                    </div>
+                                </template>
+                            </Dropdown>
                         </label>
                     </div>
 
@@ -94,6 +118,7 @@ import Dropdown from './Dropdown'
 import RadioButtons from './RadioButtons'
 import CheckboxButtons from './Input/CheckboxButtons'
 import Modal from './Modal'
+import Role from '../store/models/Role'
 
 export default {
     name: 'modalInviteToTeam',
@@ -111,12 +136,15 @@ export default {
     },
     data: function () { return {
         newUsers: [
-            {email: '', name: ''}
+            {email: '', name: '', permission_level: 1}
         ],
         selectedTeamId: null,
         selectedUserIds: [],
     }},
     computed: {
+        roles () {
+            return Role.all()
+        },
         submitDisabled () {
             if (this.newUsers[0].email.length > 7)
                 return false
@@ -147,6 +175,7 @@ export default {
         submitInvite(e) {
             e.preventDefault()
             this.inviteUsersToTeam({users: this.newUsers, team: this.selectedTeam, authUser: this.authUser})
+            this.newUsers = [{email: '', name: '', permission_level: 1}]
             this.close()
         },
         setNewUsers(users) {
@@ -157,7 +186,7 @@ export default {
                     this.newUsers[0].email = user
                 }
                 else {
-                    this.newUsers.push({email: user, name: ''})
+                    this.newUsers.push({email: user, name: '', permission_level: 1})
                 }
                 count++
             })
@@ -172,7 +201,7 @@ export default {
             }
         },
         addUser() {
-            this.newUsers.push({email: '', name: ''})
+            this.newUsers.push({email: '', name: '', permission_level: 1})
         }
     },
 }
@@ -258,6 +287,16 @@ export default {
     }
     .add-more {
         margin-bottom: 24px;
+    }
+    label.role {
+        input {
+            color: transparent;
+        }
+        .square {
+            position: absolute;
+            left: 12px;
+            bottom: 8px;
+        }
     }
 
 </style>

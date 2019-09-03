@@ -556,7 +556,7 @@ export default {
     .square {
         background: $light1;
         color: $dark;
-        padding: 7px 10px;
+        // padding: 7px 10px;
         border-radius: 4px;
         font-size: 14px;
         font-weight: 600;

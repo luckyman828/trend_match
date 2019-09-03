@@ -1,5 +1,3 @@
-import Team from '../models/Team'
-
 export default {
     namespaced: true,
 
