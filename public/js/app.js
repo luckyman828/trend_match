@@ -8088,24 +8088,28 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       selectedUserIds: []
     };
   },
-  computed: {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']), {
     roles: function roles() {
-      return _store_models_Role__WEBPACK_IMPORTED_MODULE_5__["default"].all();
+      var _this = this;
+
+      return _store_models_Role__WEBPACK_IMPORTED_MODULE_5__["default"].all().filter(function (role) {
+        return role.id <= _this.userPermissionLevel;
+      });
     },
     submitDisabled: function submitDisabled() {
       if (this.newUsers[0].email.length > 7) return false;else return true;
     },
     selectedTeam: function selectedTeam() {
-      var _this = this;
+      var _this2 = this;
 
       return this.teams.find(function (x) {
-        return x.id == _this.selectedTeamId;
+        return x.id == _this2.selectedTeamId;
       });
     },
     multipleUsers: function multipleUsers() {
       if (this.selectedUserIds.length > 0) return true;else return false;
     }
-  },
+  }),
   watch: {
     team: function team(newTeam) {
       if (newTeam) this.selectedTeamId = newTeam.id;
@@ -8133,15 +8137,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.close();
     },
     setNewUsers: function setNewUsers(users) {
-      var _this2 = this;
+      var _this3 = this;
 
       var count = 0;
       users.forEach(function (user) {
         // Edit the first new user to have the email of the first added user
         if (count == 0) {
-          _this2.newUsers[0].email = user;
+          _this3.newUsers[0].email = user;
         } else {
-          _this2.newUsers.push({
+          _this3.newUsers.push({
             email: user,
             name: '',
             permission_level: 1

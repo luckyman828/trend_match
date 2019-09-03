@@ -142,8 +142,9 @@ export default {
         selectedUserIds: [],
     }},
     computed: {
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']),
         roles () {
-            return Role.all()
+            return Role.all().filter(role => role.id <= this.userPermissionLevel)
         },
         submitDisabled () {
             if (this.newUsers[0].email.length > 7)
