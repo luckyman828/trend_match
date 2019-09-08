@@ -9168,12 +9168,18 @@ textarea {
   display: block;
 }
 
-.dropdown-wrapper {
+.has-tooltip {
+  cursor: pointer;
+}
+
+.dropdown-wrapper,
+.tooltip-wrapper {
   display: -webkit-box;
   display: flex;
 }
 
-.dropdown-parent {
+.dropdown-parent,
+.has-tooltip {
   position: relative;
 }
 
@@ -9224,8 +9230,9 @@ textarea {
   right: 12px;
 }
 
-.dropdown {
-  position: absolute;
+.dropdown,
+.tooltip {
+  position: fixed;
   top: 0;
   z-index: 120;
   left: 0;
@@ -9236,15 +9243,18 @@ textarea {
   overflow: hidden;
 }
 
-.dropdown .inner {
+.dropdown .inner,
+.tooltip .inner {
   border-radius: 4px;
   min-width: 188px;
   background: white;
   border: solid 1px #DFDFDF;
   margin-top: 7px;
+  overflow: hidden;
 }
 
-.dropdown::before {
+.dropdown::before,
+.tooltip::before {
   content: "";
   height: 12px;
   width: 13px;
@@ -9262,29 +9272,39 @@ textarea {
   border-radius: 2px;
 }
 
-.right .dropdown {
+.right .dropdown,
+.right .tooltip {
   left: auto;
   right: 0;
 }
 
-.right .dropdown::before {
+.right .dropdown::before,
+.right .tooltip::before {
   left: auto;
   right: 28px;
 }
 
-.dropdown.collapsed {
+.dropdown.collapsed,
+.tooltip.collapsed {
   max-height: 0 !important;
   border: none;
 }
 
-.dropdown .header {
+.dropdown.hidden,
+.tooltip.hidden {
+  display: none;
+}
+
+.dropdown .header,
+.tooltip .header {
   padding: 12px 8px 8px;
   font-size: 14px;
   font-weight: 400;
   color: #A8A8A8;
 }
 
-.dropdown .header .close {
+.dropdown .header .close,
+.tooltip .header .close {
   position: absolute;
   right: 8px;
   top: 12px;
@@ -9295,40 +9315,72 @@ textarea {
   cursor: pointer;
 }
 
-.dropdown .header .close i {
+.dropdown .header .close i,
+.tooltip .header .close i {
   line-height: 24px;
   font-size: 12px;
 }
 
-.dropdown .body {
+.dropdown .body,
+.tooltip .body {
   max-height: 186px;
   overflow-x: hidden;
   overflow-y: auto;
   background: white;
 }
 
-.dropdown .footer {
+.dropdown .footer,
+.tooltip .footer {
   padding: 4px 8px 6px;
 }
 
 .dropdown.dark .inner,
-.dark .dropdown .inner {
+.dark .dropdown .inner,
+.tooltip.dark .inner,
+.dark .tooltip .inner {
   background: #43425D;
+  border-color: #43425D;
 }
 
 .dropdown.dark::before,
-.dark .dropdown::before {
+.dark .dropdown::before,
+.tooltip.dark::before,
+.dark .tooltip::before {
   background: #43425D;
+  border: solid 1px #43425D;
 }
 
 .dropdown.dark .header,
-.dark .dropdown .header {
+.dark .dropdown .header,
+.tooltip.dark .header,
+.dark .tooltip .header {
   color: white;
 }
 
 .dropdown.dark .body,
-.dark .dropdown .body {
+.dark .dropdown .body,
+.tooltip.dark .body,
+.dark .tooltip .body {
   background: #56556E;
+}
+
+.tooltip .inner {
+  margin-top: 0;
+}
+
+.tooltip::before {
+  content: none;
+}
+
+.tooltip .tooltip-row {
+  font-size: 12px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0;
+}
+
+.tooltip .tooltip-row:nth-child(even) {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .checkbox .radiomark,

@@ -28,18 +28,63 @@
                                     <img :src="`https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${product.color_variants[currentImgIndex].blob_id}_thumbnail.jpg`">
                                 </div>
                                 <div class="description">
-                                    <strong>Style number</strong>
-                                    <p>{{product.datasource_id}}</p>
-                                    <strong>Category</strong>
-                                    <p>{{product.short_description}}</p>
-                                    <strong>Minimum production</strong>
-                                    <p>{{product.quantity}}</p>
-                                    <strong>WHS ({{catalogue.currency}})</strong>
-                                    <p>{{product.wholesale_price}}</p>
-                                    <strong>RRP ({{catalogue.currency}})</strong>
-                                    <p>{{product.recommended_retail_price}}</p>
-                                    <strong>MU</strong>
-                                    <p>{{product.mark_up}}</p>
+                                    <div>
+                                        <strong>Style number</strong>
+                                        <span>{{product.datasource_id}}</span>
+                                    </div>
+                                    <div>
+                                        <strong>Category</strong>
+                                        <span>{{product.short_description}}</span>
+                                    </div>
+                                    <div>
+                                        <strong>Minimum production</strong>
+                                        <span>{{product.quantity}}</span>
+                                    </div>
+                                    <div>
+                                        <strong>WHS ({{product.userPrices.currency}})</strong>
+                                        <TooltipAlt v-if="userPermissionLevel >= 4">
+                                            <template v-slot:parent><span>{{product.userPrices.wholesale_price}}</span></template>
+                                            <template v-slot:header><span>Wholesale price</span></template>
+                                            <template v-slot:body>
+                                                <p class="tooltip-row" v-for="(currency, index) in product.prices" :key="index">
+                                                    <strong>{{currency.currency}}: </strong>
+                                                    <span>{{currency.wholesale_price}}</span>
+                                                </p>
+                                            </template>
+                                        </TooltipAlt>
+                                        <span v-else>{{product.userPrices.wholesale_price}}</span>
+                                    </div>
+                                    <div>
+                                        <strong>RRP ({{product.userPrices.currency}})</strong>
+                                        <TooltipAlt v-if="userPermissionLevel >= 4">
+                                            <template v-slot:parent><span>{{product.userPrices.recommended_retail_price}}</span></template>
+                                            <template v-slot:header><span>Recommended retail price</span></template>
+                                            <template v-slot:body>
+                                                <p class="tooltip-row" v-for="(currency, index) in product.prices" :key="index">
+                                                    <strong>{{currency.currency}}: </strong>
+                                                    <span>{{currency.recommended_retail_price}}</span>
+                                                </p>
+                                            </template>
+                                        </TooltipAlt>
+                                        <span v-else>{{product.userPrices.recommended_retail_price}}</span>
+                                    </div>
+                                    <div>
+                                        <strong>MU</strong>
+                                        <!-- <TooltipAlt v-if="userPermissionLevel >= 4">
+                                            <template v-slot:parent><span>{{product.userPrices.markup}}</span></template>
+                                            <template v-slot:header><span>Mark up</span></template>
+                                            <template v-slot:body>
+                                                <p class="tooltip-row" v-for="(currency, index) in product.prices" :key="index">
+                                                    <strong>{{currency.currency}}: </strong>
+                                                    <span>{{currency.markup}}</span>
+                                                </p>
+                                            </template>
+                                        </TooltipAlt> -->
+                                        <TooltipAlt2 v-if="userPermissionLevel >= 4" :header="'Mark up'" :array="product.prices" :arrayValueKey="'markup'" :arrayLabelKey="'currency'">
+                                            <span>{{product.userPrices.markup}}</span>
+                                        </TooltipAlt2>
+                                        <span v-else>{{product.userPrices.markup}}</span>
+                                    </div>
                                 </div>
                             </div>
                             <strong>Composition</strong>
@@ -101,6 +146,9 @@
 import { mapActions, mapGetters } from 'vuex'
 import ProductSingleComments from './ProductSingleComments'
 import Loader from './Loader'
+import Dropdown from './Dropdown'
+import TooltipAlt from './TooltipAlt'
+import TooltipAlt2 from './TooltipAlt2'
 
 export default {
     name: 'productSingle',
@@ -116,16 +164,11 @@ export default {
     components: {
         ProductSingleComments,
         Loader,
+        Dropdown,
+        TooltipAlt,
+        TooltipAlt2,
     },
     data: function () { return {
-            // comment: {
-            //     user_id: '',
-            //     product_id: '',
-            //     comment: '',
-            //     important: false,
-            //     final: false,
-            //     product_final: false,
-            // },
             user_id: this.authUser.id,
             currentTab: 'ins',
             currentImgIndex: 0,
@@ -149,14 +192,6 @@ export default {
             else return this.product[this.currentTab]
         },
     },
-    // watch: {
-    //     product: function (newVal, oldVal) {
-    //         this.comment.product_id = newVal.id
-    //     },
-    //     authUser: function (newVal, oldVal) {
-    //         this.comment.user_id = newVal.id
-    //     },
-    // },
     methods: {
         ...mapActions('entities/comments', ['createComment']),
         ...mapActions('entities/comments', ['markAsFinal']),
@@ -267,9 +302,13 @@ export default {
             }
         }
         .description {
-            p {
-                margin-top: -4px;
-                margin-bottom: 8px;
+            > div {
+                > strong {
+                    margin-bottom: -4px;
+                    margin-top: 8px;
+                    display: block;
+                }
+
             }
         }
     }

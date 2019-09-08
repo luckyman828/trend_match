@@ -25,6 +25,7 @@ export default class Product extends Model {
       quantity: this.attr(''),
       wholesale_price: this.attr(''),
       recommended_retail_price: this.attr(''),
+      prices: this.attr(''),
       composition: this.attr(''),
       mark_up: this.attr(''),
       category_id: this.attr(''),

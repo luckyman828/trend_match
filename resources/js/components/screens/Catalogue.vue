@@ -107,8 +107,8 @@ export default{
         ...mapGetters('entities/actions', ['loadingActions']),
         ...mapGetters('entities/comments', ['loadingComments']),
         ...mapGetters('entities/collections', ['loadingCollections']),
-        ...mapGetters('entities/teams', ['theTeams']),
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel']),
+        ...mapGetters('entities/teams', ['teams']),
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'workspaceCurrency', 'teamCurrency']),
         defaultTeam() {
             if (this.userPermissionLevel >= 3)
                 return {id: 0, title: 'Global'}
@@ -150,6 +150,7 @@ export default{
             const data = []
             products.forEach(product => {
                 product.color_variants = JSON.parse(product.color_variants)
+                product.prices = JSON.parse(product.prices)
                 product.ins = []
                 product.outs = []
                 product.focus = []
@@ -158,6 +159,27 @@ export default{
                 product.commentsScoped = []
                 product.teamAction = product.teamActions.find(x => x.team_id == this.currentTeamId)
                 product.phaseAction = product.phaseActions.find(x => x.phase_id == 1)
+
+                // Find the correct price
+                // Check if the chosen currency exists on the product
+                if (product.prices != null) {
+                    const workspacePrices = product.prices.find(x => x.currency == this.workspaceCurrency)
+                    const teamPrices = product.prices.find(x => x.currency == this.teamCurrency)
+
+                    if ( this.userPermissionLevel <= 4 ) {
+                    // Use team currency for low level members
+                        if (teamPrices != null)
+                            product.userPrices = teamPrices
+                        else if (workspacePrices != null)
+                            product.userPrices = workspacePrices
+                        else product.userPrices = product.prices[0]
+                    } else {
+                    // Use workspace currency for high level members
+                        if (workspacePrices != null)
+                            product.userPrices = workspacePrices
+                        else product.userPrices = product.prices[0]
+                    }
+                }
 
                 // Scope comments to current teamFilter
                 const comments = product.comments

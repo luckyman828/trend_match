@@ -1,22 +1,19 @@
 <template>
-    <div class="dropdown-wrapper" ref="wrapper">
+    <div class="tooltip-wrapper" ref="wrapper">
 
-        <slot name="button" :toggle="toggle" :collapsed="collapsed">
-            <!-- <span class="button" @click="toggle">Open dropdown</span> -->
-        </slot>
+        <div class="tooltip-parent" ref="parent" @mouseenter="show" @mouseleave="hide">
+            <slot name="parent" @mouseenter="test">
+                <p>Show tooltip</p>
+            </slot>
+        </div>
 
-        <div class="overlay invisible" :class="{active: !collapsed}" @click="toggle"></div>
-
-        <div class="dropdown" :class="{collapsed: collapsed}" ref="dropdown">
+        <div class="tooltip dark" :class="{hidden: hidden}" ref="tooltip">
             <div class="inner">
                 <div class="header">
                     <slot name="header" :toggle="toggle"></slot>
                 </div>
                 <div class="body">
                     <slot name="body" :toggle="toggle"></slot>
-                </div>
-                <div class="footer">
-                    <slot name="footer" :toggle="toggle"></slot>
                 </div>
             </div>
         </div>
@@ -26,13 +23,23 @@
 
 <script>
 export default {
-    name: 'dropdown',
+    name: 'tooltipAlt',
     data: function () { return {
-        collapsed: true,
+        hidden: true,
     }},
     methods: {
+        test () {
+            console.log('test')
+        },
         toggle() {
-            this.collapsed = !this.collapsed
+            this.hidden = !this.hidden
+        },
+        hide() {
+            this.hidden = true
+            clearTimeout(this.showDelay)
+        },
+        show() {
+            this.showDelay = setTimeout( () => {this.hidden = false}, 300)
         },
         getPosition(element) {
             var xPosition = 0;
@@ -48,9 +55,11 @@ export default {
         },
         // Set the height of the component
         setHeight() {
-            const offset = 4
-            const el = this.$refs.dropdown
-            const parent = el.closest('.dropdown-parent')
+            const offsetTop = 4
+            const offsetLeft = 4
+            const el = this.$refs.tooltip
+            // const parent = el.closest('.has-tooltip')
+            const parent = this.$refs.parent
             const wrapper = this.$refs.wrapper
 
             const parentPos = this.getPosition(parent)
@@ -65,17 +74,17 @@ export default {
             if (parent != null) {
                 // Top + Right align
                 if (wrapper.classList.contains('right'))
-                    el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft + parentWidth - elWidth + offset}px ;max-height: ${el.scrollHeight}px;`
+                    el.style.cssText = `top: ${parentTop + parentHeight + offsetTop}px; left: ${parentLeft + parentWidth - elWidth + offsetLeft}px;`
 
                 // Top + Left align
                 else
-                    el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft - offset}px ;max-height: ${el.scrollHeight}px;`
+                    el.style.cssText = `top: ${parentTop + parentHeight + offsetTop}px; left: ${parentLeft - offsetLeft}px;`
             }
-            else el.style.cssText = `max-height: ${el.scrollHeight}px;`
-        }
+        },
     },
     mounted() {
         this.setHeight()
+
     },
     updated() {
         this.setHeight()
@@ -86,9 +95,10 @@ export default {
 <style scopes lang="scss">
 @import '~@/_variables.scss';
 
-    .dropdown {
-        position: fixed;
-        width: fit-content;
+    .tooltip-parent {
+        &:hover {
+            cursor: pointer;
+        }
     }
 
 </style>

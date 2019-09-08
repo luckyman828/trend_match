@@ -119,6 +119,7 @@ Route::middleware('auth:api')->group( function(){
     Route::post('invite-user', 'MailController@inviteUser');
     Route::post('invite-users', 'MailController@inviteUsers');
     Route::get('roles', 'UserController@roles');
+    Route::put('user/role', 'UserController@changeRole');
 
     // xxx Comments xxx
     // create new comment

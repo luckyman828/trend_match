@@ -13,6 +13,8 @@ export default {
 
     getters: {
         currentTeamId: state => { return state.currentTeamId },
+        workspaceCurrency: state => { return 'EUR' },
+        teamCurrency: state => { return 'SEK' },
         currentWorkspaceId: state => { return state.currentWorkspaceId },
         currentFileId: state => { return state.currentFileId },
         userPermissionLevel: state => { return state.userPermissionLevel },

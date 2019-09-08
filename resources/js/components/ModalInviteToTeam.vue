@@ -116,7 +116,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import Dropdown from './Dropdown'
 import RadioButtons from './RadioButtons'
-import CheckboxButtons from './Input/CheckboxButtons'
+import CheckboxButtons from './input/CheckboxButtons'
 import Modal from './Modal'
 import Role from '../store/models/Role'
 

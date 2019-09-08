@@ -38,6 +38,21 @@ export default {
             }
           }
       },
+      async changeRole({commit}, {user_id, role_id}) {
+
+          commit('updateRole', {user_id, role_id})
+          // commit('setManyActions', {productIds, user_id, action_code})
+  
+          await axios.put(`/api/user/role`, {
+            user_id: user_id,
+            role_id: role_id,
+          }).then(response => {
+            console.log(response.data)
+          }).catch(err =>{
+            console.log(err)
+          })
+  
+        },
 
     },
 
@@ -46,6 +61,14 @@ export default {
       //Set the loading status of the app
       setLoading(state, bool) {
         state.loading = bool
+      },
+      updateRole(state, {user_id, role_id}) {
+        console.log(user_id)
+        console.log(role_id)
+        User.update({
+          where: user_id,
+          data: {role_id: role_id}
+        })
       }
     }
 

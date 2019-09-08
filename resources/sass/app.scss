@@ -386,13 +386,15 @@ input, button, select, optgroup, textarea {
     }
 
 }
-
-// DROPDOWN
-.dropdown-wrapper {
+// DROPDOWN & TOOLTIP
+.has-tooltip {
+    cursor: pointer;
+}
+.dropdown-wrapper, .tooltip-wrapper {
     // position: relative;
     display: flex;
 }
-.dropdown-parent {
+.dropdown-parent, .has-tooltip {
     position: relative;
 }
 .dropdown-button {
@@ -436,8 +438,8 @@ input, button, select, optgroup, textarea {
         right: 12px;
     }
 }
-.dropdown {
-    position: absolute;
+.dropdown, .tooltip {
+    position: fixed;
     top: 0;
     z-index: 120;
     left: 0;
@@ -450,6 +452,7 @@ input, button, select, optgroup, textarea {
         background: white;
         border: solid 1px $light2;
         margin-top: 7px;
+        overflow: hidden;
     }
     &::before { // Arrow
         content: "";
@@ -478,6 +481,9 @@ input, button, select, optgroup, textarea {
     &.collapsed {
         max-height: 0 !important;
         border: none;
+    }
+    &.hidden {
+        display: none;
     }
     .header {
         padding: 12px 8px 8px;
@@ -512,10 +518,11 @@ input, button, select, optgroup, textarea {
     &.dark, .dark & {
         .inner {
             background: $darkAlt;
+            border-color: $darkAlt;
         }
         &::before { // Arrow
             background: $darkAlt;
-            // border: solid 1px $darkAlt;
+            border: solid 1px $darkAlt;
             // border-right: 0;
             // border-bottom: 0;
         }
@@ -524,6 +531,24 @@ input, button, select, optgroup, textarea {
         }
         .body {
             background: $darkAlt2;
+        }
+    }
+}
+// Tooltip specific
+.tooltip {
+    .inner {
+        margin-top: 0;
+    }
+    &::before {
+        content: none;
+    }
+    .tooltip-row {
+        font-size: 12px;
+        padding: 8px;
+        background: rgba(white, .1);
+        margin: 0;
+        &:nth-child(even) {
+            background: rgba(white, .2)
         }
     }
 }
