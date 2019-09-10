@@ -280,13 +280,14 @@ input, button, select, optgroup, textarea {
         }
     }
     // -- SIZES --
+    &.true-square {
+        min-width: 0;
+        width: 32px;
+        padding: 0;
+    }
     &.tiny {
         min-width: 0;
         padding: 0;
-    }
-    &.xs {
-        min-width: 0;
-        padding: 0 6px;
     }
     &.wide {
         width: 155px;

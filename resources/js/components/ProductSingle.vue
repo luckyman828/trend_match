@@ -4,11 +4,11 @@
             <div class="card">
                 <template v-if="!loading">
                     <div class="controls-wrapper">
-                            <span class="square light close" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
+                            <span class="square true-square light close clickable" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
                         <div class="controls">
 
                             <template v-if="authUser.role_id >= 2">
-                                <span v-if="userPermissionLevel == 2" class="square xs clickable focus-action" :class="[(product[actionScope] != null) ? (product[actionScope].action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 2)">
+                                <span v-if="userPermissionLevel == 2" class="square true-square clickable focus-action" :class="[(product[actionScope] != null) ? (product[actionScope].action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 2)">
                                     <i class="far fa-star"></i>
                                 </span>
                                 <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 1)">
@@ -343,6 +343,20 @@ export default {
     @keyframes slide-in {
         0% {transform: translateX(100%);}
         100% {transform: translateX(0);}
+    }
+    .close i {
+        font-size: 22px;
+    }
+    .square {
+        i {
+            color: $dark2;
+        }
+        &.active {
+            i {
+                font-weight: 900;
+                color: $primary;
+            }
+        }
     }
     // .square {
     //     background: $light1;

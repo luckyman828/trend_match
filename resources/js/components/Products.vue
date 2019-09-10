@@ -81,11 +81,11 @@
                         </template>
                     </template>
 
-                    <td class="square-wrapper comments"><span class="square icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment bind-view-single"></i>{{product.commentsScoped.length}}</span></td>
+                    <td class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment bind-view-single"></i>{{product.commentsScoped.length}}</span></td>
 
                     <template v-if="userPermissionLevel >= 2">
                             <td class="action">
-                                <span v-if="userPermissionLevel == 2" class="square xs clickable focus-action" :class="[(product[actionScope] != null) ? (product[actionScope].action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 2)">
+                                <span v-if="userPermissionLevel == 2" class="square true-square clickable focus-action" :class="[(product[actionScope] != null) ? (product[actionScope].action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 2)">
                                 <i class="far fa-star"></i>
                                 </span>
                                 <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 1)">
@@ -578,7 +578,7 @@ export default {
         // // padding: 7px 10px;
         // border-radius: 4px;
         // font-size: 14px;
-        &:not(.xs) {
+        &:not(.true-square) {
             min-width: 58px;
         }
         font-weight: 600;

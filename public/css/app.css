@@ -9063,16 +9063,17 @@ textarea {
   margin-right: 8px;
 }
 
+.button.true-square,
+.square.true-square {
+  min-width: 0;
+  width: 32px;
+  padding: 0;
+}
+
 .button.tiny,
 .square.tiny {
   min-width: 0;
   padding: 0;
-}
-
-.button.xs,
-.square.xs {
-  min-width: 0;
-  padding: 0 6px;
 }
 
 .button.wide,
