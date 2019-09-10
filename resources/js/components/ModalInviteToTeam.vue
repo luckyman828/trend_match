@@ -11,9 +11,9 @@
                     <input type="text" name="team" :value="selectedTeam.title" disabled>
                     <span class="square tiny"><i class="fas fa-check"></i></span>
 
-                    <Dropdown class="right dark">
+                    <Dropdown class="dark">
                         <template v-slot:button="slotProps">
-                            <span @click="slotProps.toggle" class="open-dropdown" :class="{active: !slotProps.collapsed}">Change team<i class="far fa-chevron-down"></i></span>
+                            <span @click="slotProps.toggle" class="open-dropdown dropdown-parent" :class="{active: !slotProps.collapsed}">Change team<i class="far fa-chevron-down"></i></span>
                         </template>
                         <template v-slot:header="slotProps">
                             <span>{{teams.length}} teams</span>
@@ -45,9 +45,9 @@
                             Email
                             <input type="email" name="email" :id="'invite-email-' + index" placeholder="example@mail.com" v-model="newUsers[index].email">
                             
-                            <Dropdown class="right dark">
+                            <Dropdown class="dark">
                                 <template v-slot:button="slotProps">
-                                    <span @click="slotProps.toggle" class="open-dropdown" :class="{active: !slotProps.collapsed}">
+                                    <span @click="slotProps.toggle" class="open-dropdown dropdown-parent" :class="{active: !slotProps.collapsed}">
                                         or Choose from Users
                                         <i class="far fa-chevron-down"></i>
                                     </span>
@@ -78,9 +78,9 @@
                             <input type="text" name="role" id="invite-role">
                             <span @click="$refs.roleDropdown[index].toggle()" class="role square" :class="'role-' + [newUsers[index].permission_level]">{{(roles[(Number([newUsers[index].permission_level])-1)].title).charAt(0).toUpperCase() + (roles[(Number([newUsers[index].permission_level])-1)].title).slice(1)}}</span>
 
-                            <Dropdown class="right dark" ref="roleDropdown">
+                            <Dropdown class="dark" ref="roleDropdown">
                                 <template v-slot:button="slotProps">
-                                    <span @click="slotProps.toggle" class="open-dropdown" :class="{active: !slotProps.collapsed}">Change role<i class="far fa-chevron-down"></i></span>
+                                    <span @click="slotProps.toggle" class="open-dropdown dropdown-parent" :class="{active: !slotProps.collapsed}">Change role<i class="far fa-chevron-down"></i></span>
                                 </template>
                                 <template v-slot:header="slotProps">
                                     <span>{{roles.length}} roles</span>

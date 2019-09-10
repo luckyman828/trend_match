@@ -1,8 +1,8 @@
 <template>
     <div class="dropdown-wrapper" ref="wrapper">
 
-        <slot name="button" :toggle="toggle" :collapsed="collapsed">
-            <!-- <span class="button" @click="toggle">Open dropdown</span> -->
+        <slot name="button" :toggle="toggle" :collapsed="collapsed" rel="test">
+            <span class="button" @click="toggle">Open dropdown</span>
         </slot>
 
         <div class="overlay invisible" :class="{active: !collapsed}" @click="toggle"></div>
@@ -50,8 +50,12 @@ export default {
         setHeight() {
             const offset = 4
             const el = this.$refs.dropdown
-            const parent = el.closest('.dropdown-parent')
+
             const wrapper = this.$refs.wrapper
+            // const parent = el.closest('.dropdown-parent') // Use set element as parent
+
+            // First look for a parent inside the dropdown, then look for a parent outside
+            const parent = ( wrapper.querySelector('.dropdown-parent') ) ? wrapper.querySelector('.dropdown-parent') : el.closest('.dropdown-parent')
 
             const parentPos = this.getPosition(parent)
             const parentTop = parentPos.y
@@ -68,8 +72,12 @@ export default {
                     el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft + parentWidth - elWidth + offset}px ;max-height: ${el.scrollHeight}px;`
 
                 // Top + Left align
-                else
+                else if (wrapper.classList.contains('left'))
                     el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft - offset}px ;max-height: ${el.scrollHeight}px;`
+                
+                // Top + Center align (DEFAULT)
+                else
+                    el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft + ( parentWidth / 2 ) - ( elWidth / 2 ) }px ;max-height: ${el.scrollHeight}px;`
             }
             else el.style.cssText = `max-height: ${el.scrollHeight}px;`
         }

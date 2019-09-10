@@ -59,24 +59,30 @@
                             <td class="email">{{user.email}}</td>
                             <td class="collections">-</td>
                             <td class="role dropdown-parent">
-                                <span v-if="userPermissionLevel < user.role_id" class="square" :class="'role-' + user.role_id">{{user.role.title}}</span>
-                                <span v-else class="square clickable" :class="'role-' + user.role_id" @click="editUser = user, $refs.roleDropdown[index].toggle()">{{user.role.title}}</span>
-                                <Dropdown class="left dark" ref="roleDropdown">
-                                    <template v-slot:button="slotProps"><span></span></template>
-                                    <template v-slot:header="slotProps">
-                                        <span>Change role</span>
-                                        <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
-                                    </template>
-                                    <template v-slot:body>
-                                        <RadioButtons :options="roles" :optionNameKey="'title'" :optionValueKey="'id'" ref="roleRadio" @submit="changeRole({user_id: user.id, role_id: $event})"/>
-                                    </template>
-                                    <template v-slot:footer="slotProps">
-                                        <div class="grid-2">
-                                            <span class="button green" @click="$refs.roleRadio[index].submit(); slotProps.toggle()">Save</span>
-                                            <span class="button invisible" @click="slotProps.toggle">Cancel</span>
-                                        </div>
-                                    </template>
-                                </Dropdown>
+                                <template v-if="userPermissionLevel < user.role_id">
+                                    <span class="square" :class="'role-' + user.role_id">{{user.role.title}}</span>
+                                </template>
+                                <template v-else>
+                                    
+                                    <Dropdown class="dark" ref="roleDropdown">
+                                        <template v-slot:button="slotProps">
+                                            <span class="square clickable dropdown-parent" :class="'role-' + user.role_id" @click="editUser = user, $refs.roleDropdown[index].toggle()">{{user.role.title}}</span>
+                                        </template>
+                                        <template v-slot:header="slotProps">
+                                            <span>Change role</span>
+                                            <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
+                                        </template>
+                                        <template v-slot:body>
+                                            <RadioButtons :options="roles" :optionNameKey="'title'" :optionValueKey="'id'" ref="roleRadio" @submit="changeRole({user_id: user.id, role_id: $event})"/>
+                                        </template>
+                                        <template v-slot:footer="slotProps">
+                                            <div class="grid-2">
+                                                <span class="button green" @click="$refs.roleRadio[index].submit(); slotProps.toggle()">Save</span>
+                                                <span class="button invisible" @click="slotProps.toggle">Cancel</span>
+                                            </div>
+                                        </template>
+                                    </Dropdown>
+                                </template>
                             </td>
                             <td></td>
                             <td class="action">

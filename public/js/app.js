@@ -7556,8 +7556,10 @@ __webpack_require__.r(__webpack_exports__);
     setHeight: function setHeight() {
       var offset = 4;
       var el = this.$refs.dropdown;
-      var parent = el.closest('.dropdown-parent');
-      var wrapper = this.$refs.wrapper;
+      var wrapper = this.$refs.wrapper; // const parent = el.closest('.dropdown-parent') // Use set element as parent
+      // First look for a parent inside the dropdown, then look for a parent outside
+
+      var parent = wrapper.querySelector('.dropdown-parent') ? wrapper.querySelector('.dropdown-parent') : el.closest('.dropdown-parent');
       var parentPos = this.getPosition(parent);
       var parentTop = parentPos.y;
       var parentLeft = parentPos.x;
@@ -7569,7 +7571,8 @@ __webpack_require__.r(__webpack_exports__);
       if (parent != null) {
         // Top + Right align
         if (wrapper.classList.contains('right')) el.style.cssText = "top: ".concat(parentTop + parentHeight + offset, "px; left: ").concat(parentLeft + parentWidth - elWidth + offset, "px ;max-height: ").concat(el.scrollHeight, "px;"); // Top + Left align
-        else el.style.cssText = "top: ".concat(parentTop + parentHeight + offset, "px; left: ").concat(parentLeft - offset, "px ;max-height: ").concat(el.scrollHeight, "px;");
+        else if (wrapper.classList.contains('left')) el.style.cssText = "top: ".concat(parentTop + parentHeight + offset, "px; left: ").concat(parentLeft - offset, "px ;max-height: ").concat(el.scrollHeight, "px;"); // Top + Center align (DEFAULT)
+          else el.style.cssText = "top: ".concat(parentTop + parentHeight + offset, "px; left: ").concat(parentLeft + parentWidth / 2 - elWidth / 2, "px ;max-height: ").concat(el.scrollHeight, "px;");
       } else el.style.cssText = "max-height: ".concat(el.scrollHeight, "px;");
     }
   },
@@ -8083,6 +8086,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
 //
 //
 //
@@ -9498,6 +9503,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -9972,6 +9983,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'tooltipAlt',
   data: function data() {
@@ -10015,22 +10035,29 @@ __webpack_require__.r(__webpack_exports__);
     setHeight: function setHeight() {
       var offsetTop = 4;
       var offsetLeft = 4;
-      var el = this.$refs.tooltip; // const parent = el.closest('.has-tooltip')
+      var el = this.$refs.tooltip; // const parent = el.closest('.has-tooltip') // Use a set parent as parent
+      // const parent = this.$refs.parent // Use the slots wrapper as parent
 
-      var parent = this.$refs.parent;
-      var wrapper = this.$refs.wrapper;
+      var parent = this.$slots["default"][0].elm; // Use the slot as parent
+
+      console.log(this.$slots["default"][0].elm); // Use the slot as parent
+
+      var wrapper = this.$refs.wrapper; // if (parent != null) {
+
       var parentPos = this.getPosition(parent);
       var parentTop = parentPos.y;
       var parentLeft = parentPos.x;
       var parentHeight = parent.getBoundingClientRect().height;
-      var parentWidth = parent.getBoundingClientRect().width;
+      var parentWidth = parent.getBoundingClientRect().width; // }
+
       var elHeight = el.getBoundingClientRect().height;
       var elWidth = el.getBoundingClientRect().width; // Align the dropdown after the parent
 
       if (parent != null) {
         // Top + Right align
         if (wrapper.classList.contains('right')) el.style.cssText = "top: ".concat(parentTop + parentHeight + offsetTop, "px; left: ").concat(parentLeft + parentWidth - elWidth + offsetLeft, "px;"); // Top + Left align
-        else el.style.cssText = "top: ".concat(parentTop + parentHeight + offsetTop, "px; left: ").concat(parentLeft - offsetLeft, "px;");
+        else if (wrapper.classList.contains('left')) el.style.cssText = "top: ".concat(parentTop + parentHeight + offsetTop, "px; left: ").concat(parentLeft - offsetLeft, "px;"); // Top + Center align
+          else el.style.cssText = "top: ".concat(parentTop + parentHeight + offsetTop, "px; left: ").concat(parentLeft + parentWidth / 2 - elWidth / 2, "px;");
       }
     }
   },
@@ -11420,7 +11447,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".catalogues-table[data-v-f0b881ae] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.clickable[data-v-f0b881ae] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-f0b881ae] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-f0b881ae] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-f0b881ae] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-f0b881ae] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-f0b881ae] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.flex-table .flex-group > td.action[data-v-f0b881ae] {\n  text-align: right;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae]:last-child {\n  margin-right: 16px;\n}\n.show-more[data-v-f0b881ae] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-f0b881ae] {\n  -webkit-animation: loading-data-v-f0b881ae 2s;\n          animation: loading-data-v-f0b881ae 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-f0b881ae] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-f0b881ae]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-f0b881ae] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-f0b881ae] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-f0b881ae]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae]:after {\n  display: block;\n}\n.button[data-v-f0b881ae] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n  margin: 0;\n}\n.button i[data-v-f0b881ae] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-f0b881ae] {\n  font-weight: 900;\n}\n.view-single[data-v-f0b881ae] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-f0b881ae] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-f0b881ae] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
+exports.push([module.i, ".catalogues-table[data-v-f0b881ae] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.clickable[data-v-f0b881ae] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-f0b881ae] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-f0b881ae] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-f0b881ae] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-f0b881ae] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-f0b881ae] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.flex-table .flex-group > td.action[data-v-f0b881ae] {\n  text-align: right;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae]:last-child {\n  margin-right: 16px;\n}\n.flex-table .flex-table-row th.action[data-v-f0b881ae] {\n  text-align: right;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.show-more[data-v-f0b881ae] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-f0b881ae] {\n  -webkit-animation: loading-data-v-f0b881ae 2s;\n          animation: loading-data-v-f0b881ae 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-f0b881ae] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-f0b881ae]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-f0b881ae] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-f0b881ae] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-f0b881ae]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae]:after {\n  display: block;\n}\n.button[data-v-f0b881ae] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n  margin: 0;\n}\n.button i[data-v-f0b881ae] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-f0b881ae] {\n  font-weight: 900;\n}\n.view-single[data-v-f0b881ae] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-f0b881ae] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-f0b881ae] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
 
 // exports
 
@@ -11534,7 +11561,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".product-single[data-v-019a7388] {\n  position: absolute;\n  right: 0;\n  top: 0;\n  margin: 0;\n  max-width: 60vw;\n  z-index: 1;\n}\n.product-single.visible[data-v-019a7388] {\n  width: 100%;\n}\n.product-single.sticky[data-v-019a7388] {\n  right: 76px;\n  top: 130px;\n  position: fixed;\n  height: calc(100vh - 130px);\n}\n.product-single.sticky > .card[data-v-019a7388] {\n  height: 100%;\n  overflow: hidden;\n}\n.product-single > .card[data-v-019a7388] {\n  margin: 0;\n  background: white;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #DFDFDF;\n  width: 100%;\n}\n.product-single .description > div > strong[data-v-019a7388] {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\nh3[data-v-019a7388] {\n  font-size: 18px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #A8A8A8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3B86FF;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 77vh;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #DFDFDF;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #F3F3F3;\n  padding: 6px 0;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n}\n.controls-wrapper .square[data-v-019a7388] {\n  margin-left: 1em;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  padding-right: 1em;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  cursor: pointer;\n  border-bottom: solid 2px #DFDFDF;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #F9F9F9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1B1C1D;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-color: #3B86FF;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tab-body[data-v-019a7388] {\n  background: #F3F3F3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #DFDFDF;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #A8A8A8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3B86FF;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #F3F3F3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #F3F3F3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3C3B54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}", ""]);
+exports.push([module.i, ".product-single[data-v-019a7388] {\n  position: absolute;\n  right: 0;\n  top: 0;\n  margin: 0;\n  max-width: 60vw;\n  z-index: 1;\n}\n.product-single.visible[data-v-019a7388] {\n  width: 100%;\n}\n.product-single.sticky[data-v-019a7388] {\n  right: 76px;\n  top: 130px;\n  position: fixed;\n  height: calc(100vh - 130px);\n}\n.product-single.sticky > .card[data-v-019a7388] {\n  height: 100%;\n  overflow: hidden;\n}\n.product-single > .card[data-v-019a7388] {\n  margin: 0;\n  background: white;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #DFDFDF;\n  width: 100%;\n}\n.product-single .description > div > strong[data-v-019a7388] {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\nh3[data-v-019a7388] {\n  font-size: 18px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #A8A8A8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3B86FF;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 77vh;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #DFDFDF;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #F3F3F3;\n  padding: 6px 0;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n}\n.controls-wrapper .square[data-v-019a7388] {\n  margin-left: 1em;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  padding-right: 1em;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  cursor: pointer;\n  border-bottom: solid 2px #DFDFDF;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #F9F9F9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1B1C1D;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-color: #3B86FF;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tab-body[data-v-019a7388] {\n  background: #F3F3F3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #DFDFDF;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #A8A8A8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3B86FF;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #F3F3F3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #F3F3F3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3C3B54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}", ""]);
 
 // exports
 
@@ -11800,7 +11827,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".tooltip-parent[data-v-3ccc3b31]:hover {\n  cursor: pointer;\n}\n.body-wrapper[data-v-3ccc3b31] {\n  padding: 8px;\n  display: block;\n  font-size: 13px;\n}", ""]);
+exports.push([module.i, ".tooltip-parent[data-v-3ccc3b31]:hover {\n  cursor: pointer;\n}\n.body-wrapper[data-v-3ccc3b31] {\n  padding: 8px;\n  display: block;\n  font-size: 13px;\n}\n.flex-wrapper[data-v-3ccc3b31] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}", ""]);
 
 // exports
 
@@ -14966,8 +14993,7 @@ var render = function() {
                       _c(
                         "span",
                         {
-                          staticClass:
-                            "clickable view-single button invisible-button",
+                          staticClass: "clickable view-single button invisible",
                           on: {
                             click: function($event) {
                               return _vm.viewSingle(
@@ -15025,7 +15051,15 @@ var render = function() {
     "div",
     { ref: "wrapper", staticClass: "dropdown-wrapper" },
     [
-      _vm._t("button", null, { toggle: _vm.toggle, collapsed: _vm.collapsed }),
+      _vm._t(
+        "button",
+        [
+          _c("span", { staticClass: "button", on: { click: _vm.toggle } }, [
+            _vm._v("Open dropdown")
+          ])
+        ],
+        { toggle: _vm.toggle, collapsed: _vm.collapsed, rel: "test" }
+      ),
       _vm._v(" "),
       _c("div", {
         staticClass: "overlay invisible",
@@ -15346,7 +15380,7 @@ var render = function() {
                         ]),
                         _vm._v(" "),
                         _c("Dropdown", {
-                          staticClass: "right dark",
+                          staticClass: "dark",
                           scopedSlots: _vm._u(
                             [
                               {
@@ -15356,7 +15390,8 @@ var render = function() {
                                     _c(
                                       "span",
                                       {
-                                        staticClass: "open-dropdown",
+                                        staticClass:
+                                          "open-dropdown dropdown-parent",
                                         class: { active: !slotProps.collapsed },
                                         on: { click: slotProps.toggle }
                                       },
@@ -15530,7 +15565,7 @@ var render = function() {
                                 }),
                                 _vm._v(" "),
                                 _c("Dropdown", {
-                                  staticClass: "right dark",
+                                  staticClass: "dark",
                                   scopedSlots: _vm._u(
                                     [
                                       {
@@ -15540,7 +15575,8 @@ var render = function() {
                                             _c(
                                               "span",
                                               {
-                                                staticClass: "open-dropdown",
+                                                staticClass:
+                                                  "open-dropdown dropdown-parent",
                                                 class: {
                                                   active: !slotProps.collapsed
                                                 },
@@ -15753,7 +15789,7 @@ var render = function() {
                                 _c("Dropdown", {
                                   ref: "roleDropdown",
                                   refInFor: true,
-                                  staticClass: "right dark",
+                                  staticClass: "dark",
                                   scopedSlots: _vm._u(
                                     [
                                       {
@@ -15763,7 +15799,8 @@ var render = function() {
                                             _c(
                                               "span",
                                               {
-                                                staticClass: "open-dropdown",
+                                                staticClass:
+                                                  "open-dropdown dropdown-parent",
                                                 class: {
                                                   active: !slotProps.collapsed
                                                 },
@@ -16509,6 +16546,10 @@ var render = function() {
                             _c("strong", [_vm._v("Composition")]),
                             _vm._v(" "),
                             _c("p", [_vm._v(_vm._s(_vm.product.composition))]),
+                            _vm._v(" "),
+                            _c("strong", [_vm._v("Delivery date")]),
+                            _vm._v(" "),
+                            _c("p", [_vm._v("placeholder date")]),
                             _vm._v(" "),
                             _c(
                               "div",
@@ -18907,145 +18948,169 @@ var render = function() {
                                   { staticClass: "role dropdown-parent" },
                                   [
                                     _vm.userPermissionLevel < user.role_id
-                                      ? _c(
-                                          "span",
-                                          {
-                                            staticClass: "square",
-                                            class: "role-" + user.role_id
-                                          },
-                                          [_vm._v(_vm._s(user.role.title))]
-                                        )
-                                      : _c(
-                                          "span",
-                                          {
-                                            staticClass: "square clickable",
-                                            class: "role-" + user.role_id,
-                                            on: {
-                                              click: function($event) {
-                                                ;(_vm.editUser = user),
-                                                  _vm.$refs.roleDropdown[
-                                                    index
-                                                  ].toggle()
-                                              }
-                                            }
-                                          },
-                                          [_vm._v(_vm._s(user.role.title))]
-                                        ),
-                                    _vm._v(" "),
-                                    _c("Dropdown", {
-                                      ref: "roleDropdown",
-                                      refInFor: true,
-                                      staticClass: "left dark",
-                                      scopedSlots: _vm._u(
-                                        [
-                                          {
-                                            key: "button",
-                                            fn: function(slotProps) {
-                                              return [_c("span")]
-                                            }
-                                          },
-                                          {
-                                            key: "header",
-                                            fn: function(slotProps) {
-                                              return [
-                                                _c("span", [
-                                                  _vm._v("Change role")
-                                                ]),
-                                                _vm._v(" "),
-                                                _c(
-                                                  "span",
-                                                  {
-                                                    staticClass: "close",
-                                                    on: {
-                                                      click: slotProps.toggle
-                                                    }
-                                                  },
-                                                  [
-                                                    _c("i", {
-                                                      staticClass:
-                                                        "fal fa-times"
-                                                    })
-                                                  ]
-                                                )
-                                              ]
-                                            }
-                                          },
-                                          {
-                                            key: "body",
-                                            fn: function() {
-                                              return [
-                                                _c("RadioButtons", {
-                                                  ref: "roleRadio",
-                                                  refInFor: true,
-                                                  attrs: {
-                                                    options: _vm.roles,
-                                                    optionNameKey: "title",
-                                                    optionValueKey: "id"
-                                                  },
-                                                  on: {
-                                                    submit: function($event) {
-                                                      return _vm.changeRole({
-                                                        user_id: user.id,
-                                                        role_id: $event
-                                                      })
-                                                    }
-                                                  }
-                                                })
-                                              ]
+                                      ? [
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass: "square",
+                                              class: "role-" + user.role_id
                                             },
-                                            proxy: true
-                                          },
-                                          {
-                                            key: "footer",
-                                            fn: function(slotProps) {
-                                              return [
-                                                _c(
-                                                  "div",
-                                                  { staticClass: "grid-2" },
-                                                  [
-                                                    _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "button green",
+                                            [_vm._v(_vm._s(user.role.title))]
+                                          )
+                                        ]
+                                      : [
+                                          _c("Dropdown", {
+                                            ref: "roleDropdown",
+                                            refInFor: true,
+                                            staticClass: "dark",
+                                            scopedSlots: _vm._u(
+                                              [
+                                                {
+                                                  key: "button",
+                                                  fn: function(slotProps) {
+                                                    return [
+                                                      _c(
+                                                        "span",
+                                                        {
+                                                          staticClass:
+                                                            "square clickable dropdown-parent",
+                                                          class:
+                                                            "role-" +
+                                                            user.role_id,
+                                                          on: {
+                                                            click: function(
+                                                              $event
+                                                            ) {
+                                                              ;(_vm.editUser = user),
+                                                                _vm.$refs.roleDropdown[
+                                                                  index
+                                                                ].toggle()
+                                                            }
+                                                          }
+                                                        },
+                                                        [
+                                                          _vm._v(
+                                                            _vm._s(
+                                                              user.role.title
+                                                            )
+                                                          )
+                                                        ]
+                                                      )
+                                                    ]
+                                                  }
+                                                },
+                                                {
+                                                  key: "header",
+                                                  fn: function(slotProps) {
+                                                    return [
+                                                      _c("span", [
+                                                        _vm._v("Change role")
+                                                      ]),
+                                                      _vm._v(" "),
+                                                      _c(
+                                                        "span",
+                                                        {
+                                                          staticClass: "close",
+                                                          on: {
+                                                            click:
+                                                              slotProps.toggle
+                                                          }
+                                                        },
+                                                        [
+                                                          _c("i", {
+                                                            staticClass:
+                                                              "fal fa-times"
+                                                          })
+                                                        ]
+                                                      )
+                                                    ]
+                                                  }
+                                                },
+                                                {
+                                                  key: "body",
+                                                  fn: function() {
+                                                    return [
+                                                      _c("RadioButtons", {
+                                                        ref: "roleRadio",
+                                                        refInFor: true,
+                                                        attrs: {
+                                                          options: _vm.roles,
+                                                          optionNameKey:
+                                                            "title",
+                                                          optionValueKey: "id"
+                                                        },
                                                         on: {
-                                                          click: function(
+                                                          submit: function(
                                                             $event
                                                           ) {
-                                                            _vm.$refs.roleRadio[
-                                                              index
-                                                            ].submit()
-                                                            slotProps.toggle()
+                                                            return _vm.changeRole(
+                                                              {
+                                                                user_id:
+                                                                  user.id,
+                                                                role_id: $event
+                                                              }
+                                                            )
                                                           }
                                                         }
-                                                      },
-                                                      [_vm._v("Save")]
-                                                    ),
-                                                    _vm._v(" "),
-                                                    _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "button invisible",
-                                                        on: {
-                                                          click:
-                                                            slotProps.toggle
-                                                        }
-                                                      },
-                                                      [_vm._v("Cancel")]
-                                                    )
-                                                  ]
-                                                )
-                                              ]
-                                            }
-                                          }
-                                        ],
-                                        null,
-                                        true
-                                      )
-                                    })
+                                                      })
+                                                    ]
+                                                  },
+                                                  proxy: true
+                                                },
+                                                {
+                                                  key: "footer",
+                                                  fn: function(slotProps) {
+                                                    return [
+                                                      _c(
+                                                        "div",
+                                                        {
+                                                          staticClass: "grid-2"
+                                                        },
+                                                        [
+                                                          _c(
+                                                            "span",
+                                                            {
+                                                              staticClass:
+                                                                "button green",
+                                                              on: {
+                                                                click: function(
+                                                                  $event
+                                                                ) {
+                                                                  _vm.$refs.roleRadio[
+                                                                    index
+                                                                  ].submit()
+                                                                  slotProps.toggle()
+                                                                }
+                                                              }
+                                                            },
+                                                            [_vm._v("Save")]
+                                                          ),
+                                                          _vm._v(" "),
+                                                          _c(
+                                                            "span",
+                                                            {
+                                                              staticClass:
+                                                                "button invisible",
+                                                              on: {
+                                                                click:
+                                                                  slotProps.toggle
+                                                              }
+                                                            },
+                                                            [_vm._v("Cancel")]
+                                                          )
+                                                        ]
+                                                      )
+                                                    ]
+                                                  }
+                                                }
+                                              ],
+                                              null,
+                                              true
+                                            )
+                                          })
+                                        ]
                                   ],
-                                  1
+                                  2
                                 ),
                                 _vm._v(" "),
                                 _c("td"),
@@ -19588,6 +19653,8 @@ var render = function() {
         class: { hidden: _vm.hidden }
       },
       [
+        _c("div", { staticClass: "arrow" }),
+        _vm._v(" "),
         _c("div", { staticClass: "inner" }, [
           _vm.header != null
             ? _c("div", {
@@ -19609,17 +19676,32 @@ var render = function() {
               _vm._v(" "),
               _vm.array != null
                 ? _vm._l(_vm.array, function(row, index) {
-                    return _c("p", { key: index, staticClass: "tooltip-row" }, [
-                      _vm.arrayLabelKey != null
-                        ? _c("strong", [
-                            _vm._v(_vm._s(row[_vm.arrayLabelKey]) + ": ")
-                          ])
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _vm.arrayValueKey != null
-                        ? _c("span", [_vm._v(_vm._s(row[_vm.arrayValueKey]))])
-                        : _c("span", [_vm._v(_vm._s(row))])
-                    ])
+                    return _c(
+                      "p",
+                      { key: index, staticClass: "row" },
+                      [
+                        _vm.arrayLabelKey != null
+                          ? [
+                              _c("span", [
+                                _vm._v(_vm._s(row[_vm.arrayLabelKey]) + ": ")
+                              ]),
+                              _vm._v(" "),
+                              _vm.arrayValueKey != null
+                                ? _c("strong", [
+                                    _vm._v(_vm._s(row[_vm.arrayValueKey]))
+                                  ])
+                                : _c("strong", [_vm._v(_vm._s(row))])
+                            ]
+                          : [
+                              _vm.arrayValueKey != null
+                                ? _c("span", [
+                                    _vm._v(_vm._s(row[_vm.arrayValueKey]))
+                                  ])
+                                : _c("span", [_vm._v(_vm._s(row))])
+                            ]
+                      ],
+                      2
+                    )
                   })
                 : _vm._e()
             ],
@@ -39830,6 +39912,7 @@ function (_Model) {
         datasource_id: this.attr(''),
         title: this.attr(''),
         short_description: this.attr(''),
+        delivery_date: this.attr(''),
         sale_description: this.attr(''),
         brand: this.attr(''),
         collection_id: this.attr(''),

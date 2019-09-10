@@ -92,6 +92,8 @@
                             </div>
                             <strong>Composition</strong>
                             <p>{{product.composition}}</p>
+                            <strong>Delivery date</strong>
+                            <p>placeholder date</p>
 
                             <div class="product-variants">
                                 <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
@@ -546,6 +548,7 @@ export default {
         grid-template-columns: repeat( auto-fit, minmax(33.33%, 1fr) );
     }
     .product-variants {
+        margin-top: 12px;
         white-space: nowrap;
         overflow-x: auto;
     }
@@ -611,5 +614,8 @@ export default {
     }
     .tabs-wrapper {
         margin-bottom: 60px;
+    }
+    p {
+        margin: 0;
     }
 </style>

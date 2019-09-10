@@ -64,7 +64,7 @@
                         <!-- <span class="button">Action</span>
                         <span class="button">Action</span> -->
                         <span class="placeholder"></span>
-                        <span class="clickable view-single button invisible-button" @click="viewSingle(catalogue.id, catalogue.title)">View</span>
+                        <span class="clickable view-single button invisible" @click="viewSingle(catalogue.id, catalogue.title)">View</span>
                     </td>
                 </div>
             </div>
@@ -224,6 +224,12 @@ export default {
                 }
                 &:last-child {
                     margin-right: 16px;
+                }
+            }
+            th {
+                &.action {
+                    text-align: right;
+                    justify-content: flex-end;
                 }
             }
         }

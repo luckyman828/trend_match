@@ -6,6 +6,9 @@
         </div>
 
         <div class="tooltip dark" :class="{hidden: hidden}" ref="tooltip">
+
+            <div class="arrow"></div>
+
             <div class="inner">
 
                 <div class="header"  v-if="header != null" v-html="header"></div>
@@ -15,10 +18,16 @@
                     <span class="body-wrapper" v-if="body != null" v-html="body"></span>
 
                     <template v-if="array != null">
-                        <p class="tooltip-row" v-for="(row, index) in array" :key="index">
-                            <strong v-if="arrayLabelKey != null">{{row[arrayLabelKey]}}: </strong>
-                            <span v-if="arrayValueKey != null">{{row[arrayValueKey]}}</span>
-                            <span v-else>{{row}}</span>
+                        <p class="row" v-for="(row, index) in array" :key="index">
+                            <template v-if="arrayLabelKey != null">
+                                <span>{{row[arrayLabelKey]}}: </span>
+                                <strong v-if="arrayValueKey != null">{{row[arrayValueKey]}}</strong>
+                                <strong v-else>{{row}}</strong>
+                            </template>
+                            <template v-else>
+                                <span v-if="arrayValueKey != null">{{row[arrayValueKey]}}</span>
+                                <span v-else>{{row}}</span>
+                            </template>
                         </p>
                     </template>
 
@@ -71,15 +80,19 @@ export default {
             const offsetTop = 4
             const offsetLeft = 4
             const el = this.$refs.tooltip
-            // const parent = el.closest('.has-tooltip')
-            const parent = this.$refs.parent
+            // const parent = el.closest('.has-tooltip') // Use a set parent as parent
+            // const parent = this.$refs.parent // Use the slots wrapper as parent
+            const parent = this.$slots.default[0].elm // Use the slot as parent
+            console.log(this.$slots.default[0].elm) // Use the slot as parent
             const wrapper = this.$refs.wrapper
 
+            // if (parent != null) {
             const parentPos = this.getPosition(parent)
             const parentTop = parentPos.y
             const parentLeft = parentPos.x
             const parentHeight = parent.getBoundingClientRect().height
             const parentWidth = parent.getBoundingClientRect().width
+            // }
             const elHeight = el.getBoundingClientRect().height
             const elWidth = el.getBoundingClientRect().width
 
@@ -90,8 +103,13 @@ export default {
                     el.style.cssText = `top: ${parentTop + parentHeight + offsetTop}px; left: ${parentLeft + parentWidth - elWidth + offsetLeft}px;`
 
                 // Top + Left align
-                else
+                else if (wrapper.classList.contains('left'))
                     el.style.cssText = `top: ${parentTop + parentHeight + offsetTop}px; left: ${parentLeft - offsetLeft}px;`
+
+                // Top + Center align
+                else
+                    el.style.cssText = `top: ${parentTop + parentHeight + offsetTop}px; left: ${parentLeft + ( parentWidth / 2 ) - ( elWidth / 2 ) }px;`
+
             }
         },
     },
@@ -117,6 +135,10 @@ export default {
         padding: 8px;
         display: block;
         font-size: 13px;
+    }
+    .flex-wrapper {
+        display: flex;
+        justify-content: space-between;
     }
 
 </style>

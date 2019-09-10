@@ -18,6 +18,7 @@ export default class Product extends Model {
       datasource_id: this.attr(''),
       title: this.attr(''),
       short_description: this.attr(''),
+      delivery_date: this.attr(''),
       sale_description: this.attr(''),
       brand: this.attr(''),
       collection_id: this.attr(''),

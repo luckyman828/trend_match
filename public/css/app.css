@@ -9254,7 +9254,7 @@ textarea {
 .dropdown .inner,
 .tooltip .inner {
   border-radius: 4px;
-  min-width: 188px;
+  min-width: 152px;
   background: white;
   border: solid 1px #DFDFDF;
   margin-top: 7px;
@@ -9262,22 +9262,24 @@ textarea {
 }
 
 .dropdown::before,
-.tooltip::before {
+.dropdown .arrow,
+.tooltip::before,
+.tooltip .arrow {
   content: "";
-  height: 12px;
+  height: 13px;
   width: 13px;
   display: block;
   background: white;
-  left: 28px;
+  left: calc(50% - 7px);
   border: solid 1px #DFDFDF;
   border-right: 0;
   border-bottom: 0;
-  top: 1px;
+  top: 3px;
   z-index: 1;
   position: absolute;
   -webkit-transform: rotateZ(45deg);
           transform: rotateZ(45deg);
-  border-radius: 2px;
+  border-radius: 0px;
 }
 
 .right .dropdown,
@@ -9290,6 +9292,13 @@ textarea {
 .right .tooltip::before {
   left: auto;
   right: 28px;
+}
+
+.center .dropdown::before,
+.center .dropdown .arrow,
+.center .tooltip::before,
+.center .tooltip .arrow {
+  left: 28px;
 }
 
 .dropdown.collapsed,
@@ -9308,6 +9317,12 @@ textarea {
   padding: 12px 8px 8px;
   font-size: 14px;
   font-weight: 400;
+  color: #A8A8A8;
+  text-align: center;
+}
+
+.dark .dropdown .header,
+.dark .tooltip .header {
   color: #A8A8A8;
 }
 
@@ -9337,6 +9352,20 @@ textarea {
   background: white;
 }
 
+.dropdown .row,
+.tooltip .row {
+  font-size: 12px;
+  padding: 0 16px;
+  margin: 0;
+  border: solid 1px #43425D;
+  height: 32px;
+  line-height: 32px;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-pack: justify;
+          justify-content: space-between;
+}
+
 .dropdown .footer,
 .tooltip .footer {
   padding: 4px 8px 6px;
@@ -9351,9 +9380,13 @@ textarea {
 }
 
 .dropdown.dark::before,
+.dropdown.dark .arrow,
 .dark .dropdown::before,
+.dark .dropdown .arrow,
 .tooltip.dark::before,
-.dark .tooltip::before {
+.tooltip.dark .arrow,
+.dark .tooltip::before,
+.dark .tooltip .arrow {
   background: #43425D;
   border: solid 1px #43425D;
 }
@@ -9372,27 +9405,13 @@ textarea {
   background: #56556E;
 }
 
-.tooltip .inner {
-  margin-top: 0;
-}
-
 .tooltip .body {
   max-height: none;
+  overflow: visible;
 }
 
 .tooltip::before {
   content: none;
-}
-
-.tooltip .tooltip-row {
-  font-size: 12px;
-  padding: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  margin: 0;
-}
-
-.tooltip .tooltip-row:nth-child(even) {
-  background: rgba(255, 255, 255, 0.2);
 }
 
 .checkbox .radiomark,
