@@ -17,6 +17,7 @@ export default class Team extends Model {
       id: this.attr(null),
       title: this.attr(''),
       workspace_id: this.attr(''),
+      currency: this.attr(''),
       users: this.belongsToMany(User, UserTeam, 'team_id', 'user_id'),
       invites: this.hasMany(TeamInvite, 'team_id'),
     }

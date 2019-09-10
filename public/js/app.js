@@ -8227,6 +8227,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 
 
@@ -8268,6 +8271,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['createComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['markAsFinal']), {
+    variantImg: function variantImg(variant) {
+      if (variant.error != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
+    },
+    imgError: function imgError(variant) {
+      variant.error = true;
+    },
     onCloseSingle: function onCloseSingle() {
       this.currentImgIndex = 0; // Emit event to parent
 
@@ -8294,6 +8303,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.currentImgIndex++;
       }
     },
+    cycleImageReverse: function cycleImageReverse() {
+      if (this.currentImgIndex == 0) {
+        this.currentImgIndex = this.product.color_variants.length - 1;
+      } else {
+        this.currentImgIndex--;
+      }
+    },
     clickOutsideEvent: function clickOutsideEvent(event) {
       var thisElement = document.querySelector('.product-single'); // Check if the clicked element is outside component
 
@@ -8308,6 +8324,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (event.target.type != 'textarea') {
         if (key == 'ArrowRight') this.onNextSingle();
         if (key == 'ArrowLeft') this.onPrevSingle();
+        if (key == 'ArrowUp') event.preventDefault(), this.cycleImage();
+        if (key == 'ArrowDown') event.preventDefault(), this.cycleImageReverse();
 
         if (this.authUser.role_id >= 2) {
           if (key == 'KeyI') this.toggleInOut(this.product, 1);
@@ -8319,7 +8337,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   created: function created() {
     // Listen for clicks outside component
     document.body.addEventListener('click', this.clickOutsideEvent);
-    document.body.addEventListener('keyup', this.hotkeyHandler);
+    document.body.addEventListener('keydown', this.hotkeyHandler);
   },
   destroyed: function destroyed() {
     // Remove click listener
@@ -8343,6 +8361,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _Tooltip__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tooltip */ "./resources/js/components/Tooltip.vue");
+/* harmony import */ var _TooltipAlt2__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./TooltipAlt2 */ "./resources/js/components/TooltipAlt2.vue");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -8415,13 +8434,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'productSingleComments',
   props: ['comments', 'authUser', 'product'],
   components: {
-    Tooltip: _Tooltip__WEBPACK_IMPORTED_MODULE_2__["default"]
+    Tooltip: _Tooltip__WEBPACK_IMPORTED_MODULE_2__["default"],
+    TooltipAlt2: _TooltipAlt2__WEBPACK_IMPORTED_MODULE_3__["default"]
   },
   data: function data() {
     return {
@@ -8756,6 +8782,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 
 
@@ -8807,27 +8836,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction', 'deleteAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['deleteTeamProduct', 'updateTeamProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['deletePhaseProduct', 'updatePhaseProduct']), {
-    // ...mapActions('entities/productFinalActions', ['deleteFinalAction']),
+    productImg: function productImg(variant) {
+      if (variant.error != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
+    },
+    imgError: function imgError(variant) {
+      variant.error = true;
+    },
     toggleInOut: function toggleInOut(product, action) {
       if (product[this.actionScope] != null) {
         // If the product has an action
-        if (product[this.actionScope].action == action) {
-          // DELETE ACTION
-          if (this.actionScope == 'userAction') this.deleteAction({
-            user_id: this.authUser.id,
-            productToUpdate: product.id
-          });
-          if (this.actionScope == 'teamAction') this.deleteTeamProduct({
-            team_id: this.currentTeamId,
-            product_id: product.id,
-            phase_id: 1
-          });
-          if (this.actionScope == 'phaseAction') this.deletePhaseProduct({
-            product_id: product.id,
-            phase_id: 1
-          });
-        } else {
+        console.log('current action: ' + product[this.actionScope].action);
+        console.log('new action: ' + action);
+
+        if (product[this.actionScope].action != action) {
           // UPDATE ACTION
+          console.log('update action!');
           if (this.actionScope == 'userAction') this.updateAction({
             user_id: this.authUser.id,
             productToUpdate: product.id,
@@ -8843,6 +8866,41 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             product_id: product.id,
             phase_id: 1,
             action: action
+          });
+        } else if (product[this.actionScope].action == 2 && action == 2) {
+          console.log('toggle focus!'); // TOGGLE FOCUS
+
+          if (this.actionScope == 'userAction') this.updateAction({
+            user_id: this.authUser.id,
+            productToUpdate: product.id,
+            action_code: 1
+          });
+          if (this.actionScope == 'teamAction') this.updateTeamProduct({
+            team_id: this.currentTeamId,
+            product_id: product.id,
+            phase_id: 1,
+            action: 1
+          });
+          if (this.actionScope == 'phaseAction') this.updatePhaseProduct({
+            product_id: product.id,
+            phase_id: 1,
+            action: 1
+          });
+        } else {
+          console.log('delete!'); // DELETE ACTION
+
+          if (this.actionScope == 'userAction') this.deleteAction({
+            user_id: this.authUser.id,
+            productToUpdate: product.id
+          });
+          if (this.actionScope == 'teamAction') this.deleteTeamProduct({
+            team_id: this.currentTeamId,
+            product_id: product.id,
+            phase_id: 1
+          });
+          if (this.actionScope == 'phaseAction') this.deletePhaseProduct({
+            product_id: product.id,
+            phase_id: 1
           });
         }
       } else {
@@ -10193,7 +10251,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       test: ''
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'workspaceCurrency', 'teamCurrency']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace']), {
     defaultTeam: function defaultTeam() {
       if (this.userPermissionLevel >= 3) return {
         id: 0,
@@ -10232,7 +10290,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     products: function products() {
       var _this = this;
 
-      var products = _store_models_Product__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes', 'comments.user.teams', 'comments.team'])["with"]('productFinalAction')["with"]('teamActions.team')["with"]('phaseActions').all();
+      var products = _store_models_Product__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes.user.teams', 'comments.user.teams', 'comments.team'])["with"]('productFinalAction')["with"]('teamActions.team')["with"]('phaseActions').all();
       var totalUsers = this.teamUsers;
       var userId = this.authUser.id;
       var teamFilterId = this.currentTeamId;
@@ -10257,11 +10315,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         // Check if the chosen currency exists on the product
 
         if (product.prices != null) {
-          var workspacePrices = product.prices.find(function (x) {
-            return x.currency == _this.workspaceCurrency;
+          var workspacePrices = null;
+          var teamPrices = null;
+          if (_this.currentWorkspace.currency != null) workspacePrices = product.prices.find(function (x) {
+            return x.currency == _this.currentWorkspace.currency;
           });
-          var teamPrices = product.prices.find(function (x) {
-            return x.currency == _this.teamCurrency;
+          if (_this.currentTeam.currency != null) teamPrices = product.prices.find(function (x) {
+            return x.currency == _this.currentTeam.currency;
           });
 
           if (_this.userPermissionLevel <= 4) {
@@ -10271,10 +10331,40 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             // Use workspace currency for high level members
             if (workspacePrices != null) product.userPrices = workspacePrices;else product.userPrices = product.prices[0];
           }
-        } // Scope comments to current teamFilter
-
+        }
 
         var comments = product.comments;
+        comments.forEach(function (comment) {
+          comment.teamVotes = [{
+            id: 0,
+            title: 'No team',
+            votes: 0
+          }];
+          comment.votes.forEach(function (vote) {
+            if (vote.user != null) {
+              if (vote.user.teams.length > 0) {
+                var found = comment.teamVotes.find(function (x) {
+                  return x.title == vote.user.teams[0].title;
+                });
+
+                if (!found) {
+                  var voteTeam = vote.user.teams[0];
+                  var teamToPush = {
+                    id: voteTeam.id,
+                    title: voteTeam.title,
+                    votes: 1
+                  };
+                  comment.teamVotes.push(teamToPush);
+                } else {
+                  found.votes++;
+                }
+              } else {
+                comment.teamVotes[0].votes++;
+              }
+            }
+          });
+        }); // Scope comments to current teamFilter
+
         var commentsScoped = []; // If the user is a buyer function, only return global comments
 
         if (_this.userPermissionLevel == _this.viewAdminPermissionLevel) {
@@ -10614,6 +10704,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     teams: function teams() {
       return this.$store.getters['entities/teams/teams'];
+    },
+    teamsForFilter: function teamsForFilter() {
+      if (this.userPermissionLevel >= 3) {
+        var teamsToReturn = JSON.parse(JSON.stringify(this.teams));
+        teamsToReturn.unshift({
+          title: 'Global',
+          id: 0
+        });
+        return teamsToReturn;
+      } else return this.teams;
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentFileId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']), {
@@ -10933,6 +11033,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     teams: function teams() {
       return this.$store.getters['entities/teams/teams'];
+    },
+    teamsForFilter: function teamsForFilter() {
+      if (this.userPermissionLevel >= 3) {
+        var teamsToReturn = JSON.parse(JSON.stringify(this.teams));
+        teamsToReturn.unshift({
+          title: 'Global',
+          id: 0
+        });
+        return teamsToReturn;
+      } else return this.teams;
     },
     isLoading: function isLoading() {
       var loading = false;
@@ -11272,7 +11382,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\nhtml, body, #app {\n  color: #1B1C1D;\n  background: #F9F9F9;\n}\n.app {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05) inset, 5px 0 6px rgba(0, 0, 0, 0.02) inset;\n  max-height: calc(100vh - 70px);\n  overflow: scroll;\n  scroll-behavior: smooth;\n}\n.main-wrapper {\n  padding-left: 200px;\n  padding-top: 70px;\n}\n.main {\n  min-height: 105vh;\n  padding: 20px 60px;\n}\n.container {\n  max-width: 1170px;\n}\nh1 {\n  margin-bottom: 30px;\n}\n.grid-2, .grid-3 {\n  display: grid;\n  grid-gap: 17px;\n}\n.grid-2.small-gap, .grid-3.small-gap {\n  grid-gap: 12px;\n}\n.grid-3 {\n  grid-template-columns: repeat(3, 1fr);\n}\n.grid-2 {\n  grid-template-columns: repeat(2, 1fr);\n}\n.card {\n  padding: 1em;\n  border-radius: 6px;\n  margin: 30px 0;\n  border: none;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n}\n.pill {\n  background: #F3F3F3;\n  height: 20px;\n  font-size: 13px;\n  border-radius: 20px;\n  width: 85px;\n  height: 25px;\n  display: inline-block;\n  line-height: 25px;\n  text-align: center;\n}\n.pill.positive {\n  background: rgba(105, 228, 166, 0.35);\n}\n.tabs {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.tabs .tab {\n  display: inline-block;\n  font-size: 18px;\n  opacity: 0.5;\n  padding: 10px 25px;\n  border-bottom: solid 3px transparent;\n  margin-bottom: 8px;\n}\n.tabs .tab.active {\n  opacity: 1;\n  border-color: #3B86FF;\n}\n.tabs .tab:not(.active):hover {\n  border-color: rgba(59, 134, 255, 0.5);\n  cursor: pointer;\n}\n.vdp-datepicker {\n  display: grid;\n  justify-items: end;\n}\n.vdp-datepicker.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.vdp-datepicker > div::after {\n  content: \"\\F078\";\n  font-size: 11px;\n  color: #A8A8A8;\n  display: block;\n  position: absolute;\n  z-index: 1;\n  right: 12px;\n  height: 32px;\n  top: 0;\n  line-height: 32px;\n  font-weight: 900;\n  font-family: \"Font Awesome 5 Pro\";\n}\n.vdp-datepicker input {\n  border: solid 1px #DFDFDF;\n  border-radius: 4px;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  padding-left: 12px;\n  height: 32px;\n  width: 150px;\n  font-size: 14px;\n  cursor: pointer;\n}\n.loading {\n  -webkit-animation: loading 2s;\n          animation: loading 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.flex-table {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled {\n  opacity: 0.5;\n}\n.flex-table .flex-table-row {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n  min-height: 45px;\n}\n.flex-table .flex-table-row > *.select {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table .header-row {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.flex-table .item-row {\n  border-bottom: solid 1px #F3F3F3;\n}\n.flex-table .item-row:hover {\n  background: #F9F9F9;\n}\n.flex-table th {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\n.flex-table th i {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\n.flex-table th.active i {\n  color: #3B86FF;\n}\n.clickable {\n  cursor: pointer;\n}\nbody::after {\n  content: \"\";\n  display: none;\n  position: fixed;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(27, 28, 29, 0.7);\n  z-index: 110;\n}\nbody.disabled::after {\n  display: block;\n}\ni.green {\n  color: #5EE2A0;\n}\ni.red {\n  color: #FF6565;\n}\ni.dark {\n  color: #1B1C1D;\n}\ni.primary {\n  color: #3B86FF;\n}\n*:not(.app) {\n  /* width */\n  /* Track */\n  /* Handle */\n}\n*:not(.app)::-webkit-scrollbar {\n  width: 3px;\n}\n*:not(.app)::-webkit-scrollbar-track {\n  background: #DFDFDF;\n}\n*:not(.app)::-webkit-scrollbar-thumb {\n  background: #A8A8A8;\n  border-radius: 2px;\n}\n*:not(.app)::-webkit-scrollbar-thumb:hover {\n  background: #888;\n}\n*:not(.app) .dark > *, *:not(.app) .dark {\n  /* width */\n  /* Track */\n  /* Handle */\n}\n*:not(.app) .dark > *::-webkit-scrollbar, *:not(.app) .dark::-webkit-scrollbar {\n  width: 5px;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-track, *:not(.app) .dark::-webkit-scrollbar-track {\n  background: transparent;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-thumb, *:not(.app) .dark::-webkit-scrollbar-thumb {\n  background: white;\n  box-shadow: -2px 0 #333 inset;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-thumb:hover, *:not(.app) .dark::-webkit-scrollbar-thumb:hover {\n  background: #3B86FF;\n}", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\nhtml, body, #app {\n  color: #1B1C1D;\n  background: #F9F9F9;\n}\n.app {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05) inset, 5px 0 6px rgba(0, 0, 0, 0.02) inset;\n  max-height: calc(100vh - 70px);\n  overflow: scroll;\n  scroll-behavior: smooth;\n}\n.main-wrapper {\n  padding-left: 200px;\n  padding-top: 70px;\n}\n.main {\n  min-height: 105vh;\n  padding: 20px 60px;\n}\n.container {\n  max-width: 1170px;\n}\nh1 {\n  margin-bottom: 30px;\n}\n.grid-2, .grid-3 {\n  display: grid;\n  grid-gap: 17px;\n}\n.grid-2.small-gap, .grid-3.small-gap {\n  grid-gap: 12px;\n}\n.grid-3 {\n  grid-template-columns: repeat(3, 1fr);\n}\n.grid-2 {\n  grid-template-columns: repeat(2, 1fr);\n}\n.card {\n  padding: 1em;\n  border-radius: 6px;\n  margin: 30px 0;\n  border: none;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n}\n.pill {\n  background: #F3F3F3;\n  height: 20px;\n  font-size: 13px;\n  border-radius: 20px;\n  width: 85px;\n  height: 25px;\n  display: inline-block;\n  line-height: 25px;\n  text-align: center;\n}\n.pill.positive {\n  background: rgba(105, 228, 166, 0.35);\n}\n.tabs {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.tabs .tab {\n  display: inline-block;\n  font-size: 18px;\n  opacity: 0.5;\n  padding: 10px 25px;\n  border-bottom: solid 3px transparent;\n  margin-bottom: 8px;\n}\n.tabs .tab.active {\n  opacity: 1;\n  border-color: #3B86FF;\n}\n.tabs .tab:not(.active):hover {\n  border-color: rgba(59, 134, 255, 0.5);\n  cursor: pointer;\n}\n.vdp-datepicker {\n  display: grid;\n  justify-items: end;\n}\n.vdp-datepicker.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.vdp-datepicker > div::after {\n  content: \"\\F078\";\n  font-size: 11px;\n  color: #A8A8A8;\n  display: block;\n  position: absolute;\n  z-index: 1;\n  right: 12px;\n  height: 32px;\n  top: 0;\n  line-height: 32px;\n  font-weight: 900;\n  font-family: \"Font Awesome 5 Pro\";\n}\n.vdp-datepicker input {\n  border: solid 1px #DFDFDF;\n  border-radius: 4px;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  padding-left: 12px;\n  height: 32px;\n  width: 150px;\n  font-size: 14px;\n  cursor: pointer;\n}\n.loading {\n  -webkit-animation: loading 2s;\n          animation: loading 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.flex-table {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled {\n  opacity: 0.5;\n}\n.flex-table .flex-table-row {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n  min-height: 45px;\n}\n.flex-table .flex-table-row > *.select {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table .header-row {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.flex-table .item-row {\n  border-bottom: solid 1px #F3F3F3;\n}\n.flex-table .item-row:hover {\n  background: #F9F9F9;\n}\n.flex-table th {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\n.flex-table th i {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\n.flex-table th.active i {\n  color: #3B86FF;\n}\n.clickable {\n  cursor: pointer;\n}\nbody::after {\n  content: \"\";\n  display: none;\n  position: fixed;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(27, 28, 29, 0.7);\n  z-index: 110;\n}\nbody.disabled::after {\n  display: block;\n}\ni.green {\n  color: #5EE2A0;\n}\ni.red {\n  color: #FF6565;\n}\ni.dark {\n  color: #1B1C1D;\n}\ni.primary {\n  color: #3B86FF;\n}\n*:not(.app) {\n  /* width */\n  /* Track */\n  /* Handle */\n}\n*:not(.app)::-webkit-scrollbar {\n  width: 3px;\n}\n*:not(.app)::-webkit-scrollbar-track {\n  background: #DFDFDF;\n}\n*:not(.app)::-webkit-scrollbar-thumb {\n  background: #A8A8A8;\n  border-radius: 2px;\n}\n*:not(.app)::-webkit-scrollbar-thumb:hover {\n  background: #888;\n}\n*:not(.app) .dark > *, *:not(.app) .dark {\n  /* width */\n  /* Track */\n  /* Handle */\n}\n*:not(.app) .dark > *::-webkit-scrollbar, *:not(.app) .dark::-webkit-scrollbar {\n  width: 5px;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-track, *:not(.app) .dark::-webkit-scrollbar-track {\n  background: transparent;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-thumb, *:not(.app) .dark::-webkit-scrollbar-thumb {\n  background: white;\n  box-shadow: -2px 0 #333 inset;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-thumb:hover, *:not(.app) .dark::-webkit-scrollbar-thumb:hover {\n  background: #3B86FF;\n}", ""]);
 
 // exports
 
@@ -11291,7 +11401,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".header[data-v-932a4c8a] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  padding-bottom: 16px;\n  margin-bottom: 16px;\n  border-bottom: solid 2px #DFDFDF;\n}\n.header > div[data-v-932a4c8a] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header h1[data-v-932a4c8a] {\n  display: inline-block;\n  margin: 0;\n  margin-right: 12px;\n}\n.header .square[data-v-932a4c8a] {\n  background: #F3F3F3;\n  color: #3C3B54;\n  font-weight: 700;\n  padding: 4px 16px;\n  border-radius: 4px;\n  font-size: 12px;\n  display: inline-block;\n  white-space: nowrap;\n}\n.header .stat[data-v-932a4c8a] {\n  margin-left: 24px;\n}\n.header .title[data-v-932a4c8a] {\n  display: block;\n  text-align: left;\n  font-size: 12px;\n  font-weight: 700;\n  color: #A8A8A8;\n}\n.header .progress[data-v-932a4c8a] {\n  width: 400px;\n  position: relative;\n  padding-right: 36px;\n}\n.header .progress .value[data-v-932a4c8a] {\n  position: absolute;\n  left: calc(100% - 32px);\n  top: 50%;\n  font-size: 14px;\n  font-weight: 700;\n}\n.header svg[data-v-932a4c8a] {\n  width: 100%;\n}\n.header svg rect.value[data-v-932a4c8a] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  fill: #B5CC18;\n}\n.header svg rect.background[data-v-932a4c8a] {\n  fill: #DFDFDF;\n}", ""]);
+exports.push([module.i, ".header[data-v-932a4c8a] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  padding-bottom: 16px;\n  margin-bottom: 16px;\n  border-bottom: solid 2px #DFDFDF;\n}\n.header > div[data-v-932a4c8a] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header h1[data-v-932a4c8a] {\n  display: inline-block;\n  margin: 0;\n  margin-right: 12px;\n}\n.header .square[data-v-932a4c8a] {\n  height: 24px;\n  line-height: 20px;\n  font-size: 12px;\n  font-weight: 700;\n}\n.header .stat[data-v-932a4c8a] {\n  margin-left: 24px;\n}\n.header .title[data-v-932a4c8a] {\n  display: block;\n  text-align: left;\n  font-size: 12px;\n  font-weight: 700;\n  color: #A8A8A8;\n}\n.header .progress[data-v-932a4c8a] {\n  width: 400px;\n  position: relative;\n  padding-right: 36px;\n}\n.header .progress .value[data-v-932a4c8a] {\n  position: absolute;\n  left: calc(100% - 32px);\n  top: 50%;\n  font-size: 14px;\n  font-weight: 700;\n}\n.header svg[data-v-932a4c8a] {\n  width: 100%;\n}\n.header svg rect.value[data-v-932a4c8a] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  fill: #B5CC18;\n}\n.header svg rect.background[data-v-932a4c8a] {\n  fill: #DFDFDF;\n}", ""]);
 
 // exports
 
@@ -11424,7 +11534,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".product-single[data-v-019a7388] {\n  position: absolute;\n  right: 0;\n  top: 0;\n  margin: 0;\n  max-width: 60vw;\n  z-index: 1;\n}\n.product-single.visible[data-v-019a7388] {\n  width: 100%;\n}\n.product-single.sticky[data-v-019a7388] {\n  right: 76px;\n  top: 130px;\n  position: fixed;\n  height: calc(100vh - 130px);\n}\n.product-single.sticky > .card[data-v-019a7388] {\n  height: 100%;\n  overflow: hidden;\n}\n.product-single > .card[data-v-019a7388] {\n  margin: 0;\n  background: white;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #DFDFDF;\n  width: 100%;\n}\n.product-single .description > div > strong[data-v-019a7388] {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\nh3[data-v-019a7388] {\n  font-size: 18px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.square[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 600;\n  display: inline-block;\n  padding: 0;\n  height: 32px;\n  width: 32px;\n  text-align: center;\n  line-height: 40px;\n}\n.square[data-v-019a7388]:hover {\n  cursor: pointer;\n  background: #F9F9F9;\n}\n.square i[data-v-019a7388] {\n  font-size: 22px;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 77vh;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #DFDFDF;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #F3F3F3;\n  padding: 6px 0;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n}\n.controls-wrapper .square[data-v-019a7388] {\n  margin-left: 1em;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  padding-right: 1em;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  cursor: pointer;\n  border-bottom: solid 2px #DFDFDF;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #F9F9F9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1B1C1D;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-color: #3B86FF;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tab-body[data-v-019a7388] {\n  background: #F3F3F3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #DFDFDF;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #A8A8A8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3B86FF;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #F3F3F3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #F3F3F3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3C3B54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}", ""]);
+exports.push([module.i, ".product-single[data-v-019a7388] {\n  position: absolute;\n  right: 0;\n  top: 0;\n  margin: 0;\n  max-width: 60vw;\n  z-index: 1;\n}\n.product-single.visible[data-v-019a7388] {\n  width: 100%;\n}\n.product-single.sticky[data-v-019a7388] {\n  right: 76px;\n  top: 130px;\n  position: fixed;\n  height: calc(100vh - 130px);\n}\n.product-single.sticky > .card[data-v-019a7388] {\n  height: 100%;\n  overflow: hidden;\n}\n.product-single > .card[data-v-019a7388] {\n  margin: 0;\n  background: white;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #DFDFDF;\n  width: 100%;\n}\n.product-single .description > div > strong[data-v-019a7388] {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\nh3[data-v-019a7388] {\n  font-size: 18px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 77vh;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #DFDFDF;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #F3F3F3;\n  padding: 6px 0;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n}\n.controls-wrapper .square[data-v-019a7388] {\n  margin-left: 1em;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  padding-right: 1em;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  cursor: pointer;\n  border-bottom: solid 2px #DFDFDF;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #F9F9F9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1B1C1D;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-color: #3B86FF;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tab-body[data-v-019a7388] {\n  background: #F3F3F3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #DFDFDF;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #A8A8A8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3B86FF;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #F3F3F3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #F3F3F3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3C3B54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}", ""]);
 
 // exports
 
@@ -11500,7 +11610,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1B1C1D;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n  position: relative;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 0;\n  background: #F9F9F9;\n  width: 100%;\n  height: 130px;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  width: calc(100% - 120px - 200px - 16px);\n  margin-left: 1px;\n  border-radius: 0.25rem 0.25rem 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.flex-table[data-v-57b394cf] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  padding-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf] {\n  min-width: 70px;\n  padding-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.nds[data-v-57b394cf] {\n  min-width: 100px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 86px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: auto;\n  padding-left: 16px;\n  min-width: 320px;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  padding-right: 16px;\n}\n.flex-table-row > *.action[data-v-57b394cf]:not(th) {\n  display: -webkit-box;\n  display: flex;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #F3F3F3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #FF6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #DFDFDF;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n  white-space: nowrap;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3B86FF;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.square[data-v-57b394cf] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-radius: 4px;\n  font-size: 14px;\n  font-weight: 600;\n}\n.square i[data-v-57b394cf] {\n  color: #A8A8A8;\n  margin-right: 12px;\n  font-size: 16px;\n}\n.button[data-v-57b394cf]:nth-child(1n+2) {\n  margin-left: 20px;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.square-wrapper[data-v-57b394cf] {\n  min-width: 65px;\n}", ""]);
+exports.push([module.i, ".dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1B1C1D;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n  position: relative;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 0;\n  background: #F9F9F9;\n  width: 100%;\n  height: 130px;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  width: calc(100% - 120px - 200px - 16px);\n  margin-left: 1px;\n  border-radius: 0.25rem 0.25rem 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.flex-table[data-v-57b394cf] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  margin-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf] {\n  min-width: 70px;\n  margin-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.nds[data-v-57b394cf] {\n  min-width: 100px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 86px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: 16px;\n  margin-right: 16px;\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 320px;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table-row > *.action[data-v-57b394cf]:not(th) {\n  display: -webkit-box;\n  display: flex;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #F3F3F3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #FF6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #DFDFDF;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n  white-space: nowrap;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3B86FF;\n}\nth.action[data-v-57b394cf] {\n  text-align: right;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.square[data-v-57b394cf] {\n  color: #1B1C1D;\n  font-weight: 600;\n}\n.square[data-v-57b394cf]:not(.xs) {\n  min-width: 58px;\n}\n.square i[data-v-57b394cf] {\n  color: #A8A8A8;\n}\n.square.focus-action.active i[data-v-57b394cf] {\n  font-weight: 900;\n  color: #3B86FF;\n}\n.button[data-v-57b394cf]:nth-child(1n+2) {\n  margin-left: 12px;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.square-wrapper[data-v-57b394cf] {\n  min-width: 65px;\n}", ""]);
 
 // exports
 
@@ -14514,7 +14624,7 @@ var render = function() {
     _c("div", [
       _c("h1", [_vm._v(_vm._s(_vm.collection.title))]),
       _vm._v(" "),
-      _c("span", { staticClass: "square" }, [
+      _c("span", { staticClass: "square light" }, [
         _vm._v("Stage " + _vm._s(_vm.collection.phase))
       ])
     ]),
@@ -14525,13 +14635,17 @@ var render = function() {
       _c("div", { staticClass: "stat" }, [
         _c("span", { staticClass: "title" }, [_vm._v("Start date")]),
         _vm._v(" "),
-        _c("span", { staticClass: "square" }, [_vm._v(_vm._s(_vm.startDate))])
+        _c("span", { staticClass: "square light" }, [
+          _vm._v(_vm._s(_vm.startDate))
+        ])
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "stat" }, [
         _c("span", { staticClass: "title" }, [_vm._v("Deadline")]),
         _vm._v(" "),
-        _c("span", { staticClass: "square" }, [_vm._v(_vm._s(_vm.endDate))])
+        _c("span", { staticClass: "square light" }, [
+          _vm._v(_vm._s(_vm.endDate))
+        ])
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "stat progress" }, [
@@ -14568,7 +14682,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "stat" }, [
       _c("span", { staticClass: "title" }, [_vm._v("Teams")]),
       _vm._v(" "),
-      _c("span", { staticClass: "square" }, [_vm._v("x Teams")])
+      _c("span", { staticClass: "square light" }, [_vm._v("x Teams")])
     ])
   }
 ]
@@ -15946,7 +16060,7 @@ var render = function() {
                         _c(
                           "span",
                           {
-                            staticClass: "square",
+                            staticClass: "square light close",
                             on: {
                               click: function($event) {
                                 return _vm.onCloseSingle()
@@ -15962,6 +16076,41 @@ var render = function() {
                           [
                             _vm.authUser.role_id >= 2
                               ? [
+                                  _vm.userPermissionLevel == 2
+                                    ? _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "square xs clickable focus-action",
+                                          class: [
+                                            _vm.product[_vm.actionScope] != null
+                                              ? _vm.product[_vm.actionScope]
+                                                  .action == 2
+                                                ? "active light"
+                                                : "ghost primary-hover"
+                                              : "ghost primary-hover",
+                                            {
+                                              disabled:
+                                                _vm.authUser.role_id == 3
+                                            }
+                                          ],
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.toggleInOut(
+                                                _vm.product,
+                                                2
+                                              )
+                                            }
+                                          }
+                                        },
+                                        [
+                                          _c("i", {
+                                            staticClass: "far fa-star"
+                                          })
+                                        ]
+                                      )
+                                    : _vm._e(),
+                                  _vm._v(" "),
                                   _c(
                                     "span",
                                     {
@@ -16073,12 +16222,20 @@ var render = function() {
                                 [
                                   _c("img", {
                                     attrs: {
-                                      src:
-                                        "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/" +
+                                      src: _vm.variantImg(
                                         _vm.product.color_variants[
                                           _vm.currentImgIndex
-                                        ].blob_id +
-                                        "_thumbnail.jpg"
+                                        ]
+                                      )
+                                    },
+                                    on: {
+                                      error: function($event) {
+                                        return _vm.imgError(
+                                          _vm.product.color_variants[
+                                            _vm.currentImgIndex
+                                          ]
+                                        )
+                                      }
                                     }
                                   })
                                 ]
@@ -16376,7 +16533,12 @@ var render = function() {
                                   [
                                     _c("div", { staticClass: "img-wrapper" }, [
                                       _c("img", {
-                                        attrs: { src: variant.image }
+                                        attrs: { src: _vm.variantImg(variant) },
+                                        on: {
+                                          error: function($event) {
+                                            return _vm.imgError(variant)
+                                          }
+                                        }
                                       })
                                     ]),
                                     _vm._v(" "),
@@ -16389,7 +16551,14 @@ var render = function() {
                                           { staticClass: "circle-img" },
                                           [
                                             _c("img", {
-                                              attrs: { src: variant.image }
+                                              attrs: {
+                                                src: _vm.variantImg(variant)
+                                              },
+                                              on: {
+                                                error: function($event) {
+                                                  return _vm.imgError(variant)
+                                                }
+                                              }
                                             })
                                           ]
                                         ),
@@ -16684,14 +16853,38 @@ var render = function() {
                     : _vm._e(),
                   _vm._v(" "),
                   comment.votes.length > 0
-                    ? _c(
-                        "span",
-                        {
-                          staticClass: "votes bubble",
-                          class: { second: comment.important }
-                        },
-                        [_vm._v(_vm._s(comment.votes.length))]
-                      )
+                    ? [
+                        _vm.userPermissionLevel >= 2
+                          ? _c(
+                              "tooltipAlt2",
+                              {
+                                attrs: {
+                                  header: "Comment votes",
+                                  array: comment.teamVotes,
+                                  arrayLabelKey: "title",
+                                  arrayValueKey: "votes"
+                                }
+                              },
+                              [
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "votes bubble",
+                                    class: { second: comment.important }
+                                  },
+                                  [_vm._v(_vm._s(comment.votes.length))]
+                                )
+                              ]
+                            )
+                          : _c(
+                              "span",
+                              {
+                                staticClass: "votes bubble",
+                                class: { second: comment.important }
+                              },
+                              [_vm._v(_vm._s(comment.votes.length))]
+                            )
+                      ]
                     : _vm._e(),
                   _vm._v(" "),
                   _c(
@@ -17500,10 +17693,12 @@ var render = function() {
                         _c("img", {
                           staticClass: "bind-view-single",
                           attrs: {
-                            src:
-                              "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/" +
-                              product.color_variants[0].blob_id +
-                              "_thumbnail.jpg"
+                            src: _vm.productImg(product.color_variants[0])
+                          },
+                          on: {
+                            error: function($event) {
+                              return _vm.imgError(product.color_variants[0])
+                            }
                           }
                         })
                       ]
@@ -17537,7 +17732,8 @@ var render = function() {
                                     _c(
                                       "span",
                                       {
-                                        staticClass: "square clickable",
+                                        staticClass:
+                                          "square light icon-left clickable",
                                         on: {
                                           mouseover: function($event) {
                                             return _vm.showTooltip(
@@ -17562,7 +17758,8 @@ var render = function() {
                                   _c(
                                     "span",
                                     {
-                                      staticClass: "square clickable",
+                                      staticClass:
+                                        "square light icon-left clickable",
                                       on: {
                                         mouseover: function($event) {
                                           _vm.showTooltip(
@@ -17591,7 +17788,8 @@ var render = function() {
                                   _c(
                                     "span",
                                     {
-                                      staticClass: "square clickable",
+                                      staticClass:
+                                        "square light icon-left clickable",
                                       on: {
                                         mouseover: function($event) {
                                           return _vm.showTooltip(
@@ -17620,7 +17818,8 @@ var render = function() {
                                     _c(
                                       "span",
                                       {
-                                        staticClass: "square clickable",
+                                        staticClass:
+                                          "square light icon-left clickable",
                                         on: {
                                           mouseover: function($event) {
                                             return _vm.showTooltip(
@@ -17655,7 +17854,8 @@ var render = function() {
                                     _c(
                                       "span",
                                       {
-                                        staticClass: "square clickable",
+                                        staticClass:
+                                          "square light icon-left clickable",
                                         on: {
                                           mouseover: function($event) {
                                             return _vm.showTooltip(
@@ -17680,7 +17880,8 @@ var render = function() {
                                   _c(
                                     "span",
                                     {
-                                      staticClass: "square clickable",
+                                      staticClass:
+                                        "square light icon-left clickable",
                                       on: {
                                         mouseover: function($event) {
                                           _vm.showTooltip(
@@ -17709,7 +17910,8 @@ var render = function() {
                                   _c(
                                     "span",
                                     {
-                                      staticClass: "square clickable",
+                                      staticClass:
+                                        "square light icon-left clickable",
                                       on: {
                                         mouseover: function($event) {
                                           return _vm.showTooltip(
@@ -17738,7 +17940,8 @@ var render = function() {
                                     _c(
                                       "span",
                                       {
-                                        staticClass: "square clickable",
+                                        staticClass:
+                                          "square light icon-left clickable",
                                         on: {
                                           mouseover: function($event) {
                                             return _vm.showTooltip(
@@ -17772,7 +17975,8 @@ var render = function() {
                       _c(
                         "span",
                         {
-                          staticClass: "square clickable bind-view-single",
+                          staticClass:
+                            "square icon-left clickable bind-view-single",
                           on: {
                             click: function($event) {
                               return _vm.onViewSingle(product.id)
@@ -17788,9 +17992,33 @@ var render = function() {
                       )
                     ]),
                     _vm._v(" "),
-                    _vm.authUser.role_id >= 2
+                    _vm.userPermissionLevel >= 2
                       ? [
                           _c("td", { staticClass: "action" }, [
+                            _vm.userPermissionLevel == 2
+                              ? _c(
+                                  "span",
+                                  {
+                                    staticClass:
+                                      "square xs clickable focus-action",
+                                    class: [
+                                      product[_vm.actionScope] != null
+                                        ? product[_vm.actionScope].action == 2
+                                          ? "active light"
+                                          : "ghost primary-hover"
+                                        : "ghost primary-hover",
+                                      { disabled: _vm.authUser.role_id == 3 }
+                                    ],
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.toggleInOut(product, 2)
+                                      }
+                                    }
+                                  },
+                                  [_c("i", { staticClass: "far fa-star" })]
+                                )
+                              : _vm._e(),
+                            _vm._v(" "),
                             _c(
                               "span",
                               {
@@ -17843,7 +18071,7 @@ var render = function() {
                               "span",
                               {
                                 staticClass:
-                                  "view-single bind-view-single button invisible-button",
+                                  "view-single bind-view-single button invisible",
                                 on: {
                                   click: function($event) {
                                     return _vm.onViewSingle(product.id)
@@ -17860,7 +18088,7 @@ var render = function() {
                               "span",
                               {
                                 staticClass:
-                                  "view-single bind-view-single button invisible-button",
+                                  "view-single bind-view-single button invisible",
                                 on: {
                                   click: function($event) {
                                     return _vm.onViewSingle(product.id)
@@ -19740,7 +19968,7 @@ var render = function() {
                             _c("RadioButtons", {
                               ref: "countryRadio",
                               attrs: {
-                                options: _vm.teams,
+                                options: _vm.teamsForFilter,
                                 currentOptionId: _vm.currentTeamId,
                                 optionNameKey: "title",
                                 optionValueKey: "id"
@@ -19759,7 +19987,7 @@ var render = function() {
                     ],
                     null,
                     false,
-                    1430962770
+                    3104046121
                   )
                 })
               ],
@@ -19993,7 +20221,7 @@ var render = function() {
                     _c("RadioButtons", {
                       ref: "countryRadio",
                       attrs: {
-                        options: _vm.teams,
+                        options: _vm.teamsForFilter,
                         currentOptionId: _vm.currentTeamId,
                         optionNameKey: "title",
                         optionValueKey: "id"
@@ -36119,12 +36347,16 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 
 
 Vue.use(vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]);
-Vue.component('app', __webpack_require__(/*! ./App.vue */ "./resources/js/App.vue")["default"]); // Define global variable
+Vue.component('app', __webpack_require__(/*! ./App.vue */ "./resources/js/App.vue")["default"]); // Define global mixins
 // Vue.mixin({
-//   data: function() {
-//     return {
-//       permissionLevel_write_final_actions: 3,
-//       permissionLevel_see_teams: 3,
+//   methods: {
+//     groupBy(prop) {
+//       return this.reduce(function(groups, item) {
+//         const val = item[prop]
+//         groups[val] = groups[val] || []
+//         groups[val].push(item)
+//         return groups
+//       }, {})
 //     }
 //   }
 // })
@@ -39223,7 +39455,6 @@ function (_Model) {
         id: this.attr(null),
         room_code: this.attr(''),
         title: this.attr(''),
-        currency: this.attr(''),
         phase: this.attr(''),
         catalog_id: this.attr(''),
         start_time: this.attr('unset'),
@@ -39336,6 +39567,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return CommentVote; });
 /* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
 /* harmony import */ var _Comment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Comment */ "./resources/js/store/models/Comment.js");
+/* harmony import */ var _User__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./User */ "./resources/js/store/models/User.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -39355,6 +39587,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // Product Model
+
 
 
 
@@ -39378,6 +39611,7 @@ function (_Model) {
       var data = {
         comment_id: this.attr(null),
         user_id: this.attr(''),
+        user: this.belongsTo(_User__WEBPACK_IMPORTED_MODULE_2__["default"], 'user_id'),
         comment: this.belongsTo(_Comment__WEBPACK_IMPORTED_MODULE_1__["default"], 'comment_id')
       };
       return data;
@@ -39822,6 +40056,7 @@ function (_Model) {
         id: this.attr(null),
         title: this.attr(''),
         workspace_id: this.attr(''),
+        currency: this.attr(''),
         users: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_1__["default"], _UserTeam__WEBPACK_IMPORTED_MODULE_2__["default"], 'team_id', 'user_id'),
         invites: this.hasMany(_TeamInvite__WEBPACK_IMPORTED_MODULE_3__["default"], 'team_id')
       };
@@ -40188,6 +40423,7 @@ function (_Model) {
       var data = {
         id: this.attr(null),
         name: this.attr(''),
+        currency: this.attr(''),
         users: this.belongsToMany(_User__WEBPACK_IMPORTED_MODULE_1__["default"], _WorkspaceUser__WEBPACK_IMPORTED_MODULE_2__["default"], 'workspace_id', 'user_id'),
         workspace_users: this.hasMany(_WorkspaceUser__WEBPACK_IMPORTED_MODULE_2__["default"], 'workspace_id')
       };
@@ -41429,6 +41665,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _store_models_Workspace__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../store/models/Workspace */ "./resources/js/store/models/Workspace.js");
+/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   namespaced: true,
   state: {
@@ -41443,6 +41683,20 @@ __webpack_require__.r(__webpack_exports__);
   getters: {
     currentTeamId: function currentTeamId(state) {
       return state.currentTeamId;
+    },
+    // currentTeam: (state, getters, rootState, rootGetters) => {
+    //     const teams = rootGetters['teams/teams']
+    //     if (state.currentTeamId == 0)
+    //         return 'Global'
+    //     if (teams)
+    //         return teams.find(x => x.id == state.currentTeamId)
+    //     else return undefined
+    // },
+    currentWorkspace: function currentWorkspace(state) {
+      return _store_models_Workspace__WEBPACK_IMPORTED_MODULE_0__["default"].find(state.currentWorkspaceId);
+    },
+    currentTeam: function currentTeam(state) {
+      return state.currentTeamId == 0 ? 'Global' : _store_models_Team__WEBPACK_IMPORTED_MODULE_1__["default"].find(state.currentTeamId);
     },
     workspaceCurrency: function workspaceCurrency(state) {
       return 'EUR';
@@ -41467,9 +41721,6 @@ __webpack_require__.r(__webpack_exports__);
     },
     viewAdminPermissionLevel: function viewAdminPermissionLevel(state) {
       return state.viewAdminPermissionLevel;
-    },
-    test: function test(state) {
-      return state.adminLevel;
     },
     actionScope: function actionScope(state) {
       if (state.userPermissionLevel >= state.adminPermissionLevel || state.userPermissionLevel == state.viewAdminPermissionLevel) // buyer
@@ -42990,7 +43241,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _models_User__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../models/User */ "./resources/js/store/models/User.js");
 /* harmony import */ var _models_AuthUser__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../models/AuthUser */ "./resources/js/store/models/AuthUser.js");
 
-var _arguments = arguments;
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -43008,17 +43258,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   getters: {
     loadingTeams: function loadingTeams(state) {
       return state.loading;
-    },
-    test: function test() {
-      return _arguments;
-    },
-    testArgumentsAlt: function testArgumentsAlt() {
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      // return args[3]['persist/actionScope']
-      return args;
     },
     teams: function teams(state, getters, rootState, rootGetters) {
       if (!rootGetters['persist/loadingInit']) {

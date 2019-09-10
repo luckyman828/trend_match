@@ -11,7 +11,12 @@
             <div class="comment-wrapper" v-for="comment in commentsToShow" :key="comment.id" :class="[{'own-team': comment.team_id == currentTeamId}, {'own': comment.user_id == authUser.id}]">
                 <div class="comment">
                     <span class="important bubble" v-if="comment.important" @mouseover="showTooltip($event, 'Important')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
-                    <span v-if="comment.votes.length > 0" class="votes bubble" :class="{second: comment.important}">{{comment.votes.length}}</span>
+                    <template v-if="comment.votes.length > 0">
+                        <tooltipAlt2 v-if="userPermissionLevel >= 2" :header="'Comment votes'" :array="comment.teamVotes" :arrayLabelKey="'title'" :arrayValueKey="'votes'">
+                            <span class="votes bubble" :class="{second: comment.important}">{{comment.votes.length}}</span>
+                        </tooltipAlt2>
+                        <span v-else class="votes bubble" :class="{second: comment.important}">{{comment.votes.length}}</span>
+                    </template>
                     <div class="pill-wrapper">
                         <span class="votes phase-final pill" v-if="comment.phase_final && actionScope != 'phaseAction'">Phase final <i class="far fa-comment-check"></i></span>
                         <template v-if="actionScope == 'teamAction'">
@@ -63,6 +68,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import Tooltip from './Tooltip'
+import TooltipAlt2 from './TooltipAlt2'
 
 export default {
     name: 'productSingleComments',
@@ -73,6 +79,7 @@ export default {
     ],
     components: {
         Tooltip,
+        TooltipAlt2,
     },
     data: function () { return {
         newComment: {
@@ -132,7 +139,7 @@ export default {
                 }
             })
             return commentsToReturn
-        }
+        },
     },
     methods: {
         ...mapActions('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']),

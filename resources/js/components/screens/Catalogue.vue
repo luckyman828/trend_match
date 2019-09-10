@@ -37,7 +37,7 @@
                         <span>Switch team</span>
                     </template>
                     <template v-slot:body>
-                        <RadioButtons :options="teams" :currentOptionId="currentTeamId" :optionNameKey="'title'" :optionValueKey="'id'" ref="countryRadio" @change="setCurrentTeam($event); $refs.countryDropdown.toggle()"/>
+                        <RadioButtons :options="teamsForFilter" :currentOptionId="currentTeamId" :optionNameKey="'title'" :optionValueKey="'id'" ref="countryRadio" @change="setCurrentTeam($event); $refs.countryDropdown.toggle()"/>
                     </template>
                 </Dropdown>
             </div>
@@ -108,7 +108,7 @@ export default{
         ...mapGetters('entities/comments', ['loadingComments']),
         ...mapGetters('entities/collections', ['loadingCollections']),
         ...mapGetters('entities/teams', ['teams']),
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'workspaceCurrency', 'teamCurrency']),
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace']),
         defaultTeam() {
             if (this.userPermissionLevel >= 3)
                 return {id: 0, title: 'Global'}
@@ -142,7 +142,7 @@ export default{
             return 'Unset'
         },
         products () {
-            const products = Product.query().with(['actions.user.teams']).with(['comments.votes', 'comments.user.teams', 'comments.team']).with('productFinalAction')
+            const products = Product.query().with(['actions.user.teams']).with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team']).with('productFinalAction')
             .with('teamActions.team').with('phaseActions').all()
             const totalUsers = this.teamUsers
             const userId = this.authUser.id
@@ -163,8 +163,12 @@ export default{
                 // Find the correct price
                 // Check if the chosen currency exists on the product
                 if (product.prices != null) {
-                    const workspacePrices = product.prices.find(x => x.currency == this.workspaceCurrency)
-                    const teamPrices = product.prices.find(x => x.currency == this.teamCurrency)
+                    let workspacePrices = null
+                    let teamPrices = null
+                    if (this.currentWorkspace.currency != null)
+                        workspacePrices = product.prices.find(x => x.currency == this.currentWorkspace.currency)
+                    if (this.currentTeam.currency != null)
+                        teamPrices = product.prices.find(x => x.currency == this.currentTeam.currency)
 
                     if ( this.userPermissionLevel <= 4 ) {
                     // Use team currency for low level members
@@ -181,9 +185,32 @@ export default{
                     }
                 }
 
-                // Scope comments to current teamFilter
                 const comments = product.comments
+
+                comments.forEach(comment => {
+                    comment.teamVotes = [{id: 0, title: 'No team', votes: 0}]
+                    comment.votes.forEach(vote => {
+                        if (vote.user != null) {
+                            if (vote.user.teams.length > 0) {
+                                const found = (comment.teamVotes.find(x => x.title == vote.user.teams[0].title))
+                                if (!found) {
+                                    let voteTeam = vote.user.teams[0]
+                                    let teamToPush = {id: voteTeam.id, title: voteTeam.title, votes: 1}
+                                    comment.teamVotes.push(teamToPush)
+                                } else {
+                                    found.votes ++
+                                }
+        
+                            } else {
+                                comment.teamVotes[0].votes ++
+                            }
+                        }
+                    })
+                })
+
+                // Scope comments to current teamFilter
                 let commentsScoped = []
+
                 // If the user is a buyer function, only return global comments
                 if (this.userPermissionLevel == this.viewAdminPermissionLevel) {
                     comments.forEach(comment => {
@@ -564,6 +591,14 @@ export default{
         },
         teams () {
             return this.$store.getters['entities/teams/teams']
+        },
+        teamsForFilter() {
+            if (this.userPermissionLevel >= 3) {
+                const teamsToReturn = JSON.parse(JSON.stringify(this.teams))
+                teamsToReturn.unshift({title: 'Global', id: 0})
+                return teamsToReturn
+            }
+            else return this.teams
         },
         // teams () {
         //     // Manually find the teams and the users belonging to each team.

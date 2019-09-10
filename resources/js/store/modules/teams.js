@@ -14,13 +14,6 @@ export default {
       loadingTeams: state => {
         return state.loading
       },
-      test: () => {
-        return arguments
-      },
-      testArgumentsAlt: (...args) => {
-        // return args[3]['persist/actionScope']
-        return args
-      },
       teams: (state, getters, rootState, rootGetters) => {
         if (!rootGetters['persist/loadingInit']) {
 

@@ -161,17 +161,17 @@ input, button, select, optgroup, textarea {
 
 .button, .square {
     &:not(.square) {
-        height: 32px;
-        line-height: 28px;
         cursor: pointer;
         min-width: 92px;
-        border: solid 2px $light2;
         font-weight: 700;
     }
     &:not(.button) {
-        height: 24px;
-        line-height: 24px;
+        // height: 24px;
+        // line-height: 24px;
     }
+    border: solid 2px $light2;
+    height: 32px;
+    line-height: 28px;
     transition: .2s;
     font-size: 12px;
     padding: 0 12px;
@@ -249,11 +249,15 @@ input, button, select, optgroup, textarea {
         pointer-events: none;
         opacity: .5;
     }
+    // -- ICONS --
+    i {
+        font-size: 16px;
+        line-height: 28px;
+    }
     &.icon-right, &.icon-left {
         min-width: 76px;
         i {
             font-size: 14px;
-            line-height: 28px;
         }
         &.active {
             i {
@@ -261,14 +265,15 @@ input, button, select, optgroup, textarea {
             }
         }
     }
-    // -- ICONS --
     &.icon-right {
+        padding-right: 8px;
         text-align: right;
         i {
             margin-left: 12px;
         }
     }
     &.icon-left {
+        padding-left: 8px;
         text-align: left;
         i {
             margin-right: 8px;
@@ -278,6 +283,10 @@ input, button, select, optgroup, textarea {
     &.tiny {
         min-width: 0;
         padding: 0;
+    }
+    &.xs {
+        min-width: 0;
+        padding: 0 6px;
     }
     &.wide {
         width: 155px;
@@ -539,7 +548,10 @@ input, button, select, optgroup, textarea {
     .inner {
         margin-top: 0;
     }
-    &::before {
+    .body {
+        max-height: none;
+    }
+    &::before { // arrow
         content: none;
     }
     .tooltip-row {

@@ -63,40 +63,43 @@
                         </label>
                     </td>
                     <td class="id clickable bind-view-single" @click="onViewSingle(product.id)">{{product.datasource_id}}</td>
-                    <td class="image clickable" @click="onViewSingle(product.id)"><img class="bind-view-single" :src="`https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${product.color_variants[0].blob_id}_thumbnail.jpg`"></td>
+                    <td class="image clickable" @click="onViewSingle(product.id)"><img class="bind-view-single" :src="productImg(product.color_variants[0])" @error="imgError(product.color_variants[0])"></td>
                     <td class="title clickable" @click="onViewSingle(product.id)"><span class="bind-view-single">{{product.title}}</span></td>
                     
                     <template v-if="userPermissionLevel != viewAdminPermissionLevel">
                         <template v-if="currentTeamId == 0">
-                            <td class="square-wrapper focus"><span class="square clickable" @mouseover="showTooltip($event, 'teams', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
-                            <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'teams', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length + product.focus.length}}</span></td>
-                            <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'teams', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
-                            <td class="square-wrapper nds"><span class="square clickable" @mouseover="showTooltip($event, 'teams', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}} /{{teams.length}}</span></td>
+                            <td class="square-wrapper focus"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'teams', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
+                            <td class="square-wrapper"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'teams', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length + product.focus.length}}</span></td>
+                            <td class="square-wrapper"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'teams', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
+                            <td class="square-wrapper nds"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'teams', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}} /{{teams.length}}</span></td>
                         </template>
                         <template v-else>
-                            <td class="square-wrapper focus"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
-                            <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length + product.focus.length}}</span></td>
-                            <td class="square-wrapper"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
-                            <td class="square-wrapper nds"><span class="square clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}} /{{teamUsers.length}}</span></td>
+                            <td class="square-wrapper focus"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'users', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
+                            <td class="square-wrapper"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'users', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length + product.focus.length}}</span></td>
+                            <td class="square-wrapper"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'users', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
+                            <td class="square-wrapper nds"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}} /{{teamUsers.length}}</span></td>
                         </template>
                     </template>
 
-                    <td class="square-wrapper comments"><span class="square clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment bind-view-single"></i>{{product.commentsScoped.length}}</span></td>
+                    <td class="square-wrapper comments"><span class="square icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment bind-view-single"></i>{{product.commentsScoped.length}}</span></td>
 
-                    <template v-if="authUser.role_id >= 2">
+                    <template v-if="userPermissionLevel >= 2">
                             <td class="action">
+                                <span v-if="userPermissionLevel == 2" class="square xs clickable focus-action" :class="[(product[actionScope] != null) ? (product[actionScope].action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 2)">
+                                <i class="far fa-star"></i>
+                                </span>
                                 <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 1)">
                                 In  <i class="far fa-heart"></i>
                                 </span>
                                 <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {'disabled': authUser.role_id == 3}]"  @click="toggleInOut(product, 0)">
                                 Out  <i class="far fa-times-circle"></i>
                                 </span>
-                                <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
+                                <span class="view-single bind-view-single button invisible" @click="onViewSingle(product.id)">View</span>
                             </td>
                     </template>
                     <template v-else>
                         <td class="action">
-                            <span class="view-single bind-view-single button invisible-button" @click="onViewSingle(product.id)">View</span>
+                            <span class="view-single bind-view-single button invisible" @click="onViewSingle(product.id)">View</span>
                         </td>
                     </template>
 
@@ -180,24 +183,26 @@ export default {
         },
     },
     methods: {
-        // ...mapActions('entities/productFinalActions', ['updateFinalAction', 'deleteFinalAction']),
         ...mapActions('entities/actions', ['updateAction', 'deleteAction']),
         ...mapActions('entities/teamProducts', ['deleteTeamProduct', 'updateTeamProduct']),
         ...mapActions('entities/phaseProducts', ['deletePhaseProduct', 'updatePhaseProduct']),
-        // ...mapActions('entities/productFinalActions', ['deleteFinalAction']),
+        productImg(variant) {
+            if (variant.error != null)
+                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
+            else return variant.image
+        },
+        imgError (variant) {
+             variant.error = true
+        },
         toggleInOut(product, action) {
             if (product[this.actionScope] != null) {
                 // If the product has an action
-                if(product[this.actionScope].action == action) {
-                    // DELETE ACTION
-                    if (this.actionScope == 'userAction')
-                        this.deleteAction({user_id: this.authUser.id, productToUpdate: product.id})
-                    if (this.actionScope == 'teamAction')
-                        this.deleteTeamProduct({team_id: this.currentTeamId, product_id: product.id, phase_id: 1})
-                    if (this.actionScope == 'phaseAction')
-                        this.deletePhaseProduct({product_id: product.id, phase_id: 1})
-                } else {
+                console.log('current action: ' + product[this.actionScope].action)
+                console.log('new action: ' + action)
+
+                if(product[this.actionScope].action != action) {
                     // UPDATE ACTION
+                    console.log('update action!')
                     if (this.actionScope == 'userAction')
                         this.updateAction({user_id: this.authUser.id, productToUpdate: product.id, action_code: actionType})
                     if (this.actionScope == 'teamAction')
@@ -205,6 +210,27 @@ export default {
                     if (this.actionScope == 'phaseAction')
                         this.updatePhaseProduct({product_id: product.id, phase_id: 1, action: action})
                 }
+                else if(product[this.actionScope].action == 2 && action == 2) {
+                    console.log('toggle focus!')
+                    // TOGGLE FOCUS
+                    if (this.actionScope == 'userAction')
+                        this.updateAction({user_id: this.authUser.id, productToUpdate: product.id, action_code: 1})
+                    if (this.actionScope == 'teamAction')
+                        this.updateTeamProduct({team_id: this.currentTeamId, product_id: product.id, phase_id: 1, action: 1})
+                    if (this.actionScope == 'phaseAction')
+                        this.updatePhaseProduct({product_id: product.id, phase_id: 1, action: 1})
+                }
+                else {
+                    console.log('delete!')
+                    // DELETE ACTION
+                    if (this.actionScope == 'userAction')
+                        this.deleteAction({user_id: this.authUser.id, productToUpdate: product.id})
+                    if (this.actionScope == 'teamAction')
+                        this.deleteTeamProduct({team_id: this.currentTeamId, product_id: product.id, phase_id: 1})
+                    if (this.actionScope == 'phaseAction')
+                        this.deletePhaseProduct({product_id: product.id, phase_id: 1})
+                }
+
             } else {
                 // CREATE ACTION
                 if (this.actionScope == 'userAction')
@@ -405,7 +431,7 @@ export default {
         align-items: center;
         > * {
             &.select {
-                padding-left: 16px;
+                margin-left: 16px;
                 min-width: 80px;
             }
             &.id {
@@ -418,7 +444,7 @@ export default {
             }
             &.title {
                 width: 300px;
-                padding-left: 16px;
+                margin-left: 16px;
                 // padding-right: 16px;
             }
             &.focus {
@@ -426,7 +452,7 @@ export default {
             }
             &.square-wrapper {
                 min-width: 70px;
-                padding-left: 16px;
+                margin-left: 16px;
                 box-sizing: content-box;
             }
             &.nds {
@@ -436,11 +462,11 @@ export default {
                 min-width: 86px;
             }
             &.action {
-                margin-left: auto;
-                padding-left: 16px;
+                margin-left: 16px;
+                margin-right: 16px;
+                flex: 1;
                 min-width: 320px;
                 justify-content: flex-end;
-                padding-right: 16px;
                 &:not(th) {
                     display: flex;
                 }
@@ -497,6 +523,9 @@ export default {
                 color: $primary
             }
         }
+        &.action {
+            text-align: right;
+        }
     }
     td {
         &.title {
@@ -544,21 +573,30 @@ export default {
     }
 
     .square {
-        background: $light1;
+        // background: $light1;
         color: $dark;
-        // padding: 7px 10px;
-        border-radius: 4px;
-        font-size: 14px;
+        // // padding: 7px 10px;
+        // border-radius: 4px;
+        // font-size: 14px;
+        &:not(.xs) {
+            min-width: 58px;
+        }
         font-weight: 600;
         i {
             color: $dark2;
-            margin-right: 12px;
-            font-size: 16px;
+            // margin-right: 12px;
+            // font-size: 16px;
+        }
+        &.focus-action.active {
+            i {
+                font-weight: 900;
+                color: $primary;
+            }
         }
     }
     .button {
         &:nth-child(1n+2) {
-            margin-left: 20px;
+            margin-left: 12px;
         }
     }
     .view-single {

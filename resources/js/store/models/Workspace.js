@@ -15,6 +15,7 @@ export default class Workspace extends Model {
     const data = {
       id: this.attr(null),
       name: this.attr(''),
+      currency: this.attr(''),
       users: this.belongsToMany(User, WorkspaceUser, 'workspace_id', 'user_id'),
       workspace_users: this.hasMany(WorkspaceUser, 'workspace_id')
     }

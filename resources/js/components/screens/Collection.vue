@@ -37,7 +37,7 @@
                     <span>Switch team</span>
                 </template>
                 <template v-slot:body>
-                    <RadioButtons :options="teams" :currentOptionId="currentTeamId" :optionNameKey="'title'" :optionValueKey="'id'" ref="countryRadio" @change="setCurrentTeam($event); $refs.countryDropdown.toggle()"/>
+                    <RadioButtons :options="teamsForFilter" :currentOptionId="currentTeamId" :optionNameKey="'title'" :optionValueKey="'id'" ref="countryRadio" @change="setCurrentTeam($event); $refs.countryDropdown.toggle()"/>
                 </template>
             </Dropdown>
         </div>
@@ -108,6 +108,14 @@ export default {
         },
         teams () {
             return this.$store.getters['entities/teams/teams']
+        },
+        teamsForFilter() {
+            if (this.userPermissionLevel >= 3) {
+                const teamsToReturn = JSON.parse(JSON.stringify(this.teams))
+                teamsToReturn.unshift({title: 'Global', id: 0})
+                return teamsToReturn
+            }
+            else return this.teams
         },
         isLoading () {
             let loading = false

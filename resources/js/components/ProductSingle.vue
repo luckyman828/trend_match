@@ -4,10 +4,13 @@
             <div class="card">
                 <template v-if="!loading">
                     <div class="controls-wrapper">
-                            <span class="square" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
+                            <span class="square light close" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
                         <div class="controls">
 
                             <template v-if="authUser.role_id >= 2">
+                                <span v-if="userPermissionLevel == 2" class="square xs clickable focus-action" :class="[(product[actionScope] != null) ? (product[actionScope].action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 2)">
+                                    <i class="far fa-star"></i>
+                                </span>
                                 <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 1)">
                                 In  <i class="far fa-heart"></i>
                                 </span>
@@ -25,7 +28,7 @@
                             <h3>{{product.title}}</h3>
                             <div class="grid-2">
                                 <div class="image" @click="cycleImage()">
-                                    <img :src="`https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${product.color_variants[currentImgIndex].blob_id}_thumbnail.jpg`">
+                                    <img :src="variantImg(product.color_variants[currentImgIndex])" @error="imgError(product.color_variants[currentImgIndex])">
                                 </div>
                                 <div class="description">
                                     <div>
@@ -93,10 +96,10 @@
                             <div class="product-variants">
                                 <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
                                     <div class="img-wrapper">
-                                        <img :src="variant.image">
+                                        <img :src="variantImg(variant)" @error="imgError(variant)">
                                     </div>
                                     <div class="color-wrapper">
-                                        <div class="circle-img"><img :src="variant.image"></div>
+                                        <div class="circle-img"><img :src="variantImg(variant)" @error="imgError(variant)"></div>
                                         <span>{{variant.color}}</span>
                                     </div>
                                 </div>
@@ -195,6 +198,14 @@ export default {
     methods: {
         ...mapActions('entities/comments', ['createComment']),
         ...mapActions('entities/comments', ['markAsFinal']),
+        variantImg (variant) {
+            if (variant.error != null)
+                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
+            else return variant.image
+        },
+        imgError (variant) {
+             variant.error = true
+        },
         onCloseSingle() {
             this.currentImgIndex = 0
             // Emit event to parent
@@ -221,6 +232,13 @@ export default {
                 this.currentImgIndex ++
             }
         },
+        cycleImageReverse() {
+            if (this.currentImgIndex == 0) {
+                this.currentImgIndex = this.product.color_variants.length - 1
+            } else {
+                this.currentImgIndex --
+            }
+        },
         clickOutsideEvent(event) {
             const thisElement = document.querySelector('.product-single')
             // Check if the clicked element is outside component
@@ -239,6 +257,12 @@ export default {
                     this.onNextSingle()
                 if (key == 'ArrowLeft')
                     this.onPrevSingle()
+                if (key == 'ArrowUp')
+                    event.preventDefault(),
+                    this.cycleImage()
+                if (key == 'ArrowDown')
+                    event.preventDefault(),
+                    this.cycleImageReverse()
                 if (this.authUser.role_id >= 2) {
                     if (key == 'KeyI')
                         this.toggleInOut(this.product, 1)
@@ -251,7 +275,7 @@ export default {
     created() {
         // Listen for clicks outside component
         document.body.addEventListener('click', this.clickOutsideEvent)
-        document.body.addEventListener('keyup', this.hotkeyHandler)
+        document.body.addEventListener('keydown', this.hotkeyHandler)
     },
     destroyed() {
         // Remove click listener
@@ -320,26 +344,26 @@ export default {
         0% {transform: translateX(100%);}
         100% {transform: translateX(0);}
     }
-    .square {
-        background: $light1;
-        color: $dark;
-        border-radius: 4px;
-        font-size: 14px;
-        font-weight: 600;
-        display: inline-block;
-        padding: 0;
-        height: 32px;
-        width: 32px;
-        text-align: center;
-        line-height: 40px;
-        &:hover {
-            cursor: pointer;
-            background: $light;
-        }
-        i {
-            font-size: 22px;
-        }
-    }
+    // .square {
+    //     background: $light1;
+    //     color: $dark;
+    //     border-radius: 4px;
+    //     font-size: 14px;
+    //     font-weight: 600;
+    //     display: inline-block;
+    //     padding: 0;
+    //     height: 32px;
+    //     width: 32px;
+    //     text-align: center;
+    //     line-height: 40px;
+    //     &:hover {
+    //         cursor: pointer;
+    //         background: $light;
+    //     }
+    //     i {
+    //         font-size: 22px;
+    //     }
+    // }
     .card > .grid-2 {
         > :first-child {
             overflow-x: hidden;

@@ -1,3 +1,6 @@
+import Workspace from '../../store/models/Workspace';
+import Team from '../../store/models/Team';
+
 export default {
     namespaced: true,
 
@@ -13,6 +16,16 @@ export default {
 
     getters: {
         currentTeamId: state => { return state.currentTeamId },
+        // currentTeam: (state, getters, rootState, rootGetters) => {
+        //     const teams = rootGetters['teams/teams']
+        //     if (state.currentTeamId == 0)
+        //         return 'Global'
+        //     if (teams)
+        //         return teams.find(x => x.id == state.currentTeamId)
+        //     else return undefined
+        // },
+        currentWorkspace: state => { return Workspace.find(state.currentWorkspaceId) },
+        currentTeam: state => { return (state.currentTeamId == 0) ? 'Global' : Team.find(state.currentTeamId) },
         workspaceCurrency: state => { return 'EUR' },
         teamCurrency: state => { return 'SEK' },
         currentWorkspaceId: state => { return state.currentWorkspaceId },
@@ -21,7 +34,6 @@ export default {
         loadingInit: state => { return state.loadingInit },
         adminPermissionLevel: state => { return state.adminPermissionLevel },
         viewAdminPermissionLevel: state => { return state.viewAdminPermissionLevel },
-        test: state => { return state.adminLevel },
         actionScope: state => {
             if ( (state.userPermissionLevel >= state.adminPermissionLevel) || (state.userPermissionLevel == state.viewAdminPermissionLevel) ) // buyer
                 return 'phaseAction'

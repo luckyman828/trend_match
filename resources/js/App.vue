@@ -246,7 +246,7 @@ export default{
             min-height: 45px;
             > * {
                 &.select {
-                    padding-left: 16px;
+                    margin-left: 16px;
                     min-width: 80px;
                 }
             }

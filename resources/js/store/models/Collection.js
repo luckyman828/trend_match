@@ -12,7 +12,6 @@ export default class Collection extends Model {
       id: this.attr(null),
       room_code: this.attr(''),
       title: this.attr(''),
-      currency: this.attr(''),
       phase: this.attr(''),
       catalog_id: this.attr(''),
       start_time: this.attr('unset'),

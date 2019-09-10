@@ -8813,6 +8813,9 @@ textarea {
 
 .button,
 .square {
+  border: solid 2px #DFDFDF;
+  height: 32px;
+  line-height: 28px;
   -webkit-transition: 0.2s;
   transition: 0.2s;
   font-size: 12px;
@@ -8825,18 +8828,9 @@ textarea {
 
 .button:not(.square),
 .square:not(.square) {
-  height: 32px;
-  line-height: 28px;
   cursor: pointer;
   min-width: 92px;
-  border: solid 2px #DFDFDF;
   font-weight: 700;
-}
-
-.button:not(.button),
-.square:not(.button) {
-  height: 24px;
-  line-height: 24px;
 }
 
 .button.ghost,
@@ -9020,6 +9014,12 @@ textarea {
   opacity: 0.5;
 }
 
+.button i,
+.square i {
+  font-size: 16px;
+  line-height: 28px;
+}
+
 .button.icon-right,
 .button.icon-left,
 .square.icon-right,
@@ -9032,7 +9032,6 @@ textarea {
 .square.icon-right i,
 .square.icon-left i {
   font-size: 14px;
-  line-height: 28px;
 }
 
 .button.icon-right.active i,
@@ -9044,6 +9043,7 @@ textarea {
 
 .button.icon-right,
 .square.icon-right {
+  padding-right: 8px;
   text-align: right;
 }
 
@@ -9054,6 +9054,7 @@ textarea {
 
 .button.icon-left,
 .square.icon-left {
+  padding-left: 8px;
   text-align: left;
 }
 
@@ -9066,6 +9067,12 @@ textarea {
 .square.tiny {
   min-width: 0;
   padding: 0;
+}
+
+.button.xs,
+.square.xs {
+  min-width: 0;
+  padding: 0 6px;
 }
 
 .button.wide,
@@ -9366,6 +9373,10 @@ textarea {
 
 .tooltip .inner {
   margin-top: 0;
+}
+
+.tooltip .body {
+  max-height: none;
 }
 
 .tooltip::before {
