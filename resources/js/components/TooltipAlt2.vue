@@ -83,7 +83,6 @@ export default {
             // const parent = el.closest('.has-tooltip') // Use a set parent as parent
             // const parent = this.$refs.parent // Use the slots wrapper as parent
             const parent = this.$slots.default[0].elm // Use the slot as parent
-            console.log(this.$slots.default[0].elm) // Use the slot as parent
             const wrapper = this.$refs.wrapper
 
             // if (parent != null) {

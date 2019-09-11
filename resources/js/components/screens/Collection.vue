@@ -3,9 +3,9 @@
         <h1>Collection</h1>
         <div class="underline"></div>
         <div class="filters">
-            <Dropdown class="dropdown-parent">
+            <Dropdown class="dropdown-parent left">
                 <template v-slot:button="slotProps">
-                    <div class="dropdown-button item-filter-button" @click="slotProps.toggle">
+                    <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
                         <span>Collection</span>
                         <i class="far fa-chevron-down"></i>
                         <span v-if="itemFilterIds.length > 0" class="bubble">
@@ -16,7 +16,7 @@
                 </template>
                 <template v-slot:header="slotProps">
                     <span>Filter by collection</span>
-                    <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
+                    <!-- <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span> -->
                 </template>
                 <template v-slot:body>
                     <CheckboxButtons :options="uniqueCollections" ref="filterSelect" v-model="itemFilterIds" @change="$refs.filterSelect.submit()"/>

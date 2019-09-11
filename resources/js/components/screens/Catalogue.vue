@@ -3,9 +3,9 @@
         <template v-if="!loadingCollections">
             <catalogueHeader :collection="collection" :startDate="startDate" :endDate="endDate" :productTotals="productTotals"/>
             <div class="filters">
-                <Dropdown class="dropdown-parent">
+                <Dropdown class="dropdown-parent left">
                     <template v-slot:button="slotProps">
-                        <div class="dropdown-button item-filter-button" @click="slotProps.toggle">
+                        <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
                             <span>Category </span>
                             <i class="far fa-chevron-down"></i>
                             <span v-if="selectedCategories.length > 0" class="bubble">
@@ -16,7 +16,7 @@
                     </template>
                     <template v-slot:header="slotProps">
                         <span>Filter by category</span>
-                        <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
+                        <!-- <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span> -->
                     </template>
                     <template v-slot:body>
                         <CheckboxButtons :options="dynamicCategories" ref="filterSelect" v-model="selectedCategories" @change="$refs.filterSelect.submit()"/>
@@ -307,7 +307,7 @@ export default{
             if (categories.length > 0) {
                 
                 const filteredByCategory = productsToReturn.filter(product => {
-                        return Array.from(categories).includes(product.short_description)
+                        return Array.from(categories).includes(product.category)
                 })
                 productsToReturn = filteredByCategory
             }
@@ -570,9 +570,9 @@ export default{
             const products = this.products
             let uniqueCategories = []
             products.forEach(product => {
-                const found = (uniqueCategories.includes(product.short_description))
+                const found = (uniqueCategories.includes(product.category))
                 if (!found)
-                    uniqueCategories.push(product.short_description)
+                    uniqueCategories.push(product.category)
             })
             return uniqueCategories
         },

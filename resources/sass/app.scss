@@ -466,15 +466,15 @@ input, button, select, optgroup, textarea {
     }
     &::before, .arrow { // Arrow
         content: "";
-        height: 13px;
-        width: 13px;
+        height: 11px;
+        width: 11px;
         display: block;
         background: white;
-        left: calc(50% - 7px);
+        left: calc(50% - 6px);
         border: solid 1px $light2;
         border-right: 0;
         border-bottom: 0;
-        top: 3px;
+        top: 2px;
         z-index: 1;
         position: absolute;
         transform: rotateZ(45deg);
@@ -484,8 +484,8 @@ input, button, select, optgroup, textarea {
         left: auto;
         right: 0;
         &::before { // Arrow
-            left: auto;
-            right: 28px;
+            // left: auto;
+            // right: 28px;
         }
     }
     .center & {

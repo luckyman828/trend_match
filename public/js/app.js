@@ -10040,8 +10040,6 @@ __webpack_require__.r(__webpack_exports__);
 
       var parent = this.$slots["default"][0].elm; // Use the slot as parent
 
-      console.log(this.$slots["default"][0].elm); // Use the slot as parent
-
       var wrapper = this.$refs.wrapper; // if (parent != null) {
 
       var parentPos = this.getPosition(parent);
@@ -10481,7 +10479,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       if (categories.length > 0) {
         var filteredByCategory = productsToReturn.filter(function (product) {
-          return Array.from(categories).includes(product.short_description);
+          return Array.from(categories).includes(product.category);
         });
         productsToReturn = filteredByCategory;
       }
@@ -10711,8 +10709,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var products = this.products;
       var uniqueCategories = [];
       products.forEach(function (product) {
-        var found = uniqueCategories.includes(product.short_description);
-        if (!found) uniqueCategories.push(product.short_description);
+        var found = uniqueCategories.includes(product.category);
+        if (!found) uniqueCategories.push(product.category);
       });
       return uniqueCategories;
     },
@@ -16292,9 +16290,7 @@ var render = function() {
                                   _c("strong", [_vm._v("Category")]),
                                   _vm._v(" "),
                                   _c("span", [
-                                    _vm._v(
-                                      _vm._s(_vm.product.short_description)
-                                    )
+                                    _vm._v(_vm._s(_vm.product.category))
                                   ])
                                 ]),
                                 _vm._v(" "),
@@ -16549,7 +16545,9 @@ var render = function() {
                             _vm._v(" "),
                             _c("strong", [_vm._v("Delivery date")]),
                             _vm._v(" "),
-                            _c("p", [_vm._v("placeholder date")]),
+                            _c("p", [
+                              _vm._v(_vm._s(_vm.product.delivery_date))
+                            ]),
                             _vm._v(" "),
                             _c(
                               "div",
@@ -19898,7 +19896,7 @@ var render = function() {
               { staticClass: "filters" },
               [
                 _c("Dropdown", {
-                  staticClass: "dropdown-parent",
+                  staticClass: "dropdown-parent left",
                   scopedSlots: _vm._u(
                     [
                       {
@@ -19909,7 +19907,7 @@ var render = function() {
                               "div",
                               {
                                 staticClass:
-                                  "dropdown-button item-filter-button",
+                                  "dropdown-button dropdown-parent item-filter-button",
                                 on: { click: slotProps.toggle }
                               },
                               [
@@ -19953,18 +19951,7 @@ var render = function() {
                       {
                         key: "header",
                         fn: function(slotProps) {
-                          return [
-                            _c("span", [_vm._v("Filter by category")]),
-                            _vm._v(" "),
-                            _c(
-                              "span",
-                              {
-                                staticClass: "close",
-                                on: { click: slotProps.toggle }
-                              },
-                              [_c("i", { staticClass: "fal fa-times" })]
-                            )
-                          ]
+                          return [_c("span", [_vm._v("Filter by category")])]
                         }
                       },
                       {
@@ -19994,7 +19981,7 @@ var render = function() {
                     ],
                     null,
                     false,
-                    534097708
+                    17439235
                   )
                 }),
                 _vm._v(" "),
@@ -20167,7 +20154,7 @@ var render = function() {
         { staticClass: "filters" },
         [
           _c("Dropdown", {
-            staticClass: "dropdown-parent",
+            staticClass: "dropdown-parent left",
             scopedSlots: _vm._u([
               {
                 key: "button",
@@ -20176,7 +20163,8 @@ var render = function() {
                     _c(
                       "div",
                       {
-                        staticClass: "dropdown-button item-filter-button",
+                        staticClass:
+                          "dropdown-button dropdown-parent item-filter-button",
                         on: { click: slotProps.toggle }
                       },
                       [
@@ -20216,15 +20204,7 @@ var render = function() {
               {
                 key: "header",
                 fn: function(slotProps) {
-                  return [
-                    _c("span", [_vm._v("Filter by collection")]),
-                    _vm._v(" "),
-                    _c(
-                      "span",
-                      { staticClass: "close", on: { click: slotProps.toggle } },
-                      [_c("i", { staticClass: "fal fa-times" })]
-                    )
-                  ]
+                  return [_c("span", [_vm._v("Filter by collection")])]
                 }
               },
               {
@@ -39912,6 +39892,7 @@ function (_Model) {
         datasource_id: this.attr(''),
         title: this.attr(''),
         short_description: this.attr(''),
+        category: this.attr(''),
         delivery_date: this.attr(''),
         sale_description: this.attr(''),
         brand: this.attr(''),
@@ -41768,14 +41749,6 @@ __webpack_require__.r(__webpack_exports__);
     currentTeamId: function currentTeamId(state) {
       return state.currentTeamId;
     },
-    // currentTeam: (state, getters, rootState, rootGetters) => {
-    //     const teams = rootGetters['teams/teams']
-    //     if (state.currentTeamId == 0)
-    //         return 'Global'
-    //     if (teams)
-    //         return teams.find(x => x.id == state.currentTeamId)
-    //     else return undefined
-    // },
     currentWorkspace: function currentWorkspace(state) {
       return _store_models_Workspace__WEBPACK_IMPORTED_MODULE_0__["default"].find(state.currentWorkspaceId);
     },

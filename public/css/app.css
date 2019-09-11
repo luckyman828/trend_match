@@ -9266,15 +9266,15 @@ textarea {
 .tooltip::before,
 .tooltip .arrow {
   content: "";
-  height: 13px;
-  width: 13px;
+  height: 11px;
+  width: 11px;
   display: block;
   background: white;
-  left: calc(50% - 7px);
+  left: calc(50% - 6px);
   border: solid 1px #DFDFDF;
   border-right: 0;
   border-bottom: 0;
-  top: 3px;
+  top: 2px;
   z-index: 1;
   position: absolute;
   -webkit-transform: rotateZ(45deg);
@@ -9286,12 +9286,6 @@ textarea {
 .right .tooltip {
   left: auto;
   right: 0;
-}
-
-.right .dropdown::before,
-.right .tooltip::before {
-  left: auto;
-  right: 28px;
 }
 
 .center .dropdown::before,

@@ -16,14 +16,6 @@ export default {
 
     getters: {
         currentTeamId: state => { return state.currentTeamId },
-        // currentTeam: (state, getters, rootState, rootGetters) => {
-        //     const teams = rootGetters['teams/teams']
-        //     if (state.currentTeamId == 0)
-        //         return 'Global'
-        //     if (teams)
-        //         return teams.find(x => x.id == state.currentTeamId)
-        //     else return undefined
-        // },
         currentWorkspace: state => { return Workspace.find(state.currentWorkspaceId) },
         currentTeam: state => { return (state.currentTeamId == 0) ? 'Global' : Team.find(state.currentTeamId) },
         workspaceCurrency: state => { return 'EUR' },

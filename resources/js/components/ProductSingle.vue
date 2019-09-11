@@ -37,7 +37,7 @@
                                     </div>
                                     <div>
                                         <strong>Category</strong>
-                                        <span>{{product.short_description}}</span>
+                                        <span>{{product.category}}</span>
                                     </div>
                                     <div>
                                         <strong>Minimum production</strong>
@@ -93,7 +93,7 @@
                             <strong>Composition</strong>
                             <p>{{product.composition}}</p>
                             <strong>Delivery date</strong>
-                            <p>placeholder date</p>
+                            <p>{{product.delivery_date}}</p>
 
                             <div class="product-variants">
                                 <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
