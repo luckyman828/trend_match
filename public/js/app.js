@@ -8348,7 +8348,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   destroyed: function destroyed() {
     // Remove click listener
     document.body.removeEventListener('click', this.clickOutsideEvent);
-    document.body.removeEventListener('keyup', this.hotkeyHandler);
+    document.body.removeEventListener('keydown', this.hotkeyHandler);
   }
 });
 
@@ -8478,6 +8478,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['submittingComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']), {
+    submitDisabled: function submitDisabled() {
+      if (this.newComment.comment.length < 1 || this.submittingComment) return true;else return false;
+    },
     commentsToShow: function commentsToShow() {
       var _this = this;
 
@@ -8523,8 +8526,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                e.preventDefault();
-                console.log('submitting comment to store');
+                if (e) e.preventDefault();
+
+                if (this.submitDisabled) {
+                  _context.next = 8;
+                  break;
+                }
+
                 _context.next = 4;
                 return this.createComment({
                   comment: this.newComment
@@ -8579,7 +8587,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   mounted: function mounted() {
-    if (this.actionScope == 'phaseAction') this.finalOnly = true;else this.finalOnly = false;
+    if (this.actionScope == 'phaseAction') this.finalOnly = true;else this.finalOnly = false; // this.$refs.commentField.addEventListener('keydown', this.hotkeyHandler)
   },
   updated: function updated() {
     // Set comment scope
@@ -8595,6 +8603,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     } else if (this.userPermissionLevel >= 2) {
       this.newComment.team_final = true;
     }
+  },
+  created: function created() {},
+  destroyed: function destroyed() {// this.$refs.commentField.removeEventListener('keydown', this.hotkeyHandler)
   }
 });
 
@@ -10881,12 +10892,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.sortProducts();
     },
     sortProducts: function sortProducts() {
-      console.log('Sorting products..!'); // Try always sorting by datasource_id first
-
       var products = this.productsFiltered;
       var key = this.sortBy;
       var sortAsc = this.sortAsc;
-      var sortMethod = this.sortMethod; // Try always sorting by datasource_id first
+      var sortMethod = this.sortMethod; // Always sort the products by datasource_id first before sorting with the chosen method, to make sure the products are always sorted in the same manner
 
       products.sort(function (a, b) {
         if (a.datasource_id == b.datasource_id) {
@@ -11681,7 +11690,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.toggle[data-v-6d61fa50] {\n  border: solid 1px #DFDFDF;\n  border-radius: 50px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.toggle .option[data-v-6d61fa50] {\n  font-size: 12px;\n  padding: 6px 14px;\n  font-weight: 700;\n  color: #A8A8A8;\n  text-transform: uppercase;\n  display: inline-block;\n}\n.toggle .option.active[data-v-6d61fa50] {\n  color: #1B1C1D;\n  background: #DFDFDF;\n  border-radius: 50px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #F3F3F3;\n  border-radius: 8px;\n  padding: 36px 24px;\n  height: 57vh;\n  max-height: 57vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 24px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment-wrapper.own[data-v-6d61fa50] {\n  text-align: right;\n}\n.comment[data-v-6d61fa50] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n  margin-right: 56px;\n}\n.own-team .comment[data-v-6d61fa50] {\n  background: rgba(59, 134, 255, 0.7);\n  color: white;\n}\n.own .comment[data-v-6d61fa50] {\n  background: #3B86FF;\n  color: white;\n  text-align: left;\n  margin-right: 0;\n  margin-left: 56px;\n}\n.user[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-6d61fa50] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-6d61fa50] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-6d61fa50] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-6d61fa50] {\n  left: 18px;\n}\n.circle[data-v-6d61fa50] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.comment-wrapper.own .circle[data-v-6d61fa50] {\n  right: auto;\n  left: -56px;\n}\n.circle i[data-v-6d61fa50] {\n  font-size: 20px;\n}\n.circle[data-v-6d61fa50]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.active[data-v-6d61fa50] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.disabled[data-v-6d61fa50]:not(.active) {\n  display: none;\n}\n.circle.disabled[data-v-6d61fa50] {\n  cursor: auto;\n}\n.pill[data-v-6d61fa50] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\n.pill.phase-final[data-v-6d61fa50] {\n  background: #3B86FF;\n  color: white;\n}\n.pill[data-v-6d61fa50]:nth-child(2) {\n  right: 100px;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #DFDFDF;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #A8A8A8;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #A8A8A8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #F3F3F3;\n  color: #A8A8A8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3B86FF;\n}", ""]);
+exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.toggle[data-v-6d61fa50] {\n  border: solid 1px #DFDFDF;\n  border-radius: 50px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.toggle .option[data-v-6d61fa50] {\n  font-size: 12px;\n  padding: 6px 14px;\n  font-weight: 700;\n  color: #A8A8A8;\n  text-transform: uppercase;\n  display: inline-block;\n}\n.toggle .option.active[data-v-6d61fa50] {\n  color: #1B1C1D;\n  background: #DFDFDF;\n  border-radius: 50px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #F3F3F3;\n  border-radius: 8px;\n  padding: 36px 24px;\n  height: 57vh;\n  max-height: 57vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 24px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment-wrapper.own[data-v-6d61fa50] {\n  text-align: right;\n}\n.comment[data-v-6d61fa50] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n  margin-right: 56px;\n}\n.own-team .comment[data-v-6d61fa50] {\n  background: rgba(59, 134, 255, 0.7);\n  color: white;\n}\n.own .comment[data-v-6d61fa50] {\n  background: #3B86FF;\n  color: white;\n  text-align: left;\n  margin-right: 0;\n  margin-left: 56px;\n}\n.comment .body[data-v-6d61fa50] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n}\n.user[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-6d61fa50] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-6d61fa50] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-6d61fa50] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-6d61fa50] {\n  left: 18px;\n}\n.circle[data-v-6d61fa50] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.comment-wrapper.own .circle[data-v-6d61fa50] {\n  right: auto;\n  left: -56px;\n}\n.circle i[data-v-6d61fa50] {\n  font-size: 20px;\n}\n.circle[data-v-6d61fa50]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.active[data-v-6d61fa50] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.disabled[data-v-6d61fa50]:not(.active) {\n  display: none;\n}\n.circle.disabled[data-v-6d61fa50] {\n  cursor: auto;\n}\n.pill[data-v-6d61fa50] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\n.pill.phase-final[data-v-6d61fa50] {\n  background: #3B86FF;\n  color: white;\n}\n.pill[data-v-6d61fa50]:nth-child(2) {\n  right: 100px;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #DFDFDF;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #A8A8A8;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #A8A8A8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #F3F3F3;\n  color: #A8A8A8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3B86FF;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}", ""]);
 
 // exports
 
@@ -17206,6 +17215,7 @@ var render = function() {
                 expression: "newComment.comment"
               }
             ],
+            ref: "commentField",
             attrs: {
               name: "comment",
               id: "comment-input",
@@ -17215,10 +17225,35 @@ var render = function() {
             },
             domProps: { value: _vm.newComment.comment },
             on: {
+              keydown: function($event) {
+                if (
+                  !$event.type.indexOf("key") &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                if (
+                  $event.ctrlKey ||
+                  $event.shiftKey ||
+                  $event.altKey ||
+                  $event.metaKey
+                ) {
+                  return null
+                }
+                $event.preventDefault()
+              },
               keyup: function($event) {
                 if (
                   !$event.type.indexOf("key") &&
                   _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                if (
+                  $event.ctrlKey ||
+                  $event.shiftKey ||
+                  $event.altKey ||
+                  $event.metaKey
                 ) {
                   return null
                 }
@@ -17294,9 +17329,7 @@ var render = function() {
         _vm._v(" "),
         _c("input", {
           staticClass: "button primary xl",
-          class: {
-            disabled: _vm.newComment.comment.length < 1 || _vm.submittingComment
-          },
+          class: { disabled: _vm.submitDisabled },
           attrs: { type: "submit", value: "Submit comment" }
         })
       ]),

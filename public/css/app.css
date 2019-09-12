@@ -8678,6 +8678,11 @@ textarea {
   line-height: inherit;
 }
 
+textarea {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
 .login-wrapper {
   background: #3C3B54;
   min-height: 100vh;

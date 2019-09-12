@@ -52,14 +52,14 @@
         <form @submit="onSubmitComment">
             <div class="input-wrapper">
                 <i class="far fa-comment"></i>
-                <textarea @keyup.enter="onSubmitComment" name="comment" id="comment-input" placeholder="Write a comment.." v-model="newComment.comment" 
+                <textarea ref="commentField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="comment" id="comment-input" placeholder="Write a comment.." v-model="newComment.comment" 
                 oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
                 <label>
                     <input type="checkbox" v-model="newComment.important" name="comment-important">
                     <span class="checkmark" :class="{active: newComment.important}" @mouseover="showTooltip($event, 'Important comment')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
                 </label>
             </div>
-            <input type="submit" class="button primary xl" value="Submit comment" :class="{disabled: (newComment.comment.length < 1 || submittingComment)}">
+            <input type="submit" class="button primary xl" value="Submit comment" :class="{disabled: submitDisabled}">
         </form>
         <Tooltip :tooltip="tooltip"/>
     </div>
@@ -104,6 +104,11 @@ export default {
     computed: {
         ...mapGetters('entities/comments', ['submittingComment']),
         ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']),
+        submitDisabled () {
+            if(this.newComment.comment.length < 1 || this.submittingComment)
+                return true
+            else return false
+        },
         commentsToShow () {
             const comments = this.comments
             let commentsToReturn = []
@@ -144,15 +149,17 @@ export default {
     methods: {
         ...mapActions('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']),
         async onSubmitComment(e) {
-            e.preventDefault()
-            console.log('submitting comment to store')
-            await this.createComment({comment: this.newComment})
+            if (e) e.preventDefault()
 
-            // Reset comment
-            this.newComment.comment = ''
-            this.newComment.important = false
-            this.newComment.team_final = false
-            this.newComment.phase_final = false
+            if (!this.submitDisabled) {
+                await this.createComment({comment: this.newComment})
+    
+                // Reset comment
+                this.newComment.comment = ''
+                this.newComment.important = false
+                this.newComment.team_final = false
+                this.newComment.phase_final = false
+            }
         },
         onMarkAsFinal(comment) {
             if (this.actionScope == 'phaseAction') {
@@ -181,12 +188,25 @@ export default {
         hideTooltip() {
             this.tooltip.active = false;
         },
+        // hotkeyHandler(e) {
+        //     console.log(e)
+        //     const key = e.key
+        //     console.log(key == 'Enter')
+        //     console.log(!e.shiftKey)
+        //     console.log(!this.submitDisabled)
+        //     console.log(key == 'Enter' && !e.shiftKey && !this.submitDisabled)
+        //     if (key == 'Enter' && !e.shiftKey && !this.submitDisabled)
+        //         console.log('its all true!'),
+        //         this.onSubmitComment()
+        // }
     },
     mounted() {
         if (this.actionScope == 'phaseAction')
             this.finalOnly = true
         else
             this.finalOnly = false
+        
+        // this.$refs.commentField.addEventListener('keydown', this.hotkeyHandler)
     },
     updated() {
         // Set comment scope
@@ -202,6 +222,11 @@ export default {
             this.newComment.team_final = true
         }
 
+    },
+    created() {
+    },
+    destroyed() {
+        // this.$refs.commentField.removeEventListener('keydown', this.hotkeyHandler)
     }
 }
 </script>
@@ -236,9 +261,6 @@ export default {
                 background: $light2;
                 border-radius: 50px;
             }
-            // &:first-child {
-            //     margin-right: 8px;
-            // }
         }
     }
     .comments-wrapper {
@@ -279,6 +301,10 @@ export default {
             text-align: left;
             margin-right: 0;
             margin-left: 56px;
+        }
+        .body {
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
     }
     .user {
@@ -435,24 +461,8 @@ export default {
                 color: $primary;
             }
         }
-        // input[type=submit] {
-        //     -webkit-appearance: none;
-        //     border: none;
-        //     height: 32px;
-        //     border-radius: 4px;
-        //     margin-top: 12px;
-        //     background: $primary;
-        //     color: white;
-        //     padding: 4px 12px;
-        //     width: 100%;
-        //     text-align: center;
-        //     font-weight: 700;
-        //     font-size: 12px;
-        //     margin-bottom: 60px;
-        //     &.disabled {
-        //         pointer-events: none;
-        //         opacity: .5;
-        //     }
-        // }
+        input[type=submit] {
+            margin-top: 12px;
+        }
     }
 </style>

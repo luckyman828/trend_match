@@ -716,16 +716,13 @@ export default{
             this.sortProducts()
         },
         sortProducts() {
-            console.log('Sorting products..!')
-
-            // Try always sorting by datasource_id first
 
             const products = this.productsFiltered
             let key = this.sortBy
             let sortAsc = this.sortAsc
             const sortMethod = this.sortMethod
 
-            // Try always sorting by datasource_id first
+            // Always sort the products by datasource_id first before sorting with the chosen method, to make sure the products are always sorted in the same manner
             products.sort((a, b) => {
                 if ( a.datasource_id == b.datasource_id ) {
                     return 0

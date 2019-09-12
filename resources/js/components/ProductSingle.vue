@@ -282,7 +282,7 @@ export default {
     destroyed() {
         // Remove click listener
         document.body.removeEventListener('click', this.clickOutsideEvent)
-        document.body.removeEventListener('keyup', this.hotkeyHandler)
+        document.body.removeEventListener('keydown', this.hotkeyHandler)
     }
 }
 </script>
