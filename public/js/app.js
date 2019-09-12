@@ -8854,7 +8854,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction', 'deleteAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['deleteTeamProduct', 'updateTeamProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['deletePhaseProduct', 'updatePhaseProduct']), {
     productImg: function productImg(variant) {
-      if (variant.error != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
+      if (!variant.error) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
     },
     imgError: function imgError(variant) {
       variant.error = true;

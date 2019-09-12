@@ -187,7 +187,7 @@ export default {
         ...mapActions('entities/teamProducts', ['deleteTeamProduct', 'updateTeamProduct']),
         ...mapActions('entities/phaseProducts', ['deletePhaseProduct', 'updatePhaseProduct']),
         productImg(variant) {
-            if (variant.error != null)
+            if (!variant.error)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
             else return variant.image
         },
