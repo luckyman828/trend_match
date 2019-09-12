@@ -197,12 +197,9 @@ export default {
         toggleInOut(product, action) {
             if (product[this.actionScope] != null) {
                 // If the product has an action
-                console.log('current action: ' + product[this.actionScope].action)
-                console.log('new action: ' + action)
 
                 if(product[this.actionScope].action != action) {
                     // UPDATE ACTION
-                    console.log('update action!')
                     if (this.actionScope == 'userAction')
                         this.updateAction({user_id: this.authUser.id, productToUpdate: product.id, action_code: actionType})
                     if (this.actionScope == 'teamAction')
@@ -211,7 +208,6 @@ export default {
                         this.updatePhaseProduct({product_id: product.id, phase_id: 1, action: action})
                 }
                 else if(product[this.actionScope].action == 2 && action == 2) {
-                    console.log('toggle focus!')
                     // TOGGLE FOCUS
                     if (this.actionScope == 'userAction')
                         this.updateAction({user_id: this.authUser.id, productToUpdate: product.id, action_code: 1})
@@ -221,7 +217,6 @@ export default {
                         this.updatePhaseProduct({product_id: product.id, phase_id: 1, action: 1})
                 }
                 else {
-                    console.log('delete!')
                     // DELETE ACTION
                     if (this.actionScope == 'userAction')
                         this.deleteAction({user_id: this.authUser.id, productToUpdate: product.id})

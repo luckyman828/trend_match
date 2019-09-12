@@ -7645,6 +7645,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     toggle: function toggle() {
       this.$refs.modalWrapper.classList.toggle('active');
+      this.setPos();
     },
     toggleAlt: function toggleAlt() {
       this.$refs.modalWrapper.classList.toggle('active');
@@ -8850,12 +8851,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     toggleInOut: function toggleInOut(product, action) {
       if (product[this.actionScope] != null) {
         // If the product has an action
-        console.log('current action: ' + product[this.actionScope].action);
-        console.log('new action: ' + action);
-
         if (product[this.actionScope].action != action) {
           // UPDATE ACTION
-          console.log('update action!');
           if (this.actionScope == 'userAction') this.updateAction({
             user_id: this.authUser.id,
             productToUpdate: product.id,
@@ -8873,8 +8870,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             action: action
           });
         } else if (product[this.actionScope].action == 2 && action == 2) {
-          console.log('toggle focus!'); // TOGGLE FOCUS
-
+          // TOGGLE FOCUS
           if (this.actionScope == 'userAction') this.updateAction({
             user_id: this.authUser.id,
             productToUpdate: product.id,
@@ -8892,8 +8888,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             action: 1
           });
         } else {
-          console.log('delete!'); // DELETE ACTION
-
+          // DELETE ACTION
           if (this.actionScope == 'userAction') this.deleteAction({
             user_id: this.authUser.id,
             productToUpdate: product.id
@@ -10273,8 +10268,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // teamFilterId: -1,
       catalogueId: '',
       unsub: '',
-      test: ''
+      test: '',
+      productsTest: []
     };
+  },
+  watch: {
+    products: function products() {
+      this.sortProducts();
+    }
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace']), {
     defaultTeam: function defaultTeam() {
@@ -10528,69 +10529,90 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       return sortMethod;
     },
-    productsSorted: function productsSorted() {
-      var products = this.productsFiltered;
-      var key = this.sortBy;
-      var sortAsc = this.sortAsc;
-      var sortMethod = this.sortMethod;
-      var dataSorted = products.sort(function (a, b) {
-        if (sortMethod == 'action') {
-          if (a[key] != null) {
-            if (b[key] != null) {
-              // If A and B has a key
-              if (sortAsc) return a[key].action > b[key].action ? 1 : -1;else return a[key].action < b[key].action ? 1 : -1;
-            } else {
-              // If ONLY A has a key
-              if (sortAsc) return 1;else return -1;
-            }
-          } else if (b[key] != null) {
-            // If ONLY B has a key
-            if (sortAsc) return -1;else return 1;
-          } else {
-            // Neither A nor B has a key
-            return 0;
-          }
-        } else if (sortMethod == 'focus') {
-          // First sort by focus
-          if (a[key].length != b[key].length) {
-            if (sortAsc) return a[key].length > b[key].length ? 1 : -1;else return a[key].length < b[key].length ? 1 : -1; // Then sort by ins
-          } else if (a.ins.length == b.ins.length) {
-            return 0;
-          } else {
-            if (sortAsc) return a.ins.length > b.ins.length ? 1 : -1;else return a.ins.length < b.ins.length ? 1 : -1;
-          }
-        } else if (sortMethod == 'in') {
-          // First sort by focus
-          var aInLength = a[key].length + a.focus.length;
-          var bInLength = b[key].length + b.focus.length;
-
-          if (aInLength != bInLength) {
-            if (sortAsc) return aInLength > bInLength ? 1 : -1;else return aInLength < bInLength ? 1 : -1; // Then sort by focus
-          } else if (a.focus.length == b.focus.length) {
-            return 0;
-          } else {
-            if (sortAsc) return a.focus.length > b.focus.length ? 1 : -1;else return a.focus.length < b.focus.length ? 1 : -1;
-          }
-        } else {
-          if (sortMethod == 'object') {
-            // Sort by key length
-            if (a[key].length == b[key].length) {
-              return 0;
-            } else if (sortAsc) {
-              return a[key].length > b[key].length ? 1 : -1;
-            } else return a[key].length < b[key].length ? 1 : -1;
-          } // If the keys aren't objects, finalActions or strings - sort by the key
-          else {
-              if (a[key] == b[key]) {
-                return 0;
-              } else if (sortAsc) {
-                return a[key] > b[key] ? 1 : -1;
-              } else return a[key] < b[key] ? 1 : -1;
-            }
-        }
-      });
-      return dataSorted;
-    },
+    // productsSorted() {
+    //     const products = this.productsFiltered
+    //     let key = this.sortBy
+    //     let sortAsc = this.sortAsc
+    //     const sortMethod = this.sortMethod
+    //     const dataSorted = products.sort((a, b) => {
+    //         if (sortMethod == 'action') {
+    //             if (a[key] != null) {
+    //                 if (b[key] != null) {
+    //                     // If A and B has a key
+    //                     if (sortAsc)
+    //                         return (a[key].action > b[key].action) ? 1 : -1
+    //                         else return (a[key].action < b[key].action) ? 1 : -1
+    //                 } else {
+    //                     // If ONLY A has a key
+    //                     if (sortAsc)
+    //                         return 1
+    //                         else return -1
+    //                 }
+    //             } else if (b[key] != null) {
+    //                 // If ONLY B has a key
+    //                 if (sortAsc)
+    //                     return -1
+    //                     else return 1
+    //             } else {
+    //                 // Neither A nor B has a key
+    //                 return 0
+    //             }
+    //         }
+    //         else if ( sortMethod == 'focus' ) {
+    //             // First sort by focus
+    //             if ( a[key].length != b[key].length ) {
+    //                 if (sortAsc)
+    //                     return (a[key].length > b[key].length) ? 1 : -1
+    //                     else return (a[key].length < b[key].length) ? 1 : -1
+    //             // Then sort by ins
+    //             } else if ( a.ins.length == b.ins.length ) {
+    //                     return 0 
+    //             } else {
+    //                 if (sortAsc)
+    //                     return (a.ins.length > b.ins.length) ? 1 : -1
+    //                     else return (a.ins.length < b.ins.length) ? 1 : -1 
+    //             }
+    //         }
+    //         else if ( sortMethod == 'in' ) {
+    //             // First sort by focus
+    //             const aInLength = a[key].length + a.focus.length
+    //             const bInLength = b[key].length + b.focus.length
+    //             if ( aInLength != bInLength ) {
+    //                 if (sortAsc)
+    //                     return (aInLength > bInLength) ? 1 : -1
+    //                     else return (aInLength < bInLength) ? 1 : -1
+    //             // Then sort by focus
+    //             } else if ( a.focus.length == b.focus.length ) {
+    //                     return 0 
+    //             } else {
+    //                 if (sortAsc)
+    //                     return (a.focus.length > b.focus.length) ? 1 : -1
+    //                     else return (a.focus.length < b.focus.length) ? 1 : -1 
+    //             }
+    //         }
+    //         else {
+    //             if ( sortMethod == 'object' ) {
+    //                 // Sort by key length
+    //                 if ( a[key].length == b[key].length ) {
+    //                     return 0
+    //                 } else if (sortAsc) {
+    //                     return (a[key].length > b[key].length) ? 1 : -1
+    //                 }
+    //                 else return (a[key].length < b[key].length) ? 1 : -1
+    //             }
+    //             // If the keys aren't objects, finalActions or strings - sort by the key
+    //             else {
+    //                 if ( a[key] == b[key] ) {
+    //                     return 0
+    //                 } else if (sortAsc) {
+    //                     return (a[key] > b[key]) ? 1 : -1
+    //                 }
+    //                 else return (a[key] < b[key]) ? 1 : -1
+    //             }
+    //         }
+    //     })
+    //     return dataSorted
+    // },
     selectedProducts: function selectedProducts() {
       var products = this.products;
       var selectedProducts = [];
@@ -10646,7 +10668,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     nextSingleProductID: function nextSingleProductID() {
       var _this5 = this;
 
-      var products = this.productsSorted; // Check if we have a single product
+      // const products = this.productsSorted
+      var products = this.productsFiltered; // Check if we have a single product
 
       if (this.singleProductID != -1) {
         var currentProductIndex = products.findIndex(function (product) {
@@ -10659,7 +10682,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     prevSingleProductID: function prevSingleProductID() {
       var _this6 = this;
 
-      var products = this.productsSorted; // Check if we have a single product
+      // const products = this.productsSorted
+      var products = this.productsFiltered; // Check if we have a single product
 
       if (this.singleProductID != -1) {
         var currentProductIndex = products.findIndex(function (product) {
@@ -10853,6 +10877,81 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else {
         this.sortAsc = !this.sortAsc;
       }
+
+      this.sortProducts();
+    },
+    sortProducts: function sortProducts() {
+      console.log('Sorting products..!'); // Try always sorting by datasource_id first
+
+      var products = this.productsFiltered;
+      var key = this.sortBy;
+      var sortAsc = this.sortAsc;
+      var sortMethod = this.sortMethod; // Try always sorting by datasource_id first
+
+      products.sort(function (a, b) {
+        if (a.datasource_id == b.datasource_id) {
+          return 0;
+        } else if (sortAsc) {
+          return a.datasource_id > b.datasource_id ? 1 : -1;
+        } else return a.datasource_id < b.datasource_id ? 1 : -1;
+      });
+      var dataSorted = products.sort(function (a, b) {
+        if (sortMethod == 'action') {
+          if (a[key] != null) {
+            if (b[key] != null) {
+              // If A and B has a key
+              if (sortAsc) return a[key].action > b[key].action ? 1 : -1;else return a[key].action < b[key].action ? 1 : -1;
+            } else {
+              // If ONLY A has a key
+              if (sortAsc) return 1;else return -1;
+            }
+          } else if (b[key] != null) {
+            // If ONLY B has a key
+            if (sortAsc) return -1;else return 1;
+          } else {
+            // Neither A nor B has a key
+            return 0;
+          }
+        } else if (sortMethod == 'focus') {
+          // First sort by focus
+          if (a[key].length != b[key].length) {
+            if (sortAsc) return a[key].length > b[key].length ? 1 : -1;else return a[key].length < b[key].length ? 1 : -1; // Then sort by ins
+          } else if (a.ins.length == b.ins.length) {
+            return 0;
+          } else {
+            if (sortAsc) return a.ins.length > b.ins.length ? 1 : -1;else return a.ins.length < b.ins.length ? 1 : -1;
+          }
+        } else if (sortMethod == 'in') {
+          // First sort by focus
+          var aInLength = a[key].length + a.focus.length;
+          var bInLength = b[key].length + b.focus.length;
+
+          if (aInLength != bInLength) {
+            if (sortAsc) return aInLength > bInLength ? 1 : -1;else return aInLength < bInLength ? 1 : -1; // Then sort by focus
+          } else if (a.focus.length == b.focus.length) {
+            return 0;
+          } else {
+            if (sortAsc) return a.focus.length > b.focus.length ? 1 : -1;else return a.focus.length < b.focus.length ? 1 : -1;
+          }
+        } else {
+          if (sortMethod == 'object') {
+            // Sort by key length
+            if (a[key].length == b[key].length) {
+              return 0;
+            } else if (sortAsc) {
+              return a[key].length > b[key].length ? 1 : -1;
+            } else return a[key].length < b[key].length ? 1 : -1;
+          } // If the keys aren't objects, finalActions or strings - sort by the key
+          else {
+              if (a[key] == b[key]) {
+                return 0;
+              } else if (sortAsc) {
+                return a[key] > b[key] ? 1 : -1;
+              } else return a[key] < b[key] ? 1 : -1;
+            }
+        }
+      });
+      return dataSorted;
     },
     initRequiresWorkspace: function () {
       var _initRequiresWorkspace = _asyncToGenerator(
@@ -10918,6 +11017,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _this9.initRequiresWorkspace();
       }
     });
+  },
+  mounted: function mounted() {
+    this.sortProducts;
+    this.productsTest = this.productsFiltered;
   },
   destroyed: function destroyed() {
     this.unsub();
@@ -11521,7 +11624,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "label.team[data-v-95e58d5a] {\n  position: relative;\n}\nlabel.team .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 8px;\n  top: 8px;\n  background: #3B86FF;\n  color: white;\n  height: 24px;\n  width: 24px;\n  text-align: center;\n}\nlabel.team .square i[data-v-95e58d5a] {\n  font-size: 10px;\n  line-height: 24px;\n}\n.open-dropdown[data-v-95e58d5a] {\n  position: absolute;\n  right: 8px;\n  bottom: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n}\n.open-dropdown.active[data-v-95e58d5a] {\n  color: #1B1C1D;\n}\n.open-dropdown[data-v-95e58d5a]:hover {\n  color: #535353;\n}\n.open-dropdown i[data-v-95e58d5a] {\n  margin-left: 8px;\n}\nh4[data-v-95e58d5a] {\n  font-size: 16px;\n  color: #A8A8A8;\n  margin: 0;\n  font-weight: 500;\n  margin-bottom: 16px;\n}\nlabel.team[data-v-95e58d5a] {\n  margin-bottom: calc(24px + 1em);\n}\n.user[data-v-95e58d5a] {\n  margin-bottom: calc(32px + 2em - 2px);\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.user[data-v-95e58d5a]:last-child {\n  margin-bottom: calc(20px + 2em - 2px);\n}\n.user .flex-wrapper[data-v-95e58d5a] {\n  opacity: 0;\n}\n.user.card[data-v-95e58d5a] {\n  margin-top: -14px;\n  margin-left: -1em;\n  margin-right: -1em;\n  width: calc(100% + 2em);\n  margin-bottom: 32px;\n}\n.user.card .flex-wrapper[data-v-95e58d5a] {\n  opacity: 1;\n}\n.user.card[data-v-95e58d5a]:last-child {\n  margin-bottom: 20px;\n}\nform[data-v-95e58d5a] {\n  margin-bottom: 60px;\n}\n.flex-wrapper[data-v-95e58d5a] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.add-more[data-v-95e58d5a] {\n  margin-bottom: 24px;\n}\nlabel.role input[data-v-95e58d5a] {\n  color: transparent;\n}\nlabel.role .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 12px;\n  bottom: 8px;\n}", ""]);
+exports.push([module.i, "label.team[data-v-95e58d5a] {\n  position: relative;\n}\nlabel.team .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 8px;\n  top: 8px;\n  background: #3B86FF;\n  color: white;\n  height: 24px;\n  width: 24px;\n  text-align: center;\n}\nlabel.team .square i[data-v-95e58d5a] {\n  font-size: 10px;\n  line-height: 24px;\n}\n.open-dropdown[data-v-95e58d5a] {\n  position: absolute;\n  right: 8px;\n  bottom: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n}\n.open-dropdown.active[data-v-95e58d5a] {\n  color: #1B1C1D;\n}\n.open-dropdown[data-v-95e58d5a]:hover {\n  color: #535353;\n}\n.open-dropdown i[data-v-95e58d5a] {\n  margin-left: 8px;\n}\nh4[data-v-95e58d5a] {\n  font-size: 16px;\n  color: #A8A8A8;\n  margin: 0;\n  font-weight: 500;\n  margin-bottom: 16px;\n}\nlabel.team[data-v-95e58d5a] {\n  margin-bottom: calc(24px + 1em);\n}\n.user[data-v-95e58d5a] {\n  margin-bottom: calc(32px + 2em - 2px);\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.user[data-v-95e58d5a]:last-child {\n  margin-bottom: calc(20px + 2em - 2px);\n}\n.user .flex-wrapper[data-v-95e58d5a] {\n  opacity: 0;\n}\n.user.card[data-v-95e58d5a] {\n  margin-top: -14px;\n  margin-left: -1em;\n  margin-right: -1em;\n  width: calc(100% + 2em);\n  margin-bottom: 32px;\n}\n.user.card .flex-wrapper[data-v-95e58d5a] {\n  opacity: 1;\n}\n.user.card[data-v-95e58d5a]:last-child {\n  margin-bottom: 20px;\n}\nform[data-v-95e58d5a] {\n  margin-bottom: 60px;\n}\n.flex-wrapper[data-v-95e58d5a] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.add-more[data-v-95e58d5a] {\n  margin-bottom: 24px;\n}\nlabel.role input[data-v-95e58d5a] {\n  color: transparent;\n}\nlabel.role .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 12px;\n  bottom: 4px;\n}", ""]);
 
 // exports
 
@@ -16546,7 +16649,16 @@ var render = function() {
                             _c("strong", [_vm._v("Delivery date")]),
                             _vm._v(" "),
                             _c("p", [
-                              _vm._v(_vm._s(_vm.product.delivery_date))
+                              _vm._v(
+                                _vm._s(
+                                  new Date(
+                                    _vm.product.delivery_date
+                                  ).toLocaleDateString("da-DK", {
+                                    month: "long",
+                                    year: "numeric"
+                                  })
+                                )
+                              )
                             ]),
                             _vm._v(" "),
                             _c(
@@ -19120,7 +19232,7 @@ var render = function() {
                                     "span",
                                     {
                                       staticClass:
-                                        "remove button red invisible",
+                                        "remove button text-link icon-left red invisible",
                                       on: {
                                         click: function($event) {
                                           return _vm.removeUser(
@@ -19174,7 +19286,7 @@ var render = function() {
                                     "span",
                                     {
                                       staticClass:
-                                        "resend button dark invisible",
+                                        "resend button text-link icon-left dark invisible",
                                       on: {
                                         click: function($event) {
                                           return _vm.resendInvite(
@@ -19197,7 +19309,7 @@ var render = function() {
                                     "span",
                                     {
                                       staticClass:
-                                        "remove button red invisible",
+                                        "remove button text-link icon-left red invisible",
                                       on: {
                                         click: function($event) {
                                           return _vm.removeInvite(
@@ -19278,7 +19390,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("td", { staticClass: "collections" }, [
-      _c("span", [
+      _c("span", { staticClass: "square invisible dark icon-left" }, [
         _c("i", { staticClass: "far fa-exclamation-triangle" }),
         _vm._v(" invited")
       ])
@@ -20087,7 +20199,7 @@ var render = function() {
                 totalProductCount: _vm.products.length,
                 selectedCount: _vm.selectedProducts.length,
                 collection: _vm.collection,
-                products: _vm.productsSorted,
+                products: _vm.productsFiltered,
                 loading: _vm.loadingProducts,
                 authUser: _vm.authUser
               },
@@ -20103,7 +20215,7 @@ var render = function() {
             _vm._v(" "),
             _c("SelectedController", {
               attrs: {
-                totalCount: _vm.productsSorted.length,
+                totalCount: _vm.productsFiltered.length,
                 selected: _vm.selectedProductIDs
               },
               on: {

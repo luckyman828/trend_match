@@ -87,7 +87,7 @@
                             <td></td>
                             <td class="action">
                                 <span class="resend"></span>
-                                <span class="remove button red invisible" @click="removeUser(user.id, team.id)"><i class="far fa-user-minus"></i> Remove</span>
+                                <span class="remove button text-link icon-left red invisible" @click="removeUser(user.id, team.id)"><i class="far fa-user-minus"></i> Remove</span>
                             </td>
                         </div>
 
@@ -95,12 +95,12 @@
                             <td class="index">{{team.users.length + index + 1}}</td>
                             <td class="name">No name yet</td>
                             <td class="email">{{invited.email}}</td>
-                            <td class="collections"><span><i class="far fa-exclamation-triangle"></i> invited</span></td>
+                            <td class="collections"><span class="square invisible dark icon-left"><i class="far fa-exclamation-triangle"></i> invited</span></td>
                             <td class="role"></td>
                             <td></td>
                             <td class="action">
-                                <span class="resend button dark invisible" @click="resendInvite($event, invited.email, team)"><i class="far fa-paper-plane"></i> Resend invite</span>
-                                <span class="remove button red invisible" @click="removeInvite(invited.email, team.id)"><i class="far fa-user-minus"></i> Remove</span>
+                                <span class="resend button text-link icon-left dark invisible" @click="resendInvite($event, invited.email, team)"><i class="far fa-paper-plane"></i> Resend invite</span>
+                                <span class="remove button text-link icon-left red invisible" @click="removeInvite(invited.email, team.id)"><i class="far fa-user-minus"></i> Remove</span>
                             </td>
                         </div>
 

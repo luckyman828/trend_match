@@ -93,7 +93,7 @@
                             <strong>Composition</strong>
                             <p>{{product.composition}}</p>
                             <strong>Delivery date</strong>
-                            <p>{{product.delivery_date}}</p>
+                            <p>{{new Date(product.delivery_date).toLocaleDateString('da-DK', {month: 'long', year: 'numeric'})}}</p>
 
                             <div class="product-variants">
                                 <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">

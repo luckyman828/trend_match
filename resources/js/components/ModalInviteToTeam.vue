@@ -296,7 +296,7 @@ export default {
         .square {
             position: absolute;
             left: 12px;
-            bottom: 8px;
+            bottom: 4px;
         }
     }
 

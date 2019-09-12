@@ -157,30 +157,18 @@ input, button, select, optgroup, textarea {
     color: white;
 }
 
-// BUTTONS
-
-.button, .square {
-    &:not(.square) {
-        cursor: pointer;
-        min-width: 92px;
-        font-weight: 700;
-    }
-    &:not(.button) {
-        // height: 24px;
-        // line-height: 24px;
-    }
-    border: solid 2px $light2;
-    height: 32px;
-    line-height: 28px;
+// SHAPES: BUTTONS, SQUARES, PILLS, BUBBLES, CIRCLES
+.button, .square, .pill, .bubble, .circle {
+    line-height: 1;
     transition: .2s;
-    font-size: 12px;
-    padding: 0 12px;
     text-align: center;
-    display: inline-block;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
     color: $dark2;
-    border-radius: 4px;
-    // -- COLORS --
+    border: none;
     &.ghost {
+        border: solid 2px;
         background: transparent;
     }
     &.dark, &.dark-hover:hover, &.role-2 {
@@ -249,10 +237,17 @@ input, button, select, optgroup, textarea {
         pointer-events: none;
         opacity: .5;
     }
+}
+.button, .square {
+    height: 32px;
+    font-size: 12px;
+    padding: 0 12px;
+    color: $dark2;
+    border-radius: 4px;
     // -- ICONS --
     i {
-        font-size: 16px;
-        line-height: 28px;
+        // font-size: 16px;
+        // line-height: 28px;
     }
     &.icon-right, &.icon-left {
         min-width: 76px;
@@ -301,20 +296,31 @@ input, button, select, optgroup, textarea {
         font-size: 14px;
     }
 }
-// .square {
-//     padding: 0 12px;
-//     display: inline-block;
-//     text-align: center;
-//     font-size: 12px;
-//     font-weight: 700;
-//     height: 32px;
-//     line-height: 28px;
-//     cursor: pointer;
-//     border-radius: 4px;
-//     min-width: 92px;
-//     border: solid 2px #DFDFDF;
-//     color: #A8A8A8;
-// }
+.button {
+    min-width: 92px;
+    font-weight: 700;
+    cursor: pointer;
+    &.text-link {
+        padding-top: 4px;
+        padding-bottom: 4px;
+        height: auto;
+        border-radius: 0;
+        &:hover {
+            border-bottom: solid 1px;
+        }
+    }
+}
+.square {
+
+}
+.pill {
+    height: 20px;
+    padding: 0 12px;
+    border-radius: 50%;
+    box-shadow: 0 3px 6px rgba(0,0,0,.1);
+    background: $light1;
+    font-weight: 500;
+}
 
 // CLOSE BUTTONS / ICONS
 .close {
@@ -727,6 +733,7 @@ form, .form-group {
         }
     }
 }
+
 
 // TRANSITIONS
 .fade-enter-active, .fade-leave-active {

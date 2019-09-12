@@ -33,6 +33,7 @@ export default {
         },
         toggle() {
             this.$refs.modalWrapper.classList.toggle('active')
+            this.setPos()
         },
         toggleAlt() {
             this.$refs.modalWrapper.classList.toggle('active')

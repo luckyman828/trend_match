@@ -8812,29 +8812,30 @@ textarea {
 }
 
 .button,
-.square {
-  border: solid 2px #DFDFDF;
-  height: 32px;
-  line-height: 28px;
+.square,
+.pill,
+.bubble,
+.circle {
+  line-height: 1;
   -webkit-transition: 0.2s;
   transition: 0.2s;
-  font-size: 12px;
-  padding: 0 12px;
   text-align: center;
-  display: inline-block;
+  display: -webkit-inline-box;
+  display: inline-flex;
+  -webkit-box-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+          align-items: center;
   color: #A8A8A8;
-  border-radius: 4px;
-}
-
-.button:not(.square),
-.square:not(.square) {
-  cursor: pointer;
-  min-width: 92px;
-  font-weight: 700;
+  border: none;
 }
 
 .button.ghost,
-.square.ghost {
+.square.ghost,
+.pill.ghost,
+.bubble.ghost,
+.circle.ghost {
+  border: solid 2px;
   background: transparent;
 }
 
@@ -8843,7 +8844,16 @@ textarea {
 .button.role-2,
 .square.dark,
 .square.dark-hover:hover,
-.square.role-2 {
+.square.role-2,
+.pill.dark,
+.pill.dark-hover:hover,
+.pill.role-2,
+.bubble.dark,
+.bubble.dark-hover:hover,
+.bubble.role-2,
+.circle.dark,
+.circle.dark-hover:hover,
+.circle.role-2 {
   color: white;
   border-color: #3C3B54;
   background: #3C3B54;
@@ -8860,7 +8870,25 @@ textarea {
 .square.dark-hover:hover.invisible,
 .square.dark-hover:hover.ghost,
 .square.role-2.invisible,
-.square.role-2.ghost {
+.square.role-2.ghost,
+.pill.dark.invisible,
+.pill.dark.ghost,
+.pill.dark-hover:hover.invisible,
+.pill.dark-hover:hover.ghost,
+.pill.role-2.invisible,
+.pill.role-2.ghost,
+.bubble.dark.invisible,
+.bubble.dark.ghost,
+.bubble.dark-hover:hover.invisible,
+.bubble.dark-hover:hover.ghost,
+.bubble.role-2.invisible,
+.bubble.role-2.ghost,
+.circle.dark.invisible,
+.circle.dark.ghost,
+.circle.dark-hover:hover.invisible,
+.circle.dark-hover:hover.ghost,
+.circle.role-2.invisible,
+.circle.role-2.ghost {
   color: #1B1C1D;
   background: transparent;
 }
@@ -8870,7 +8898,16 @@ textarea {
 .button.role-4,
 .square.green,
 .square.green-hover:hover,
-.square.role-4 {
+.square.role-4,
+.pill.green,
+.pill.green-hover:hover,
+.pill.role-4,
+.bubble.green,
+.bubble.green-hover:hover,
+.bubble.role-4,
+.circle.green,
+.circle.green-hover:hover,
+.circle.role-4 {
   border-color: #5EE2A0;
   background: #5EE2A0;
   color: white;
@@ -8887,7 +8924,25 @@ textarea {
 .square.green-hover:hover.invisible,
 .square.green-hover:hover.ghost,
 .square.role-4.invisible,
-.square.role-4.ghost {
+.square.role-4.ghost,
+.pill.green.invisible,
+.pill.green.ghost,
+.pill.green-hover:hover.invisible,
+.pill.green-hover:hover.ghost,
+.pill.role-4.invisible,
+.pill.role-4.ghost,
+.bubble.green.invisible,
+.bubble.green.ghost,
+.bubble.green-hover:hover.invisible,
+.bubble.green-hover:hover.ghost,
+.bubble.role-4.invisible,
+.bubble.role-4.ghost,
+.circle.green.invisible,
+.circle.green.ghost,
+.circle.green-hover:hover.invisible,
+.circle.green-hover:hover.ghost,
+.circle.role-4.invisible,
+.circle.role-4.ghost {
   color: #5EE2A0;
   background: transparent;
 }
@@ -8897,7 +8952,16 @@ textarea {
 .button.role-5,
 .square.red,
 .square.red-hover:hover,
-.square.role-5 {
+.square.role-5,
+.pill.red,
+.pill.red-hover:hover,
+.pill.role-5,
+.bubble.red,
+.bubble.red-hover:hover,
+.bubble.role-5,
+.circle.red,
+.circle.red-hover:hover,
+.circle.role-5 {
   border-color: #FF6565;
   background: #FF6565;
   color: white;
@@ -8914,7 +8978,25 @@ textarea {
 .square.red-hover:hover.invisible,
 .square.red-hover:hover.ghost,
 .square.role-5.invisible,
-.square.role-5.ghost {
+.square.role-5.ghost,
+.pill.red.invisible,
+.pill.red.ghost,
+.pill.red-hover:hover.invisible,
+.pill.red-hover:hover.ghost,
+.pill.role-5.invisible,
+.pill.role-5.ghost,
+.bubble.red.invisible,
+.bubble.red.ghost,
+.bubble.red-hover:hover.invisible,
+.bubble.red-hover:hover.ghost,
+.bubble.role-5.invisible,
+.bubble.role-5.ghost,
+.circle.red.invisible,
+.circle.red.ghost,
+.circle.red-hover:hover.invisible,
+.circle.red-hover:hover.ghost,
+.circle.role-5.invisible,
+.circle.role-5.ghost {
   color: #FF6565;
   background: transparent;
 }
@@ -8924,7 +9006,16 @@ textarea {
 .button.role-1,
 .square.primary,
 .square.primary-hover:hover,
-.square.role-1 {
+.square.role-1,
+.pill.primary,
+.pill.primary-hover:hover,
+.pill.role-1,
+.bubble.primary,
+.bubble.primary-hover:hover,
+.bubble.role-1,
+.circle.primary,
+.circle.primary-hover:hover,
+.circle.role-1 {
   border-color: #3B86FF;
   background: #3B86FF;
   color: white;
@@ -8941,7 +9032,25 @@ textarea {
 .square.primary-hover:hover.invisible,
 .square.primary-hover:hover.ghost,
 .square.role-1.invisible,
-.square.role-1.ghost {
+.square.role-1.ghost,
+.pill.primary.invisible,
+.pill.primary.ghost,
+.pill.primary-hover:hover.invisible,
+.pill.primary-hover:hover.ghost,
+.pill.role-1.invisible,
+.pill.role-1.ghost,
+.bubble.primary.invisible,
+.bubble.primary.ghost,
+.bubble.primary-hover:hover.invisible,
+.bubble.primary-hover:hover.ghost,
+.bubble.role-1.invisible,
+.bubble.role-1.ghost,
+.circle.primary.invisible,
+.circle.primary.ghost,
+.circle.primary-hover:hover.invisible,
+.circle.primary-hover:hover.ghost,
+.circle.role-1.invisible,
+.circle.role-1.ghost {
   color: #3B86FF;
   background: transparent;
 }
@@ -8949,7 +9058,13 @@ textarea {
 .button.light,
 .button.light-hover:hover,
 .square.light,
-.square.light-hover:hover {
+.square.light-hover:hover,
+.pill.light,
+.pill.light-hover:hover,
+.bubble.light,
+.bubble.light-hover:hover,
+.circle.light,
+.circle.light-hover:hover {
   border-color: #F3F3F3;
   background: #F3F3F3;
   color: #3C3B54;
@@ -8962,7 +9077,19 @@ textarea {
 .square.light.invisible,
 .square.light.ghost,
 .square.light-hover:hover.invisible,
-.square.light-hover:hover.ghost {
+.square.light-hover:hover.ghost,
+.pill.light.invisible,
+.pill.light.ghost,
+.pill.light-hover:hover.invisible,
+.pill.light-hover:hover.ghost,
+.bubble.light.invisible,
+.bubble.light.ghost,
+.bubble.light-hover:hover.invisible,
+.bubble.light-hover:hover.ghost,
+.circle.light.invisible,
+.circle.light.ghost,
+.circle.light-hover:hover.invisible,
+.circle.light-hover:hover.ghost {
   color: #F3F3F3;
   background: transparent;
 }
@@ -8972,7 +9099,16 @@ textarea {
 .button.role-3,
 .square.light-2,
 .square.light-2-hover:hover,
-.square.role-3 {
+.square.role-3,
+.pill.light-2,
+.pill.light-2-hover:hover,
+.pill.role-3,
+.bubble.light-2,
+.bubble.light-2-hover:hover,
+.bubble.role-3,
+.circle.light-2,
+.circle.light-2-hover:hover,
+.circle.role-3 {
   border-color: #DFDFDF;
   background: #DFDFDF;
   color: #3C3B54;
@@ -8989,35 +9125,68 @@ textarea {
 .square.light-2-hover:hover.invisible,
 .square.light-2-hover:hover.ghost,
 .square.role-3.invisible,
-.square.role-3.ghost {
+.square.role-3.ghost,
+.pill.light-2.invisible,
+.pill.light-2.ghost,
+.pill.light-2-hover:hover.invisible,
+.pill.light-2-hover:hover.ghost,
+.pill.role-3.invisible,
+.pill.role-3.ghost,
+.bubble.light-2.invisible,
+.bubble.light-2.ghost,
+.bubble.light-2-hover:hover.invisible,
+.bubble.light-2-hover:hover.ghost,
+.bubble.role-3.invisible,
+.bubble.role-3.ghost,
+.circle.light-2.invisible,
+.circle.light-2.ghost,
+.circle.light-2-hover:hover.invisible,
+.circle.light-2-hover:hover.ghost,
+.circle.role-3.invisible,
+.circle.role-3.ghost {
   color: #DFDFDF;
   background: transparent;
 }
 
 .button.invisible,
-.square.invisible {
+.square.invisible,
+.pill.invisible,
+.bubble.invisible,
+.circle.invisible {
   font-weight: 500;
   background: none;
   border-color: transparent;
 }
 
 .button.invisible:hover,
-.square.invisible:hover {
+.square.invisible:hover,
+.pill.invisible:hover,
+.bubble.invisible:hover,
+.circle.invisible:hover {
   border-color: inherit;
 }
 
 .button.disabled,
 .button:disabled,
 .square.disabled,
-.square:disabled {
+.square:disabled,
+.pill.disabled,
+.pill:disabled,
+.bubble.disabled,
+.bubble:disabled,
+.circle.disabled,
+.circle:disabled {
   pointer-events: none;
   opacity: 0.5;
 }
 
-.button i,
-.square i {
-  font-size: 16px;
-  line-height: 28px;
+.button,
+.square {
+  height: 32px;
+  font-size: 12px;
+  padding: 0 12px;
+  color: #A8A8A8;
+  border-radius: 4px;
 }
 
 .button.icon-right,
@@ -9089,6 +9258,32 @@ textarea {
   line-height: 50px;
   font-weight: 500;
   font-size: 14px;
+}
+
+.button {
+  min-width: 92px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button.text-link {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  height: auto;
+  border-radius: 0;
+}
+
+.button.text-link:hover {
+  border-bottom: solid 1px;
+}
+
+.pill {
+  height: 20px;
+  padding: 0 12px;
+  border-radius: 50%;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  background: #F3F3F3;
+  font-weight: 500;
 }
 
 .close {
