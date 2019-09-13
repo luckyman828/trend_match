@@ -1,10 +1,10 @@
 <template>
     <nav class="navbar" style="height: 70px;">
-        <div class="logo-wrapper">
+        <!-- <div class="logo-wrapper">
             <router-link to="/collection" class="navbar-brand">
                 <img src="/images/kollekt-logo-color-1.svg" />
             </router-link>
-        </div>
+        </div> -->
         <div class="flex-wrapper">
             <div class="items-left">
 
@@ -69,11 +69,7 @@ export default {
 @import '~@/_variables.scss';
 
 .navbar {
-    background-color: white;
-    z-index: 100;
-    position: fixed;
-    top: 0;
-    left: 0;
+    grid-area: navbar;
     width: 100%;
     align-items: center;
     display: flex;

@@ -105,7 +105,7 @@ export default {
         ...mapGetters('entities/comments', ['submittingComment']),
         ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']),
         submitDisabled () {
-            if(this.newComment.comment.length < 1 || this.submittingComment)
+            if(this.newComment.comment.length < 1 || this.submittingComment || this.currentTeamId < 0)
                 return true
             else return false
         },

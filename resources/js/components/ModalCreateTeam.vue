@@ -5,7 +5,7 @@
             <span class="desc">We will create a new team as per your specifications</span>
         </template>
         <template v-slot:body="slotProps">
-            <form @submit="createTeam({name: addTeamName, workspace_id: currentWorkspaceId}), close()">
+            <form @submit.prevent="createTeam({name: addTeamName, workspace_id: currentWorkspaceId}), close()">
                 <label>
                     Team name
                     <input type="text" placeholder="My new team" ref="addTeamInput" v-model="addTeamName">

@@ -47,16 +47,16 @@
                     <td class="title clickable" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.title}}</td>
                 </div>
                 <div class="flex-group">
-                    <td class="created"><span class="square">{{
+                    <td class="created"><span class="square light">{{
                         (catalogue.start_time != null) ? catalogue.start_time.substr(0, catalogue.start_time.indexOf(" ")).replace(/\-/g, "/") : 'Unset'
                     }}</span></td>
-                    <td class="deadline"><span class="square">{{
+                    <td class="deadline"><span class="square light">{{
                         (catalogue.end_time != null) ? catalogue.end_time.substr(0, catalogue.end_time.indexOf(" ")).replace(/\-/g, "/") : 'Unset'
                     }}</span></td>
 
                     <td class="stage">
-                        <span class="square stage">STAGE {{catalogue.phase}}</span>
-                        <span class="square status">tbd</span>
+                        <span class="square light stage">STAGE {{catalogue.phase}}</span>
+                        <span class="square light status">tbd%</span>
                     </td>
                 </div>
                 <div class="flex-group">
@@ -125,18 +125,6 @@ export default {
             })
             return dataSorted
         },
-        // startDate () {
-        //     const date = this.catalogue.start_time
-        //     const dateEnd = date.indexOf(" ")
-        //     const newDate = date.substr(0, dateEnd)
-        //     return newDate.replace('-', '/')
-        // },
-        // endDate () {
-        //     const date = this.catalogue.end_time
-        //     const dateEnd = date.indexOf(" ")
-        //     const newDate = date.substr(0, dateEnd)
-        //     return newDate.replace('-', '/')
-        // },
     },
     methods: {
         onSelect(index) {
@@ -187,6 +175,14 @@ export default {
             }
             &:nth-child(2) {
                 flex: 3;
+                justify-content: flex-start;
+                > * {
+                    flex: none;
+                    flex-basis: 100px;
+                    &.stage {
+                        flex-basis: 132px;
+                    }
+                }
             }
             &:nth-child(3) {
                 flex: 2;
@@ -216,6 +212,7 @@ export default {
             }
         }
         .flex-table-row {
+            height: 82px;
             > * {
                 flex: 1;
                 margin: 0 8px;
@@ -234,101 +231,6 @@ export default {
             }
         }
     }
-
-
-
-
-    // table {
-    //     margin-left: -16px;
-    //     margin-right: -16px;
-    //     width: calc(100% + 32px);
-    //     &.disabled {
-    //         opacity: .5;
-    //     }
-    // }
-    // tr > * {
-    //     &.action {
-    //         padding: 0 32px;
-    //         text-align: right;
-    //     }
-    // }
-    // tr:hover {
-    //     background: $light;
-    // }
-    // i {
-    //     margin-right: 12px;
-    //     font-size: 11px;
-    //     &.fa-arrow-up {
-    //         color: $green;
-    //     }
-    //     &.fa-arrow-down {
-    //         color: $red;
-    //     }
-    // }
-    // tr.header-row {
-    //     background: white;
-    //     font-weight: 700;
-    //     font-size: 12px;
-    //     height: 45px;
-    //     border-bottom: solid 2px $light1;
-    // }
-    // tr.catalogue-row {
-    //     border-bottom: solid 1px $light2;
-    //     &.in > :first-child {
-    //         box-shadow: 4px 0 $green inset
-    //     }
-    //     &.out > :first-child {
-    //         box-shadow: 4px 0 $red inset
-    //     }
-    // }
-    // th {
-    //     text-transform: uppercase;
-    //     font-size: 12px;
-    //     font-weight: 600;
-    //     color: $dark2;
-    //     &:first-child {
-    //         padding-left: 16px;
-    //         width: 100px;
-    //     }
-    //     &.id {
-    //         width: 75px;
-    //     }
-    //     &.title {
-    //         width: 150px;
-    //         padding-left: 40px;
-    //     }
-    //     i {
-    //         color: $light2;
-    //         margin: 0;
-    //         margin-left: 4px;
-    //     }
-    //     &.active {
-    //         i {
-    //             color: $primary
-    //         }
-    //     }
-    // }
-    // td {
-    //     &.select {
-    //         padding: 20px 0;
-    //         padding-left: 20px;
-    //     }
-    //     &.id {
-    //             white-space: nowrap;
-    //             max-width: 50px;
-    //             overflow: hidden;
-    //     }
-    //     &.title {
-    //         padding: 0 40px;
-    //         white-space: nowrap;
-    //     }
-    //     &.created, &.deadline {
-    //         width: 120px;
-    //     }
-    //     &.stage {
-    //         width: 84px;
-    //     }
-    // }
     .show-more {
         width: 100%;
         margin: 16px auto 0;
@@ -393,24 +295,6 @@ export default {
     .checkbox input:checked ~ .checkmark:after {
       display: block;
     }
-    // .square {
-    //     background: $light1;
-    //     padding: 7px 10px;
-    //     border-radius: 4px;
-    //     font-size: 12px;
-    //     font-weight: 700;
-    //     &.sales {
-    //         background: $primary;
-    //     }
-    //     &.admin {
-    //         background: $dark05;
-    //     }
-    //     i {
-    //         color: $dark2;
-    //         margin-right: 16px;
-    //         font-size: 16px;
-    //     }
-    // }
     .button {
         display: inline-block;
         width: 86px;
@@ -441,8 +325,6 @@ export default {
     .view-single {
         font-size: 12px;
         font-weight: 700;
-        // padding: 0 12px;
-        // color: $dark2;
         cursor: pointer;
     }
     .catalogue-totals {

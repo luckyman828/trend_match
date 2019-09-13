@@ -4,6 +4,7 @@
         <div class="underline"></div>
         <!-- <TeamsTopBar :itemsToFilter="teams" :title="'Teams'"/> -->
         <TeamsTable :teams="teams" :users="users" :loading="isLoading" :authUser="authUser" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/>
+        <!-- <TeamsTableAlt :teams="teams" :users="users" :loading="isLoading" :authUser="authUser" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/> -->
         <ModalInviteToTeam :teams="teams" :team="singleTeam" :users="users" :authUser="authUser" ref="modal"/>
     </div>
 </template>
@@ -13,6 +14,7 @@ import { mapActions, mapGetters } from 'vuex'
 import Team from '../../store/models/Team'
 import TeamsTopBar from '../TeamsTopBar'
 import TeamsTable from '../TeamsTable'
+import TeamsTableAlt from '../TeamsTableAlt'
 import ModalInviteToTeam from '../ModalInviteToTeam'
 import User from '../../store/models/User'
 import UserTeam from '../../store/models/UserTeam'
@@ -24,6 +26,7 @@ export default {
     components: {
         TeamsTopBar,
         TeamsTable,
+        TeamsTableAlt,
         ModalInviteToTeam,
     },
     data: function () { return {

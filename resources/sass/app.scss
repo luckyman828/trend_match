@@ -42,6 +42,11 @@ textarea {
     white-space: pre-wrap;
     word-wrap: break-word;
 }
+.container {
+    margin: auto;
+    width: 100%;
+    max-width: 1440px;
+}
 
 .login-wrapper {
     background: $dark05;
@@ -280,7 +285,7 @@ textarea {
     }
     // -- SIZES --
     &.true-square {
-        min-width: 0;
+        min-width: 32px;
         width: 32px;
         padding: 0;
     }
@@ -315,7 +320,7 @@ textarea {
     }
 }
 .square {
-
+    font-weight: 700;
 }
 .pill {
     height: 20px;
@@ -751,4 +756,17 @@ form, .form-group {
   
   .fade-enter, .fade-leave-active {
     opacity: 0
+  }
+
+
+  // SCREEN SIZES / MEDIA QUERIES
+  .hide-screen-sm {
+    @media screen and (max-width: $screenSmall) {
+        display: none !important;
+    }
+  }
+  .show-screen-sm {
+    @media screen and (min-width: $screenSmall + 1) {
+        display: none !important;
+    }
   }

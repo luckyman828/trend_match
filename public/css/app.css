@@ -8683,6 +8683,12 @@ textarea {
   word-wrap: break-word;
 }
 
+.container {
+  margin: auto;
+  width: 100%;
+  max-width: 1440px;
+}
+
 .login-wrapper {
   background: #3C3B54;
   min-height: 100vh;
@@ -9239,7 +9245,7 @@ textarea {
 
 .button.true-square,
 .square.true-square {
-  min-width: 0;
+  min-width: 32px;
   width: 32px;
   padding: 0;
 }
@@ -9280,6 +9286,10 @@ textarea {
 
 .button.text-link:hover {
   border-bottom: solid 1px;
+}
+
+.square {
+  font-weight: 700;
 }
 
 .pill {
@@ -9852,5 +9862,17 @@ label:not(.checkbox) .form-group > label[type=submit] {
 .fade-enter,
 .fade-leave-active {
   opacity: 0;
+}
+
+@media screen and (max-width: 1400px) {
+  .hide-screen-sm {
+    display: none !important;
+  }
+}
+
+@media screen and (min-width: 1401px) {
+  .show-screen-sm {
+    display: none !important;
+  }
 }
 

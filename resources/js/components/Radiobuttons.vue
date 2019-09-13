@@ -77,7 +77,8 @@ export default {
         // Preset the selection
         if ( !this.selection )
             if (this.currentOptionId)
-                document.querySelector('#radio-option-' + this.currentOptionId).checked = true
+                if (document.querySelector('#radio-option-' + this.currentOptionId))
+                    document.querySelector('#radio-option-' + this.currentOptionId).checked = true
     },
     mounted() {
         if (this.currentOptionId)

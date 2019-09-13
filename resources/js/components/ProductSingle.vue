@@ -299,16 +299,28 @@ export default {
         &.visible {
             width: 100%;
         }
-        &.sticky {
-            right: 76px;
-            top: 130px;
-            position: fixed;
-            height: calc(100vh - 130px);
-            > .card {
-                height: 100%;
-                overflow: hidden;
-            }
+        // &.sticky {
+        //     right: 76px;
+        //     top: 130px;
+        //     position: fixed;
+        //     height: calc(100vh - 130px);
+        //     > .card {
+        //         height: 100%;
+        //         overflow: hidden;
+        //     }
+        // }
+
+        // ALWAYS STICKY
+        right: 76px;
+        top: 130px;
+        position: fixed;
+        height: calc(100vh - 130px);
+        > .card {
+            height: 100%;
+            overflow: hidden;
         }
+        // ALWAYS STICKY ENDS
+
         > .card {
             margin: 0;
             background: white;
@@ -316,8 +328,18 @@ export default {
             animation-iteration-count: 1;
             animation-timing-function: ease-out;
             padding: 0;
+            display: flex;
+            flex-direction: column;
             .inner {
                 padding: 1em;
+                height: 50%;
+                flex: 1;
+                display: grid;
+                grid-template-rows: 100%;
+                .comments {
+                    display: flex;
+                    flex-direction: column;
+                }
             }
         }  
         .image {
@@ -360,26 +382,6 @@ export default {
             }
         }
     }
-    // .square {
-    //     background: $light1;
-    //     color: $dark;
-    //     border-radius: 4px;
-    //     font-size: 14px;
-    //     font-weight: 600;
-    //     display: inline-block;
-    //     padding: 0;
-    //     height: 32px;
-    //     width: 32px;
-    //     text-align: center;
-    //     line-height: 40px;
-    //     &:hover {
-    //         cursor: pointer;
-    //         background: $light;
-    //     }
-    //     i {
-    //         font-size: 22px;
-    //     }
-    // }
     .card > .grid-2 {
         > :first-child {
             overflow-x: hidden;
@@ -402,55 +404,11 @@ export default {
             }
         }
     }
-    // .button {
-    //     display: inline-block;
-    //     width: 86px;
-    //     height: 32px;
-    //     line-height: 32px;
-    //     font-size: 12px;
-    //     border-radius: 4px;
-    //     padding: 0;
-    //     line-height: 28px;
-    //     position: relative;
-    //     font-weight: 700;
-    //     padding-right: 22px;
-    //     color: $dark2;
-    //     border-color: $light2;
-    //     i {
-    //         font-size: 16px;
-    //         position: absolute;
-    //         right: 10px;
-    //         top: 5px;
-    //         margin: 0;
-    //     }
-    //     &.active {
-    //         i {
-    //             font-weight: 900;
-    //         }
-    //     }
-    // }
+
     .button {
-        // min-width: 86px;
-        // padding: 0;
-        // position: relative;
         &:nth-child(1n+2) {
             margin-left: 8px;
         }
-        // &:not(.view-single) {
-        //     padding-right: 22px;
-        // }
-        // i {
-        //     font-size: 16px;
-        //     position: absolute;
-        //     right: 10px;
-        //     top: 5px;
-        //     margin: 0;
-        // }
-        // &.active {
-        //     i {
-        //         font-weight: 900;
-        //     }
-        // }
     }
     .controls-wrapper {
         display: flex;

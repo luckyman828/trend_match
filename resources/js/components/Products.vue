@@ -1,7 +1,13 @@
 <template>
     <div class="products card" :class="{sticky: sticky}">
         <div class="scroll-bg"></div>
-        <product-totals :totalProductCount="totalProductCount" :selectedCount="selectedCount" :products="products"/>
+        <!-- <product-totals :totalProductCount="totalProductCount" :selectedCount="selectedCount" :products="products"/> -->
+        <div class="product-totals">
+            <span>{{selectedCount}} selected</span>
+            <span v-if="products.length != totalProductCount">{{products.length}}/{{totalProductCount}} showing</span>
+            <span v-else>{{totalProductCount}} records</span>
+            <!-- <span>{{totalProductCount}} records</span> -->
+        </div>
         <product-single :loading="loadingSingle" :catalogue="collection" :sticky="sticky" :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut"/>
         <div class="flex-table" :class="{disabled: singleProductToShow.id != null}">
             <div class="header-row flex-table-row">
@@ -68,16 +74,16 @@
                     
                     <template v-if="userPermissionLevel != viewAdminPermissionLevel">
                         <template v-if="currentTeamId == 0">
-                            <td class="square-wrapper focus"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'teams', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
-                            <td class="square-wrapper"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'teams', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length + product.focus.length}}</span></td>
-                            <td class="square-wrapper"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'teams', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
-                            <td class="square-wrapper nds"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'teams', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}} /{{teams.length}}</span></td>
+                            <td class="square-wrapper focus"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'teams', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
+                            <td class="square-wrapper"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'teams', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
+                            <td class="square-wrapper"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'teams', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
+                            <td class="square-wrapper nds"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'teams', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{teams.length}}</span></td>
                         </template>
                         <template v-else>
-                            <td class="square-wrapper focus"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'users', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star"></i>{{product.focus.length}}</span></td>
-                            <td class="square-wrapper"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'users', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart"></i>{{product.ins.length + product.focus.length}}</span></td>
-                            <td class="square-wrapper"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'users', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle"></i>{{product.outs.length}}</span></td>
-                            <td class="square-wrapper nds"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle"></i>{{product.nds.length}} /{{teamUsers.length}}</span></td>
+                            <td class="square-wrapper focus"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'users', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
+                            <td class="square-wrapper"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'users', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
+                            <td class="square-wrapper"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'users', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
+                            <td class="square-wrapper nds"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{teamUsers.length}}</span></td>
                         </template>
                     </template>
 
@@ -85,7 +91,7 @@
 
                     <template v-if="userPermissionLevel >= 2">
                             <td class="action">
-                                <span v-if="userPermissionLevel == 2" class="square true-square clickable focus-action" :class="[(product[actionScope] != null) ? (product[actionScope].action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 2)">
+                                <span v-if="userPermissionLevel == 2" class="square light-2 true-square clickable focus-action" :class="[(product[actionScope] != null) ? (product[actionScope].action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 2)">
                                 <i class="far fa-star"></i>
                                 </span>
                                 <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 1)">
@@ -239,8 +245,8 @@ export default {
         onViewSingle(id) {
             // Emit event to parent
             this.$emit('viewAsSingle', id)
-            if (document.getElementById('app-component').scrollTop < 130)
-                document.getElementById('app-component').scrollTo(0, 130)
+            if (document.getElementById('main').scrollTop < 130)
+                document.getElementById('main').scrollTo(0, 130)
         },
         onSelect(index) {
             this.$emit('onSelect', index)
@@ -329,15 +335,36 @@ export default {
                 input.checked = false
             })
         },
+        getPosition(element) {
+            var xPosition = 0;
+            var yPosition = 0;
+
+            while(element) {
+                xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+                yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
+                element = element.offsetParent;
+            }
+
+            return { x: xPosition, y: yPosition };
+        },
         handleScroll (event) {
             // Fix table header to screen
-            const theWindow = document.getElementById('app-component')
+            const theWindow = document.getElementById('main')
             let scrollDist = theWindow.scrollTop
             const stickyThis = document.querySelector('.product-tabs')
+            const scrollBg = document.querySelector('.scroll-bg')
+            const tableHeader = document.querySelector('.flex-table .header-row')
+            const headerParent = tableHeader.parentElement
+            // console.log(stickyThis.parentElement)
             const stickyThisTop = stickyThis.getBoundingClientRect().top - 70
+            // console.log(this.getPosition(headerParent).x)
             if (scrollDist >= 130) {
                 this.sticky = true
                 stickyThis.classList.add('sticky')
+
+                // scrollBg.style.cssText = `width: ${theWindow.scrollWidth}px; left: ${theWindow.offsetLeft}px`
+                scrollBg.style.cssText = `width: ${theWindow.scrollWidth}px;`
+                tableHeader.style.cssText = `width: ${headerParent.scrollWidth}px; left: ${this.getPosition(headerParent).x - 1}px`
             } else {
                 this.sticky = false
                 stickyThis.classList.remove('sticky')
@@ -358,10 +385,10 @@ export default {
         },
     },
     created () {
-        document.getElementById('app-component').addEventListener('scroll', this.handleScroll);
+        document.getElementById('main').addEventListener('scroll', this.handleScroll);
     },
     destroyed () {
-        document.getElementById('app-component').removeEventListener('scroll', this.handleScroll);
+        document.getElementById('main').removeEventListener('scroll', this.handleScroll);
     }
 }
 </script>
@@ -379,6 +406,7 @@ export default {
     .products {
         margin-top: 0;
         position: relative;
+        padding: 0;
         &.sticky {
             margin-top: 90px;
             .scroll-bg {
@@ -386,19 +414,21 @@ export default {
                 z-index: 8;
                 position: fixed;
                 right: 20px;
-                top: 0;
+                top: 70px;
+                right: 0;
                 background: $light;
                 width: 100%;
-                height: 130px;
+                height: 60px;
+                box-shadow: 0 3px 5px rgba(0,0,0,.05) inset;
             }
             .header-row {
                 position: fixed;
-                top: $navbarHeight + 20px + 40px;
+                top: $navbarHeight + 20px + 40px - 2px;
                 z-index: 9;
                 background: white;
-                width: calc(100% - 120px - 200px - 16px);
+                // width: calc(100% - 120px - 200px - 16px);
                 margin-left: 1px;
-                border-radius: 0.25rem 0.25rem 0 0;
+                border-radius: 6px 6px 0 0;
                 box-shadow: 0 6px 3px -2px rgba(0,0,0, .05);
             }
         }
@@ -413,9 +443,11 @@ export default {
         padding-top: 0;
     }
     .flex-table {
-        margin-left: -16px;
-        margin-right: -16px;
-        width: calc(100% + 32px);
+        .card > & {
+            margin-left: 0;
+            margin-right: 0;
+            width: 100%;
+        }
         &.disabled {
             opacity: .5;
         }
@@ -439,6 +471,7 @@ export default {
             }
             &.title {
                 width: 300px;
+                min-width: 120px;
                 margin-left: 16px;
                 // padding-right: 16px;
             }
@@ -446,21 +479,26 @@ export default {
                 margin-left: auto;
             }
             &.square-wrapper {
-                min-width: 70px;
+                min-width: 56px;
                 margin-left: 16px;
                 box-sizing: content-box;
+                .square {
+                    min-width: 56px;
+                    width: auto;
+                    padding: 0 4px;
+                }
             }
-            &.nds {
-                min-width: 100px;
-            }
+            // &.nds {
+            //     min-width: 100px;
+            // }
             &.comments {
-                min-width: 86px;
+                min-width: 82px;
             }
             &.action {
                 margin-left: 16px;
                 margin-right: 16px;
                 flex: 1;
-                min-width: 320px;
+                min-width: 284px;
                 justify-content: flex-end;
                 &:not(th) {
                     display: flex;
@@ -590,6 +628,7 @@ export default {
         }
     }
     .button {
+        min-width: 72px;
         &:nth-child(1n+2) {
             margin-left: 12px;
         }
@@ -599,7 +638,30 @@ export default {
         font-weight: 700;
         cursor: pointer;
     }
-    .square-wrapper {
-        min-width: 65px;
+    // Table totals
+    .product-totals {
+        position: absolute;
+        right: 0;
+        top: -40px;
+        height: 40px;
+        line-height: 40px;
+        span {
+            font-weight: 500;
+            font-size: 14px;
+            &:not(:last-child) {
+                margin-right: 20px;
+            }
+        }
+    }
+
+    // SMALL SCREENS AND HIGH DPI
+    @media screen and (max-width: $screenSmall) {
+
+        @media	only screen and (-webkit-min-device-pixel-ratio: 1.3),
+        only screen and (-o-min-device-pixel-ratio: 13/10),
+        only screen and (min-resolution: 120dpi)
+        {
+            
+        }
     }
 </style>

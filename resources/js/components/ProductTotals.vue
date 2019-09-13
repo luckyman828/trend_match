@@ -24,10 +24,10 @@ export default {
         top: -40px;
         height: 40px;
         line-height: 40px;
-    }
-    span {
-        font-weight: 500;
-        font-size: 14px;
-        margin-right: 20px;
+        span {
+            font-weight: 500;
+            font-size: 14px;
+            margin-right: 20px;
+        }
     }
 </style>

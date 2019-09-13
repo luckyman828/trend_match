@@ -43,10 +43,14 @@ class TeamController extends Controller
 
     public function store(Request $request, $workspace_id)
     {
-        // First, check if an action for the following product and phase already exists
-        $existingTeam = Team::where('title', $request->title)->where('workspace_id', $workspace_id)->first();
+        // First, check if the team already exists
+        // $existingTeam = Team::where('title', $request->title)->where('workspace_id', $workspace_id)->first();
 
-        $team = ($existingTeam) ? $existingTeam : new Team;
+        // return $existingTeam;
+        
+        // $team = ($existingTeam) ? $existingTeam : new Team;
+        $team = new Team;
+        // return $team;
         
         $team->title = $request->title;
         $team->workspace_id = $workspace_id;

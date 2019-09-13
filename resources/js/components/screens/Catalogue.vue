@@ -173,8 +173,9 @@ export default{
                     let teamPrices = null
                     if (this.currentWorkspace.currency != null)
                         workspacePrices = product.prices.find(x => x.currency == this.currentWorkspace.currency)
-                    if (this.currentTeam.currency != null)
-                        teamPrices = product.prices.find(x => x.currency == this.currentTeam.currency)
+                    if (this.currentTeam)
+                        if (this.currentTeam.currency != null)
+                            teamPrices = product.prices.find(x => x.currency == this.currentTeam.currency)
 
                     if ( this.userPermissionLevel <= 4 ) {
                     // Use team currency for low level members

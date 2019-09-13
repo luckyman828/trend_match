@@ -7142,8 +7142,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _components_Sidebar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/Sidebar */ "./resources/js/components/Sidebar.vue");
 /* harmony import */ var _components_Navbar__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/Navbar */ "./resources/js/components/Navbar.vue");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
-/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+/* harmony import */ var _components_NavbarLogo__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/NavbarLogo */ "./resources/js/components/NavbarLogo.vue");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -7166,6 +7167,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+
 
 
 
@@ -7177,7 +7182,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   store: _store__WEBPACK_IMPORTED_MODULE_1__["default"],
   components: {
     Sidebar: _components_Sidebar__WEBPACK_IMPORTED_MODULE_3__["default"],
-    Navbar: _components_Navbar__WEBPACK_IMPORTED_MODULE_4__["default"]
+    Navbar: _components_Navbar__WEBPACK_IMPORTED_MODULE_4__["default"],
+    NavbarLogo: _components_NavbarLogo__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
   data: function data() {
     return {// currentWorkspaceId: null,
@@ -7185,7 +7191,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['userPermissionLevel', 'currentWorkspaceId']), {
     authUser: function authUser() {
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_5__["default"].query()["with"]('teams')["with"]('workspaces').first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_6__["default"].query()["with"]('teams')["with"]('workspaces').first();
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/roles', ['fetchRoles']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']), {
@@ -8068,6 +8074,28 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/NavbarLogo.vue?vue&type=script&lang=js&":
+/*!*********************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/NavbarLogo.vue?vue&type=script&lang=js& ***!
+  \*********************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'navbarLogo'
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ProductSingle.vue?vue&type=script&lang=js&":
 /*!************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ProductSingle.vue?vue&type=script&lang=js& ***!
@@ -8479,7 +8507,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['submittingComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']), {
     submitDisabled: function submitDisabled() {
-      if (this.newComment.comment.length < 1 || this.submittingComment) return true;else return false;
+      if (this.newComment.comment.length < 1 || this.submittingComment || this.currentTeamId < 0) return true;else return false;
     },
     commentsToShow: function commentsToShow() {
       var _this = this;
@@ -8802,6 +8830,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -8937,7 +8971,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     onViewSingle: function onViewSingle(id) {
       // Emit event to parent
       this.$emit('viewAsSingle', id);
-      if (document.getElementById('app-component').scrollTop < 130) document.getElementById('app-component').scrollTo(0, 130);
+      if (document.getElementById('main').scrollTop < 130) document.getElementById('main').scrollTo(0, 130);
     },
     onSelect: function onSelect(index) {
       this.$emit('onSelect', index);
@@ -9023,16 +9057,38 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         input.checked = false;
       });
     },
+    getPosition: function getPosition(element) {
+      var xPosition = 0;
+      var yPosition = 0;
+
+      while (element) {
+        xPosition += element.offsetLeft - element.scrollLeft + element.clientLeft;
+        yPosition += element.offsetTop - element.scrollTop + element.clientTop;
+        element = element.offsetParent;
+      }
+
+      return {
+        x: xPosition,
+        y: yPosition
+      };
+    },
     handleScroll: function handleScroll(event) {
       // Fix table header to screen
-      var theWindow = document.getElementById('app-component');
+      var theWindow = document.getElementById('main');
       var scrollDist = theWindow.scrollTop;
       var stickyThis = document.querySelector('.product-tabs');
-      var stickyThisTop = stickyThis.getBoundingClientRect().top - 70;
+      var scrollBg = document.querySelector('.scroll-bg');
+      var tableHeader = document.querySelector('.flex-table .header-row');
+      var headerParent = tableHeader.parentElement; // console.log(stickyThis.parentElement)
+
+      var stickyThisTop = stickyThis.getBoundingClientRect().top - 70; // console.log(this.getPosition(headerParent).x)
 
       if (scrollDist >= 130) {
         this.sticky = true;
-        stickyThis.classList.add('sticky');
+        stickyThis.classList.add('sticky'); // scrollBg.style.cssText = `width: ${theWindow.scrollWidth}px; left: ${theWindow.offsetLeft}px`
+
+        scrollBg.style.cssText = "width: ".concat(theWindow.scrollWidth, "px;");
+        tableHeader.style.cssText = "width: ".concat(headerParent.scrollWidth, "px; left: ").concat(this.getPosition(headerParent).x - 1, "px");
       } else {
         this.sticky = false;
         stickyThis.classList.remove('sticky');
@@ -9052,10 +9108,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   created: function created() {
-    document.getElementById('app-component').addEventListener('scroll', this.handleScroll);
+    document.getElementById('main').addEventListener('scroll', this.handleScroll);
   },
   destroyed: function destroyed() {
-    document.getElementById('app-component').removeEventListener('scroll', this.handleScroll);
+    document.getElementById('main').removeEventListener('scroll', this.handleScroll);
   }
 });
 
@@ -9147,7 +9203,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   updated: function updated() {
     // Preset the selection
-    if (!this.selection) if (this.currentOptionId) document.querySelector('#radio-option-' + this.currentOptionId).checked = true;
+    if (!this.selection) if (this.currentOptionId) if (document.querySelector('#radio-option-' + this.currentOptionId)) document.querySelector('#radio-option-' + this.currentOptionId).checked = true;
   },
   mounted: function mounted() {
     if (this.currentOptionId) if (document.querySelector('#radio-option-' + this.currentOptionId)) document.querySelector('#radio-option-' + this.currentOptionId).checked = true;
@@ -9263,6 +9319,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _SignoutButton__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SignoutButton */ "./resources/js/components/SignoutButton.vue");
 /* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
 /* harmony import */ var _store_models_Role__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../store/models/Role */ "./resources/js/store/models/Role.js");
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -9657,6 +9719,167 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   updated: function updated() {
     this.setHeights();
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamsTableAlt.vue?vue&type=script&lang=js&":
+/*!************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/TeamsTableAlt.vue?vue&type=script&lang=js& ***!
+  \************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'teamsTableAlt',
+  data: function data() {
+    return {
+      rows: [{
+        title: 'fisk fisk hest fugl hane frø stork ribe hylander fars grønland snaps',
+        value: 'hest',
+        something: 'niels',
+        name: 'Henri',
+        anArray: [{
+          a: '123',
+          b: '321',
+          c: '544',
+          d: '422'
+        }, {
+          a: '423',
+          b: '654',
+          c: '765',
+          d: '567'
+        }, {
+          a: '423',
+          b: '654',
+          c: '765',
+          d: '567'
+        }, {
+          a: '5567',
+          b: '666',
+          c: '644',
+          d: '456'
+        }]
+      }, {
+        title: 'hest',
+        value: 'honning',
+        something: 'sovs',
+        name: 'Margrethe',
+        anArray: [{
+          a: '423',
+          b: '654',
+          c: '765',
+          d: '567'
+        }]
+      }, {
+        title: 'niels',
+        value: 'marmelade',
+        something: 'pipe',
+        name: 'Gumle',
+        anArray: []
+      }, {
+        title: 'peter',
+        value: 'ost',
+        something: 'rensdyr',
+        name: 'Filoni',
+        anArray: [{
+          a: '2725',
+          b: '171',
+          c: '515',
+          d: '754'
+        }]
+      }]
+    };
+  },
+  methods: {
+    autoSizeTable: function autoSizeTable() {
+      var table = document.querySelector('.js-table');
+      var rows = table.querySelectorAll('.row');
+      var cellWidths = [];
+      rows.forEach(function (row) {
+        var cellIndex = 0;
+        Array.from(row.children).forEach(function (cell) {
+          var cellWidth = cell.scrollWidth;
+
+          if (cellWidths[cellIndex] != null) {
+            if (cellWidths[cellIndex].cellWidth < cellWidth) cellWidths[cellIndex].cellWidth = cellWidth;
+          } else {
+            cellWidths.push({
+              cellIndex: cellIndex,
+              cellWidth: cellWidth
+            });
+          }
+
+          cellIndex++;
+        });
+      });
+      rows.forEach(function (row) {
+        var cellIndex = 0;
+        Array.from(row.children).forEach(function (cell) {
+          cell.style.minWidth = cellWidths[cellIndex].cellWidth + 'px'; // cell.style.minWidth = 100 + 'px'
+
+          cellIndex++;
+        });
+      });
+      console.log(cellWidths);
+    }
+  },
+  mounted: function mounted() {
+    this.autoSizeTable();
   }
 });
 
@@ -10357,7 +10580,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           if (_this.currentWorkspace.currency != null) workspacePrices = product.prices.find(function (x) {
             return x.currency == _this.currentWorkspace.currency;
           });
-          if (_this.currentTeam.currency != null) teamPrices = product.prices.find(function (x) {
+          if (_this.currentTeam) if (_this.currentTeam.currency != null) teamPrices = product.prices.find(function (x) {
             return x.currency == _this.currentTeam.currency;
           });
 
@@ -11241,11 +11464,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
 /* harmony import */ var _TeamsTopBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../TeamsTopBar */ "./resources/js/components/TeamsTopBar.vue");
 /* harmony import */ var _TeamsTable__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../TeamsTable */ "./resources/js/components/TeamsTable.vue");
-/* harmony import */ var _ModalInviteToTeam__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../ModalInviteToTeam */ "./resources/js/components/ModalInviteToTeam.vue");
-/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
-/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
-/* harmony import */ var _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../store/models/TeamInvite */ "./resources/js/store/models/TeamInvite.js");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _TeamsTableAlt__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../TeamsTableAlt */ "./resources/js/components/TeamsTableAlt.vue");
+/* harmony import */ var _ModalInviteToTeam__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../ModalInviteToTeam */ "./resources/js/components/ModalInviteToTeam.vue");
+/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
+/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../store/models/TeamInvite */ "./resources/js/store/models/TeamInvite.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -11260,6 +11484,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+
 
 
 
@@ -11274,7 +11500,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   components: {
     TeamsTopBar: _TeamsTopBar__WEBPACK_IMPORTED_MODULE_2__["default"],
     TeamsTable: _TeamsTable__WEBPACK_IMPORTED_MODULE_3__["default"],
-    ModalInviteToTeam: _ModalInviteToTeam__WEBPACK_IMPORTED_MODULE_4__["default"]
+    TeamsTableAlt: _TeamsTableAlt__WEBPACK_IMPORTED_MODULE_4__["default"],
+    ModalInviteToTeam: _ModalInviteToTeam__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
   data: function data() {
     return {
@@ -11289,16 +11516,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return this.$store.getters['persist/actionScope'];
     },
     authUser: function authUser() {
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_8__["default"].query()["with"]('workspaces')["with"]('teams')["with"]('role').first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_9__["default"].query()["with"]('workspaces')["with"]('teams')["with"]('role').first();
     },
     teamInvites: function teamInvites() {
-      return _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_7__["default"].query().all();
+      return _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_8__["default"].query().all();
     },
     userTeams: function userTeams() {
-      return _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_6__["default"].query()["with"]('team')["with"]('user').all();
+      return _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_7__["default"].query()["with"]('team')["with"]('user').all();
     },
     users: function users() {
-      return _store_models_User__WEBPACK_IMPORTED_MODULE_5__["default"].query()["with"]('teams')["with"]('role').all();
+      return _store_models_User__WEBPACK_IMPORTED_MODULE_6__["default"].query()["with"]('teams')["with"]('role').all();
     },
     teams: function teams() {
       return this.$store.getters['entities/teams/teams'];
@@ -11364,8 +11591,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$refs.modal.toggle();
     },
     initRequiresWorkspace: function initRequiresWorkspace() {
-      if (_store_models_User__WEBPACK_IMPORTED_MODULE_5__["default"].all().length <= 0) this.fetchUsers(this.currentWorkspaceId);
-      if (_store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_7__["default"].all().length <= 0) this.fetchTeamInvites(this.currentWorkspaceId);
+      if (_store_models_User__WEBPACK_IMPORTED_MODULE_6__["default"].all().length <= 0) this.fetchUsers(this.currentWorkspaceId);
+      if (_store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_8__["default"].all().length <= 0) this.fetchTeamInvites(this.currentWorkspaceId);
       this.singleTeam = this.teams[0];
     }
   }),
@@ -11519,7 +11746,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\nhtml, body, #app {\n  color: #1B1C1D;\n  background: #F9F9F9;\n}\n.app {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05) inset, 5px 0 6px rgba(0, 0, 0, 0.02) inset;\n  max-height: calc(100vh - 70px);\n  overflow: scroll;\n  scroll-behavior: smooth;\n}\n.main-wrapper {\n  padding-left: 200px;\n  padding-top: 70px;\n}\n.main {\n  min-height: 105vh;\n  padding: 20px 60px;\n}\n.container {\n  max-width: 1170px;\n}\nh1 {\n  margin-bottom: 30px;\n}\n.grid-2, .grid-3 {\n  display: grid;\n  grid-gap: 17px;\n}\n.grid-2.small-gap, .grid-3.small-gap {\n  grid-gap: 12px;\n}\n.grid-3 {\n  grid-template-columns: repeat(3, 1fr);\n}\n.grid-2 {\n  grid-template-columns: repeat(2, 1fr);\n}\n.card {\n  padding: 1em;\n  border-radius: 6px;\n  margin: 30px 0;\n  border: none;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n}\n.pill {\n  background: #F3F3F3;\n  height: 20px;\n  font-size: 13px;\n  border-radius: 20px;\n  width: 85px;\n  height: 25px;\n  display: inline-block;\n  line-height: 25px;\n  text-align: center;\n}\n.pill.positive {\n  background: rgba(105, 228, 166, 0.35);\n}\n.tabs {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.tabs .tab {\n  display: inline-block;\n  font-size: 18px;\n  opacity: 0.5;\n  padding: 10px 25px;\n  border-bottom: solid 3px transparent;\n  margin-bottom: 8px;\n}\n.tabs .tab.active {\n  opacity: 1;\n  border-color: #3B86FF;\n}\n.tabs .tab:not(.active):hover {\n  border-color: rgba(59, 134, 255, 0.5);\n  cursor: pointer;\n}\n.vdp-datepicker {\n  display: grid;\n  justify-items: end;\n}\n.vdp-datepicker.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.vdp-datepicker > div::after {\n  content: \"\\F078\";\n  font-size: 11px;\n  color: #A8A8A8;\n  display: block;\n  position: absolute;\n  z-index: 1;\n  right: 12px;\n  height: 32px;\n  top: 0;\n  line-height: 32px;\n  font-weight: 900;\n  font-family: \"Font Awesome 5 Pro\";\n}\n.vdp-datepicker input {\n  border: solid 1px #DFDFDF;\n  border-radius: 4px;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  padding-left: 12px;\n  height: 32px;\n  width: 150px;\n  font-size: 14px;\n  cursor: pointer;\n}\n.loading {\n  -webkit-animation: loading 2s;\n          animation: loading 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.flex-table {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled {\n  opacity: 0.5;\n}\n.flex-table .flex-table-row {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n  min-height: 45px;\n}\n.flex-table .flex-table-row > *.select {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table .header-row {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.flex-table .item-row {\n  border-bottom: solid 1px #F3F3F3;\n}\n.flex-table .item-row:hover {\n  background: #F9F9F9;\n}\n.flex-table th {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\n.flex-table th i {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\n.flex-table th.active i {\n  color: #3B86FF;\n}\n.clickable {\n  cursor: pointer;\n}\nbody::after {\n  content: \"\";\n  display: none;\n  position: fixed;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(27, 28, 29, 0.7);\n  z-index: 110;\n}\nbody.disabled::after {\n  display: block;\n}\ni.green {\n  color: #5EE2A0;\n}\ni.red {\n  color: #FF6565;\n}\ni.dark {\n  color: #1B1C1D;\n}\ni.primary {\n  color: #3B86FF;\n}\n*:not(.app) {\n  /* width */\n  /* Track */\n  /* Handle */\n}\n*:not(.app)::-webkit-scrollbar {\n  width: 3px;\n}\n*:not(.app)::-webkit-scrollbar-track {\n  background: #DFDFDF;\n}\n*:not(.app)::-webkit-scrollbar-thumb {\n  background: #A8A8A8;\n  border-radius: 2px;\n}\n*:not(.app)::-webkit-scrollbar-thumb:hover {\n  background: #888;\n}\n*:not(.app) .dark > *, *:not(.app) .dark {\n  /* width */\n  /* Track */\n  /* Handle */\n}\n*:not(.app) .dark > *::-webkit-scrollbar, *:not(.app) .dark::-webkit-scrollbar {\n  width: 5px;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-track, *:not(.app) .dark::-webkit-scrollbar-track {\n  background: transparent;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-thumb, *:not(.app) .dark::-webkit-scrollbar-thumb {\n  background: white;\n  box-shadow: -2px 0 #333 inset;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-thumb:hover, *:not(.app) .dark::-webkit-scrollbar-thumb:hover {\n  background: #3B86FF;\n}", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\nhtml, body, #app {\n  color: #1B1C1D;\n}\n.app {\n  scroll-behavior: smooth;\n  display: grid;\n  min-height: 100vh;\n  min-width: 100vw;\n  grid-template-columns: 260px auto;\n  grid-template-rows: 70px auto;\n  grid-template-areas: \"logo navbar\" \"sidebar main\";\n}\n@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-webkit-min-device-pixel-ratio: 1.25), only screen and (min-resolution: 120dpi) {\n.app .app {\n    grid-template-columns: 200px auto;\n}\n}\n@media screen and (max-width: 1400px) {\n.app {\n    grid-template-columns: 80px auto;\n}\n}\n.main {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05) inset, 5px 0 6px rgba(0, 0, 0, 0.02) inset;\n  padding: 20px 60px;\n  overflow-y: scroll;\n  overflow-x: auto;\n  background: #F9F9F9;\n}\nh1 {\n  margin-bottom: 30px;\n}\n.grid-2, .grid-3 {\n  display: grid;\n  grid-gap: 17px;\n}\n.grid-2.small-gap, .grid-3.small-gap {\n  grid-gap: 12px;\n}\n.grid-3 {\n  grid-template-columns: repeat(3, 1fr);\n}\n.grid-2 {\n  grid-template-columns: repeat(2, 1fr);\n}\n.card {\n  padding: 1em;\n  border-radius: 6px;\n  margin: 30px 0;\n  border: none;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n}\n.pill {\n  background: #F3F3F3;\n  height: 20px;\n  font-size: 13px;\n  border-radius: 20px;\n  width: 85px;\n  height: 25px;\n  display: inline-block;\n  line-height: 25px;\n  text-align: center;\n}\n.pill.positive {\n  background: rgba(105, 228, 166, 0.35);\n}\n.tabs {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.tabs .tab {\n  display: inline-block;\n  font-size: 18px;\n  opacity: 0.5;\n  padding: 10px 25px;\n  border-bottom: solid 3px transparent;\n  margin-bottom: 8px;\n}\n.tabs .tab.active {\n  opacity: 1;\n  border-color: #3B86FF;\n}\n.tabs .tab:not(.active):hover {\n  border-color: rgba(59, 134, 255, 0.5);\n  cursor: pointer;\n}\n.vdp-datepicker {\n  display: grid;\n  justify-items: end;\n}\n.vdp-datepicker.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.vdp-datepicker > div::after {\n  content: \"\\F078\";\n  font-size: 11px;\n  color: #A8A8A8;\n  display: block;\n  position: absolute;\n  z-index: 1;\n  right: 12px;\n  height: 32px;\n  top: 0;\n  line-height: 32px;\n  font-weight: 900;\n  font-family: \"Font Awesome 5 Pro\";\n}\n.vdp-datepicker input {\n  border: solid 1px #DFDFDF;\n  border-radius: 4px;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  padding-left: 12px;\n  height: 32px;\n  width: 150px;\n  font-size: 14px;\n  cursor: pointer;\n}\n.loading {\n  -webkit-animation: loading 2s;\n          animation: loading 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.card > .flex-table {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled {\n  opacity: 0.5;\n}\n.flex-table .flex-table-row {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n  min-height: 45px;\n}\n.flex-table .flex-table-row > *.select {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table .header-row {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.flex-table .item-row {\n  border-bottom: solid 1px #F3F3F3;\n}\n.flex-table .item-row:hover {\n  background: #F9F9F9;\n}\n.flex-table th {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n}\n.flex-table th i {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\n.flex-table th.active i {\n  color: #3B86FF;\n}\n.clickable {\n  cursor: pointer;\n}\nbody::after {\n  content: \"\";\n  display: none;\n  position: fixed;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(27, 28, 29, 0.7);\n  z-index: 110;\n}\nbody.disabled::after {\n  display: block;\n}\ni.green {\n  color: #5EE2A0;\n}\ni.red {\n  color: #FF6565;\n}\ni.dark {\n  color: #1B1C1D;\n}\ni.primary {\n  color: #3B86FF;\n}\n*:not(.app) {\n  /* width */\n  /* Track */\n  /* Handle */\n}\n*:not(.app)::-webkit-scrollbar {\n  width: 3px;\n}\n*:not(.app)::-webkit-scrollbar-track {\n  background: #DFDFDF;\n}\n*:not(.app)::-webkit-scrollbar-thumb {\n  background: #A8A8A8;\n  border-radius: 2px;\n}\n*:not(.app)::-webkit-scrollbar-thumb:hover {\n  background: #888;\n}\n*:not(.app) .dark > *, *:not(.app) .dark {\n  /* width */\n  /* Track */\n  /* Handle */\n}\n*:not(.app) .dark > *::-webkit-scrollbar, *:not(.app) .dark::-webkit-scrollbar {\n  width: 5px;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-track, *:not(.app) .dark::-webkit-scrollbar-track {\n  background: transparent;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-thumb, *:not(.app) .dark::-webkit-scrollbar-thumb {\n  background: white;\n  box-shadow: -2px 0 #333 inset;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-thumb:hover, *:not(.app) .dark::-webkit-scrollbar-thumb:hover {\n  background: #3B86FF;\n}", ""]);
 
 // exports
 
@@ -11557,7 +11784,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".catalogues-table[data-v-f0b881ae] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.clickable[data-v-f0b881ae] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-f0b881ae] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-f0b881ae] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-f0b881ae] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-f0b881ae] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-f0b881ae] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.flex-table .flex-group > td.action[data-v-f0b881ae] {\n  text-align: right;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae]:last-child {\n  margin-right: 16px;\n}\n.flex-table .flex-table-row th.action[data-v-f0b881ae] {\n  text-align: right;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.show-more[data-v-f0b881ae] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-f0b881ae] {\n  -webkit-animation: loading-data-v-f0b881ae 2s;\n          animation: loading-data-v-f0b881ae 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-f0b881ae] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-f0b881ae]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-f0b881ae] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-f0b881ae] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-f0b881ae]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae]:after {\n  display: block;\n}\n.button[data-v-f0b881ae] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n  margin: 0;\n}\n.button i[data-v-f0b881ae] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-f0b881ae] {\n  font-weight: 900;\n}\n.view-single[data-v-f0b881ae] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-f0b881ae] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-f0b881ae] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
+exports.push([module.i, ".catalogues-table[data-v-f0b881ae] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.clickable[data-v-f0b881ae] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-f0b881ae] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n}\n.flex-table .flex-group:nth-child(2) > *[data-v-f0b881ae] {\n  -webkit-box-flex: 0;\n          flex: none;\n  flex-basis: 100px;\n}\n.flex-table .flex-group:nth-child(2) > *.stage[data-v-f0b881ae] {\n  flex-basis: 132px;\n}\n.flex-table .flex-group[data-v-f0b881ae]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-f0b881ae] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-f0b881ae] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-f0b881ae] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-f0b881ae] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.flex-table .flex-group > td.action[data-v-f0b881ae] {\n  text-align: right;\n}\n.flex-table .flex-table-row[data-v-f0b881ae] {\n  height: 82px;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-f0b881ae]:last-child {\n  margin-right: 16px;\n}\n.flex-table .flex-table-row th.action[data-v-f0b881ae] {\n  text-align: right;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.show-more[data-v-f0b881ae] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-f0b881ae] {\n  -webkit-animation: loading-data-v-f0b881ae 2s;\n          animation: loading-data-v-f0b881ae 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-f0b881ae {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-f0b881ae] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-f0b881ae]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-f0b881ae] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-f0b881ae] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-f0b881ae]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-f0b881ae]:after {\n  display: block;\n}\n.button[data-v-f0b881ae] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #A8A8A8;\n  border-color: #DFDFDF;\n  margin: 0;\n}\n.button i[data-v-f0b881ae] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-f0b881ae] {\n  font-weight: 900;\n}\n.view-single[data-v-f0b881ae] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-f0b881ae] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-f0b881ae] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
 
 // exports
 
@@ -11652,7 +11879,26 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".navbar[data-v-6dde423b] {\n  background-color: white;\n  z-index: 100;\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  -webkit-box-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: flex;\n}\n.navbar .logo-wrapper[data-v-6dde423b] {\n  min-width: 200px;\n  padding-left: 20px;\n}\n.navbar img[data-v-6dde423b] {\n  display: block;\n  height: 100%;\n}\n.navbar .flex-wrapper[data-v-6dde423b] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}", ""]);
+exports.push([module.i, ".navbar[data-v-6dde423b] {\n  grid-area: navbar;\n  width: 100%;\n  -webkit-box-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: flex;\n}\n.navbar .logo-wrapper[data-v-6dde423b] {\n  min-width: 260px;\n  padding-left: 20px;\n}\n.navbar img[data-v-6dde423b] {\n  display: block;\n  height: 100%;\n}\n.navbar .flex-wrapper[data-v-6dde423b] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/NavbarLogo.vue?vue&type=style&index=0&id=d1f7d5f4&lang=scss&scoped=true&":
+/*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/NavbarLogo.vue?vue&type=style&index=0&id=d1f7d5f4&lang=scss&scoped=true& ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "@media screen and (max-width: 1400px) {\n.logo[data-v-d1f7d5f4] {\n    display: -webkit-box;\n    display: flex;\n    -webkit-box-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n            align-items: center;\n}\n}\n@media screen and (min-width: 1401px) {\n.logo[data-v-d1f7d5f4] {\n    padding: 24px 20px 16px;\n}\n}", ""]);
 
 // exports
 
@@ -11671,7 +11917,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".product-single[data-v-019a7388] {\n  position: absolute;\n  right: 0;\n  top: 0;\n  margin: 0;\n  max-width: 60vw;\n  z-index: 1;\n}\n.product-single.visible[data-v-019a7388] {\n  width: 100%;\n}\n.product-single.sticky[data-v-019a7388] {\n  right: 76px;\n  top: 130px;\n  position: fixed;\n  height: calc(100vh - 130px);\n}\n.product-single.sticky > .card[data-v-019a7388] {\n  height: 100%;\n  overflow: hidden;\n}\n.product-single > .card[data-v-019a7388] {\n  margin: 0;\n  background: white;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #DFDFDF;\n  width: 100%;\n}\n.product-single .description > div > strong[data-v-019a7388] {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\nh3[data-v-019a7388] {\n  font-size: 18px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #A8A8A8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3B86FF;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 77vh;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #DFDFDF;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #F3F3F3;\n  padding: 6px 0;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n}\n.controls-wrapper .square[data-v-019a7388] {\n  margin-left: 1em;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  padding-right: 1em;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  cursor: pointer;\n  border-bottom: solid 2px #DFDFDF;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #F9F9F9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1B1C1D;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-color: #3B86FF;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tab-body[data-v-019a7388] {\n  background: #F3F3F3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #DFDFDF;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #A8A8A8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3B86FF;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #F3F3F3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #F3F3F3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3C3B54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}", ""]);
+exports.push([module.i, ".product-single[data-v-019a7388] {\n  position: absolute;\n  right: 0;\n  top: 0;\n  margin: 0;\n  max-width: 60vw;\n  z-index: 1;\n  right: 76px;\n  top: 130px;\n  position: fixed;\n  height: calc(100vh - 130px);\n}\n.product-single.visible[data-v-019a7388] {\n  width: 100%;\n}\n.product-single > .card[data-v-019a7388] {\n  height: 100%;\n  overflow: hidden;\n}\n.product-single > .card[data-v-019a7388] {\n  margin: 0;\n  background: white;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.product-single > .card .inner .comments[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #DFDFDF;\n  width: 100%;\n}\n.product-single .description > div > strong[data-v-019a7388] {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\nh3[data-v-019a7388] {\n  font-size: 18px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #A8A8A8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3B86FF;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 77vh;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #DFDFDF;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #F3F3F3;\n  padding: 6px 0;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n}\n.controls-wrapper .square[data-v-019a7388] {\n  margin-left: 1em;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  padding-right: 1em;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  cursor: pointer;\n  border-bottom: solid 2px #DFDFDF;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #F9F9F9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1B1C1D;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-color: #3B86FF;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tab-body[data-v-019a7388] {\n  background: #F3F3F3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #DFDFDF;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #A8A8A8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3B86FF;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #F3F3F3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #F3F3F3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3C3B54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}", ""]);
 
 // exports
 
@@ -11709,7 +11955,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".product-tabs.sticky[data-v-8351dd1c] {\n  position: fixed;\n  top: 90px;\n  z-index: 9;\n}\n.tab[data-v-8351dd1c] {\n  display: inline-block;\n  width: 184px;\n  background: #F3F3F3;\n  height: 40px;\n  line-height: 40px;\n  text-align: center;\n  font-size: 14px;\n  color: #A8A8A8;\n  margin-right: 4px;\n  font-weight: 500;\n  cursor: pointer;\n  border-radius: 6px 6px 0 0;\n}\n.tab .count[data-v-8351dd1c] {\n  margin-left: 8px;\n}\n.tab.active[data-v-8351dd1c] {\n  background: white;\n  color: #1B1C1D;\n  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);\n}\n.tab.active .count[data-v-8351dd1c] {\n  color: #A8A8A8;\n}", ""]);
+exports.push([module.i, ".product-tabs.sticky[data-v-8351dd1c] {\n  position: fixed;\n  top: 92px;\n  z-index: 9;\n}\n.tab[data-v-8351dd1c] {\n  display: inline-block;\n  width: 184px;\n  background: #F3F3F3;\n  height: 40px;\n  line-height: 40px;\n  text-align: center;\n  font-size: 14px;\n  color: #A8A8A8;\n  margin-right: 4px;\n  font-weight: 500;\n  cursor: pointer;\n  border-radius: 6px 6px 0 0;\n}\n.tab .count[data-v-8351dd1c] {\n  margin-left: 8px;\n}\n.tab.active[data-v-8351dd1c] {\n  background: white;\n  color: #1B1C1D;\n  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);\n}\n.tab.active .count[data-v-8351dd1c] {\n  color: #A8A8A8;\n}", ""]);
 
 // exports
 
@@ -11728,7 +11974,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".product-totals[data-v-c08477ba] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\nspan[data-v-c08477ba] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
+exports.push([module.i, ".product-totals[data-v-c08477ba] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.product-totals span[data-v-c08477ba] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
 
 // exports
 
@@ -11747,7 +11993,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1B1C1D;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n  position: relative;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 0;\n  background: #F9F9F9;\n  width: 100%;\n  height: 130px;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  width: calc(100% - 120px - 200px - 16px);\n  margin-left: 1px;\n  border-radius: 0.25rem 0.25rem 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.flex-table[data-v-57b394cf] {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  margin-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf] {\n  min-width: 70px;\n  margin-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.nds[data-v-57b394cf] {\n  min-width: 100px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 86px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: 16px;\n  margin-right: 16px;\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 320px;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table-row > *.action[data-v-57b394cf]:not(th) {\n  display: -webkit-box;\n  display: flex;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #F3F3F3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #FF6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #DFDFDF;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n  white-space: nowrap;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3B86FF;\n}\nth.action[data-v-57b394cf] {\n  text-align: right;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.square[data-v-57b394cf] {\n  color: #1B1C1D;\n  font-weight: 600;\n}\n.square[data-v-57b394cf]:not(.true-square) {\n  min-width: 58px;\n}\n.square i[data-v-57b394cf] {\n  color: #A8A8A8;\n}\n.square.focus-action.active i[data-v-57b394cf] {\n  font-weight: 900;\n  color: #3B86FF;\n}\n.button[data-v-57b394cf]:nth-child(1n+2) {\n  margin-left: 12px;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.square-wrapper[data-v-57b394cf] {\n  min-width: 65px;\n}", ""]);
+exports.push([module.i, ".dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1B1C1D;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n  position: relative;\n  padding: 0;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 70px;\n  right: 0;\n  background: #F9F9F9;\n  width: 100%;\n  height: 60px;\n  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05) inset;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  margin-left: 1px;\n  border-radius: 6px 6px 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.card > .flex-table[data-v-57b394cf] {\n  margin-left: 0;\n  margin-right: 0;\n  width: 100%;\n}\n.flex-table.disabled[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  min-width: 120px;\n  margin-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf] {\n  min-width: 56px;\n  margin-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.square-wrapper .square[data-v-57b394cf] {\n  min-width: 56px;\n  width: auto;\n  padding: 0 4px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 82px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: 16px;\n  margin-right: 16px;\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 284px;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table-row > *.action[data-v-57b394cf]:not(th) {\n  display: -webkit-box;\n  display: flex;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #F3F3F3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #F3F3F3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5EE2A0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #FF6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #DFDFDF;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #A8A8A8;\n  white-space: nowrap;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #DFDFDF;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3B86FF;\n}\nth.action[data-v-57b394cf] {\n  text-align: right;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #F9F9F9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.square[data-v-57b394cf] {\n  color: #1B1C1D;\n  font-weight: 600;\n}\n.square[data-v-57b394cf]:not(.true-square) {\n  min-width: 58px;\n}\n.square i[data-v-57b394cf] {\n  color: #A8A8A8;\n}\n.square.focus-action.active i[data-v-57b394cf] {\n  font-weight: 900;\n  color: #3B86FF;\n}\n.button[data-v-57b394cf] {\n  min-width: 72px;\n}\n.button[data-v-57b394cf]:nth-child(1n+2) {\n  margin-left: 12px;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.product-totals[data-v-57b394cf] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.product-totals span[data-v-57b394cf] {\n  font-weight: 500;\n  font-size: 14px;\n}\n.product-totals span[data-v-57b394cf]:not(:last-child) {\n  margin-right: 20px;\n}", ""]);
 
 // exports
 
@@ -11823,7 +12069,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".sidebar[data-v-81fbb27e] {\n  margin: 0;\n  padding: 0;\n  width: 200px;\n  height: calc(100% - 70px);\n  background-color: white;\n  position: fixed;\n  left: 0;\n  top: 70px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  z-index: 99;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.sidebar .nav[data-v-81fbb27e] {\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.sidebar .nav > *[data-v-81fbb27e] {\n  width: 100%;\n}\n@media screen and (max-width: 700px) {\n.sidebar[data-v-81fbb27e] {\n    width: 100%;\n    height: auto;\n    position: relative;\n}\n}\n@media screen and (max-width: 400px) {\n.sidebar[data-v-81fbb27e] {\n    text-align: center;\n    float: none;\n}\n}\n.sidebar .stick-to-bottom[data-v-81fbb27e] {\n  position: absolute;\n  left: 0;\n  width: 100%;\n  bottom: 200px;\n}\n.sidebar .link[data-v-81fbb27e] {\n  display: block;\n  color: #a8a8a8;\n  padding: 16px;\n  text-decoration: none;\n  border-left: solid 5px white;\n  cursor: pointer;\n}\n.sidebar .link.router-link-active[data-v-81fbb27e] {\n  background-color: #f9f9f9;\n  color: #1b1c1d;\n  border-left: 5px solid #4facfe;\n}\n.sidebar .link.router-link-active i[data-v-81fbb27e] {\n  color: #3B86FF;\n}\n.sidebar .link[data-v-81fbb27e]:hover {\n  background: #F3F3F3;\n}\n.sidebar .link[data-v-81fbb27e]:hover:not(.router-link-active) {\n  border-color: #F3F3F3;\n}\n.sidebar .link i[data-v-81fbb27e] {\n  margin-right: 8px;\n}\n@media screen and (max-width: 700px) {\n.sidebar .link[data-v-81fbb27e] {\n    float: left;\n}\n}\n.sidebar .bottom-drawer.collapsed .drawer[data-v-81fbb27e] {\n  max-height: 0 !important;\n}\n.sidebar .bottom-drawer .header[data-v-81fbb27e] {\n  padding: 16px;\n  cursor: pointer;\n}\n.sidebar .bottom-drawer .header[data-v-81fbb27e]:hover {\n  background: #F9F9F9;\n}\n.sidebar .bottom-drawer .user[data-v-81fbb27e] {\n  font-size: 14px;\n  font-weight: 500;\n}\n.sidebar .bottom-drawer .role[data-v-81fbb27e] {\n  margin: auto;\n  font-size: 14px;\n  color: #A8A8A8;\n}\n.sidebar .bottom-drawer .drawer[data-v-81fbb27e] {\n  background: #F3F3F3;\n  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.3);\n  height: 200px;\n  max-height: 200px;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.sidebar .bottom-drawer .drawer .link[data-v-81fbb27e] {\n  border-left: none;\n}\n.sidebar .bottom-drawer .drawer .link[data-v-81fbb27e]:hover {\n  background: white;\n}", ""]);
+exports.push([module.i, ".sidebar[data-v-81fbb27e] {\n  margin: 0;\n  padding: 0;\n  grid-area: sidebar;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  overflow: hidden;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.sidebar .nav[data-v-81fbb27e] {\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.sidebar .nav > *[data-v-81fbb27e] {\n  width: 100%;\n}\n.sidebar .stick-to-bottom[data-v-81fbb27e] {\n  position: absolute;\n  left: 0;\n  width: 100%;\n  bottom: 200px;\n}\n.sidebar .link[data-v-81fbb27e] {\n  display: block;\n  color: #a8a8a8;\n  padding: 16px;\n  text-decoration: none;\n  border-left: solid 5px white;\n  cursor: pointer;\n}\n.sidebar .link.router-link-active[data-v-81fbb27e] {\n  background-color: #f9f9f9;\n  color: #1b1c1d;\n  border-left: 5px solid #4facfe;\n}\n.sidebar .link.router-link-active i[data-v-81fbb27e] {\n  color: #3B86FF;\n}\n.sidebar .link[data-v-81fbb27e]:hover {\n  background: #F3F3F3;\n}\n.sidebar .link[data-v-81fbb27e]:hover:not(.router-link-active) {\n  border-color: #F3F3F3;\n}\n.sidebar .link i[data-v-81fbb27e] {\n  font-size: 16px;\n  margin-right: 8px;\n}\n.sidebar .bottom-drawer.collapsed .drawer[data-v-81fbb27e] {\n  max-height: 0 !important;\n}\n.sidebar .bottom-drawer .header[data-v-81fbb27e] {\n  padding: 16px;\n  cursor: pointer;\n}\n.sidebar .bottom-drawer .header[data-v-81fbb27e]:hover {\n  background: #F9F9F9;\n}\n.sidebar .bottom-drawer .user[data-v-81fbb27e] {\n  font-size: 14px;\n  font-weight: 500;\n}\n.sidebar .bottom-drawer .role[data-v-81fbb27e] {\n  margin: auto;\n  font-size: 14px;\n  color: #A8A8A8;\n}\n.sidebar .bottom-drawer .drawer[data-v-81fbb27e] {\n  background: #F3F3F3;\n  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.3);\n  height: 200px;\n  max-height: 200px;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.sidebar .bottom-drawer .drawer .link[data-v-81fbb27e] {\n  border-left: none;\n}\n.sidebar .bottom-drawer .drawer .link[data-v-81fbb27e]:hover {\n  background: white;\n}\n.sidebar .bottom-drawer .flex-center[data-v-81fbb27e] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  color: #A8A8A8;\n}\n.sidebar .bottom-drawer .flex-center i[data-v-81fbb27e] {\n  margin-bottom: 8px;\n}\n@media screen and (max-width: 1400px) {\n.sidebar .link[data-v-81fbb27e] {\n    display: -webkit-box;\n    display: flex;\n    -webkit-box-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n            align-items: center;\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n            flex-direction: column;\n}\n.sidebar .link i[data-v-81fbb27e] {\n    margin: 0;\n    margin-bottom: 8px;\n}\n}\n@media only screen and (max-width: 1400px) and (-webkit-min-device-pixel-ratio: 1.3), only screen and (max-width: 1400px) and (-webkit-min-device-pixel-ratio: 1.25), only screen and (max-width: 1400px) and (min-resolution: 120dpi) {\n.sidebar .link[data-v-81fbb27e] {\n    font-size: 12px;\n}\n.sidebar .link i[data-v-81fbb27e] {\n    font-size: 16px;\n}\n}", ""]);
 
 // exports
 
@@ -11862,6 +12108,25 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 // module
 exports.push([module.i, ".teams-table[data-v-0b6bf463] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.teams-table .team-row .view-single[data-v-0b6bf463] {\n  border-color: transparent;\n}\n.teams-table .team-row.expanded[data-v-0b6bf463] {\n  background: #F3F3F3;\n}\n.teams-table .team-row.expanded .view-single[data-v-0b6bf463] {\n  color: #1B1C1D;\n  background: white;\n}\n.flex-table-row[data-v-0b6bf463] {\n  padding: 12px 0;\n}\n.flex-table-row > *.select[data-v-0b6bf463], .flex-table-row > *[data-v-0b6bf463]:nth-child(1) {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(2) {\n  padding-left: 32px;\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(3) {\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(4) {\n  min-width: 112px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(5) {\n  min-width: 132px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(6) {\n  min-width: 80px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(7) {\n  margin-left: auto;\n  min-width: 80px;\n  padding-left: 16px;\n  padding-right: 32px;\n}\n.flex-table-row > *.action[data-v-0b6bf463] > :first-child {\n  margin-right: 20px;\n}\n.flex-table-row td.title[data-v-0b6bf463] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.flex-table-row td.title .square[data-v-0b6bf463] {\n  margin-left: -32px;\n  color: #1B1C1D;\n  background: none;\n}\n.flex-table-row td.title .square i[data-v-0b6bf463] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  font-size: 12px;\n}\n.flex-table-row.invited-row .name[data-v-0b6bf463], .flex-table-row.invited-row .email[data-v-0b6bf463], .flex-table-row.invited-row .role[data-v-0b6bf463] {\n  opacity: 0.5;\n}\n.flex-table-row.invited-row.add-member[data-v-0b6bf463] {\n  -webkit-box-pack: center;\n          justify-content: center;\n  cursor: pointer;\n}\n.flex-table-row.invited-row.add-member:hover td[data-v-0b6bf463] {\n  border-bottom: solid 1px #1B1C1D;\n}\n.flex-table-row.invited-row.add-member td[data-v-0b6bf463] {\n  color: #3C3B54;\n  font-weight: 500;\n  font-size: 12px;\n  padding: 0;\n  border-bottom: solid 1px transparent;\n}\n.flex-table-row.invited-row.add-member td i[data-v-0b6bf463] {\n  font-size: 13px;\n}\ni[data-v-0b6bf463] {\n  font-size: 11px;\n}\n.show-more[data-v-0b6bf463] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-0b6bf463] {\n  -webkit-animation: loading-data-v-0b6bf463 2s;\n          animation: loading-data-v-0b6bf463 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-0b6bf463] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox input[data-v-0b6bf463] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-0b6bf463] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-0b6bf463]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463]:after {\n  display: block;\n}\n.view-single[data-v-0b6bf463] {\n  font-size: 12px;\n  font-weight: 700;\n  color: #A8A8A8;\n  cursor: pointer;\n}\n.team-totals[data-v-0b6bf463] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.team-totals span[data-v-0b6bf463] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.user-row[data-v-0b6bf463] {\n  background: #F9F9F9;\n}\n.user-row[data-v-0b6bf463]:not(:last-child) {\n  border-bottom: solid 2px white;\n}\n.user-row td[data-v-0b6bf463] {\n  font-size: 14px;\n}\n.user-row td.index[data-v-0b6bf463] {\n  text-align: right;\n  padding-right: 20px;\n}\n.team-users[data-v-0b6bf463] {\n  overflow: hidden;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n}\n.team-users.collapsed[data-v-0b6bf463] {\n  max-height: 0 !important;\n}\n.team-users.expanded + .team-row-wrapper[data-v-0b6bf463] {\n  box-shadow: 0 1px 0 #DFDFDF inset;\n}\n.team-row.expanded td.title .button i[data-v-0b6bf463] {\n  -webkit-transform: rotateZ(90deg);\n          transform: rotateZ(90deg);\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamsTableAlt.vue?vue&type=style&index=0&id=03ad2df6&scoped=true&lang=scss&":
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/TeamsTableAlt.vue?vue&type=style&index=0&id=03ad2df6&scoped=true&lang=scss& ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".grid-table[data-v-03ad2df6] {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(100px, 1fr));\n}\n.header-row[data-v-03ad2df6] {\n  background: pink;\n}\ntd[data-v-03ad2df6], th[data-v-03ad2df6] {\n  padding: 4px 12px;\n}\n.row[data-v-03ad2df6] {\n  display: -webkit-box;\n  display: flex;\n}\n.row > *[data-v-03ad2df6]:nth-child(3) {\n  background: orange;\n}\n.team-row > td[data-v-03ad2df6] {\n  background: #333;\n  color: white;\n  border: solid 1px #555;\n  border-left: 0;\n  border-right: 0;\n}\n.team-users.collapsed .user-row > td[data-v-03ad2df6] {\n  max-height: 0 !important;\n}\n.user-row > td[data-v-03ad2df6] {\n  background: #ccc;\n  border: solid 1px #eee;\n  border-left: 0;\n  border-right: 0;\n  overflow: hidden;\n  max-height: 82px;\n  height: 82px;\n  -webkit-transition: 1.3s;\n  transition: 1.3s;\n}", ""]);
 
 // exports
 
@@ -13518,6 +13783,36 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/NavbarLogo.vue?vue&type=style&index=0&id=d1f7d5f4&lang=scss&scoped=true&":
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/NavbarLogo.vue?vue&type=style&index=0&id=d1f7d5f4&lang=scss&scoped=true& ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./NavbarLogo.vue?vue&type=style&index=0&id=d1f7d5f4&lang=scss&scoped=true& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/NavbarLogo.vue?vue&type=style&index=0&id=d1f7d5f4&lang=scss&scoped=true&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ProductSingle.vue?vue&type=style&index=0&id=019a7388&scoped=true&lang=scss&":
 /*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ProductSingle.vue?vue&type=style&index=0&id=019a7388&scoped=true&lang=scss& ***!
@@ -13827,6 +14122,36 @@ if(false) {}
 
 
 var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./TeamsTable.vue?vue&type=style&index=0&id=0b6bf463&scoped=true&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamsTable.vue?vue&type=style&index=0&id=0b6bf463&scoped=true&lang=scss&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamsTableAlt.vue?vue&type=style&index=0&id=03ad2df6&scoped=true&lang=scss&":
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/TeamsTableAlt.vue?vue&type=style&index=0&id=03ad2df6&scoped=true&lang=scss& ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./TeamsTableAlt.vue?vue&type=style&index=0&id=03ad2df6&scoped=true&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamsTableAlt.vue?vue&type=style&index=0&id=03ad2df6&scoped=true&lang=scss&");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -14721,16 +15046,27 @@ var render = function() {
     "div",
     { staticClass: "app", attrs: { id: "app-component" } },
     [
+      _c("NavbarLogo"),
+      _vm._v(" "),
       _c("Navbar"),
       _vm._v(" "),
       _c("Sidebar", { attrs: { authUser: _vm.authUser } }),
       _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "main", attrs: { id: "main" } },
-        [_c("transition", { attrs: { name: "fade" } }, [_c("router-view")], 1)],
-        1
-      )
+      _c("div", { staticClass: "main", attrs: { id: "main" } }, [
+        _c(
+          "div",
+          { staticClass: "container" },
+          [
+            _c(
+              "transition",
+              { attrs: { name: "fade" } },
+              [_c("router-view")],
+              1
+            )
+          ],
+          1
+        )
+      ])
     ],
     1
   )
@@ -15058,7 +15394,7 @@ var render = function() {
                   _vm._v(" "),
                   _c("div", { staticClass: "flex-group" }, [
                     _c("td", { staticClass: "created" }, [
-                      _c("span", { staticClass: "square" }, [
+                      _c("span", { staticClass: "square light" }, [
                         _vm._v(
                           _vm._s(
                             catalogue.start_time != null
@@ -15072,7 +15408,7 @@ var render = function() {
                     ]),
                     _vm._v(" "),
                     _c("td", { staticClass: "deadline" }, [
-                      _c("span", { staticClass: "square" }, [
+                      _c("span", { staticClass: "square light" }, [
                         _vm._v(
                           _vm._s(
                             catalogue.end_time != null
@@ -15086,12 +15422,12 @@ var render = function() {
                     ]),
                     _vm._v(" "),
                     _c("td", { staticClass: "stage" }, [
-                      _c("span", { staticClass: "square stage" }, [
+                      _c("span", { staticClass: "square light stage" }, [
                         _vm._v("STAGE " + _vm._s(catalogue.phase))
                       ]),
                       _vm._v(" "),
-                      _c("span", { staticClass: "square status" }, [
-                        _vm._v("tbd")
+                      _c("span", { staticClass: "square light status" }, [
+                        _vm._v("tbd%")
                       ])
                     ])
                   ]),
@@ -15378,6 +15714,7 @@ var render = function() {
               {
                 on: {
                   submit: function($event) {
+                    $event.preventDefault()
                     _vm.createTeam({
                       name: _vm.addTeamName,
                       workspace_id: _vm.currentWorkspaceId
@@ -16111,19 +16448,6 @@ var render = function() {
     "nav",
     { staticClass: "navbar", staticStyle: { height: "70px" } },
     [
-      _c(
-        "div",
-        { staticClass: "logo-wrapper" },
-        [
-          _c(
-            "router-link",
-            { staticClass: "navbar-brand", attrs: { to: "/collection" } },
-            [_c("img", { attrs: { src: "/images/kollekt-logo-color-1.svg" } })]
-          )
-        ],
-        1
-      ),
-      _vm._v(" "),
       _c("div", { staticClass: "flex-wrapper" }, [
         _c(
           "div",
@@ -16161,6 +16485,44 @@ var render = function() {
       _c("ModalCreateTeam", { ref: "createTeamModal" })
     ],
     1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/NavbarLogo.vue?vue&type=template&id=d1f7d5f4&scoped=true&":
+/*!*************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/NavbarLogo.vue?vue&type=template&id=d1f7d5f4&scoped=true& ***!
+  \*************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "router-link",
+    { staticClass: "logo link", attrs: { to: "/collection" } },
+    [
+      _c("img", {
+        staticClass: "hide-screen-sm",
+        attrs: { src: "/images/kollekt-logo-color-1.svg" }
+      }),
+      _vm._v(" "),
+      _c("img", {
+        staticClass: "show-screen-sm",
+        attrs: { src: "/images/kollekt_logo_small.svg" }
+      })
+    ]
   )
 }
 var staticRenderFns = []
@@ -17497,13 +17859,20 @@ var render = function() {
     [
       _c("div", { staticClass: "scroll-bg" }),
       _vm._v(" "),
-      _c("product-totals", {
-        attrs: {
-          totalProductCount: _vm.totalProductCount,
-          selectedCount: _vm.selectedCount,
-          products: _vm.products
-        }
-      }),
+      _c("div", { staticClass: "product-totals" }, [
+        _c("span", [_vm._v(_vm._s(_vm.selectedCount) + " selected")]),
+        _vm._v(" "),
+        _vm.products.length != _vm.totalProductCount
+          ? _c("span", [
+              _vm._v(
+                _vm._s(_vm.products.length) +
+                  "/" +
+                  _vm._s(_vm.totalProductCount) +
+                  " showing"
+              )
+            ])
+          : _c("span", [_vm._v(_vm._s(_vm.totalProductCount) + " records")])
+      ]),
       _vm._v(" "),
       _c("product-single", {
         attrs: {
@@ -17932,7 +18301,10 @@ var render = function() {
                                         }
                                       },
                                       [
-                                        _c("i", { staticClass: "far fa-star" }),
+                                        _c("i", {
+                                          staticClass:
+                                            "far fa-star hide-screen-sm"
+                                        }),
                                         _vm._v(_vm._s(product.focus.length))
                                       ]
                                     )
@@ -17958,7 +18330,10 @@ var render = function() {
                                       }
                                     },
                                     [
-                                      _c("i", { staticClass: "far fa-heart" }),
+                                      _c("i", {
+                                        staticClass:
+                                          "far fa-heart hide-screen-sm"
+                                      }),
                                       _vm._v(
                                         _vm._s(
                                           product.ins.length +
@@ -17989,7 +18364,8 @@ var render = function() {
                                     },
                                     [
                                       _c("i", {
-                                        staticClass: "far fa-times-circle"
+                                        staticClass:
+                                          "far fa-times-circle hide-screen-sm"
                                       }),
                                       _vm._v(_vm._s(product.outs.length))
                                     ]
@@ -18019,7 +18395,8 @@ var render = function() {
                                       },
                                       [
                                         _c("i", {
-                                          staticClass: "far fa-question-circle"
+                                          staticClass:
+                                            "far fa-question-circle hide-screen-sm"
                                         }),
                                         _vm._v(
                                           _vm._s(product.nds.length) +
@@ -18054,7 +18431,10 @@ var render = function() {
                                         }
                                       },
                                       [
-                                        _c("i", { staticClass: "far fa-star" }),
+                                        _c("i", {
+                                          staticClass:
+                                            "far fa-star hide-screen-sm"
+                                        }),
                                         _vm._v(_vm._s(product.focus.length))
                                       ]
                                     )
@@ -18080,7 +18460,10 @@ var render = function() {
                                       }
                                     },
                                     [
-                                      _c("i", { staticClass: "far fa-heart" }),
+                                      _c("i", {
+                                        staticClass:
+                                          "far fa-heart hide-screen-sm"
+                                      }),
                                       _vm._v(
                                         _vm._s(
                                           product.ins.length +
@@ -18111,7 +18494,8 @@ var render = function() {
                                     },
                                     [
                                       _c("i", {
-                                        staticClass: "far fa-times-circle"
+                                        staticClass:
+                                          "far fa-times-circle hide-screen-sm"
                                       }),
                                       _vm._v(_vm._s(product.outs.length))
                                     ]
@@ -18141,7 +18525,8 @@ var render = function() {
                                       },
                                       [
                                         _c("i", {
-                                          staticClass: "far fa-question-circle"
+                                          staticClass:
+                                            "far fa-question-circle hide-screen-sm"
                                         }),
                                         _vm._v(
                                           _vm._s(product.nds.length) +
@@ -18185,7 +18570,7 @@ var render = function() {
                                   "span",
                                   {
                                     staticClass:
-                                      "square true-square clickable focus-action",
+                                      "square light-2 true-square clickable focus-action",
                                     class: [
                                       product[_vm.actionScope] != null
                                         ? product[_vm.actionScope].action == 2
@@ -18644,30 +19029,34 @@ var render = function() {
         }
       },
       [
-        _c(
-          "div",
-          { staticClass: "header" },
-          [
-            !_vm.loadingUser
-              ? [
-                  _c("strong", { staticClass: "user" }, [
-                    _vm._v(_vm._s(_vm.authUser.name))
-                  ]),
-                  _vm._v(" "),
-                  _c("p", { staticClass: "role" }, [
-                    _vm._v(_vm._s(_vm.authUser.role.title))
-                  ])
-                ]
-              : [
-                  _c("strong", { staticClass: "user" }, [
-                    _vm._v("Fetching user")
-                  ]),
-                  _vm._v(" "),
-                  _c("p", { staticClass: "role" }, [_vm._v("Fethcing role")])
-                ]
-          ],
-          2
-        ),
+        _c("div", { staticClass: "header" }, [
+          _c(
+            "div",
+            { staticClass: "hide-screen-sm" },
+            [
+              !_vm.loadingUser
+                ? [
+                    _c("strong", { staticClass: "user" }, [
+                      _vm._v(_vm._s(_vm.authUser.name))
+                    ]),
+                    _vm._v(" "),
+                    _c("p", { staticClass: "role" }, [
+                      _vm._v(_vm._s(_vm.authUser.role.title))
+                    ])
+                  ]
+                : [
+                    _c("strong", { staticClass: "user" }, [
+                      _vm._v("Fetching user")
+                    ]),
+                    _vm._v(" "),
+                    _c("p", { staticClass: "role" }, [_vm._v("Fethcing role")])
+                  ]
+            ],
+            2
+          ),
+          _vm._v(" "),
+          _vm._m(0)
+        ]),
         _vm._v(" "),
         _c(
           "div",
@@ -18679,7 +19068,18 @@ var render = function() {
     )
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "show-screen-sm flex-center" }, [
+      _c("i", { staticClass: "fas fa-user" }),
+      _vm._v(" "),
+      _c("span", [_vm._v("User")])
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -19436,6 +19836,119 @@ var staticRenderFns = [
     return _c("td", [
       _c("i", { staticClass: "far fa-user-plus" }),
       _vm._v("Add Member to team")
+    ])
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamsTableAlt.vue?vue&type=template&id=03ad2df6&scoped=true&":
+/*!****************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/TeamsTableAlt.vue?vue&type=template&id=03ad2df6&scoped=true& ***!
+  \****************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "teams-table card" }, [
+    _c(
+      "div",
+      { staticClass: "js-table" },
+      [
+        _vm._m(0),
+        _vm._v(" "),
+        _vm._l(_vm.rows, function(row, index) {
+          return _c("div", { key: index, staticClass: "team-row-wrapper" }, [
+            _c("div", { staticClass: "team-row row" }, [
+              _c("td", [_vm._v(_vm._s(row.title))]),
+              _vm._v(" "),
+              _c("td", [_vm._v(_vm._s(row.value))]),
+              _vm._v(" "),
+              _c("td", [_vm._v(_vm._s(row.something))]),
+              _vm._v(" "),
+              _c("td", [_vm._v(_vm._s(row.name))])
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "user-rows-wrapper" },
+              _vm._l(row.anArray, function(user, index) {
+                return row.anArray.length > 0
+                  ? _c("div", { key: index, staticClass: "row user-row" }, [
+                      _c("td", [_vm._v(_vm._s(user.a))]),
+                      _vm._v(" "),
+                      _c("td", [_vm._v(_vm._s(user.b))]),
+                      _vm._v(" "),
+                      _c("td", [_vm._v(_vm._s(user.c))]),
+                      _vm._v(" "),
+                      _c("td", [_vm._v(_vm._s(user.d))])
+                    ])
+                  : _vm._e()
+              }),
+              0
+            )
+          ])
+        })
+      ],
+      2
+    ),
+    _vm._v(" "),
+    _vm._m(1)
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row header-row" }, [
+      _c("th", [_vm._v("Header 1")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Header 2")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Header 3")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Header 4")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "grid-table" }, [
+      _c("th", [_vm._v("Title")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Title")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Title")]),
+      _vm._v(" "),
+      _c("td", [_vm._v("Value")]),
+      _vm._v(" "),
+      _c("td", [_vm._v("Value")]),
+      _vm._v(" "),
+      _c("td", [_vm._v("Value")]),
+      _vm._v(" "),
+      _c("td", [_vm._v("Value")]),
+      _vm._v(" "),
+      _c("td", [_vm._v("Value")]),
+      _vm._v(" "),
+      _c("td", [_vm._v("Value")]),
+      _vm._v(" "),
+      _c("td", [_vm._v("Value")]),
+      _vm._v(" "),
+      _c("td", [_vm._v("Value")]),
+      _vm._v(" "),
+      _c("td", [_vm._v("Value")])
     ])
   }
 ]
@@ -37290,6 +37803,93 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/NavbarLogo.vue":
+/*!************************************************!*\
+  !*** ./resources/js/components/NavbarLogo.vue ***!
+  \************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _NavbarLogo_vue_vue_type_template_id_d1f7d5f4_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./NavbarLogo.vue?vue&type=template&id=d1f7d5f4&scoped=true& */ "./resources/js/components/NavbarLogo.vue?vue&type=template&id=d1f7d5f4&scoped=true&");
+/* harmony import */ var _NavbarLogo_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./NavbarLogo.vue?vue&type=script&lang=js& */ "./resources/js/components/NavbarLogo.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _NavbarLogo_vue_vue_type_style_index_0_id_d1f7d5f4_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./NavbarLogo.vue?vue&type=style&index=0&id=d1f7d5f4&lang=scss&scoped=true& */ "./resources/js/components/NavbarLogo.vue?vue&type=style&index=0&id=d1f7d5f4&lang=scss&scoped=true&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _NavbarLogo_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _NavbarLogo_vue_vue_type_template_id_d1f7d5f4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _NavbarLogo_vue_vue_type_template_id_d1f7d5f4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "d1f7d5f4",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/NavbarLogo.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/NavbarLogo.vue?vue&type=script&lang=js&":
+/*!*************************************************************************!*\
+  !*** ./resources/js/components/NavbarLogo.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_NavbarLogo_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./NavbarLogo.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/NavbarLogo.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_NavbarLogo_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/NavbarLogo.vue?vue&type=style&index=0&id=d1f7d5f4&lang=scss&scoped=true&":
+/*!**********************************************************************************************************!*\
+  !*** ./resources/js/components/NavbarLogo.vue?vue&type=style&index=0&id=d1f7d5f4&lang=scss&scoped=true& ***!
+  \**********************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_NavbarLogo_vue_vue_type_style_index_0_id_d1f7d5f4_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./NavbarLogo.vue?vue&type=style&index=0&id=d1f7d5f4&lang=scss&scoped=true& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/NavbarLogo.vue?vue&type=style&index=0&id=d1f7d5f4&lang=scss&scoped=true&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_NavbarLogo_vue_vue_type_style_index_0_id_d1f7d5f4_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_NavbarLogo_vue_vue_type_style_index_0_id_d1f7d5f4_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_NavbarLogo_vue_vue_type_style_index_0_id_d1f7d5f4_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_NavbarLogo_vue_vue_type_style_index_0_id_d1f7d5f4_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_NavbarLogo_vue_vue_type_style_index_0_id_d1f7d5f4_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/NavbarLogo.vue?vue&type=template&id=d1f7d5f4&scoped=true&":
+/*!*******************************************************************************************!*\
+  !*** ./resources/js/components/NavbarLogo.vue?vue&type=template&id=d1f7d5f4&scoped=true& ***!
+  \*******************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_NavbarLogo_vue_vue_type_template_id_d1f7d5f4_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./NavbarLogo.vue?vue&type=template&id=d1f7d5f4&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/NavbarLogo.vue?vue&type=template&id=d1f7d5f4&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_NavbarLogo_vue_vue_type_template_id_d1f7d5f4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_NavbarLogo_vue_vue_type_template_id_d1f7d5f4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/ProductSingle.vue":
 /*!***************************************************!*\
   !*** ./resources/js/components/ProductSingle.vue ***!
@@ -38242,6 +38842,93 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamsTable_vue_vue_type_template_id_0b6bf463_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamsTable_vue_vue_type_template_id_0b6bf463_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/TeamsTableAlt.vue":
+/*!***************************************************!*\
+  !*** ./resources/js/components/TeamsTableAlt.vue ***!
+  \***************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _TeamsTableAlt_vue_vue_type_template_id_03ad2df6_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TeamsTableAlt.vue?vue&type=template&id=03ad2df6&scoped=true& */ "./resources/js/components/TeamsTableAlt.vue?vue&type=template&id=03ad2df6&scoped=true&");
+/* harmony import */ var _TeamsTableAlt_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TeamsTableAlt.vue?vue&type=script&lang=js& */ "./resources/js/components/TeamsTableAlt.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _TeamsTableAlt_vue_vue_type_style_index_0_id_03ad2df6_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./TeamsTableAlt.vue?vue&type=style&index=0&id=03ad2df6&scoped=true&lang=scss& */ "./resources/js/components/TeamsTableAlt.vue?vue&type=style&index=0&id=03ad2df6&scoped=true&lang=scss&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _TeamsTableAlt_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _TeamsTableAlt_vue_vue_type_template_id_03ad2df6_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _TeamsTableAlt_vue_vue_type_template_id_03ad2df6_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "03ad2df6",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/TeamsTableAlt.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/TeamsTableAlt.vue?vue&type=script&lang=js&":
+/*!****************************************************************************!*\
+  !*** ./resources/js/components/TeamsTableAlt.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamsTableAlt_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./TeamsTableAlt.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamsTableAlt.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamsTableAlt_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/TeamsTableAlt.vue?vue&type=style&index=0&id=03ad2df6&scoped=true&lang=scss&":
+/*!*************************************************************************************************************!*\
+  !*** ./resources/js/components/TeamsTableAlt.vue?vue&type=style&index=0&id=03ad2df6&scoped=true&lang=scss& ***!
+  \*************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamsTableAlt_vue_vue_type_style_index_0_id_03ad2df6_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./TeamsTableAlt.vue?vue&type=style&index=0&id=03ad2df6&scoped=true&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamsTableAlt.vue?vue&type=style&index=0&id=03ad2df6&scoped=true&lang=scss&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamsTableAlt_vue_vue_type_style_index_0_id_03ad2df6_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamsTableAlt_vue_vue_type_style_index_0_id_03ad2df6_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamsTableAlt_vue_vue_type_style_index_0_id_03ad2df6_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamsTableAlt_vue_vue_type_style_index_0_id_03ad2df6_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamsTableAlt_vue_vue_type_style_index_0_id_03ad2df6_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/TeamsTableAlt.vue?vue&type=template&id=03ad2df6&scoped=true&":
+/*!**********************************************************************************************!*\
+  !*** ./resources/js/components/TeamsTableAlt.vue?vue&type=template&id=03ad2df6&scoped=true& ***!
+  \**********************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamsTableAlt_vue_vue_type_template_id_03ad2df6_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./TeamsTableAlt.vue?vue&type=template&id=03ad2df6&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TeamsTableAlt.vue?vue&type=template&id=03ad2df6&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamsTableAlt_vue_vue_type_template_id_03ad2df6_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamsTableAlt_vue_vue_type_template_id_03ad2df6_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

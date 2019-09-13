@@ -1,8 +1,8 @@
 <template>
   <div class="vue-component-sidebar sidebar">
     <div class="nav">
-      <div class="top-items">
-        <router-link to="/collection" class="link"><i class="fas fa-signal-alt-3"></i> Collection</router-link>
+        <div class="top-items">
+            <router-link to="/collection" class="link"><i class="fas fa-signal-alt-3"></i> Collection</router-link>
         <!-- <router-link to="/catalogue">Catalogue</router-link> -->
         <!-- <router-link class="stick-to-bottom" to="/teams"><i class="fas fa-users"></i> Teams</router-link> -->
 
@@ -18,16 +18,22 @@
       </div> -->
     </div>
     <div class="bottom-drawer" @click="drawerExpanded = !drawerExpanded" :class="{collapsed: !drawerExpanded}">
-      <div class="header">
-        <template v-if="!loadingUser">
-          <strong class="user">{{authUser.name}}</strong>
-          <p class="role">{{authUser.role.title}}</p>
-        </template>
-        <template v-else>
-          <strong class="user">Fetching user</strong>
-          <p class="role">Fethcing role</p>
-        </template>
-      </div>
+        <div class="header">
+            <div class="hide-screen-sm">
+                <template v-if="!loadingUser">
+                    <strong class="user">{{authUser.name}}</strong>
+                    <p class="role">{{authUser.role.title}}</p>
+                </template>
+                <template v-else>
+                    <strong class="user">Fetching user</strong>
+                    <p class="role">Fethcing role</p>
+                </template>
+            </div>
+            <div class="show-screen-sm flex-center">
+                <i class="fas fa-user"></i>
+                <span>User</span>
+            </div>
+        </div>
       <div class="drawer">
         <signout-button class="link"/>
       </div>
@@ -73,18 +79,14 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
+
 .sidebar {
   margin: 0;
   padding: 0;
-  width: $sidebarWidth;
-  height: calc(100% - 70px);
-  background-color: white;
-  position: fixed;
-  left: 0;
-  top: $navbarHeight;
+  grid-area: sidebar;
   display: flex;
   flex-direction: column;
-  z-index: 99;
+  overflow: hidden;
   justify-content: space-between;
 
   .nav {
@@ -93,17 +95,6 @@ export default {
     > * {
       width: 100%;
     }
-  }
-
-  @media screen and (max-width: 700px) {
-    width: 100%;
-    height: auto;
-    position: relative;
-  }
-
-  @media screen and (max-width: 400px) {
-    text-align: center;
-    float: none;
   }
   .stick-to-bottom {
     position: absolute;
@@ -133,11 +124,8 @@ export default {
       }
     }
     i {
-      margin-right: 8px;
-    }
-
-    @media screen and (max-width: 700px) {
-      float: left;
+        font-size: 16px;
+        margin-right: 8px;
     }
   }
   .bottom-drawer {
@@ -175,7 +163,40 @@ export default {
         }
       }
     }
+    .flex-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        color: $dark2;
+        i {
+            margin-bottom: 8px;
+        }
+    }
     
   }
+  // SMALL SCREENS AND HIGH DPI
+    @media screen and (max-width: $screenSmall) {
+        .link {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            i {
+                margin: 0;
+                margin-bottom: 8px;
+            }
+            @media	only screen and (-webkit-min-device-pixel-ratio: 1.3),
+            only screen and (-o-min-device-pixel-ratio: 13/10),
+            only screen and (min-resolution: 120dpi)
+            {
+                font-size: 12px;
+                i {
+                    font-size: 16px;
+                }
+            }
+        }
+    }
 }
+
 </style>

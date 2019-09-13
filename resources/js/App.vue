@@ -1,11 +1,14 @@
 <template>
     <div class="app" id="app-component">
+        <NavbarLogo/>
         <Navbar/>
         <Sidebar :authUser="authUser"/>
         <div class="main" id="main">
-            <transition name="fade">
-                <router-view></router-view>
-            </transition>
+            <div class="container">
+                <transition name="fade">
+                    <router-view></router-view>
+                </transition>
+            </div>
         </div>
     </div>
 </template>
@@ -15,6 +18,7 @@ import store from './store'
 import { mapActions, mapGetters } from 'vuex'
 import Sidebar from './components/Sidebar'
 import Navbar from './components/Navbar'
+import NavbarLogo from './components/NavbarLogo'
 import AuthUser from './store/models/AuthUser';
 import { Query } from '@vuex-orm/core';
 
@@ -24,6 +28,7 @@ export default{
     components: {
         Sidebar,
         Navbar,
+        NavbarLogo,
     },
     data: function () { return {
         // currentWorkspaceId: null,
@@ -111,24 +116,37 @@ export default{
     html, body, #app {
         color: $dark;
         // font-family: 'Source Sans Pro', sans-serif;
-        background: $light;
+        // background: white;
     }
     .app {
-        box-shadow: 0 3px 6px rgba(0,0,0,.05) inset, 5px 0 6px rgba(0,0,0,.02) inset;
-        max-height: calc(100vh - 70px);
-        overflow: scroll;
+        // max-height: calc(100vh - 70px);
+        // overflow: scroll;
         scroll-behavior: smooth;
-    }
-    .main-wrapper {
-        padding-left: $sidebarWidth;
-        padding-top: $navbarHeight;
+        display: grid;
+        min-height: 100vh;
+        min-width: 100vw;
+        grid-template-columns: 260px auto;
+        grid-template-rows: 70px auto;
+        grid-template-areas: 
+            "logo navbar" 
+            "sidebar main";
+        @media	only screen and (-webkit-min-device-pixel-ratio: 1.3),
+        only screen and (-o-min-device-pixel-ratio: 13/10),
+        only screen and (min-resolution: 120dpi) {
+            .app {
+                grid-template-columns: 200px auto;
+            }
+        }
+        @media screen and (max-width: $screenSmall) {
+            grid-template-columns: 80px auto;
+        }
     }
     .main {
-        min-height: 105vh;
+        box-shadow: 0 3px 6px rgba(0,0,0,.05) inset, 5px 0 6px rgba(0,0,0,.02) inset;
         padding: 20px 60px;
-    }
-    .container {
-        max-width: 1170px;
+        overflow-y: scroll;
+        overflow-x: auto;
+        background: $light;
     }
     h1 {
         margin-bottom: 30px;
@@ -233,9 +251,11 @@ export default{
 
     // Tables
     .flex-table {
-        margin-left: -16px;
-        margin-right: -16px;
-        width: calc(100% + 32px);
+        .card > & {
+            margin-left: -16px;
+            margin-right: -16px;
+            width: calc(100% + 32px);
+        }
         &.disabled {
             opacity: .5;
         }
