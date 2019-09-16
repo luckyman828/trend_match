@@ -201,7 +201,7 @@ export default {
         ...mapActions('entities/comments', ['createComment']),
         ...mapActions('entities/comments', ['markAsFinal']),
         variantImg (variant) {
-            if (variant.error != null)
+            if (!variant.error)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
             else return variant.image
         },
@@ -265,7 +265,7 @@ export default {
                 if (key == 'ArrowDown')
                     event.preventDefault(),
                     this.cycleImageReverse()
-                if (this.authUser.role_id >= 2) {
+                if ( authUser.role_id >= 2 && authUser.role_id != 3 ) {
                     if (key == 'KeyI')
                         this.toggleInOut(this.product, 1)
                     if (key == 'KeyO')
@@ -315,7 +315,7 @@ export default {
         // }
 
         // ALWAYS STICKY
-        right: 76px;
+        right: 62px;
         top: 130px;
         position: fixed;
         height: calc(100vh - 130px);

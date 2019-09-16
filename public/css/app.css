@@ -9276,6 +9276,10 @@ textarea {
 .button {
   min-width: 92px;
   font-weight: 700;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
   cursor: pointer;
 }
 
@@ -9627,7 +9631,7 @@ textarea {
   content: none;
 }
 
-.tooltip-parent:hover i {
+.tooltip-parent:hover i.fa-info-circle {
   font-weight: 900;
 }
 

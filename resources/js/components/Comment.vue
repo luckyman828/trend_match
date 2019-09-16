@@ -99,7 +99,8 @@ export default {
         display: inline-block;
         clear: both;
         min-width: 170px;
-        margin-right: 56px;
+        // margin-right: 56px;
+        max-width: calc(100% - 56px);
         // .own-team & {
         //     background: rgba($primary, 70%);
         //     color: white;

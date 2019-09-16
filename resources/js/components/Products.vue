@@ -62,7 +62,7 @@
                 <div class="product-row flex-table-row"
                 v-for="(product, index) in products" :key="product.id"
                 :class="[(product[actionScope] != null) ? (product[actionScope].action == 0) ? 'out' : 'in' : '']">
-                    <td class="select" v-if="authUser.role_id >= 2">
+                    <td class="select" v-if="authUser.role_id >= 2 && authUser.role_id != 3">
                         <label class="checkbox">
                             <input type="checkbox" @change="onSelect(index)" :ref="'checkbox-for-' + index"/>
                             <span class="checkmark"></span>
