@@ -8473,6 +8473,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 
 
@@ -17545,7 +17548,13 @@ var render = function() {
                             _vm._v("Global")
                           ]),
                       _vm._v(" "),
-                      _vm.userPermissionLevel >= 2
+                      comment.user_id == _vm.authUser.id
+                        ? [
+                            _vm._v(
+                              "\n                    | You\n                "
+                            )
+                          ]
+                        : _vm.userPermissionLevel >= 2
                         ? [
                             _vm._v(
                               "\n                    | " +

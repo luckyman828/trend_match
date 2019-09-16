@@ -43,7 +43,10 @@
                         </template>
                     </span>
                     <span class="team" v-else>Global</span>
-                    <template v-if="userPermissionLevel >= 2">
+                    <template v-if="comment.user_id == authUser.id">
+                        | You
+                    </template>
+                    <template v-else-if="userPermissionLevel >= 2">
                         | {{comment.user.email}}
                     </template>
                 </span>
