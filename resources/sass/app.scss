@@ -601,6 +601,13 @@ textarea {
     //     line-height: 32px;
     // }
 }
+.tooltip-parent {
+    &:hover {
+        i {
+            font-weight: 900;
+        }
+    }
+}
 
 // CUSTOM RADIO AND CHECKBOX BUTTONS
 .checkbox, .radiobox {

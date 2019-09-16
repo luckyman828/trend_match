@@ -9620,6 +9620,10 @@ textarea {
   content: none;
 }
 
+.tooltip-parent:hover i {
+  font-weight: 900;
+}
+
 .checkbox .radiomark,
 .checkbox .checkmark,
 .radiobox .radiomark,

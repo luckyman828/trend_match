@@ -11926,7 +11926,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".product-single[data-v-019a7388] {\n  position: absolute;\n  right: 0;\n  top: 0;\n  margin: 0;\n  max-width: 60vw;\n  z-index: 1;\n  right: 76px;\n  top: 130px;\n  position: fixed;\n  height: calc(100vh - 130px);\n}\n.product-single.visible[data-v-019a7388] {\n  width: 100%;\n}\n.product-single > .card[data-v-019a7388] {\n  height: 100%;\n  overflow: hidden;\n}\n.product-single > .card[data-v-019a7388] {\n  margin: 0;\n  background: white;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.product-single > .card .inner .comments[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #DFDFDF;\n  width: 100%;\n}\n.product-single .description > div > strong[data-v-019a7388] {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\nh3[data-v-019a7388] {\n  font-size: 18px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #A8A8A8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3B86FF;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 77vh;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #DFDFDF;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #F3F3F3;\n  padding: 6px 0;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n}\n.controls-wrapper .square[data-v-019a7388] {\n  margin-left: 1em;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  padding-right: 1em;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  cursor: pointer;\n  border-bottom: solid 2px #DFDFDF;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #F9F9F9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1B1C1D;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-color: #3B86FF;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tab-body[data-v-019a7388] {\n  background: #F3F3F3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #DFDFDF;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #A8A8A8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3B86FF;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #F3F3F3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #F3F3F3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3C3B54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}", ""]);
+exports.push([module.i, ".product-single[data-v-019a7388] {\n  position: absolute;\n  right: 0;\n  top: 0;\n  margin: 0;\n  max-width: 60vw;\n  z-index: 1;\n  right: 76px;\n  top: 130px;\n  position: fixed;\n  height: calc(100vh - 130px);\n}\n.product-single.visible[data-v-019a7388] {\n  width: 100%;\n}\n.product-single > .card[data-v-019a7388] {\n  height: 100%;\n  overflow: hidden;\n}\n.product-single > .card[data-v-019a7388] {\n  margin: 0;\n  background: white;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.product-single > .card .inner .comments[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #DFDFDF;\n  width: 100%;\n}\n.product-single .description .stat[data-v-019a7388] > :first-child {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\nh3[data-v-019a7388] {\n  font-size: 18px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #A8A8A8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3B86FF;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 77vh;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #DFDFDF;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #F3F3F3;\n  padding: 6px 0;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n}\n.controls-wrapper .square[data-v-019a7388] {\n  margin-left: 1em;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  padding-right: 1em;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  cursor: pointer;\n  border-bottom: solid 2px #DFDFDF;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #F9F9F9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1B1C1D;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #F3F3F3;\n  color: #1B1C1D;\n  border-color: #3B86FF;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tab-body[data-v-019a7388] {\n  background: #F3F3F3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #DFDFDF;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #A8A8A8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3B86FF;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #A8A8A8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #F3F3F3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #F3F3F3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3C3B54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1B1C1D;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}", ""]);
 
 // exports
 
@@ -16760,285 +16760,247 @@ var render = function() {
                                 ]
                               ),
                               _vm._v(" "),
-                              _c("div", { staticClass: "description" }, [
-                                _c("div", [
-                                  _c("strong", [_vm._v("Style number")]),
+                              _c(
+                                "div",
+                                { staticClass: "description" },
+                                [
+                                  _c("div", { staticClass: "stat" }, [
+                                    _vm._m(0),
+                                    _vm._v(" "),
+                                    _c("p", [
+                                      _c("span", [
+                                        _vm._v(
+                                          _vm._s(_vm.product.datasource_id)
+                                        )
+                                      ])
+                                    ])
+                                  ]),
                                   _vm._v(" "),
-                                  _c("span", [
-                                    _vm._v(_vm._s(_vm.product.datasource_id))
-                                  ])
-                                ]),
-                                _vm._v(" "),
-                                _c("div", [
-                                  _c("strong", [_vm._v("Category")]),
+                                  _c("div", { staticClass: "stat" }, [
+                                    _vm._m(1),
+                                    _vm._v(" "),
+                                    _c("span", [
+                                      _vm._v(_vm._s(_vm.product.category))
+                                    ])
+                                  ]),
                                   _vm._v(" "),
-                                  _c("span", [
-                                    _vm._v(_vm._s(_vm.product.category))
-                                  ])
-                                ]),
-                                _vm._v(" "),
-                                _c("div", [
-                                  _c("strong", [_vm._v("Minimum production")]),
-                                  _vm._v(" "),
-                                  _c("span", [
-                                    _vm._v(_vm._s(_vm.product.quantity))
-                                  ])
-                                ]),
-                                _vm._v(" "),
-                                _c(
-                                  "div",
-                                  [
+                                  _c("div", { staticClass: "stat" }, [
                                     _c("strong", [
-                                      _vm._v(
-                                        "WHS (" +
-                                          _vm._s(
-                                            _vm.product.userPrices.currency
-                                          ) +
-                                          ")"
-                                      )
+                                      _vm._v("Minimum production")
                                     ]),
                                     _vm._v(" "),
-                                    _vm.userPermissionLevel >= 4
-                                      ? _c("TooltipAlt", {
-                                          scopedSlots: _vm._u(
-                                            [
-                                              {
-                                                key: "parent",
-                                                fn: function() {
-                                                  return [
-                                                    _c("span", [
-                                                      _vm._v(
-                                                        _vm._s(
-                                                          _vm.product.userPrices
-                                                            .wholesale_price
-                                                        )
-                                                      )
-                                                    ])
-                                                  ]
-                                                },
-                                                proxy: true
-                                              },
-                                              {
-                                                key: "header",
-                                                fn: function() {
-                                                  return [
-                                                    _c("span", [
-                                                      _vm._v("Wholesale price")
-                                                    ])
-                                                  ]
-                                                },
-                                                proxy: true
-                                              },
-                                              {
-                                                key: "body",
-                                                fn: function() {
-                                                  return _vm._l(
-                                                    _vm.product.prices,
-                                                    function(currency, index) {
-                                                      return _c(
-                                                        "p",
-                                                        {
-                                                          key: index,
-                                                          staticClass:
-                                                            "tooltip-row"
-                                                        },
-                                                        [
-                                                          _c("strong", [
-                                                            _vm._v(
-                                                              _vm._s(
-                                                                currency.currency
-                                                              ) + ": "
-                                                            )
-                                                          ]),
-                                                          _vm._v(" "),
-                                                          _c("span", [
-                                                            _vm._v(
-                                                              _vm._s(
-                                                                currency.wholesale_price
-                                                              )
-                                                            )
-                                                          ])
-                                                        ]
-                                                      )
-                                                    }
-                                                  )
-                                                },
-                                                proxy: true
-                                              }
-                                            ],
-                                            null,
-                                            false,
-                                            2513656181
-                                          )
-                                        })
-                                      : _c("span", [
-                                          _vm._v(
-                                            _vm._s(
-                                              _vm.product.userPrices
-                                                .wholesale_price
-                                            )
-                                          )
-                                        ])
-                                  ],
-                                  1
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "div",
-                                  [
-                                    _c("strong", [
-                                      _vm._v(
-                                        "RRP (" +
-                                          _vm._s(
-                                            _vm.product.userPrices.currency
-                                          ) +
-                                          ")"
+                                    _c("span", [
+                                      _vm._v(_vm._s(_vm.product.quantity))
+                                    ])
+                                  ]),
+                                  _vm._v(" "),
+                                  _vm.userPermissionLevel >= 4
+                                    ? _c(
+                                        "TooltipAlt2",
+                                        {
+                                          attrs: {
+                                            header: "Wholesale price",
+                                            array: _vm.product.prices,
+                                            arrayValueKey: "wholesale_price",
+                                            arrayLabelKey: "currency"
+                                          }
+                                        },
+                                        [
+                                          _c("div", { staticClass: "stat" }, [
+                                            _c("p", [
+                                              _c("strong", [
+                                                _vm._v(
+                                                  "WHS (" +
+                                                    _vm._s(
+                                                      _vm.product.userPrices
+                                                        .currency
+                                                    ) +
+                                                    ")"
+                                                )
+                                              ])
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.product.userPrices
+                                                    .wholesale_price
+                                                ) + " "
+                                              ),
+                                              _c("i", {
+                                                staticClass:
+                                                  "far fa-info-circle"
+                                              })
+                                            ])
+                                          ])
+                                        ]
                                       )
-                                    ]),
-                                    _vm._v(" "),
-                                    _vm.userPermissionLevel >= 4
-                                      ? _c("TooltipAlt", {
-                                          scopedSlots: _vm._u(
-                                            [
-                                              {
-                                                key: "parent",
-                                                fn: function() {
-                                                  return [
-                                                    _c("span", [
-                                                      _vm._v(
-                                                        _vm._s(
-                                                          _vm.product.userPrices
-                                                            .recommended_retail_price
-                                                        )
-                                                      )
-                                                    ])
-                                                  ]
-                                                },
-                                                proxy: true
-                                              },
-                                              {
-                                                key: "header",
-                                                fn: function() {
-                                                  return [
-                                                    _c("span", [
-                                                      _vm._v(
-                                                        "Recommended retail price"
-                                                      )
-                                                    ])
-                                                  ]
-                                                },
-                                                proxy: true
-                                              },
-                                              {
-                                                key: "body",
-                                                fn: function() {
-                                                  return _vm._l(
-                                                    _vm.product.prices,
-                                                    function(currency, index) {
-                                                      return _c(
-                                                        "p",
-                                                        {
-                                                          key: index,
-                                                          staticClass:
-                                                            "tooltip-row"
-                                                        },
-                                                        [
-                                                          _c("strong", [
-                                                            _vm._v(
-                                                              _vm._s(
-                                                                currency.currency
-                                                              ) + ": "
-                                                            )
-                                                          ]),
-                                                          _vm._v(" "),
-                                                          _c("span", [
-                                                            _vm._v(
-                                                              _vm._s(
-                                                                currency.recommended_retail_price
-                                                              )
-                                                            )
-                                                          ])
-                                                        ]
-                                                      )
-                                                    }
-                                                  )
-                                                },
-                                                proxy: true
-                                              }
-                                            ],
-                                            null,
-                                            false,
-                                            630250405
-                                          )
-                                        })
-                                      : _c("span", [
-                                          _vm._v(
-                                            _vm._s(
-                                              _vm.product.userPrices
-                                                .recommended_retail_price
+                                    : [
+                                        _c("div", { staticClass: "stat" }, [
+                                          _c("p", [
+                                            _c("strong", [
+                                              _vm._v(
+                                                "WHS (" +
+                                                  _vm._s(
+                                                    _vm.product.userPrices
+                                                      .currency
+                                                  ) +
+                                                  ")"
+                                              )
+                                            ])
+                                          ]),
+                                          _vm._v(" "),
+                                          _c("p", [
+                                            _vm._v(
+                                              _vm._s(
+                                                _vm.product.userPrices
+                                                  .wholesale_price
+                                              )
                                             )
-                                          )
+                                          ])
                                         ])
-                                  ],
-                                  1
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "div",
-                                  [
-                                    _c("strong", [_vm._v("MU")]),
-                                    _vm._v(" "),
-                                    _vm.userPermissionLevel >= 4
-                                      ? _c(
-                                          "TooltipAlt2",
-                                          {
-                                            attrs: {
-                                              header: "Mark up",
-                                              array: _vm.product.prices,
-                                              arrayValueKey: "markup",
-                                              arrayLabelKey: "currency"
-                                            }
-                                          },
-                                          [
-                                            _c("span", [
+                                      ],
+                                  _vm._v(" "),
+                                  _vm.userPermissionLevel >= 4
+                                    ? _c(
+                                        "TooltipAlt2",
+                                        {
+                                          attrs: {
+                                            header: "Recommended retail price",
+                                            array: _vm.product.prices,
+                                            arrayValueKey:
+                                              "recommended_retail_price",
+                                            arrayLabelKey: "currency"
+                                          }
+                                        },
+                                        [
+                                          _c("div", { staticClass: "stat" }, [
+                                            _c("p", [
+                                              _c("strong", [
+                                                _vm._v(
+                                                  "RRP (" +
+                                                    _vm._s(
+                                                      _vm.product.userPrices
+                                                        .currency
+                                                    ) +
+                                                    ")"
+                                                )
+                                              ])
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.product.userPrices
+                                                    .recommended_retail_price
+                                                ) + " "
+                                              ),
+                                              _c("i", {
+                                                staticClass:
+                                                  "far fa-info-circle"
+                                              })
+                                            ])
+                                          ])
+                                        ]
+                                      )
+                                    : [
+                                        _c("div", { staticClass: "stat" }, [
+                                          _c("p", [
+                                            _c("strong", [
+                                              _vm._v(
+                                                "RRP (" +
+                                                  _vm._s(
+                                                    _vm.product.userPrices
+                                                      .currency
+                                                  ) +
+                                                  ")"
+                                              )
+                                            ])
+                                          ]),
+                                          _vm._v(" "),
+                                          _c("p", [
+                                            _vm._v(
+                                              _vm._s(
+                                                _vm.product.userPrices
+                                                  .recommended_retail_price
+                                              )
+                                            )
+                                          ])
+                                        ])
+                                      ],
+                                  _vm._v(" "),
+                                  _vm.userPermissionLevel >= 4
+                                    ? _c(
+                                        "TooltipAlt2",
+                                        {
+                                          attrs: {
+                                            header: "Mark up",
+                                            array: _vm.product.prices,
+                                            arrayValueKey: "markup",
+                                            arrayLabelKey: "currency"
+                                          }
+                                        },
+                                        [
+                                          _c("div", { staticClass: "stat" }, [
+                                            _c("p", [
+                                              _c("strong", [_vm._v("MU")])
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", [
                                               _vm._v(
                                                 _vm._s(
                                                   _vm.product.userPrices.markup
-                                                )
-                                              )
+                                                ) + " "
+                                              ),
+                                              _c("i", {
+                                                staticClass:
+                                                  "far fa-info-circle"
+                                              })
                                             ])
-                                          ]
-                                        )
-                                      : _c("span", [
-                                          _vm._v(
-                                            _vm._s(
-                                              _vm.product.userPrices.markup
+                                          ])
+                                        ]
+                                      )
+                                    : [
+                                        _c("div", { staticClass: "stat" }, [
+                                          _c("p", [
+                                            _c("strong", [_vm._v("MU")])
+                                          ]),
+                                          _vm._v(" "),
+                                          _c("p", [
+                                            _vm._v(
+                                              _vm._s(
+                                                _vm.product.userPrices.markup
+                                              )
                                             )
-                                          )
+                                          ])
                                         ])
-                                  ],
-                                  1
-                                )
-                              ])
+                                      ]
+                                ],
+                                2
+                              )
                             ]),
                             _vm._v(" "),
-                            _c("strong", [_vm._v("Composition")]),
+                            _c("div", { staticClass: "stat" }, [
+                              _vm._m(2),
+                              _vm._v(" "),
+                              _c("p", [_vm._v(_vm._s(_vm.product.composition))])
+                            ]),
                             _vm._v(" "),
-                            _c("p", [_vm._v(_vm._s(_vm.product.composition))]),
-                            _vm._v(" "),
-                            _c("strong", [_vm._v("Delivery date")]),
-                            _vm._v(" "),
-                            _c("p", [
-                              _vm._v(
-                                _vm._s(
-                                  new Date(
-                                    _vm.product.delivery_date
-                                  ).toLocaleDateString("da-DK", {
-                                    month: "long",
-                                    year: "numeric"
-                                  })
+                            _c("div", { staticClass: "stat" }, [
+                              _vm._m(3),
+                              _vm._v(" "),
+                              _c("p", [
+                                _vm._v(
+                                  _vm._s(
+                                    new Date(
+                                      _vm.product.delivery_date
+                                    ).toLocaleDateString("da-DK", {
+                                      month: "long",
+                                      year: "numeric"
+                                    })
+                                  )
                                 )
-                              )
+                              ])
                             ]),
                             _vm._v(" "),
                             _c(
@@ -17294,7 +17256,32 @@ var render = function() {
     2
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", [_c("strong", [_vm._v("Style number")])])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", [_c("strong", [_vm._v("Category")])])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", [_c("strong", [_vm._v("Composition")])])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", [_c("strong", [_vm._v("Delivery date")])])
+  }
+]
 render._withStripped = true
 
 

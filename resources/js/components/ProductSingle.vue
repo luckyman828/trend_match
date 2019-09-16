@@ -31,69 +31,69 @@
                                     <img :src="variantImg(product.color_variants[currentImgIndex])" @error="imgError(product.color_variants[currentImgIndex])">
                                 </div>
                                 <div class="description">
-                                    <div>
-                                        <strong>Style number</strong>
-                                        <span>{{product.datasource_id}}</span>
+                                    <div class="stat">
+                                        <p><strong>Style number</strong></p>
+                                        <p><span>{{product.datasource_id}}</span></p>
                                     </div>
-                                    <div>
-                                        <strong>Category</strong>
+                                    <div class="stat">
+                                        <p><strong>Category</strong></p>
                                         <span>{{product.category}}</span>
                                     </div>
-                                    <div>
+                                    <div class="stat">
                                         <strong>Minimum production</strong>
                                         <span>{{product.quantity}}</span>
                                     </div>
-                                    <div>
-                                        <strong>WHS ({{product.userPrices.currency}})</strong>
-                                        <TooltipAlt v-if="userPermissionLevel >= 4">
-                                            <template v-slot:parent><span>{{product.userPrices.wholesale_price}}</span></template>
-                                            <template v-slot:header><span>Wholesale price</span></template>
-                                            <template v-slot:body>
-                                                <p class="tooltip-row" v-for="(currency, index) in product.prices" :key="index">
-                                                    <strong>{{currency.currency}}: </strong>
-                                                    <span>{{currency.wholesale_price}}</span>
-                                                </p>
-                                            </template>
-                                        </TooltipAlt>
-                                        <span v-else>{{product.userPrices.wholesale_price}}</span>
-                                    </div>
-                                    <div>
-                                        <strong>RRP ({{product.userPrices.currency}})</strong>
-                                        <TooltipAlt v-if="userPermissionLevel >= 4">
-                                            <template v-slot:parent><span>{{product.userPrices.recommended_retail_price}}</span></template>
-                                            <template v-slot:header><span>Recommended retail price</span></template>
-                                            <template v-slot:body>
-                                                <p class="tooltip-row" v-for="(currency, index) in product.prices" :key="index">
-                                                    <strong>{{currency.currency}}: </strong>
-                                                    <span>{{currency.recommended_retail_price}}</span>
-                                                </p>
-                                            </template>
-                                        </TooltipAlt>
-                                        <span v-else>{{product.userPrices.recommended_retail_price}}</span>
-                                    </div>
-                                    <div>
-                                        <strong>MU</strong>
-                                        <!-- <TooltipAlt v-if="userPermissionLevel >= 4">
-                                            <template v-slot:parent><span>{{product.userPrices.markup}}</span></template>
-                                            <template v-slot:header><span>Mark up</span></template>
-                                            <template v-slot:body>
-                                                <p class="tooltip-row" v-for="(currency, index) in product.prices" :key="index">
-                                                    <strong>{{currency.currency}}: </strong>
-                                                    <span>{{currency.markup}}</span>
-                                                </p>
-                                            </template>
-                                        </TooltipAlt> -->
-                                        <TooltipAlt2 v-if="userPermissionLevel >= 4" :header="'Mark up'" :array="product.prices" :arrayValueKey="'markup'" :arrayLabelKey="'currency'">
-                                            <span>{{product.userPrices.markup}}</span>
-                                        </TooltipAlt2>
-                                        <span v-else>{{product.userPrices.markup}}</span>
-                                    </div>
+
+                                    <TooltipAlt2 v-if="userPermissionLevel >= 4" :header="'Wholesale price'" :array="product.prices" :arrayValueKey="'wholesale_price'" :arrayLabelKey="'currency'">
+                                        <div class="stat">
+                                            <p><strong>WHS ({{product.userPrices.currency}})</strong></p>
+                                            <p>{{product.userPrices.wholesale_price}} <i class="far fa-info-circle"></i></p>
+                                        </div>
+                                    </TooltipAlt2>
+                                    <template v-else>
+                                        <div class="stat">
+                                            <p><strong>WHS ({{product.userPrices.currency}})</strong></p>
+                                            <p>{{product.userPrices.wholesale_price}}</p>
+                                        </div>
+                                    </template>
+ 
+                                    <TooltipAlt2 v-if="userPermissionLevel >= 4" :header="'Recommended retail price'" :array="product.prices" :arrayValueKey="'recommended_retail_price'" :arrayLabelKey="'currency'">
+                                        <div class="stat">
+                                            <p><strong>RRP ({{product.userPrices.currency}})</strong></p>
+                                            <p>{{product.userPrices.recommended_retail_price}} <i class="far fa-info-circle"></i></p>
+                                        </div>
+                                    </TooltipAlt2>
+                                    <template v-else>
+                                        <div class="stat">
+                                            <p><strong>RRP ({{product.userPrices.currency}})</strong></p>
+                                            <p>{{product.userPrices.recommended_retail_price}}</p>
+                                        </div>
+                                    </template>
+
+                                    <TooltipAlt2 v-if="userPermissionLevel >= 4" :header="'Mark up'" :array="product.prices" :arrayValueKey="'markup'" :arrayLabelKey="'currency'">
+                                        <div class="stat">
+                                            <p><strong>MU</strong></p>
+                                            <p>{{product.userPrices.markup}} <i class="far fa-info-circle"></i></p>
+                                        </div>
+                                    </TooltipAlt2>
+                                    <template v-else>
+                                        <div class="stat">
+                                            <p><strong>MU</strong></p>
+                                            <p>{{product.userPrices.markup}}</p>
+                                        </div>
+                                    </template>
+
                                 </div>
                             </div>
-                            <strong>Composition</strong>
-                            <p>{{product.composition}}</p>
-                            <strong>Delivery date</strong>
-                            <p>{{new Date(product.delivery_date).toLocaleDateString('da-DK', {month: 'long', year: 'numeric'})}}</p>
+
+                            <div class="stat">
+                                <p><strong>Composition</strong></p>
+                                <p>{{product.composition}}</p>
+                            </div>
+                            <div class="stat">
+                                <p><strong>Delivery date</strong></p>
+                                <p>{{new Date(product.delivery_date).toLocaleDateString('da-DK', {month: 'long', year: 'numeric'})}}</p>
+                            </div>
 
                             <div class="product-variants">
                                 <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
@@ -354,13 +354,12 @@ export default {
             }
         }
         .description {
-            > div {
-                > strong {
+            .stat {
+                > :first-child {
                     margin-bottom: -4px;
                     margin-top: 8px;
                     display: block;
                 }
-
             }
         }
     }
