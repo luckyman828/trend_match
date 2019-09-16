@@ -8365,6 +8365,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           if (key == 'KeyI') this.toggleInOut(this.product, 1);
           if (key == 'KeyO') this.toggleInOut(this.product, 0);
         }
+
+        if (this.authUser.role_id == 2) {
+          if (key == 'KeyF') this.toggleInOut(this.product, 2);
+        }
       }
     }
   }),
@@ -10727,15 +10731,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     productsFiltered: function productsFiltered() {
       var _this2 = this;
 
-      var method = this.currentProductFilter == 'ins' ? 1 : this.currentProductFilter == 'outs' ? 0 : this.currentProductFilter == 'nds' ? 2 : -1;
+      var method = this.currentProductFilter;
       var products = this.productsFilteredByCategory;
       var productsToReturn = products; // filter by in/out
 
-      if (method > -1) {
+      if (['ins', 'outs', 'nds'].includes(method)) {
         var filteredByAction = productsToReturn.filter(function (product) {
-          if (method != 2) {
-            if (product[_this2.actionScope] != null) return product[_this2.actionScope].action == method;
-          } else {
+          if (method == 'ins') {
+            if (product[_this2.actionScope] != null) return product[_this2.actionScope].action >= 1;
+          } else if (method == 'outs') {
+            if (product[_this2.actionScope] != null) return product[_this2.actionScope].action == 0;
+          } else if (method == 'nds') {
             return product[_this2.actionScope] == null;
           }
         });
@@ -10889,7 +10895,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         data.nds += product.nds.length;
 
         if (product[_this3.actionScope] != null) {
-          if (product[_this3.actionScope].action == 1) data["final"].ins++;else if (product[_this3.actionScope].action == 0) data["final"].outs++;
+          if (product[_this3.actionScope].action >= 1) data["final"].ins++;else if (product[_this3.actionScope].action == 0) data["final"].outs++;
         } else data["final"].nds++;
       });
       return data;

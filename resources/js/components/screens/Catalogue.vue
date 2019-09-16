@@ -322,17 +322,20 @@ export default{
             return productsToReturn
         },
         productsFiltered() {
-            const method = (this.currentProductFilter == 'ins') ? 1 : (this.currentProductFilter == 'outs') ? 0 : (this.currentProductFilter == 'nds') ? 2 : -1
+            const method = this.currentProductFilter
             const products = this.productsFilteredByCategory
             let productsToReturn = products
 
             // filter by in/out
-            if (method > -1) {
+            if ( ['ins', 'outs', 'nds'].includes(method) ) {
                 const filteredByAction = productsToReturn.filter(product => {
-                    if (method != 2) {
+                    if (method == 'ins') {
                         if (product[this.actionScope] != null)
-                        return product[this.actionScope].action == method
-                    } else {
+                            return product[this.actionScope].action >= 1
+                    } else if (method == 'outs') {
+                        if (product[this.actionScope] != null)
+                            return product[this.actionScope].action == 0
+                    } else if (method == 'nds') {
                         return product[this.actionScope] == null
                     }
                 })
@@ -502,7 +505,7 @@ export default{
                     data.nds += product.nds.length
 
                 if (product[this.actionScope] != null) {
-                    if (product[this.actionScope].action == 1)
+                    if (product[this.actionScope].action >= 1)
                         data.final.ins ++
                     else if (product[this.actionScope].action == 0)
                         data.final.outs ++

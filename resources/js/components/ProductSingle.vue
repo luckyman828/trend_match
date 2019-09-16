@@ -271,6 +271,10 @@ export default {
                     if (key == 'KeyO')
                         this.toggleInOut(this.product, 0)
                 }
+                if (this.authUser.role_id == 2) {
+                    if (key == 'KeyF')
+                        this.toggleInOut(this.product, 2)
+                }
             }
         }
     },
