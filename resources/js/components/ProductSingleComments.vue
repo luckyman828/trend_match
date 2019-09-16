@@ -11,95 +11,15 @@
 
 
         <div class="comments-wrapper" v-if="commentFilter == 'all comments'">
-
-            <div class="teams-wrapper">
-                <div class="team" v-for="team in commentsFiltered" :key="team.id">
-
-                    <div class="comment-wrapper" v-for="comment in team.comments" :key="comment.id" :class="[{'own-team': comment.team_id == currentTeamId}, {'own': comment.user_id == authUser.id}]">
-                        <div class="comment">
-                            <span class="important bubble" v-if="comment.important" @mouseover="showTooltip($event, 'Important')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
-                            <template v-if="comment.votes.length > 0">
-                                <tooltipAlt2 v-if="userPermissionLevel >= 2" :header="'Comment votes'" :array="comment.teamVotes" :arrayLabelKey="'title'" :arrayValueKey="'votes'">
-                                    <span class="votes bubble" :class="{second: comment.important}">{{comment.votes.length}}</span>
-                                </tooltipAlt2>
-                                <span v-else class="votes bubble" :class="{second: comment.important}">{{comment.votes.length}}</span>
-                            </template>
-                            <div class="pill-wrapper">
-                                <span class="votes phase-final pill" v-if="comment.phase_final && actionScope != 'phaseAction'">Phase final <i class="far fa-comment-check"></i></span>
-                                <!-- <template v-if="actionScope == 'teamAction'">
-                                    <span class="votes team-final pill" v-if="comment.team_final && comment.team_id != currentTeamId">Team final <i class="far fa-comment-check"></i></span>
-                                </template> -->
-                                <!-- <template v-else>
-                                    <span class="votes team-final pill" v-if="comment.team_final">Team final <i class="far fa-comment-check"></i></span>
-                                </template> -->
-                            </div>
-                            <span class="body">{{comment.comment}}</span>
-                            <template v-if="userPermissionLevel >= 2">
-                                <span v-if="actionScope == 'phaseAction'" :class="{active: comment.phase_final}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as phase final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
-                                <span v-else-if="actionScope == 'teamAction' && comment.team_id == currentTeamId" :class="{active: comment.team_final && comment.team_id == currentTeamId}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as team final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
-                            </template>
-                        </div>
-                        <span class="user" v-if="comment.user != null">
-                            <span class="team" v-if="comment.team_id > 0">
-                                <template v-if="comment.team">
-                                    {{comment.team.title}}
-                                </template>
-                            </span>
-                            <span class="team" v-else>Global</span>
-                            <template v-if="comment.user_id == authUser.id">
-                                | You
-                            </template>
-                            <template v-else-if="userPermissionLevel >= 2">
-                                | {{comment.user.email}}
-                            </template>
-                        </span>
-                    </div>
-                    
-                </div>
+            <div class="team" v-for="team in commentTeams" :key="team.id">
+                    <comment :comment="comment" v-for="comment in team.comments" :key="comment.id" 
+                    :class="[{'own-team': comment.team_id == currentTeamId}, {'own': comment.user_id == authUser.id}]"/>
             </div>
-
         </div>
 
         <div class="comments-wrapper" v-else>
-            <div class="comment-wrapper" v-for="comment in commentsFiltered" :key="comment.id" :class="[{'own-team': comment.team_id == currentTeamId}, {'own': comment.user_id == authUser.id}]">
-                <div class="comment">
-                    <span class="important bubble" v-if="comment.important" @mouseover="showTooltip($event, 'Important')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
-                    <template v-if="comment.votes.length > 0">
-                        <tooltipAlt2 v-if="userPermissionLevel >= 2" :header="'Comment votes'" :array="comment.teamVotes" :arrayLabelKey="'title'" :arrayValueKey="'votes'">
-                            <span class="votes bubble" :class="{second: comment.important}">{{comment.votes.length}}</span>
-                        </tooltipAlt2>
-                        <span v-else class="votes bubble" :class="{second: comment.important}">{{comment.votes.length}}</span>
-                    </template>
-                    <div class="pill-wrapper">
-                        <span class="votes phase-final pill" v-if="comment.phase_final && actionScope != 'phaseAction'">Phase final <i class="far fa-comment-check"></i></span>
-                        <!-- <template v-if="actionScope == 'teamAction'">
-                            <span class="votes team-final pill" v-if="comment.team_final && comment.team_id != currentTeamId">Team final <i class="far fa-comment-check"></i></span>
-                        </template>
-                        <template v-else>
-                            <span class="votes team-final pill" v-if="comment.team_final">Team final <i class="far fa-comment-check"></i></span>
-                        </template> -->
-                    </div>
-                    <span class="body">{{comment.comment}}</span>
-                     <template v-if="userPermissionLevel >= 2">
-                        <span v-if="actionScope == 'phaseAction'" :class="{active: comment.phase_final}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as phase final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
-                        <span v-else-if="actionScope == 'teamAction' && comment.team_id == currentTeamId" :class="{active: comment.team_final && comment.team_id == currentTeamId}" @click="onMarkAsFinal(comment)" class="circle" @mouseover="showTooltip($event, 'Choose as team final comment')" @mouseleave="hideTooltip"><i class="far fa-comment-check"></i></span>
-                     </template>
-                </div>
-                <span class="user" v-if="comment.user != null">
-                    <span class="team" v-if="comment.team_id > 0">
-                        <template v-if="comment.team">
-                            {{comment.team.title}}
-                        </template>
-                    </span>
-                    <span class="team" v-else>Global</span>
-                    <template v-if="comment.user_id == authUser.id">
-                        | You
-                    </template>
-                    <template v-else-if="userPermissionLevel >= 2">
-                        | {{comment.user.email}}
-                    </template>
-                </span>
-            </div>
+            <comment :comment="comment" v-for="comment in commentsFiltered" :key="comment.id" 
+            :class="[{'own-team': comment.team_id == currentTeamId}, {'own': comment.user_id == authUser.id}]"/>
         </div>
 
 
@@ -123,6 +43,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import Tooltip from './Tooltip'
 import TooltipAlt2 from './TooltipAlt2'
+import Comment from './Comment'
 
 export default {
     name: 'productSingleComments',
@@ -134,6 +55,7 @@ export default {
     components: {
         Tooltip,
         TooltipAlt2,
+        Comment,
     },
     data: function () { return {
         newComment: {
@@ -164,47 +86,11 @@ export default {
                 return true
             else return false
         },
-        commentsToShow () {
-            const comments = this.comments
-            let commentsToReturn = []
-            // Scope to team if auth user role is less than 3
-            if (this.finalOnly) {
-                comments.forEach(comment => {
-                    // Check if the comment is final
-                    if (comment.team_final || comment.phase_final)
-                        commentsToReturn.push(comment)
-
-                    // Check if the auth user made the comment
-                    comment.userComment = false
-                    if (comment.user_id == this.authUser.id && comment.team_id == this.currentTeamId) {
-                        comment.userComment = true
-                        // Check if the comment is already in the array
-                        if (!commentsToReturn.find(x => x.id == comment.id))
-                            commentsToReturn.push(comment)
-                    }
-                })
-            } else {
-                commentsToReturn = comments
-            }
-            commentsToReturn.forEach(comment => {
-                comment.user_final = false
-                // Check if the comment is the auth users final comment
-                if (comment.team_final || comment.phase_final) {
-                    if (this.actionScope == 'phaseAction')
-                        if (comment.user_id == this.authUser.id)
-                            comment.user_final = true
-                    if (this.actionScope == 'teamAction')
-                        if (comment.team_id == this.currentTeamId)
-                            comment.user_final = true
-                }
-            })
-            return commentsToReturn
-        },
         commentsFiltered () {
             const comments = this.comments
             const filter = this.commentFilter
             let commentsFiltered = []
-            let commentTeams = []
+            // let commentTeams = []
 
 
             if (filter == 'team comments') {
@@ -218,18 +104,7 @@ export default {
                         commentsFiltered.push(comment)
                 })
             } else if (filter == 'all comments') {
-                // Group comments by team
-                comments.forEach(comment => {
-                    if (!commentTeams.find(x => x.id == comment.team_id) )
-                        if (comment.team_id > 0) {
-                            comment.team.comments = []
-                            commentTeams.push(comment.team)
-                        }
-                        else commentTeams.push ({id: 0, title: 'Global', comments: []})
-
-                    commentTeams.find(x => x.id == comment.team_id).comments.push(comment)
-                })
-                commentsFiltered = commentTeams
+                commentsFiltered = comments
             }
 
 
@@ -251,10 +126,25 @@ export default {
                             comment.user_final = true
                 }
             })
-
-
             return commentsFiltered
         },
+        commentTeams () {
+            const comments = this.commentsFiltered
+            let commentTeams = []
+
+            // Group comments by team
+            comments.forEach(comment => {
+                if (!commentTeams.find(x => x.id == comment.team_id) )
+                    if (comment.team_id > 0) {
+                        comment.team.comments = []
+                        commentTeams.push(comment.team)
+                    }
+                    else commentTeams.push ({id: 0, title: 'Global', comments: []})
+
+                commentTeams.find(x => x.id == comment.team_id).comments.push(comment)
+            })
+            return commentTeams
+        }
     },
     methods: {
         ...mapActions('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']),

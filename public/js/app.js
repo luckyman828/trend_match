@@ -7499,6 +7499,100 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Comment.vue?vue&type=script&lang=js&":
+/*!******************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Comment.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'comment',
+  props: ['comment'],
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']), {
+    authUser: function authUser() {
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_1__["default"].query().first();
+    }
+  }),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']), {
+    onMarkAsFinal: function onMarkAsFinal(comment) {
+      if (this.actionScope == 'phaseAction') {
+        comment.phase_final = !comment.phase_final;
+        this.markAsPhaseFinal({
+          comment: comment
+        });
+      } else if (this.actionScope == 'teamAction') {
+        comment.team_final = !comment.team_final;
+        this.markAsTeamFinal({
+          comment: comment
+        });
+      }
+    }
+  })
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Dropdown.vue?vue&type=script&lang=js&":
 /*!*******************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Dropdown.vue?vue&type=script&lang=js& ***!
@@ -8402,6 +8496,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _Tooltip__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tooltip */ "./resources/js/components/Tooltip.vue");
 /* harmony import */ var _TooltipAlt2__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./TooltipAlt2 */ "./resources/js/components/TooltipAlt2.vue");
+/* harmony import */ var _Comment__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Comment */ "./resources/js/components/Comment.vue");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -8453,86 +8548,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
 
 
 
@@ -8541,7 +8557,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   props: ['comments', 'authUser', 'product'],
   components: {
     Tooltip: _Tooltip__WEBPACK_IMPORTED_MODULE_2__["default"],
-    TooltipAlt2: _TooltipAlt2__WEBPACK_IMPORTED_MODULE_3__["default"]
+    TooltipAlt2: _TooltipAlt2__WEBPACK_IMPORTED_MODULE_3__["default"],
+    Comment: _Comment__WEBPACK_IMPORTED_MODULE_4__["default"]
   },
   data: function data() {
     return {
@@ -8570,91 +8587,60 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     submitDisabled: function submitDisabled() {
       if (this.newComment.comment.length < 1 || this.submittingComment || this.currentTeamId < 0) return true;else return false;
     },
-    commentsToShow: function commentsToShow() {
+    commentsFiltered: function commentsFiltered() {
       var _this = this;
 
       var comments = this.comments;
-      var commentsToReturn = []; // Scope to team if auth user role is less than 3
-
-      if (this.finalOnly) {
-        comments.forEach(function (comment) {
-          // Check if the comment is final
-          if (comment.team_final || comment.phase_final) commentsToReturn.push(comment); // Check if the auth user made the comment
-
-          comment.userComment = false;
-
-          if (comment.user_id == _this.authUser.id && comment.team_id == _this.currentTeamId) {
-            comment.userComment = true; // Check if the comment is already in the array
-
-            if (!commentsToReturn.find(function (x) {
-              return x.id == comment.id;
-            })) commentsToReturn.push(comment);
-          }
-        });
-      } else {
-        commentsToReturn = comments;
-      }
-
-      commentsToReturn.forEach(function (comment) {
-        comment.user_final = false; // Check if the comment is the auth users final comment
-
-        if (comment.team_final || comment.phase_final) {
-          if (_this.actionScope == 'phaseAction') if (comment.user_id == _this.authUser.id) comment.user_final = true;
-          if (_this.actionScope == 'teamAction') if (comment.team_id == _this.currentTeamId) comment.user_final = true;
-        }
-      });
-      return commentsToReturn;
-    },
-    commentsFiltered: function commentsFiltered() {
-      var _this2 = this;
-
-      var comments = this.comments;
       var filter = this.commentFilter;
-      var commentsFiltered = [];
-      var commentTeams = [];
+      var commentsFiltered = []; // let commentTeams = []
 
       if (filter == 'team comments') {
         comments.forEach(function (comment) {
-          if (comment.team_id == _this2.currentTeamId) commentsFiltered.push(comment);
+          if (comment.team_id == _this.currentTeamId) commentsFiltered.push(comment);
         });
       } else if (filter == 'remarks') {
         comments.forEach(function (comment) {
           if (comment.team_final || comment.phase_final) commentsFiltered.push(comment);
         });
       } else if (filter == 'all comments') {
-        // Group comments by team
-        comments.forEach(function (comment) {
-          if (!commentTeams.find(function (x) {
-            return x.id == comment.team_id;
-          })) if (comment.team_id > 0) {
-            comment.team.comments = [];
-            commentTeams.push(comment.team);
-          } else commentTeams.push({
-            id: 0,
-            title: 'Global',
-            comments: []
-          });
-          commentTeams.find(function (x) {
-            return x.id == comment.team_id;
-          }).comments.push(comment);
-        });
-        commentsFiltered = commentTeams;
+        commentsFiltered = comments;
       } // Find the users actions and users teams actions
 
 
       commentsFiltered.forEach(function (comment) {
         // Check if the auth user made the comment
         comment.userComment = false;
-        if (comment.user_id == _this2.authUser.id && comment.team_id == _this2.currentTeamId) comment.userComment = true; // Check if the comment is the auth users final comment
+        if (comment.user_id == _this.authUser.id && comment.team_id == _this.currentTeamId) comment.userComment = true; // Check if the comment is the auth users final comment
 
         comment.user_final = false;
 
         if (comment.team_final || comment.phase_final) {
-          if (_this2.actionScope == 'phaseAction') if (comment.user_id == _this2.authUser.id) comment.user_final = true;
-          if (_this2.actionScope == 'teamAction') if (comment.team_id == _this2.currentTeamId) comment.user_final = true;
+          if (_this.actionScope == 'phaseAction') if (comment.user_id == _this.authUser.id) comment.user_final = true;
+          if (_this.actionScope == 'teamAction') if (comment.team_id == _this.currentTeamId) comment.user_final = true;
         }
       });
       return commentsFiltered;
+    },
+    commentTeams: function commentTeams() {
+      var comments = this.commentsFiltered;
+      var commentTeams = []; // Group comments by team
+
+      comments.forEach(function (comment) {
+        if (!commentTeams.find(function (x) {
+          return x.id == comment.team_id;
+        })) if (comment.team_id > 0) {
+          comment.team.comments = [];
+          commentTeams.push(comment.team);
+        } else commentTeams.push({
+          id: 0,
+          title: 'Global',
+          comments: []
+        });
+        commentTeams.find(function (x) {
+          return x.id == comment.team_id;
+        }).comments.push(comment);
+      });
+      return commentTeams;
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']), {
@@ -11950,6 +11936,25 @@ exports.push([module.i, ".catalogues-table[data-v-f0b881ae] {\n  margin-top: 52p
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Comment.vue?vue&type=style&index=0&id=54ded044&scoped=true&lang=scss&":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Comment.vue?vue&type=style&index=0&id=54ded044&scoped=true&lang=scss& ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".comment-wrapper[data-v-54ded044] {\n  margin-bottom: 24px;\n}\n.comment-wrapper:hover .circle[data-v-54ded044] {\n  opacity: 1;\n}\n.comment-wrapper.own[data-v-54ded044] {\n  text-align: right;\n}\n.comment[data-v-54ded044] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n  margin-right: 56px;\n}\n.own .comment[data-v-54ded044] {\n  background: #3B86FF;\n  color: white;\n  text-align: left;\n  margin-right: 0;\n  margin-left: 56px;\n}\n.comment .body[data-v-54ded044] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n}\n.user[data-v-54ded044] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-54ded044] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-54ded044] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-54ded044] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-54ded044] {\n  left: 18px;\n}\n.circle[data-v-54ded044] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.comment-wrapper.own .circle[data-v-54ded044] {\n  right: auto;\n  left: -56px;\n}\n.circle i[data-v-54ded044] {\n  font-size: 20px;\n}\n.circle[data-v-54ded044]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.active[data-v-54ded044] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.disabled[data-v-54ded044]:not(.active) {\n  display: none;\n}\n.circle.disabled[data-v-54ded044] {\n  cursor: auto;\n}\n.pill[data-v-54ded044] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\n.pill.phase-final[data-v-54ded044] {\n  background: #3B86FF;\n  color: white;\n}\n.pill[data-v-54ded044]:nth-child(2) {\n  right: 100px;\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Dropdown.vue?vue&type=style&index=0&scopes=true&lang=scss&":
 /*!********************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Dropdown.vue?vue&type=style&index=0&scopes=true&lang=scss& ***!
@@ -13790,6 +13795,36 @@ if(false) {}
 
 
 var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./CataloguesTable.vue?vue&type=style&index=0&id=f0b881ae&scoped=true&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CataloguesTable.vue?vue&type=style&index=0&id=f0b881ae&scoped=true&lang=scss&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Comment.vue?vue&type=style&index=0&id=54ded044&scoped=true&lang=scss&":
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Comment.vue?vue&type=style&index=0&id=54ded044&scoped=true&lang=scss& ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./Comment.vue?vue&type=style&index=0&id=54ded044&scoped=true&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Comment.vue?vue&type=style&index=0&id=54ded044&scoped=true&lang=scss&");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -15690,6 +15725,179 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Comment.vue?vue&type=template&id=54ded044&scoped=true&":
+/*!**********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Comment.vue?vue&type=template&id=54ded044&scoped=true& ***!
+  \**********************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "comment-wrapper" }, [
+    _c(
+      "div",
+      { staticClass: "comment" },
+      [
+        _vm.comment.important
+          ? _c("TooltipAlt2", { attrs: { body: "Important" } }, [
+              _c("span", { staticClass: "important bubble" }, [
+                _c("i", { staticClass: "fas fa-exclamation" })
+              ])
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.comment.votes.length > 0
+          ? [
+              _vm.userPermissionLevel >= 2
+                ? _c(
+                    "tooltipAlt2",
+                    {
+                      attrs: {
+                        header: "Comment votes",
+                        array: _vm.comment.teamVotes,
+                        arrayLabelKey: "title",
+                        arrayValueKey: "votes"
+                      }
+                    },
+                    [
+                      _c(
+                        "span",
+                        {
+                          staticClass: "votes bubble",
+                          class: { second: _vm.comment.important }
+                        },
+                        [_vm._v(_vm._s(_vm.comment.votes.length))]
+                      )
+                    ]
+                  )
+                : _c(
+                    "span",
+                    {
+                      staticClass: "votes bubble",
+                      class: { second: _vm.comment.important }
+                    },
+                    [_vm._v(_vm._s(_vm.comment.votes.length))]
+                  )
+            ]
+          : _vm._e(),
+        _vm._v(" "),
+        _c("div", { staticClass: "pill-wrapper" }, [
+          _vm.comment.phase_final && _vm.actionScope != "phaseAction"
+            ? _c("span", { staticClass: "votes phase-final pill" }, [
+                _vm._v("Phase final "),
+                _c("i", { staticClass: "far fa-comment-check" })
+              ])
+            : _vm._e()
+        ]),
+        _vm._v(" "),
+        _c("span", { staticClass: "body" }, [
+          _vm._v(_vm._s(_vm.comment.comment))
+        ]),
+        _vm._v(" "),
+        _vm.userPermissionLevel >= 2
+          ? [
+              _vm.actionScope == "phaseAction"
+                ? _c(
+                    "TooltipAlt2",
+                    { attrs: { body: "Mark as phase final" } },
+                    [
+                      _c(
+                        "span",
+                        {
+                          staticClass: "circle",
+                          class: { active: _vm.comment.phase_final },
+                          on: {
+                            click: function($event) {
+                              return _vm.onMarkAsFinal(_vm.comment)
+                            }
+                          }
+                        },
+                        [_c("i", { staticClass: "far fa-comment-check" })]
+                      )
+                    ]
+                  )
+                : _vm.actionScope == "teamAction" &&
+                  _vm.comment.team_id == _vm.currentTeamId
+                ? _c("TooltipAlt2", { attrs: { body: "Mark as team final" } }, [
+                    _c(
+                      "span",
+                      {
+                        class: {
+                          active:
+                            _vm.comment.team_final &&
+                            _vm.comment.team_id == _vm.currentTeamId
+                        },
+                        on: {
+                          click: function($event) {
+                            return _vm.onMarkAsFinal(_vm.comment)
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "far fa-comment-check" })]
+                    )
+                  ])
+                : _vm._e()
+            ]
+          : _vm._e()
+      ],
+      2
+    ),
+    _vm._v(" "),
+    _vm.comment.user != null
+      ? _c(
+          "span",
+          { staticClass: "user" },
+          [
+            _vm.comment.team_id > 0
+              ? _c(
+                  "span",
+                  { staticClass: "team" },
+                  [
+                    _vm.comment.team
+                      ? [
+                          _vm._v(
+                            "\n                " +
+                              _vm._s(_vm.comment.team.title) +
+                              "\n            "
+                          )
+                        ]
+                      : _vm._e()
+                  ],
+                  2
+                )
+              : _c("span", { staticClass: "team" }, [_vm._v("Global")]),
+            _vm._v(" "),
+            _vm.comment.user_id == _vm.authUser.id
+              ? [_vm._v("\n            | You\n        ")]
+              : _vm.userPermissionLevel >= 2
+              ? [
+                  _vm._v(
+                    "\n            | " +
+                      _vm._s(_vm.comment.user.email) +
+                      "\n        "
+                  )
+                ]
+              : _vm._e()
+          ],
+          2
+        )
+      : _vm._e()
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Dropdown.vue?vue&type=template&id=ef782e08&":
 /*!***********************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Dropdown.vue?vue&type=template&id=ef782e08& ***!
@@ -17562,435 +17770,42 @@ var render = function() {
       ),
       _vm._v(" "),
       _vm.commentFilter == "all comments"
-        ? _c("div", { staticClass: "comments-wrapper" }, [
-            _c(
-              "div",
-              { staticClass: "teams-wrapper" },
-              _vm._l(_vm.commentsFiltered, function(team) {
-                return _c(
-                  "div",
-                  { key: team.id, staticClass: "team" },
-                  _vm._l(team.comments, function(comment) {
-                    return _c(
-                      "div",
-                      {
-                        key: comment.id,
-                        staticClass: "comment-wrapper",
-                        class: [
-                          { "own-team": comment.team_id == _vm.currentTeamId },
-                          { own: comment.user_id == _vm.authUser.id }
-                        ]
-                      },
-                      [
-                        _c(
-                          "div",
-                          { staticClass: "comment" },
-                          [
-                            comment.important
-                              ? _c(
-                                  "span",
-                                  {
-                                    staticClass: "important bubble",
-                                    on: {
-                                      mouseover: function($event) {
-                                        return _vm.showTooltip(
-                                          $event,
-                                          "Important"
-                                        )
-                                      },
-                                      mouseleave: _vm.hideTooltip
-                                    }
-                                  },
-                                  [
-                                    _c("i", {
-                                      staticClass: "fas fa-exclamation"
-                                    })
-                                  ]
-                                )
-                              : _vm._e(),
-                            _vm._v(" "),
-                            comment.votes.length > 0
-                              ? [
-                                  _vm.userPermissionLevel >= 2
-                                    ? _c(
-                                        "tooltipAlt2",
-                                        {
-                                          attrs: {
-                                            header: "Comment votes",
-                                            array: comment.teamVotes,
-                                            arrayLabelKey: "title",
-                                            arrayValueKey: "votes"
-                                          }
-                                        },
-                                        [
-                                          _c(
-                                            "span",
-                                            {
-                                              staticClass: "votes bubble",
-                                              class: {
-                                                second: comment.important
-                                              }
-                                            },
-                                            [
-                                              _vm._v(
-                                                _vm._s(comment.votes.length)
-                                              )
-                                            ]
-                                          )
-                                        ]
-                                      )
-                                    : _c(
-                                        "span",
-                                        {
-                                          staticClass: "votes bubble",
-                                          class: { second: comment.important }
-                                        },
-                                        [_vm._v(_vm._s(comment.votes.length))]
-                                      )
-                                ]
-                              : _vm._e(),
-                            _vm._v(" "),
-                            _c("div", { staticClass: "pill-wrapper" }, [
-                              comment.phase_final &&
-                              _vm.actionScope != "phaseAction"
-                                ? _c(
-                                    "span",
-                                    { staticClass: "votes phase-final pill" },
-                                    [
-                                      _vm._v("Phase final "),
-                                      _c("i", {
-                                        staticClass: "far fa-comment-check"
-                                      })
-                                    ]
-                                  )
-                                : _vm._e()
-                            ]),
-                            _vm._v(" "),
-                            _c("span", { staticClass: "body" }, [
-                              _vm._v(_vm._s(comment.comment))
-                            ]),
-                            _vm._v(" "),
-                            _vm.userPermissionLevel >= 2
-                              ? [
-                                  _vm.actionScope == "phaseAction"
-                                    ? _c(
-                                        "span",
-                                        {
-                                          staticClass: "circle",
-                                          class: {
-                                            active: comment.phase_final
-                                          },
-                                          on: {
-                                            click: function($event) {
-                                              return _vm.onMarkAsFinal(comment)
-                                            },
-                                            mouseover: function($event) {
-                                              return _vm.showTooltip(
-                                                $event,
-                                                "Choose as phase final comment"
-                                              )
-                                            },
-                                            mouseleave: _vm.hideTooltip
-                                          }
-                                        },
-                                        [
-                                          _c("i", {
-                                            staticClass: "far fa-comment-check"
-                                          })
-                                        ]
-                                      )
-                                    : _vm.actionScope == "teamAction" &&
-                                      comment.team_id == _vm.currentTeamId
-                                    ? _c(
-                                        "span",
-                                        {
-                                          staticClass: "circle",
-                                          class: {
-                                            active:
-                                              comment.team_final &&
-                                              comment.team_id ==
-                                                _vm.currentTeamId
-                                          },
-                                          on: {
-                                            click: function($event) {
-                                              return _vm.onMarkAsFinal(comment)
-                                            },
-                                            mouseover: function($event) {
-                                              return _vm.showTooltip(
-                                                $event,
-                                                "Choose as team final comment"
-                                              )
-                                            },
-                                            mouseleave: _vm.hideTooltip
-                                          }
-                                        },
-                                        [
-                                          _c("i", {
-                                            staticClass: "far fa-comment-check"
-                                          })
-                                        ]
-                                      )
-                                    : _vm._e()
-                                ]
-                              : _vm._e()
-                          ],
-                          2
-                        ),
-                        _vm._v(" "),
-                        comment.user != null
-                          ? _c(
-                              "span",
-                              { staticClass: "user" },
-                              [
-                                comment.team_id > 0
-                                  ? _c(
-                                      "span",
-                                      { staticClass: "team" },
-                                      [
-                                        comment.team
-                                          ? [
-                                              _vm._v(
-                                                "\n                                " +
-                                                  _vm._s(comment.team.title) +
-                                                  "\n                            "
-                                              )
-                                            ]
-                                          : _vm._e()
-                                      ],
-                                      2
-                                    )
-                                  : _c("span", { staticClass: "team" }, [
-                                      _vm._v("Global")
-                                    ]),
-                                _vm._v(" "),
-                                comment.user_id == _vm.authUser.id
-                                  ? [
-                                      _vm._v(
-                                        "\n                            | You\n                        "
-                                      )
-                                    ]
-                                  : _vm.userPermissionLevel >= 2
-                                  ? [
-                                      _vm._v(
-                                        "\n                            | " +
-                                          _vm._s(comment.user.email) +
-                                          "\n                        "
-                                      )
-                                    ]
-                                  : _vm._e()
-                              ],
-                              2
-                            )
-                          : _vm._e()
-                      ]
-                    )
-                  }),
-                  0
-                )
-              }),
-              0
-            )
-          ])
+        ? _c(
+            "div",
+            { staticClass: "comments-wrapper" },
+            _vm._l(_vm.commentTeams, function(team) {
+              return _c(
+                "div",
+                { key: team.id, staticClass: "team" },
+                _vm._l(team.comments, function(comment) {
+                  return _c("comment", {
+                    key: comment.id,
+                    class: [
+                      { "own-team": comment.team_id == _vm.currentTeamId },
+                      { own: comment.user_id == _vm.authUser.id }
+                    ],
+                    attrs: { comment: comment }
+                  })
+                }),
+                1
+              )
+            }),
+            0
+          )
         : _c(
             "div",
             { staticClass: "comments-wrapper" },
             _vm._l(_vm.commentsFiltered, function(comment) {
-              return _c(
-                "div",
-                {
-                  key: comment.id,
-                  staticClass: "comment-wrapper",
-                  class: [
-                    { "own-team": comment.team_id == _vm.currentTeamId },
-                    { own: comment.user_id == _vm.authUser.id }
-                  ]
-                },
-                [
-                  _c(
-                    "div",
-                    { staticClass: "comment" },
-                    [
-                      comment.important
-                        ? _c(
-                            "span",
-                            {
-                              staticClass: "important bubble",
-                              on: {
-                                mouseover: function($event) {
-                                  return _vm.showTooltip($event, "Important")
-                                },
-                                mouseleave: _vm.hideTooltip
-                              }
-                            },
-                            [_c("i", { staticClass: "fas fa-exclamation" })]
-                          )
-                        : _vm._e(),
-                      _vm._v(" "),
-                      comment.votes.length > 0
-                        ? [
-                            _vm.userPermissionLevel >= 2
-                              ? _c(
-                                  "tooltipAlt2",
-                                  {
-                                    attrs: {
-                                      header: "Comment votes",
-                                      array: comment.teamVotes,
-                                      arrayLabelKey: "title",
-                                      arrayValueKey: "votes"
-                                    }
-                                  },
-                                  [
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass: "votes bubble",
-                                        class: { second: comment.important }
-                                      },
-                                      [_vm._v(_vm._s(comment.votes.length))]
-                                    )
-                                  ]
-                                )
-                              : _c(
-                                  "span",
-                                  {
-                                    staticClass: "votes bubble",
-                                    class: { second: comment.important }
-                                  },
-                                  [_vm._v(_vm._s(comment.votes.length))]
-                                )
-                          ]
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "pill-wrapper" }, [
-                        comment.phase_final && _vm.actionScope != "phaseAction"
-                          ? _c(
-                              "span",
-                              { staticClass: "votes phase-final pill" },
-                              [
-                                _vm._v("Phase final "),
-                                _c("i", { staticClass: "far fa-comment-check" })
-                              ]
-                            )
-                          : _vm._e()
-                      ]),
-                      _vm._v(" "),
-                      _c("span", { staticClass: "body" }, [
-                        _vm._v(_vm._s(comment.comment))
-                      ]),
-                      _vm._v(" "),
-                      _vm.userPermissionLevel >= 2
-                        ? [
-                            _vm.actionScope == "phaseAction"
-                              ? _c(
-                                  "span",
-                                  {
-                                    staticClass: "circle",
-                                    class: { active: comment.phase_final },
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.onMarkAsFinal(comment)
-                                      },
-                                      mouseover: function($event) {
-                                        return _vm.showTooltip(
-                                          $event,
-                                          "Choose as phase final comment"
-                                        )
-                                      },
-                                      mouseleave: _vm.hideTooltip
-                                    }
-                                  },
-                                  [
-                                    _c("i", {
-                                      staticClass: "far fa-comment-check"
-                                    })
-                                  ]
-                                )
-                              : _vm.actionScope == "teamAction" &&
-                                comment.team_id == _vm.currentTeamId
-                              ? _c(
-                                  "span",
-                                  {
-                                    staticClass: "circle",
-                                    class: {
-                                      active:
-                                        comment.team_final &&
-                                        comment.team_id == _vm.currentTeamId
-                                    },
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.onMarkAsFinal(comment)
-                                      },
-                                      mouseover: function($event) {
-                                        return _vm.showTooltip(
-                                          $event,
-                                          "Choose as team final comment"
-                                        )
-                                      },
-                                      mouseleave: _vm.hideTooltip
-                                    }
-                                  },
-                                  [
-                                    _c("i", {
-                                      staticClass: "far fa-comment-check"
-                                    })
-                                  ]
-                                )
-                              : _vm._e()
-                          ]
-                        : _vm._e()
-                    ],
-                    2
-                  ),
-                  _vm._v(" "),
-                  comment.user != null
-                    ? _c(
-                        "span",
-                        { staticClass: "user" },
-                        [
-                          comment.team_id > 0
-                            ? _c(
-                                "span",
-                                { staticClass: "team" },
-                                [
-                                  comment.team
-                                    ? [
-                                        _vm._v(
-                                          "\n                        " +
-                                            _vm._s(comment.team.title) +
-                                            "\n                    "
-                                        )
-                                      ]
-                                    : _vm._e()
-                                ],
-                                2
-                              )
-                            : _c("span", { staticClass: "team" }, [
-                                _vm._v("Global")
-                              ]),
-                          _vm._v(" "),
-                          comment.user_id == _vm.authUser.id
-                            ? [
-                                _vm._v(
-                                  "\n                    | You\n                "
-                                )
-                              ]
-                            : _vm.userPermissionLevel >= 2
-                            ? [
-                                _vm._v(
-                                  "\n                    | " +
-                                    _vm._s(comment.user.email) +
-                                    "\n                "
-                                )
-                              ]
-                            : _vm._e()
-                        ],
-                        2
-                      )
-                    : _vm._e()
-                ]
-              )
+              return _c("comment", {
+                key: comment.id,
+                class: [
+                  { "own-team": comment.team_id == _vm.currentTeamId },
+                  { own: comment.user_id == _vm.authUser.id }
+                ],
+                attrs: { comment: comment }
+              })
             }),
-            0
+            1
           ),
       _vm._v(" "),
       _c("form", { on: { submit: _vm.onSubmitComment } }, [
@@ -37773,6 +37588,93 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CataloguesTable_vue_vue_type_template_id_f0b881ae_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CataloguesTable_vue_vue_type_template_id_f0b881ae_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/Comment.vue":
+/*!*********************************************!*\
+  !*** ./resources/js/components/Comment.vue ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Comment_vue_vue_type_template_id_54ded044_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Comment.vue?vue&type=template&id=54ded044&scoped=true& */ "./resources/js/components/Comment.vue?vue&type=template&id=54ded044&scoped=true&");
+/* harmony import */ var _Comment_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Comment.vue?vue&type=script&lang=js& */ "./resources/js/components/Comment.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _Comment_vue_vue_type_style_index_0_id_54ded044_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Comment.vue?vue&type=style&index=0&id=54ded044&scoped=true&lang=scss& */ "./resources/js/components/Comment.vue?vue&type=style&index=0&id=54ded044&scoped=true&lang=scss&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _Comment_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _Comment_vue_vue_type_template_id_54ded044_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _Comment_vue_vue_type_template_id_54ded044_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "54ded044",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/Comment.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/Comment.vue?vue&type=script&lang=js&":
+/*!**********************************************************************!*\
+  !*** ./resources/js/components/Comment.vue?vue&type=script&lang=js& ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Comment_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./Comment.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Comment.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Comment_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/Comment.vue?vue&type=style&index=0&id=54ded044&scoped=true&lang=scss&":
+/*!*******************************************************************************************************!*\
+  !*** ./resources/js/components/Comment.vue?vue&type=style&index=0&id=54ded044&scoped=true&lang=scss& ***!
+  \*******************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Comment_vue_vue_type_style_index_0_id_54ded044_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./Comment.vue?vue&type=style&index=0&id=54ded044&scoped=true&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Comment.vue?vue&type=style&index=0&id=54ded044&scoped=true&lang=scss&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Comment_vue_vue_type_style_index_0_id_54ded044_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Comment_vue_vue_type_style_index_0_id_54ded044_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Comment_vue_vue_type_style_index_0_id_54ded044_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Comment_vue_vue_type_style_index_0_id_54ded044_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Comment_vue_vue_type_style_index_0_id_54ded044_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/Comment.vue?vue&type=template&id=54ded044&scoped=true&":
+/*!****************************************************************************************!*\
+  !*** ./resources/js/components/Comment.vue?vue&type=template&id=54ded044&scoped=true& ***!
+  \****************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Comment_vue_vue_type_template_id_54ded044_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./Comment.vue?vue&type=template&id=54ded044&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Comment.vue?vue&type=template&id=54ded044&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Comment_vue_vue_type_template_id_54ded044_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Comment_vue_vue_type_template_id_54ded044_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
