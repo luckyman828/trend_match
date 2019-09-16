@@ -25,7 +25,7 @@
                     <span :class="{active: comment.phase_final}" @click="onMarkAsFinal(comment)" class="circle"><i class="far fa-comment-check"></i></span>
                 </TooltipAlt2>
                 <TooltipAlt2 v-else-if="actionScope == 'teamAction' && comment.team_id == currentTeamId" :body="'Mark as team final'">
-                    <span :class="{active: comment.team_final && comment.team_id == currentTeamId}" @click="onMarkAsFinal(comment)"><i class="far fa-comment-check"></i></span>
+                    <span :class="{active: comment.team_final && comment.team_id == currentTeamId}" @click="onMarkAsFinal(comment)" class="circle"><i class="far fa-comment-check"></i></span>
                 </TooltipAlt2>
                 <!-- <span v-if="actionScope == 'phaseAction'" :class="{active: comment.phase_final}" @click="onMarkAsFinal(comment)" class="circle"><i class="far fa-comment-check"></i></span>
                 <span v-else-if="actionScope == 'teamAction' && comment.team_id == currentTeamId" :class="{active: comment.team_final && comment.team_id == currentTeamId}" @click="onMarkAsFinal(comment)"><i class="far fa-comment-check"></i></span> -->

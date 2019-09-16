@@ -63,18 +63,18 @@ export default {
         show() {
             this.showDelay = setTimeout( () => {this.hidden = false}, this.showDelay)
         },
-        getPosition(element) {
-            var xPosition = 0;
-            var yPosition = 0;
+        // getPosition(element) {
+        //     var xPosition = 0;
+        //     var yPosition = 0;
 
-            while(element) {
-                xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
-                yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
-                element = element.offsetParent;
-            }
+        //     while(element) {
+        //         xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+        //         yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
+        //         element = element.offsetParent;
+        //     }
 
-            return { x: xPosition, y: yPosition };
-        },
+        //     return { x: xPosition, y: yPosition };
+        // },
         // Set the height of the component
         setHeight() {
             const offsetTop = 4
@@ -86,11 +86,14 @@ export default {
             const wrapper = this.$refs.wrapper
 
             // if (parent != null) {
-            const parentPos = this.getPosition(parent)
-            const parentTop = parentPos.y
-            const parentLeft = parentPos.x
+            // const parentPos = this.getPosition(parent)
+            // const parentTop = parentPos.y
+            // const parentLeft = parentPos.x
+            const parentTop = parent.getBoundingClientRect().top
+            const parentLeft = parent.getBoundingClientRect().left
             const parentHeight = parent.getBoundingClientRect().height
             const parentWidth = parent.getBoundingClientRect().width
+            // console.log(parent.getBoundingClientRect().top)
             // }
             const elHeight = el.getBoundingClientRect().height
             const elWidth = el.getBoundingClientRect().width

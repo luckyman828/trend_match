@@ -576,7 +576,10 @@ textarea {
             color: white;
         }
         .body {
-            background: $darkAlt2;
+            background: $darkAlt;
+            &:not(:first-child) {
+                background: $darkAlt2;
+            }
         }
     }
 }

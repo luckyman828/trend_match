@@ -44,8 +44,8 @@
                     </th>
                 </template>
 
-                <th :class="{active: this.sortBy == 'comments'}" class="clickable square-wrapper comments" @click="onSortBy('comments', false)">
-                    Comments <i class="fas" :class="[(this.sortBy == 'comments' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                <th :class="{active: this.sortBy == 'commentsScoped'}" class="clickable square-wrapper comments" @click="onSortBy('commentsScoped', false)">
+                    Comments <i class="fas" :class="[(this.sortBy == 'commentsScoped' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
 
                 <template v-if="userPermissionLevel >= 2">

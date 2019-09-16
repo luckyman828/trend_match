@@ -232,14 +232,19 @@ export default{
                         let pushComment = false
 
                         // Check if the comment belongs to one of auth users teams
-                        if (comment.user != null)
-                            if (comment.user.teams != null)
-                                if ( comment.user.teams.find(x => x.id == teamFilterId) )
-                                    pushComment = true
-
-                        // Check if the comment is final or global
-                        if (comment.team_final || comment.phase_final || comment.team_id == 0)
+                        // if (comment.user != null)
+                        //     if (comment.user.teams != null)
+                        //         if ( comment.user.teams.find(x => x.id == teamFilterId) )
+                        //             pushComment = true
+                        if (comment.team_id == teamFilterId)
                             pushComment = true
+
+
+                        // Check if the comment is final or global (not for sales)
+                        if (this.userPermissionLevel >= 2) {
+                            if (comment.team_final || comment.phase_final || comment.team_id == 0)
+                                pushComment = true
+                        }
 
                         if (pushComment)
                             product.commentsScoped.push(comment)

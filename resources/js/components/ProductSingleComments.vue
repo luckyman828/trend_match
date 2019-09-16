@@ -100,7 +100,7 @@ export default {
                 })
             } else if (filter == 'remarks') {
                 comments.forEach(comment => {
-                    if (comment.team_final || comment.phase_final)
+                    if (comment.team_final || comment.phase_final || comment.team_id == 0)
                         commentsFiltered.push(comment)
                 })
             } else if (filter == 'all comments') {

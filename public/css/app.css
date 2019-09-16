@@ -9608,6 +9608,13 @@ textarea {
 .dark .dropdown .body,
 .tooltip.dark .body,
 .dark .tooltip .body {
+  background: #43425D;
+}
+
+.dropdown.dark .body:not(:first-child),
+.dark .dropdown .body:not(:first-child),
+.tooltip.dark .body:not(:first-child),
+.dark .tooltip .body:not(:first-child) {
   background: #56556E;
 }
 

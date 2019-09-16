@@ -8600,7 +8600,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
       } else if (filter == 'remarks') {
         comments.forEach(function (comment) {
-          if (comment.team_final || comment.phase_final) commentsFiltered.push(comment);
+          if (comment.team_final || comment.phase_final || comment.team_id == 0) commentsFiltered.push(comment);
         });
       } else if (filter == 'all comments') {
         commentsFiltered = comments;
@@ -10388,21 +10388,16 @@ __webpack_require__.r(__webpack_exports__);
         _this.hidden = false;
       }, this.showDelay);
     },
-    getPosition: function getPosition(element) {
-      var xPosition = 0;
-      var yPosition = 0;
-
-      while (element) {
-        xPosition += element.offsetLeft - element.scrollLeft + element.clientLeft;
-        yPosition += element.offsetTop - element.scrollTop + element.clientTop;
-        element = element.offsetParent;
-      }
-
-      return {
-        x: xPosition,
-        y: yPosition
-      };
-    },
+    // getPosition(element) {
+    //     var xPosition = 0;
+    //     var yPosition = 0;
+    //     while(element) {
+    //         xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+    //         yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
+    //         element = element.offsetParent;
+    //     }
+    //     return { x: xPosition, y: yPosition };
+    // },
     // Set the height of the component
     setHeight: function setHeight() {
       var offsetTop = 4;
@@ -10413,12 +10408,15 @@ __webpack_require__.r(__webpack_exports__);
       var parent = this.$slots["default"][0].elm; // Use the slot as parent
 
       var wrapper = this.$refs.wrapper; // if (parent != null) {
+      // const parentPos = this.getPosition(parent)
+      // const parentTop = parentPos.y
+      // const parentLeft = parentPos.x
 
-      var parentPos = this.getPosition(parent);
-      var parentTop = parentPos.y;
-      var parentLeft = parentPos.x;
+      var parentTop = parent.getBoundingClientRect().top;
+      var parentLeft = parent.getBoundingClientRect().left;
       var parentHeight = parent.getBoundingClientRect().height;
-      var parentWidth = parent.getBoundingClientRect().width; // }
+      var parentWidth = parent.getBoundingClientRect().width; // console.log(parent.getBoundingClientRect().top)
+      // }
 
       var elHeight = el.getBoundingClientRect().height;
       var elWidth = el.getBoundingClientRect().width; // Align the dropdown after the parent
@@ -10779,12 +10777,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           comments.forEach(function (comment) {
             // Loop through comments users teams
             var pushComment = false; // Check if the comment belongs to one of auth users teams
+            // if (comment.user != null)
+            //     if (comment.user.teams != null)
+            //         if ( comment.user.teams.find(x => x.id == teamFilterId) )
+            //             pushComment = true
 
-            if (comment.user != null) if (comment.user.teams != null) if (comment.user.teams.find(function (x) {
-              return x.id == teamFilterId;
-            })) pushComment = true; // Check if the comment is final or global
+            if (comment.team_id == teamFilterId) pushComment = true; // Check if the comment is final or global (not for sales)
 
-            if (comment.team_final || comment.phase_final || comment.team_id == 0) pushComment = true;
+            if (_this.userPermissionLevel >= 2) {
+              if (comment.team_final || comment.phase_final || comment.team_id == 0) pushComment = true;
+            }
+
             if (pushComment) product.commentsScoped.push(comment);
           });
         } else if (teamFilterId == 0) {
@@ -15829,6 +15832,7 @@ var render = function() {
                     _c(
                       "span",
                       {
+                        staticClass: "circle",
                         class: {
                           active:
                             _vm.comment.team_final &&
@@ -18374,10 +18378,10 @@ var render = function() {
                 "th",
                 {
                   staticClass: "clickable square-wrapper comments",
-                  class: { active: this.sortBy == "comments" },
+                  class: { active: this.sortBy == "commentsScoped" },
                   on: {
                     click: function($event) {
-                      return _vm.onSortBy("comments", false)
+                      return _vm.onSortBy("commentsScoped", false)
                     }
                   }
                 },
@@ -18386,7 +18390,7 @@ var render = function() {
                   _c("i", {
                     staticClass: "fas",
                     class: [
-                      this.sortBy == "comments" && !_vm.sortAsc
+                      this.sortBy == "commentsScoped" && !_vm.sortAsc
                         ? "fa-long-arrow-alt-up"
                         : "fa-long-arrow-alt-down"
                     ]
