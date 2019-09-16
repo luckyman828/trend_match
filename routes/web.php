@@ -20,3 +20,7 @@ use Illuminate\Support\Facades\URL;
 Auth::routes(['register' => true]);
 
 Route::get('/', 'HomeController@index')->middleware('auth');
+
+// LEGAL
+Route::view('/privacy-policy', 'legal/privacyPolicy');
+Route::view('/terms-of-service', 'legal/termsOfService');
