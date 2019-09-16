@@ -7431,6 +7431,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 
@@ -8480,6 +8482,57 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -8509,7 +8562,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         type: 'text',
         data: ''
       },
-      finalOnly: true
+      finalOnly: true,
+      commentFilter: ''
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['submittingComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']), {
@@ -8550,6 +8604,57 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
       });
       return commentsToReturn;
+    },
+    commentsFiltered: function commentsFiltered() {
+      var _this2 = this;
+
+      var comments = this.comments;
+      var filter = this.commentFilter;
+      var commentsFiltered = [];
+      var commentTeams = [];
+
+      if (filter == 'team comments') {
+        comments.forEach(function (comment) {
+          if (comment.team_id == _this2.currentTeamId) commentsFiltered.push(comment);
+        });
+      } else if (filter == 'remarks') {
+        comments.forEach(function (comment) {
+          if (comment.team_final || comment.phase_final) commentsFiltered.push(comment);
+        });
+      } else if (filter == 'all comments') {
+        // Group comments by team
+        comments.forEach(function (comment) {
+          if (!commentTeams.find(function (x) {
+            return x.id == comment.team_id;
+          })) if (comment.team_id > 0) {
+            comment.team.comments = [];
+            commentTeams.push(comment.team);
+          } else commentTeams.push({
+            id: 0,
+            title: 'Global',
+            comments: []
+          });
+          commentTeams.find(function (x) {
+            return x.id == comment.team_id;
+          }).comments.push(comment);
+        });
+        commentsFiltered = commentTeams;
+      } // Find the users actions and users teams actions
+
+
+      commentsFiltered.forEach(function (comment) {
+        // Check if the auth user made the comment
+        comment.userComment = false;
+        if (comment.user_id == _this2.authUser.id && comment.team_id == _this2.currentTeamId) comment.userComment = true; // Check if the comment is the auth users final comment
+
+        comment.user_final = false;
+
+        if (comment.team_final || comment.phase_final) {
+          if (_this2.actionScope == 'phaseAction') if (comment.user_id == _this2.authUser.id) comment.user_final = true;
+          if (_this2.actionScope == 'teamAction') if (comment.team_id == _this2.currentTeamId) comment.user_final = true;
+        }
+      });
+      return commentsFiltered;
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']), {
@@ -8622,7 +8727,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   mounted: function mounted() {
-    if (this.actionScope == 'phaseAction') this.finalOnly = true;else this.finalOnly = false; // this.$refs.commentField.addEventListener('keydown', this.hotkeyHandler)
+    if (this.actionScope == 'phaseAction') this.finalOnly = true;else this.finalOnly = false; // Set the default comment filter by the value of the toggle
+
+    if (this.$refs.toggle._props.defaultOption) {
+      this.commentFilter = this.$refs.toggle._props.options[this.$refs.toggle._props.defaultOption - 1];
+    } else {
+      this.commentFilter = this.$refs.toggle._props.options[0];
+    }
   },
   updated: function updated() {
     // Set comment scope
@@ -8640,8 +8751,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   },
   created: function created() {},
-  destroyed: function destroyed() {// this.$refs.commentField.removeEventListener('keydown', this.hotkeyHandler)
-  }
+  destroyed: function destroyed() {}
 });
 
 /***/ }),
@@ -9957,6 +10067,46 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     onSelectItem: function onSelectItem(item) {
       this.selectedItems.push(item.title);
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Toggle.vue?vue&type=script&lang=js&":
+/*!*****************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Toggle.vue?vue&type=script&lang=js& ***!
+  \*****************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'toggle',
+  props: ['options', 'defaultOption'],
+  data: function data() {
+    return {
+      activeOption: 0
+    };
+  },
+  methods: {
+    toggle: function toggle() {
+      if (this.options.length > 1) {
+        if (this.activeOption == this.options.length - 1) this.activeOption = 0;else this.activeOption++;
+        this.$emit('input', this.options[this.activeOption]);
+      }
+    }
+  },
+  mounted: function mounted() {
+    if (this.defaultOption) {
+      this.activeOption = this.defaultOption - 1;
     }
   }
 });
@@ -11945,7 +12095,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.toggle[data-v-6d61fa50] {\n  border: solid 1px #DFDFDF;\n  border-radius: 50px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.toggle .option[data-v-6d61fa50] {\n  font-size: 12px;\n  padding: 6px 14px;\n  font-weight: 700;\n  color: #A8A8A8;\n  text-transform: uppercase;\n  display: inline-block;\n}\n.toggle .option.active[data-v-6d61fa50] {\n  color: #1B1C1D;\n  background: #DFDFDF;\n  border-radius: 50px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #F3F3F3;\n  border-radius: 8px;\n  padding: 36px 24px;\n  height: 57vh;\n  max-height: 57vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 24px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment-wrapper.own[data-v-6d61fa50] {\n  text-align: right;\n}\n.comment[data-v-6d61fa50] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n  margin-right: 56px;\n}\n.own-team .comment[data-v-6d61fa50] {\n  background: rgba(59, 134, 255, 0.7);\n  color: white;\n}\n.own .comment[data-v-6d61fa50] {\n  background: #3B86FF;\n  color: white;\n  text-align: left;\n  margin-right: 0;\n  margin-left: 56px;\n}\n.comment .body[data-v-6d61fa50] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n}\n.user[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-6d61fa50] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-6d61fa50] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-6d61fa50] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-6d61fa50] {\n  left: 18px;\n}\n.circle[data-v-6d61fa50] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.comment-wrapper.own .circle[data-v-6d61fa50] {\n  right: auto;\n  left: -56px;\n}\n.circle i[data-v-6d61fa50] {\n  font-size: 20px;\n}\n.circle[data-v-6d61fa50]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.active[data-v-6d61fa50] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.disabled[data-v-6d61fa50]:not(.active) {\n  display: none;\n}\n.circle.disabled[data-v-6d61fa50] {\n  cursor: auto;\n}\n.pill[data-v-6d61fa50] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\n.pill.phase-final[data-v-6d61fa50] {\n  background: #3B86FF;\n  color: white;\n}\n.pill[data-v-6d61fa50]:nth-child(2) {\n  right: 100px;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #DFDFDF;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #A8A8A8;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #A8A8A8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #F3F3F3;\n  color: #A8A8A8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3B86FF;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}", ""]);
+exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.toggle[data-v-6d61fa50] {\n  border: solid 1px #DFDFDF;\n  border-radius: 50px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.toggle .option[data-v-6d61fa50] {\n  font-size: 12px;\n  padding: 6px 14px;\n  font-weight: 700;\n  color: #A8A8A8;\n  text-transform: uppercase;\n  display: inline-block;\n}\n.toggle .option.active[data-v-6d61fa50] {\n  color: #1B1C1D;\n  background: #DFDFDF;\n  border-radius: 50px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #F3F3F3;\n  border-radius: 8px;\n  padding: 36px 24px;\n  height: 57vh;\n  max-height: 57vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 24px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment-wrapper.own[data-v-6d61fa50] {\n  text-align: right;\n}\n.comment[data-v-6d61fa50] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n  margin-right: 56px;\n}\n.own .comment[data-v-6d61fa50] {\n  background: #3B86FF;\n  color: white;\n  text-align: left;\n  margin-right: 0;\n  margin-left: 56px;\n}\n.comment .body[data-v-6d61fa50] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n}\n.user[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-6d61fa50] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-6d61fa50] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-6d61fa50] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-6d61fa50] {\n  left: 18px;\n}\n.circle[data-v-6d61fa50] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.comment-wrapper.own .circle[data-v-6d61fa50] {\n  right: auto;\n  left: -56px;\n}\n.circle i[data-v-6d61fa50] {\n  font-size: 20px;\n}\n.circle[data-v-6d61fa50]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.active[data-v-6d61fa50] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.disabled[data-v-6d61fa50]:not(.active) {\n  display: none;\n}\n.circle.disabled[data-v-6d61fa50] {\n  cursor: auto;\n}\n.pill[data-v-6d61fa50] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\n.pill.phase-final[data-v-6d61fa50] {\n  background: #3B86FF;\n  color: white;\n}\n.pill[data-v-6d61fa50]:nth-child(2) {\n  right: 100px;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #DFDFDF;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #A8A8A8;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #A8A8A8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #A8A8A8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #F3F3F3;\n  color: #A8A8A8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3B86FF;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}", ""]);
 
 // exports
 
@@ -12155,6 +12305,25 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 // module
 exports.push([module.i, ".vue-component-filters[data-v-7b258cb9] {\n  margin-bottom: 12px;\n}\n.global[data-v-7b258cb9] {\n  height: 32px;\n  width: 150px;\n  color: #1b1c1d;\n  background-color: #ffffff;\n  border: 1px solid #dfdfdf;\n  font-size: 14px;\n  font-weight: bold;\n  margin-left: auto;\n}\n.global img[data-v-7b258cb9] {\n  margin-top: 6px;\n}\n.global span[data-v-7b258cb9] {\n  margin-left: -8px;\n  margin-top: -3px;\n  background-color: #3b86ff;\n  width: 24px;\n  height: 24px;\n  border-radius: 25%;\n}\n.global span img[data-v-7b258cb9] {\n  margin-top: 0px;\n}\n.counter-filter[data-v-7b258cb9] {\n  position: absolute;\n  height: 20px;\n  width: 20px;\n  border-radius: 50%;\n  background-color: #f3f3f3;\n  z-index: 500;\n  box-shadow: 0px 3px 6px #a8a8a8;\n  margin-left: -10px;\n  margin-top: -10px;\n  line-height: 14px;\n}\n.category[data-v-7b258cb9] {\n  background-color: #dfdfdf;\n  color: #1b1c1d;\n  font-size: 12px;\n  font-weight: bold;\n  border: 0;\n  height: 32px;\n  width: 114px;\n}\n.category img[data-v-7b258cb9] {\n  margin-top: 6px;\n}\n.dropdown-toggle[data-v-7b258cb9]::after {\n  display: none;\n}\n.dropdown-menu[data-v-7b258cb9]:hover {\n  display: block;\n}\n.dropdown-menu[data-v-7b258cb9] {\n  overflow-y: auto;\n  max-height: 285px;\n  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);\n}\n.dropdown-menu input[type=text][data-v-7b258cb9] {\n  border: 0px;\n  border-bottom: 1px solid #a8a8a8;\n  color: #a8a8a8;\n  padding: 5px 0;\n  width: 100%;\n}\n.dropdown-menu input[type=text][data-v-7b258cb9]::-webkit-input-placeholder {\n  color: #a8a8a8;\n  text-align: center;\n}\n.dropdown-menu p[data-v-7b258cb9] {\n  display: inline;\n  font-size: 12px;\n  color: #1b1c1d;\n}\n.dropdown-menu .container[data-v-7b258cb9] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.dropdown-menu .container[data-v-7b258cb9]:hover {\n  background: #F9F9F9;\n}\n.dropdown-menu .container input[data-v-7b258cb9] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.dropdown-menu .checkmark[data-v-7b258cb9] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.dropdown-menu .container input:checked ~ .checkmark[data-v-7b258cb9] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.dropdown-menu .checkmark[data-v-7b258cb9]:after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.dropdown-menu .container input:checked ~ .checkmark[data-v-7b258cb9]:after {\n  display: block;\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Toggle.vue?vue&type=style&index=0&id=47b09f7f&scoped=true&lang=scss&":
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Toggle.vue?vue&type=style&index=0&id=47b09f7f&scoped=true&lang=scss& ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".toggle[data-v-47b09f7f] {\n  border: solid 1px #DFDFDF;\n  border-radius: 50px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.toggle .option[data-v-47b09f7f] {\n  font-size: 12px;\n  padding: 6px 14px;\n  font-weight: 700;\n  color: #A8A8A8;\n  text-transform: uppercase;\n  display: inline-block;\n}\n.toggle .option.active[data-v-47b09f7f] {\n  color: #1B1C1D;\n  background: #DFDFDF;\n  border-radius: 50px;\n}", ""]);
 
 // exports
 
@@ -14212,6 +14381,36 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Toggle.vue?vue&type=style&index=0&id=47b09f7f&scoped=true&lang=scss&":
+/*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Toggle.vue?vue&type=style&index=0&id=47b09f7f&scoped=true&lang=scss& ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./Toggle.vue?vue&type=style&index=0&id=47b09f7f&scoped=true&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Toggle.vue?vue&type=style&index=0&id=47b09f7f&scoped=true&lang=scss&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Tooltip.vue?vue&type=style&index=0&id=09733fe8&scoped=true&lang=scss&":
 /*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Tooltip.vue?vue&type=style&index=0&id=09733fe8&scoped=true&lang=scss& ***!
@@ -15384,7 +15583,11 @@ var render = function() {
                           }
                         }
                       },
-                      [_vm._v(_vm._s(catalogue.id) + ">")]
+                      [
+                        _c("span", { attrs: { title: catalogue.id } }, [
+                          _vm._v(_vm._s(_vm._f("truncate")(catalogue.id, 10)))
+                        ])
+                      ]
                     ),
                     _vm._v(" "),
                     _c(
@@ -17307,85 +17510,347 @@ var render = function() {
     "div",
     { staticClass: "comments" },
     [
-      _c("div", { staticClass: "header" }, [
-        _c("h4", [_vm._v("Comments")]),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "toggle",
-            on: {
-              click: function($event) {
-                _vm.finalOnly = !_vm.finalOnly
-              }
-            }
-          },
-          [
-            _c(
-              "span",
-              { staticClass: "option", class: { active: !_vm.finalOnly } },
-              [_vm._v("All")]
-            ),
-            _vm._v(" "),
-            _c(
-              "span",
-              { staticClass: "option", class: { active: _vm.finalOnly } },
-              [_vm._v("Final comment")]
-            )
-          ]
-        )
-      ]),
-      _vm._v(" "),
       _c(
         "div",
-        { staticClass: "comments-wrapper" },
-        _vm._l(_vm.commentsToShow, function(comment) {
-          return _c(
-            "div",
-            {
-              key: comment.id,
-              staticClass: "comment-wrapper",
-              class: [
-                { "own-team": comment.team_id == _vm.currentTeamId },
-                { own: comment.user_id == _vm.authUser.id }
-              ]
-            },
-            [
-              _c(
-                "div",
-                { staticClass: "comment" },
-                [
-                  comment.important
-                    ? _c(
-                        "span",
-                        {
-                          staticClass: "important bubble",
-                          on: {
-                            mouseover: function($event) {
-                              return _vm.showTooltip($event, "Important")
-                            },
-                            mouseleave: _vm.hideTooltip
-                          }
-                        },
-                        [_c("i", { staticClass: "fas fa-exclamation" })]
-                      )
-                    : _vm._e(),
-                  _vm._v(" "),
-                  comment.votes.length > 0
-                    ? [
-                        _vm.userPermissionLevel >= 2
+        { staticClass: "header" },
+        [
+          _c("h4", [_vm._v("Comments")]),
+          _vm._v(" "),
+          _vm.userPermissionLevel < 2
+            ? _c("toggle", {
+                ref: "toggle",
+                attrs: { options: ["team comments"] },
+                model: {
+                  value: _vm.commentFilter,
+                  callback: function($$v) {
+                    _vm.commentFilter = $$v
+                  },
+                  expression: "commentFilter"
+                }
+              })
+            : _vm.userPermissionLevel == 2
+            ? _c("toggle", {
+                ref: "toggle",
+                attrs: {
+                  options: ["team comments", "remarks"],
+                  defaultOption: 2
+                },
+                model: {
+                  value: _vm.commentFilter,
+                  callback: function($$v) {
+                    _vm.commentFilter = $$v
+                  },
+                  expression: "commentFilter"
+                }
+              })
+            : _c("toggle", {
+                ref: "toggle",
+                attrs: {
+                  options: ["all comments", "remarks"],
+                  defaultOption: 2
+                },
+                model: {
+                  value: _vm.commentFilter,
+                  callback: function($$v) {
+                    _vm.commentFilter = $$v
+                  },
+                  expression: "commentFilter"
+                }
+              })
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _vm.commentFilter == "all comments"
+        ? _c("div", { staticClass: "comments-wrapper" }, [
+            _c(
+              "div",
+              { staticClass: "teams-wrapper" },
+              _vm._l(_vm.commentsFiltered, function(team) {
+                return _c(
+                  "div",
+                  { key: team.id, staticClass: "team" },
+                  _vm._l(team.comments, function(comment) {
+                    return _c(
+                      "div",
+                      {
+                        key: comment.id,
+                        staticClass: "comment-wrapper",
+                        class: [
+                          { "own-team": comment.team_id == _vm.currentTeamId },
+                          { own: comment.user_id == _vm.authUser.id }
+                        ]
+                      },
+                      [
+                        _c(
+                          "div",
+                          { staticClass: "comment" },
+                          [
+                            comment.important
+                              ? _c(
+                                  "span",
+                                  {
+                                    staticClass: "important bubble",
+                                    on: {
+                                      mouseover: function($event) {
+                                        return _vm.showTooltip(
+                                          $event,
+                                          "Important"
+                                        )
+                                      },
+                                      mouseleave: _vm.hideTooltip
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "fas fa-exclamation"
+                                    })
+                                  ]
+                                )
+                              : _vm._e(),
+                            _vm._v(" "),
+                            comment.votes.length > 0
+                              ? [
+                                  _vm.userPermissionLevel >= 2
+                                    ? _c(
+                                        "tooltipAlt2",
+                                        {
+                                          attrs: {
+                                            header: "Comment votes",
+                                            array: comment.teamVotes,
+                                            arrayLabelKey: "title",
+                                            arrayValueKey: "votes"
+                                          }
+                                        },
+                                        [
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass: "votes bubble",
+                                              class: {
+                                                second: comment.important
+                                              }
+                                            },
+                                            [
+                                              _vm._v(
+                                                _vm._s(comment.votes.length)
+                                              )
+                                            ]
+                                          )
+                                        ]
+                                      )
+                                    : _c(
+                                        "span",
+                                        {
+                                          staticClass: "votes bubble",
+                                          class: { second: comment.important }
+                                        },
+                                        [_vm._v(_vm._s(comment.votes.length))]
+                                      )
+                                ]
+                              : _vm._e(),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "pill-wrapper" }, [
+                              comment.phase_final &&
+                              _vm.actionScope != "phaseAction"
+                                ? _c(
+                                    "span",
+                                    { staticClass: "votes phase-final pill" },
+                                    [
+                                      _vm._v("Phase final "),
+                                      _c("i", {
+                                        staticClass: "far fa-comment-check"
+                                      })
+                                    ]
+                                  )
+                                : _vm._e()
+                            ]),
+                            _vm._v(" "),
+                            _c("span", { staticClass: "body" }, [
+                              _vm._v(_vm._s(comment.comment))
+                            ]),
+                            _vm._v(" "),
+                            _vm.userPermissionLevel >= 2
+                              ? [
+                                  _vm.actionScope == "phaseAction"
+                                    ? _c(
+                                        "span",
+                                        {
+                                          staticClass: "circle",
+                                          class: {
+                                            active: comment.phase_final
+                                          },
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.onMarkAsFinal(comment)
+                                            },
+                                            mouseover: function($event) {
+                                              return _vm.showTooltip(
+                                                $event,
+                                                "Choose as phase final comment"
+                                              )
+                                            },
+                                            mouseleave: _vm.hideTooltip
+                                          }
+                                        },
+                                        [
+                                          _c("i", {
+                                            staticClass: "far fa-comment-check"
+                                          })
+                                        ]
+                                      )
+                                    : _vm.actionScope == "teamAction" &&
+                                      comment.team_id == _vm.currentTeamId
+                                    ? _c(
+                                        "span",
+                                        {
+                                          staticClass: "circle",
+                                          class: {
+                                            active:
+                                              comment.team_final &&
+                                              comment.team_id ==
+                                                _vm.currentTeamId
+                                          },
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.onMarkAsFinal(comment)
+                                            },
+                                            mouseover: function($event) {
+                                              return _vm.showTooltip(
+                                                $event,
+                                                "Choose as team final comment"
+                                              )
+                                            },
+                                            mouseleave: _vm.hideTooltip
+                                          }
+                                        },
+                                        [
+                                          _c("i", {
+                                            staticClass: "far fa-comment-check"
+                                          })
+                                        ]
+                                      )
+                                    : _vm._e()
+                                ]
+                              : _vm._e()
+                          ],
+                          2
+                        ),
+                        _vm._v(" "),
+                        comment.user != null
                           ? _c(
-                              "tooltipAlt2",
-                              {
-                                attrs: {
-                                  header: "Comment votes",
-                                  array: comment.teamVotes,
-                                  arrayLabelKey: "title",
-                                  arrayValueKey: "votes"
-                                }
-                              },
+                              "span",
+                              { staticClass: "user" },
                               [
-                                _c(
+                                comment.team_id > 0
+                                  ? _c(
+                                      "span",
+                                      { staticClass: "team" },
+                                      [
+                                        comment.team
+                                          ? [
+                                              _vm._v(
+                                                "\n                                " +
+                                                  _vm._s(comment.team.title) +
+                                                  "\n                            "
+                                              )
+                                            ]
+                                          : _vm._e()
+                                      ],
+                                      2
+                                    )
+                                  : _c("span", { staticClass: "team" }, [
+                                      _vm._v("Global")
+                                    ]),
+                                _vm._v(" "),
+                                comment.user_id == _vm.authUser.id
+                                  ? [
+                                      _vm._v(
+                                        "\n                            | You\n                        "
+                                      )
+                                    ]
+                                  : _vm.userPermissionLevel >= 2
+                                  ? [
+                                      _vm._v(
+                                        "\n                            | " +
+                                          _vm._s(comment.user.email) +
+                                          "\n                        "
+                                      )
+                                    ]
+                                  : _vm._e()
+                              ],
+                              2
+                            )
+                          : _vm._e()
+                      ]
+                    )
+                  }),
+                  0
+                )
+              }),
+              0
+            )
+          ])
+        : _c(
+            "div",
+            { staticClass: "comments-wrapper" },
+            _vm._l(_vm.commentsFiltered, function(comment) {
+              return _c(
+                "div",
+                {
+                  key: comment.id,
+                  staticClass: "comment-wrapper",
+                  class: [
+                    { "own-team": comment.team_id == _vm.currentTeamId },
+                    { own: comment.user_id == _vm.authUser.id }
+                  ]
+                },
+                [
+                  _c(
+                    "div",
+                    { staticClass: "comment" },
+                    [
+                      comment.important
+                        ? _c(
+                            "span",
+                            {
+                              staticClass: "important bubble",
+                              on: {
+                                mouseover: function($event) {
+                                  return _vm.showTooltip($event, "Important")
+                                },
+                                mouseleave: _vm.hideTooltip
+                              }
+                            },
+                            [_c("i", { staticClass: "fas fa-exclamation" })]
+                          )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      comment.votes.length > 0
+                        ? [
+                            _vm.userPermissionLevel >= 2
+                              ? _c(
+                                  "tooltipAlt2",
+                                  {
+                                    attrs: {
+                                      header: "Comment votes",
+                                      array: comment.teamVotes,
+                                      arrayLabelKey: "title",
+                                      arrayValueKey: "votes"
+                                    }
+                                  },
+                                  [
+                                    _c(
+                                      "span",
+                                      {
+                                        staticClass: "votes bubble",
+                                        class: { second: comment.important }
+                                      },
+                                      [_vm._v(_vm._s(comment.votes.length))]
+                                    )
+                                  ]
+                                )
+                              : _c(
                                   "span",
                                   {
                                     staticClass: "votes bubble",
@@ -17393,178 +17858,140 @@ var render = function() {
                                   },
                                   [_vm._v(_vm._s(comment.votes.length))]
                                 )
-                              ]
-                            )
-                          : _c(
-                              "span",
-                              {
-                                staticClass: "votes bubble",
-                                class: { second: comment.important }
-                              },
-                              [_vm._v(_vm._s(comment.votes.length))]
-                            )
-                      ]
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    { staticClass: "pill-wrapper" },
-                    [
-                      comment.phase_final && _vm.actionScope != "phaseAction"
-                        ? _c(
-                            "span",
-                            { staticClass: "votes phase-final pill" },
-                            [
-                              _vm._v("Phase final "),
-                              _c("i", { staticClass: "far fa-comment-check" })
-                            ]
-                          )
+                          ]
                         : _vm._e(),
                       _vm._v(" "),
-                      _vm.actionScope == "teamAction"
-                        ? [
-                            comment.team_final &&
-                            comment.team_id != _vm.currentTeamId
-                              ? _c(
-                                  "span",
-                                  { staticClass: "votes team-final pill" },
-                                  [
-                                    _vm._v("Team final "),
-                                    _c("i", {
-                                      staticClass: "far fa-comment-check"
-                                    })
-                                  ]
-                                )
-                              : _vm._e()
-                          ]
-                        : [
-                            comment.team_final
-                              ? _c(
-                                  "span",
-                                  { staticClass: "votes team-final pill" },
-                                  [
-                                    _vm._v("Team final "),
-                                    _c("i", {
-                                      staticClass: "far fa-comment-check"
-                                    })
-                                  ]
-                                )
-                              : _vm._e()
-                          ]
-                    ],
-                    2
-                  ),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "body" }, [
-                    _vm._v(_vm._s(comment.comment))
-                  ]),
-                  _vm._v(" "),
-                  _vm.userPermissionLevel >= 2
-                    ? [
-                        _vm.actionScope == "phaseAction"
+                      _c("div", { staticClass: "pill-wrapper" }, [
+                        comment.phase_final && _vm.actionScope != "phaseAction"
                           ? _c(
                               "span",
-                              {
-                                staticClass: "circle",
-                                class: { active: comment.phase_final },
-                                on: {
-                                  click: function($event) {
-                                    return _vm.onMarkAsFinal(comment)
-                                  },
-                                  mouseover: function($event) {
-                                    return _vm.showTooltip(
-                                      $event,
-                                      "Choose as phase final comment"
-                                    )
-                                  },
-                                  mouseleave: _vm.hideTooltip
-                                }
-                              },
-                              [_c("i", { staticClass: "far fa-comment-check" })]
-                            )
-                          : _vm.actionScope == "teamAction" &&
-                            comment.team_id == _vm.currentTeamId
-                          ? _c(
-                              "span",
-                              {
-                                staticClass: "circle",
-                                class: {
-                                  active:
-                                    comment.team_final &&
-                                    comment.team_id == _vm.currentTeamId
-                                },
-                                on: {
-                                  click: function($event) {
-                                    return _vm.onMarkAsFinal(comment)
-                                  },
-                                  mouseover: function($event) {
-                                    return _vm.showTooltip(
-                                      $event,
-                                      "Choose as team final comment"
-                                    )
-                                  },
-                                  mouseleave: _vm.hideTooltip
-                                }
-                              },
-                              [_c("i", { staticClass: "far fa-comment-check" })]
+                              { staticClass: "votes phase-final pill" },
+                              [
+                                _vm._v("Phase final "),
+                                _c("i", { staticClass: "far fa-comment-check" })
+                              ]
                             )
                           : _vm._e()
-                      ]
-                    : _vm._e()
-                ],
-                2
-              ),
-              _vm._v(" "),
-              comment.user != null
-                ? _c(
-                    "span",
-                    { staticClass: "user" },
-                    [
-                      comment.team_id > 0
-                        ? _c(
-                            "span",
-                            { staticClass: "team" },
-                            [
-                              comment.team
-                                ? [
-                                    _vm._v(
-                                      "\n                        " +
-                                        _vm._s(comment.team.title) +
-                                        "\n                    "
-                                    )
-                                  ]
-                                : _vm._e()
-                            ],
-                            2
-                          )
-                        : _c("span", { staticClass: "team" }, [
-                            _vm._v("Global")
-                          ]),
+                      ]),
                       _vm._v(" "),
-                      comment.user_id == _vm.authUser.id
+                      _c("span", { staticClass: "body" }, [
+                        _vm._v(_vm._s(comment.comment))
+                      ]),
+                      _vm._v(" "),
+                      _vm.userPermissionLevel >= 2
                         ? [
-                            _vm._v(
-                              "\n                    | You\n                "
-                            )
-                          ]
-                        : _vm.userPermissionLevel >= 2
-                        ? [
-                            _vm._v(
-                              "\n                    | " +
-                                _vm._s(comment.user.email) +
-                                "\n                "
-                            )
+                            _vm.actionScope == "phaseAction"
+                              ? _c(
+                                  "span",
+                                  {
+                                    staticClass: "circle",
+                                    class: { active: comment.phase_final },
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.onMarkAsFinal(comment)
+                                      },
+                                      mouseover: function($event) {
+                                        return _vm.showTooltip(
+                                          $event,
+                                          "Choose as phase final comment"
+                                        )
+                                      },
+                                      mouseleave: _vm.hideTooltip
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "far fa-comment-check"
+                                    })
+                                  ]
+                                )
+                              : _vm.actionScope == "teamAction" &&
+                                comment.team_id == _vm.currentTeamId
+                              ? _c(
+                                  "span",
+                                  {
+                                    staticClass: "circle",
+                                    class: {
+                                      active:
+                                        comment.team_final &&
+                                        comment.team_id == _vm.currentTeamId
+                                    },
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.onMarkAsFinal(comment)
+                                      },
+                                      mouseover: function($event) {
+                                        return _vm.showTooltip(
+                                          $event,
+                                          "Choose as team final comment"
+                                        )
+                                      },
+                                      mouseleave: _vm.hideTooltip
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "far fa-comment-check"
+                                    })
+                                  ]
+                                )
+                              : _vm._e()
                           ]
                         : _vm._e()
                     ],
                     2
-                  )
-                : _vm._e()
-            ]
-          )
-        }),
-        0
-      ),
+                  ),
+                  _vm._v(" "),
+                  comment.user != null
+                    ? _c(
+                        "span",
+                        { staticClass: "user" },
+                        [
+                          comment.team_id > 0
+                            ? _c(
+                                "span",
+                                { staticClass: "team" },
+                                [
+                                  comment.team
+                                    ? [
+                                        _vm._v(
+                                          "\n                        " +
+                                            _vm._s(comment.team.title) +
+                                            "\n                    "
+                                        )
+                                      ]
+                                    : _vm._e()
+                                ],
+                                2
+                              )
+                            : _c("span", { staticClass: "team" }, [
+                                _vm._v("Global")
+                              ]),
+                          _vm._v(" "),
+                          comment.user_id == _vm.authUser.id
+                            ? [
+                                _vm._v(
+                                  "\n                    | You\n                "
+                                )
+                              ]
+                            : _vm.userPermissionLevel >= 2
+                            ? [
+                                _vm._v(
+                                  "\n                    | " +
+                                    _vm._s(comment.user.email) +
+                                    "\n                "
+                                )
+                              ]
+                            : _vm._e()
+                        ],
+                        2
+                      )
+                    : _vm._e()
+                ]
+              )
+            }),
+            0
+          ),
       _vm._v(" "),
       _c("form", { on: { submit: _vm.onSubmitComment } }, [
         _c("div", { staticClass: "input-wrapper" }, [
@@ -20102,6 +20529,45 @@ var staticRenderFns = [
     ])
   }
 ]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Toggle.vue?vue&type=template&id=47b09f7f&scoped=true&":
+/*!*********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Toggle.vue?vue&type=template&id=47b09f7f&scoped=true& ***!
+  \*********************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "toggle", on: { click: _vm.toggle } },
+    _vm._l(_vm.options, function(option, index) {
+      return _c(
+        "span",
+        {
+          key: index,
+          staticClass: "option",
+          class: { active: _vm.activeOption == index }
+        },
+        [_vm._v(_vm._s(option))]
+      )
+    }),
+    0
+  )
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -37070,7 +37536,18 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 
 
 Vue.use(vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]);
-Vue.component('app', __webpack_require__(/*! ./App.vue */ "./resources/js/App.vue")["default"]); // Define global mixins
+Vue.component('app', __webpack_require__(/*! ./App.vue */ "./resources/js/App.vue")["default"]); // Global components
+
+Vue.component('TooltipAlt2', __webpack_require__(/*! ./components/TooltipAlt2.vue */ "./resources/js/components/TooltipAlt2.vue")["default"]);
+Vue.component('Toggle', __webpack_require__(/*! ./components/Toggle.vue */ "./resources/js/components/Toggle.vue")["default"]); // Define global filters
+
+Vue.filter('truncate', function (value, limit) {
+  if (value.length > limit) {
+    value = value.substring(0, limit - 2) + '..';
+  }
+
+  return value;
+}); // Define global mixins
 // Vue.mixin({
 //   methods: {
 //     groupBy(prop) {
@@ -39018,6 +39495,93 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamsTopBar_vue_vue_type_template_id_7b258cb9_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TeamsTopBar_vue_vue_type_template_id_7b258cb9_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/Toggle.vue":
+/*!********************************************!*\
+  !*** ./resources/js/components/Toggle.vue ***!
+  \********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Toggle_vue_vue_type_template_id_47b09f7f_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Toggle.vue?vue&type=template&id=47b09f7f&scoped=true& */ "./resources/js/components/Toggle.vue?vue&type=template&id=47b09f7f&scoped=true&");
+/* harmony import */ var _Toggle_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Toggle.vue?vue&type=script&lang=js& */ "./resources/js/components/Toggle.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _Toggle_vue_vue_type_style_index_0_id_47b09f7f_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Toggle.vue?vue&type=style&index=0&id=47b09f7f&scoped=true&lang=scss& */ "./resources/js/components/Toggle.vue?vue&type=style&index=0&id=47b09f7f&scoped=true&lang=scss&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _Toggle_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _Toggle_vue_vue_type_template_id_47b09f7f_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _Toggle_vue_vue_type_template_id_47b09f7f_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "47b09f7f",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/Toggle.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/Toggle.vue?vue&type=script&lang=js&":
+/*!*********************************************************************!*\
+  !*** ./resources/js/components/Toggle.vue?vue&type=script&lang=js& ***!
+  \*********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Toggle_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./Toggle.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Toggle.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Toggle_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/Toggle.vue?vue&type=style&index=0&id=47b09f7f&scoped=true&lang=scss&":
+/*!******************************************************************************************************!*\
+  !*** ./resources/js/components/Toggle.vue?vue&type=style&index=0&id=47b09f7f&scoped=true&lang=scss& ***!
+  \******************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Toggle_vue_vue_type_style_index_0_id_47b09f7f_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./Toggle.vue?vue&type=style&index=0&id=47b09f7f&scoped=true&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Toggle.vue?vue&type=style&index=0&id=47b09f7f&scoped=true&lang=scss&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Toggle_vue_vue_type_style_index_0_id_47b09f7f_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Toggle_vue_vue_type_style_index_0_id_47b09f7f_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Toggle_vue_vue_type_style_index_0_id_47b09f7f_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Toggle_vue_vue_type_style_index_0_id_47b09f7f_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Toggle_vue_vue_type_style_index_0_id_47b09f7f_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/Toggle.vue?vue&type=template&id=47b09f7f&scoped=true&":
+/*!***************************************************************************************!*\
+  !*** ./resources/js/components/Toggle.vue?vue&type=template&id=47b09f7f&scoped=true& ***!
+  \***************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Toggle_vue_vue_type_template_id_47b09f7f_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./Toggle.vue?vue&type=template&id=47b09f7f&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Toggle.vue?vue&type=template&id=47b09f7f&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Toggle_vue_vue_type_template_id_47b09f7f_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Toggle_vue_vue_type_template_id_47b09f7f_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

@@ -6,6 +6,20 @@ Vue.use(VueRouter)
 
 Vue.component('app', require('./App.vue').default);
 
+// Global components
+Vue.component('TooltipAlt2', require('./components/TooltipAlt2.vue').default);
+Vue.component('Toggle', require('./components/Toggle.vue').default);
+
+// Define global filters
+Vue.filter( 'truncate', function (value, limit) {
+  if (value.length > limit) {
+    value = value.substring(0, (limit - 2)) + '..';
+  }
+
+  return value
+
+})
+
 // Define global mixins
 // Vue.mixin({
 //   methods: {

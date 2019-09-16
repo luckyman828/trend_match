@@ -43,7 +43,9 @@
                             <span class="checkmark"></span>
                         </label>
                     </td>
-                    <td class="id clickable" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.id}}></td>
+                    <td class="id clickable" @click="viewSingle(catalogue.id, catalogue.title)">
+                        <span :title="catalogue.id">{{ catalogue.id | truncate(10) }}</span>
+                    </td>
                     <td class="title clickable" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.title}}</td>
                 </div>
                 <div class="flex-group">
