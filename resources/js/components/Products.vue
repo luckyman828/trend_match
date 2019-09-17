@@ -428,7 +428,7 @@ export default {
                 background: white;
                 // width: calc(100% - 120px - 200px - 16px);
                 margin-left: 1px;
-                border-radius: 6px 6px 0 0;
+                border-radius: 0 6px 0 0;
                 box-shadow: 0 6px 3px -2px rgba(0,0,0, .05);
             }
         }
