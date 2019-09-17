@@ -8841,6 +8841,7 @@ textarea {
           align-items: center;
   color: #A8A8A8;
   border: none;
+  text-decoration: none;
 }
 
 .button.ghost,

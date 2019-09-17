@@ -1,53 +1,65 @@
 <template>
     <div class="catalogue">
-        <template v-if="!loadingCollections">
-            <catalogueHeader :collection="collection" :startDate="startDate" :endDate="endDate" :productTotals="productTotals"/>
-            <div class="filters">
-                <Dropdown class="dropdown-parent left">
-                    <template v-slot:button="slotProps">
-                        <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
-                            <span>Category </span>
-                            <i class="far fa-chevron-down"></i>
-                            <span v-if="selectedCategories.length > 0" class="bubble">
-                                {{selectedCategories.length}}
-                            </span>
-                        </div>
-                        <span v-if="selectedCategories.length > 0" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]">Clear filter</span>
-                    </template>
-                    <template v-slot:header="slotProps">
-                        <span>Filter by category</span>
-                        <!-- <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span> -->
-                    </template>
-                    <template v-slot:body>
-                        <CheckboxButtons :options="dynamicCategories" ref="filterSelect" v-model="selectedCategories" @change="$refs.filterSelect.submit()"/>
-                    </template>
-                </Dropdown>
 
-                <Dropdown class="dropdown-parent right" ref="countryDropdown">
-                    <template v-slot:button="slotProps">
-                        <div class="dropdown-button" @click="slotProps.toggle">
-                            <img src="/assets/Path5699.svg">
-                            <span v-if="currentTeamId > 0">{{teams.find(x => x.id == currentTeamId).title}}</span>
-                            <span v-else-if="currentTeamId == 0">Global</span>
-                            <span v-else>No team available</span>
-                            <i class="far fa-chevron-down"></i>
-                        </div>
-                    </template>
-                    <template v-slot:header="slotProps">
-                        <span>Switch team</span>
-                    </template>
-                    <template v-slot:body>
-                        <RadioButtons :options="teamsForFilter" :currentOptionId="currentTeamId" :optionNameKey="'title'" :optionValueKey="'id'" ref="countryRadio" @change="setCurrentTeam($event); $refs.countryDropdown.toggle()"/>
-                    </template>
-                </Dropdown>
+        <template v-if="userHasAccess">
+
+            <template v-if="!loadingCollections">
+                <catalogueHeader :collection="collection" :startDate="startDate" :endDate="endDate" :productTotals="productTotals"/>
+                <div class="filters">
+                    <Dropdown class="dropdown-parent left">
+                        <template v-slot:button="slotProps">
+                            <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
+                                <span>Category </span>
+                                <i class="far fa-chevron-down"></i>
+                                <span v-if="selectedCategories.length > 0" class="bubble">
+                                    {{selectedCategories.length}}
+                                </span>
+                            </div>
+                            <span v-if="selectedCategories.length > 0" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]">Clear filter</span>
+                        </template>
+                        <template v-slot:header="slotProps">
+                            <span>Filter by category</span>
+                            <!-- <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span> -->
+                        </template>
+                        <template v-slot:body>
+                            <CheckboxButtons :options="dynamicCategories" ref="filterSelect" v-model="selectedCategories" @change="$refs.filterSelect.submit()"/>
+                        </template>
+                    </Dropdown>
+
+                    <Dropdown class="dropdown-parent right" ref="countryDropdown">
+                        <template v-slot:button="slotProps">
+                            <div class="dropdown-button" @click="slotProps.toggle">
+                                <img src="/assets/Path5699.svg">
+                                <span v-if="currentTeamId > 0">{{teams.find(x => x.id == currentTeamId).title}}</span>
+                                <span v-else-if="currentTeamId == 0">Global</span>
+                                <span v-else>No team available</span>
+                                <i class="far fa-chevron-down"></i>
+                            </div>
+                        </template>
+                        <template v-slot:header="slotProps">
+                            <span>Switch team</span>
+                        </template>
+                        <template v-slot:body>
+                            <RadioButtons :options="teamsForFilter" :currentOptionId="currentTeamId" :optionNameKey="'title'" :optionValueKey="'id'" ref="countryRadio" @change="setCurrentTeam($event); $refs.countryDropdown.toggle()"/>
+                        </template>
+                    </Dropdown>
+                </div>
+                <product-tabs :productTotals="productTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
+                <products ref="productsComponent" :teamFilterId="currentTeamId" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :prevSingleProductID="prevSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @prevSingle="setPrevSingle"/>
+                <SelectedController :totalCount="productsFiltered.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction" @onClearSelection="clearSelectedProducts"/>
+            </template>
+            <template v-if="loadingCollections">
+                <Loader/>
+            </template>
+
+        </template>
+        <template v-else>
+            <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; height: 50vh">
+                <p>You don't have access to this file</p>
+                <router-link to="/collection" class="button dark wide">Go to collections</router-link>
             </div>
-            <product-tabs :productTotals="productTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
-            <products ref="productsComponent" :teamFilterId="currentTeamId" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :prevSingleProductID="prevSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @prevSingle="setPrevSingle"/>
-            <SelectedController :totalCount="productsFiltered.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction" @onClearSelection="clearSelectedProducts"/>
         </template>
-        <template v-if="loadingCollections">
-            <Loader/>
-        </template>
+
     </div>
 </template>
 
@@ -98,7 +110,7 @@ export default{
         sortBy: 'datasource_id',
         sortAsc: true,
         // teamFilterId: -1,
-        catalogueId: '',
+        // catalogueId: '',
         unsub: '',
         test: '',
         productsTest: [],
@@ -114,11 +126,26 @@ export default{
         ...mapGetters('entities/comments', ['loadingComments']),
         ...mapGetters('entities/collections', ['loadingCollections']),
         ...mapGetters('entities/teams', ['teams']),
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace']),
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser']),
         defaultTeam() {
             if (this.userPermissionLevel >= 3)
                 return {id: 0, title: 'Global'}
             else return null
+        },
+        userHasAccess () {
+            let hasAccess = false
+            if (this.userPermissionLevel <= 2) {
+                this.authUser.teams.forEach(team => {
+                    team.teamFiles.forEach(file => {
+                        if (file.file_id == this.currentFileId && file.role_level <= this.userPermissionLevel)
+                            hasAccess = true
+                    })
+                    // if (team.teamFiles.find(x => x.file_id == this.currentFileId))
+                    //     hasAccess = true
+                })
+            } 
+            else hasAccess = true
+            return hasAccess
         },
         teamProducts() {
             return TeamProduct.with('products').all()
@@ -599,10 +626,10 @@ export default{
         commentVotes() {
             return CommentVote.query().with('comment').all()
         },
-        authUser() {
-            // return this.$store.getters.authUser;
-            return AuthUser.query().with('teams').with('workspaces').first()
-        },
+        // authUser() {
+        //     // return this.$store.getters.authUser;
+        //     return AuthUser.query().with('teams').with('workspaces').first()
+        // },
         users () {
             return User.query().with('teams').all()
         },

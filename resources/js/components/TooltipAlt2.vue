@@ -128,11 +128,11 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-    .tooltip-parent {
-        &:hover {
-            cursor: pointer;
-        }
-    }
+    // .tooltip-parent {
+    //     &:hover {
+    //         cursor: pointer;
+    //     }
+    // }
     .body-wrapper {
         padding: 8px;
         display: block;

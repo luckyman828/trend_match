@@ -21,7 +21,7 @@ export default {
           // This is only necessary because I cannot make the Vuex ORM realtionship work 
           // If you can make it work, please be my guest
           const adminPermissionLevel = rootGetters['persist/adminPermissionLevel']
-          const teams = Team.query().with('users').with('invites').all()
+          const teams = Team.query().with('users').with('invites').with('teamFiles').with('files').all()
           const users = User.query().with('teams').with('role').all()
           const authUser = AuthUser.query().with('teams').first()
           // Loop through the users and sort them between the teams

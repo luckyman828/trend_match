@@ -1,5 +1,6 @@
 import Workspace from '../../store/models/Workspace';
 import Team from '../../store/models/Team';
+import AuthUser from '../../store/models/AuthUser';
 
 export default {
     namespaced: true,
@@ -39,6 +40,9 @@ export default {
             else if (state.userPermissionLevel >= 2)
                 return 'Team action'
             else return 'Your action'
+        },
+        authUser() {
+            return AuthUser.query().with('teams.files|teamFiles').with('workspaces').first()
         },
     },
   

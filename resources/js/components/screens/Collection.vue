@@ -41,7 +41,7 @@
                 </template>
             </Dropdown>
         </div>
-        <CataloguesTable :isLoading="isLoading" :authUser="authUser" :catalogues="collections" :loading="loadingCollections" :selected="selected" @onSelect="onSelect"/>
+        <FilesTable :isLoading="isLoading" :authUser="authUser" :files="userFiles" :loading="loadingCollections" :selected="selected" @onSelect="onSelect"/>
     </div>
 </template>
 
@@ -49,7 +49,7 @@
 import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
 import Loader from '../Loader'
-import CataloguesTable from '../CataloguesTable'
+import FilesTable from '../FilesTable'
 import RadioButtons from '../RadioButtons'
 import CheckboxButtons from '../input/CheckboxButtons'
 import Dropdown from '../Dropdown'
@@ -65,7 +65,7 @@ export default {
     store,
     components: {
         Loader,
-        CataloguesTable,
+        FilesTable,
         Dropdown,
         CheckboxButtons,
         RadioButtons
@@ -79,7 +79,7 @@ export default {
     }},
     computed: {
         ...mapGetters('entities/collections', ['loadingCollections']),
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel']),
+        ...mapGetters('persist', ['currentTeamId', 'currentTeam', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'authUser']),
         defaultTeam() {
             if (this.userPermissionLevel >= 3)
                 return {id: 0, title: 'Global'}
@@ -87,6 +87,25 @@ export default {
         },
         collections () {
             return Collection.query().all()
+        },
+        userFiles() {
+            const files = this.collections
+            let filesToReturn = []
+            // Get the files the user has access to
+            if (this.userPermissionLevel <= 2) {
+                this.authUser.teams.forEach(team => {
+                    team.teamFiles.forEach(file => {
+                        if (file.role_level <= this.userPermissionLevel)
+                            if (!filesToReturn.find(x => x.id == file.file_id))
+                                filesToReturn.push(files.find(x => x.id == file.file_id))
+                    })
+                })
+            }
+            else {
+                filesToReturn = this.collections
+            }
+
+            return filesToReturn
         },
         uniqueCollections() {
             const inputData = this.collections
@@ -102,10 +121,10 @@ export default {
         users() {
             return User.query().with('teams').all()
         },
-        authUser() {
-            // return this.$store.getters.authUser;
-            return AuthUser.query().with('teams').with('workspaces').first()
-        },
+        // authUser() {
+        //     // return this.$store.getters.authUser;
+        //     return AuthUser.query().with('teams').with('workspaces').first()
+        // },
         teams () {
             return this.$store.getters['entities/teams/teams']
         },

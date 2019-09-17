@@ -20,6 +20,8 @@ import Sidebar from './components/Sidebar'
 import Navbar from './components/Navbar'
 import NavbarLogo from './components/NavbarLogo'
 import AuthUser from './store/models/AuthUser';
+import TeamFile from './store/models/TeamFile';
+import Team from './store/models/Team';
 import { Query } from '@vuex-orm/core';
 
 export default{
@@ -38,6 +40,12 @@ export default{
         authUser() {
             return AuthUser.query().with('teams').with('workspaces').first()
         },
+        teamFiles() {
+            return TeamFile.all()
+        },
+        teams() {
+            return Team.query().with('files').get()
+        },
     },
     methods: {
         ...mapActions('entities/authUser', ['getAuthUser']),
@@ -47,7 +55,9 @@ export default{
         ...mapActions('entities/userTeams', ['fetchUserTeams']),
         ...mapActions('entities/workspaces', ['fetchWorkspaces']),
         ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
+        ...mapActions('entities/teamFiles', ['fetchTeamFiles']),
         ...mapActions('entities/roles', ['fetchRoles']),
+        ...mapActions('entities/collections', ['fetchCollections']),
         ...mapActions('persist', ['setCurrentTeam', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']),
         async fetchInitialData() {
             // Get user
@@ -94,6 +104,8 @@ export default{
                 await (
                     this.fetchTeams(this.currentWorkspaceId),
                     this.fetchUserTeams(this.currentWorkspaceId),
+                    this.fetchTeamFiles(this.currentWorkspaceId),
+                    this.fetchCollections(this.currentWorkspaceId),
                     this.fetchRoles()
                 )
                 

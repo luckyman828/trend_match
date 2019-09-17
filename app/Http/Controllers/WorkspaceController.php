@@ -14,6 +14,8 @@ use App\Collection;
 Use App\Http\Resources\Collection as CollectionResource;
 use App\User;
 use App\Http\Resources\User as UserResource;
+use App\TeamFile;
+use App\Http\Resources\TeamFile as TeamFileResource;
 use Illuminate\Database\Eloquent\Builder;
 
 class WorkspaceController extends Controller
@@ -50,6 +52,16 @@ class WorkspaceController extends Controller
 
         // Return collection of products as a resource
         return CollectionResource::collection($files);
+    }
+
+    // Return all team files of the workspace
+    public function teamFiles($workspace_id)
+    {
+        $teamFiles = TeamFile::whereHas('team', function (Builder $query) use($workspace_id) {
+            $query->where('workspace_id', $workspace_id);
+        })->get();
+
+        return TeamFileResource::collection($teamFiles);
     }
 
     // Return all users with access to the specified collection

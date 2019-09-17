@@ -42,8 +42,13 @@
                         </td>
                         <td class="title clickable" @click="expandUsers(team)"><span :class="(expandedIds.includes(team.id)) ? 'light-2' : 'invisible'" class="button icon-left"><i class="far fa-chevron-right"></i>{{team.title}}</span></td>
                         <td class="assigned">{{team.expanded}}</td>
-                        <td class="members"><span>{{team.users.length}}<template v-if="team.invites.length > 0"> ({{team.invites.length}})</template></span></td>
-                        <td class="collections"><span>N/A</span></td>
+                        <td class="members clickable" @click="expandUsers(team)"><span>{{team.users.length}}<template v-if="team.invites.length > 0"> ({{team.invites.length}})</template></span></td>
+                        <td class="collections">
+                            <TooltipAlt2 v-if="team.files.length > 0" :header="'Team collections'" :array="team.files" :arrayValueKey="'title'">
+                                <span>{{team.files.length}} <i class="far fa-info-circle"/></span>
+                            </TooltipAlt2>
+                            <span v-else>{{team.files.length}}</span>
+                        </td>
                         <td class="status"><span>N/A</span></td>
                         <td class="action">
                             <span v-if="expandedIds.includes(team.id)" class="button green active"  @click="openInviteToTeam(team)">Add to team</span>

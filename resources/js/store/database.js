@@ -35,6 +35,8 @@ import TeamProduct from './models/TeamProduct';
 import teamProducts from './modules/teamProducts';
 import PhaseProduct from './models/PhaseProduct';
 import phaseProducts from './modules/phaseProducts';
+import TeamFile from './models/TeamFile';
+import teamFiles from './modules/teamFiles';
 
 const database = new Database()
 
@@ -56,5 +58,6 @@ database.register(Workspace, workspaces)
 database.register(WorkspaceUser, workspaceUsers)
 database.register(TeamProduct, teamProducts)
 database.register(PhaseProduct, phaseProducts)
+database.register(TeamFile, teamFiles)
 
 export default database

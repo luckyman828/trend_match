@@ -2,7 +2,7 @@
     <div class="catalogues-table card" v-if="!isLoading">
         <div class="catalogue-totals">
             <span>{{selectedCount}} selected</span>
-            <span>{{catalogues.length}} records</span>
+            <span>{{files.length}} records</span>
         </div>
         <div class="flex-table">
             <div class="header-row flex-table-row">
@@ -84,9 +84,9 @@ import ProductTotals from './ProductTotals'
 import ProductSingle from './ProductSingle'
 
 export default {
-    name: 'cataloguesTable',
+    name: 'filesTable',
     props: [
-        'catalogues',
+        'files',
         'loading',
         'selected',
         'authUser',
@@ -104,7 +104,7 @@ export default {
             return this.selected.length
         },
         cataloguesSorted() {
-            const catalogues = this.catalogues
+            const catalogues = this.files
             let key = this.sortBy
             let sortAsc = this.sortAsc
             const dataSorted = catalogues.sort((a, b) => {

@@ -2,6 +2,8 @@
 import { Model } from '@vuex-orm/core'
 import User from './Team'
 import UserTeam from './UserTeam';
+import Collection from './Collection'
+import TeamFile from './TeamFile';
 import TeamInvite from './TeamInvite';
 
 export default class Team extends Model {
@@ -19,6 +21,8 @@ export default class Team extends Model {
       workspace_id: this.attr(''),
       currency: this.attr(''),
       users: this.belongsToMany(User, UserTeam, 'team_id', 'user_id'),
+      teamFiles: this.hasMany(TeamFile, 'team_id'),
+      files: this.belongsToMany(Collection, TeamFile, 'team_id', 'file_id'),
       invites: this.hasMany(TeamInvite, 'team_id'),
     }
 
