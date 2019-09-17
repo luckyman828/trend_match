@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Collection from '../models/Collection';
+import User from '../models/User'
 
 export default {
     namespaced: true,
@@ -12,6 +13,36 @@ export default {
       loadingCollections: state => {
         return state.loading
         //comment 
+      },
+      files: (state, getters, rootState, rootGetters) => {
+        if (!rootGetters['persist/loadingInit']) {
+            const files = Collection.query().with('teams').with('teamFiles').all()
+
+            // const adminPermissionLevel = rootGetters['persist/adminPermissionLevel']
+            // const authUser = rootGetters['persist/authUser']
+            const users = User.query().with('teams.teamFiles').all()
+
+            files.forEach(file => {
+                file.users = []
+                users.forEach(user => {
+                    let hasAccess = false
+                    if (user.role_id <= 2) {
+                        user.teams.forEach(team => {
+                            team.teamFiles.forEach(teamFile => {
+                                if (teamFile.file_id == file.id && teamFile.role_level <= user.role_id)
+                                    hasAccess = true
+                            })
+                        })
+                    }
+                    else hasAccess = true
+                    if (hasAccess) {
+                        file.users.push(user)
+                    }
+                })
+            })
+            return files
+        }
+
       }
     },
   

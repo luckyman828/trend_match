@@ -45,7 +45,7 @@
                     </Dropdown>
                 </div>
                 <product-tabs :productTotals="productTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
-                <products ref="productsComponent" :teamFilterId="currentTeamId" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :prevSingleProductID="prevSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @prevSingle="setPrevSingle"/>
+                <products ref="productsComponent" :teamFilterId="currentTeamId" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="collection.teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :prevSingleProductID="prevSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @prevSingle="setPrevSingle"/>
                 <SelectedController :totalCount="productsFiltered.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction" @onClearSelection="clearSelectedProducts"/>
             </template>
             <template v-if="loadingCollections">
@@ -124,7 +124,7 @@ export default{
         ...mapGetters('entities/products', ['loadingProducts']),
         ...mapGetters('entities/actions', ['loadingActions']),
         ...mapGetters('entities/comments', ['loadingComments']),
-        ...mapGetters('entities/collections', ['loadingCollections']),
+        ...mapGetters('entities/collections', ['loadingCollections', 'files']),
         ...mapGetters('entities/teams', ['teams']),
         ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser']),
         defaultTeam() {
@@ -154,7 +154,8 @@ export default{
             return PhaseProduct.with('products').all()
         },
         collection() {
-            return Collection.find(this.currentFileId)
+            // return Collection.query().with('teams').find(this.currentFileId)
+            return this.files.find(x => x.id == this.currentFileId)
         },
         startDate () {
             if (this.collection.start_time != null) {
@@ -177,7 +178,7 @@ export default{
         products () {
             const products = Product.query().with(['actions.user.teams']).with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team']).with('productFinalAction')
             .with('teamActions.team').with('phaseActions').all()
-            const totalUsers = this.teamUsers
+            // const totalUsers = this.teamUsers
             const userId = this.authUser.id
             const teamFilterId = this.currentTeamId
             const data = []
@@ -285,7 +286,7 @@ export default{
                 // Check if the action has a user
                 if ( teamFilterId > 0 && product.actions != null) {
                     product.scope = 'user scope'
-                    product.nds = JSON.parse(JSON.stringify(totalUsers)) // Copy our users into a new variable
+                    product.nds = JSON.parse(JSON.stringify(this.teamUsers)) // Copy our users into a new variable
                     product.actions.forEach(action => {
                         if (action.user != null) {
                             // Check if the user has a team
@@ -313,7 +314,7 @@ export default{
                 // Filter actions by teams if GLOBAL scope is set (= 0)
                 } else if ( teamFilterId == 0 && product.teamActions != null) {
                     product.scope = 'team scope'
-                    product.nds = JSON.parse(JSON.stringify(this.teams)) // Copy our users into a new variable
+                    product.nds = JSON.parse(JSON.stringify(this.collection.teams)) // Copy our users into a new variable
                     product.teamActions.forEach(action => {
                         if (action.team != null) {
 
@@ -583,12 +584,17 @@ export default{
             if (this.currentTeamId > 0) {
                 const thisTeam = this.teams.find(team => team.id == this.currentTeamId)
                 if (thisTeam)
-                    usersToReturn = thisTeam.users
-            } else if (this.currentTeamId == 0) {
-                usersToReturn = this.users
-            } else {
-                usersToReturn = []
-            }
+                    thisTeam.users.forEach(user => {
+                        if (this.collection.users.find(x => x.id == user.id))
+                            usersToReturn.push(user)
+                    })
+                    // usersToReturn = thisTeam.users
+            } 
+            // else if (this.currentTeamId == 0) {
+            //     usersToReturn = this.users
+            // } else {
+            //     usersToReturn = []
+            // }
             return usersToReturn
         },
         actions() {

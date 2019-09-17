@@ -78,7 +78,7 @@ export default {
         unsub: '',
     }},
     computed: {
-        ...mapGetters('entities/collections', ['loadingCollections']),
+        ...mapGetters('entities/collections', ['loadingCollections', 'files']),
         ...mapGetters('persist', ['currentTeamId', 'currentTeam', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'authUser']),
         defaultTeam() {
             if (this.userPermissionLevel >= 3)
@@ -89,7 +89,7 @@ export default {
             return Collection.query().all()
         },
         userFiles() {
-            const files = this.collections
+            const files = this.files
             let filesToReturn = []
             // Get the files the user has access to
             if (this.userPermissionLevel <= 2) {

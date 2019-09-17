@@ -10679,7 +10679,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.sortProducts();
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/collections', ['loadingCollections', 'files']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser']), {
     defaultTeam: function defaultTeam() {
       if (this.userPermissionLevel >= 3) return {
         id: 0,
@@ -10709,7 +10709,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_22__["default"]["with"]('products').all();
     },
     collection: function collection() {
-      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_15__["default"].find(this.currentFileId);
+      var _this2 = this;
+
+      // return Collection.query().with('teams').find(this.currentFileId)
+      return this.files.find(function (x) {
+        return x.id == _this2.currentFileId;
+      });
     },
     startDate: function startDate() {
       if (this.collection.start_time != null) {
@@ -10732,10 +10737,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return 'Unset';
     },
     products: function products() {
-      var _this2 = this;
+      var _this3 = this;
 
-      var products = _store_models_Product__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes.user.teams', 'comments.user.teams', 'comments.team'])["with"]('productFinalAction')["with"]('teamActions.team')["with"]('phaseActions').all();
-      var totalUsers = this.teamUsers;
+      var products = _store_models_Product__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes.user.teams', 'comments.user.teams', 'comments.team'])["with"]('productFinalAction')["with"]('teamActions.team')["with"]('phaseActions').all(); // const totalUsers = this.teamUsers
+
       var userId = this.authUser.id;
       var teamFilterId = this.currentTeamId;
       var data = [];
@@ -10747,11 +10752,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         product.focus = [];
         product.nds = [];
         product.userAction = product.actions.find(function (x) {
-          return x.user_id == _this2.authUser.id;
+          return x.user_id == _this3.authUser.id;
         });
         product.commentsScoped = [];
         product.teamAction = product.teamActions.find(function (x) {
-          return x.team_id == _this2.currentTeamId;
+          return x.team_id == _this3.currentTeamId;
         });
         product.phaseAction = product.phaseActions.find(function (x) {
           return x.phase_id == 1;
@@ -10761,14 +10766,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         if (product.prices != null) {
           var workspacePrices = null;
           var teamPrices = null;
-          if (_this2.currentWorkspace.currency != null) workspacePrices = product.prices.find(function (x) {
-            return x.currency == _this2.currentWorkspace.currency;
+          if (_this3.currentWorkspace.currency != null) workspacePrices = product.prices.find(function (x) {
+            return x.currency == _this3.currentWorkspace.currency;
           });
-          if (_this2.currentTeam) if (_this2.currentTeam.currency != null) teamPrices = product.prices.find(function (x) {
-            return x.currency == _this2.currentTeam.currency;
+          if (_this3.currentTeam) if (_this3.currentTeam.currency != null) teamPrices = product.prices.find(function (x) {
+            return x.currency == _this3.currentTeam.currency;
           });
 
-          if (_this2.userPermissionLevel <= 4) {
+          if (_this3.userPermissionLevel <= 4) {
             // Use team currency for low level members
             if (teamPrices != null) product.userPrices = teamPrices;else if (workspacePrices != null) product.userPrices = workspacePrices;else product.userPrices = product.prices[0];
           } else {
@@ -10811,7 +10816,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
         var commentsScoped = []; // If the user is a buyer function, only return global comments
 
-        if (_this2.userPermissionLevel == _this2.viewAdminPermissionLevel) {
+        if (_this3.userPermissionLevel == _this3.viewAdminPermissionLevel) {
           comments.forEach(function (comment) {
             if (comment.team_id == 0) product.commentsScoped.push(comment);
           });
@@ -10827,7 +10832,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
             if (comment.team_id == teamFilterId) pushComment = true; // Check if the comment is final or global (not for sales)
 
-            if (_this2.userPermissionLevel >= 2) {
+            if (_this3.userPermissionLevel >= 2) {
               if (comment.team_final || comment.phase_final || comment.team_id == 0) pushComment = true;
             }
 
@@ -10841,7 +10846,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
         if (teamFilterId > 0 && product.actions != null) {
           product.scope = 'user scope';
-          product.nds = JSON.parse(JSON.stringify(totalUsers)); // Copy our users into a new variable
+          product.nds = JSON.parse(JSON.stringify(_this3.teamUsers)); // Copy our users into a new variable
 
           product.actions.forEach(function (action) {
             if (action.user != null) {
@@ -10870,7 +10875,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           }); // Filter actions by teams if GLOBAL scope is set (= 0)
         } else if (teamFilterId == 0 && product.teamActions != null) {
           product.scope = 'team scope';
-          product.nds = JSON.parse(JSON.stringify(_this2.teams)); // Copy our users into a new variable
+          product.nds = JSON.parse(JSON.stringify(_this3.collection.teams)); // Copy our users into a new variable
 
           product.teamActions.forEach(function (action) {
             if (action.team != null) {
@@ -10911,7 +10916,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return productsToReturn;
     },
     productsFiltered: function productsFiltered() {
-      var _this3 = this;
+      var _this4 = this;
 
       var method = this.currentProductFilter;
       var products = this.productsFilteredByCategory;
@@ -10920,11 +10925,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (['ins', 'outs', 'nds'].includes(method)) {
         var filteredByAction = productsToReturn.filter(function (product) {
           if (method == 'ins') {
-            if (product[_this3.actionScope] != null) return product[_this3.actionScope].action >= 1;
+            if (product[_this4.actionScope] != null) return product[_this4.actionScope].action >= 1;
           } else if (method == 'outs') {
-            if (product[_this3.actionScope] != null) return product[_this3.actionScope].action == 0;
+            if (product[_this4.actionScope] != null) return product[_this4.actionScope].action == 0;
           } else if (method == 'nds') {
-            return product[_this3.actionScope] == null;
+            return product[_this4.actionScope] == null;
           }
         });
         productsToReturn = filteredByAction;
@@ -11047,7 +11052,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return selectedProducts;
     },
     productTotals: function productTotals() {
-      var _this4 = this;
+      var _this5 = this;
 
       var products = this.productsFilteredByCategory;
       var data = {
@@ -11076,35 +11081,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         data.outs += product.outs.length;
         data.nds += product.nds.length;
 
-        if (product[_this4.actionScope] != null) {
-          if (product[_this4.actionScope].action >= 1) data["final"].ins++;else if (product[_this4.actionScope].action == 0) data["final"].outs++;
+        if (product[_this5.actionScope] != null) {
+          if (product[_this5.actionScope].action >= 1) data["final"].ins++;else if (product[_this5.actionScope].action == 0) data["final"].outs++;
         } else data["final"].nds++;
       });
       return data;
     },
     singleProductToShow: function singleProductToShow() {
-      var _this5 = this;
+      var _this6 = this;
 
       var productToReturn = this.singleProductID != -1 ? this.products.find(function (product) {
-        return product.id == _this5.singleProductID;
+        return product.id == _this6.singleProductID;
       }) : {};
       return productToReturn;
     },
     nextSingleProductID: function nextSingleProductID() {
-      var _this6 = this;
-
-      // const products = this.productsSorted
-      var products = this.productsFiltered; // Check if we have a single product
-
-      if (this.singleProductID != -1) {
-        var currentProductIndex = products.findIndex(function (product) {
-          return product.id == _this6.singleProductID;
-        }); // Check that the current single product is not the last product
-
-        if (currentProductIndex + 1 < products.length) return products[currentProductIndex + 1].id;else return -1;
-      } else return -1;
-    },
-    prevSingleProductID: function prevSingleProductID() {
       var _this7 = this;
 
       // const products = this.productsSorted
@@ -11113,26 +11104,45 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (this.singleProductID != -1) {
         var currentProductIndex = products.findIndex(function (product) {
           return product.id == _this7.singleProductID;
+        }); // Check that the current single product is not the last product
+
+        if (currentProductIndex + 1 < products.length) return products[currentProductIndex + 1].id;else return -1;
+      } else return -1;
+    },
+    prevSingleProductID: function prevSingleProductID() {
+      var _this8 = this;
+
+      // const products = this.productsSorted
+      var products = this.productsFiltered; // Check if we have a single product
+
+      if (this.singleProductID != -1) {
+        var currentProductIndex = products.findIndex(function (product) {
+          return product.id == _this8.singleProductID;
         }); // Check that the current single product is not the first product
 
         if (currentProductIndex != 0) return products[currentProductIndex - 1].id;else return -1;
       } else return -1;
     },
     teamUsers: function teamUsers() {
-      var _this8 = this;
+      var _this9 = this;
 
       var usersToReturn = [];
 
       if (this.currentTeamId > 0) {
         var thisTeam = this.teams.find(function (team) {
-          return team.id == _this8.currentTeamId;
+          return team.id == _this9.currentTeamId;
         });
-        if (thisTeam) usersToReturn = thisTeam.users;
-      } else if (this.currentTeamId == 0) {
-        usersToReturn = this.users;
-      } else {
-        usersToReturn = [];
-      }
+        if (thisTeam) thisTeam.users.forEach(function (user) {
+          if (_this9.collection.users.find(function (x) {
+            return x.id == user.id;
+          })) usersToReturn.push(user);
+        }); // usersToReturn = thisTeam.users
+      } // else if (this.currentTeamId == 0) {
+      //     usersToReturn = this.users
+      // } else {
+      //     usersToReturn = []
+      // }
+
 
       return usersToReturn;
     },
@@ -11230,7 +11240,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this9 = this;
+      var _this10 = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
@@ -11240,7 +11250,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
-        var thisProduct = _this9.products.find(function (x) {
+        var thisProduct = _this10.products.find(function (x) {
           return x.id == product;
         });
 
@@ -11427,7 +11437,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   created: function created() {
-    var _this10 = this;
+    var _this11 = this;
 
     // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
     var routeFileId = this.$route.params.catalogueId;
@@ -11437,7 +11447,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     this.unsub = this.$store.subscribe(function (mutation, state) {
       if (mutation.type == 'persist/setCurrentWorkspace') {
-        _this10.initRequiresWorkspace();
+        _this11.initRequiresWorkspace();
       }
     });
   },
@@ -11555,7 +11565,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       unsub: ''
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentTeam', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'authUser']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentTeam', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'authUser']), {
     defaultTeam: function defaultTeam() {
       if (this.userPermissionLevel >= 3) return {
         id: 0,
@@ -11568,7 +11578,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     userFiles: function userFiles() {
       var _this = this;
 
-      var files = this.collections;
+      var files = this.files;
       var filesToReturn = []; // Get the files the user has access to
 
       if (this.userPermissionLevel <= 2) {
@@ -21140,7 +21150,7 @@ var render = function() {
                       selectedIds: _vm.selectedProductIDs,
                       sortBy: _vm.sortBy,
                       sortAsc: _vm.sortAsc,
-                      teams: _vm.teams,
+                      teams: _vm.collection.teams,
                       singleProductToShow: _vm.singleProductToShow,
                       nextSingleProductID: _vm.nextSingleProductID,
                       prevSingleProductID: _vm.prevSingleProductID,
@@ -40928,6 +40938,8 @@ Collection.entity = 'categories';
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Collection; });
 /* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+/* harmony import */ var _TeamFile__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TeamFile */ "./resources/js/store/models/TeamFile.js");
+/* harmony import */ var _Team__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Team */ "./resources/js/store/models/Team.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -40947,6 +40959,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // Product Model
+
+
 
 
 var Collection =
@@ -40973,7 +40987,9 @@ function (_Model) {
         phase: this.attr(''),
         catalog_id: this.attr(''),
         start_time: this.attr('unset'),
-        end_time: this.attr('unset')
+        end_time: this.attr('unset'),
+        teamFiles: this.hasMany(_TeamFile__WEBPACK_IMPORTED_MODULE_1__["default"], 'file_id'),
+        teams: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_2__["default"], _TeamFile__WEBPACK_IMPORTED_MODULE_1__["default"], 'file_id', 'team_id')
       };
       return data;
     }
@@ -42629,11 +42645,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _models_Collection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/Collection */ "./resources/js/store/models/Collection.js");
+/* harmony import */ var _models_User__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../models/User */ "./resources/js/store/models/User.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -42645,6 +42663,33 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   getters: {
     loadingCollections: function loadingCollections(state) {
       return state.loading; //comment 
+    },
+    files: function files(state, getters, rootState, rootGetters) {
+      if (!rootGetters['persist/loadingInit']) {
+        var files = _models_Collection__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('teams')["with"]('teamFiles').all(); // const adminPermissionLevel = rootGetters['persist/adminPermissionLevel']
+        // const authUser = rootGetters['persist/authUser']
+
+        var users = _models_User__WEBPACK_IMPORTED_MODULE_3__["default"].query()["with"]('teams.teamFiles').all();
+        files.forEach(function (file) {
+          file.users = [];
+          users.forEach(function (user) {
+            var hasAccess = false;
+
+            if (user.role_id <= 2) {
+              user.teams.forEach(function (team) {
+                team.teamFiles.forEach(function (teamFile) {
+                  if (teamFile.file_id == file.id && teamFile.role_level <= user.role_id) hasAccess = true;
+                });
+              });
+            } else hasAccess = true;
+
+            if (hasAccess) {
+              file.users.push(user);
+            }
+          });
+        });
+        return files;
+      }
     }
   },
   actions: {

@@ -71,13 +71,6 @@ export default{
             this.setCurrentWorkspace(this.authUser.workspaces[0].id)
             // this.currentWorkspaceId = this.authUser.workspaces[0].id
         },
-        // testFunc(model) {
-        //     if(model.constructor.name == 'Team')
-        //         if (this.authUser.role_id >= 3)
-        //             this.setCurrentTeam(0)
-        //         else if (this.authUser.teams.length > 0)
-        //             this.setCurrentTeam(this.authUser.teams[0].id)
-        // }
     },
     watch : {
         authUser(newVal) {
