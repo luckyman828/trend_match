@@ -15807,15 +15807,36 @@ var render = function() {
         _vm.userPermissionLevel >= 2
           ? [
               _vm.actionScope == "phaseAction"
+                ? _c("TooltipAlt2", { attrs: { body: "Choose as remark" } }, [
+                    _c(
+                      "span",
+                      {
+                        staticClass: "circle",
+                        class: { active: _vm.comment.phase_final },
+                        on: {
+                          click: function($event) {
+                            return _vm.onMarkAsFinal(_vm.comment)
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "far fa-comment-check" })]
+                    )
+                  ])
+                : _vm.actionScope == "teamAction" &&
+                  _vm.comment.team_id == _vm.currentTeamId
                 ? _c(
                     "TooltipAlt2",
-                    { attrs: { body: "Mark as phase final" } },
+                    { attrs: { body: "Choose as team remark" } },
                     [
                       _c(
                         "span",
                         {
                           staticClass: "circle",
-                          class: { active: _vm.comment.phase_final },
+                          class: {
+                            active:
+                              _vm.comment.team_final &&
+                              _vm.comment.team_id == _vm.currentTeamId
+                          },
                           on: {
                             click: function($event) {
                               return _vm.onMarkAsFinal(_vm.comment)
@@ -15826,27 +15847,6 @@ var render = function() {
                       )
                     ]
                   )
-                : _vm.actionScope == "teamAction" &&
-                  _vm.comment.team_id == _vm.currentTeamId
-                ? _c("TooltipAlt2", { attrs: { body: "Mark as team final" } }, [
-                    _c(
-                      "span",
-                      {
-                        staticClass: "circle",
-                        class: {
-                          active:
-                            _vm.comment.team_final &&
-                            _vm.comment.team_id == _vm.currentTeamId
-                        },
-                        on: {
-                          click: function($event) {
-                            return _vm.onMarkAsFinal(_vm.comment)
-                          }
-                        }
-                      },
-                      [_c("i", { staticClass: "far fa-comment-check" })]
-                    )
-                  ])
                 : _vm._e()
             ]
           : _vm._e()
