@@ -15,16 +15,16 @@ export default {
         //comment 
       },
       files: (state, getters, rootState, rootGetters) => {
-        if (!rootGetters['persist/loadingInit']) {
+        if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
             const files = Collection.query().with('teams').with('teamFiles').all()
+            const users = User.query().with('teams.teamFiles').with('actions').all()
 
-            // const adminPermissionLevel = rootGetters['persist/adminPermissionLevel']
-            // const authUser = rootGetters['persist/authUser']
-            const users = User.query().with('teams.teamFiles').all()
-
+            // Get the users that has access to the file
             files.forEach(file => {
                 file.users = []
-                users.forEach(user => {
+                const usersCopy = JSON.parse(JSON.stringify(users))
+                usersCopy.forEach(user => {
+                    // Determine if the user has access
                     let hasAccess = false
                     if (user.role_id <= 2) {
                         user.teams.forEach(team => {
@@ -37,9 +37,22 @@ export default {
                     else hasAccess = true
                     if (hasAccess) {
                         file.users.push(user)
+
+                        // Calculate progress for the user
+                        if (user.actions.length > 0) {
+                            // user.progress = ( (user.actions.length / file.products.length) * 100).toFixed(0)
+                            user.progress = (user.actions.length / file.products.length)
+                        }
+                        else user.progress = 0
                     }
                 })
             })
+
+            
+
+
+            // Calculate progress for every TEAM
+
             return files
         }
 

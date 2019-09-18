@@ -48,7 +48,7 @@ class WorkspaceController extends Controller
     // Return all collections of the workspace
     public function files($workspace_id)
     {
-        $files = Collection::where('workspace_id', $workspace_id)->get();
+        $files = Collection::where('workspace_id', $workspace_id)->with('products')->get();
 
         // Return collection of products as a resource
         return CollectionResource::collection($files);

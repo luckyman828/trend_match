@@ -85,8 +85,11 @@ export default {
                 return {id: 0, title: 'Global'}
             else return null
         },
-        collections () {
-            return Collection.query().all()
+        // collections () {
+        //     return Collection.query().all()
+        // },
+        filesRef() {
+            return this.files
         },
         userFiles() {
             const files = this.files
@@ -94,21 +97,21 @@ export default {
             // Get the files the user has access to
             if (this.userPermissionLevel <= 2) {
                 this.authUser.teams.forEach(team => {
-                    team.teamFiles.forEach(file => {
-                        if (file.role_level <= this.userPermissionLevel)
-                            if (!filesToReturn.find(x => x.id == file.file_id))
-                                filesToReturn.push(files.find(x => x.id == file.file_id))
+                    team.teamFiles.forEach(teamFile => {
+                        if (teamFile.role_level <= this.userPermissionLevel)
+                            if (!filesToReturn.find(x => x.id == teamFile.file_id))
+                                filesToReturn.push(files.find(x => x.id == teamFile.file_id))
                     })
                 })
             }
             else {
-                filesToReturn = this.collections
+                filesToReturn = this.files
             }
 
             return filesToReturn
         },
         uniqueCollections() {
-            const inputData = this.collections
+            const inputData = this.files
             let uniqueData = []
             inputData.forEach(data => {
                 const filterKey = data.title

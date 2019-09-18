@@ -8,4 +8,9 @@ class Collection extends Model
 {
     public $incrementing = false;
     protected $keyType = 'string';
+
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'collection_id');
+    } 
 }

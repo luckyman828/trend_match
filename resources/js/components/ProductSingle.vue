@@ -265,13 +265,13 @@ export default {
                 if (key == 'ArrowDown')
                     event.preventDefault(),
                     this.cycleImageReverse()
-                if ( authUser.role_id >= 2 && authUser.role_id != 3 ) {
+                if ( this.userPermissionLevel >= 2 && this.userPermissionLevel != 3 ) {
                     if (key == 'KeyI')
                         this.toggleInOut(this.product, 1)
                     if (key == 'KeyO')
                         this.toggleInOut(this.product, 0)
                 }
-                if (this.authUser.role_id == 2) {
+                if (this.userPermissionLevel == 2) {
                     if (key == 'KeyF')
                         this.toggleInOut(this.product, 2)
                 }

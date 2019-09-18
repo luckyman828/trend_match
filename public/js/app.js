@@ -8467,12 +8467,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         if (key == 'ArrowUp') event.preventDefault(), this.cycleImage();
         if (key == 'ArrowDown') event.preventDefault(), this.cycleImageReverse();
 
-        if (authUser.role_id >= 2 && authUser.role_id != 3) {
+        if (this.userPermissionLevel >= 2 && this.userPermissionLevel != 3) {
           if (key == 'KeyI') this.toggleInOut(this.product, 1);
           if (key == 'KeyO') this.toggleInOut(this.product, 0);
         }
 
-        if (this.authUser.role_id == 2) {
+        if (this.userPermissionLevel == 2) {
           if (key == 'KeyF') this.toggleInOut(this.product, 2);
         }
       }
@@ -11572,8 +11572,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         title: 'Global'
       };else return null;
     },
-    collections: function collections() {
-      return _store_models_Collection__WEBPACK_IMPORTED_MODULE_7__["default"].query().all();
+    // collections () {
+    //     return Collection.query().all()
+    // },
+    filesRef: function filesRef() {
+      return this.files;
     },
     userFiles: function userFiles() {
       var _this = this;
@@ -11583,22 +11586,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       if (this.userPermissionLevel <= 2) {
         this.authUser.teams.forEach(function (team) {
-          team.teamFiles.forEach(function (file) {
-            if (file.role_level <= _this.userPermissionLevel) if (!filesToReturn.find(function (x) {
-              return x.id == file.file_id;
+          team.teamFiles.forEach(function (teamFile) {
+            if (teamFile.role_level <= _this.userPermissionLevel) if (!filesToReturn.find(function (x) {
+              return x.id == teamFile.file_id;
             })) filesToReturn.push(files.find(function (x) {
-              return x.id == file.file_id;
+              return x.id == teamFile.file_id;
             }));
           });
         });
       } else {
-        filesToReturn = this.collections;
+        filesToReturn = this.files;
       }
 
       return filesToReturn;
     },
     uniqueCollections: function uniqueCollections() {
-      var inputData = this.collections;
+      var inputData = this.files;
       var uniqueData = [];
       inputData.forEach(function (data) {
         var filterKey = data.title;
@@ -40940,6 +40943,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
 /* harmony import */ var _TeamFile__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TeamFile */ "./resources/js/store/models/TeamFile.js");
 /* harmony import */ var _Team__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var _Product__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Product */ "./resources/js/store/models/Product.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -40959,6 +40963,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // Product Model
+
 
 
 
@@ -40989,6 +40994,8 @@ function (_Model) {
         start_time: this.attr('unset'),
         end_time: this.attr('unset'),
         teamFiles: this.hasMany(_TeamFile__WEBPACK_IMPORTED_MODULE_1__["default"], 'file_id'),
+        products: this.attr(''),
+        // products: this.hasMany(Product, 'collection_id'),
         teams: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_2__["default"], _TeamFile__WEBPACK_IMPORTED_MODULE_1__["default"], 'file_id', 'team_id')
       };
       return data;
@@ -41832,6 +41839,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Team__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Team */ "./resources/js/store/models/Team.js");
 /* harmony import */ var _UserTeam__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./UserTeam */ "./resources/js/store/models/UserTeam.js");
 /* harmony import */ var _Role__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Role */ "./resources/js/store/models/Role.js");
+/* harmony import */ var _Action__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Action */ "./resources/js/store/models/Action.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -41851,6 +41859,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // User Model
+
 
 
 
@@ -41886,6 +41895,7 @@ function (_Model) {
         country: this.belongsTo(_Country__WEBPACK_IMPORTED_MODULE_2__["default"], 'country_id'),
         role: this.belongsTo(_Role__WEBPACK_IMPORTED_MODULE_5__["default"], 'role_id'),
         teams: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_3__["default"], _UserTeam__WEBPACK_IMPORTED_MODULE_4__["default"], 'user_id', 'team_id'),
+        actions: this.hasMany(_Action__WEBPACK_IMPORTED_MODULE_6__["default"], 'user_id'),
         assigned_room_id: this.attr('')
       };
       return data;
@@ -42665,14 +42675,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return state.loading; //comment 
     },
     files: function files(state, getters, rootState, rootGetters) {
-      if (!rootGetters['persist/loadingInit']) {
-        var files = _models_Collection__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('teams')["with"]('teamFiles').all(); // const adminPermissionLevel = rootGetters['persist/adminPermissionLevel']
-        // const authUser = rootGetters['persist/authUser']
+      if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
+        var files = _models_Collection__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('teams')["with"]('teamFiles').all();
+        var users = _models_User__WEBPACK_IMPORTED_MODULE_3__["default"].query()["with"]('teams.teamFiles')["with"]('actions').all(); // Get the users that has access to the file
 
-        var users = _models_User__WEBPACK_IMPORTED_MODULE_3__["default"].query()["with"]('teams.teamFiles').all();
         files.forEach(function (file) {
           file.users = [];
-          users.forEach(function (user) {
+          var usersCopy = JSON.parse(JSON.stringify(users));
+          usersCopy.forEach(function (user) {
+            // Determine if the user has access
             var hasAccess = false;
 
             if (user.role_id <= 2) {
@@ -42684,10 +42695,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             } else hasAccess = true;
 
             if (hasAccess) {
-              file.users.push(user);
+              file.users.push(user); // Calculate progress for the user
+
+              if (user.actions.length > 0) {
+                // user.progress = ( (user.actions.length / file.products.length) * 100).toFixed(0)
+                user.progress = user.actions.length / file.products.length;
+              } else user.progress = 0;
             }
           });
-        });
+        }); // Calculate progress for every TEAM
+
         return files;
       }
     }
