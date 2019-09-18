@@ -26,7 +26,7 @@
         <form @submit="onSubmitComment">
             <div class="input-wrapper">
                 <i class="far fa-comment"></i>
-                <textarea ref="commentField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="comment" id="comment-input" placeholder="Write a comment.." v-model="newComment.comment" 
+                <textarea ref="commentField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="comment" id="comment-input" :placeholder="placeholderText" v-model="newComment.comment" 
                 oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
                 <label>
                     <input type="checkbox" v-model="newComment.important" name="comment-important">
@@ -85,6 +85,11 @@ export default {
             if(this.newComment.comment.length < 1 || this.submittingComment || this.currentTeamId < 0)
                 return true
             else return false
+        },
+        placeholderText () {
+            const filter = this.commentFilter
+            if (filter == 'remarks') return 'Write a new remark..'
+            else return 'Write a comment..'
         },
         commentsFiltered () {
             const comments = this.comments
