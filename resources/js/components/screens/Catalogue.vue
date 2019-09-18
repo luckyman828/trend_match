@@ -4,7 +4,7 @@
         <template v-if="userHasAccess">
 
             <template v-if="!loadingCollections">
-                <catalogueHeader :collection="collection" :startDate="startDate" :endDate="endDate" :productTotals="productTotals"/>
+                <catalogueHeader :collection="collection" :startDate="startDate" :endDate="endDate" :teamUsers="teamUsers" :productTotals="productTotals"/>
                 <div class="filters">
                     <Dropdown class="dropdown-parent left">
                         <template v-slot:button="slotProps">
@@ -585,8 +585,9 @@ export default{
                 const thisTeam = this.teams.find(team => team.id == this.currentTeamId)
                 if (thisTeam)
                     thisTeam.users.forEach(user => {
-                        if (this.collection.users.find(x => x.id == user.id))
-                            usersToReturn.push(user)
+                        const fileUser = this.collection.users.find(x => x.id == user.id)
+                        if (fileUser)
+                            usersToReturn.push(fileUser)
                     })
                     // usersToReturn = thisTeam.users
             } 

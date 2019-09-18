@@ -140,6 +140,7 @@ export default {
         z-index: 1;
         font-weight: 700;
         font-size: 12px;
+        user-select: none;
         i {
             font-size: 9px;
         }

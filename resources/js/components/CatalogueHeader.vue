@@ -17,27 +17,75 @@
                 <span class="title">Deadline</span>
                 <span class="square light">{{endDate}}</span>
             </div>
-            <div class="stat progress">
-                <span class="title">Progress</span>
-                <svg height="4">
-                    <rect class="background" v-if="productTotals.progress > 0" width="100%" height="4"/>
-                    <rect class="value" v-if="productTotals.progress > 0" :width="productTotals.progress + '%'" height="4"/>
-                </svg>
-                <span class="value">{{productTotals.progress}}%</span>
-            </div>
+            <template v-if="userPermissionLevel >= 2">
+                <template v-if="currentTeamId == 0">
+                    <!-- Teams progress -->
+                    <TooltipAlt2 :header="'Progress'" :array="collection.teams" :arrayLabelKey="'title'" :arrayValueKey="'progress'">
+                        <div class="stat progress">
+                            <span class="title">Progress</span>
+                            <svg height="4">
+                                <rect class="background" v-if="productTotals.progress > 0" width="100%" height="4"/>
+                                <rect class="value" v-if="productTotals.progress > 0" :width="productTotals.progress + '%'" height="4"/>
+                            </svg>
+                            <span class="value">{{productTotals.progress}}%</span>
+                        </div>
+                    </TooltipAlt2>
+                </template>
+                <template v-else>
+                    <!-- User progress -->
+                    <TooltipAlt2 :header="'Team progress'" :array="teamUsers" :arrayLabelKey="'email'" :arrayValueKey="'progress'">
+                        <div class="stat progress">
+                            <span class="title">Progress</span>
+                            <svg height="4">
+                                <rect class="background" v-if="productTotals.progress > 0" width="100%" height="4"/>
+                                <rect class="value" v-if="productTotals.progress > 0" :width="productTotals.progress + '%'" height="4"/>
+                            </svg>
+                            <span class="value">{{productTotals.progress}}%</span>
+                        </div>
+                    </TooltipAlt2>
+                </template>
+                
+            </template>
+            <template v-else>
+                <!-- User progress -->
+                <div class="stat progress">
+                    <span class="title">Progress</span>
+                    <svg height="4">
+                        <rect class="background" v-if="productTotals.progress > 0" width="100%" height="4"/>
+                        <rect class="value" v-if="productTotals.progress > 0" :width="productTotals.progress + '%'" height="4"/>
+                    </svg>
+                    <span class="value">{{productTotals.progress}}%</span>
+                </div>
+
+                <!-- Teams progress -->
+                <!-- <div class="stat progress">
+                    <span class="title">Progress</span>
+                    <svg height="4">
+                        <rect class="background" v-if="productTotals.progress > 0" width="100%" height="4"/>
+                        <rect class="value" v-if="productTotals.progress > 0" :width="productTotals.progress + '%'" height="4"/>
+                    </svg>
+                    <span class="value">{{productTotals.progress}}%</span>
+                </div> -->
+            </template>
         </div>
     </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
+
 export default {
     name: 'catalogueHeader',
     props: [
         'collection',
         'productTotals',
         'startDate',
-        'endDate'
-    ]
+        'endDate',
+        'teamUsers',
+    ],
+    computed: {
+        ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel']),
+    }
 }
 </script>
 

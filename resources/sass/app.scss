@@ -477,7 +477,7 @@ textarea {
     overflow: hidden;
     .inner {
         border-radius: 4px;
-        min-width: 152px;
+        // min-width: 152px;
         background: white;
         border: solid 1px $light2;
         margin-top: 7px;
@@ -526,9 +526,6 @@ textarea {
         font-weight: 400;
         color: $dark2;
         text-align: center;
-        .dark & {
-            color: $dark2;
-        }
         .close {
             position: absolute;
             right: 8px;
@@ -552,13 +549,23 @@ textarea {
     }
     .row {
         font-size: 12px;
-        padding: 0 16px;
+        padding: 0 12px;
         margin: 0;
         border: solid 1px $darkAlt;
         height: 32px;
         line-height: 32px;
         display: flex;
         justify-content: space-between;
+        min-width: 152px;
+        .label {
+            margin-right: 16px;
+            + .value {
+                text-align: right;
+            }
+        }
+        .value {
+            min-width: 44px;
+        }
     }
     .footer {
         padding: 4px 8px 6px;
@@ -575,7 +582,7 @@ textarea {
             // border-bottom: 0;
         }
         .header {
-            color: white;
+            color: $dark2;
         }
         .body {
             background: $darkAlt;
@@ -597,14 +604,6 @@ textarea {
     &::before { // arrow
         content: none;
     }
-    // .tooltip-row {
-    //     font-size: 12px;
-    //     padding: 0 8px;
-    //     margin: 0;
-    //     border: solid 1px $darkAlt;
-    //     height: 32px;
-    //     line-height: 32px;
-    // }
 }
 .tooltip-parent {
     &:hover {

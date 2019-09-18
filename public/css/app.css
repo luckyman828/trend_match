@@ -9471,7 +9471,6 @@ textarea {
 .dropdown .inner,
 .tooltip .inner {
   border-radius: 4px;
-  min-width: 152px;
   background: white;
   border: solid 1px #DFDFDF;
   margin-top: 7px;
@@ -9532,11 +9531,6 @@ textarea {
   text-align: center;
 }
 
-.dark .dropdown .header,
-.dark .tooltip .header {
-  color: #A8A8A8;
-}
-
 .dropdown .header .close,
 .tooltip .header .close {
   position: absolute;
@@ -9566,7 +9560,7 @@ textarea {
 .dropdown .row,
 .tooltip .row {
   font-size: 12px;
-  padding: 0 16px;
+  padding: 0 12px;
   margin: 0;
   border: solid 1px #43425D;
   height: 32px;
@@ -9575,6 +9569,22 @@ textarea {
   display: flex;
   -webkit-box-pack: justify;
           justify-content: space-between;
+  min-width: 152px;
+}
+
+.dropdown .row .label,
+.tooltip .row .label {
+  margin-right: 16px;
+}
+
+.dropdown .row .label + .value,
+.tooltip .row .label + .value {
+  text-align: right;
+}
+
+.dropdown .row .value,
+.tooltip .row .value {
+  min-width: 44px;
 }
 
 .dropdown .footer,
@@ -9606,7 +9616,7 @@ textarea {
 .dark .dropdown .header,
 .tooltip.dark .header,
 .dark .tooltip .header {
-  color: white;
+  color: #A8A8A8;
 }
 
 .dropdown.dark .body,

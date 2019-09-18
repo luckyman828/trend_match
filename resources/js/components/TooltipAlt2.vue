@@ -20,13 +20,13 @@
                     <template v-if="array != null">
                         <p class="row" v-for="(row, index) in array" :key="index">
                             <template v-if="arrayLabelKey != null">
-                                <span>{{row[arrayLabelKey]}}: </span>
-                                <strong v-if="arrayValueKey != null">{{row[arrayValueKey]}}</strong>
-                                <strong v-else>{{row}}</strong>
+                                <span class="label">{{row[arrayLabelKey]}}: </span>
+                                <strong class="value" v-if="arrayValueKey != null">{{row[arrayValueKey]}}</strong>
+                                <strong class="value" v-else>{{row}}</strong>
                             </template>
                             <template v-else>
-                                <span v-if="arrayValueKey != null">{{row[arrayValueKey]}}</span>
-                                <span v-else>{{row}}</span>
+                                <span class="value" v-if="arrayValueKey != null">{{row[arrayValueKey]}}</span>
+                                <span class="value" v-else>{{row}}</span>
                             </template>
                         </p>
                     </template>
@@ -61,6 +61,7 @@ export default {
             clearTimeout(this.showDelay)
         },
         show() {
+            this.setHeight()
             this.showDelay = setTimeout( () => {this.hidden = false}, this.showDelay)
         },
         // getPosition(element) {
@@ -128,11 +129,6 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-    // .tooltip-parent {
-    //     &:hover {
-    //         cursor: pointer;
-    //     }
-    // }
     .body-wrapper {
         padding: 8px;
         display: block;

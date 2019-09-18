@@ -7313,6 +7313,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -7344,9 +7349,53 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'catalogueHeader',
-  props: ['collection', 'productTotals', 'startDate', 'endDate']
+  props: ['collection', 'productTotals', 'startDate', 'endDate', 'teamUsers'],
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel']))
 });
 
 /***/ }),
@@ -10403,6 +10452,7 @@ __webpack_require__.r(__webpack_exports__);
     show: function show() {
       var _this = this;
 
+      this.setHeight();
       this.showDelay = setTimeout(function () {
         _this.hidden = false;
       }, this.showDelay);
@@ -11137,9 +11187,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           return team.id == _this9.currentTeamId;
         });
         if (thisTeam) thisTeam.users.forEach(function (user) {
-          if (_this9.collection.users.find(function (x) {
+          var fileUser = _this9.collection.users.find(function (x) {
             return x.id == user.id;
-          })) usersToReturn.push(user);
+          });
+
+          if (fileUser) usersToReturn.push(fileUser);
         }); // usersToReturn = thisTeam.users
       } // else if (this.currentTeamId == 0) {
       //     usersToReturn = this.users
@@ -12014,7 +12066,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".comment-wrapper[data-v-54ded044] {\n  margin-bottom: 24px;\n}\n.comment-wrapper:hover .circle[data-v-54ded044] {\n  opacity: 1;\n}\n.comment-wrapper.own[data-v-54ded044] {\n  text-align: right;\n}\n.comment[data-v-54ded044] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n  max-width: calc(100% - 56px);\n}\n.own .comment[data-v-54ded044] {\n  background: #3B86FF;\n  color: white;\n  text-align: left;\n  margin-right: 0;\n  margin-left: 56px;\n}\n.comment .body[data-v-54ded044] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n}\n.user[data-v-54ded044] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-54ded044] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n}\n.bubble i[data-v-54ded044] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-54ded044] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-54ded044] {\n  left: 18px;\n}\n.circle[data-v-54ded044] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.comment-wrapper.own .circle[data-v-54ded044] {\n  right: auto;\n  left: -56px;\n}\n.circle i[data-v-54ded044] {\n  font-size: 20px;\n}\n.circle[data-v-54ded044]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.active[data-v-54ded044] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.disabled[data-v-54ded044]:not(.active) {\n  display: none;\n}\n.circle.disabled[data-v-54ded044] {\n  cursor: auto;\n}\n.pill[data-v-54ded044] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\n.pill.phase-final[data-v-54ded044] {\n  background: #3B86FF;\n  color: white;\n}\n.pill[data-v-54ded044]:nth-child(2) {\n  right: 100px;\n}", ""]);
+exports.push([module.i, ".comment-wrapper[data-v-54ded044] {\n  margin-bottom: 24px;\n}\n.comment-wrapper:hover .circle[data-v-54ded044] {\n  opacity: 1;\n}\n.comment-wrapper.own[data-v-54ded044] {\n  text-align: right;\n}\n.comment[data-v-54ded044] {\n  position: relative;\n  padding: 12px;\n  background: #DFDFDF;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n  max-width: calc(100% - 56px);\n}\n.own .comment[data-v-54ded044] {\n  background: #3B86FF;\n  color: white;\n  text-align: left;\n  margin-right: 0;\n  margin-left: 56px;\n}\n.comment .body[data-v-54ded044] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n}\n.user[data-v-54ded044] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #A8A8A8;\n  margin-top: 4px;\n}\n.bubble[data-v-54ded044] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1B1C1D;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.bubble i[data-v-54ded044] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-54ded044] {\n  color: #3B86FF;\n}\n.bubble.second[data-v-54ded044] {\n  left: 18px;\n}\n.circle[data-v-54ded044] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #DFDFDF;\n  border-radius: 20px;\n  color: #A8A8A8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n  cursor: pointer;\n}\n.comment-wrapper.own .circle[data-v-54ded044] {\n  right: auto;\n  left: -56px;\n}\n.circle i[data-v-54ded044] {\n  font-size: 20px;\n}\n.circle[data-v-54ded044]:hover {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.active[data-v-54ded044] {\n  color: #3B86FF;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.disabled[data-v-54ded044]:not(.active) {\n  display: none;\n}\n.circle.disabled[data-v-54ded044] {\n  cursor: auto;\n}\n.pill[data-v-54ded044] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3B86FF;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #F3F3F3;\n  font-weight: 500;\n}\n.pill.phase-final[data-v-54ded044] {\n  background: #3B86FF;\n  color: white;\n}\n.pill[data-v-54ded044]:nth-child(2) {\n  right: 100px;\n}", ""]);
 
 // exports
 
@@ -15430,49 +15482,148 @@ var render = function() {
       ])
     ]),
     _vm._v(" "),
-    _c("div", [
-      _vm._m(0),
-      _vm._v(" "),
-      _c("div", { staticClass: "stat" }, [
-        _c("span", { staticClass: "title" }, [_vm._v("Start date")]),
+    _c(
+      "div",
+      [
+        _vm._m(0),
         _vm._v(" "),
-        _c("span", { staticClass: "square light" }, [
-          _vm._v(_vm._s(_vm.startDate))
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "stat" }, [
-        _c("span", { staticClass: "title" }, [_vm._v("Deadline")]),
-        _vm._v(" "),
-        _c("span", { staticClass: "square light" }, [
-          _vm._v(_vm._s(_vm.endDate))
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "stat progress" }, [
-        _c("span", { staticClass: "title" }, [_vm._v("Progress")]),
-        _vm._v(" "),
-        _c("svg", { attrs: { height: "4" } }, [
-          _vm.productTotals.progress > 0
-            ? _c("rect", {
-                staticClass: "background",
-                attrs: { width: "100%", height: "4" }
-              })
-            : _vm._e(),
+        _c("div", { staticClass: "stat" }, [
+          _c("span", { staticClass: "title" }, [_vm._v("Start date")]),
           _vm._v(" "),
-          _vm.productTotals.progress > 0
-            ? _c("rect", {
-                staticClass: "value",
-                attrs: { width: _vm.productTotals.progress + "%", height: "4" }
-              })
-            : _vm._e()
+          _c("span", { staticClass: "square light" }, [
+            _vm._v(_vm._s(_vm.startDate))
+          ])
         ]),
         _vm._v(" "),
-        _c("span", { staticClass: "value" }, [
-          _vm._v(_vm._s(_vm.productTotals.progress) + "%")
-        ])
-      ])
-    ])
+        _c("div", { staticClass: "stat" }, [
+          _c("span", { staticClass: "title" }, [_vm._v("Deadline")]),
+          _vm._v(" "),
+          _c("span", { staticClass: "square light" }, [
+            _vm._v(_vm._s(_vm.endDate))
+          ])
+        ]),
+        _vm._v(" "),
+        _vm.userPermissionLevel >= 2
+          ? [
+              _vm.currentTeamId == 0
+                ? [
+                    _c(
+                      "TooltipAlt2",
+                      {
+                        attrs: {
+                          header: "Progress",
+                          array: _vm.collection.teams,
+                          arrayLabelKey: "title",
+                          arrayValueKey: "progress"
+                        }
+                      },
+                      [
+                        _c("div", { staticClass: "stat progress" }, [
+                          _c("span", { staticClass: "title" }, [
+                            _vm._v("Progress")
+                          ]),
+                          _vm._v(" "),
+                          _c("svg", { attrs: { height: "4" } }, [
+                            _vm.productTotals.progress > 0
+                              ? _c("rect", {
+                                  staticClass: "background",
+                                  attrs: { width: "100%", height: "4" }
+                                })
+                              : _vm._e(),
+                            _vm._v(" "),
+                            _vm.productTotals.progress > 0
+                              ? _c("rect", {
+                                  staticClass: "value",
+                                  attrs: {
+                                    width: _vm.productTotals.progress + "%",
+                                    height: "4"
+                                  }
+                                })
+                              : _vm._e()
+                          ]),
+                          _vm._v(" "),
+                          _c("span", { staticClass: "value" }, [
+                            _vm._v(_vm._s(_vm.productTotals.progress) + "%")
+                          ])
+                        ])
+                      ]
+                    )
+                  ]
+                : [
+                    _c(
+                      "TooltipAlt2",
+                      {
+                        attrs: {
+                          header: "Team progress",
+                          array: _vm.teamUsers,
+                          arrayLabelKey: "email",
+                          arrayValueKey: "progress"
+                        }
+                      },
+                      [
+                        _c("div", { staticClass: "stat progress" }, [
+                          _c("span", { staticClass: "title" }, [
+                            _vm._v("Progress")
+                          ]),
+                          _vm._v(" "),
+                          _c("svg", { attrs: { height: "4" } }, [
+                            _vm.productTotals.progress > 0
+                              ? _c("rect", {
+                                  staticClass: "background",
+                                  attrs: { width: "100%", height: "4" }
+                                })
+                              : _vm._e(),
+                            _vm._v(" "),
+                            _vm.productTotals.progress > 0
+                              ? _c("rect", {
+                                  staticClass: "value",
+                                  attrs: {
+                                    width: _vm.productTotals.progress + "%",
+                                    height: "4"
+                                  }
+                                })
+                              : _vm._e()
+                          ]),
+                          _vm._v(" "),
+                          _c("span", { staticClass: "value" }, [
+                            _vm._v(_vm._s(_vm.productTotals.progress) + "%")
+                          ])
+                        ])
+                      ]
+                    )
+                  ]
+            ]
+          : [
+              _c("div", { staticClass: "stat progress" }, [
+                _c("span", { staticClass: "title" }, [_vm._v("Progress")]),
+                _vm._v(" "),
+                _c("svg", { attrs: { height: "4" } }, [
+                  _vm.productTotals.progress > 0
+                    ? _c("rect", {
+                        staticClass: "background",
+                        attrs: { width: "100%", height: "4" }
+                      })
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.productTotals.progress > 0
+                    ? _c("rect", {
+                        staticClass: "value",
+                        attrs: {
+                          width: _vm.productTotals.progress + "%",
+                          height: "4"
+                        }
+                      })
+                    : _vm._e()
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "value" }, [
+                  _vm._v(_vm._s(_vm.productTotals.progress) + "%")
+                ])
+              ])
+            ]
+      ],
+      2
+    )
   ])
 }
 var staticRenderFns = [
@@ -15572,15 +15723,36 @@ var render = function() {
         _vm.userPermissionLevel >= 2
           ? [
               _vm.actionScope == "phaseAction"
+                ? _c("TooltipAlt2", { attrs: { body: "Choose as remark" } }, [
+                    _c(
+                      "span",
+                      {
+                        staticClass: "circle",
+                        class: { active: _vm.comment.phase_final },
+                        on: {
+                          click: function($event) {
+                            return _vm.onMarkAsFinal(_vm.comment)
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "far fa-comment-check" })]
+                    )
+                  ])
+                : _vm.actionScope == "teamAction" &&
+                  _vm.comment.team_id == _vm.currentTeamId
                 ? _c(
                     "TooltipAlt2",
-                    { attrs: { body: "Mark as phase final" } },
+                    { attrs: { body: "Choose as team remark" } },
                     [
                       _c(
                         "span",
                         {
                           staticClass: "circle",
-                          class: { active: _vm.comment.phase_final },
+                          class: {
+                            active:
+                              _vm.comment.team_final &&
+                              _vm.comment.team_id == _vm.currentTeamId
+                          },
                           on: {
                             click: function($event) {
                               return _vm.onMarkAsFinal(_vm.comment)
@@ -15591,27 +15763,6 @@ var render = function() {
                       )
                     ]
                   )
-                : _vm.actionScope == "teamAction" &&
-                  _vm.comment.team_id == _vm.currentTeamId
-                ? _c("TooltipAlt2", { attrs: { body: "Mark as team final" } }, [
-                    _c(
-                      "span",
-                      {
-                        staticClass: "circle",
-                        class: {
-                          active:
-                            _vm.comment.team_final &&
-                            _vm.comment.team_id == _vm.currentTeamId
-                        },
-                        on: {
-                          click: function($event) {
-                            return _vm.onMarkAsFinal(_vm.comment)
-                          }
-                        }
-                      },
-                      [_c("i", { staticClass: "far fa-comment-check" })]
-                    )
-                  ])
                 : _vm._e()
             ]
           : _vm._e()
@@ -20740,22 +20891,26 @@ var render = function() {
                       [
                         _vm.arrayLabelKey != null
                           ? [
-                              _c("span", [
+                              _c("span", { staticClass: "label" }, [
                                 _vm._v(_vm._s(row[_vm.arrayLabelKey]) + ": ")
                               ]),
                               _vm._v(" "),
                               _vm.arrayValueKey != null
-                                ? _c("strong", [
+                                ? _c("strong", { staticClass: "value" }, [
                                     _vm._v(_vm._s(row[_vm.arrayValueKey]))
                                   ])
-                                : _c("strong", [_vm._v(_vm._s(row))])
+                                : _c("strong", { staticClass: "value" }, [
+                                    _vm._v(_vm._s(row))
+                                  ])
                             ]
                           : [
                               _vm.arrayValueKey != null
-                                ? _c("span", [
+                                ? _c("span", { staticClass: "value" }, [
                                     _vm._v(_vm._s(row[_vm.arrayValueKey]))
                                   ])
-                                : _c("span", [_vm._v(_vm._s(row))])
+                                : _c("span", { staticClass: "value" }, [
+                                    _vm._v(_vm._s(row))
+                                  ])
                             ]
                       ],
                       2
@@ -20949,6 +21104,7 @@ var render = function() {
                       collection: _vm.collection,
                       startDate: _vm.startDate,
                       endDate: _vm.endDate,
+                      teamUsers: _vm.teamUsers,
                       productTotals: _vm.productTotals
                     }
                   }),
@@ -41556,6 +41712,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Collection__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Collection */ "./resources/js/store/models/Collection.js");
 /* harmony import */ var _TeamFile__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./TeamFile */ "./resources/js/store/models/TeamFile.js");
 /* harmony import */ var _TeamInvite__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./TeamInvite */ "./resources/js/store/models/TeamInvite.js");
+/* harmony import */ var _TeamProduct__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./TeamProduct */ "./resources/js/store/models/TeamProduct.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -41575,6 +41732,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // Team Model
+
 
 
 
@@ -41607,6 +41765,7 @@ function (_Model) {
         currency: this.attr(''),
         users: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_1__["default"], _UserTeam__WEBPACK_IMPORTED_MODULE_2__["default"], 'team_id', 'user_id'),
         teamFiles: this.hasMany(_TeamFile__WEBPACK_IMPORTED_MODULE_4__["default"], 'team_id'),
+        actions: this.hasMany(_TeamProduct__WEBPACK_IMPORTED_MODULE_6__["default"], 'team_id'),
         files: this.belongsToMany(_Collection__WEBPACK_IMPORTED_MODULE_3__["default"], _TeamFile__WEBPACK_IMPORTED_MODULE_4__["default"], 'team_id', 'file_id'),
         invites: this.hasMany(_TeamInvite__WEBPACK_IMPORTED_MODULE_5__["default"], 'team_id')
       };
@@ -42680,11 +42839,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     files: function files(state, getters, rootState, rootGetters) {
       if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
-        var files = _models_Collection__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('teams')["with"]('teamFiles').all();
+        var files = _models_Collection__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('teams.actions')["with"]('teamFiles').all();
         var users = _models_User__WEBPACK_IMPORTED_MODULE_3__["default"].query()["with"]('teams.teamFiles')["with"]('actions').all(); // Get the users that has access to the file
 
         files.forEach(function (file) {
-          file.users = [];
+          file.users = []; // Create a
+          // const teamsa = JSON.parse(JSON.stringify(file.teams))
+          // const teamsCopy = Object.assign([], file.teams)
+
+          var teamsCopy = JSON.parse(JSON.stringify(file.teams));
           var usersCopy = JSON.parse(JSON.stringify(users));
           usersCopy.forEach(function (user) {
             // Determine if the user has access
@@ -42701,14 +42864,32 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             if (hasAccess) {
               file.users.push(user); // Calculate progress for the user
 
-              if (user.actions.length > 0) {
-                // user.progress = ( (user.actions.length / file.products.length) * 100).toFixed(0)
-                user.progress = user.actions.length / file.products.length;
-              } else user.progress = 0;
-            }
-          });
-        }); // Calculate progress for every TEAM
+              user.products = file.products.length;
 
+              if (user.actions.length > 0) {
+                user.progressRaw = Math.round(user.actions.length / file.products.length * 100 * 1e0) / 1e0;
+                user.progress = "".concat(user.progressRaw, "%");
+              } else {
+                user.progressRaw = 0;
+                user.progress = "".concat(user.progressRaw, "%");
+              }
+            }
+          }); // Calculate progress for every TEAM
+
+          teamsCopy.forEach(function (team) {
+            team.progressRaw = Math.round(team.actions.length / file.products.length * 100 * 1e0) / 1e0;
+            team.progress = "".concat(team.progressRaw, "%");
+          });
+          file.teams = teamsCopy; // Sort teams by progress
+
+          file.teams.sort(function (a, b) {
+            return a.progressRaw < b.progressRaw ? 1 : -1;
+          }); // Sort users by progress
+
+          file.users.sort(function (a, b) {
+            return a.progressRaw < b.progressRaw ? 1 : -1;
+          });
+        });
         return files;
       }
     }
