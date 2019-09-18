@@ -8587,6 +8587,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     submitDisabled: function submitDisabled() {
       if (this.newComment.comment.length < 1 || this.submittingComment || this.currentTeamId < 0) return true;else return false;
     },
+    placeholderText: function placeholderText() {
+      var filter = this.commentFilter;
+      if (filter == 'remarks') return 'Write a new remark..';else return 'Write a comment..';
+    },
     commentsFiltered: function commentsFiltered() {
       var _this = this;
 
@@ -17829,7 +17833,7 @@ var render = function() {
             attrs: {
               name: "comment",
               id: "comment-input",
-              placeholder: "Write a comment..",
+              placeholder: _vm.placeholderText,
               oninput:
                 'this.style.height = "";this.style.height = this.scrollHeight + "px"'
             },
