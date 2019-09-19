@@ -1,7 +1,7 @@
 <template>
     <div class="product-single" :class="[{visible: visible}, {sticky: sticky}]">
         <div class="overlay" @mousedown="onCloseSingle"></div>
-        <template v-if="Object.keys(product).length != 0">
+        <template v-if="product != null">
             <div class="card">
                 <template v-if="!loading">
                     <div class="controls-wrapper">
@@ -159,7 +159,7 @@ import TooltipAlt2 from './TooltipAlt2'
 export default {
     name: 'productSingle',
     props: [
-        'product',
+        // 'product',
         'authUser',
         'nextProductID',
         'prevProductID',
@@ -181,7 +181,11 @@ export default {
             currentImgIndex: 0,
     }},
     computed: {
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']),
+        ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope']),
+        ...mapGetters('entities/products', ['currentProductId', 'currentProduct']),
+        product () {
+            return this.currentProduct
+        },
         tabBody () {
             if(this.currentTab == 'ins') {
                 // return this.productActionUsers.focus.push(this.productActionUsers.ins)

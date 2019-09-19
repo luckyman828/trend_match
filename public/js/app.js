@@ -7463,8 +7463,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -8435,7 +8433,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'productSingle',
-  props: ['product', 'authUser', 'nextProductID', 'prevProductID', 'sticky', 'visible', 'catalogue', 'loading'],
+  props: [// 'product',
+  'authUser', 'nextProductID', 'prevProductID', 'sticky', 'visible', 'catalogue', 'loading'],
   components: {
     ProductSingleComments: _ProductSingleComments__WEBPACK_IMPORTED_MODULE_1__["default"],
     Loader: _Loader__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -8450,7 +8449,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       currentImgIndex: 0
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/products', ['currentProductId', 'currentProduct']), {
+    product: function product() {
+      return this.currentProduct;
+    },
     tabBody: function tabBody() {
       if (this.currentTab == 'ins') {
         // return this.productActionUsers.focus.push(this.productActionUsers.ins)
@@ -8786,9 +8788,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.tooltip.active = false;
     },
     resizeTextarea: function resizeTextarea() {
-      console.log('resizing!');
       var commentField = this.$refs.commentField;
-      console.log(commentField.scrollHeight + "px");
       commentField.style.height = '';
       commentField.style.height = commentField.scrollHeight + "px";
     }
@@ -9071,7 +9071,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return loading;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction', 'deleteAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['deleteTeamProduct', 'updateTeamProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['deletePhaseProduct', 'updatePhaseProduct']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction', 'deleteAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['deleteTeamProduct', 'updateTeamProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['deletePhaseProduct', 'updatePhaseProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['setCurrentProductId']), {
     productImg: function productImg(variant) {
       if (!variant.error) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
     },
@@ -9155,7 +9155,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     onViewSingle: function onViewSingle(id) {
       // Emit event to parent
-      this.$emit('viewAsSingle', id);
+      // this.$emit('viewAsSingle', id)
+      this.setCurrentProductId(id);
       this.showSingle = true;
       if (document.getElementById('main').scrollTop < 130) document.getElementById('main').scrollTo(0, 130);
     },
@@ -10794,8 +10795,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this3 = this;
 
       var products = _store_models_Product__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes.user.teams', 'comments.user.teams', 'comments.team'])["with"]('productFinalAction')["with"]('teamActions.team')["with"]('phaseActions').all(); // const totalUsers = this.teamUsers
+      // const userId = this.authUser.id
 
-      var userId = this.authUser.id;
       var teamFilterId = this.currentTeamId;
       var data = [];
       products.forEach(function (product) {
@@ -15739,54 +15740,7 @@ var render = function() {
         _vm._v(" "),
         _c("span", { staticClass: "body" }, [
           _vm._v(_vm._s(_vm.comment.comment))
-        ]),
-        _vm._v(" "),
-        _vm.userPermissionLevel >= 2
-          ? [
-              _vm.actionScope == "phaseAction"
-                ? _c("TooltipAlt2", { attrs: { body: "Choose as remark" } }, [
-                    _c(
-                      "span",
-                      {
-                        staticClass: "circle",
-                        class: { active: _vm.comment.phase_final },
-                        on: {
-                          click: function($event) {
-                            return _vm.onMarkAsFinal(_vm.comment)
-                          }
-                        }
-                      },
-                      [_c("i", { staticClass: "far fa-comment-check" })]
-                    )
-                  ])
-                : _vm.actionScope == "teamAction" &&
-                  _vm.comment.team_id == _vm.currentTeamId
-                ? _c(
-                    "TooltipAlt2",
-                    { attrs: { body: "Choose as team remark" } },
-                    [
-                      _c(
-                        "span",
-                        {
-                          staticClass: "circle",
-                          class: {
-                            active:
-                              _vm.comment.team_final &&
-                              _vm.comment.team_id == _vm.currentTeamId
-                          },
-                          on: {
-                            click: function($event) {
-                              return _vm.onMarkAsFinal(_vm.comment)
-                            }
-                          }
-                        },
-                        [_c("i", { staticClass: "far fa-comment-check" })]
-                      )
-                    ]
-                  )
-                : _vm._e()
-            ]
-          : _vm._e()
+        ])
       ],
       2
     ),
@@ -17290,7 +17244,7 @@ var render = function() {
         on: { mousedown: _vm.onCloseSingle }
       }),
       _vm._v(" "),
-      Object.keys(_vm.product).length != 0
+      _vm.product != null
         ? [
             _c(
               "div",
@@ -42979,6 +42933,42 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         });
         return files;
       }
+    },
+    currentFile: function currentFile(state, getters, rootState, rootGetters) {
+      if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
+        var currentFileId = rootGetters['persist/currentFileId'];
+        var files = getters.files;
+        return files != null ? files.find(function (x) {
+          return x.id == currentFileId;
+        }) : null;
+      }
+    },
+    currentTeamUsers: function currentTeamUsers(state, getters, rootState, rootGetters) {
+      if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
+        var currentTeamId = rootGetters['persist/currentTeamId'];
+        var teams = rootGetters['entities/teams/teams'];
+        var currentFile = getters.currentFile;
+        var usersToReturn = [];
+
+        if (currentTeamId > 0) {
+          var thisTeam = teams.find(function (team) {
+            return team.id == currentTeamId;
+          });
+
+          if (thisTeam) {
+            thisTeam.users.forEach(function (user) {
+              if (currentFile.users) {
+                var fileUser = currentFile.users.find(function (x) {
+                  return x.id == user.id;
+                });
+                if (fileUser) usersToReturn.push(fileUser);
+              }
+            });
+          }
+        }
+
+        return usersToReturn;
+      }
     }
   },
   actions: {
@@ -44401,7 +44391,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   namespaced: true,
   state: {
     loading: true,
-    currentSingleProductId: -1
+    currentSingleProductId: -1,
+    currentProductId: null
   },
   getters: {
     loadingProducts: function loadingProducts(state) {
@@ -44409,6 +44400,180 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     currentSingleProductId: function currentSingleProductId(state) {
       return state.currentSingleProductId;
+    },
+    currentProductId: function currentProductId(state) {
+      return state.currentProductId;
+    },
+    //   currentProduct: state => { return (state.currentProductId != null) ? Product.find(state.currentProductId) : null },
+    products: function products(state, getters, rootState, rootGetters) {
+      if (!rootGetters['persist/loadingInit'] && !state.loading) {
+        var products = _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes.user.teams', 'comments.user.teams', 'comments.team'])["with"]('productFinalAction')["with"]('teamActions.team')["with"]('phaseActions').all();
+        var userId = rootGetters['persist/authUser'].id;
+        var teamFilterId = rootGetters['persist/currentTeamId'];
+        var currentTeam = rootGetters['persist/currentTeam'];
+        var currentFile = rootGetters['entities/collections/currentFile'];
+        var teamUsers = rootGetters['entities/collections/currentTeamUsers'];
+        var workspace = rootGetters['persist/currentWorkspace'];
+        var userPermissionLevel = rootGetters['persist/userPermissionLevel'];
+        var viewAdminPermissionLevel = rootGetters['persist/viewAdminPermissionLevel'];
+        var data = [];
+        products.forEach(function (product) {
+          product.color_variants = JSON.parse(product.color_variants);
+          product.prices = JSON.parse(product.prices);
+          product.ins = [];
+          product.outs = [];
+          product.focus = [];
+          product.nds = [];
+          product.userAction = product.actions.find(function (x) {
+            return x.user_id == userId;
+          });
+          product.commentsScoped = [];
+          product.teamAction = product.teamActions.find(function (x) {
+            return x.team_id == teamFilterId;
+          });
+          product.phaseAction = product.phaseActions.find(function (x) {
+            return x.phase_id == 1;
+          }); // Find the correct price
+          // Check if the chosen currency exists on the product
+
+          if (product.prices != null) {
+            var workspacePrices = null;
+            var teamPrices = null;
+            if (workspace.currency != null) workspacePrices = product.prices.find(function (x) {
+              return x.currency == workspace.currency;
+            });
+            if (currentTeam) if (currentTeam.currency != null) teamPrices = product.prices.find(function (x) {
+              return x.currency == currentTeam.currency;
+            });
+
+            if (userPermissionLevel <= 4) {
+              // Use team currency for low level members
+              if (teamPrices != null) product.userPrices = teamPrices;else if (workspacePrices != null) product.userPrices = workspacePrices;else product.userPrices = product.prices[0];
+            } else {
+              // Use workspace currency for high level members
+              if (workspacePrices != null) product.userPrices = workspacePrices;else product.userPrices = product.prices[0];
+            }
+          }
+
+          var comments = product.comments;
+          comments.forEach(function (comment) {
+            comment.teamVotes = [{
+              id: 0,
+              title: 'No team',
+              votes: 0
+            }];
+            comment.votes.forEach(function (vote) {
+              if (vote.user != null) {
+                if (vote.user.teams.length > 0) {
+                  var found = comment.teamVotes.find(function (x) {
+                    return x.title == vote.user.teams[0].title;
+                  });
+
+                  if (!found) {
+                    var voteTeam = vote.user.teams[0];
+                    var teamToPush = {
+                      id: voteTeam.id,
+                      title: voteTeam.title,
+                      votes: 1
+                    };
+                    comment.teamVotes.push(teamToPush);
+                  } else {
+                    found.votes++;
+                  }
+                } else {
+                  comment.teamVotes[0].votes++;
+                }
+              }
+            });
+          }); // Scope comments to current teamFilter
+          // If the user is a buyer function, only return global comments
+
+          if (userPermissionLevel == viewAdminPermissionLevel) {
+            comments.forEach(function (comment) {
+              if (comment.team_id == 0) product.commentsScoped.push(comment);
+            });
+          } else if (teamFilterId > 0) {
+            // Loop through the comments
+            comments.forEach(function (comment) {
+              // Loop through comments users teams
+              var pushComment = false; // Check if the comment belongs to one of auth users teams
+              // if (comment.user != null)
+              //     if (comment.user.teams != null)
+              //         if ( comment.user.teams.find(x => x.id == teamFilterId) )
+              //             pushComment = true
+
+              if (comment.team_id == teamFilterId) pushComment = true; // Check if the comment is final or global (not for sales)
+
+              if (userPermissionLevel >= 2) {
+                if (comment.team_final || comment.phase_final || comment.team_id == 0) pushComment = true;
+              }
+
+              if (pushComment) product.commentsScoped.push(comment);
+            });
+          } else if (teamFilterId == 0) {
+            product.commentsScoped = comments;
+          } // Filter actions by the current team filter
+          // Check if the action has a user
+
+
+          if (teamFilterId > 0 && product.actions != null) {
+            product.nds = JSON.parse(JSON.stringify(teamUsers)); // Copy our users into a new variable
+
+            product.actions.forEach(function (action) {
+              if (action.user != null) {
+                // Check if the user has a team
+                if (action.user.teams[0] != null) {
+                  // Find the users team
+                  if (action.user.teams.findIndex(function (x) {
+                    return x.id == teamFilterId;
+                  }) > -1) {
+                    // if (action.user.teams[0].id == teamFilterId) {
+                    if (action.action == 0) product.outs.push(action.user);
+                    if (action.action == 1) product.ins.push(action.user);
+                    if (action.action == 2) product.focus.push(action.user);
+                  }
+                } // Find Not decided
+
+
+                var index = product.nds.findIndex(function (nd) {
+                  return nd.id == action.user_id;
+                });
+
+                if (index > -1) {
+                  product.nds.splice(index, 1);
+                }
+              }
+            }); // Filter actions by teams if GLOBAL scope is set (= 0)
+          } else if (teamFilterId == 0 && product.teamActions != null) {
+            product.nds = JSON.parse(JSON.stringify(currentFile.teams)); // Copy our users into a new variable
+
+            product.teamActions.forEach(function (action) {
+              if (action.team != null) {
+                if (action.action == 0) product.outs.push(action.team);
+                if (action.action == 1) product.ins.push(action.team);
+                if (action.action == 2) product.focus.push(action.team);
+              } // Find Not decided
+
+
+              var index = product.nds.findIndex(function (nd) {
+                return nd.id == action.team_id;
+              });
+
+              if (index > -1) {
+                product.nds.splice(index, 1);
+              }
+            });
+          }
+
+          data.push(product);
+        });
+        return data;
+      }
+    },
+    currentProduct: function currentProduct(state, getters, rootState, rootGetters) {
+      return state.currentProductId != null && getters.products != null ? getters.products.find(function (x) {
+        return x.id == state.currentProductId;
+      }) : null;
     }
   },
   actions: {
@@ -44479,12 +44644,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return fetchProducts;
-    }()
+    }(),
+    setCurrentProductId: function setCurrentProductId(_ref2, id) {
+      var commit = _ref2.commit;
+      commit('setCurrentProductId', id);
+    }
   },
   mutations: {
     //Set the loading status of the app
     setLoading: function setLoading(state, bool) {
       state.loading = bool;
+    },
+    setCurrentProductId: function setCurrentProductId(state, id) {
+      state.currentProductId = id;
     }
   }
 });

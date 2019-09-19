@@ -197,9 +197,7 @@ export default {
             this.tooltip.active = false;
         },
         resizeTextarea() {
-            console.log('resizing!')
             const commentField = this.$refs.commentField
-            console.log(commentField.scrollHeight + "px")
             commentField.style.height = ''
             commentField.style.height = commentField.scrollHeight + "px"
         }

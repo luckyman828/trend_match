@@ -161,7 +161,7 @@ export default{
             const products = Product.query().with(['actions.user.teams']).with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team']).with('productFinalAction')
             .with('teamActions.team').with('phaseActions').all()
             // const totalUsers = this.teamUsers
-            const userId = this.authUser.id
+            // const userId = this.authUser.id
             const teamFilterId = this.currentTeamId
             const data = []
             products.forEach(product => {

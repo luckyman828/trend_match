@@ -68,14 +68,38 @@ export default {
                 file.users.sort((a, b) => { return (a.progressRaw < b.progressRaw) ? 1 : -1 })
 
             })
-
-            
-
-
-
             return files
         }
 
+      },
+      currentFile: (state, getters, rootState, rootGetters) => {
+        if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
+          const currentFileId = rootGetters['persist/currentFileId']
+          const files = getters.files
+          return (files != null) ? files.find(x => x.id == currentFileId) : null
+        }
+      },
+      currentTeamUsers (state, getters, rootState, rootGetters) {
+        if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
+          const currentTeamId = rootGetters['persist/currentTeamId']
+          const teams = rootGetters['entities/teams/teams']
+          const currentFile = getters.currentFile
+          let usersToReturn = []
+          if (currentTeamId > 0) {
+              const thisTeam = teams.find(team => team.id == currentTeamId)
+              if (thisTeam) {
+                  thisTeam.users.forEach(user => {
+                    if (currentFile.users) {
+                        const fileUser = currentFile.users.find(x => x.id == user.id)
+                        if (fileUser)
+                            usersToReturn.push(fileUser)
+                    }
+                  })
+              }
+
+          } 
+          return usersToReturn
+        }
       }
     },
   

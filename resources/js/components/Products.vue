@@ -193,6 +193,7 @@ export default {
         ...mapActions('entities/actions', ['updateAction', 'deleteAction']),
         ...mapActions('entities/teamProducts', ['deleteTeamProduct', 'updateTeamProduct']),
         ...mapActions('entities/phaseProducts', ['deletePhaseProduct', 'updatePhaseProduct']),
+        ...mapActions('entities/products', ['setCurrentProductId']),
         productImg(variant) {
             if (!variant.error)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
@@ -245,7 +246,8 @@ export default {
         },
         onViewSingle(id) {
             // Emit event to parent
-            this.$emit('viewAsSingle', id)
+            // this.$emit('viewAsSingle', id)
+            this.setCurrentProductId(id)
             this.showSingle = true;
             if (document.getElementById('main').scrollTop < 130)
                 document.getElementById('main').scrollTo(0, 130)
