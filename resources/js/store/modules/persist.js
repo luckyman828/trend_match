@@ -1,5 +1,6 @@
 import Workspace from '../../store/models/Workspace';
 import Team from '../../store/models/Team';
+import File from '../../store/models/Collection';
 import AuthUser from '../../store/models/AuthUser';
 
 export default {
@@ -23,6 +24,7 @@ export default {
         teamCurrency: state => { return 'SEK' },
         currentWorkspaceId: state => { return state.currentWorkspaceId },
         currentFileId: state => { return state.currentFileId },
+        currentFile: state => { return (state.currentFileId != null) ? File.find(state.currentFileId) : null },
         userPermissionLevel: state => { return state.userPermissionLevel },
         loadingInit: state => { return state.loadingInit },
         adminPermissionLevel: state => { return state.adminPermissionLevel },

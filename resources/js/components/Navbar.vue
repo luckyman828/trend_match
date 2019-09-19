@@ -14,8 +14,8 @@
                 <template v-if="$route.name == 'catalogue'">
                     <router-link :to="{name: 'collection'}" class="back-link"><span class="circle primary"><i class="far fa-arrow-left"></i></span><span>Back to Collections</span></router-link>
                     <div class="breadcrumbs">
-                        <router-link :to="{name: 'collection'}">Collections</router-link>
-                        
+                        <router-link class="text-link" :to="{name: 'collection'}">Collections</router-link>
+                        <span class="current"><strong>{{(currentFile != null) ? currentFile.title : 'Fetching..'}}</strong></span>
                     </div>
                 </template>
 
@@ -50,7 +50,7 @@ export default {
         ModalCreateTeam
     },
     computed: {
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'adminPermissionLevel', 'actionScope', 'actionScopeName']),
+        ...mapGetters('persist', ['userPermissionLevel', 'adminPermissionLevel', 'currentFile']),
         addTeamValid () {
             if (this.teams.length <= 0)
                 return false
@@ -95,9 +95,44 @@ export default {
         display: flex;
         justify-content: space-between;
     }
+    .items-left {
+        display: flex;
+        align-items: center;
+    }
     .back-link {
+        padding-right: 28px;
+        border-right: solid 2px $light2;
+        margin-right: 28px;
         .circle {
             margin-right: 8px;
+        }
+    }
+    .breadcrumbs {
+        display: flex;
+        > * {
+            display: inline-flex;
+            align-items: center;
+        }
+        > *:not(:first-child)::before {
+            content: '';
+            pointer-events: none;
+            color: $dark1;
+            margin-left: 8px;
+            margin-right: 10px;
+            margin-bottom: 2px;
+            font-size: 10px;
+            font-family: "Font Awesome 5 Pro";
+            font-weight: 900;
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-font-smoothing: antialiased;
+            display: inline-block;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            line-height: 1;
+        }
+        > *:last-child::before {
+            content: '';
         }
     }
 }

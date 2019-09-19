@@ -8214,7 +8214,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     Modal: _Modal__WEBPACK_IMPORTED_MODULE_1__["default"],
     ModalCreateTeam: _ModalCreateTeam__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'adminPermissionLevel', 'actionScope', 'actionScopeName']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['userPermissionLevel', 'adminPermissionLevel', 'currentFile']), {
     addTeamValid: function addTeamValid() {
       var _this = this;
 
@@ -12167,7 +12167,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".navbar[data-v-6dde423b] {\n  grid-area: navbar;\n  width: 100%;\n  -webkit-box-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: flex;\n}\n.navbar .logo-wrapper[data-v-6dde423b] {\n  min-width: 260px;\n  padding-left: 20px;\n}\n.navbar img[data-v-6dde423b] {\n  display: block;\n  height: 100%;\n}\n.navbar .flex-wrapper[data-v-6dde423b] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.navbar .back-link .circle[data-v-6dde423b] {\n  margin-right: 8px;\n}", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\n.navbar[data-v-6dde423b] {\n  grid-area: navbar;\n  width: 100%;\n  -webkit-box-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: flex;\n}\n.navbar .logo-wrapper[data-v-6dde423b] {\n  min-width: 260px;\n  padding-left: 20px;\n}\n.navbar img[data-v-6dde423b] {\n  display: block;\n  height: 100%;\n}\n.navbar .flex-wrapper[data-v-6dde423b] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.navbar .items-left[data-v-6dde423b] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.navbar .back-link[data-v-6dde423b] {\n  padding-right: 28px;\n  border-right: solid 2px #DFDFDF;\n  margin-right: 28px;\n}\n.navbar .back-link .circle[data-v-6dde423b] {\n  margin-right: 8px;\n}\n.navbar .breadcrumbs[data-v-6dde423b] {\n  display: -webkit-box;\n  display: flex;\n}\n.navbar .breadcrumbs > *[data-v-6dde423b] {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.navbar .breadcrumbs > *[data-v-6dde423b]:not(:first-child)::before {\n  content: \"\\F054\";\n  pointer-events: none;\n  color: #535353;\n  margin-left: 8px;\n  margin-right: 10px;\n  margin-bottom: 2px;\n  font-size: 10px;\n  font-family: \"Font Awesome 5 Pro\";\n  font-weight: 900;\n  -moz-osx-font-smoothing: grayscale;\n  -webkit-font-smoothing: antialiased;\n  display: inline-block;\n  font-style: normal;\n  font-variant: normal;\n  text-rendering: auto;\n  line-height: 1;\n}\n.navbar .breadcrumbs > *[data-v-6dde423b]:last-child::before {\n  content: \"\\F061\";\n}", ""]);
 
 // exports
 
@@ -17135,9 +17135,24 @@ var render = function() {
                     [
                       _c(
                         "router-link",
-                        { attrs: { to: { name: "collection" } } },
+                        {
+                          staticClass: "text-link",
+                          attrs: { to: { name: "collection" } }
+                        },
                         [_vm._v("Collections")]
-                      )
+                      ),
+                      _vm._v(" "),
+                      _c("span", { staticClass: "current" }, [
+                        _c("strong", [
+                          _vm._v(
+                            _vm._s(
+                              _vm.currentFile != null
+                                ? _vm.currentFile.title
+                                : "Fetching.."
+                            )
+                          )
+                        ])
+                      ])
                     ],
                     1
                   )
@@ -43536,7 +43551,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_models_Workspace__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../store/models/Workspace */ "./resources/js/store/models/Workspace.js");
 /* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+
 
 
 
@@ -43573,6 +43590,9 @@ __webpack_require__.r(__webpack_exports__);
     currentFileId: function currentFileId(state) {
       return state.currentFileId;
     },
+    currentFile: function currentFile(state) {
+      return state.currentFileId != null ? _store_models_Collection__WEBPACK_IMPORTED_MODULE_2__["default"].find(state.currentFileId) : null;
+    },
     userPermissionLevel: function userPermissionLevel(state) {
       return state.userPermissionLevel;
     },
@@ -43594,7 +43614,7 @@ __webpack_require__.r(__webpack_exports__);
         return 'Phase action';else if (state.userPermissionLevel >= 2) return 'Team action';else return 'Your action';
     },
     authUser: function authUser() {
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('teams.files|teamFiles')["with"]('workspaces').first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_3__["default"].query()["with"]('teams.files|teamFiles')["with"]('workspaces').first();
     }
   },
   actions: {

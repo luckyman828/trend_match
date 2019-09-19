@@ -8683,6 +8683,10 @@ a {
   color: inherit;
 }
 
+a.text-link {
+  color: #3B86FF;
+}
+
 textarea {
   white-space: pre-wrap;
   word-wrap: break-word;

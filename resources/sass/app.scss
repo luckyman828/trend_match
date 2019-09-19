@@ -41,6 +41,9 @@ input, button, select, optgroup, textarea {
 a {
     text-decoration: none;
     color: inherit;
+    &.text-link {
+        color: $primary;
+    }
 }
 textarea {
     white-space: pre-wrap;
