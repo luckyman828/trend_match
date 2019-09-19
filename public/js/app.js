@@ -18389,21 +18389,6 @@ var render = function() {
     [
       _c("div", { staticClass: "scroll-bg" }),
       _vm._v(" "),
-      _c("div", { staticClass: "product-totals" }, [
-        _c("span", [_vm._v(_vm._s(_vm.selectedCount) + " selected")]),
-        _vm._v(" "),
-        _vm.products.length != _vm.totalProductCount
-          ? _c("span", [
-              _vm._v(
-                _vm._s(_vm.products.length) +
-                  "/" +
-                  _vm._s(_vm.totalProductCount) +
-                  " showing"
-              )
-            ])
-          : _c("span", [_vm._v(_vm._s(_vm.totalProductCount) + " records")])
-      ]),
-      _vm._v(" "),
       _c("product-single", {
         attrs: {
           loading: _vm.loadingSingle,
@@ -18433,6 +18418,23 @@ var render = function() {
             "div",
             { staticClass: "header-row flex-table-row" },
             [
+              _c("div", { staticClass: "product-totals" }, [
+                _c("span", [_vm._v(_vm._s(_vm.selectedCount) + " selected")]),
+                _vm._v(" "),
+                _vm.products.length != _vm.totalProductCount
+                  ? _c("span", [
+                      _vm._v(
+                        _vm._s(_vm.products.length) +
+                          "/" +
+                          _vm._s(_vm.totalProductCount) +
+                          " showing"
+                      )
+                    ])
+                  : _c("span", [
+                      _vm._v(_vm._s(_vm.totalProductCount) + " records")
+                    ])
+              ]),
+              _vm._v(" "),
               _vm.authUser.role_id >= 2
                 ? _c(
                     "th",

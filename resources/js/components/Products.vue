@@ -1,16 +1,16 @@
 <template>
     <div class="products card" :class="{sticky: sticky}">
         <div class="scroll-bg"></div>
-        <!-- <product-totals :totalProductCount="totalProductCount" :selectedCount="selectedCount" :products="products"/> -->
-        <div class="product-totals">
-            <span>{{selectedCount}} selected</span>
-            <span v-if="products.length != totalProductCount">{{products.length}}/{{totalProductCount}} showing</span>
-            <span v-else>{{totalProductCount}} records</span>
-            <!-- <span>{{totalProductCount}} records</span> -->
-        </div>
         <product-single :loading="loadingSingle" :catalogue="collection" :sticky="sticky" :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut"/>
         <div class="flex-table" :class="{disabled: singleProductToShow.id != null}">
             <div class="header-row flex-table-row">
+                <div class="product-totals">
+                    <span>{{selectedCount}} selected</span>
+                    <span v-if="products.length != totalProductCount">{{products.length}}/{{totalProductCount}} showing</span>
+                    <span v-else>{{totalProductCount}} records</span>
+                    <!-- <span>{{totalProductCount}} records</span> -->
+                </div>
+
                 <th class="select dropdown-parent" @click="toggleDropdown($event)" v-if="authUser.role_id >= 2">
                     <Dropdown ref="multiSelectDropdown">
                         <template v-slot:button="slotProps">
