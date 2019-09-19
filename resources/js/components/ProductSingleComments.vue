@@ -27,7 +27,7 @@
             <div class="input-wrapper">
                 <i class="far fa-comment"></i>
                 <textarea ref="commentField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="comment" id="comment-input" :placeholder="placeholderText" v-model="newComment.comment" 
-                oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
+                @input="resizeTextarea"></textarea>
                 <label>
                     <input type="checkbox" v-model="newComment.important" name="comment-important">
                     <span class="checkmark" :class="{active: newComment.important}" @mouseover="showTooltip($event, 'Important comment')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
@@ -164,6 +164,9 @@ export default {
                 this.newComment.important = false
                 this.newComment.team_final = false
                 this.newComment.phase_final = false
+
+                // Reset textarea height
+                this.$refs.commentField.style.height = ''
             }
         },
         onMarkAsFinal(comment) {
@@ -193,6 +196,13 @@ export default {
         hideTooltip() {
             this.tooltip.active = false;
         },
+        resizeTextarea() {
+            console.log('resizing!')
+            const commentField = this.$refs.commentField
+            console.log(commentField.scrollHeight + "px")
+            commentField.style.height = ''
+            commentField.style.height = commentField.scrollHeight + "px"
+        }
     },
     mounted() {
         if (this.actionScope == 'phaseAction')
@@ -282,6 +292,10 @@ export default {
     }
     form {
         margin-top: 12px;
+        margin-bottom: 42px;
+        @media screen and (max-width: $screenSmall) {
+            margin-bottom: 0px;
+        }
         .input-wrapper {
             border-radius: 6px;
             border: solid 2px $light2;
@@ -291,6 +305,8 @@ export default {
             font-weight: 500;
             position: relative;
             color: $dark2;
+            max-height: 200px;
+            overflow: auto;
             > i {
                 position: absolute;
                 left: 14px;

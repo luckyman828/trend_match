@@ -351,6 +351,7 @@ export default{
         /* width */
         &::-webkit-scrollbar {
             width: 3px;
+            height: 7px;
         }
         /* Track */
         &::-webkit-scrollbar-track {
@@ -368,6 +369,7 @@ export default{
             /* width */
             &::-webkit-scrollbar {
                 width: 5px;
+                height: 7px;
             }
             /* Track */
             &::-webkit-scrollbar-track {

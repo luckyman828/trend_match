@@ -1,8 +1,11 @@
 window.Vue = require('vue');
 import store from './store/index';
-import VueRouter from 'vue-router';
 
+import VueRouter from 'vue-router';
 Vue.use(VueRouter)
+
+import VueDragscroll from 'vue-dragscroll'
+Vue.use(VueDragscroll)
 
 Vue.component('app', require('./App.vue').default);
 

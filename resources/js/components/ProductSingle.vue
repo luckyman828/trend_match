@@ -1,5 +1,6 @@
 <template>
-    <div class="product-single" :class="[{visible: Object.keys(product).length != 0}, {sticky: sticky}]">
+    <div class="product-single" :class="[{visible: visible}, {sticky: sticky}]">
+        <div class="overlay" @mousedown="onCloseSingle"></div>
         <template v-if="Object.keys(product).length != 0">
             <div class="card">
                 <template v-if="!loading">
@@ -24,7 +25,7 @@
                         </div>
                     </div>
                     <div class="grid-2 grid-border-between inner">
-                        <div>
+                        <div class="details">
                             <h3>{{product.title}}</h3>
                             <div class="grid-2">
                                 <div class="image" @click="cycleImage()">
@@ -95,7 +96,7 @@
                                 <p>{{new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})}}</p>
                             </div>
 
-                            <div class="product-variants">
+                            <div class="product-variants" v-dragscroll>
                                 <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
                                     <div class="img-wrapper">
                                         <img :src="variantImg(variant)" @error="imgError(variant)">
@@ -163,6 +164,7 @@ export default {
         'nextProductID',
         'prevProductID',
         'sticky',
+        'visible',
         'catalogue',
         'loading',
     ],
@@ -241,14 +243,14 @@ export default {
                 this.currentImgIndex --
             }
         },
-        clickOutsideEvent(event) {
-            const thisElement = document.querySelector('.product-single')
-            // Check if the clicked element is outside component
-            if (!(thisElement == event.target || thisElement.contains(event.target))) {
-                if ( !event.target.classList.contains('bind-view-single') )
-                    this.onCloseSingle()
-            }
-        },
+        // clickOutsideEvent(event) {
+        //     const thisElement = document.querySelector('.product-single')
+        //     // Check if the clicked element is outside component
+        //     if (!(thisElement == event.target || thisElement.contains(event.target))) {
+        //         if ( !event.target.classList.contains('bind-view-single') )
+        //             this.onCloseSingle()
+        //     }
+        // },
         hotkeyHandler(event) {
             const key = event.code
             if (key == 'Escape')
@@ -280,12 +282,12 @@ export default {
     },
     created() {
         // Listen for clicks outside component
-        document.body.addEventListener('click', this.clickOutsideEvent)
+        // document.body.addEventListener('click', this.clickOutsideEvent)
         document.body.addEventListener('keydown', this.hotkeyHandler)
     },
     destroyed() {
         // Remove click listener
-        document.body.removeEventListener('click', this.clickOutsideEvent)
+        // document.body.removeEventListener('click', this.clickOutsideEvent)
         document.body.removeEventListener('keydown', this.hotkeyHandler)
     }
 }
@@ -293,40 +295,40 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
-    .product-single {
-        position: absolute;
-        right: 0;
-        top: 0;
-        margin: 0;
-        max-width: 60vw;
-        z-index: 1;
-        &.visible {
-            width: 100%;
-        }
-        // &.sticky {
-        //     right: 76px;
-        //     top: 130px;
-        //     position: fixed;
-        //     height: calc(100vh - 130px);
-        //     > .card {
-        //         height: 100%;
-        //         overflow: hidden;
-        //     }
-        // }
-
-        // ALWAYS STICKY
-        right: 62px;
-        top: 130px;
+    .overlay {
+        z-index: 10;
         position: fixed;
-        height: calc(100vh - 130px);
-        > .card {
-            height: 100%;
-            overflow: hidden;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: transparent;
+    }
+    .product-single {
+        &.visible {
+            > .card {
+                width: 100%;
+                right: 62px;
+                transform: translateX(0);
+            }
+            .overlay {
+                display: block;
+            }
         }
-        // ALWAYS STICKY ENDS
-
         > .card {
+            right: 0;
+            transform: translateX(100%);
             margin: 0;
+            max-width: 60vw;
+            z-index: 11;
+            top: 130px;
+            position: fixed;
+            height: calc(100vh - 130px);
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
+            transition-timing-function: ease-out;
+            transition: .2s;
             background: white;
             animation: slide-in .3s;
             animation-iteration-count: 1;
@@ -578,5 +580,8 @@ export default {
     }
     p {
         margin: 0;
+    }
+    .details {
+        padding-right: 1px;
     }
 </style>

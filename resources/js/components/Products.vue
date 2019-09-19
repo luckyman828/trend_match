@@ -1,8 +1,8 @@
 <template>
     <div class="products card" :class="{sticky: sticky}">
         <div class="scroll-bg"></div>
-        <product-single :loading="loadingSingle" :catalogue="collection" :sticky="sticky" :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut"/>
-        <div class="flex-table" :class="{disabled: singleProductToShow.id != null}">
+        <product-single :loading="loadingSingle" :visible="showSingle" :catalogue="collection" :sticky="sticky" :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut"/>
+        <div class="flex-table" :class="{disabled: showSingle}">
             <div class="header-row flex-table-row">
                 <div class="product-totals">
                     <span>{{selectedCount}} selected</span>
@@ -168,6 +168,7 @@ export default {
             data: {},
         },
         sticky: false,
+        showSingle: false,
     }},
     computed: {
         ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
@@ -245,6 +246,7 @@ export default {
         onViewSingle(id) {
             // Emit event to parent
             this.$emit('viewAsSingle', id)
+            this.showSingle = true;
             if (document.getElementById('main').scrollTop < 130)
                 document.getElementById('main').scrollTo(0, 130)
         },
@@ -322,7 +324,8 @@ export default {
             this.$emit('onSortBy', key, method)
         },
         onCloseSingle() {
-            this.$emit('closeSingle', -1)
+            this.showSingle = false;
+            // this.$emit('closeSingle', -1)
         },
         onNextSingle() {
             this.$emit('nextSingle')
