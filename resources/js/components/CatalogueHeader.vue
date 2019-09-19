@@ -7,15 +7,15 @@
         <div>
             <div class="stat">
                 <span class="title">Teams</span>
-                <span class="square light">x Teams</span>
+                <span class="square light">{{collection.teams.length}} Teams</span>
             </div>
             <div class="stat">
                 <span class="title">Start date</span>
-                <span class="square light">{{startDate}}</span>
+                <span class="square light">{{new Date(collection.start_date).toLocaleDateString('en-GB', {day: '2-digit', month: '2-digit', year: 'numeric'})}}</span>
             </div>
             <div class="stat">
                 <span class="title">Deadline</span>
-                <span class="square light">{{endDate}}</span>
+                <span class="square light">{{new Date(collection.start_date).toLocaleDateString('en-GB', {day: '2-digit', month: '2-digit', year: 'numeric'})}}</span>
             </div>
             <template v-if="userPermissionLevel >= 2">
                 <template v-if="currentTeamId == 0">

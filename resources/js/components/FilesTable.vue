@@ -50,15 +50,15 @@
                 </div>
                 <div class="flex-group">
                     <td class="created"><span class="square light">{{
-                        (catalogue.start_time != null) ? catalogue.start_time.substr(0, catalogue.start_time.indexOf(" ")).replace(/\-/g, "/") : 'Unset'
+                        (catalogue.start_date != null) ? new Date(catalogue.start_date).toLocaleDateString('en-GB', {day: '2-digit', month: '2-digit', year: 'numeric'}) : 'Unset'
                     }}</span></td>
                     <td class="deadline"><span class="square light">{{
-                        (catalogue.end_time != null) ? catalogue.end_time.substr(0, catalogue.end_time.indexOf(" ")).replace(/\-/g, "/") : 'Unset'
+                        (catalogue.end_date != null) ? new Date(catalogue.end_date).toLocaleDateString('en-GB', {day: '2-digit', month: '2-digit', year: 'numeric'}) : 'Unset'
                     }}</span></td>
 
                     <td class="stage">
                         <span class="square light stage">STAGE {{catalogue.phase}}</span>
-                        <span class="square light status">tbd%</span>
+                        <!-- <span class="square light status">tbd%</span> -->
                     </td>
                 </div>
                 <div class="flex-group">

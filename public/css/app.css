@@ -8678,6 +8678,11 @@ textarea {
   line-height: inherit;
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 textarea {
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -9306,6 +9311,12 @@ textarea {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
   background: #F3F3F3;
   font-weight: 500;
+}
+
+.circle {
+  border-radius: 50%;
+  height: 40px;
+  width: 40px;
 }
 
 .close {

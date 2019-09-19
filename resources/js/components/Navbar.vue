@@ -8,8 +8,15 @@
         <div class="flex-wrapper">
             <div class="items-left">
 
+                <template v-if="$route.name == 'collection'">
+                    <!-- <router-link :to="{name: 'collection'}" class="back-link"><span class="circle primary"><i class="far fa-arrow-left"></i></span><span>Back to Brand</span></router-link> -->
+                </template>
                 <template v-if="$route.name == 'catalogue'">
-
+                    <router-link :to="{name: 'collection'}" class="back-link"><span class="circle primary"><i class="far fa-arrow-left"></i></span><span>Back to Collections</span></router-link>
+                    <div class="breadcrumbs">
+                        <router-link :to="{name: 'collection'}">Collections</router-link>
+                        
+                    </div>
                 </template>
 
 
@@ -87,6 +94,11 @@ export default {
         padding-right: 77px;
         display: flex;
         justify-content: space-between;
+    }
+    .back-link {
+        .circle {
+            margin-right: 8px;
+        }
     }
 }
 

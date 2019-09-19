@@ -461,6 +461,11 @@ export default {
         }
     }
     .team-row {
+        td.title {
+            .button {
+                min-width: 0;
+            }
+        }
         &.expanded {
             td.title {
                 .button {

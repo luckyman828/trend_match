@@ -92,7 +92,7 @@
                             </div>
                             <div class="stat">
                                 <p><strong>Delivery date</strong></p>
-                                <p>{{new Date(product.delivery_date).toLocaleDateString('da-DK', {month: 'long', year: 'numeric'})}}</p>
+                                <p>{{new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})}}</p>
                             </div>
 
                             <div class="product-variants">

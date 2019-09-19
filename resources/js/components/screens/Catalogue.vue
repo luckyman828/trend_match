@@ -4,7 +4,7 @@
         <template v-if="userHasAccess">
 
             <template v-if="!loadingCollections">
-                <catalogueHeader :collection="collection" :startDate="startDate" :endDate="endDate" :teamUsers="teamUsers" :productTotals="productTotals"/>
+                <catalogueHeader :collection="collection" :teamUsers="teamUsers" :productTotals="productTotals"/>
                 <div class="filters">
                     <Dropdown class="dropdown-parent left">
                         <template v-slot:button="slotProps">
@@ -156,24 +156,6 @@ export default{
         collection() {
             // return Collection.query().with('teams').find(this.currentFileId)
             return this.files.find(x => x.id == this.currentFileId)
-        },
-        startDate () {
-            if (this.collection.start_time != null) {
-                const date = this.collection.start_time
-                const dateEnd = date.indexOf(" ")
-                const newDate = date.substr(0, dateEnd)
-                return newDate.replace('-', '/')
-            }
-            return 'Unset'
-        },
-        endDate () {
-            if (this.collection.end_time != null) {
-                const date = this.collection.end_time
-                const dateEnd = date.indexOf(" ")
-                const newDate = date.substr(0, dateEnd)
-                return newDate.replace('-', '/')
-            }
-            return 'Unset'
         },
         products () {
             const products = Product.query().with(['actions.user.teams']).with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team']).with('productFinalAction')

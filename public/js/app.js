@@ -8192,6 +8192,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -10770,26 +10777,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return x.id == _this2.currentFileId;
       });
     },
-    startDate: function startDate() {
-      if (this.collection.start_time != null) {
-        var date = this.collection.start_time;
-        var dateEnd = date.indexOf(" ");
-        var newDate = date.substr(0, dateEnd);
-        return newDate.replace('-', '/');
-      }
-
-      return 'Unset';
-    },
-    endDate: function endDate() {
-      if (this.collection.end_time != null) {
-        var date = this.collection.end_time;
-        var dateEnd = date.indexOf(" ");
-        var newDate = date.substr(0, dateEnd);
-        return newDate.replace('-', '/');
-      }
-
-      return 'Unset';
-    },
     products: function products() {
       var _this3 = this;
 
@@ -12180,7 +12167,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".navbar[data-v-6dde423b] {\n  grid-area: navbar;\n  width: 100%;\n  -webkit-box-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: flex;\n}\n.navbar .logo-wrapper[data-v-6dde423b] {\n  min-width: 260px;\n  padding-left: 20px;\n}\n.navbar img[data-v-6dde423b] {\n  display: block;\n  height: 100%;\n}\n.navbar .flex-wrapper[data-v-6dde423b] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}", ""]);
+exports.push([module.i, ".navbar[data-v-6dde423b] {\n  grid-area: navbar;\n  width: 100%;\n  -webkit-box-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: flex;\n}\n.navbar .logo-wrapper[data-v-6dde423b] {\n  min-width: 260px;\n  padding-left: 20px;\n}\n.navbar img[data-v-6dde423b] {\n  display: block;\n  height: 100%;\n}\n.navbar .flex-wrapper[data-v-6dde423b] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.navbar .back-link .circle[data-v-6dde423b] {\n  margin-right: 8px;\n}", ""]);
 
 // exports
 
@@ -12408,7 +12395,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".teams-table[data-v-0b6bf463] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.teams-table .team-row .view-single[data-v-0b6bf463] {\n  border-color: transparent;\n}\n.teams-table .team-row.expanded[data-v-0b6bf463] {\n  background: #F3F3F3;\n}\n.teams-table .team-row.expanded .view-single[data-v-0b6bf463] {\n  color: #1B1C1D;\n  background: white;\n}\n.flex-table-row[data-v-0b6bf463] {\n  padding: 12px 0;\n}\n.flex-table-row > *.select[data-v-0b6bf463], .flex-table-row > *[data-v-0b6bf463]:nth-child(1) {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(2) {\n  padding-left: 32px;\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(3) {\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(4) {\n  min-width: 112px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(5) {\n  min-width: 132px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(6) {\n  min-width: 80px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(7) {\n  margin-left: auto;\n  min-width: 80px;\n  padding-left: 16px;\n  padding-right: 32px;\n}\n.flex-table-row > *.action[data-v-0b6bf463] > :first-child {\n  margin-right: 20px;\n}\n.flex-table-row td.title[data-v-0b6bf463] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.flex-table-row td.title .square[data-v-0b6bf463] {\n  margin-left: -32px;\n  color: #1B1C1D;\n  background: none;\n}\n.flex-table-row td.title .square i[data-v-0b6bf463] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  font-size: 12px;\n}\n.flex-table-row.invited-row .name[data-v-0b6bf463], .flex-table-row.invited-row .email[data-v-0b6bf463], .flex-table-row.invited-row .role[data-v-0b6bf463] {\n  opacity: 0.5;\n}\n.flex-table-row.invited-row.add-member[data-v-0b6bf463] {\n  -webkit-box-pack: center;\n          justify-content: center;\n  cursor: pointer;\n}\n.flex-table-row.invited-row.add-member:hover td[data-v-0b6bf463] {\n  border-bottom: solid 1px #1B1C1D;\n}\n.flex-table-row.invited-row.add-member td[data-v-0b6bf463] {\n  color: #3C3B54;\n  font-weight: 500;\n  font-size: 12px;\n  padding: 0;\n  border-bottom: solid 1px transparent;\n}\n.flex-table-row.invited-row.add-member td i[data-v-0b6bf463] {\n  font-size: 13px;\n}\ni[data-v-0b6bf463] {\n  font-size: 11px;\n}\n.show-more[data-v-0b6bf463] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-0b6bf463] {\n  -webkit-animation: loading-data-v-0b6bf463 2s;\n          animation: loading-data-v-0b6bf463 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-0b6bf463] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox input[data-v-0b6bf463] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-0b6bf463] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-0b6bf463]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463]:after {\n  display: block;\n}\n.view-single[data-v-0b6bf463] {\n  font-size: 12px;\n  font-weight: 700;\n  color: #A8A8A8;\n  cursor: pointer;\n}\n.team-totals[data-v-0b6bf463] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.team-totals span[data-v-0b6bf463] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.user-row[data-v-0b6bf463] {\n  background: #F9F9F9;\n}\n.user-row[data-v-0b6bf463]:not(:last-child) {\n  border-bottom: solid 2px white;\n}\n.user-row td[data-v-0b6bf463] {\n  font-size: 14px;\n}\n.user-row td.index[data-v-0b6bf463] {\n  text-align: right;\n  padding-right: 20px;\n}\n.team-users[data-v-0b6bf463] {\n  overflow: hidden;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n}\n.team-users.collapsed[data-v-0b6bf463] {\n  max-height: 0 !important;\n}\n.team-users.expanded + .team-row-wrapper[data-v-0b6bf463] {\n  box-shadow: 0 1px 0 #DFDFDF inset;\n}\n.team-row.expanded td.title .button i[data-v-0b6bf463] {\n  -webkit-transform: rotateZ(90deg);\n          transform: rotateZ(90deg);\n}", ""]);
+exports.push([module.i, ".teams-table[data-v-0b6bf463] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.teams-table .team-row .view-single[data-v-0b6bf463] {\n  border-color: transparent;\n}\n.teams-table .team-row.expanded[data-v-0b6bf463] {\n  background: #F3F3F3;\n}\n.teams-table .team-row.expanded .view-single[data-v-0b6bf463] {\n  color: #1B1C1D;\n  background: white;\n}\n.flex-table-row[data-v-0b6bf463] {\n  padding: 12px 0;\n}\n.flex-table-row > *.select[data-v-0b6bf463], .flex-table-row > *[data-v-0b6bf463]:nth-child(1) {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(2) {\n  padding-left: 32px;\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(3) {\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(4) {\n  min-width: 112px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(5) {\n  min-width: 132px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(6) {\n  min-width: 80px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(7) {\n  margin-left: auto;\n  min-width: 80px;\n  padding-left: 16px;\n  padding-right: 32px;\n}\n.flex-table-row > *.action[data-v-0b6bf463] > :first-child {\n  margin-right: 20px;\n}\n.flex-table-row td.title[data-v-0b6bf463] {\n  font-size: 13px;\n  color: #1B1C1D;\n}\n.flex-table-row td.title .square[data-v-0b6bf463] {\n  margin-left: -32px;\n  color: #1B1C1D;\n  background: none;\n}\n.flex-table-row td.title .square i[data-v-0b6bf463] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  font-size: 12px;\n}\n.flex-table-row.invited-row .name[data-v-0b6bf463], .flex-table-row.invited-row .email[data-v-0b6bf463], .flex-table-row.invited-row .role[data-v-0b6bf463] {\n  opacity: 0.5;\n}\n.flex-table-row.invited-row.add-member[data-v-0b6bf463] {\n  -webkit-box-pack: center;\n          justify-content: center;\n  cursor: pointer;\n}\n.flex-table-row.invited-row.add-member:hover td[data-v-0b6bf463] {\n  border-bottom: solid 1px #1B1C1D;\n}\n.flex-table-row.invited-row.add-member td[data-v-0b6bf463] {\n  color: #3C3B54;\n  font-weight: 500;\n  font-size: 12px;\n  padding: 0;\n  border-bottom: solid 1px transparent;\n}\n.flex-table-row.invited-row.add-member td i[data-v-0b6bf463] {\n  font-size: 13px;\n}\ni[data-v-0b6bf463] {\n  font-size: 11px;\n}\n.show-more[data-v-0b6bf463] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-0b6bf463] {\n  -webkit-animation: loading-data-v-0b6bf463 2s;\n          animation: loading-data-v-0b6bf463 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-0b6bf463] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox input[data-v-0b6bf463] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-0b6bf463] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-0b6bf463]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463]:after {\n  display: block;\n}\n.view-single[data-v-0b6bf463] {\n  font-size: 12px;\n  font-weight: 700;\n  color: #A8A8A8;\n  cursor: pointer;\n}\n.team-totals[data-v-0b6bf463] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.team-totals span[data-v-0b6bf463] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.user-row[data-v-0b6bf463] {\n  background: #F9F9F9;\n}\n.user-row[data-v-0b6bf463]:not(:last-child) {\n  border-bottom: solid 2px white;\n}\n.user-row td[data-v-0b6bf463] {\n  font-size: 14px;\n}\n.user-row td.index[data-v-0b6bf463] {\n  text-align: right;\n  padding-right: 20px;\n}\n.team-users[data-v-0b6bf463] {\n  overflow: hidden;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n}\n.team-users.collapsed[data-v-0b6bf463] {\n  max-height: 0 !important;\n}\n.team-users.expanded + .team-row-wrapper[data-v-0b6bf463] {\n  box-shadow: 0 1px 0 #DFDFDF inset;\n}\n.team-row td.title .button[data-v-0b6bf463] {\n  min-width: 0;\n}\n.team-row.expanded td.title .button i[data-v-0b6bf463] {\n  -webkit-transform: rotateZ(90deg);\n          transform: rotateZ(90deg);\n}", ""]);
 
 // exports
 
@@ -15485,13 +15472,26 @@ var render = function() {
     _c(
       "div",
       [
-        _vm._m(0),
+        _c("div", { staticClass: "stat" }, [
+          _c("span", { staticClass: "title" }, [_vm._v("Teams")]),
+          _vm._v(" "),
+          _c("span", { staticClass: "square light" }, [
+            _vm._v(_vm._s(_vm.collection.teams.length) + " Teams")
+          ])
+        ]),
         _vm._v(" "),
         _c("div", { staticClass: "stat" }, [
           _c("span", { staticClass: "title" }, [_vm._v("Start date")]),
           _vm._v(" "),
           _c("span", { staticClass: "square light" }, [
-            _vm._v(_vm._s(_vm.startDate))
+            _vm._v(
+              _vm._s(
+                new Date(_vm.collection.start_date).toLocaleDateString(
+                  "en-GB",
+                  { day: "2-digit", month: "2-digit", year: "numeric" }
+                )
+              )
+            )
           ])
         ]),
         _vm._v(" "),
@@ -15499,7 +15499,14 @@ var render = function() {
           _c("span", { staticClass: "title" }, [_vm._v("Deadline")]),
           _vm._v(" "),
           _c("span", { staticClass: "square light" }, [
-            _vm._v(_vm._s(_vm.endDate))
+            _vm._v(
+              _vm._s(
+                new Date(_vm.collection.start_date).toLocaleDateString(
+                  "en-GB",
+                  { day: "2-digit", month: "2-digit", year: "numeric" }
+                )
+              )
+            )
           ])
         ]),
         _vm._v(" "),
@@ -15626,18 +15633,7 @@ var render = function() {
     )
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "stat" }, [
-      _c("span", { staticClass: "title" }, [_vm._v("Teams")]),
-      _vm._v(" "),
-      _c("span", { staticClass: "square light" }, [_vm._v("x Teams")])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -16132,10 +16128,14 @@ var render = function() {
                       _c("span", { staticClass: "square light" }, [
                         _vm._v(
                           _vm._s(
-                            catalogue.start_time != null
-                              ? catalogue.start_time
-                                  .substr(0, catalogue.start_time.indexOf(" "))
-                                  .replace(/\-/g, "/")
+                            catalogue.start_date != null
+                              ? new Date(
+                                  catalogue.start_date
+                                ).toLocaleDateString("en-GB", {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric"
+                                })
                               : "Unset"
                           )
                         )
@@ -16146,10 +16146,15 @@ var render = function() {
                       _c("span", { staticClass: "square light" }, [
                         _vm._v(
                           _vm._s(
-                            catalogue.end_time != null
-                              ? catalogue.end_time
-                                  .substr(0, catalogue.end_time.indexOf(" "))
-                                  .replace(/\-/g, "/")
+                            catalogue.end_date != null
+                              ? new Date(catalogue.end_date).toLocaleDateString(
+                                  "en-GB",
+                                  {
+                                    day: "2-digit",
+                                    month: "2-digit",
+                                    year: "numeric"
+                                  }
+                                )
                               : "Unset"
                           )
                         )
@@ -16159,10 +16164,6 @@ var render = function() {
                     _c("td", { staticClass: "stage" }, [
                       _c("span", { staticClass: "square light stage" }, [
                         _vm._v("STAGE " + _vm._s(catalogue.phase))
-                      ]),
-                      _vm._v(" "),
-                      _c("span", { staticClass: "square light status" }, [
-                        _vm._v("tbd%")
                       ])
                     ])
                   ]),
@@ -17109,7 +17110,40 @@ var render = function() {
         _c(
           "div",
           { staticClass: "items-left" },
-          [_vm.$route.name == "catalogue" ? void 0 : _vm._e()],
+          [
+            _vm.$route.name == "collection" ? void 0 : _vm._e(),
+            _vm._v(" "),
+            _vm.$route.name == "catalogue"
+              ? [
+                  _c(
+                    "router-link",
+                    {
+                      staticClass: "back-link",
+                      attrs: { to: { name: "collection" } }
+                    },
+                    [
+                      _c("span", { staticClass: "circle primary" }, [
+                        _c("i", { staticClass: "far fa-arrow-left" })
+                      ]),
+                      _c("span", [_vm._v("Back to Collections")])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    { staticClass: "breadcrumbs" },
+                    [
+                      _c(
+                        "router-link",
+                        { attrs: { to: { name: "collection" } } },
+                        [_vm._v("Collections")]
+                      )
+                    ],
+                    1
+                  )
+                ]
+              : _vm._e()
+          ],
           2
         ),
         _vm._v(" "),
@@ -17642,7 +17676,7 @@ var render = function() {
                                   _vm._s(
                                     new Date(
                                       _vm.product.delivery_date
-                                    ).toLocaleDateString("da-DK", {
+                                    ).toLocaleDateString("en-GB", {
                                       month: "long",
                                       year: "numeric"
                                     })
@@ -21102,8 +21136,6 @@ var render = function() {
                   _c("catalogueHeader", {
                     attrs: {
                       collection: _vm.collection,
-                      startDate: _vm.startDate,
-                      endDate: _vm.endDate,
                       teamUsers: _vm.teamUsers,
                       productTotals: _vm.productTotals
                     }
@@ -41151,8 +41183,8 @@ function (_Model) {
         title: this.attr(''),
         phase: this.attr(''),
         catalog_id: this.attr(''),
-        start_time: this.attr('unset'),
-        end_time: this.attr('unset'),
+        start_date: this.attr('unset'),
+        end_date: this.attr('unset'),
         teamFiles: this.hasMany(_TeamFile__WEBPACK_IMPORTED_MODULE_1__["default"], 'file_id'),
         products: this.attr(''),
         // products: this.hasMany(Product, 'collection_id'),
