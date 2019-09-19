@@ -8,20 +8,20 @@
                             <span class="square true-square light close clickable" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
                         <div class="controls">
 
-                            <template v-if="authUser.role_id >= 2">
-                                <span v-if="userPermissionLevel == 2" class="square true-square clickable focus-action" :class="[(product[actionScope] != null) ? (product[actionScope].action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 2)">
+                            <template v-if="userPermissionLevel >= 2">
+                                <span v-if="userPermissionLevel == 2" class="square true-square clickable focus-action" :class="[(product[actionScope] != null) ? (product[actionScope].action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': userPermissionLevel == 3}]" @click="toggleInOut(product, 2)">
                                     <i class="far fa-star"></i>
                                 </span>
-                                <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 1)">
+                                <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': userPermissionLevel == 3}]" @click="toggleInOut(product, 1)">
                                 In  <i class="far fa-heart"></i>
                                 </span>
-                                <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {'disabled': authUser.role_id == 3}]"  @click="toggleInOut(product, 0)">
+                                <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {'disabled': userPermissionLevel == 3}]"  @click="toggleInOut(product, 0)">
                                 Out  <i class="far fa-times-circle"></i>
                                 </span>
                             </template>
 
-                            <span class="button primary active wide" @click="onPrevSingle()" :class="[{ disabled: prevProductID < 0}]">Previous style</span>
-                            <span class="button primary active wide" @click="onNextSingle()" :class="[{ disabled: nextProductID < 0}]">Next style</span>
+                            <span class="button primary active wide" @click="onPrevSingle()" :class="[{ disabled: prevProductId == null}]">Previous style</span>
+                            <span class="button primary active wide" @click="onNextSingle()" :class="[{ disabled: nextProductId == null}]">Next style</span>
                         </div>
                     </div>
                     <div class="grid-2 grid-border-between inner">
@@ -159,13 +159,9 @@ import TooltipAlt2 from './TooltipAlt2'
 export default {
     name: 'productSingle',
     props: [
-        // 'product',
         'authUser',
-        'nextProductID',
-        'prevProductID',
         'sticky',
         'visible',
-        'catalogue',
         'loading',
     ],
     components: {
@@ -176,13 +172,12 @@ export default {
         TooltipAlt2,
     },
     data: function () { return {
-            user_id: this.authUser.id,
             currentTab: 'ins',
             currentImgIndex: 0,
     }},
     computed: {
         ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope']),
-        ...mapGetters('entities/products', ['currentProductId', 'currentProduct']),
+        ...mapGetters('entities/products', ['currentProductId', 'currentProduct', 'nextProductId', 'prevProductId']),
         product () {
             return this.currentProduct
         },
@@ -204,8 +199,8 @@ export default {
         },
     },
     methods: {
-        ...mapActions('entities/comments', ['createComment']),
-        ...mapActions('entities/comments', ['markAsFinal']),
+        ...mapActions('entities/comments', ['createComment', 'markAsFinal']),
+        ...mapActions('entities/products', ['showNextProduct', 'showPrevProduct']),
         variantImg (variant) {
             if (!variant.error)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
@@ -220,12 +215,16 @@ export default {
             this.$emit('closeSingle')
         },
         onNextSingle() {
-            this.currentImgIndex = 0
-            this.$emit('nextSingle')
+            if (this.nextProductId != null) {
+                this.currentImgIndex = 0
+                this.showNextProduct()
+            }
         },
         onPrevSingle() {
-            this.currentImgIndex = 0
-            this.$emit('prevSingle')
+            if (this.prevProductId != null) {
+                this.currentImgIndex = 0
+                this.showPrevProduct()
+            }
         },
         toggleInOut(product, action) {
             this.$emit('onToggleInOut', product, action)
@@ -247,14 +246,6 @@ export default {
                 this.currentImgIndex --
             }
         },
-        // clickOutsideEvent(event) {
-        //     const thisElement = document.querySelector('.product-single')
-        //     // Check if the clicked element is outside component
-        //     if (!(thisElement == event.target || thisElement.contains(event.target))) {
-        //         if ( !event.target.classList.contains('bind-view-single') )
-        //             this.onCloseSingle()
-        //     }
-        // },
         hotkeyHandler(event) {
             const key = event.code
             if (key == 'Escape')
@@ -285,13 +276,9 @@ export default {
         }
     },
     created() {
-        // Listen for clicks outside component
-        // document.body.addEventListener('click', this.clickOutsideEvent)
         document.body.addEventListener('keydown', this.hotkeyHandler)
     },
     destroyed() {
-        // Remove click listener
-        // document.body.removeEventListener('click', this.clickOutsideEvent)
         document.body.removeEventListener('keydown', this.hotkeyHandler)
     }
 }

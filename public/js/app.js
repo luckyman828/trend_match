@@ -8433,8 +8433,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'productSingle',
-  props: [// 'product',
-  'authUser', 'nextProductID', 'prevProductID', 'sticky', 'visible', 'catalogue', 'loading'],
+  props: ['authUser', 'sticky', 'visible', 'loading'],
   components: {
     ProductSingleComments: _ProductSingleComments__WEBPACK_IMPORTED_MODULE_1__["default"],
     Loader: _Loader__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -8444,12 +8443,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
-      user_id: this.authUser.id,
       currentTab: 'ins',
       currentImgIndex: 0
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/products', ['currentProductId', 'currentProduct']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/products', ['currentProductId', 'currentProduct', 'nextProductId', 'prevProductId']), {
     product: function product() {
       return this.currentProduct;
     },
@@ -8469,7 +8467,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else return this.product[this.currentTab];
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['createComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['markAsFinal']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['createComment', 'markAsFinal']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/products', ['showNextProduct', 'showPrevProduct']), {
     variantImg: function variantImg(variant) {
       if (!variant.error) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
     },
@@ -8482,12 +8480,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$emit('closeSingle');
     },
     onNextSingle: function onNextSingle() {
-      this.currentImgIndex = 0;
-      this.$emit('nextSingle');
+      if (this.nextProductId != null) {
+        this.currentImgIndex = 0;
+        this.showNextProduct();
+      }
     },
     onPrevSingle: function onPrevSingle() {
-      this.currentImgIndex = 0;
-      this.$emit('prevSingle');
+      if (this.prevProductId != null) {
+        this.currentImgIndex = 0;
+        this.showPrevProduct();
+      }
     },
     toggleInOut: function toggleInOut(product, action) {
       this.$emit('onToggleInOut', product, action);
@@ -8509,14 +8511,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.currentImgIndex--;
       }
     },
-    // clickOutsideEvent(event) {
-    //     const thisElement = document.querySelector('.product-single')
-    //     // Check if the clicked element is outside component
-    //     if (!(thisElement == event.target || thisElement.contains(event.target))) {
-    //         if ( !event.target.classList.contains('bind-view-single') )
-    //             this.onCloseSingle()
-    //     }
-    // },
     hotkeyHandler: function hotkeyHandler(event) {
       var key = event.code;
       if (key == 'Escape') this.onCloseSingle(); // Only do these if the current target is not the comment box
@@ -8539,13 +8533,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   created: function created() {
-    // Listen for clicks outside component
-    // document.body.addEventListener('click', this.clickOutsideEvent)
     document.body.addEventListener('keydown', this.hotkeyHandler);
   },
   destroyed: function destroyed() {
-    // Remove click listener
-    // document.body.removeEventListener('click', this.clickOutsideEvent)
     document.body.removeEventListener('keydown', this.hotkeyHandler);
   }
 });
@@ -9056,22 +9046,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/productFinalActions', ['loadingFinalActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']), {
     loadingSingle: function loadingSingle() {
-      var loading = false; // if (this.teamUsers == null) {
-      //     loading = true
-      // }
-      // else {
-      //     if (this.teamUsers[0] == null)
-      //         loading = true
-      //     else {
-      //         if (this.teamUsers[0].teams == null)
-      //             loading = true
-      //     }
-      // }
-
+      var loading = false;
       return loading;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction', 'deleteAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['deleteTeamProduct', 'updateTeamProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['deletePhaseProduct', 'updatePhaseProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['setCurrentProductId']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction', 'deleteAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['deleteTeamProduct', 'updateTeamProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['deletePhaseProduct', 'updatePhaseProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['setCurrentProductId', 'setAvailableProductIds']), {
     productImg: function productImg(variant) {
       if (!variant.error) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
     },
@@ -9154,9 +9133,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     onViewSingle: function onViewSingle(id) {
-      // Emit event to parent
-      // this.$emit('viewAsSingle', id)
       this.setCurrentProductId(id);
+      this.setAvailableProductIds(this.products); // Save array of available products
+
       this.showSingle = true;
       if (document.getElementById('main').scrollTop < 130) document.getElementById('main').scrollTo(0, 130);
     },
@@ -9231,13 +9210,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$emit('onSortBy', key, method);
     },
     onCloseSingle: function onCloseSingle() {
-      this.showSingle = false; // this.$emit('closeSingle', -1)
-    },
-    onNextSingle: function onNextSingle() {
-      this.$emit('nextSingle');
-    },
-    onPrevSingle: function onPrevSingle() {
-      this.$emit('prevSingle');
+      this.showSingle = false;
     },
     resetSelected: function resetSelected() {
       document.querySelectorAll('.product-row input[type=checkbox]').forEach(function (input) {
@@ -10735,15 +10708,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
-      singleProductID: -1,
       currentProductFilter: 'overview',
       selectedProductIDs: [],
       selectedCategoryIDs: [],
       selectedCategories: [],
       sortBy: 'datasource_id',
       sortAsc: true,
-      // teamFilterId: -1,
-      // catalogueId: '',
       unsub: '',
       test: '',
       productsTest: []
@@ -11014,90 +10984,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       return sortMethod;
     },
-    // productsSorted() {
-    //     const products = this.productsFiltered
-    //     let key = this.sortBy
-    //     let sortAsc = this.sortAsc
-    //     const sortMethod = this.sortMethod
-    //     const dataSorted = products.sort((a, b) => {
-    //         if (sortMethod == 'action') {
-    //             if (a[key] != null) {
-    //                 if (b[key] != null) {
-    //                     // If A and B has a key
-    //                     if (sortAsc)
-    //                         return (a[key].action > b[key].action) ? 1 : -1
-    //                         else return (a[key].action < b[key].action) ? 1 : -1
-    //                 } else {
-    //                     // If ONLY A has a key
-    //                     if (sortAsc)
-    //                         return 1
-    //                         else return -1
-    //                 }
-    //             } else if (b[key] != null) {
-    //                 // If ONLY B has a key
-    //                 if (sortAsc)
-    //                     return -1
-    //                     else return 1
-    //             } else {
-    //                 // Neither A nor B has a key
-    //                 return 0
-    //             }
-    //         }
-    //         else if ( sortMethod == 'focus' ) {
-    //             // First sort by focus
-    //             if ( a[key].length != b[key].length ) {
-    //                 if (sortAsc)
-    //                     return (a[key].length > b[key].length) ? 1 : -1
-    //                     else return (a[key].length < b[key].length) ? 1 : -1
-    //             // Then sort by ins
-    //             } else if ( a.ins.length == b.ins.length ) {
-    //                     return 0 
-    //             } else {
-    //                 if (sortAsc)
-    //                     return (a.ins.length > b.ins.length) ? 1 : -1
-    //                     else return (a.ins.length < b.ins.length) ? 1 : -1 
-    //             }
-    //         }
-    //         else if ( sortMethod == 'in' ) {
-    //             // First sort by focus
-    //             const aInLength = a[key].length + a.focus.length
-    //             const bInLength = b[key].length + b.focus.length
-    //             if ( aInLength != bInLength ) {
-    //                 if (sortAsc)
-    //                     return (aInLength > bInLength) ? 1 : -1
-    //                     else return (aInLength < bInLength) ? 1 : -1
-    //             // Then sort by focus
-    //             } else if ( a.focus.length == b.focus.length ) {
-    //                     return 0 
-    //             } else {
-    //                 if (sortAsc)
-    //                     return (a.focus.length > b.focus.length) ? 1 : -1
-    //                     else return (a.focus.length < b.focus.length) ? 1 : -1 
-    //             }
-    //         }
-    //         else {
-    //             if ( sortMethod == 'object' ) {
-    //                 // Sort by key length
-    //                 if ( a[key].length == b[key].length ) {
-    //                     return 0
-    //                 } else if (sortAsc) {
-    //                     return (a[key].length > b[key].length) ? 1 : -1
-    //                 }
-    //                 else return (a[key].length < b[key].length) ? 1 : -1
-    //             }
-    //             // If the keys aren't objects, finalActions or strings - sort by the key
-    //             else {
-    //                 if ( a[key] == b[key] ) {
-    //                     return 0
-    //                 } else if (sortAsc) {
-    //                     return (a[key] > b[key]) ? 1 : -1
-    //                 }
-    //                 else return (a[key] < b[key]) ? 1 : -1
-    //             }
-    //         }
-    //     })
-    //     return dataSorted
-    // },
     selectedProducts: function selectedProducts() {
       var products = this.products;
       var selectedProducts = [];
@@ -11142,53 +11028,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       return data;
     },
-    singleProductToShow: function singleProductToShow() {
-      var _this6 = this;
-
-      var productToReturn = this.singleProductID != -1 ? this.products.find(function (product) {
-        return product.id == _this6.singleProductID;
-      }) : {};
-      return productToReturn;
-    },
-    nextSingleProductID: function nextSingleProductID() {
-      var _this7 = this;
-
-      // const products = this.productsSorted
-      var products = this.productsFiltered; // Check if we have a single product
-
-      if (this.singleProductID != -1) {
-        var currentProductIndex = products.findIndex(function (product) {
-          return product.id == _this7.singleProductID;
-        }); // Check that the current single product is not the last product
-
-        if (currentProductIndex + 1 < products.length) return products[currentProductIndex + 1].id;else return -1;
-      } else return -1;
-    },
-    prevSingleProductID: function prevSingleProductID() {
-      var _this8 = this;
-
-      // const products = this.productsSorted
-      var products = this.productsFiltered; // Check if we have a single product
-
-      if (this.singleProductID != -1) {
-        var currentProductIndex = products.findIndex(function (product) {
-          return product.id == _this8.singleProductID;
-        }); // Check that the current single product is not the first product
-
-        if (currentProductIndex != 0) return products[currentProductIndex - 1].id;else return -1;
-      } else return -1;
-    },
     teamUsers: function teamUsers() {
-      var _this9 = this;
+      var _this6 = this;
 
       var usersToReturn = [];
 
       if (this.currentTeamId > 0) {
         var thisTeam = this.teams.find(function (team) {
-          return team.id == _this9.currentTeamId;
+          return team.id == _this6.currentTeamId;
         });
         if (thisTeam) thisTeam.users.forEach(function (user) {
-          var fileUser = _this9.collection.users.find(function (x) {
+          var fileUser = _this6.collection.users.find(function (x) {
             return x.id == user.id;
           });
 
@@ -11258,18 +11108,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentFileId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']), {
-    setSingleProduct: function setSingleProduct(index) {
-      this.singleProductID = index;
-    },
-    closeSingleProduct: function closeSingleProduct() {
-      this.singleProductID = -1;
-    },
-    setNextSingle: function setNextSingle() {
-      this.singleProductID = this.nextSingleProductID;
-    },
-    setPrevSingle: function setPrevSingle() {
-      this.singleProductID = this.prevSingleProductID;
-    },
     setProductFilter: function setProductFilter(filter) {
       this.currentProductFilter = filter;
       this.clearSelectedProducts();
@@ -11297,7 +11135,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this10 = this;
+      var _this7 = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
@@ -11307,7 +11145,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
-        var thisProduct = _this10.products.find(function (x) {
+        var thisProduct = _this7.products.find(function (x) {
           return x.id == product;
         });
 
@@ -11494,7 +11332,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   created: function created() {
-    var _this11 = this;
+    var _this8 = this;
 
     // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
     var routeFileId = this.$route.params.catalogueId;
@@ -11504,7 +11342,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     this.unsub = this.$store.subscribe(function (mutation, state) {
       if (mutation.type == 'persist/setCurrentWorkspace') {
-        _this11.initRequiresWorkspace();
+        _this8.initRequiresWorkspace();
       }
     });
   },
@@ -17271,7 +17109,7 @@ var render = function() {
                           "div",
                           { staticClass: "controls" },
                           [
-                            _vm.authUser.role_id >= 2
+                            _vm.userPermissionLevel >= 2
                               ? [
                                   _vm.userPermissionLevel == 2
                                     ? _c(
@@ -17288,7 +17126,7 @@ var render = function() {
                                               : "ghost primary-hover",
                                             {
                                               disabled:
-                                                _vm.authUser.role_id == 3
+                                                _vm.userPermissionLevel == 3
                                             }
                                           ],
                                           on: {
@@ -17319,7 +17157,9 @@ var render = function() {
                                             ? "active green"
                                             : "ghost green-hover"
                                           : "ghost green-hover",
-                                        { disabled: _vm.authUser.role_id == 3 }
+                                        {
+                                          disabled: _vm.userPermissionLevel == 3
+                                        }
                                       ],
                                       on: {
                                         click: function($event) {
@@ -17346,7 +17186,9 @@ var render = function() {
                                             ? "active red"
                                             : "ghost red-hover"
                                           : "ghost red-hover",
-                                        { disabled: _vm.authUser.role_id == 3 }
+                                        {
+                                          disabled: _vm.userPermissionLevel == 3
+                                        }
                                       ],
                                       on: {
                                         click: function($event) {
@@ -17370,7 +17212,9 @@ var render = function() {
                               "span",
                               {
                                 staticClass: "button primary active wide",
-                                class: [{ disabled: _vm.prevProductID < 0 }],
+                                class: [
+                                  { disabled: _vm.prevProductId == null }
+                                ],
                                 on: {
                                   click: function($event) {
                                     return _vm.onPrevSingle()
@@ -17384,7 +17228,9 @@ var render = function() {
                               "span",
                               {
                                 staticClass: "button primary active wide",
-                                class: [{ disabled: _vm.nextProductID < 0 }],
+                                class: [
+                                  { disabled: _vm.nextProductId == null }
+                                ],
                                 on: {
                                   click: function($event) {
                                     return _vm.onNextSingle()
@@ -18383,19 +18229,10 @@ var render = function() {
         attrs: {
           loading: _vm.loadingSingle,
           visible: _vm.showSingle,
-          catalogue: _vm.collection,
           sticky: _vm.sticky,
-          product: _vm.singleProductToShow,
-          nextProductID: _vm.nextSingleProductID,
-          prevProductID: _vm.prevSingleProductID,
           authUser: _vm.authUser
         },
-        on: {
-          closeSingle: _vm.onCloseSingle,
-          nextSingle: _vm.onNextSingle,
-          prevSingle: _vm.onPrevSingle,
-          onToggleInOut: _vm.toggleInOut
-        }
+        on: { closeSingle: _vm.onCloseSingle, onToggleInOut: _vm.toggleInOut }
       }),
       _vm._v(" "),
       _c(
@@ -21351,9 +21188,6 @@ var render = function() {
                       sortBy: _vm.sortBy,
                       sortAsc: _vm.sortAsc,
                       teams: _vm.collection.teams,
-                      singleProductToShow: _vm.singleProductToShow,
-                      nextSingleProductID: _vm.nextSingleProductID,
-                      prevSingleProductID: _vm.prevSingleProductID,
                       totalProductCount: _vm.products.length,
                       selectedCount: _vm.selectedProducts.length,
                       collection: _vm.collection,
@@ -21363,11 +21197,7 @@ var render = function() {
                     },
                     on: {
                       onSortBy: _vm.onSortBy,
-                      viewAsSingle: _vm.setSingleProduct,
-                      onSelect: _vm.setSelectedProduct,
-                      closeSingle: _vm.setSingleProduct,
-                      nextSingle: _vm.setNextSingle,
-                      prevSingle: _vm.setPrevSingle
+                      onSelect: _vm.setSelectedProduct
                     }
                   }),
                   _vm._v(" "),
@@ -42876,7 +42706,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   getters: {
     loadingCollections: function loadingCollections(state) {
-      return state.loading; //comment 
+      return state.loading; //comment
     },
     files: function files(state, getters, rootState, rootGetters) {
       if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
@@ -42908,7 +42738,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               user.products = file.products.length;
 
               if (user.actions.length > 0) {
-                user.progressRaw = Math.round(user.actions.length / file.products.length * 100 * 1e0) / 1e0;
+                user.progressRaw = Math.round(user.actions.length / file.products.length * 100 * 1) / 1;
                 user.progress = "".concat(user.progressRaw, "%");
               } else {
                 user.progressRaw = 0;
@@ -42918,7 +42748,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           }); // Calculate progress for every TEAM
 
           teamsCopy.forEach(function (team) {
-            team.progressRaw = Math.round(team.actions.length / file.products.length * 100 * 1e0) / 1e0;
+            team.progressRaw = Math.round(team.actions.length / file.products.length * 100 * 1) / 1;
             team.progress = "".concat(team.progressRaw, "%");
           });
           file.teams = teamsCopy; // Sort teams by progress
@@ -44381,6 +44211,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _models_Product__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/Product */ "./resources/js/store/models/Product.js");
 
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -44392,7 +44224,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   state: {
     loading: true,
     currentSingleProductId: -1,
-    currentProductId: null
+    currentProductId: null,
+    availableProductIds: []
   },
   getters: {
     loadingProducts: function loadingProducts(state) {
@@ -44570,10 +44403,37 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         return data;
       }
     },
+    availableProductIds: function availableProductIds(state) {
+      return state.availableProductIds;
+    },
     currentProduct: function currentProduct(state, getters, rootState, rootGetters) {
       return state.currentProductId != null && getters.products != null ? getters.products.find(function (x) {
         return x.id == state.currentProductId;
       }) : null;
+    },
+    nextProductId: function nextProductId(state, getters, rootState, rootGetters) {
+      if (state.currentProductId != null && getters.availableProductIds.length > 0) {
+        var productIds = getters.availableProductIds;
+        var currentProductIndex = productIds.findIndex(function (x) {
+          return x == state.currentProductId;
+        });
+
+        if (currentProductIndex < productIds.length - 1) {
+          return productIds[currentProductIndex + 1];
+        }
+      }
+    },
+    prevProductId: function prevProductId(state, getters, rootState, rootGetters) {
+      if (state.currentProductId != null && getters.availableProductIds.length > 0) {
+        var productIds = getters.availableProductIds;
+        var currentProductIndex = productIds.findIndex(function (x) {
+          return x == state.currentProductId;
+        });
+
+        if (currentProductIndex != 0) {
+          return productIds[currentProductIndex - 1];
+        }
+      }
     }
   },
   actions: {
@@ -44648,17 +44508,38 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     setCurrentProductId: function setCurrentProductId(_ref2, id) {
       var commit = _ref2.commit;
       commit('setCurrentProductId', id);
+    },
+    setAvailableProductIds: function setAvailableProductIds(_ref3, products) {
+      var commit = _ref3.commit;
+      commit('setAvailableProductIds', products);
+    },
+    showNextProduct: function showNextProduct(_ref4) {
+      var commit = _ref4.commit,
+          getters = _ref4.getters;
+      commit('setCurrentProductId', getters.nextProductId);
+    },
+    showPrevProduct: function showPrevProduct(_ref5) {
+      var commit = _ref5.commit,
+          getters = _ref5.getters;
+      commit('setCurrentProductId', getters.prevProductId);
     }
   },
-  mutations: {
+  mutations: _defineProperty({
     //Set the loading status of the app
     setLoading: function setLoading(state, bool) {
       state.loading = bool;
     },
     setCurrentProductId: function setCurrentProductId(state, id) {
       state.currentProductId = id;
+    },
+    setAvailableProductIds: function setAvailableProductIds(state, products) {
+      state.availableProductIds = products.map(function (x) {
+        return x.id;
+      });
     }
-  }
+  }, "setCurrentProductId", function setCurrentProductId(state, id) {
+    state.currentProductId = id;
+  })
 });
 
 /***/ }),

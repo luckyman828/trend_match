@@ -45,7 +45,7 @@
                     </Dropdown>
                 </div>
                 <product-tabs :productTotals="productTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
-                <products ref="productsComponent" :teamFilterId="currentTeamId" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="collection.teams" :singleProductToShow="singleProductToShow" :nextSingleProductID="nextSingleProductID" :prevSingleProductID="prevSingleProductID" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @viewAsSingle="setSingleProduct" @onSelect="setSelectedProduct" @closeSingle="setSingleProduct" @nextSingle="setNextSingle" @prevSingle="setPrevSingle"/>
+                <products ref="productsComponent" :teamFilterId="currentTeamId" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="collection.teams" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @onSelect="setSelectedProduct"/>
                 <SelectedController :totalCount="productsFiltered.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction" @onClearSelection="clearSelectedProducts"/>
             </template>
             <template v-if="loadingCollections">
@@ -102,15 +102,12 @@ export default{
         RadioButtons,
     },
     data: function () { return {
-        singleProductID: -1,
         currentProductFilter: 'overview',
         selectedProductIDs: [],
         selectedCategoryIDs: [],
         selectedCategories: [],
         sortBy: 'datasource_id',
         sortAsc: true,
-        // teamFilterId: -1,
-        // catalogueId: '',
         unsub: '',
         test: '',
         productsTest: [],
@@ -384,105 +381,6 @@ export default{
             }
             return sortMethod
         },
-        // productsSorted() {
-        //     const products = this.productsFiltered
-        //     let key = this.sortBy
-        //     let sortAsc = this.sortAsc
-        //     const sortMethod = this.sortMethod
-        //     const dataSorted = products.sort((a, b) => {
-
-        //         if (sortMethod == 'action') {
-        //             if (a[key] != null) {
-        //                 if (b[key] != null) {
-        //                     // If A and B has a key
-        //                     if (sortAsc)
-        //                         return (a[key].action > b[key].action) ? 1 : -1
-        //                         else return (a[key].action < b[key].action) ? 1 : -1
-        //                 } else {
-        //                     // If ONLY A has a key
-        //                     if (sortAsc)
-        //                         return 1
-        //                         else return -1
-        //                 }
-        //             } else if (b[key] != null) {
-        //                 // If ONLY B has a key
-        //                 if (sortAsc)
-        //                     return -1
-        //                     else return 1
-        //             } else {
-        //                 // Neither A nor B has a key
-        //                 return 0
-        //             }
-        //         }
-
-        //         else if ( sortMethod == 'focus' ) {
-        //             // First sort by focus
-        //             if ( a[key].length != b[key].length ) {
-
-        //                 if (sortAsc)
-        //                     return (a[key].length > b[key].length) ? 1 : -1
-        //                     else return (a[key].length < b[key].length) ? 1 : -1
-
-        //             // Then sort by ins
-        //             } else if ( a.ins.length == b.ins.length ) {
-        //                     return 0 
-        //             } else {
-        //                 if (sortAsc)
-        //                     return (a.ins.length > b.ins.length) ? 1 : -1
-        //                     else return (a.ins.length < b.ins.length) ? 1 : -1 
-        //             }
-        //         }
-
-        //         else if ( sortMethod == 'in' ) {
-        //             // First sort by focus
-        //             const aInLength = a[key].length + a.focus.length
-        //             const bInLength = b[key].length + b.focus.length
-
-        //             if ( aInLength != bInLength ) {
-
-        //                 if (sortAsc)
-        //                     return (aInLength > bInLength) ? 1 : -1
-        //                     else return (aInLength < bInLength) ? 1 : -1
-
-        //             // Then sort by focus
-        //             } else if ( a.focus.length == b.focus.length ) {
-        //                     return 0 
-        //             } else {
-        //                 if (sortAsc)
-        //                     return (a.focus.length > b.focus.length) ? 1 : -1
-        //                     else return (a.focus.length < b.focus.length) ? 1 : -1 
-        //             }
-        //         }
-                
-        //         else {
-
-        //             if ( sortMethod == 'object' ) {
-
-        //                 // Sort by key length
-        //                 if ( a[key].length == b[key].length ) {
-        //                     return 0
-        //                 } else if (sortAsc) {
-        //                     return (a[key].length > b[key].length) ? 1 : -1
-        //                 }
-        //                 else return (a[key].length < b[key].length) ? 1 : -1
-
-        //             }
-
-        //             // If the keys aren't objects, finalActions or strings - sort by the key
-        //             else {
-
-        //                 if ( a[key] == b[key] ) {
-        //                     return 0
-        //                 } else if (sortAsc) {
-        //                     return (a[key] > b[key]) ? 1 : -1
-        //                 }
-        //                 else return (a[key] < b[key]) ? 1 : -1
-        //             }
-
-        //         }
-        //     })
-        //     return dataSorted
-        // },
         selectedProducts() {
             const products = this.products
             const selectedProducts = []
@@ -528,38 +426,6 @@ export default{
                 else data.final.nds ++
             })
             return data
-        },
-        singleProductToShow() {
-            const productToReturn = (this.singleProductID != -1) ? this.products.find(product => product.id == this.singleProductID) : {}
-            return productToReturn
-        },
-        nextSingleProductID() {
-            // const products = this.productsSorted
-            const products = this.productsFiltered
-
-            // Check if we have a single product
-            if (this.singleProductID != -1) {
-                const currentProductIndex = products.findIndex(product => product.id == this.singleProductID)
-                // Check that the current single product is not the last product
-                if (currentProductIndex + 1 < products.length)
-                    return products[currentProductIndex + 1].id
-                    else return -1
-            }
-            else return -1
-        },
-        prevSingleProductID() {
-            // const products = this.productsSorted
-            const products = this.productsFiltered
-
-            // Check if we have a single product
-            if (this.singleProductID != -1) {
-                const currentProductIndex = products.findIndex(product => product.id == this.singleProductID)
-                // Check that the current single product is not the first product
-                if (currentProductIndex != 0)
-                    return products[currentProductIndex - 1].id
-                    else return -1
-            }
-            else return -1
         },
         teamUsers () {
             let usersToReturn = []
@@ -652,18 +518,6 @@ export default{
         ...mapActions('persist', ['setCurrentTeam', 'setCurrentFileId']),
         ...mapActions('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']),
         ...mapActions('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']),
-        setSingleProduct(index) {
-            this.singleProductID = index
-        },
-        closeSingleProduct() {
-            this.singleProductID = -1
-        },
-        setNextSingle() {
-            this.singleProductID = this.nextSingleProductID
-        },
-        setPrevSingle() {
-            this.singleProductID = this.prevSingleProductID
-        },
         setProductFilter(filter) {
             this.currentProductFilter = filter
             this.clearSelectedProducts()

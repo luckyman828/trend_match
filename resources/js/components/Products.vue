@@ -1,7 +1,7 @@
 <template>
     <div class="products card" :class="{sticky: sticky}">
         <div class="scroll-bg"></div>
-        <product-single :loading="loadingSingle" :visible="showSingle" :catalogue="collection" :sticky="sticky" :product="singleProductToShow" :nextProductID="nextSingleProductID" :prevProductID="prevSingleProductID" :authUser="authUser" @closeSingle="onCloseSingle" @nextSingle="onNextSingle" @prevSingle="onPrevSingle" @onToggleInOut="toggleInOut"/>
+        <product-single :loading="loadingSingle" :visible="showSingle" :sticky="sticky" :authUser="authUser" @closeSingle="onCloseSingle" @onToggleInOut="toggleInOut"/>
         <div class="flex-table" :class="{disabled: showSingle}">
             <div class="header-row flex-table-row">
                 <div class="product-totals">
@@ -175,17 +175,6 @@ export default {
         ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']),
         loadingSingle() {
             let loading = false
-            // if (this.teamUsers == null) {
-            //     loading = true
-            // }
-            // else {
-            //     if (this.teamUsers[0] == null)
-            //         loading = true
-            //     else {
-            //         if (this.teamUsers[0].teams == null)
-            //             loading = true
-            //     }
-            // }
             return loading
         },
     },
@@ -193,7 +182,7 @@ export default {
         ...mapActions('entities/actions', ['updateAction', 'deleteAction']),
         ...mapActions('entities/teamProducts', ['deleteTeamProduct', 'updateTeamProduct']),
         ...mapActions('entities/phaseProducts', ['deletePhaseProduct', 'updatePhaseProduct']),
-        ...mapActions('entities/products', ['setCurrentProductId']),
+        ...mapActions('entities/products', ['setCurrentProductId', 'setAvailableProductIds']),
         productImg(variant) {
             if (!variant.error)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
@@ -245,9 +234,8 @@ export default {
             }
         },
         onViewSingle(id) {
-            // Emit event to parent
-            // this.$emit('viewAsSingle', id)
             this.setCurrentProductId(id)
+            this.setAvailableProductIds(this.products) // Save array of available products
             this.showSingle = true;
             if (document.getElementById('main').scrollTop < 130)
                 document.getElementById('main').scrollTo(0, 130)
@@ -327,13 +315,6 @@ export default {
         },
         onCloseSingle() {
             this.showSingle = false;
-            // this.$emit('closeSingle', -1)
-        },
-        onNextSingle() {
-            this.$emit('nextSingle')
-        },
-        onPrevSingle() {
-            this.$emit('prevSingle')
         },
         resetSelected() {
             document.querySelectorAll('.product-row input[type=checkbox]').forEach(input => {
