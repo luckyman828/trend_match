@@ -15659,7 +15659,7 @@ var render = function() {
         _vm._v(" "),
         _vm.userPermissionLevel >= 2
           ? [
-              _vm.actionScope == "phaseAction" && _vm.comment.phaseComment
+              _vm.actionScope == "phaseAction" && _vm.comment.phase_final
                 ? _c("TooltipAlt2", { attrs: { body: "Remark" } }, [
                     _c(
                       "span",
@@ -15670,7 +15670,7 @@ var render = function() {
                       [_c("i", { staticClass: "far fa-comment-check" })]
                     )
                   ])
-                : _vm.actionScope == "teamAction" && _vm.comment.teamComment
+                : _vm.actionScope == "teamAction" && _vm.comment.team_final
                 ? _c("TooltipAlt2", { attrs: { body: "Remark" } }, [
                     _c(
                       "span",
