@@ -78,7 +78,8 @@ export default {
                     const comments = product.comments
 
                     comments.forEach(comment => {
-                        comment.teamVotes = [{ id: 0, title: 'No team', votes: 0 }]
+                        comment.teamVotes = []
+                        let noTeamExists = false
                         comment.votes.forEach(vote => {
                             if (vote.user != null) {
                                 if (vote.user.teams.length > 0) {
@@ -95,9 +96,21 @@ export default {
                                         found.votes++
                                     }
                                 } else {
+                                    if (!noTeamExists) {
+                                        comment.teamVotes.unshift({ id: 0, title: 'No team', votes: 0 })
+                                        noTeamExists = true
+                                    }
                                     comment.teamVotes[0].votes++
                                 }
                             }
+                        })
+                    })
+                    // Scope votes to current team filter
+                    comments.forEach(comment => {
+                        comment.votesScoped = []
+                        comment.votes.forEach(vote => {
+                            const found = teamUsers.find(x => x.id == vote.user.id)
+                            if (found) comment.votesScoped.push(vote)
                         })
                     })
 

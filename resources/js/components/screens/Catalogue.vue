@@ -118,7 +118,7 @@ export default{
         }
     },
     computed: {
-        ...mapGetters('entities/products', ['loadingProducts']),
+        ...mapGetters('entities/products', ['loadingProducts', 'products']),
         ...mapGetters('entities/actions', ['loadingActions']),
         ...mapGetters('entities/comments', ['loadingComments']),
         ...mapGetters('entities/collections', ['loadingCollections', 'files']),
@@ -154,169 +154,169 @@ export default{
             // return Collection.query().with('teams').find(this.currentFileId)
             return this.files.find(x => x.id == this.currentFileId)
         },
-        products () {
-            const products = Product.query().with(['actions.user.teams']).with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team']).with('productFinalAction')
-            .with('teamActions.team').with('phaseActions').all()
-            // const totalUsers = this.teamUsers
-            // const userId = this.authUser.id
-            const teamFilterId = this.currentTeamId
-            const data = []
-            products.forEach(product => {
-                product.color_variants = JSON.parse(product.color_variants)
-                product.prices = JSON.parse(product.prices)
-                product.ins = []
-                product.outs = []
-                product.focus = []
-                product.nds = []
-                product.userAction = product.actions.find(x => x.user_id == this.authUser.id)
-                product.commentsScoped = []
-                product.teamAction = product.teamActions.find(x => x.team_id == this.currentTeamId)
-                product.phaseAction = product.phaseActions.find(x => x.phase_id == 1)
+        // products () {
+        //     const products = Product.query().with(['actions.user.teams']).with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team']).with('productFinalAction')
+        //     .with('teamActions.team').with('phaseActions').all()
+        //     // const totalUsers = this.teamUsers
+        //     // const userId = this.authUser.id
+        //     const teamFilterId = this.currentTeamId
+        //     const data = []
+        //     products.forEach(product => {
+        //         product.color_variants = JSON.parse(product.color_variants)
+        //         product.prices = JSON.parse(product.prices)
+        //         product.ins = []
+        //         product.outs = []
+        //         product.focus = []
+        //         product.nds = []
+        //         product.userAction = product.actions.find(x => x.user_id == this.authUser.id)
+        //         product.commentsScoped = []
+        //         product.teamAction = product.teamActions.find(x => x.team_id == this.currentTeamId)
+        //         product.phaseAction = product.phaseActions.find(x => x.phase_id == 1)
 
-                // Find the correct price
-                // Check if the chosen currency exists on the product
-                if (product.prices != null) {
-                    let workspacePrices = null
-                    let teamPrices = null
-                    if (this.currentWorkspace.currency != null)
-                        workspacePrices = product.prices.find(x => x.currency == this.currentWorkspace.currency)
-                    if (this.currentTeam)
-                        if (this.currentTeam.currency != null)
-                            teamPrices = product.prices.find(x => x.currency == this.currentTeam.currency)
+        //         // Find the correct price
+        //         // Check if the chosen currency exists on the product
+        //         if (product.prices != null) {
+        //             let workspacePrices = null
+        //             let teamPrices = null
+        //             if (this.currentWorkspace.currency != null)
+        //                 workspacePrices = product.prices.find(x => x.currency == this.currentWorkspace.currency)
+        //             if (this.currentTeam)
+        //                 if (this.currentTeam.currency != null)
+        //                     teamPrices = product.prices.find(x => x.currency == this.currentTeam.currency)
 
-                    if ( this.userPermissionLevel <= 4 ) {
-                    // Use team currency for low level members
-                        if (teamPrices != null)
-                            product.userPrices = teamPrices
-                        else if (workspacePrices != null)
-                            product.userPrices = workspacePrices
-                        else product.userPrices = product.prices[0]
-                    } else {
-                    // Use workspace currency for high level members
-                        if (workspacePrices != null)
-                            product.userPrices = workspacePrices
-                        else product.userPrices = product.prices[0]
-                    }
-                }
+        //             if ( this.userPermissionLevel <= 4 ) {
+        //             // Use team currency for low level members
+        //                 if (teamPrices != null)
+        //                     product.userPrices = teamPrices
+        //                 else if (workspacePrices != null)
+        //                     product.userPrices = workspacePrices
+        //                 else product.userPrices = product.prices[0]
+        //             } else {
+        //             // Use workspace currency for high level members
+        //                 if (workspacePrices != null)
+        //                     product.userPrices = workspacePrices
+        //                 else product.userPrices = product.prices[0]
+        //             }
+        //         }
 
-                const comments = product.comments
+        //         const comments = product.comments
 
-                comments.forEach(comment => {
-                    comment.teamVotes = [{id: 0, title: 'No team', votes: 0}]
-                    comment.votes.forEach(vote => {
-                        if (vote.user != null) {
-                            if (vote.user.teams.length > 0) {
-                                const found = (comment.teamVotes.find(x => x.title == vote.user.teams[0].title))
-                                if (!found) {
-                                    let voteTeam = vote.user.teams[0]
-                                    let teamToPush = {id: voteTeam.id, title: voteTeam.title, votes: 1}
-                                    comment.teamVotes.push(teamToPush)
-                                } else {
-                                    found.votes ++
-                                }
+        //         comments.forEach(comment => {
+        //             comment.teamVotes = [{id: 0, title: 'No team', votes: 0}]
+        //             comment.votes.forEach(vote => {
+        //                 if (vote.user != null) {
+        //                     if (vote.user.teams.length > 0) {
+        //                         const found = (comment.teamVotes.find(x => x.title == vote.user.teams[0].title))
+        //                         if (!found) {
+        //                             let voteTeam = vote.user.teams[0]
+        //                             let teamToPush = {id: voteTeam.id, title: voteTeam.title, votes: 1}
+        //                             comment.teamVotes.push(teamToPush)
+        //                         } else {
+        //                             found.votes ++
+        //                         }
         
-                            } else {
-                                comment.teamVotes[0].votes ++
-                            }
-                        }
-                    })
-                })
+        //                     } else {
+        //                         comment.teamVotes[0].votes ++
+        //                     }
+        //                 }
+        //             })
+        //         })
 
-                // Scope comments to current teamFilter
-                let commentsScoped = []
+        //         // Scope comments to current teamFilter
+        //         let commentsScoped = []
 
-                // If the user is a buyer function, only return global comments
-                if (this.userPermissionLevel == this.viewAdminPermissionLevel) {
-                    comments.forEach(comment => {
-                        if (comment.team_id == 0)
-                            product.commentsScoped.push(comment)
-                    })
-                }
-                else if ( teamFilterId > 0 ) {
-                    // Loop through the comments
-                    comments.forEach(comment => {
-                        // Loop through comments users teams
-                        let pushComment = false
+        //         // If the user is a buyer function, only return global comments
+        //         if (this.userPermissionLevel == this.viewAdminPermissionLevel) {
+        //             comments.forEach(comment => {
+        //                 if (comment.team_id == 0)
+        //                     product.commentsScoped.push(comment)
+        //             })
+        //         }
+        //         else if ( teamFilterId > 0 ) {
+        //             // Loop through the comments
+        //             comments.forEach(comment => {
+        //                 // Loop through comments users teams
+        //                 let pushComment = false
 
-                        // Check if the comment belongs to one of auth users teams
-                        // if (comment.user != null)
-                        //     if (comment.user.teams != null)
-                        //         if ( comment.user.teams.find(x => x.id == teamFilterId) )
-                        //             pushComment = true
-                        if (comment.team_id == teamFilterId)
-                            pushComment = true
-
-
-                        // Check if the comment is final or global (not for sales)
-                        if (this.userPermissionLevel >= 2) {
-                            if (comment.team_final || comment.phase_final || comment.team_id == 0)
-                                pushComment = true
-                        }
-
-                        if (pushComment)
-                            product.commentsScoped.push(comment)
-                    })
-                }
-                else if ( teamFilterId == 0) {
-                    product.commentsScoped = comments
-                }
-
-                // Filter actions by the current team filter
-                // Check if the action has a user
-                if ( teamFilterId > 0 && product.actions != null) {
-                    product.scope = 'user scope'
-                    product.nds = JSON.parse(JSON.stringify(this.teamUsers)) // Copy our users into a new variable
-                    product.actions.forEach(action => {
-                        if (action.user != null) {
-                            // Check if the user has a team
-                            if (action.user.teams[0] != null) {
-                                // Find the users team
-                                if ( action.user.teams.findIndex(x => x.id == teamFilterId) > -1 ) {
-                                // if (action.user.teams[0].id == teamFilterId) {
-                                    if (action.action == 0)
-                                        product.outs.push(action.user)
-                                    if (action.action == 1)
-                                        product.ins.push(action.user)
-                                    if (action.action == 2)
-                                        product.focus.push(action.user)
-                                }
-                            }
-                            // Find Not decided
-                            let index = product.nds.findIndex(nd => nd.id == action.user_id)
-                            if (index > -1) {
-                                product.nds.splice(index,1)
-                            }
-                        }
+        //                 // Check if the comment belongs to one of auth users teams
+        //                 // if (comment.user != null)
+        //                 //     if (comment.user.teams != null)
+        //                 //         if ( comment.user.teams.find(x => x.id == teamFilterId) )
+        //                 //             pushComment = true
+        //                 if (comment.team_id == teamFilterId)
+        //                     pushComment = true
 
 
-                    })
-                // Filter actions by teams if GLOBAL scope is set (= 0)
-                } else if ( teamFilterId == 0 && product.teamActions != null) {
-                    product.scope = 'team scope'
-                    product.nds = JSON.parse(JSON.stringify(this.collection.teams)) // Copy our users into a new variable
-                    product.teamActions.forEach(action => {
-                        if (action.team != null) {
+        //                 // Check if the comment is final or global (not for sales)
+        //                 if (this.userPermissionLevel >= 2) {
+        //                     if (comment.team_final || comment.phase_final || comment.team_id == 0)
+        //                         pushComment = true
+        //                 }
 
-                            if (action.action == 0)
-                                product.outs.push(action.team)
-                            if (action.action == 1)
-                                product.ins.push(action.team)
-                            if (action.action == 2)
-                                product.focus.push(action.team)
-                        }
-                        // Find Not decided
-                        let index = product.nds.findIndex(nd => nd.id == action.team_id)
-                        if (index > -1) {
-                            product.nds.splice(index,1)
-                        }
-                    })
-                } else {
-                    product.scope = 'no scope 360'
-                }
-                data.push(product)
-            })
-            return data
-        },
+        //                 if (pushComment)
+        //                     product.commentsScoped.push(comment)
+        //             })
+        //         }
+        //         else if ( teamFilterId == 0) {
+        //             product.commentsScoped = comments
+        //         }
+
+        //         // Filter actions by the current team filter
+        //         // Check if the action has a user
+        //         if ( teamFilterId > 0 && product.actions != null) {
+        //             product.scope = 'user scope'
+        //             product.nds = JSON.parse(JSON.stringify(this.teamUsers)) // Copy our users into a new variable
+        //             product.actions.forEach(action => {
+        //                 if (action.user != null) {
+        //                     // Check if the user has a team
+        //                     if (action.user.teams[0] != null) {
+        //                         // Find the users team
+        //                         if ( action.user.teams.findIndex(x => x.id == teamFilterId) > -1 ) {
+        //                         // if (action.user.teams[0].id == teamFilterId) {
+        //                             if (action.action == 0)
+        //                                 product.outs.push(action.user)
+        //                             if (action.action == 1)
+        //                                 product.ins.push(action.user)
+        //                             if (action.action == 2)
+        //                                 product.focus.push(action.user)
+        //                         }
+        //                     }
+        //                     // Find Not decided
+        //                     let index = product.nds.findIndex(nd => nd.id == action.user_id)
+        //                     if (index > -1) {
+        //                         product.nds.splice(index,1)
+        //                     }
+        //                 }
+
+
+        //             })
+        //         // Filter actions by teams if GLOBAL scope is set (= 0)
+        //         } else if ( teamFilterId == 0 && product.teamActions != null) {
+        //             product.scope = 'team scope'
+        //             product.nds = JSON.parse(JSON.stringify(this.collection.teams)) // Copy our users into a new variable
+        //             product.teamActions.forEach(action => {
+        //                 if (action.team != null) {
+
+        //                     if (action.action == 0)
+        //                         product.outs.push(action.team)
+        //                     if (action.action == 1)
+        //                         product.ins.push(action.team)
+        //                     if (action.action == 2)
+        //                         product.focus.push(action.team)
+        //                 }
+        //                 // Find Not decided
+        //                 let index = product.nds.findIndex(nd => nd.id == action.team_id)
+        //                 if (index > -1) {
+        //                     product.nds.splice(index,1)
+        //                 }
+        //             })
+        //         } else {
+        //             product.scope = 'no scope 360'
+        //         }
+        //         data.push(product)
+        //     })
+        //     return data
+        // },
         productsFilteredByCategory() {
             const products = this.products
             const categories = this.selectedCategories
@@ -391,7 +391,6 @@ export default{
         },
         productTotals() {
             const products = this.productsFilteredByCategory
-
             const data = {
                 get actions () {
                     return this.ins + this.outs
@@ -406,7 +405,7 @@ export default{
                 outs: 0,
                 nds: 0,
                 final: {
-                    products: products.length,
+                    get products () { return products.length },
                     ins: 0,
                     outs: 0,
                     nds: 0,
@@ -481,10 +480,6 @@ export default{
         commentVotes() {
             return CommentVote.query().with('comment').all()
         },
-        // authUser() {
-        //     // return this.$store.getters.authUser;
-        //     return AuthUser.query().with('teams').with('workspaces').first()
-        // },
         users () {
             return User.query().with('teams').all()
         },
@@ -501,20 +496,13 @@ export default{
         },
     },
     methods: {
-        ...mapActions('entities/authUser', ['getAuthUser']),
         ...mapActions('entities/collections', ['fetchCollections']),
         ...mapActions('entities/products', ['fetchProducts']),
         ...mapActions('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/comments', ['fetchComments']),
         ...mapActions('entities/actions', ['updateAction']),
-        ...mapActions('entities/teams', ['fetchTeams']),
         ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
-        ...mapActions('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']),
-        ...mapActions('entities/categories', ['fetchCategories']),
-        ...mapActions('entities/userTeams', ['fetchUserTeams']),
-        ...mapActions('entities/workspaces', ['fetchWorkspaces']),
-        ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
         ...mapActions('persist', ['setCurrentTeam', 'setCurrentFileId']),
         ...mapActions('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']),
         ...mapActions('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']),
@@ -705,39 +693,6 @@ export default{
             })
             return dataSorted
         },
-        async initRequiresWorkspace() {
-            if (Collection.all().length <= 0)
-                await this.fetchCollections(this.currentWorkspaceId)
-            if (User.all().length <= 0)
-                await this.fetchUsers(this.currentWorkspaceId)
-        },
-        initRequiresFileId() {
-            this.fetchProducts(this.currentFileId)
-            this.fetchActions(this.currentFileId)
-            this.fetchComments(this.currentFileId)
-            this.fetchFinalActions(this.currentFileId)
-            this.fetchCommentVotes(this.currentFileId)
-            this.fetchCategories(this.currentFileId)
-            this.fetchTeamProducts(this.currentFileId)
-            this.fetchPhaseProducts(this.currentFileId)
-        }
-    },
-    created() {
-        // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
-        const routeFileId = this.$route.params.catalogueId
-        if (this.currentFileId != routeFileId)
-            this.setCurrentFileId(routeFileId),
-            this.initRequiresFileId()
-
-        // If we already have a workspace id, fetch the data we are missing
-        if (this.currentWorkspaceId != null)
-            this.initRequiresWorkspace()
-        // Else, wait till a workspace id is set, and then fetch the data
-        this.unsub = this.$store.subscribe((mutation, state) => {
-            if(mutation.type == 'persist/setCurrentWorkspace') {
-                this.initRequiresWorkspace()
-            } 
-        })
     },
     mounted() {
         this.sortProducts

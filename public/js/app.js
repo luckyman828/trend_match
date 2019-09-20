@@ -7463,6 +7463,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -7471,6 +7474,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']), {
     authUser: function authUser() {
       return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_1__["default"].query().first();
+    },
+    voteUsers: function voteUsers() {
+      return comment.votesScoped.map(function (vote) {
+        vote.user_id;
+      });
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']), {
@@ -10581,36 +10589,28 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../store */ "./resources/js/store/index.js");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _Products__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Products */ "./resources/js/components/Products.vue");
-/* harmony import */ var _ProductTabs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../ProductTabs */ "./resources/js/components/ProductTabs.vue");
-/* harmony import */ var _CatalogueHeader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../CatalogueHeader */ "./resources/js/components/CatalogueHeader.vue");
-/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../Loader */ "./resources/js/components/Loader.vue");
-/* harmony import */ var _SelectedController__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../SelectedController */ "./resources/js/components/SelectedController.vue");
-/* harmony import */ var _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../input/CheckboxButtons */ "./resources/js/components/input/CheckboxButtons.vue");
-/* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../RadioButtons */ "./resources/js/components/RadioButtons.vue");
-/* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../Dropdown */ "./resources/js/components/Dropdown.vue");
-/* harmony import */ var _store_models_Comment__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../store/models/Comment */ "./resources/js/store/models/Comment.js");
-/* harmony import */ var _store_models_Product__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../store/models/Product */ "./resources/js/store/models/Product.js");
-/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
-/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
-/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
-/* harmony import */ var _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../store/models/ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
-/* harmony import */ var _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../store/models/CommentVote */ "./resources/js/store/models/CommentVote.js");
-/* harmony import */ var _store_models_Category__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../store/models/Category */ "./resources/js/store/models/Category.js");
-/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
-/* harmony import */ var _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../../store/models/TeamProduct */ "./resources/js/store/models/TeamProduct.js");
-/* harmony import */ var _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ../../store/models/PhaseProduct */ "./resources/js/store/models/PhaseProduct.js");
-
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../store */ "./resources/js/store/index.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Products__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Products */ "./resources/js/components/Products.vue");
+/* harmony import */ var _ProductTabs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../ProductTabs */ "./resources/js/components/ProductTabs.vue");
+/* harmony import */ var _CatalogueHeader__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../CatalogueHeader */ "./resources/js/components/CatalogueHeader.vue");
+/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../Loader */ "./resources/js/components/Loader.vue");
+/* harmony import */ var _SelectedController__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../SelectedController */ "./resources/js/components/SelectedController.vue");
+/* harmony import */ var _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../input/CheckboxButtons */ "./resources/js/components/input/CheckboxButtons.vue");
+/* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../RadioButtons */ "./resources/js/components/RadioButtons.vue");
+/* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../Dropdown */ "./resources/js/components/Dropdown.vue");
+/* harmony import */ var _store_models_Comment__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../store/models/Comment */ "./resources/js/store/models/Comment.js");
+/* harmony import */ var _store_models_Product__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../store/models/Product */ "./resources/js/store/models/Product.js");
+/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
+/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
+/* harmony import */ var _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../store/models/ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
+/* harmony import */ var _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../store/models/CommentVote */ "./resources/js/store/models/CommentVote.js");
+/* harmony import */ var _store_models_Category__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../store/models/Category */ "./resources/js/store/models/Category.js");
+/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../../store/models/TeamProduct */ "./resources/js/store/models/TeamProduct.js");
+/* harmony import */ var _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../../store/models/PhaseProduct */ "./resources/js/store/models/PhaseProduct.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
@@ -10706,16 +10706,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'catalogue',
-  store: _store__WEBPACK_IMPORTED_MODULE_1__["default"],
+  store: _store__WEBPACK_IMPORTED_MODULE_0__["default"],
   components: {
-    Products: _Products__WEBPACK_IMPORTED_MODULE_3__["default"],
-    ProductTabs: _ProductTabs__WEBPACK_IMPORTED_MODULE_4__["default"],
-    SelectedController: _SelectedController__WEBPACK_IMPORTED_MODULE_7__["default"],
-    Loader: _Loader__WEBPACK_IMPORTED_MODULE_6__["default"],
-    CatalogueHeader: _CatalogueHeader__WEBPACK_IMPORTED_MODULE_5__["default"],
-    CheckboxButtons: _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_8__["default"],
-    Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_10__["default"],
-    RadioButtons: _RadioButtons__WEBPACK_IMPORTED_MODULE_9__["default"]
+    Products: _Products__WEBPACK_IMPORTED_MODULE_2__["default"],
+    ProductTabs: _ProductTabs__WEBPACK_IMPORTED_MODULE_3__["default"],
+    SelectedController: _SelectedController__WEBPACK_IMPORTED_MODULE_6__["default"],
+    Loader: _Loader__WEBPACK_IMPORTED_MODULE_5__["default"],
+    CatalogueHeader: _CatalogueHeader__WEBPACK_IMPORTED_MODULE_4__["default"],
+    CheckboxButtons: _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_7__["default"],
+    Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_9__["default"],
+    RadioButtons: _RadioButtons__WEBPACK_IMPORTED_MODULE_8__["default"]
   },
   data: function data() {
     return {
@@ -10735,7 +10735,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.sortProducts();
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['loadingProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/collections', ['loadingCollections', 'files']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'products']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser']), {
     defaultTeam: function defaultTeam() {
       if (this.userPermissionLevel >= 3) return {
         id: 0,
@@ -10759,10 +10759,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return hasAccess;
     },
     teamProducts: function teamProducts() {
-      return _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_21__["default"]["with"]('products').all();
+      return _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_20__["default"]["with"]('products').all();
     },
     phaseProducts: function phaseProducts() {
-      return _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_22__["default"]["with"]('products').all();
+      return _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_21__["default"]["with"]('products').all();
     },
     collection: function collection() {
       var _this2 = this;
@@ -10772,171 +10772,154 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return x.id == _this2.currentFileId;
       });
     },
-    products: function products() {
-      var _this3 = this;
-
-      var products = _store_models_Product__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes.user.teams', 'comments.user.teams', 'comments.team'])["with"]('productFinalAction')["with"]('teamActions.team')["with"]('phaseActions').all(); // const totalUsers = this.teamUsers
-      // const userId = this.authUser.id
-
-      var teamFilterId = this.currentTeamId;
-      var data = [];
-      products.forEach(function (product) {
-        product.color_variants = JSON.parse(product.color_variants);
-        product.prices = JSON.parse(product.prices);
-        product.ins = [];
-        product.outs = [];
-        product.focus = [];
-        product.nds = [];
-        product.userAction = product.actions.find(function (x) {
-          return x.user_id == _this3.authUser.id;
-        });
-        product.commentsScoped = [];
-        product.teamAction = product.teamActions.find(function (x) {
-          return x.team_id == _this3.currentTeamId;
-        });
-        product.phaseAction = product.phaseActions.find(function (x) {
-          return x.phase_id == 1;
-        }); // Find the correct price
-        // Check if the chosen currency exists on the product
-
-        if (product.prices != null) {
-          var workspacePrices = null;
-          var teamPrices = null;
-          if (_this3.currentWorkspace.currency != null) workspacePrices = product.prices.find(function (x) {
-            return x.currency == _this3.currentWorkspace.currency;
-          });
-          if (_this3.currentTeam) if (_this3.currentTeam.currency != null) teamPrices = product.prices.find(function (x) {
-            return x.currency == _this3.currentTeam.currency;
-          });
-
-          if (_this3.userPermissionLevel <= 4) {
-            // Use team currency for low level members
-            if (teamPrices != null) product.userPrices = teamPrices;else if (workspacePrices != null) product.userPrices = workspacePrices;else product.userPrices = product.prices[0];
-          } else {
-            // Use workspace currency for high level members
-            if (workspacePrices != null) product.userPrices = workspacePrices;else product.userPrices = product.prices[0];
-          }
-        }
-
-        var comments = product.comments;
-        comments.forEach(function (comment) {
-          comment.teamVotes = [{
-            id: 0,
-            title: 'No team',
-            votes: 0
-          }];
-          comment.votes.forEach(function (vote) {
-            if (vote.user != null) {
-              if (vote.user.teams.length > 0) {
-                var found = comment.teamVotes.find(function (x) {
-                  return x.title == vote.user.teams[0].title;
-                });
-
-                if (!found) {
-                  var voteTeam = vote.user.teams[0];
-                  var teamToPush = {
-                    id: voteTeam.id,
-                    title: voteTeam.title,
-                    votes: 1
-                  };
-                  comment.teamVotes.push(teamToPush);
-                } else {
-                  found.votes++;
-                }
-              } else {
-                comment.teamVotes[0].votes++;
-              }
-            }
-          });
-        }); // Scope comments to current teamFilter
-
-        var commentsScoped = []; // If the user is a buyer function, only return global comments
-
-        if (_this3.userPermissionLevel == _this3.viewAdminPermissionLevel) {
-          comments.forEach(function (comment) {
-            if (comment.team_id == 0) product.commentsScoped.push(comment);
-          });
-        } else if (teamFilterId > 0) {
-          // Loop through the comments
-          comments.forEach(function (comment) {
-            // Loop through comments users teams
-            var pushComment = false; // Check if the comment belongs to one of auth users teams
-            // if (comment.user != null)
-            //     if (comment.user.teams != null)
-            //         if ( comment.user.teams.find(x => x.id == teamFilterId) )
-            //             pushComment = true
-
-            if (comment.team_id == teamFilterId) pushComment = true; // Check if the comment is final or global (not for sales)
-
-            if (_this3.userPermissionLevel >= 2) {
-              if (comment.team_final || comment.phase_final || comment.team_id == 0) pushComment = true;
-            }
-
-            if (pushComment) product.commentsScoped.push(comment);
-          });
-        } else if (teamFilterId == 0) {
-          product.commentsScoped = comments;
-        } // Filter actions by the current team filter
-        // Check if the action has a user
-
-
-        if (teamFilterId > 0 && product.actions != null) {
-          product.scope = 'user scope';
-          product.nds = JSON.parse(JSON.stringify(_this3.teamUsers)); // Copy our users into a new variable
-
-          product.actions.forEach(function (action) {
-            if (action.user != null) {
-              // Check if the user has a team
-              if (action.user.teams[0] != null) {
-                // Find the users team
-                if (action.user.teams.findIndex(function (x) {
-                  return x.id == teamFilterId;
-                }) > -1) {
-                  // if (action.user.teams[0].id == teamFilterId) {
-                  if (action.action == 0) product.outs.push(action.user);
-                  if (action.action == 1) product.ins.push(action.user);
-                  if (action.action == 2) product.focus.push(action.user);
-                }
-              } // Find Not decided
-
-
-              var index = product.nds.findIndex(function (nd) {
-                return nd.id == action.user_id;
-              });
-
-              if (index > -1) {
-                product.nds.splice(index, 1);
-              }
-            }
-          }); // Filter actions by teams if GLOBAL scope is set (= 0)
-        } else if (teamFilterId == 0 && product.teamActions != null) {
-          product.scope = 'team scope';
-          product.nds = JSON.parse(JSON.stringify(_this3.collection.teams)); // Copy our users into a new variable
-
-          product.teamActions.forEach(function (action) {
-            if (action.team != null) {
-              if (action.action == 0) product.outs.push(action.team);
-              if (action.action == 1) product.ins.push(action.team);
-              if (action.action == 2) product.focus.push(action.team);
-            } // Find Not decided
-
-
-            var index = product.nds.findIndex(function (nd) {
-              return nd.id == action.team_id;
-            });
-
-            if (index > -1) {
-              product.nds.splice(index, 1);
-            }
-          });
-        } else {
-          product.scope = 'no scope 360';
-        }
-
-        data.push(product);
-      });
-      return data;
-    },
+    // products () {
+    //     const products = Product.query().with(['actions.user.teams']).with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team']).with('productFinalAction')
+    //     .with('teamActions.team').with('phaseActions').all()
+    //     // const totalUsers = this.teamUsers
+    //     // const userId = this.authUser.id
+    //     const teamFilterId = this.currentTeamId
+    //     const data = []
+    //     products.forEach(product => {
+    //         product.color_variants = JSON.parse(product.color_variants)
+    //         product.prices = JSON.parse(product.prices)
+    //         product.ins = []
+    //         product.outs = []
+    //         product.focus = []
+    //         product.nds = []
+    //         product.userAction = product.actions.find(x => x.user_id == this.authUser.id)
+    //         product.commentsScoped = []
+    //         product.teamAction = product.teamActions.find(x => x.team_id == this.currentTeamId)
+    //         product.phaseAction = product.phaseActions.find(x => x.phase_id == 1)
+    //         // Find the correct price
+    //         // Check if the chosen currency exists on the product
+    //         if (product.prices != null) {
+    //             let workspacePrices = null
+    //             let teamPrices = null
+    //             if (this.currentWorkspace.currency != null)
+    //                 workspacePrices = product.prices.find(x => x.currency == this.currentWorkspace.currency)
+    //             if (this.currentTeam)
+    //                 if (this.currentTeam.currency != null)
+    //                     teamPrices = product.prices.find(x => x.currency == this.currentTeam.currency)
+    //             if ( this.userPermissionLevel <= 4 ) {
+    //             // Use team currency for low level members
+    //                 if (teamPrices != null)
+    //                     product.userPrices = teamPrices
+    //                 else if (workspacePrices != null)
+    //                     product.userPrices = workspacePrices
+    //                 else product.userPrices = product.prices[0]
+    //             } else {
+    //             // Use workspace currency for high level members
+    //                 if (workspacePrices != null)
+    //                     product.userPrices = workspacePrices
+    //                 else product.userPrices = product.prices[0]
+    //             }
+    //         }
+    //         const comments = product.comments
+    //         comments.forEach(comment => {
+    //             comment.teamVotes = [{id: 0, title: 'No team', votes: 0}]
+    //             comment.votes.forEach(vote => {
+    //                 if (vote.user != null) {
+    //                     if (vote.user.teams.length > 0) {
+    //                         const found = (comment.teamVotes.find(x => x.title == vote.user.teams[0].title))
+    //                         if (!found) {
+    //                             let voteTeam = vote.user.teams[0]
+    //                             let teamToPush = {id: voteTeam.id, title: voteTeam.title, votes: 1}
+    //                             comment.teamVotes.push(teamToPush)
+    //                         } else {
+    //                             found.votes ++
+    //                         }
+    //                     } else {
+    //                         comment.teamVotes[0].votes ++
+    //                     }
+    //                 }
+    //             })
+    //         })
+    //         // Scope comments to current teamFilter
+    //         let commentsScoped = []
+    //         // If the user is a buyer function, only return global comments
+    //         if (this.userPermissionLevel == this.viewAdminPermissionLevel) {
+    //             comments.forEach(comment => {
+    //                 if (comment.team_id == 0)
+    //                     product.commentsScoped.push(comment)
+    //             })
+    //         }
+    //         else if ( teamFilterId > 0 ) {
+    //             // Loop through the comments
+    //             comments.forEach(comment => {
+    //                 // Loop through comments users teams
+    //                 let pushComment = false
+    //                 // Check if the comment belongs to one of auth users teams
+    //                 // if (comment.user != null)
+    //                 //     if (comment.user.teams != null)
+    //                 //         if ( comment.user.teams.find(x => x.id == teamFilterId) )
+    //                 //             pushComment = true
+    //                 if (comment.team_id == teamFilterId)
+    //                     pushComment = true
+    //                 // Check if the comment is final or global (not for sales)
+    //                 if (this.userPermissionLevel >= 2) {
+    //                     if (comment.team_final || comment.phase_final || comment.team_id == 0)
+    //                         pushComment = true
+    //                 }
+    //                 if (pushComment)
+    //                     product.commentsScoped.push(comment)
+    //             })
+    //         }
+    //         else if ( teamFilterId == 0) {
+    //             product.commentsScoped = comments
+    //         }
+    //         // Filter actions by the current team filter
+    //         // Check if the action has a user
+    //         if ( teamFilterId > 0 && product.actions != null) {
+    //             product.scope = 'user scope'
+    //             product.nds = JSON.parse(JSON.stringify(this.teamUsers)) // Copy our users into a new variable
+    //             product.actions.forEach(action => {
+    //                 if (action.user != null) {
+    //                     // Check if the user has a team
+    //                     if (action.user.teams[0] != null) {
+    //                         // Find the users team
+    //                         if ( action.user.teams.findIndex(x => x.id == teamFilterId) > -1 ) {
+    //                         // if (action.user.teams[0].id == teamFilterId) {
+    //                             if (action.action == 0)
+    //                                 product.outs.push(action.user)
+    //                             if (action.action == 1)
+    //                                 product.ins.push(action.user)
+    //                             if (action.action == 2)
+    //                                 product.focus.push(action.user)
+    //                         }
+    //                     }
+    //                     // Find Not decided
+    //                     let index = product.nds.findIndex(nd => nd.id == action.user_id)
+    //                     if (index > -1) {
+    //                         product.nds.splice(index,1)
+    //                     }
+    //                 }
+    //             })
+    //         // Filter actions by teams if GLOBAL scope is set (= 0)
+    //         } else if ( teamFilterId == 0 && product.teamActions != null) {
+    //             product.scope = 'team scope'
+    //             product.nds = JSON.parse(JSON.stringify(this.collection.teams)) // Copy our users into a new variable
+    //             product.teamActions.forEach(action => {
+    //                 if (action.team != null) {
+    //                     if (action.action == 0)
+    //                         product.outs.push(action.team)
+    //                     if (action.action == 1)
+    //                         product.ins.push(action.team)
+    //                     if (action.action == 2)
+    //                         product.focus.push(action.team)
+    //                 }
+    //                 // Find Not decided
+    //                 let index = product.nds.findIndex(nd => nd.id == action.team_id)
+    //                 if (index > -1) {
+    //                     product.nds.splice(index,1)
+    //                 }
+    //             })
+    //         } else {
+    //             product.scope = 'no scope 360'
+    //         }
+    //         data.push(product)
+    //     })
+    //     return data
+    // },
     productsFilteredByCategory: function productsFilteredByCategory() {
       var products = this.products;
       var categories = this.selectedCategories;
@@ -10952,7 +10935,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return productsToReturn;
     },
     productsFiltered: function productsFiltered() {
-      var _this4 = this;
+      var _this3 = this;
 
       var method = this.currentProductFilter;
       var products = this.productsFilteredByCategory;
@@ -10961,11 +10944,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (['ins', 'outs', 'nds'].includes(method)) {
         var filteredByAction = productsToReturn.filter(function (product) {
           if (method == 'ins') {
-            if (product[_this4.actionScope] != null) return product[_this4.actionScope].action >= 1;
+            if (product[_this3.actionScope] != null) return product[_this3.actionScope].action >= 1;
           } else if (method == 'outs') {
-            if (product[_this4.actionScope] != null) return product[_this4.actionScope].action == 0;
+            if (product[_this3.actionScope] != null) return product[_this3.actionScope].action == 0;
           } else if (method == 'nds') {
-            return product[_this4.actionScope] == null;
+            return product[_this3.actionScope] == null;
           }
         });
         productsToReturn = filteredByAction;
@@ -11004,7 +10987,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return selectedProducts;
     },
     productTotals: function productTotals() {
-      var _this5 = this;
+      var _this4 = this;
 
       var products = this.productsFilteredByCategory;
       var data = {
@@ -11022,7 +11005,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         outs: 0,
         nds: 0,
         "final": {
-          products: products.length,
+          get products() {
+            return products.length;
+          },
+
           ins: 0,
           outs: 0,
           nds: 0
@@ -11033,23 +11019,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         data.outs += product.outs.length;
         data.nds += product.nds.length;
 
-        if (product[_this5.actionScope] != null) {
-          if (product[_this5.actionScope].action >= 1) data["final"].ins++;else if (product[_this5.actionScope].action == 0) data["final"].outs++;
+        if (product[_this4.actionScope] != null) {
+          if (product[_this4.actionScope].action >= 1) data["final"].ins++;else if (product[_this4.actionScope].action == 0) data["final"].outs++;
         } else data["final"].nds++;
       });
       return data;
     },
     teamUsers: function teamUsers() {
-      var _this6 = this;
+      var _this5 = this;
 
       var usersToReturn = [];
 
       if (this.currentTeamId > 0) {
         var thisTeam = this.teams.find(function (team) {
-          return team.id == _this6.currentTeamId;
+          return team.id == _this5.currentTeamId;
         });
         if (thisTeam) thisTeam.users.forEach(function (user) {
-          var fileUser = _this6.collection.users.find(function (x) {
+          var fileUser = _this5.collection.users.find(function (x) {
             return x.id == user.id;
           });
 
@@ -11068,7 +11054,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return this.$store.getters['entities/actions/all']();
     },
     comments: function comments() {
-      var comments = _store_models_Comment__WEBPACK_IMPORTED_MODULE_11__["default"].query()["with"](['votes', 'user.teams']).all();
+      var comments = _store_models_Comment__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"](['votes', 'user.teams']).all();
       var teamFilterId = this.currentTeamId;
 
       if (teamFilterId > 0) {
@@ -11080,7 +11066,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else return comments;
     },
     categories: function categories() {
-      return _store_models_Category__WEBPACK_IMPORTED_MODULE_18__["default"].query()["with"]('products').all();
+      return _store_models_Category__WEBPACK_IMPORTED_MODULE_17__["default"].query()["with"]('products').all();
     },
     dynamicCategories: function dynamicCategories() {
       var products = this.products;
@@ -11092,17 +11078,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return uniqueCategories;
     },
     finalActions: function finalActions() {
-      return _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_16__["default"].query().all();
+      return _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_15__["default"].query().all();
     },
     commentVotes: function commentVotes() {
-      return _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_17__["default"].query()["with"]('comment').all();
+      return _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_16__["default"].query()["with"]('comment').all();
     },
-    // authUser() {
-    //     // return this.$store.getters.authUser;
-    //     return AuthUser.query().with('teams').with('workspaces').first()
-    // },
     users: function users() {
-      return _store_models_User__WEBPACK_IMPORTED_MODULE_13__["default"].query()["with"]('teams').all();
+      return _store_models_User__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"]('teams').all();
     },
     teams: function teams() {
       return this.$store.getters['entities/teams/teams'];
@@ -11118,7 +11100,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else return this.teams;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/productFinalActions', ['fetchFinalActions', 'updateFinalAction', 'deleteFinalAction', 'createManyFinalAction', 'updateManyFinalAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/categories', ['fetchCategories']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentFileId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentFileId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']), {
     setProductFilter: function setProductFilter(filter) {
       this.currentProductFilter = filter;
       this.clearSelectedProducts();
@@ -11146,7 +11128,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this7 = this;
+      var _this6 = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
@@ -11156,7 +11138,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
-        var thisProduct = _this7.products.find(function (x) {
+        var thisProduct = _this6.products.find(function (x) {
           return x.id == product;
         });
 
@@ -11291,72 +11273,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
       });
       return dataSorted;
-    },
-    initRequiresWorkspace: function () {
-      var _initRequiresWorkspace = _asyncToGenerator(
-      /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                if (!(_store_models_Collection__WEBPACK_IMPORTED_MODULE_15__["default"].all().length <= 0)) {
-                  _context.next = 3;
-                  break;
-                }
-
-                _context.next = 3;
-                return this.fetchCollections(this.currentWorkspaceId);
-
-              case 3:
-                if (!(_store_models_User__WEBPACK_IMPORTED_MODULE_13__["default"].all().length <= 0)) {
-                  _context.next = 6;
-                  break;
-                }
-
-                _context.next = 6;
-                return this.fetchUsers(this.currentWorkspaceId);
-
-              case 6:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-
-      function initRequiresWorkspace() {
-        return _initRequiresWorkspace.apply(this, arguments);
-      }
-
-      return initRequiresWorkspace;
-    }(),
-    initRequiresFileId: function initRequiresFileId() {
-      this.fetchProducts(this.currentFileId);
-      this.fetchActions(this.currentFileId);
-      this.fetchComments(this.currentFileId);
-      this.fetchFinalActions(this.currentFileId);
-      this.fetchCommentVotes(this.currentFileId);
-      this.fetchCategories(this.currentFileId);
-      this.fetchTeamProducts(this.currentFileId);
-      this.fetchPhaseProducts(this.currentFileId);
     }
   }),
-  created: function created() {
-    var _this8 = this;
-
-    // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
-    var routeFileId = this.$route.params.catalogueId;
-    if (this.currentFileId != routeFileId) this.setCurrentFileId(routeFileId), this.initRequiresFileId(); // If we already have a workspace id, fetch the data we are missing
-
-    if (this.currentWorkspaceId != null) this.initRequiresWorkspace(); // Else, wait till a workspace id is set, and then fetch the data
-
-    this.unsub = this.$store.subscribe(function (mutation, state) {
-      if (mutation.type == 'persist/setCurrentWorkspace') {
-        _this8.initRequiresWorkspace();
-      }
-    });
-  },
   mounted: function mounted() {
     this.sortProducts;
     this.productsTest = this.productsFiltered;
@@ -11756,21 +11674,133 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Catalogue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Catalogue */ "./resources/js/components/screens/Catalogue.vue");
-/* harmony import */ var _ScreenLoader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ScreenLoader */ "./resources/js/components/screens/loaders/ScreenLoader.vue");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Catalogue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Catalogue */ "./resources/js/components/screens/Catalogue.vue");
+/* harmony import */ var _ScreenLoader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ScreenLoader */ "./resources/js/components/screens/loaders/ScreenLoader.vue");
+/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../store/models/Collection */ "./resources/js/store/models/Collection.js");
+/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../store/models/User */ "./resources/js/store/models/User.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
 //
 //
 //
+
+
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'fileLoader',
   components: {
-    File: _Catalogue__WEBPACK_IMPORTED_MODULE_0__["default"],
-    ScreenLoader: _ScreenLoader__WEBPACK_IMPORTED_MODULE_1__["default"]
+    File: _Catalogue__WEBPACK_IMPORTED_MODULE_2__["default"],
+    ScreenLoader: _ScreenLoader__WEBPACK_IMPORTED_MODULE_3__["default"]
+  },
+  data: function data() {
+    return {
+      loadingFile: true
+    };
+  },
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['products']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentWorkspaceId', 'currentFileId']), {
+    loading: function loading() {
+      return this.products != null && !this.loadingFile ? false : true;
+    }
+  }),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentFileId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['fetchTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts']), {
+    initRequiresWorkspace: function () {
+      var _initRequiresWorkspace = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (!(_store_models_Collection__WEBPACK_IMPORTED_MODULE_4__["default"].all().length <= 0)) {
+                  _context.next = 3;
+                  break;
+                }
+
+                _context.next = 3;
+                return this.fetchCollections(this.currentWorkspaceId);
+
+              case 3:
+                if (!(_store_models_User__WEBPACK_IMPORTED_MODULE_5__["default"].all().length <= 0)) {
+                  _context.next = 6;
+                  break;
+                }
+
+                _context.next = 6;
+                return this.fetchUsers(this.currentWorkspaceId);
+
+              case 6:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function initRequiresWorkspace() {
+        return _initRequiresWorkspace.apply(this, arguments);
+      }
+
+      return initRequiresWorkspace;
+    }(),
+    initRequiresFileId: function () {
+      var _initRequiresFileId = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.next = 2;
+                return this.fetchProducts(this.currentFileId), this.fetchActions(this.currentFileId), this.fetchComments(this.currentFileId), this.fetchCommentVotes(this.currentFileId), this.fetchTeamProducts(this.currentFileId), this.fetchPhaseProducts(this.currentFileId);
+
+              case 2:
+                this.loadingFile = false;
+
+              case 3:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function initRequiresFileId() {
+        return _initRequiresFileId.apply(this, arguments);
+      }
+
+      return initRequiresFileId;
+    }()
+  }),
+  created: function created() {
+    var _this = this;
+
+    // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
+    var routeFileId = this.$route.params.catalogueId;
+    if (this.currentFileId != routeFileId) this.setCurrentFileId(routeFileId), this.initRequiresFileId(); // If we already have a workspace id, fetch the data we are missing
+
+    if (this.currentWorkspaceId != null) this.initRequiresWorkspace(); // Else, wait till a workspace id is set, and then fetch the data
+
+    this.unsub = this.$store.subscribe(function (mutation, state) {
+      if (mutation.type == 'persist/setCurrentWorkspace') {
+        _this.initRequiresWorkspace();
+      }
+    });
   }
 });
 
@@ -11828,6 +11858,7 @@ __webpack_require__.r(__webpack_exports__);
   components: {
     Loader: _Loader__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
+  props: ['loading'],
   computed: {
     loadingInit: function loadingInit() {
       return this.$store.getters['persist/loadingInit'];
@@ -12068,7 +12099,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".overlay[data-v-019a7388] {\n  z-index: 10;\n  position: fixed;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  background: transparent;\n}\n.product-single.visible > .card[data-v-019a7388] {\n  width: 100%;\n  right: 62px;\n  -webkit-transform: translateX(0);\n          transform: translateX(0);\n}\n.product-single.visible .overlay[data-v-019a7388] {\n  display: block;\n}\n.product-single > .card[data-v-019a7388] {\n  right: 0;\n  -webkit-transform: translateX(100%);\n          transform: translateX(100%);\n  margin: 0;\n  max-width: 60vw;\n  z-index: 11;\n  top: 130px;\n  position: fixed;\n  height: calc(100vh - 130px);\n  overflow: hidden;\n  height: 100%;\n  width: 100%;\n  -webkit-transition-timing-function: ease-out;\n          transition-timing-function: ease-out;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n  background: white;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.product-single > .card .inner .comments[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #dfdfdf;\n  width: 100%;\n}\n.product-single .description .stat[data-v-019a7388] > :first-child {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\nh3[data-v-019a7388] {\n  font-size: 18px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #a8a8a8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 77vh;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #dfdfdf;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 0;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n}\n.controls-wrapper .square[data-v-019a7388] {\n  margin-left: 1em;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  padding-right: 1em;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  border-bottom: solid 2px #dfdfdf;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #f9f9f9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1b1c1d;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #f3f3f3;\n  color: #1b1c1d;\n  border-color: #3b86ff;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tab-body[data-v-019a7388] {\n  background: #f3f3f3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #dfdfdf;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3b86ff;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #f3f3f3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3c3b54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}\n.details[data-v-019a7388] {\n  padding-right: 1px;\n}", ""]);
+exports.push([module.i, ".overlay[data-v-019a7388] {\n  z-index: 10;\n  position: fixed;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  background: transparent;\n}\n.product-single.visible > .card[data-v-019a7388] {\n  width: 100%;\n  right: 62px;\n}\n.product-single.visible .overlay[data-v-019a7388] {\n  display: block;\n}\n.product-single > .card[data-v-019a7388] {\n  right: -100%;\n  margin: 0;\n  max-width: 60vw;\n  z-index: 11;\n  top: 130px;\n  position: fixed;\n  height: calc(100vh - 130px);\n  overflow: hidden;\n  height: 100%;\n  width: 100%;\n  -webkit-transition-timing-function: ease-out;\n          transition-timing-function: ease-out;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  background: white;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.product-single > .card .inner .comments[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #dfdfdf;\n  width: 100%;\n}\n.product-single .description .stat[data-v-019a7388] > :first-child {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\nh3[data-v-019a7388] {\n  font-size: 18px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #a8a8a8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 77vh;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #dfdfdf;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 0;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n}\n.controls-wrapper .square[data-v-019a7388] {\n  margin-left: 1em;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  padding-right: 1em;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  border-bottom: solid 2px #dfdfdf;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #f9f9f9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1b1c1d;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #f3f3f3;\n  color: #1b1c1d;\n  border-color: #3b86ff;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tab-body[data-v-019a7388] {\n  background: #f3f3f3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #dfdfdf;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3b86ff;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #f3f3f3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3c3b54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}\n.details[data-v-019a7388] {\n  padding-right: 1px;\n}", ""]);
 
 // exports
 
@@ -15545,7 +15576,29 @@ var render = function() {
         _vm._v(" "),
         _vm.comment.votes.length > 0
           ? [
-              _vm.userPermissionLevel >= 2
+              _vm.userPermissionLevel == 2
+                ? _c(
+                    "tooltipAlt2",
+                    {
+                      attrs: {
+                        header: "Comment votes",
+                        array: _vm.comment.votesScoped.map(function(vote) {
+                          vote.user.email
+                        })
+                      }
+                    },
+                    [
+                      _c(
+                        "span",
+                        {
+                          staticClass: "votes bubble",
+                          class: { second: _vm.comment.important }
+                        },
+                        [_vm._v(_vm._s(_vm.comment.votesScoped.length))]
+                      )
+                    ]
+                  )
+                : _vm.userPermissionLevel > 2
                 ? _c(
                     "tooltipAlt2",
                     {
@@ -15573,7 +15626,7 @@ var render = function() {
                       staticClass: "votes bubble",
                       class: { second: _vm.comment.important }
                     },
-                    [_vm._v(_vm._s(_vm.comment.votes.length))]
+                    [_vm._v(_vm._s(_vm.comment.votesScoped.length))]
                   )
             ]
           : _vm._e(),
@@ -21537,7 +21590,12 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("ScreenLoader", [_c("File")], 1)
+  return _c(
+    "ScreenLoader",
+    { attrs: { loading: _vm.loading } },
+    [_c("File")],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -21588,7 +21646,7 @@ var render = function() {
   return _c(
     "div",
     { staticClass: "screen-loader" },
-    [!_vm.loadingInit ? _vm._t("default") : _c("Loader")],
+    [!_vm.loadingInit && !_vm.loading ? _vm._t("default") : _c("Loader")],
     2
   )
 }
@@ -44301,11 +44359,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
           var comments = product.comments;
           comments.forEach(function (comment) {
-            comment.teamVotes = [{
-              id: 0,
-              title: 'No team',
-              votes: 0
-            }];
+            comment.teamVotes = [];
+            var noTeamExists = false;
             comment.votes.forEach(function (vote) {
               if (vote.user != null) {
                 if (vote.user.teams.length > 0) {
@@ -44325,9 +44380,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                     found.votes++;
                   }
                 } else {
+                  if (!noTeamExists) {
+                    comment.teamVotes.unshift({
+                      id: 0,
+                      title: 'No team',
+                      votes: 0
+                    });
+                    noTeamExists = true;
+                  }
+
                   comment.teamVotes[0].votes++;
                 }
               }
+            });
+          }); // Scope votes to current team filter
+
+          comments.forEach(function (comment) {
+            comment.votesScoped = [];
+            comment.votes.forEach(function (vote) {
+              var found = teamUsers.find(function (x) {
+                return x.id == vote.user.id;
+              });
+              if (found) comment.votesScoped.push(vote);
             });
           }); // Scope comments to current teamFilter
           // If the user is a buyer function, only return global comments

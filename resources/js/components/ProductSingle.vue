@@ -302,15 +302,15 @@ export default {
             > .card {
                 width: 100%;
                 right: 62px;
-                transform: translateX(0);
+                // transform: translateX(0);
             }
             .overlay {
                 display: block;
             }
         }
         > .card {
-            right: 0;
-            transform: translateX(100%);
+            right: -100%;
+            // transform: translateX(100%);
             margin: 0;
             max-width: 60vw;
             z-index: 11;
@@ -321,7 +321,7 @@ export default {
             height: 100%;
             width: 100%;
             transition-timing-function: ease-out;
-            transition: .2s;
+            transition: .3s;
             background: white;
             animation: slide-in .3s;
             animation-iteration-count: 1;

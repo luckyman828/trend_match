@@ -5,10 +5,13 @@
                 <span class="important bubble"><i class="fas fa-exclamation"></i></span>
             </TooltipAlt2>
             <template v-if="comment.votes.length > 0">
-                <tooltipAlt2 v-if="userPermissionLevel >= 2" :header="'Comment votes'" :array="comment.teamVotes" :arrayLabelKey="'title'" :arrayValueKey="'votes'">
+                <tooltipAlt2 v-if="userPermissionLevel == 2" :header="'Comment votes'" :array="comment.votesScoped.map(vote => {vote.user.email})">
+                    <span class="votes bubble" :class="{second: comment.important}">{{comment.votesScoped.length}}</span>
+                </tooltipAlt2>
+                <tooltipAlt2 v-else-if="userPermissionLevel > 2" :header="'Comment votes'" :array="comment.teamVotes" :arrayLabelKey="'title'" :arrayValueKey="'votes'">
                     <span class="votes bubble" :class="{second: comment.important}">{{comment.votes.length}}</span>
                 </tooltipAlt2>
-                <span v-else class="votes bubble" :class="{second: comment.important}">{{comment.votes.length}}</span>
+                <span v-else class="votes bubble" :class="{second: comment.important}">{{comment.votesScoped.length}}</span>
             </template>
             <div class="pill-wrapper">
                 <span class="votes phase-final pill" v-if="comment.phase_final && actionScope != 'phaseAction'">Phase final <i class="far fa-comment-check"></i></span>
@@ -60,6 +63,9 @@ export default {
         authUser() {
             return AuthUser.query().first()
         },
+        voteUsers () {
+            return comment.votesScoped.map(vote => {vote.user_id})
+        }
     },
     methods: {
         ...mapActions('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']),
