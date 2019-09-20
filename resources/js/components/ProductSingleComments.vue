@@ -4,7 +4,7 @@
             <h4>Comments</h4>
 
             <toggle v-if="userPermissionLevel < 2" :options="['team comments']" v-model="commentFilter" ref="toggle"/>
-            <toggle v-else-if="userPermissionLevel == 2" :options="['team comments', 'remarks']" :defaultOption="2" v-model="commentFilter" ref="toggle"/>
+            <toggle v-else-if="userPermissionLevel == 2" :options="['team comments', 'remarks']" :defaultOption="1" v-model="commentFilter" ref="toggle"/>
             <toggle v-else :options="['all comments', 'remarks']" :defaultOption="2" v-model="commentFilter" ref="toggle"/>
 
         </div>

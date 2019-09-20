@@ -33,7 +33,7 @@
                 <TooltipAlt2 v-if="actionScope == 'phaseAction'" :body="'Remark'">
                     <span :class="{active: comment.phase_final}" class="circle"><i class="far fa-comment-check"></i></span>
                 </TooltipAlt2>
-                <TooltipAlt2 v-else-if="actionScope == 'teamAction' && comment.team_id == currentTeamId" :body="'Remark'">
+                <TooltipAlt2 v-else-if="actionScope == 'teamAction' && comment.user_id == authUser.id" :body="'Remark'">
                     <span :class="{active: comment.team_final && comment.team_id == currentTeamId}" class="circle"><i class="far fa-comment-check"></i></span>
                 </TooltipAlt2>
             </template>
@@ -172,7 +172,7 @@ export default {
         color: $dark2;
         transition: .3s;
         opacity: 0;
-        cursor: pointer;
+        // cursor: pointer;
         .comment-wrapper.own & {
             right: auto;
             left: -56px;
