@@ -309,6 +309,12 @@ export default {
         @media screen and (max-width: $screenSmall) {
             margin-bottom: 0px;
         }
+        @media	only screen and (-webkit-min-device-pixel-ratio: 1.3),
+        only screen and (-o-min-device-pixel-ratio: 13/10),
+        only screen and (min-resolution: 120dpi)
+        {
+            margin-bottom: 0px;
+        }
         .input-wrapper {
             border-radius: 6px;
             border: solid 2px $light2;

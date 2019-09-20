@@ -318,7 +318,7 @@ export default {
             position: fixed;
             height: calc(100vh - 130px);
             overflow: hidden;
-            height: 100%;
+            // height: 100%;
             width: 100%;
             transition-timing-function: ease-out;
             transition: .3s;
