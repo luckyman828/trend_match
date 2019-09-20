@@ -23,14 +23,20 @@
                 </template> -->
             </div>
             <span class="body">{{comment.comment}}</span>
-            <!-- <template v-if="userPermissionLevel >= 2">
-                <TooltipAlt2 v-if="actionScope == 'phaseAction'" :body="'Choose as remark'">
+            <template v-if="userPermissionLevel >= 2">
+                <!-- <TooltipAlt2 v-if="actionScope == 'phaseAction'" :body="'Choose as remark'">
                     <span :class="{active: comment.phase_final}" @click="onMarkAsFinal(comment)" class="circle"><i class="far fa-comment-check"></i></span>
                 </TooltipAlt2>
                 <TooltipAlt2 v-else-if="actionScope == 'teamAction' && comment.team_id == currentTeamId" :body="'Choose as team remark'">
                     <span :class="{active: comment.team_final && comment.team_id == currentTeamId}" @click="onMarkAsFinal(comment)" class="circle"><i class="far fa-comment-check"></i></span>
+                </TooltipAlt2> -->
+                <TooltipAlt2 v-if="actionScope == 'phaseAction'" :body="'Remark'">
+                    <span :class="{active: comment.phase_final}" class="circle"><i class="far fa-comment-check"></i></span>
                 </TooltipAlt2>
-            </template> -->
+                <TooltipAlt2 v-else-if="actionScope == 'teamAction' && comment.team_id == currentTeamId" :body="'Remark'">
+                    <span :class="{active: comment.team_final && comment.team_id == currentTeamId}" class="circle"><i class="far fa-comment-check"></i></span>
+                </TooltipAlt2>
+            </template>
         </div>
         <span class="user" v-if="comment.user != null">
             <span class="team" v-if="comment.team_id > 0">

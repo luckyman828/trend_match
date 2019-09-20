@@ -698,9 +698,6 @@ export default{
         this.sortProducts
         this.productsTest = this.productsFiltered
     },
-    destroyed() {
-        this.unsub()
-    }
 }
 </script>
 

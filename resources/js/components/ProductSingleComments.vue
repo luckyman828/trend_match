@@ -4,7 +4,7 @@
             <h4>Comments</h4>
 
             <toggle v-if="userPermissionLevel < 2" :options="['team comments']" v-model="commentFilter" ref="toggle"/>
-            <toggle v-else-if="userPermissionLevel == 2" :options="['team comments', 'remarks']" :defaultOption="2" v-model="commentFilter" ref="toggle"/>
+            <toggle v-else-if="userPermissionLevel == 2" :options="['team comments', 'remarks']" :defaultOption="1" v-model="commentFilter" ref="toggle"/>
             <toggle v-else :options="['all comments', 'remarks']" :defaultOption="2" v-model="commentFilter" ref="toggle"/>
 
         </div>
@@ -27,7 +27,7 @@
             <div class="input-wrapper">
                 <i class="far fa-comment"></i>
                 <textarea ref="commentField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="comment" id="comment-input" :placeholder="placeholderText" v-model="newComment.comment" 
-                @input="resizeTextarea"></textarea>
+                oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
                 <label>
                     <input type="checkbox" v-model="newComment.important" name="comment-important">
                     <span class="checkmark" :class="{active: newComment.important}" @mouseover="showTooltip($event, 'Important comment')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
@@ -59,6 +59,9 @@ export default {
     },
     data: function () { return {
         newComment: {
+            user_id: this.authUser.id,
+            product_id: this.product.id,
+            team_id: this.currentTeamId,
             phase: 1,
             comment: '',
             important: false,
@@ -83,27 +86,17 @@ export default {
                 return true
             else return false
         },
-        commentToPost () {
-            return {
-                user_id: this.authUser.id,
-                product_id: this.product.id,
-                team_id: this.currentTeamId,
-                phase: 1,
-                comment: this.newComment.comment,
-                important: this.newComment.important,
-                team_final: this.newComment.team_final,
-                phase_final: this.newComment.phase_final,
-            }
-        },
         placeholderText () {
-            const filter = this.commentFilter
-            if (filter == 'remarks') return 'Write a new remark..'
-            else return 'Write a comment..'
+            // const filter = this.commentFilter
+            // if (filter == 'remarks') return 'Write a new remark..'
+            // else return 'Write a comment..'
+            return 'Write a new remark..'
         },
         submitText () {
-            const filter = this.commentFilter
-            if (filter == 'remarks') return 'Submit remark'
-            else return 'Submit comment'
+            // const filter = this.commentFilter
+            // if (filter == 'remarks') return 'Submit remark'
+            // else return 'Submit comment'
+            return 'Submit remark'
         },
         commentsFiltered () {
             const comments = this.comments
@@ -171,16 +164,13 @@ export default {
             if (e) e.preventDefault()
 
             if (!this.submitDisabled) {
-                await this.createComment({comment: this.commentToPost})
+                await this.createComment({comment: this.newComment})
     
                 // Reset comment
                 this.newComment.comment = ''
                 this.newComment.important = false
                 this.newComment.team_final = false
                 this.newComment.phase_final = false
-
-                // Reset textarea height
-                this.$refs.commentField.style.height = ''
             }
         },
         onMarkAsFinal(comment) {
@@ -210,11 +200,6 @@ export default {
         hideTooltip() {
             this.tooltip.active = false;
         },
-        resizeTextarea() {
-            const commentField = this.$refs.commentField
-            commentField.style.height = ''
-            commentField.style.height = commentField.scrollHeight + "px"
-        }
     },
     mounted() {
         if (this.actionScope == 'phaseAction')
@@ -304,10 +289,6 @@ export default {
     }
     form {
         margin-top: 12px;
-        margin-bottom: 42px;
-        @media screen and (max-width: $screenSmall) {
-            margin-bottom: 0px;
-        }
         .input-wrapper {
             border-radius: 6px;
             border: solid 2px $light2;
@@ -317,8 +298,6 @@ export default {
             font-weight: 500;
             position: relative;
             color: $dark2;
-            max-height: 200px;
-            overflow: auto;
             > i {
                 position: absolute;
                 left: 14px;
