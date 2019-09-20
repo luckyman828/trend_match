@@ -9030,7 +9030,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'products',
-  props: ['products', 'loading', 'authUser', 'collection', 'selectedCount', 'totalProductCount', 'singleProductToShow', 'nextSingleProductID', 'prevSingleProductID', 'teams', 'sortAsc', 'sortBy', 'selectedIds', 'teamUsers', 'teamFilterId'],
+  props: ['products', 'loading', 'authUser', 'collection', 'selectedCount', 'totalProductCount', 'teams', 'sortAsc', 'sortBy', 'selectedIds', 'teamUsers', 'teamFilterId'],
   components: {
     Loader: _Loader__WEBPACK_IMPORTED_MODULE_0__["default"],
     ProductTotals: _ProductTotals__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -9159,7 +9159,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var index = 0;
       products.forEach(function (product) {
         if (condition == 'No IN') {
-          if (product.ins.length < 1) {
+          if (product.ins.length <= 0 && product.focus.length <= 0) {
             // Get the index of the selected product
             var found = selected.findIndex(function (el) {
               return el == index;

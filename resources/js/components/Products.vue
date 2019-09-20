@@ -140,9 +140,6 @@ export default {
         'collection',
         'selectedCount',
         'totalProductCount',
-        'singleProductToShow',
-        'nextSingleProductID',
-        'prevSingleProductID',
         'teams',
         'sortAsc',
         'sortBy',
@@ -250,7 +247,7 @@ export default {
             products.forEach(product => {
 
                 if (condition == 'No IN') {
-                    if (product.ins.length < 1) {
+                    if (product.ins.length <= 0 && product.focus.length <= 0) {
                         // Get the index of the selected product
                         const found = selected.findIndex(el => el == index)
                         if (found < 0)
