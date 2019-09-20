@@ -8456,12 +8456,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         // return this.productActionUsers.focus.push(this.productActionUsers.ins)
         var actions = [];
         this.product.focus.forEach(function (action) {
-          action.focus = true;
-          actions.push(action);
+          var actionCopy = JSON.parse(JSON.stringify(action));
+          actionCopy.focus = true;
+          actions.push(actionCopy);
         });
         this.product.ins.forEach(function (action) {
-          action.focus = false;
-          actions.push(action);
+          var actionCopy = JSON.parse(JSON.stringify(action));
+          actionCopy.focus = false;
+          actions.push(actionCopy);
         });
         return actions;
       } else return this.product[this.currentTab];

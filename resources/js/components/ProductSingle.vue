@@ -186,12 +186,14 @@ export default {
                 // return this.productActionUsers.focus.push(this.productActionUsers.ins)
                 const actions = []
                 this.product.focus.forEach(action => {
-                    action.focus = true;
-                    actions.push(action)
+                    const actionCopy = JSON.parse(JSON.stringify(action))
+                    actionCopy.focus = true;
+                    actions.push( actionCopy )
                 })
                 this.product.ins.forEach(action => {
-                    action.focus = false
-                    actions.push(action)
+                    const actionCopy = JSON.parse(JSON.stringify(action))
+                    actionCopy.focus = false
+                    actions.push( actionCopy )
                 })
                 return actions
             }
