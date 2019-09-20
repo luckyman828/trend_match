@@ -8665,6 +8665,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var filter = this.commentFilter;
       if (filter == 'remarks') return 'Write a new remark..';else return 'Write a comment..';
     },
+    submitText: function submitText() {
+      var filter = this.commentFilter;
+      if (filter == 'remarks') return 'Submit remark';else return 'Submit comment';
+    },
     commentsFiltered: function commentsFiltered() {
       var _this = this;
 
@@ -18117,7 +18121,8 @@ var render = function() {
         _c("input", {
           staticClass: "button primary xl",
           class: { disabled: _vm.submitDisabled },
-          attrs: { type: "submit", value: "Submit comment" }
+          attrs: { type: "submit" },
+          domProps: { value: _vm.submitText }
         })
       ]),
       _vm._v(" "),

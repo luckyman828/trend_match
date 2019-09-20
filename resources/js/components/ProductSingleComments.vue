@@ -33,7 +33,7 @@
                     <span class="checkmark" :class="{active: newComment.important}" @mouseover="showTooltip($event, 'Important comment')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
                 </label>
             </div>
-            <input type="submit" class="button primary xl" value="Submit comment" :class="{disabled: submitDisabled}">
+            <input type="submit" class="button primary xl" :value="submitText" :class="{disabled: submitDisabled}">
         </form>
         <Tooltip :tooltip="tooltip"/>
     </div>
@@ -99,6 +99,11 @@ export default {
             const filter = this.commentFilter
             if (filter == 'remarks') return 'Write a new remark..'
             else return 'Write a comment..'
+        },
+        submitText () {
+            const filter = this.commentFilter
+            if (filter == 'remarks') return 'Submit remark'
+            else return 'Submit comment'
         },
         commentsFiltered () {
             const comments = this.comments
