@@ -11795,7 +11795,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
     var routeFileId = this.$route.params.catalogueId;
-    if (this.currentFileId != routeFileId) this.setCurrentFileId(routeFileId), this.initRequiresFileId(); // If we already have a workspace id, fetch the data we are missing
+
+    if (this.currentFileId != routeFileId) {
+      this.setCurrentFileId(routeFileId);
+      this.initRequiresFileId();
+    } else {
+      this.loadingFile = false;
+    } // If we already have a workspace id, fetch the data we are missing
+
 
     if (this.currentWorkspaceId != null) this.initRequiresWorkspace(); // Else, wait till a workspace id is set, and then fetch the data
 

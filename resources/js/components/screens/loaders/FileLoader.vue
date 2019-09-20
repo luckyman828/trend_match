@@ -59,9 +59,12 @@ export default {
     created() {
         // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
         const routeFileId = this.$route.params.catalogueId
-        if (this.currentFileId != routeFileId)
-            this.setCurrentFileId(routeFileId),
+        if (this.currentFileId != routeFileId) {
+            this.setCurrentFileId(routeFileId)
             this.initRequiresFileId()
+        } else {
+            this.loadingFile = false
+        }
 
         // If we already have a workspace id, fetch the data we are missing
         if (this.currentWorkspaceId != null)
