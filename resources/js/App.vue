@@ -262,7 +262,9 @@ export default{
             width: calc(100% + 32px);
         }
         &.disabled {
-            opacity: .5;
+            .flex-table-row:not(.header-row) {
+                opacity: .5;
+            }
         }
         .flex-table-row {
             display: flex;

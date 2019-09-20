@@ -432,7 +432,9 @@ export default {
             width: 100%;
         }
         &.disabled {
-            opacity: .5;
+            .product-row {
+                opacity: .5;
+            }
         }
     }
     .flex-table-row {
