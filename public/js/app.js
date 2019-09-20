@@ -8634,9 +8634,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   data: function data() {
     return {
       newComment: {
-        user_id: this.authUser.id,
-        product_id: this.product.id,
-        team_id: this.currentTeamId,
         phase: 1,
         comment: '',
         important: false,
@@ -8658,17 +8655,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     submitDisabled: function submitDisabled() {
       if (this.newComment.comment.length < 1 || this.submittingComment || this.currentTeamId < 0) return true;else return false;
     },
+    commentToPost: function commentToPost() {
+      return {
+        user_id: this.authUser.id,
+        product_id: this.product.id,
+        team_id: this.currentTeamId,
+        phase: 1,
+        comment: this.newComment.comment,
+        important: this.newComment.important,
+        team_final: this.newComment.team_final,
+        phase_final: this.newComment.phase_final
+      };
+    },
     placeholderText: function placeholderText() {
-      // const filter = this.commentFilter
-      // if (filter == 'remarks') return 'Write a new remark..'
-      // else return 'Write a comment..'
-      return 'Write a new remark..';
+      var filter = this.commentFilter;
+      if (this.userPermissionLevel >= 2) return 'Write a new remark..';else return 'Write a comment..';
     },
     submitText: function submitText() {
-      // const filter = this.commentFilter
-      // if (filter == 'remarks') return 'Submit remark'
-      // else return 'Submit comment'
-      return 'Submit remark';
+      var filter = this.commentFilter; // if (filter == 'remarks') return 'Submit remark'
+
+      if (this.userPermissionLevel >= 2) return 'Submit remark';else return 'Submit comment';
     },
     commentsFiltered: function commentsFiltered() {
       var _this = this;
@@ -8738,13 +8744,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 if (e) e.preventDefault();
 
                 if (this.submitDisabled) {
-                  _context.next = 8;
+                  _context.next = 9;
                   break;
                 }
 
                 _context.next = 4;
                 return this.createComment({
-                  comment: this.newComment
+                  comment: this.commentToPost
                 });
 
               case 4:
@@ -8752,9 +8758,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 this.newComment.comment = '';
                 this.newComment.important = false;
                 this.newComment.team_final = false;
-                this.newComment.phase_final = false;
+                this.newComment.phase_final = false; // Reset textarea height
 
-              case 8:
+                this.$refs.commentField.style.height = '';
+
+              case 9:
               case "end":
                 return _context.stop();
             }
@@ -8793,6 +8801,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     hideTooltip: function hideTooltip() {
       this.tooltip.active = false;
+    },
+    resizeTextarea: function resizeTextarea() {
+      var commentField = this.$refs.commentField;
+      commentField.style.height = '';
+      commentField.style.height = commentField.scrollHeight + "px";
     }
   }),
   mounted: function mounted() {
@@ -12111,7 +12124,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.toggle[data-v-6d61fa50] {\n  border: solid 1px #dfdfdf;\n  border-radius: 50px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.toggle .option[data-v-6d61fa50] {\n  font-size: 12px;\n  padding: 6px 14px;\n  font-weight: 700;\n  color: #a8a8a8;\n  text-transform: uppercase;\n  display: inline-block;\n}\n.toggle .option.active[data-v-6d61fa50] {\n  color: #1b1c1d;\n  background: #dfdfdf;\n  border-radius: 50px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #f3f3f3;\n  border-radius: 8px;\n  padding: 36px 24px;\n  height: 57vh;\n  max-height: 57vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 24px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment-wrapper.own[data-v-6d61fa50] {\n  text-align: right;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #dfdfdf;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #a8a8a8;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #a8a8a8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #a8a8a8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #a8a8a8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #f3f3f3;\n  color: #a8a8a8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3b86ff;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}", ""]);
+exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.toggle[data-v-6d61fa50] {\n  border: solid 1px #dfdfdf;\n  border-radius: 50px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.toggle .option[data-v-6d61fa50] {\n  font-size: 12px;\n  padding: 6px 14px;\n  font-weight: 700;\n  color: #a8a8a8;\n  text-transform: uppercase;\n  display: inline-block;\n}\n.toggle .option.active[data-v-6d61fa50] {\n  color: #1b1c1d;\n  background: #dfdfdf;\n  border-radius: 50px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #f3f3f3;\n  border-radius: 8px;\n  padding: 36px 24px;\n  height: 57vh;\n  max-height: 57vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 24px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment-wrapper.own[data-v-6d61fa50] {\n  text-align: right;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n  margin-bottom: 42px;\n}\n@media screen and (max-width: 1480px) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #dfdfdf;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #a8a8a8;\n  max-height: 200px;\n  overflow: auto;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #a8a8a8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #a8a8a8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #a8a8a8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #f3f3f3;\n  color: #a8a8a8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3b86ff;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}", ""]);
 
 // exports
 
@@ -17952,7 +17965,7 @@ var render = function() {
                 ref: "toggle",
                 attrs: {
                   options: ["team comments", "remarks"],
-                  defaultOption: 1
+                  defaultOption: 2
                 },
                 model: {
                   value: _vm.commentFilter,
@@ -18036,9 +18049,7 @@ var render = function() {
             attrs: {
               name: "comment",
               id: "comment-input",
-              placeholder: _vm.placeholderText,
-              oninput:
-                'this.style.height = "";this.style.height = this.scrollHeight + "px"'
+              placeholder: _vm.placeholderText
             },
             domProps: { value: _vm.newComment.comment },
             on: {
@@ -18076,12 +18087,15 @@ var render = function() {
                 }
                 return _vm.onSubmitComment($event)
               },
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.$set(_vm.newComment, "comment", $event.target.value)
-              }
+              input: [
+                function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.newComment, "comment", $event.target.value)
+                },
+                _vm.resizeTextarea
+              ]
             }
           }),
           _vm._v(" "),
