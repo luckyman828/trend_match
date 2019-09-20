@@ -8684,7 +8684,7 @@ a {
 }
 
 a.text-link {
-  color: #3B86FF;
+  color: #3b86ff;
 }
 
 textarea {
@@ -8699,7 +8699,7 @@ textarea {
 }
 
 .login-wrapper {
-  background: #3C3B54;
+  background: #3c3b54;
   min-height: 100vh;
 }
 
@@ -8747,7 +8747,7 @@ textarea {
   text-align: center;
   font-size: 24px;
   font-weight: 400;
-  color: #1B1C1D;
+  color: #1b1c1d;
   margin-bottom: 12px;
 }
 
@@ -8758,7 +8758,7 @@ textarea {
 .login-wrapper .login .login-form h3 {
   font-size: 16px;
   text-align: center;
-  color: #A8A8A8;
+  color: #a8a8a8;
   font-weight: 400;
   margin-bottom: 60px;
 }
@@ -8766,7 +8766,7 @@ textarea {
 .login-wrapper .login .login-form label {
   cursor: pointer;
   padding-left: 6px;
-  color: #3C3B54;
+  color: #3c3b54;
   font-weight: 500;
   width: 130px;
   display: inline-block;
@@ -8788,7 +8788,7 @@ textarea {
 
 .login-wrapper .login .login-form .forgot-password {
   text-align: center;
-  color: #3C3B54;
+  color: #3c3b54;
   text-decoration: underline;
   font-size: 14px;
   font-weight: 400;
@@ -8798,7 +8798,7 @@ textarea {
 }
 
 .login-wrapper .login .login-form .has-underline {
-  border-bottom: solid 2px #F3F3F3;
+  border-bottom: solid 2px #f3f3f3;
   max-width: 400px;
   margin-left: auto;
   margin-right: auto;
@@ -8812,7 +8812,7 @@ textarea {
   max-width: 400px;
   width: 100%;
   margin: auto;
-  background: #3C3B54;
+  background: #3c3b54;
   border-radius: 4px;
   margin-top: 4px;
   font-size: 14px;
@@ -8848,7 +8848,7 @@ textarea {
           justify-content: center;
   -webkit-box-align: center;
           align-items: center;
-  color: #A8A8A8;
+  color: #a8a8a8;
   border: none;
   text-decoration: none;
 }
@@ -8878,8 +8878,8 @@ textarea {
 .circle.dark-hover:hover,
 .circle.role-2 {
   color: white;
-  border-color: #3C3B54;
-  background: #3C3B54;
+  border-color: #3c3b54;
+  background: #3c3b54;
 }
 
 .button.dark.invisible,
@@ -8912,7 +8912,7 @@ textarea {
 .circle.dark-hover:hover.ghost,
 .circle.role-2.invisible,
 .circle.role-2.ghost {
-  color: #1B1C1D;
+  color: #1b1c1d;
   background: transparent;
 }
 
@@ -8931,8 +8931,8 @@ textarea {
 .circle.green,
 .circle.green-hover:hover,
 .circle.role-4 {
-  border-color: #5EE2A0;
-  background: #5EE2A0;
+  border-color: #5ee2a0;
+  background: #5ee2a0;
   color: white;
 }
 
@@ -8966,7 +8966,7 @@ textarea {
 .circle.green-hover:hover.ghost,
 .circle.role-4.invisible,
 .circle.role-4.ghost {
-  color: #5EE2A0;
+  color: #5ee2a0;
   background: transparent;
 }
 
@@ -8985,8 +8985,8 @@ textarea {
 .circle.red,
 .circle.red-hover:hover,
 .circle.role-5 {
-  border-color: #FF6565;
-  background: #FF6565;
+  border-color: #ff6565;
+  background: #ff6565;
   color: white;
 }
 
@@ -9020,7 +9020,7 @@ textarea {
 .circle.red-hover:hover.ghost,
 .circle.role-5.invisible,
 .circle.role-5.ghost {
-  color: #FF6565;
+  color: #ff6565;
   background: transparent;
 }
 
@@ -9039,8 +9039,8 @@ textarea {
 .circle.primary,
 .circle.primary-hover:hover,
 .circle.role-1 {
-  border-color: #3B86FF;
-  background: #3B86FF;
+  border-color: #3b86ff;
+  background: #3b86ff;
   color: white;
 }
 
@@ -9074,7 +9074,7 @@ textarea {
 .circle.primary-hover:hover.ghost,
 .circle.role-1.invisible,
 .circle.role-1.ghost {
-  color: #3B86FF;
+  color: #3b86ff;
   background: transparent;
 }
 
@@ -9088,9 +9088,9 @@ textarea {
 .bubble.light-hover:hover,
 .circle.light,
 .circle.light-hover:hover {
-  border-color: #F3F3F3;
-  background: #F3F3F3;
-  color: #3C3B54;
+  border-color: #f3f3f3;
+  background: #f3f3f3;
+  color: #3c3b54;
 }
 
 .button.light.invisible,
@@ -9113,7 +9113,7 @@ textarea {
 .circle.light.ghost,
 .circle.light-hover:hover.invisible,
 .circle.light-hover:hover.ghost {
-  color: #F3F3F3;
+  color: #f3f3f3;
   background: transparent;
 }
 
@@ -9132,9 +9132,9 @@ textarea {
 .circle.light-2,
 .circle.light-2-hover:hover,
 .circle.role-3 {
-  border-color: #DFDFDF;
-  background: #DFDFDF;
-  color: #3C3B54;
+  border-color: #dfdfdf;
+  background: #dfdfdf;
+  color: #3c3b54;
 }
 
 .button.light-2.invisible,
@@ -9167,7 +9167,7 @@ textarea {
 .circle.light-2-hover:hover.ghost,
 .circle.role-3.invisible,
 .circle.role-3.ghost {
-  color: #DFDFDF;
+  color: #dfdfdf;
   background: transparent;
 }
 
@@ -9208,7 +9208,7 @@ textarea {
   height: 32px;
   font-size: 12px;
   padding: 0 12px;
-  color: #A8A8A8;
+  color: #a8a8a8;
   border-radius: 4px;
 }
 
@@ -9313,7 +9313,7 @@ textarea {
   padding: 0 12px;
   border-radius: 50%;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-  background: #F3F3F3;
+  background: #f3f3f3;
   font-weight: 500;
 }
 
@@ -9333,10 +9333,10 @@ textarea {
   width: 40px;
   display: block;
   text-align: center;
-  background: #DFDFDF;
+  background: #dfdfdf;
   border-radius: 20px;
   cursor: pointer;
-  color: #3C3B54;
+  color: #3c3b54;
 }
 
 .close.circle i {
@@ -9345,7 +9345,7 @@ textarea {
 }
 
 .close.circle:hover {
-  color: #FF6565;
+  color: #ff6565;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -9379,7 +9379,7 @@ textarea {
   width: 100%;
   max-width: 646px;
   margin: 0;
-  background: #F9F9F9;
+  background: #f9f9f9;
   margin-bottom: 5vh;
 }
 
@@ -9400,7 +9400,7 @@ textarea {
 
 .modal-wrapper > .modal > .inner > .header .desc {
   font-size: 16px;
-  color: #A8A8A8;
+  color: #a8a8a8;
 }
 
 .modal-wrapper.active > .modal,
@@ -9435,8 +9435,8 @@ textarea {
   padding-right: 32px;
   height: 32px;
   line-height: 30px;
-  border: solid 1px #DFDFDF;
-  color: #1B1C1D;
+  border: solid 1px #dfdfdf;
+  color: #1b1c1d;
   font-weight: 700;
   border-radius: 4px;
   background: white;
@@ -9445,7 +9445,7 @@ textarea {
 .dropdown-button img {
   padding: 4px;
   border-radius: 6px;
-  background: #3B86FF;
+  background: #3b86ff;
   display: inline-block;
   margin-right: 8px;
   margin-left: -8px;
@@ -9458,14 +9458,14 @@ textarea {
   width: 20px;
   height: 20px;
   line-height: 20px;
-  background: #F3F3F3;
+  background: #f3f3f3;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
   border-radius: 10px;
 }
 
 .dropdown-button i {
-  color: #A8A8A8;
+  color: #a8a8a8;
   position: absolute;
   right: 12px;
 }
@@ -9487,7 +9487,7 @@ textarea {
 .tooltip .inner {
   border-radius: 4px;
   background: white;
-  border: solid 1px #DFDFDF;
+  border: solid 1px #dfdfdf;
   margin-top: 7px;
   overflow: hidden;
 }
@@ -9502,7 +9502,7 @@ textarea {
   display: block;
   background: white;
   left: calc(50% - 6px);
-  border: solid 1px #DFDFDF;
+  border: solid 1px #dfdfdf;
   border-right: 0;
   border-bottom: 0;
   top: 2px;
@@ -9542,7 +9542,7 @@ textarea {
   padding: 12px 8px 8px;
   font-size: 14px;
   font-weight: 400;
-  color: #A8A8A8;
+  color: #a8a8a8;
   text-align: center;
 }
 
@@ -9577,7 +9577,7 @@ textarea {
   font-size: 12px;
   padding: 0 12px;
   margin: 0;
-  border: solid 1px #43425D;
+  border: solid 1px #43425d;
   height: 32px;
   line-height: 32px;
   display: -webkit-box;
@@ -9611,8 +9611,8 @@ textarea {
 .dark .dropdown .inner,
 .tooltip.dark .inner,
 .dark .tooltip .inner {
-  background: #43425D;
-  border-color: #43425D;
+  background: #43425d;
+  border-color: #43425d;
 }
 
 .dropdown.dark::before,
@@ -9623,29 +9623,29 @@ textarea {
 .tooltip.dark .arrow,
 .dark .tooltip::before,
 .dark .tooltip .arrow {
-  background: #43425D;
-  border: solid 1px #43425D;
+  background: #43425d;
+  border: solid 1px #43425d;
 }
 
 .dropdown.dark .header,
 .dark .dropdown .header,
 .tooltip.dark .header,
 .dark .tooltip .header {
-  color: #A8A8A8;
+  color: #a8a8a8;
 }
 
 .dropdown.dark .body,
 .dark .dropdown .body,
 .tooltip.dark .body,
 .dark .tooltip .body {
-  background: #43425D;
+  background: #43425d;
 }
 
 .dropdown.dark .body:not(:first-child),
 .dark .dropdown .body:not(:first-child),
 .tooltip.dark .body:not(:first-child),
 .dark .tooltip .body:not(:first-child) {
-  background: #56556E;
+  background: #56556e;
 }
 
 .tooltip .body {
@@ -9667,7 +9667,7 @@ textarea {
 .radiobox .checkmark {
   height: 18px;
   width: 18px;
-  border: solid 1px #DFDFDF;
+  border: solid 1px #dfdfdf;
   border-radius: 10px;
   display: inline-block;
   margin-right: 8px;
@@ -9700,7 +9700,7 @@ textarea {
   top: 50%;
   -webkit-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
-  background: #3B86FF;
+  background: #3b86ff;
   border-radius: 10px;
 }
 
@@ -9731,14 +9731,14 @@ textarea {
           align-items: center;
   font-weight: 400;
   white-space: nowrap;
-  border: solid 1px #F9F9F9;
+  border: solid 1px #f9f9f9;
   font-size: 12px;
   cursor: pointer;
 }
 
 .radio-buttons label:hover,
 .checkbox-buttons label:hover {
-  background: #F9F9F9;
+  background: #f9f9f9;
 }
 
 .radio-buttons.no-marks .label,
@@ -9755,28 +9755,28 @@ textarea {
 
 .radio-buttons:not(.checkbox-buttons) label.active,
 .checkbox-buttons:not(.checkbox-buttons) label.active {
-  background: #F3F3F3;
+  background: #f3f3f3;
 }
 
 .radio-buttons.dark label,
 .dark .radio-buttons label,
 .checkbox-buttons.dark label,
 .dark .checkbox-buttons label {
-  border-color: #43425D;
+  border-color: #43425d;
 }
 
 .radio-buttons.dark label:hover,
 .dark .radio-buttons label:hover,
 .checkbox-buttons.dark label:hover,
 .dark .checkbox-buttons label:hover {
-  background: #43425D;
+  background: #43425d;
 }
 
 form > label,
 .form-group > label {
   font-size: 12px;
   font-weight: 500;
-  color: #3C3B54;
+  color: #3c3b54;
   display: block;
   width: 100%;
   margin-bottom: 12px;
@@ -9786,7 +9786,7 @@ form > label,
 form > label.team,
 .form-group > label.team {
   position: relative;
-  background: #F3F3F3;
+  background: #f3f3f3;
   margin-bottom: 72px;
   margin-top: 40px;
   border-radius: 4px;
@@ -9804,7 +9804,7 @@ form > label.team .square,
   position: absolute;
   left: 8px;
   top: 8px;
-  background: #3B86FF;
+  background: #3b86ff;
   color: white;
   height: 24px;
   width: 24px;
@@ -9825,7 +9825,7 @@ label:not(.radiobox) .form-group > label,
 label:not(.checkbox) .form-group > label {
   display: block;
   width: 100%;
-  border: solid 1px #F3F3F3;
+  border: solid 1px #f3f3f3;
   border-radius: 4px;
   height: 40px;
   box-sizing: border-box;
@@ -9841,7 +9841,7 @@ label:not(.checkbox) form > label::-webkit-input-placeholder,
 .form-group > label > input::-webkit-input-placeholder,
 label:not(.radiobox) .form-group > label::-webkit-input-placeholder,
 label:not(.checkbox) .form-group > label::-webkit-input-placeholder {
-  color: #DFDFDF;
+  color: #dfdfdf;
 }
 
 form > label > input::-moz-placeholder,
@@ -9850,7 +9850,7 @@ label:not(.checkbox) form > label::-moz-placeholder,
 .form-group > label > input::-moz-placeholder,
 label:not(.radiobox) .form-group > label::-moz-placeholder,
 label:not(.checkbox) .form-group > label::-moz-placeholder {
-  color: #DFDFDF;
+  color: #dfdfdf;
 }
 
 form > label > input:-ms-input-placeholder,
@@ -9859,7 +9859,7 @@ label:not(.checkbox) form > label:-ms-input-placeholder,
 .form-group > label > input:-ms-input-placeholder,
 label:not(.radiobox) .form-group > label:-ms-input-placeholder,
 label:not(.checkbox) .form-group > label:-ms-input-placeholder {
-  color: #DFDFDF;
+  color: #dfdfdf;
 }
 
 form > label > input::-ms-input-placeholder,
@@ -9868,7 +9868,7 @@ label:not(.checkbox) form > label::-ms-input-placeholder,
 .form-group > label > input::-ms-input-placeholder,
 label:not(.radiobox) .form-group > label::-ms-input-placeholder,
 label:not(.checkbox) .form-group > label::-ms-input-placeholder {
-  color: #DFDFDF;
+  color: #dfdfdf;
 }
 
 form > label > input::placeholder,
@@ -9877,7 +9877,7 @@ label:not(.checkbox) form > label::placeholder,
 .form-group > label > input::placeholder,
 label:not(.radiobox) .form-group > label::placeholder,
 label:not(.checkbox) .form-group > label::placeholder {
-  color: #DFDFDF;
+  color: #dfdfdf;
 }
 
 form > label > input[type=submit],
@@ -9907,13 +9907,13 @@ label:not(.checkbox) .form-group > label[type=submit] {
   opacity: 0;
 }
 
-@media screen and (max-width: 1400px) {
+@media screen and (max-width: 1480px) {
   .hide-screen-sm {
     display: none !important;
   }
 }
 
-@media screen and (min-width: 1401px) {
+@media screen and (min-width: 1481px) {
   .show-screen-sm {
     display: none !important;
   }

@@ -7,33 +7,33 @@ $font-size-base: 0.9rem;
 $line-height-base: 1.6;
 
 // Colors
-$primary: #3B86FF;
+$primary: #3b86ff;
 $primaryDark: mix(black, $primary, 10%);
 
-$secondary: #69E4A6;
-$secondaryLight: rgba($secondary, .35);
+$secondary: #69e4a6;
+$secondaryLight: rgba($secondary, 0.35);
 
-$dark: #1B1C1D;
-$dark05: #3C3B54;
+$dark: #1b1c1d;
+$dark05: #3c3b54;
 $dark1: #535353;
 $dark25: #888;
-$dark2: #A8A8A8;
-$darkAlt: #43425D;
-$darkAlt2: #56556E;
+$dark2: #a8a8a8;
+$darkAlt: #43425d;
+$darkAlt2: #56556e;
 //$darker: mix(black, $dark, 15%);
 $darker: mix(black, $dark, 20%);
 $darker1: mix(black, $dark, 30%);
-$light: #F9F9F9;
-$light1: #F3F3F3;
-$light2: #DFDFDF;
+$light: #f9f9f9;
+$light1: #f3f3f3;
+$light2: #dfdfdf;
 // $light4: #EEEEEE;
 
-$blue: #3B86FF;
-$red: #FF6565;
+$blue: #3b86ff;
+$red: #ff6565;
 $orange: #f6993f;
 $yellow: #ffed4a;
-$green: #5EE2A0;
-$yellowGreen: #B5CC18;
+$green: #5ee2a0;
+$yellowGreen: #b5cc18;
 
 // Sidebar
 $sidebarWidth: 260px;
@@ -42,7 +42,7 @@ $sidebarWidth: 260px;
 $navbarHeight: 72px;
 
 // Screen sizes / Breakpoints
-$screenSmall: 1400px;
+$screenSmall: 1480px;
 
 // Media Queries
 // $mq-small: "(min-width:)"

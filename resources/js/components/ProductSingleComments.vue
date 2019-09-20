@@ -59,9 +59,6 @@ export default {
     },
     data: function () { return {
         newComment: {
-            user_id: this.authUser.id,
-            product_id: this.product.id,
-            team_id: this.currentTeamId,
             phase: 1,
             comment: '',
             important: false,
@@ -85,6 +82,18 @@ export default {
             if(this.newComment.comment.length < 1 || this.submittingComment || this.currentTeamId < 0)
                 return true
             else return false
+        },
+        commentToPost () {
+            return {
+                user_id: this.authUser.id,
+                product_id: this.product.id,
+                team_id: this.currentTeamId,
+                phase: 1,
+                comment: this.newComment.comment,
+                important: this.newComment.important,
+                team_final: this.newComment.team_final,
+                phase_final: this.newComment.phase_final,
+            }
         },
         placeholderText () {
             const filter = this.commentFilter
@@ -157,7 +166,7 @@ export default {
             if (e) e.preventDefault()
 
             if (!this.submitDisabled) {
-                await this.createComment({comment: this.newComment})
+                await this.createComment({comment: this.commentToPost})
     
                 // Reset comment
                 this.newComment.comment = ''
