@@ -5,7 +5,7 @@
                 <span class="important bubble"><i class="fas fa-exclamation"></i></span>
             </TooltipAlt2>
             <template v-if="comment.votes.length > 0">
-                <tooltipAlt2 v-if="userPermissionLevel == 2" :header="'Comment votes'" :array="comment.votesScoped.map(vote => {vote.user.email})">
+                <tooltipAlt2 v-if="userPermissionLevel == 2" :header="'Comment votes'" :array="comment.votesScoped.map(vote => vote.user.email)">
                     <span class="votes bubble" :class="{second: comment.important}">{{comment.votesScoped.length}}</span>
                 </tooltipAlt2>
                 <tooltipAlt2 v-else-if="userPermissionLevel > 2" :header="'Comment votes'" :array="comment.teamVotes" :arrayLabelKey="'title'" :arrayValueKey="'votes'">
@@ -63,9 +63,6 @@ export default {
         authUser() {
             return AuthUser.query().first()
         },
-        voteUsers () {
-            return comment.votesScoped.map(vote => {vote.user_id})
-        }
     },
     methods: {
         ...mapActions('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']),

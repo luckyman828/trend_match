@@ -7474,11 +7474,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']), {
     authUser: function authUser() {
       return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_1__["default"].query().first();
-    },
-    voteUsers: function voteUsers() {
-      return comment.votesScoped.map(function (vote) {
-        vote.user_id;
-      });
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']), {
@@ -15583,7 +15578,7 @@ var render = function() {
                       attrs: {
                         header: "Comment votes",
                         array: _vm.comment.votesScoped.map(function(vote) {
-                          vote.user.email
+                          return vote.user.email
                         })
                       }
                     },
