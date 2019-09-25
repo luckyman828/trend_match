@@ -8,13 +8,13 @@ export default class PhaseTeam extends Model {
     // List of all fields (schema) of the product model. `this.attr` is used
     // for the generic field type. The argument is the default value.
 
-    static primaryKey = ['phase_id', 'team_id']
+    static primaryKey = ['phase_id', 'team_id', 'role_id']
 
     static fields() {
         const data = {
             phase_id: this.attr(null),
             team_id: this.attr(null),
-            role_level: this.attr(null),
+            role_id: this.attr(null),
         }
 
         return data

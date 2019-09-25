@@ -24,9 +24,7 @@ export default {
             return Workspace.find(state.currentWorkspaceId)
         },
         currentTeam: state => {
-            return state.currentTeamId == 0
-                ? 'Global'
-                : Team.find(state.currentTeamId)
+            return state.currentTeamId == 0 ? 'Global' : Team.find(state.currentTeamId)
         },
         workspaceCurrency: state => {
             return 'EUR'
@@ -41,9 +39,7 @@ export default {
             return state.currentFileId
         },
         currentFile: state => {
-            return state.currentFileId != null
-                ? File.find(state.currentFileId)
-                : null
+            return state.currentFileId != null ? File.find(state.currentFileId) : null
         },
         userPermissionLevel: state => {
             return state.userPermissionLevel
@@ -79,7 +75,7 @@ export default {
         },
         authUser() {
             return AuthUser.query()
-                .with('teams.files|teamFiles')
+                .with('teams.files|teamFiles|phases')
                 .with('workspaces')
                 .first()
         },

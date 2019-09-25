@@ -29,8 +29,18 @@ Route::middleware('auth:api')->group( function(){
     Route::get('workspace/{workspace_id}/team-files', 'WorkspaceController@teamFiles');
     // List workspace users
     Route::get('workspace/{workspace_id}/users', 'WorkspaceController@users');
-    // List phase teams
+    // List workspace phases
+    Route::get('workspace/{workspace_id}/phases', 'WorkspaceController@phases');
+    // List workspace phase teams
     Route::get('workspace/{workspace_id}/phase-teams', 'WorkspaceController@phaseTeams');
+    // List workspace tasks
+    Route::get('workspace/{workspace_id}/tasks', 'WorkspaceController@tasks');
+    // List workspace task tasks
+    Route::get('workspace/{workspace_id}/task-tasks', 'WorkspaceController@taskTasks');
+    // List workspace task teams
+    Route::get('workspace/{workspace_id}/task-teams', 'WorkspaceController@taskTeams');
+    // List workspace file tasks
+    Route::get('workspace/{workspace_id}/file-tasks', 'WorkspaceController@fileTasks');
 
     // xxx TEAMS xxx
     // List current workspace team invites
@@ -46,6 +56,8 @@ Route::middleware('auth:api')->group( function(){
     Route::get('file/{file_id}/final-actions', 'FileController@finalActions');
     Route::get('file/{file_id}/team-products', 'FileController@teamProducts');
     Route::get('file/{file_id}/phase-products', 'FileController@phaseProducts');
+    Route::get('file/{file_id}/task-actions', 'FileController@taskActions');
+    Route::get('file/{file_id}/requests', 'FileController@requests');
     
 
     // xxx CATALOGS xxx

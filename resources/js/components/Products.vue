@@ -1,17 +1,16 @@
 <template>
-    <div class="products card" :class="{sticky: sticky}">
+    <div class="products card" :class="[{sticky: sticky}]">
         <div class="scroll-bg"></div>
         <product-single :loading="loadingSingle" :visible="showSingle" :sticky="sticky" :authUser="authUser" @closeSingle="onCloseSingle" @onToggleInOut="toggleInOut"/>
-        <div class="flex-table" :class="{disabled: showSingle}">
+        <div class="flex-table" :class="[{disabled: showSingle}]">
             <div class="header-row flex-table-row">
                 <div class="product-totals">
                     <span>{{selectedCount}} selected</span>
                     <span v-if="products.length != totalProductCount">{{products.length}}/{{totalProductCount}} showing</span>
                     <span v-else>{{totalProductCount}} records</span>
-                    <!-- <span>{{totalProductCount}} records</span> -->
                 </div>
 
-                <th class="select dropdown-parent" @click="toggleDropdown($event)" v-if="authUser.role_id >= 2">
+                <th class="select dropdown-parent" @click="toggleDropdown($event)" v-if="massSelectAvailable">
                     <Dropdown ref="multiSelectDropdown">
                         <template v-slot:button="slotProps">
                             <span @click="slotProps.toggle">Select <i class="fas fa-chevron-down"></i></span>
@@ -21,6 +20,9 @@
                         </template>
                     </Dropdown>
                 </th>
+                <th class="select" v-else-if="selectAvailable">
+                    <span>Select</span>
+                </th>
                 <th class="clickable id" :class="{active: this.sortBy == 'datasource_id'}" @click="onSortBy('datasource_id', true)">
                     Id <i class="fas" :class="[(this.sortBy == 'datasource_id' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
@@ -29,7 +31,7 @@
                    Product name <i class="fas" :class="[(this.sortBy == 'title' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
 
-                <template v-if="userPermissionLevel != viewAdminPermissionLevel">
+                <template v-if="feedbackAvailable">
                     <th :class="{active: this.sortBy == 'focus'}" class="clickable square-wrapper focus" @click="onSortBy('focus', false)">
                         Focus <i class="fas" :class="[(this.sortBy == 'focus' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                     </th>
@@ -44,11 +46,11 @@
                     </th>
                 </template>
 
-                <th :class="{active: this.sortBy == 'commentsScoped'}" class="clickable square-wrapper comments" @click="onSortBy('commentsScoped', false)">
+                <th v-if="commentsAvailable" :class="{active: this.sortBy == 'commentsScoped'}" class="clickable square-wrapper comments" @click="onSortBy('commentsScoped', false)">
                     Comments <i class="fas" :class="[(this.sortBy == 'commentsScoped' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
 
-                <template v-if="userPermissionLevel >= 2">
+                <template v-if="actionsAvailable">
                     <th :class="{active: this.sortBy == actionScope}" class="clickable action" @click="onSortBy(actionScope, false)">
                         {{actionScopeName}} <i class="fas" :class="[(this.sortBy == actionScope && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                     </th>
@@ -61,51 +63,43 @@
             <template v-if="!loading">
                 <div class="product-row flex-table-row"
                 v-for="(product, index) in products" :key="product.id"
-                :class="[(product[actionScope] != null) ? (product[actionScope].action == 0) ? 'out' : 'in' : '']">
-                    <td class="select" v-if="authUser.role_id >= 2 && authUser.role_id != 3">
+                :class="[(actionsAvailable) ? (product[actionScope] != null) ? (product[actionScope].action == 0) ? 'out' : 'in' : '' : '']">
+                    <td class="select" v-if="selectAvailable">
                         <label class="checkbox">
                             <input type="checkbox" @change="onSelect(index)" :ref="'checkbox-for-' + index"/>
                             <span class="checkmark"></span>
                         </label>
                     </td>
                     <td class="id clickable bind-view-single" @click="onViewSingle(product.id)">{{product.datasource_id}}</td>
-                    <td class="image clickable" @click="onViewSingle(product.id)"><img class="bind-view-single" :src="productImg(product.color_variants[0])" @error="imgError(product.color_variants[0])"></td>
-                    <td class="title clickable" @click="onViewSingle(product.id)"><span class="bind-view-single">{{product.title}}</span></td>
+                    <td class="image clickable" @click="onViewSingle(product.id)"><img :src="productImg(product.color_variants[0])" @error="imgError(product.color_variants[0])"></td>
+                    <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
                     
-                    <template v-if="userPermissionLevel != viewAdminPermissionLevel">
-                        <template v-if="currentTeamId == 0">
-                            <td class="square-wrapper focus"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'teams', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
-                            <td class="square-wrapper"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'teams', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
-                            <td class="square-wrapper"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'teams', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
-                            <td class="square-wrapper nds"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'teams', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{teams.length}}</span></td>
-                        </template>
-                        <template v-else>
-                            <td class="square-wrapper focus"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'users', 'Focus', product.focus)" @mouseleave="hideTooltip"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
-                            <td class="square-wrapper"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'users', 'In', product.focus.concat(product.ins))" @mouseleave="hideTooltip"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
-                            <td class="square-wrapper"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'users', 'Out', product.outs)" @mouseleave="hideTooltip"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
-                            <td class="square-wrapper nds"><span class="square light icon-left clickable" @mouseover="showTooltip($event, 'users', 'Not decided', product.nds)" @mouseleave="hideTooltip"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{teamUsers.length}}</span></td>
-                        </template>
+                    <template v-if="feedbackAvailable">
+                        <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
+                        <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
+                        <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
+                        <td class="square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{teams.length}}</span></td>
                     </template>
 
-                    <td class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment bind-view-single"></i>{{product.commentsScoped.length}}</span></td>
+                    <td v-if="commentsAvailable" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment bind-view-single"></i>{{product.commentsScoped.length}}</span></td>
 
-                    <template v-if="userPermissionLevel >= 2">
-                            <td class="action">
-                                <span v-if="userPermissionLevel == 2" class="square light-2 true-square clickable focus-action" :class="[(product[actionScope] != null) ? (product[actionScope].action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 2)">
-                                <i class="far fa-star"></i>
-                                </span>
-                                <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 1)">
-                                In  <i class="far fa-heart"></i>
-                                </span>
-                                <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {'disabled': authUser.role_id == 3}]"  @click="toggleInOut(product, 0)">
-                                Out  <i class="far fa-times-circle"></i>
-                                </span>
-                                <span class="view-single bind-view-single button invisible" @click="onViewSingle(product.id)">View</span>
-                            </td>
+                    <template v-if="actionsAvailable">
+                        <td class="action">
+                            <span v-if="userPermissionLevel == 2" class="square light-2 true-square clickable focus-action" :class="[(product[actionScope] != null) ? (product[actionScope].action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 2)">
+                            <i class="far fa-star"></i>
+                            </span>
+                            <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 1)">
+                            In  <i class="far fa-heart"></i>
+                            </span>
+                            <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {'disabled': authUser.role_id == 3}]"  @click="toggleInOut(product, 0)">
+                            Out  <i class="far fa-times-circle"></i>
+                            </span>
+                            <span class="view-single button invisible" @click="onViewSingle(product.id)">View</span>
+                        </td>
                     </template>
                     <template v-else>
                         <td class="action">
-                            <span class="view-single bind-view-single button invisible" @click="onViewSingle(product.id)">View</span>
+                            <span class="view-single button invisible" @click="onViewSingle(product.id)">View</span>
                         </td>
                     </template>
 
@@ -115,7 +109,6 @@
         <template v-if="loading">
             <Loader/>
         </template>
-        <Tooltip :tooltip="tooltip" :teamFilterId="teamFilterId"/>
     </div>
 </template>
 
@@ -124,7 +117,6 @@ import Loader from './Loader'
 import { mapActions, mapGetters } from 'vuex'
 import ProductTotals from './ProductTotals'
 import ProductSingle from './ProductSingle'
-import Tooltip from './Tooltip'
 import SelectDropdown from './SelectDropdown'
 import RadioButtons from './RadioButtons'
 import Dropdown from './Dropdown'
@@ -151,7 +143,6 @@ export default {
         Loader,
         ProductTotals,
         ProductSingle,
-        Tooltip,
         SelectDropdown,
         Dropdown,
         RadioButtons,
@@ -168,11 +159,43 @@ export default {
         showSingle: false,
     }},
     computed: {
-        ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
+        // ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
+        ...mapGetters('entities/collections', ['currentFile']),
         ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']),
         loadingSingle() {
             let loading = false
             return loading
+        },
+        currentPhase() {
+            return this.currentFile.phase
+        },
+        hasAccess() {
+            // Check if the user has access to the current phase
+            let hasAccess = false
+            const currentPhase = this.currentPhase
+            // Loop through the users teams and check if they have access
+            this.authUser.teams.forEach(team => {
+                const access = team.phases.find(x => (x.phase_id == currentPhase && x.role_id == this.userPermissionLevel) )
+                if (access) hasAccess = true
+            })
+            return hasAccess
+        },
+        massSelectAvailable () {
+            return (this.currentPhase != 1 && this.hasAccess) ? true : false
+        },
+        selectAvailable () {
+            return (this.hasAccess) ? true : false
+        },
+        feedbackAvailable () {
+            let available = false
+            return available
+        },
+        commentsAvailable () {
+            let available = false
+            return available
+        },
+        actionsAvailable () {
+            return (this.hasAccess) ? true : false
         },
     },
     methods: {

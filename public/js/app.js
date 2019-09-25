@@ -8905,11 +8905,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _ProductTotals__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ProductTotals */ "./resources/js/components/ProductTotals.vue");
 /* harmony import */ var _ProductSingle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ProductSingle */ "./resources/js/components/ProductSingle.vue");
-/* harmony import */ var _Tooltip__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tooltip */ "./resources/js/components/Tooltip.vue");
-/* harmony import */ var _SelectDropdown__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./SelectDropdown */ "./resources/js/components/SelectDropdown.vue");
-/* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./RadioButtons */ "./resources/js/components/RadioButtons.vue");
-/* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Dropdown */ "./resources/js/components/Dropdown.vue");
-/* harmony import */ var _store_modules_products__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../store/modules/products */ "./resources/js/store/modules/products.js");
+/* harmony import */ var _SelectDropdown__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./SelectDropdown */ "./resources/js/components/SelectDropdown.vue");
+/* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./RadioButtons */ "./resources/js/components/RadioButtons.vue");
+/* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Dropdown */ "./resources/js/components/Dropdown.vue");
+/* harmony import */ var _store_modules_products__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../store/modules/products */ "./resources/js/store/modules/products.js");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -9028,14 +9027,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-
 
 
 
@@ -9051,10 +9042,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     Loader: _Loader__WEBPACK_IMPORTED_MODULE_0__["default"],
     ProductTotals: _ProductTotals__WEBPACK_IMPORTED_MODULE_2__["default"],
     ProductSingle: _ProductSingle__WEBPACK_IMPORTED_MODULE_3__["default"],
-    Tooltip: _Tooltip__WEBPACK_IMPORTED_MODULE_4__["default"],
-    SelectDropdown: _SelectDropdown__WEBPACK_IMPORTED_MODULE_5__["default"],
-    Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_7__["default"],
-    RadioButtons: _RadioButtons__WEBPACK_IMPORTED_MODULE_6__["default"]
+    SelectDropdown: _SelectDropdown__WEBPACK_IMPORTED_MODULE_4__["default"],
+    Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_6__["default"],
+    RadioButtons: _RadioButtons__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
   data: function data() {
     return {
@@ -9069,10 +9059,45 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       showSingle: false
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/productFinalActions', ['loadingFinalActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']), {
     loadingSingle: function loadingSingle() {
       var loading = false;
       return loading;
+    },
+    currentPhase: function currentPhase() {
+      return this.currentFile.phase;
+    },
+    hasAccess: function hasAccess() {
+      var _this = this;
+
+      // Check if the user has access to the current phase
+      var hasAccess = false;
+      var currentPhase = this.currentPhase; // Loop through the users teams and check if they have access
+
+      this.authUser.teams.forEach(function (team) {
+        var access = team.phases.find(function (x) {
+          return x.phase_id == currentPhase && x.role_id == _this.userPermissionLevel;
+        });
+        if (access) hasAccess = true;
+      });
+      return hasAccess;
+    },
+    massSelectAvailable: function massSelectAvailable() {
+      return this.currentPhase != 1 && this.hasAccess ? true : false;
+    },
+    selectAvailable: function selectAvailable() {
+      return this.hasAccess ? true : false;
+    },
+    feedbackAvailable: function feedbackAvailable() {
+      var available = false;
+      return available;
+    },
+    commentsAvailable: function commentsAvailable() {
+      var available = false;
+      return available;
+    },
+    actionsAvailable: function actionsAvailable() {
+      return this.hasAccess ? true : false;
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction', 'deleteAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['deleteTeamProduct', 'updateTeamProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['deletePhaseProduct', 'updatePhaseProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['setCurrentProductId', 'setAvailableProductIds']), {
@@ -9168,7 +9193,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$emit('onSelect', index);
     },
     selectByCondition: function selectByCondition(condition) {
-      var _this = this;
+      var _this2 = this;
 
       var selected = this.selectedIds;
       var products = this.products;
@@ -9181,9 +9206,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
               return el == index;
             });
             if (found < 0) // Select
-              _this.onSelect(index); // mark checkbox
+              _this2.onSelect(index); // mark checkbox
 
-            _this.$refs['checkbox-for-' + index][0].checked = true; // console.log(this.$refs['checkbox-for-' + index][0].checked)
+            _this2.$refs['checkbox-for-' + index][0].checked = true; // console.log(this.$refs['checkbox-for-' + index][0].checked)
           }
         }
 
@@ -9195,9 +9220,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             });
 
             if (_found < 0) // Select
-              _this.onSelect(index); // mark checkbox
+              _this2.onSelect(index); // mark checkbox
 
-            _this.$refs['checkbox-for-' + index][0].checked = true; // console.log(this.$refs['checkbox-for-' + index][0].checked)
+            _this2.$refs['checkbox-for-' + index][0].checked = true; // console.log(this.$refs['checkbox-for-' + index][0].checked)
           }
         }
 
@@ -18331,7 +18356,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "products card", class: { sticky: _vm.sticky } },
+    { staticClass: "products card", class: [{ sticky: _vm.sticky }] },
     [
       _c("div", { staticClass: "scroll-bg" }),
       _vm._v(" "),
@@ -18347,7 +18372,7 @@ var render = function() {
       _vm._v(" "),
       _c(
         "div",
-        { staticClass: "flex-table", class: { disabled: _vm.showSingle } },
+        { staticClass: "flex-table", class: [{ disabled: _vm.showSingle }] },
         [
           _c(
             "div",
@@ -18370,7 +18395,7 @@ var render = function() {
                     ])
               ]),
               _vm._v(" "),
-              _vm.authUser.role_id >= 2
+              _vm.massSelectAvailable
                 ? _c(
                     "th",
                     {
@@ -18441,6 +18466,10 @@ var render = function() {
                     ],
                     1
                   )
+                : _vm.selectAvailable
+                ? _c("th", { staticClass: "select" }, [
+                    _c("span", [_vm._v("Select")])
+                  ])
                 : _vm._e(),
               _vm._v(" "),
               _c(
@@ -18493,7 +18522,7 @@ var render = function() {
                 ]
               ),
               _vm._v(" "),
-              _vm.userPermissionLevel != _vm.viewAdminPermissionLevel
+              _vm.feedbackAvailable
                 ? [
                     _c(
                       "th",
@@ -18593,31 +18622,33 @@ var render = function() {
                   ]
                 : _vm._e(),
               _vm._v(" "),
-              _c(
-                "th",
-                {
-                  staticClass: "clickable square-wrapper comments",
-                  class: { active: this.sortBy == "commentsScoped" },
-                  on: {
-                    click: function($event) {
-                      return _vm.onSortBy("commentsScoped", false)
-                    }
-                  }
-                },
-                [
-                  _vm._v("\n                Comments "),
-                  _c("i", {
-                    staticClass: "fas",
-                    class: [
-                      this.sortBy == "commentsScoped" && !_vm.sortAsc
-                        ? "fa-long-arrow-alt-up"
-                        : "fa-long-arrow-alt-down"
+              _vm.commentsAvailable
+                ? _c(
+                    "th",
+                    {
+                      staticClass: "clickable square-wrapper comments",
+                      class: { active: this.sortBy == "commentsScoped" },
+                      on: {
+                        click: function($event) {
+                          return _vm.onSortBy("commentsScoped", false)
+                        }
+                      }
+                    },
+                    [
+                      _vm._v("\n                Comments "),
+                      _c("i", {
+                        staticClass: "fas",
+                        class: [
+                          this.sortBy == "commentsScoped" && !_vm.sortAsc
+                            ? "fa-long-arrow-alt-up"
+                            : "fa-long-arrow-alt-down"
+                        ]
+                      })
                     ]
-                  })
-                ]
-              ),
+                  )
+                : _vm._e(),
               _vm._v(" "),
-              _vm.userPermissionLevel >= 2
+              _vm.actionsAvailable
                 ? [
                     _c(
                       "th",
@@ -18660,15 +18691,17 @@ var render = function() {
                     key: product.id,
                     staticClass: "product-row flex-table-row",
                     class: [
-                      product[_vm.actionScope] != null
-                        ? product[_vm.actionScope].action == 0
-                          ? "out"
-                          : "in"
+                      _vm.actionsAvailable
+                        ? product[_vm.actionScope] != null
+                          ? product[_vm.actionScope].action == 0
+                            ? "out"
+                            : "in"
+                          : ""
                         : ""
                     ]
                   },
                   [
-                    _vm.authUser.role_id >= 2 && _vm.authUser.role_id != 3
+                    _vm.selectAvailable
                       ? _c("td", { staticClass: "select" }, [
                           _c("label", { staticClass: "checkbox" }, [
                             _c("input", {
@@ -18712,7 +18745,6 @@ var render = function() {
                       },
                       [
                         _c("img", {
-                          staticClass: "bind-view-single",
                           attrs: {
                             src: _vm.productImg(product.color_variants[0])
                           },
@@ -18735,301 +18767,99 @@ var render = function() {
                           }
                         }
                       },
-                      [
-                        _c("span", { staticClass: "bind-view-single" }, [
-                          _vm._v(_vm._s(product.title))
-                        ])
-                      ]
+                      [_c("span", [_vm._v(_vm._s(product.title))])]
                     ),
                     _vm._v(" "),
-                    _vm.userPermissionLevel != _vm.viewAdminPermissionLevel
+                    _vm.feedbackAvailable
                       ? [
-                          _vm.currentTeamId == 0
-                            ? [
-                                _c(
-                                  "td",
-                                  { staticClass: "square-wrapper focus" },
-                                  [
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass:
-                                          "square light icon-left clickable",
-                                        on: {
-                                          mouseover: function($event) {
-                                            return _vm.showTooltip(
-                                              $event,
-                                              "teams",
-                                              "Focus",
-                                              product.focus
-                                            )
-                                          },
-                                          mouseleave: _vm.hideTooltip
-                                        }
-                                      },
-                                      [
-                                        _c("i", {
-                                          staticClass:
-                                            "far fa-star hide-screen-sm"
-                                        }),
-                                        _vm._v(_vm._s(product.focus.length))
-                                      ]
-                                    )
-                                  ]
-                                ),
-                                _vm._v(" "),
-                                _c("td", { staticClass: "square-wrapper" }, [
-                                  _c(
-                                    "span",
-                                    {
-                                      staticClass:
-                                        "square light icon-left clickable",
-                                      on: {
-                                        mouseover: function($event) {
-                                          _vm.showTooltip(
-                                            $event,
-                                            "teams",
-                                            "In",
-                                            product.focus.concat(product.ins)
-                                          )
-                                        },
-                                        mouseleave: _vm.hideTooltip
-                                      }
-                                    },
-                                    [
-                                      _c("i", {
-                                        staticClass:
-                                          "far fa-heart hide-screen-sm"
-                                      }),
-                                      _vm._v(
-                                        _vm._s(
-                                          product.ins.length +
-                                            product.focus.length
-                                        )
-                                      )
-                                    ]
+                          _c("td", { staticClass: "square-wrapper focus" }, [
+                            _c(
+                              "span",
+                              { staticClass: "square light icon-left" },
+                              [
+                                _c("i", {
+                                  staticClass: "far fa-star hide-screen-sm"
+                                }),
+                                _vm._v(_vm._s(product.focus.length))
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "square-wrapper" }, [
+                            _c(
+                              "span",
+                              { staticClass: "square light icon-left" },
+                              [
+                                _c("i", {
+                                  staticClass: "far fa-heart hide-screen-sm"
+                                }),
+                                _vm._v(
+                                  _vm._s(
+                                    product.ins.length + product.focus.length
                                   )
-                                ]),
-                                _vm._v(" "),
-                                _c("td", { staticClass: "square-wrapper" }, [
-                                  _c(
-                                    "span",
-                                    {
-                                      staticClass:
-                                        "square light icon-left clickable",
-                                      on: {
-                                        mouseover: function($event) {
-                                          return _vm.showTooltip(
-                                            $event,
-                                            "teams",
-                                            "Out",
-                                            product.outs
-                                          )
-                                        },
-                                        mouseleave: _vm.hideTooltip
-                                      }
-                                    },
-                                    [
-                                      _c("i", {
-                                        staticClass:
-                                          "far fa-times-circle hide-screen-sm"
-                                      }),
-                                      _vm._v(_vm._s(product.outs.length))
-                                    ]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c(
-                                  "td",
-                                  { staticClass: "square-wrapper nds" },
-                                  [
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass:
-                                          "square light icon-left clickable",
-                                        on: {
-                                          mouseover: function($event) {
-                                            return _vm.showTooltip(
-                                              $event,
-                                              "teams",
-                                              "Not decided",
-                                              product.nds
-                                            )
-                                          },
-                                          mouseleave: _vm.hideTooltip
-                                        }
-                                      },
-                                      [
-                                        _c("i", {
-                                          staticClass:
-                                            "far fa-question-circle hide-screen-sm"
-                                        }),
-                                        _vm._v(
-                                          _vm._s(product.nds.length) +
-                                            " /" +
-                                            _vm._s(_vm.teams.length)
-                                        )
-                                      ]
-                                    )
-                                  ]
                                 )
                               ]
-                            : [
-                                _c(
-                                  "td",
-                                  { staticClass: "square-wrapper focus" },
-                                  [
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass:
-                                          "square light icon-left clickable",
-                                        on: {
-                                          mouseover: function($event) {
-                                            return _vm.showTooltip(
-                                              $event,
-                                              "users",
-                                              "Focus",
-                                              product.focus
-                                            )
-                                          },
-                                          mouseleave: _vm.hideTooltip
-                                        }
-                                      },
-                                      [
-                                        _c("i", {
-                                          staticClass:
-                                            "far fa-star hide-screen-sm"
-                                        }),
-                                        _vm._v(_vm._s(product.focus.length))
-                                      ]
-                                    )
-                                  ]
-                                ),
-                                _vm._v(" "),
-                                _c("td", { staticClass: "square-wrapper" }, [
-                                  _c(
-                                    "span",
-                                    {
-                                      staticClass:
-                                        "square light icon-left clickable",
-                                      on: {
-                                        mouseover: function($event) {
-                                          _vm.showTooltip(
-                                            $event,
-                                            "users",
-                                            "In",
-                                            product.focus.concat(product.ins)
-                                          )
-                                        },
-                                        mouseleave: _vm.hideTooltip
-                                      }
-                                    },
-                                    [
-                                      _c("i", {
-                                        staticClass:
-                                          "far fa-heart hide-screen-sm"
-                                      }),
-                                      _vm._v(
-                                        _vm._s(
-                                          product.ins.length +
-                                            product.focus.length
-                                        )
-                                      )
-                                    ]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c("td", { staticClass: "square-wrapper" }, [
-                                  _c(
-                                    "span",
-                                    {
-                                      staticClass:
-                                        "square light icon-left clickable",
-                                      on: {
-                                        mouseover: function($event) {
-                                          return _vm.showTooltip(
-                                            $event,
-                                            "users",
-                                            "Out",
-                                            product.outs
-                                          )
-                                        },
-                                        mouseleave: _vm.hideTooltip
-                                      }
-                                    },
-                                    [
-                                      _c("i", {
-                                        staticClass:
-                                          "far fa-times-circle hide-screen-sm"
-                                      }),
-                                      _vm._v(_vm._s(product.outs.length))
-                                    ]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c(
-                                  "td",
-                                  { staticClass: "square-wrapper nds" },
-                                  [
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass:
-                                          "square light icon-left clickable",
-                                        on: {
-                                          mouseover: function($event) {
-                                            return _vm.showTooltip(
-                                              $event,
-                                              "users",
-                                              "Not decided",
-                                              product.nds
-                                            )
-                                          },
-                                          mouseleave: _vm.hideTooltip
-                                        }
-                                      },
-                                      [
-                                        _c("i", {
-                                          staticClass:
-                                            "far fa-question-circle hide-screen-sm"
-                                        }),
-                                        _vm._v(
-                                          _vm._s(product.nds.length) +
-                                            " /" +
-                                            _vm._s(_vm.teamUsers.length)
-                                        )
-                                      ]
-                                    )
-                                  ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "square-wrapper" }, [
+                            _c(
+                              "span",
+                              { staticClass: "square light icon-left" },
+                              [
+                                _c("i", {
+                                  staticClass:
+                                    "far fa-times-circle hide-screen-sm"
+                                }),
+                                _vm._v(_vm._s(product.outs.length))
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "square-wrapper nds" }, [
+                            _c(
+                              "span",
+                              { staticClass: "square light icon-left" },
+                              [
+                                _c("i", {
+                                  staticClass:
+                                    "far fa-question-circle hide-screen-sm"
+                                }),
+                                _vm._v(
+                                  _vm._s(product.nds.length) +
+                                    " /" +
+                                    _vm._s(_vm.teams.length)
                                 )
                               ]
+                            )
+                          ])
                         ]
                       : _vm._e(),
                     _vm._v(" "),
-                    _c("td", { staticClass: "square-wrapper comments" }, [
-                      _c(
-                        "span",
-                        {
-                          staticClass:
-                            "square light icon-left clickable bind-view-single",
-                          on: {
-                            click: function($event) {
-                              return _vm.onViewSingle(product.id)
-                            }
-                          }
-                        },
-                        [
-                          _c("i", {
-                            staticClass: "far fa-comment bind-view-single"
-                          }),
-                          _vm._v(_vm._s(product.commentsScoped.length))
-                        ]
-                      )
-                    ]),
+                    _vm.commentsAvailable
+                      ? _c("td", { staticClass: "square-wrapper comments" }, [
+                          _c(
+                            "span",
+                            {
+                              staticClass:
+                                "square light icon-left clickable bind-view-single",
+                              on: {
+                                click: function($event) {
+                                  return _vm.onViewSingle(product.id)
+                                }
+                              }
+                            },
+                            [
+                              _c("i", {
+                                staticClass: "far fa-comment bind-view-single"
+                              }),
+                              _vm._v(_vm._s(product.commentsScoped.length))
+                            ]
+                          )
+                        ])
+                      : _vm._e(),
                     _vm._v(" "),
-                    _vm.userPermissionLevel >= 2
+                    _vm.actionsAvailable
                       ? [
                           _c("td", { staticClass: "action" }, [
                             _vm.userPermissionLevel == 2
@@ -19075,7 +18905,7 @@ var render = function() {
                                 }
                               },
                               [
-                                _vm._v("\n                            In  "),
+                                _vm._v("\n                        In  "),
                                 _c("i", { staticClass: "far fa-heart" })
                               ]
                             ),
@@ -19099,7 +18929,7 @@ var render = function() {
                                 }
                               },
                               [
-                                _vm._v("\n                            Out  "),
+                                _vm._v("\n                        Out  "),
                                 _c("i", { staticClass: "far fa-times-circle" })
                               ]
                             ),
@@ -19107,8 +18937,7 @@ var render = function() {
                             _c(
                               "span",
                               {
-                                staticClass:
-                                  "view-single bind-view-single button invisible",
+                                staticClass: "view-single button invisible",
                                 on: {
                                   click: function($event) {
                                     return _vm.onViewSingle(product.id)
@@ -19124,8 +18953,7 @@ var render = function() {
                             _c(
                               "span",
                               {
-                                staticClass:
-                                  "view-single bind-view-single button invisible",
+                                staticClass: "view-single button invisible",
                                 on: {
                                   click: function($event) {
                                     return _vm.onViewSingle(product.id)
@@ -19145,11 +18973,7 @@ var render = function() {
         2
       ),
       _vm._v(" "),
-      _vm.loading ? [_c("Loader")] : _vm._e(),
-      _vm._v(" "),
-      _c("Tooltip", {
-        attrs: { tooltip: _vm.tooltip, teamFilterId: _vm.teamFilterId }
-      })
+      _vm.loading ? [_c("Loader")] : _vm._e()
     ],
     2
   )
@@ -41506,7 +41330,7 @@ function (_Model) {
       var data = {
         phase_id: this.attr(null),
         team_id: this.attr(null),
-        role_level: this.attr(null)
+        role_id: this.attr(null)
       };
       return data;
     }
@@ -41516,7 +41340,7 @@ function (_Model) {
 }(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
 
 PhaseTeam.entity = 'phaseTeams';
-PhaseTeam.primaryKey = ['phase_id', 'team_id'];
+PhaseTeam.primaryKey = ['phase_id', 'team_id', 'role_id'];
 
 
 /***/ }),
@@ -41771,6 +41595,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _TeamFile__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./TeamFile */ "./resources/js/store/models/TeamFile.js");
 /* harmony import */ var _TeamInvite__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./TeamInvite */ "./resources/js/store/models/TeamInvite.js");
 /* harmony import */ var _TeamProduct__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./TeamProduct */ "./resources/js/store/models/TeamProduct.js");
+/* harmony import */ var _PhaseTeam__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./PhaseTeam */ "./resources/js/store/models/PhaseTeam.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -41790,6 +41615,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // Team Model
+
 
 
 
@@ -41825,7 +41651,8 @@ function (_Model) {
         teamFiles: this.hasMany(_TeamFile__WEBPACK_IMPORTED_MODULE_4__["default"], 'team_id'),
         actions: this.hasMany(_TeamProduct__WEBPACK_IMPORTED_MODULE_6__["default"], 'team_id'),
         files: this.belongsToMany(_Collection__WEBPACK_IMPORTED_MODULE_3__["default"], _TeamFile__WEBPACK_IMPORTED_MODULE_4__["default"], 'team_id', 'file_id'),
-        invites: this.hasMany(_TeamInvite__WEBPACK_IMPORTED_MODULE_5__["default"], 'team_id')
+        invites: this.hasMany(_TeamInvite__WEBPACK_IMPORTED_MODULE_5__["default"], 'team_id'),
+        phases: this.hasMany(_PhaseTeam__WEBPACK_IMPORTED_MODULE_7__["default"], 'team_id')
       };
       return data;
     }
@@ -43661,7 +43488,7 @@ __webpack_require__.r(__webpack_exports__);
         return 'Phase action';else if (state.userPermissionLevel >= 2) return 'Team action';else return 'Your action';
     },
     authUser: function authUser() {
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_3__["default"].query()["with"]('teams.files|teamFiles')["with"]('workspaces').first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_3__["default"].query()["with"]('teams.files|teamFiles|phases')["with"]('workspaces').first();
     }
   },
   actions: {
@@ -45668,10 +45495,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     teams: function teams(state, getters, rootState, rootGetters) {
       if (!rootGetters['persist/loadingInit']) {
         // Manually find the teams and the users belonging to each team.
-        // This is only necessary because I cannot make the Vuex ORM realtionship work 
+        // This is only necessary because I cannot make the Vuex ORM realtionship work
         // If you can make it work, please be my guest
         var adminPermissionLevel = rootGetters['persist/adminPermissionLevel'];
-        var teams = _models_Team__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('users')["with"]('invites')["with"]('teamFiles')["with"]('files').all();
+        var teams = _models_Team__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('users')["with"]('invites')["with"]('teamFiles')["with"]('files')["with"]('phases').all();
         var users = _models_User__WEBPACK_IMPORTED_MODULE_3__["default"].query()["with"]('teams')["with"]('role').all();
         var authUser = _models_AuthUser__WEBPACK_IMPORTED_MODULE_4__["default"].query()["with"]('teams').first(); // Loop through the users and sort them between the teams
 
