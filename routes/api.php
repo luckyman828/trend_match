@@ -29,6 +29,8 @@ Route::middleware('auth:api')->group( function(){
     Route::get('workspace/{workspace_id}/team-files', 'WorkspaceController@teamFiles');
     // List workspace users
     Route::get('workspace/{workspace_id}/users', 'WorkspaceController@users');
+    // List phase teams
+    Route::get('workspace/{workspace_id}/phase-teams', 'WorkspaceController@phaseTeams');
 
     // xxx TEAMS xxx
     // List current workspace team invites

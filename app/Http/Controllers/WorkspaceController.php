@@ -16,6 +16,7 @@ use App\User;
 use App\Http\Resources\User as UserResource;
 use App\TeamFile;
 use App\Http\Resources\TeamFile as TeamFileResource;
+use App\PhaseTeam;
 use Illuminate\Database\Eloquent\Builder;
 
 class WorkspaceController extends Controller
@@ -64,7 +65,7 @@ class WorkspaceController extends Controller
         return TeamFileResource::collection($teamFiles);
     }
 
-    // Return all users with access to the specified collection
+    // Return all users of the workspace
     public function users($workspace_id)
     {
         $users = User::whereHas('workspaces', function (Builder $query) use($workspace_id) {
@@ -73,6 +74,14 @@ class WorkspaceController extends Controller
 
         // Return collection of users as a resource
         return UserResource::collection($users);
+    }
+
+    // Return all phase teams of the workspace
+    public function phaseTeams($workspace_id)
+    {
+        $phaseTeams = PhaseTeam::all();
+
+        return $phaseTeams;
     }
 
 }

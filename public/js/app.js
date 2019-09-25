@@ -7204,7 +7204,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return _store_models_Team__WEBPACK_IMPORTED_MODULE_8__["default"].query()["with"]('files').get();
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teamFiles', ['fetchTeamFiles']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/roles', ['fetchRoles']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teamFiles', ['fetchTeamFiles']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/roles', ['fetchRoles']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/phaseTeams', ['fetchPhaseTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']), {
     fetchInitialData: function () {
       var _fetchInitialData = _asyncToGenerator(
       /*#__PURE__*/
@@ -7274,7 +7274,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 }
 
                 _context2.next = 4;
-                return _this.fetchTeams(_this.currentWorkspaceId), _this.fetchUserTeams(_this.currentWorkspaceId), _this.fetchTeamFiles(_this.currentWorkspaceId), _this.fetchCollections(_this.currentWorkspaceId), _this.fetchRoles();
+                return _this.fetchTeams(_this.currentWorkspaceId), _this.fetchUserTeams(_this.currentWorkspaceId), _this.fetchTeamFiles(_this.currentWorkspaceId), _this.fetchPhaseTeams(_this.currentWorkspaceId), _this.fetchCollections(_this.currentWorkspaceId), _this.fetchRoles();
 
               case 4:
                 if (_this.authUser.role_id >= 3) _this.setCurrentTeam(0);else if (_this.authUser.teams.length > 0) _this.setCurrentTeam(_this.authUser.teams[0].id);
@@ -40746,6 +40746,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_phaseProducts__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./modules/phaseProducts */ "./resources/js/store/modules/phaseProducts.js");
 /* harmony import */ var _models_TeamFile__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./models/TeamFile */ "./resources/js/store/models/TeamFile.js");
 /* harmony import */ var _modules_teamFiles__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! ./modules/teamFiles */ "./resources/js/store/modules/teamFiles.js");
+/* harmony import */ var _models_PhaseTeam__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! ./models/PhaseTeam */ "./resources/js/store/models/PhaseTeam.js");
+/* harmony import */ var _modules_phaseTeams__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! ./modules/phaseTeams */ "./resources/js/store/modules/phaseTeams.js");
+
+
 
 
 
@@ -40805,6 +40809,7 @@ database.register(_models_WorkspaceUser__WEBPACK_IMPORTED_MODULE_31__["default"]
 database.register(_models_TeamProduct__WEBPACK_IMPORTED_MODULE_33__["default"], _modules_teamProducts__WEBPACK_IMPORTED_MODULE_34__["default"]);
 database.register(_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_35__["default"], _modules_phaseProducts__WEBPACK_IMPORTED_MODULE_36__["default"]);
 database.register(_models_TeamFile__WEBPACK_IMPORTED_MODULE_37__["default"], _modules_teamFiles__WEBPACK_IMPORTED_MODULE_38__["default"]);
+database.register(_models_PhaseTeam__WEBPACK_IMPORTED_MODULE_39__["default"], _modules_phaseTeams__WEBPACK_IMPORTED_MODULE_40__["default"]);
 /* harmony default export */ __webpack_exports__["default"] = (database);
 
 /***/ }),
@@ -41445,6 +41450,73 @@ function (_Model) {
 
 PhaseProduct.entity = 'phaseProducts';
 PhaseProduct.primaryKey = ['phase_id', 'product_id'];
+
+
+/***/ }),
+
+/***/ "./resources/js/store/models/PhaseTeam.js":
+/*!************************************************!*\
+  !*** ./resources/js/store/models/PhaseTeam.js ***!
+  \************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return PhaseTeam; });
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// Product Model
+
+
+var PhaseTeam =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(PhaseTeam, _Model);
+
+  function PhaseTeam() {
+    _classCallCheck(this, PhaseTeam);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(PhaseTeam).apply(this, arguments));
+  }
+
+  _createClass(PhaseTeam, null, [{
+    key: "fields",
+    // This is the name used as module name of the Vuex Store.
+    // List of all fields (schema) of the product model. `this.attr` is used
+    // for the generic field type. The argument is the default value.
+    value: function fields() {
+      var data = {
+        phase_id: this.attr(null),
+        team_id: this.attr(null),
+        role_level: this.attr(null)
+      };
+      return data;
+    }
+  }]);
+
+  return PhaseTeam;
+}(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
+
+PhaseTeam.entity = 'phaseTeams';
+PhaseTeam.primaryKey = ['phase_id', 'team_id'];
 
 
 /***/ }),
@@ -43943,6 +44015,118 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       _models_PhaseProduct__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (record) {
         return record.product_id == product_id && record.phase_id == phase_id;
       });
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/store/modules/phaseTeams.js":
+/*!**************************************************!*\
+  !*** ./resources/js/store/modules/phaseTeams.js ***!
+  \**************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _models_PhaseTeam__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/PhaseTeam */ "./resources/js/store/models/PhaseTeam.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    loading: true
+  },
+  getters: {
+    loadingPhaseTeams: function loadingPhaseTeams(state) {
+      return state.loading;
+    }
+  },
+  actions: {
+    fetchPhaseTeams: function () {
+      var _fetchPhaseTeams = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, workspace_id) {
+        var commit, apiUrl, tryCount, succes, response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                commit = _ref.commit;
+                // Set the state to loading
+                commit('setLoading', true);
+                apiUrl = "/api/workspace/".concat(workspace_id, "/phase-teams");
+                tryCount = 3;
+                succes = false;
+
+              case 5:
+                if (!(tryCount-- > 0 && !succes)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                _context.prev = 6;
+                _context.next = 9;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
+
+              case 9:
+                response = _context.sent;
+                _models_PhaseTeam__WEBPACK_IMPORTED_MODULE_2__["default"].create({
+                  data: response.data
+                });
+                commit('setLoading', false);
+                succes = true;
+                _context.next = 22;
+                break;
+
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in phaseTeams.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 22;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 22:
+                _context.next = 5;
+                break;
+
+              case 24:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[6, 15]]);
+      }));
+
+      function fetchPhaseTeams(_x, _x2) {
+        return _fetchPhaseTeams.apply(this, arguments);
+      }
+
+      return fetchPhaseTeams;
+    }()
+  },
+  mutations: {
+    //Set the loading status of the app
+    setLoading: function setLoading(state, bool) {
+      state.loading = bool;
     }
   }
 });

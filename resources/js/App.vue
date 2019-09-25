@@ -58,6 +58,7 @@ export default{
         ...mapActions('entities/teamFiles', ['fetchTeamFiles']),
         ...mapActions('entities/roles', ['fetchRoles']),
         ...mapActions('entities/collections', ['fetchCollections']),
+        ...mapActions('entities/phaseTeams', ['fetchPhaseTeams']),
         ...mapActions('persist', ['setCurrentTeam', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']),
         async fetchInitialData() {
             // Get user
@@ -98,6 +99,7 @@ export default{
                     this.fetchTeams(this.currentWorkspaceId),
                     this.fetchUserTeams(this.currentWorkspaceId),
                     this.fetchTeamFiles(this.currentWorkspaceId),
+                    this.fetchPhaseTeams(this.currentWorkspaceId),
                     this.fetchCollections(this.currentWorkspaceId),
                     this.fetchRoles()
                 )
