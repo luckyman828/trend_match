@@ -75,10 +75,23 @@
                     <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
                     
                     <template v-if="feedbackAvailable">
-                        <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
+                        <tooltipAlt2 class="square-wrapper" :header="'focus'" :array="product.focus" :arrayValueKey="'email'">
+                            <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
+                        </tooltipAlt2>
+                        <tooltipAlt2 class="square-wrapper" :header="'in'" :array="product.ins" :arrayValueKey="'email'">
+                            <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
+                        </tooltipAlt2>
+                        <tooltipAlt2 class="square-wrapper" :header="'out'" :array="product.outs" :arrayValueKey="'email'">
+                            <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
+                        </tooltipAlt2>
+                        <tooltipAlt2 class="square-wrapper" :header="'not decided'" :array="product.nds" :arrayValueKey="'email'">
+                            <td class="square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{teams.length}}</span></td>
+                        </tooltipAlt2>
+                        <!-- <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
                         <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
                         <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
-                        <td class="square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{teams.length}}</span></td>
+                        <td class="square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{teams.length}}</span></td> -->
+
                     </template>
 
                     <td v-if="commentsAvailable" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment bind-view-single"></i>{{product.commentsScoped.length}}</span></td>
@@ -137,7 +150,6 @@ export default {
         'sortBy',
         'selectedIds',
         'teamUsers',
-        'teamFilterId',
     ],
     components: {
         Loader,
@@ -160,39 +172,26 @@ export default {
     }},
     computed: {
         // ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
-        ...mapGetters('entities/collections', ['currentFile']),
+        ...mapGetters('entities/collections', ['currentFile', 'currentTask']),
         ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']),
         loadingSingle() {
             let loading = false
             return loading
         },
-        currentPhase() {
-            return this.currentFile.phase
-        },
         hasAccess() {
-            // Check if the user has access to the current phase
-            let hasAccess = false
-            const currentPhase = this.currentPhase
-            // Loop through the users teams and check if they have access
-            this.authUser.teams.forEach(team => {
-                const access = team.phases.find(x => (x.phase_id == currentPhase && x.role_id == this.userPermissionLevel) )
-                if (access) hasAccess = true
-            })
-            return hasAccess
+            return (this.currentTask != null) ? true : false
         },
         massSelectAvailable () {
-            return (this.currentPhase != 1 && this.hasAccess) ? true : false
+            return (this.currentTask != null) ? (this.currentTask.type == 'alignment') ? true : false : false
         },
         selectAvailable () {
             return (this.hasAccess) ? true : false
         },
         feedbackAvailable () {
-            let available = false
-            return available
+            return (this.currentTask != null) ? (this.currentTask.type != 'approval') ? true : false :false
         },
         commentsAvailable () {
-            let available = false
-            return available
+            return true
         },
         actionsAvailable () {
             return (this.hasAccess) ? true : false
@@ -296,39 +295,6 @@ export default {
                 index++
 
             })
-            // if (condition == no_comment_no_out)
-        },
-        showTooltip(event, type, header, data) {
-            const rect = event.target.getBoundingClientRect()
-
-            // Set tooltip position
-            this.tooltip.position.top = rect.top + rect.height + 10
-            this.tooltip.position.center = rect.left + ( rect.width / 2 )
-
-            // Set tooltip data
-            this.tooltip.data = data
-            this.tooltip.header = header
-            this.tooltip.type = type
-
-
-            // Add team data to the tooltip 
-            if(type == 'users') {
-                // Show users if we are filtering by a team
-                if (this.teamFilterId > 0) {
-                    this.tooltip.users = this.teamUsers
-                }
-                // Show teams if we are not filtering by team
-                else  {
-                    this.tooltip.type = 'teams'
-                    this.tooltip.teams = this.teams
-                }   
-            }
-            // Make tooltip active
-            this.tooltip.active = true;
-        },
-            
-        hideTooltip() {
-            this.tooltip.active = false;
         },
         onSortBy(key, method) {
             this.$emit('onSortBy', key, method)
@@ -486,7 +452,7 @@ export default {
             &.focus {
                 margin-left: auto;
             }
-            &.square-wrapper {
+            &.square-wrapper, &.tooltip-wrapper .square-wrapper {
                 min-width: 56px;
                 margin-left: 16px;
                 box-sizing: content-box;

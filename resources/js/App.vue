@@ -58,8 +58,12 @@ export default{
         ...mapActions('entities/teamFiles', ['fetchTeamFiles']),
         ...mapActions('entities/roles', ['fetchRoles']),
         ...mapActions('entities/collections', ['fetchCollections']),
-        ...mapActions('entities/phaseTeams', ['fetchPhaseTeams']),
-        ...mapActions('persist', ['setCurrentTeam', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']),
+        ...mapActions('entities/taskTeams', ['fetchTaskTeams']),
+        ...mapActions('entities/phases', ['fetchPhases']),
+        ...mapActions('entities/tasks', ['fetchTasks']),
+        ...mapActions('entities/taskParents', ['fetchTaskParents']),
+        ...mapActions('entities/fileTasks', ['fetchFileTasks']),
+        ...mapActions('persist', ['setCurrentTeam', 'setTeamFilter', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']),
         async fetchInitialData() {
             // Get user
             console.log('App: Getting initial data')
@@ -99,15 +103,23 @@ export default{
                     this.fetchTeams(this.currentWorkspaceId),
                     this.fetchUserTeams(this.currentWorkspaceId),
                     this.fetchTeamFiles(this.currentWorkspaceId),
-                    this.fetchPhaseTeams(this.currentWorkspaceId),
+                    this.fetchTaskTeams(this.currentWorkspaceId),
                     this.fetchCollections(this.currentWorkspaceId),
+                    this.fetchPhases(this.currentWorkspaceId),
+                    this.fetchTasks(this.currentWorkspaceId),
+                    this.fetchTaskParents(this.currentWorkspaceId),
+                    this.fetchFileTasks(this.currentWorkspaceId),
                     this.fetchRoles()
                 )
                 
-                if (this.authUser.role_id >= 3)
+                if (this.authUser.role_id >= 5) {
                     this.setCurrentTeam(0)
-                else if (this.authUser.teams.length > 0)
+                    this.setTeamFilter(0)
+                }
+                else if (this.authUser.teams.length > 0) {
                     this.setCurrentTeam(this.authUser.teams[0].id)
+                    this.setTeamFilter(this.authUser.teams[0].id)
+                }
                 this.setLoadingInit(false)
                 
             } else {

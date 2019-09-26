@@ -37,8 +37,20 @@ import PhaseProduct from './models/PhaseProduct'
 import phaseProducts from './modules/phaseProducts'
 import TeamFile from './models/TeamFile'
 import teamFiles from './modules/teamFiles'
-import PhaseTeam from './models/PhaseTeam'
-import phaseTeams from './modules/phaseTeams'
+import taskTeams from './modules/taskTeams'
+import TaskTeam from './models/TaskTeam'
+import phases from './modules/phases'
+import Phase from './models/Phase'
+import tasks from './modules/tasks'
+import Task from './models/Task'
+import taskParents from './modules/taskParents'
+import TaskParent from './models/TaskParent'
+import FileTask from './models/FileTask'
+import fileTasks from './modules/fileTasks'
+import TaskAction from './models/TaskAction'
+import taskActions from './modules/taskActions'
+import Request from './models/Request'
+import requests from './modules/requests'
 
 const database = new Database()
 
@@ -61,6 +73,12 @@ database.register(WorkspaceUser, workspaceUsers)
 database.register(TeamProduct, teamProducts)
 database.register(PhaseProduct, phaseProducts)
 database.register(TeamFile, teamFiles)
-database.register(PhaseTeam, phaseTeams)
+database.register(TaskTeam, taskTeams)
+database.register(Phase, phases)
+database.register(Task, tasks)
+database.register(FileTask, fileTasks)
+database.register(TaskParent, taskParents)
+database.register(TaskAction, taskActions)
+database.register(Request, requests)
 
 export default database

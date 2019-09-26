@@ -8,6 +8,7 @@ export default {
 
     state: {
         currentTeamId: -1,
+        teamFilterId: -1,
         currentWorkspaceId: null,
         currentFileId: null,
         userPermissionLevel: 1,
@@ -20,11 +21,18 @@ export default {
         currentTeamId: state => {
             return state.currentTeamId
         },
+        teamFilterId: state => {
+            return state.teamFilterId
+        },
         currentWorkspace: state => {
             return Workspace.find(state.currentWorkspaceId)
         },
         currentTeam: state => {
-            return state.currentTeamId == 0 ? 'Global' : Team.find(state.currentTeamId)
+            return state.currentTeamId == 0
+                ? 'Global'
+                : Team.query()
+                      .with('taskTeams.task.parents.completed')
+                      .find(state.currentTeamId)
         },
         workspaceCurrency: state => {
             return 'EUR'
@@ -75,7 +83,7 @@ export default {
         },
         authUser() {
             return AuthUser.query()
-                .with('teams.files|teamFiles|phases')
+                .with('teams.files|teamFiles|tasks.completed')
                 .with('workspaces')
                 .first()
         },
@@ -84,6 +92,9 @@ export default {
     actions: {
         setCurrentTeam({ commit }, id) {
             commit('setCurrentTeam', id)
+        },
+        setTeamFilter({ commit }, id) {
+            commit('setTeamFilter', id)
         },
         setCurrentWorkspace({ commit }, id) {
             commit('setCurrentWorkspace', id)
@@ -102,6 +113,9 @@ export default {
     mutations: {
         setCurrentTeam(state, id) {
             state.currentTeamId = id
+        },
+        setTeamFilter(state, id) {
+            state.teamFilterId = id
         },
         setCurrentWorkspace(state, id) {
             state.currentWorkspaceId = id

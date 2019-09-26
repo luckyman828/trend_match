@@ -38,6 +38,8 @@ export default {
         ...mapActions('persist', ['setCurrentFileId']),
         ...mapActions('entities/teamProducts', ['fetchTeamProducts']),
         ...mapActions('entities/phaseProducts', ['fetchPhaseProducts']),
+        ...mapActions('entities/taskActions', ['fetchTaskActions']),
+        ...mapActions('entities/requests', ['fetchRequests']),
         async initRequiresWorkspace() {
             if (Collection.all().length <= 0)
                 await this.fetchCollections(this.currentWorkspaceId)
@@ -51,7 +53,9 @@ export default {
                 this.fetchComments(this.currentFileId),
                 this.fetchCommentVotes(this.currentFileId),
                 this.fetchTeamProducts(this.currentFileId),
-                this.fetchPhaseProducts(this.currentFileId)
+                this.fetchPhaseProducts(this.currentFileId),
+                this.fetchTaskActions(this.currentFileId),
+                this.fetchRequests(this.currentFileId)
             )
             this.loadingFile = false
         }

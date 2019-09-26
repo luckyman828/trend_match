@@ -20,7 +20,7 @@ use App\Http\Resources\TeamFile as TeamFileResource;
 use App\Phase;
 use App\PhaseTeam;
 use App\Task;
-use App\TaskTask;
+use App\TaskParent;
 use App\TaskTeam;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -110,20 +110,19 @@ class WorkspaceController extends Controller
     }
 
      // Return task structure for workspace
-     public function taskTasks($workspace_id)
+     public function taskParents($workspace_id)
      {
         //  $taskTasks = TaskTask::all();
-         $taskTasks = TaskTask::whereHas('phase', function (Builder $query) use($workspace_id) {
+         $result = TaskParent::whereHas('phase', function (Builder $query) use($workspace_id) {
              $query->where('workspace_id', $workspace_id);
          })->get();
  
-         return $taskTasks;
+         return $result;
     }
 
     // Return task structure for workspace
     public function taskTeams($workspace_id)
     {
-       //  $taskTasks = TaskTask::all();
         $result = TaskTeam::whereHas('team', function (Builder $query) use($workspace_id) {
             $query->where('workspace_id', $workspace_id);
         })->get();
@@ -134,7 +133,6 @@ class WorkspaceController extends Controller
    // Return task structure for workspace
    public function fileTasks($workspace_id)
    {
-      //  $taskTasks = TaskTask::all();
        $result = FileTask::whereHas('file', function (Builder $query) use($workspace_id) {
            $query->where('workspace_id', $workspace_id);
        })->get();

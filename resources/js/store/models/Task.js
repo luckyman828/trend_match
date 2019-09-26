@@ -1,0 +1,25 @@
+// Product Model
+import { Model } from '@vuex-orm/core'
+import FileTask from './FileTask'
+import TaskParent from './TaskParent'
+
+export default class Task extends Model {
+    // This is the name used as module name of the Vuex Store.
+    static entity = 'tasks'
+
+    // List of all fields (schema) of the product model. `this.attr` is used
+    // for the generic field type. The argument is the default value.
+
+    static fields() {
+        const data = {
+            id: this.attr(''),
+            phase_id: this.attr(''),
+            title: this.attr(''),
+            type: this.attr(''),
+            completed: this.hasMany(FileTask, 'task_id'),
+            parents: this.hasMany(TaskParent, 'task_id'),
+        }
+
+        return data
+    }
+}

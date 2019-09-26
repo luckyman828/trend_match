@@ -27,8 +27,8 @@
                 <template v-slot:button="slotProps">
                     <div class="dropdown-button" @click="slotProps.toggle">
                         <img src="/assets/Path5699.svg">
-                        <span v-if="currentTeamId > 0">{{teams.find(x => x.id == currentTeamId).title}}</span>
-                        <span v-else-if="currentTeamId == 0">Global</span>
+                        <span v-if="teamFilterId > 0">{{teams.find(x => x.id == teamFilterId).title}}</span>
+                        <span v-else-if="teamFilterId == 0">Global</span>
                         <span v-else>No team available</span>
                         <i class="far fa-chevron-down"></i>
                     </div>
@@ -37,7 +37,7 @@
                     <span>Switch team</span>
                 </template>
                 <template v-slot:body>
-                    <RadioButtons :options="teamsForFilter" :currentOptionId="currentTeamId" :optionNameKey="'title'" :optionValueKey="'id'" ref="countryRadio" @change="setCurrentTeam($event); $refs.countryDropdown.toggle()"/>
+                    <RadioButtons :options="teamsForFilter" :currentOptionId="teamFilterId" :optionNameKey="'title'" :optionValueKey="'id'" ref="countryRadio" @change="setTeamFilter($event); $refs.countryDropdown.toggle()"/>
                 </template>
             </Dropdown>
         </div>
@@ -79,7 +79,7 @@ export default {
     }},
     computed: {
         ...mapGetters('entities/collections', ['loadingCollections', 'files']),
-        ...mapGetters('persist', ['currentTeamId', 'currentTeam', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'authUser']),
+        ...mapGetters('persist', ['currentTeamId', 'teamFilterId', 'currentTeam', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'authUser']),
         defaultTeam() {
             if (this.userPermissionLevel >= 3)
                 return {id: 0, title: 'Global'}
@@ -124,10 +124,6 @@ export default {
         users() {
             return User.query().with('teams').all()
         },
-        // authUser() {
-        //     // return this.$store.getters.authUser;
-        //     return AuthUser.query().with('teams').with('workspaces').first()
-        // },
         teams () {
             return this.$store.getters['entities/teams/teams']
         },
@@ -155,7 +151,7 @@ export default {
         ...mapActions('entities/userTeams', ['fetchUserTeams']),
         ...mapActions('entities/workspaces', ['fetchWorkspaces']),
         ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
-        ...mapActions('persist', ['setCurrentTeam']),
+        ...mapActions('persist', ['setCurrentTeam', 'setTeamFilter']),
         onSelect(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
             const selected = this.selected

@@ -6,7 +6,7 @@ import Collection from './Collection'
 import TeamFile from './TeamFile'
 import TeamInvite from './TeamInvite'
 import TeamProduct from './TeamProduct'
-import PhaseTeam from './PhaseTeam'
+import TaskTeam from './TaskTeam'
 
 export default class Team extends Model {
     // This is the name used as module name of the Vuex Store.
@@ -22,12 +22,13 @@ export default class Team extends Model {
             title: this.attr(''),
             workspace_id: this.attr(''),
             currency: this.attr(''),
+            category_scope: this.attr(''),
             users: this.belongsToMany(User, UserTeam, 'team_id', 'user_id'),
             teamFiles: this.hasMany(TeamFile, 'team_id'),
             actions: this.hasMany(TeamProduct, 'team_id'),
             files: this.belongsToMany(Collection, TeamFile, 'team_id', 'file_id'),
             invites: this.hasMany(TeamInvite, 'team_id'),
-            phases: this.hasMany(PhaseTeam, 'team_id'),
+            taskTeams: this.hasMany(TaskTeam, 'team_id', 'id'),
         }
 
         return data

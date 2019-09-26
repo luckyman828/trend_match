@@ -30,8 +30,8 @@
                         <template v-slot:button="slotProps">
                             <div class="dropdown-button" @click="slotProps.toggle">
                                 <img src="/assets/Path5699.svg">
-                                <span v-if="currentTeamId > 0">{{teams.find(x => x.id == currentTeamId).title}}</span>
-                                <span v-else-if="currentTeamId == 0">Global</span>
+                                <span v-if="teamFilterId > 0">{{teams.find(x => x.id == teamFilterId).title}}</span>
+                                <span v-else-if="teamFilterId == 0">Global</span>
                                 <span v-else>No team available</span>
                                 <i class="far fa-chevron-down"></i>
                             </div>
@@ -40,12 +40,12 @@
                             <span>Switch team</span>
                         </template>
                         <template v-slot:body>
-                            <RadioButtons :options="teamsForFilter" :currentOptionId="currentTeamId" :optionNameKey="'title'" :optionValueKey="'id'" ref="countryRadio" @change="setCurrentTeam($event); $refs.countryDropdown.toggle()"/>
+                            <RadioButtons :options="teamsForFilter" :currentOptionId="teamFilterId" :optionNameKey="'title'" :optionValueKey="'id'" ref="countryRadio" @change="setTeamFilter($event); $refs.countryDropdown.toggle()"/>
                         </template>
                     </Dropdown>
                 </div>
                 <product-tabs :productTotals="productTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
-                <products ref="productsComponent" :teamFilterId="currentTeamId" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="collection.teams" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @onSelect="setSelectedProduct"/>
+                <products ref="productsComponent" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="collection.teams" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @onSelect="setSelectedProduct"/>
                 <SelectedController :totalCount="productsFiltered.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction" @onClearSelection="clearSelectedProducts"/>
             </template>
             <template v-if="loadingCollections">
@@ -83,10 +83,14 @@ import Collection from '../../store/models/Collection'
 import ProductFinalAction from '../../store/models/ProductFinalAction';
 import CommentVote from '../../store/models/CommentVote';
 import Category from '../../store/models/Category';
+import Task from '../../store/models/Task';
 import UserTeam from '../../store/models/UserTeam';
 import AuthUser from '../../store/models/AuthUser';
 import TeamProduct from '../../store/models/TeamProduct';
 import PhaseProduct from '../../store/models/PhaseProduct';
+import TaskTeam from '../../store/models/TaskTeam'
+import FileTask from '../../store/models/FileTask'
+import TaskParent from '../../store/models/TaskParent'
 
 export default{
     name: 'catalogue',
@@ -121,9 +125,9 @@ export default{
         ...mapGetters('entities/products', ['loadingProducts', 'products']),
         ...mapGetters('entities/actions', ['loadingActions']),
         ...mapGetters('entities/comments', ['loadingComments']),
-        ...mapGetters('entities/collections', ['loadingCollections', 'files']),
+        ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
         ...mapGetters('entities/teams', ['teams']),
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser']),
+        ...mapGetters('persist', ['currentTeamId', 'teamFilterId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser']),
         defaultTeam() {
             if (this.userPermissionLevel >= 3)
                 return {id: 0, title: 'Global'}
@@ -428,8 +432,8 @@ export default{
         },
         teamUsers () {
             let usersToReturn = []
-            if (this.currentTeamId > 0) {
-                const thisTeam = this.teams.find(team => team.id == this.currentTeamId)
+            if (this.teamFilterId > 0) {
+                const thisTeam = this.teams.find(team => team.id == this.teamFilterId)
                 if (thisTeam)
                     thisTeam.users.forEach(user => {
                         const fileUser = this.collection.users.find(x => x.id == user.id)
@@ -450,7 +454,7 @@ export default{
         },
         comments() {
             const comments = Comment.query().with(['votes', 'user.teams']).all()
-            const teamFilterId = this.currentTeamId
+            const teamFilterId = this.teamFilterId
             if (teamFilterId > 0) {
                 let commentsToReturn = []
                 comments.forEach(comment => {
@@ -503,7 +507,7 @@ export default{
         ...mapActions('entities/comments', ['fetchComments']),
         ...mapActions('entities/actions', ['updateAction']),
         ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
-        ...mapActions('persist', ['setCurrentTeam', 'setCurrentFileId']),
+        ...mapActions('persist', ['setCurrentTeam', 'setTeamFilter', 'setCurrentFileId']),
         ...mapActions('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']),
         ...mapActions('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']),
         setProductFilter(filter) {

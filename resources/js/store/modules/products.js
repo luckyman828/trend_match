@@ -32,7 +32,7 @@ export default {
                     .with('phaseActions')
                     .all()
                 const userId = rootGetters['persist/authUser'].id
-                const teamFilterId = rootGetters['persist/currentTeamId']
+                const teamFilterId = rootGetters['persist/teamFilterId']
                 const currentTeam = rootGetters['persist/currentTeam']
                 const currentFile = rootGetters['entities/collections/currentFile']
                 const teamUsers = rootGetters['entities/collections/currentTeamUsers']

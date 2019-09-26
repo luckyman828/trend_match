@@ -1,5 +1,5 @@
 import axios from 'axios'
-import PhaseTeam from '../models/PhaseTeam'
+import FileTask from '../models/FileTask'
 
 export default {
     namespaced: true,
@@ -9,28 +9,28 @@ export default {
     },
 
     getters: {
-        loadingPhaseTeams: state => {
+        loadingFileTasks: state => {
             return state.loading
         },
     },
 
     actions: {
-        async fetchPhaseTeams({ commit }, workspace_id) {
+        async fetchFileTasks({ commit }, workspace_id) {
             // Set the state to loading
             commit('setLoading', true)
 
-            const apiUrl = `/api/workspace/${workspace_id}/phase-teams`
+            const apiUrl = `/api/workspace/${workspace_id}/file-tasks`
 
             let tryCount = 3
             let succes = false
             while (tryCount-- > 0 && !succes) {
                 try {
                     const response = await axios.get(`${apiUrl}`)
-                    PhaseTeam.create({ data: response.data })
+                    FileTask.create({ data: response.data })
                     commit('setLoading', false)
                     succes = true
                 } catch (err) {
-                    console.log('API error in phaseTeams.js :')
+                    console.log('API error in fileTasks.js :')
                     console.log(err)
                     console.log(`Trying to fetch again. TryCount = ${tryCount}`)
                     if (tryCount <= 0) throw err
@@ -40,7 +40,6 @@ export default {
     },
 
     mutations: {
-        //Set the loading status of the app
         setLoading(state, bool) {
             state.loading = bool
         },

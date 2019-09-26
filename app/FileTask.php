@@ -13,6 +13,6 @@ class fileTask extends Model
 
     public function file()
     {
-        return $this->belongsTo(Collection::class, 'task_id');
+        return $this->belongsTo(Collection::class, 'file_id');
     } 
 }

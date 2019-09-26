@@ -36,7 +36,7 @@ Route::middleware('auth:api')->group( function(){
     // List workspace tasks
     Route::get('workspace/{workspace_id}/tasks', 'WorkspaceController@tasks');
     // List workspace task tasks
-    Route::get('workspace/{workspace_id}/task-tasks', 'WorkspaceController@taskTasks');
+    Route::get('workspace/{workspace_id}/task-parents', 'WorkspaceController@taskParents');
     // List workspace task teams
     Route::get('workspace/{workspace_id}/task-teams', 'WorkspaceController@taskTeams');
     // List workspace file tasks

@@ -1,12 +1,10 @@
-// Product Model
 import { Model } from '@vuex-orm/core'
 import User from './User'
-import CommentVote from './CommentVote'
 import Team from './Team'
 
-export default class Comment extends Model {
+export default class Request extends Model {
     // This is the name used as module name of the Vuex Store.
-    static entity = 'comments'
+    static entity = 'requests'
 
     // List of all fields (schema) of the product model. `this.attr` is used
     // for the generic field type. The argument is the default value.
@@ -17,11 +15,10 @@ export default class Comment extends Model {
             task_id: this.attr(''),
             team_id: this.attr(''),
             user_id: this.attr(''),
-            comment: this.attr(''),
-            important: this.attr(''),
+            body: this.attr(''),
+            status: this.attr(''),
             user: this.belongsTo(User, 'user_id'),
             team: this.belongsTo(Team, 'team_id'),
-            votes: this.hasMany(CommentVote, 'comment_id'),
         }
 
         return data

@@ -7204,7 +7204,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return _store_models_Team__WEBPACK_IMPORTED_MODULE_8__["default"].query()["with"]('files').get();
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teamFiles', ['fetchTeamFiles']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/roles', ['fetchRoles']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/phaseTeams', ['fetchPhaseTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/teamFiles', ['fetchTeamFiles']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/roles', ['fetchRoles']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/taskTeams', ['fetchTaskTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/phases', ['fetchPhases']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/tasks', ['fetchTasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/taskParents', ['fetchTaskParents']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/fileTasks', ['fetchFileTasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTeam', 'setTeamFilter', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']), {
     fetchInitialData: function () {
       var _fetchInitialData = _asyncToGenerator(
       /*#__PURE__*/
@@ -7274,10 +7274,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 }
 
                 _context2.next = 4;
-                return _this.fetchTeams(_this.currentWorkspaceId), _this.fetchUserTeams(_this.currentWorkspaceId), _this.fetchTeamFiles(_this.currentWorkspaceId), _this.fetchPhaseTeams(_this.currentWorkspaceId), _this.fetchCollections(_this.currentWorkspaceId), _this.fetchRoles();
+                return _this.fetchTeams(_this.currentWorkspaceId), _this.fetchUserTeams(_this.currentWorkspaceId), _this.fetchTeamFiles(_this.currentWorkspaceId), _this.fetchTaskTeams(_this.currentWorkspaceId), _this.fetchCollections(_this.currentWorkspaceId), _this.fetchPhases(_this.currentWorkspaceId), _this.fetchTasks(_this.currentWorkspaceId), _this.fetchTaskParents(_this.currentWorkspaceId), _this.fetchFileTasks(_this.currentWorkspaceId), _this.fetchRoles();
 
               case 4:
-                if (_this.authUser.role_id >= 3) _this.setCurrentTeam(0);else if (_this.authUser.teams.length > 0) _this.setCurrentTeam(_this.authUser.teams[0].id);
+                if (_this.authUser.role_id >= 5) {
+                  _this.setCurrentTeam(0);
+
+                  _this.setTeamFilter(0);
+                } else if (_this.authUser.teams.length > 0) {
+                  _this.setCurrentTeam(_this.authUser.teams[0].id);
+
+                  _this.setTeamFilter(_this.authUser.teams[0].id);
+                }
 
                 _this.setLoadingInit(false);
 
@@ -9027,6 +9035,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -9037,7 +9058,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'products',
-  props: ['products', 'loading', 'authUser', 'collection', 'selectedCount', 'totalProductCount', 'teams', 'sortAsc', 'sortBy', 'selectedIds', 'teamUsers', 'teamFilterId'],
+  props: ['products', 'loading', 'authUser', 'collection', 'selectedCount', 'totalProductCount', 'teams', 'sortAsc', 'sortBy', 'selectedIds', 'teamUsers'],
   components: {
     Loader: _Loader__WEBPACK_IMPORTED_MODULE_0__["default"],
     ProductTotals: _ProductTotals__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -9059,42 +9080,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       showSingle: false
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['currentFile', 'currentTask']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']), {
     loadingSingle: function loadingSingle() {
       var loading = false;
       return loading;
     },
-    currentPhase: function currentPhase() {
-      return this.currentFile.phase;
-    },
     hasAccess: function hasAccess() {
-      var _this = this;
-
-      // Check if the user has access to the current phase
-      var hasAccess = false;
-      var currentPhase = this.currentPhase; // Loop through the users teams and check if they have access
-
-      this.authUser.teams.forEach(function (team) {
-        var access = team.phases.find(function (x) {
-          return x.phase_id == currentPhase && x.role_id == _this.userPermissionLevel;
-        });
-        if (access) hasAccess = true;
-      });
-      return hasAccess;
+      return this.currentTask != null ? true : false;
     },
     massSelectAvailable: function massSelectAvailable() {
-      return this.currentPhase != 1 && this.hasAccess ? true : false;
+      return this.currentTask != null ? this.currentTask.type == 'alignment' ? true : false : false;
     },
     selectAvailable: function selectAvailable() {
       return this.hasAccess ? true : false;
     },
     feedbackAvailable: function feedbackAvailable() {
-      var available = false;
-      return available;
+      return this.currentTask != null ? this.currentTask.type != 'approval' ? true : false : false;
     },
     commentsAvailable: function commentsAvailable() {
-      var available = false;
-      return available;
+      return true;
     },
     actionsAvailable: function actionsAvailable() {
       return this.hasAccess ? true : false;
@@ -9193,7 +9197,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$emit('onSelect', index);
     },
     selectByCondition: function selectByCondition(condition) {
-      var _this2 = this;
+      var _this = this;
 
       var selected = this.selectedIds;
       var products = this.products;
@@ -9206,9 +9210,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
               return el == index;
             });
             if (found < 0) // Select
-              _this2.onSelect(index); // mark checkbox
+              _this.onSelect(index); // mark checkbox
 
-            _this2.$refs['checkbox-for-' + index][0].checked = true; // console.log(this.$refs['checkbox-for-' + index][0].checked)
+            _this.$refs['checkbox-for-' + index][0].checked = true; // console.log(this.$refs['checkbox-for-' + index][0].checked)
           }
         }
 
@@ -9220,41 +9224,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             });
 
             if (_found < 0) // Select
-              _this2.onSelect(index); // mark checkbox
+              _this.onSelect(index); // mark checkbox
 
-            _this2.$refs['checkbox-for-' + index][0].checked = true; // console.log(this.$refs['checkbox-for-' + index][0].checked)
+            _this.$refs['checkbox-for-' + index][0].checked = true; // console.log(this.$refs['checkbox-for-' + index][0].checked)
           }
         }
 
         index++;
-      }); // if (condition == no_comment_no_out)
-    },
-    showTooltip: function showTooltip(event, type, header, data) {
-      var rect = event.target.getBoundingClientRect(); // Set tooltip position
-
-      this.tooltip.position.top = rect.top + rect.height + 10;
-      this.tooltip.position.center = rect.left + rect.width / 2; // Set tooltip data
-
-      this.tooltip.data = data;
-      this.tooltip.header = header;
-      this.tooltip.type = type; // Add team data to the tooltip 
-
-      if (type == 'users') {
-        // Show users if we are filtering by a team
-        if (this.teamFilterId > 0) {
-          this.tooltip.users = this.teamUsers;
-        } // Show teams if we are not filtering by team
-        else {
-            this.tooltip.type = 'teams';
-            this.tooltip.teams = this.teams;
-          }
-      } // Make tooltip active
-
-
-      this.tooltip.active = true;
-    },
-    hideTooltip: function hideTooltip() {
-      this.tooltip.active = false;
+      });
     },
     onSortBy: function onSortBy(key, method) {
       this.$emit('onSortBy', key, method);
@@ -10638,10 +10615,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../store/models/ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
 /* harmony import */ var _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../store/models/CommentVote */ "./resources/js/store/models/CommentVote.js");
 /* harmony import */ var _store_models_Category__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../store/models/Category */ "./resources/js/store/models/Category.js");
-/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
-/* harmony import */ var _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../../store/models/TeamProduct */ "./resources/js/store/models/TeamProduct.js");
-/* harmony import */ var _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../../store/models/PhaseProduct */ "./resources/js/store/models/PhaseProduct.js");
+/* harmony import */ var _store_models_Task__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../store/models/Task */ "./resources/js/store/models/Task.js");
+/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../../store/models/TeamProduct */ "./resources/js/store/models/TeamProduct.js");
+/* harmony import */ var _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ../../store/models/PhaseProduct */ "./resources/js/store/models/PhaseProduct.js");
+/* harmony import */ var _store_models_TaskTeam__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ../../store/models/TaskTeam */ "./resources/js/store/models/TaskTeam.js");
+/* harmony import */ var _store_models_FileTask__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ../../store/models/FileTask */ "./resources/js/store/models/FileTask.js");
+/* harmony import */ var _store_models_TaskParent__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ../../store/models/TaskParent */ "./resources/js/store/models/TaskParent.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
@@ -10735,6 +10716,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
+
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'catalogue',
   store: _store__WEBPACK_IMPORTED_MODULE_0__["default"],
@@ -10766,7 +10751,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.sortProducts();
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'products']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'products']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files', 'currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'teamFilterId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser']), {
     defaultTeam: function defaultTeam() {
       if (this.userPermissionLevel >= 3) return {
         id: 0,
@@ -10790,10 +10775,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return hasAccess;
     },
     teamProducts: function teamProducts() {
-      return _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_20__["default"]["with"]('products').all();
+      return _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_21__["default"]["with"]('products').all();
     },
     phaseProducts: function phaseProducts() {
-      return _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_21__["default"]["with"]('products').all();
+      return _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_22__["default"]["with"]('products').all();
     },
     collection: function collection() {
       var _this2 = this;
@@ -11061,9 +11046,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       var usersToReturn = [];
 
-      if (this.currentTeamId > 0) {
+      if (this.teamFilterId > 0) {
         var thisTeam = this.teams.find(function (team) {
-          return team.id == _this5.currentTeamId;
+          return team.id == _this5.teamFilterId;
         });
         if (thisTeam) thisTeam.users.forEach(function (user) {
           var fileUser = _this5.collection.users.find(function (x) {
@@ -11086,7 +11071,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     comments: function comments() {
       var comments = _store_models_Comment__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"](['votes', 'user.teams']).all();
-      var teamFilterId = this.currentTeamId;
+      var teamFilterId = this.teamFilterId;
 
       if (teamFilterId > 0) {
         var commentsToReturn = [];
@@ -11131,7 +11116,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else return this.teams;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentTeam', 'setCurrentFileId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentTeam', 'setTeamFilter', 'setCurrentFileId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']), {
     setProductFilter: function setProductFilter(filter) {
       this.currentProductFilter = filter;
       this.clearSelectedProducts();
@@ -11417,7 +11402,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       unsub: ''
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentTeam', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'authUser']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'teamFilterId', 'currentTeam', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'authUser']), {
     defaultTeam: function defaultTeam() {
       if (this.userPermissionLevel >= 3) return {
         id: 0,
@@ -11465,10 +11450,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     users: function users() {
       return _store_models_User__WEBPACK_IMPORTED_MODULE_9__["default"].query()["with"]('teams').all();
     },
-    // authUser() {
-    //     // return this.$store.getters.authUser;
-    //     return AuthUser.query().with('teams').with('workspaces').first()
-    // },
     teams: function teams() {
       return this.$store.getters['entities/teams/teams'];
     },
@@ -11488,7 +11469,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return loading;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentTeam']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentTeam', 'setTeamFilter']), {
     onSelect: function onSelect(index) {
       // Check if index already exists in array. If it exists remove it, else add it to array
       var selected = this.selected;
@@ -11746,7 +11727,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return this.products != null && !this.loadingFile ? false : true;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentFileId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['fetchTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentFileId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['fetchTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/taskActions', ['fetchTaskActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/requests', ['fetchRequests']), {
     initRequiresWorkspace: function () {
       var _initRequiresWorkspace = _asyncToGenerator(
       /*#__PURE__*/
@@ -11795,7 +11776,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.next = 2;
-                return this.fetchProducts(this.currentFileId), this.fetchActions(this.currentFileId), this.fetchComments(this.currentFileId), this.fetchCommentVotes(this.currentFileId), this.fetchTeamProducts(this.currentFileId), this.fetchPhaseProducts(this.currentFileId);
+                return this.fetchProducts(this.currentFileId), this.fetchActions(this.currentFileId), this.fetchComments(this.currentFileId), this.fetchCommentVotes(this.currentFileId), this.fetchTeamProducts(this.currentFileId), this.fetchPhaseProducts(this.currentFileId), this.fetchTaskActions(this.currentFileId), this.fetchRequests(this.currentFileId);
 
               case 2:
                 this.loadingFile = false;
@@ -12213,7 +12194,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1b1c1d;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n  position: relative;\n  padding: 0;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 70px;\n  right: 0;\n  background: #f9f9f9;\n  width: 100%;\n  height: 60px;\n  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05) inset;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  margin-left: 1px;\n  border-radius: 0 6px 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.card > .flex-table[data-v-57b394cf] {\n  margin-left: 0;\n  margin-right: 0;\n  width: 100%;\n}\n.flex-table.disabled .product-row[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  min-width: 120px;\n  margin-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf] {\n  min-width: 56px;\n  margin-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.square-wrapper .square[data-v-57b394cf] {\n  min-width: 56px;\n  width: auto;\n  padding: 0 4px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 82px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: 16px;\n  margin-right: 16px;\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 284px;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table-row > *.action[data-v-57b394cf]:not(th) {\n  display: -webkit-box;\n  display: flex;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #f3f3f3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #f3f3f3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5ee2a0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #ff6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #f9f9f9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #dfdfdf;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #a8a8a8;\n  white-space: nowrap;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #dfdfdf;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3b86ff;\n}\nth.action[data-v-57b394cf] {\n  text-align: right;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1b1c1d;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #f9f9f9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.square[data-v-57b394cf] {\n  color: #1b1c1d;\n  font-weight: 600;\n}\n.square[data-v-57b394cf]:not(.true-square) {\n  min-width: 58px;\n}\n.square i[data-v-57b394cf] {\n  color: #a8a8a8;\n}\n.square.focus-action.active i[data-v-57b394cf] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.button[data-v-57b394cf] {\n  min-width: 72px;\n}\n.button[data-v-57b394cf]:nth-child(1n+2) {\n  margin-left: 12px;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.product-totals[data-v-57b394cf] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.product-totals span[data-v-57b394cf] {\n  font-weight: 500;\n  font-size: 14px;\n}\n.product-totals span[data-v-57b394cf]:not(:last-child) {\n  margin-right: 20px;\n}", ""]);
+exports.push([module.i, ".dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1b1c1d;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n  position: relative;\n  padding: 0;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 70px;\n  right: 0;\n  background: #f9f9f9;\n  width: 100%;\n  height: 60px;\n  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05) inset;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  margin-left: 1px;\n  border-radius: 0 6px 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.card > .flex-table[data-v-57b394cf] {\n  margin-left: 0;\n  margin-right: 0;\n  width: 100%;\n}\n.flex-table.disabled .product-row[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  min-width: 120px;\n  margin-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf], .flex-table-row > *.tooltip-wrapper .square-wrapper[data-v-57b394cf] {\n  min-width: 56px;\n  margin-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.square-wrapper .square[data-v-57b394cf], .flex-table-row > *.tooltip-wrapper .square-wrapper .square[data-v-57b394cf] {\n  min-width: 56px;\n  width: auto;\n  padding: 0 4px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 82px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: 16px;\n  margin-right: 16px;\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 284px;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table-row > *.action[data-v-57b394cf]:not(th) {\n  display: -webkit-box;\n  display: flex;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #f3f3f3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #f3f3f3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5ee2a0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #ff6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #f9f9f9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #dfdfdf;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #a8a8a8;\n  white-space: nowrap;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #dfdfdf;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3b86ff;\n}\nth.action[data-v-57b394cf] {\n  text-align: right;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1b1c1d;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #f9f9f9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.square[data-v-57b394cf] {\n  color: #1b1c1d;\n  font-weight: 600;\n}\n.square[data-v-57b394cf]:not(.true-square) {\n  min-width: 58px;\n}\n.square i[data-v-57b394cf] {\n  color: #a8a8a8;\n}\n.square.focus-action.active i[data-v-57b394cf] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.button[data-v-57b394cf] {\n  min-width: 72px;\n}\n.button[data-v-57b394cf]:nth-child(1n+2) {\n  margin-left: 12px;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.product-totals[data-v-57b394cf] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.product-totals span[data-v-57b394cf] {\n  font-weight: 500;\n  font-size: 14px;\n}\n.product-totals span[data-v-57b394cf]:not(:last-child) {\n  margin-right: 20px;\n}", ""]);
 
 // exports
 
@@ -18772,67 +18753,125 @@ var render = function() {
                     _vm._v(" "),
                     _vm.feedbackAvailable
                       ? [
-                          _c("td", { staticClass: "square-wrapper focus" }, [
-                            _c(
-                              "span",
-                              { staticClass: "square light icon-left" },
-                              [
-                                _c("i", {
-                                  staticClass: "far fa-star hide-screen-sm"
-                                }),
-                                _vm._v(_vm._s(product.focus.length))
-                              ]
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c("td", { staticClass: "square-wrapper" }, [
-                            _c(
-                              "span",
-                              { staticClass: "square light icon-left" },
-                              [
-                                _c("i", {
-                                  staticClass: "far fa-heart hide-screen-sm"
-                                }),
-                                _vm._v(
-                                  _vm._s(
-                                    product.ins.length + product.focus.length
+                          _c(
+                            "tooltipAlt2",
+                            {
+                              staticClass: "square-wrapper",
+                              attrs: {
+                                header: "focus",
+                                array: product.focus,
+                                arrayValueKey: "email"
+                              }
+                            },
+                            [
+                              _c(
+                                "td",
+                                { staticClass: "square-wrapper focus" },
+                                [
+                                  _c(
+                                    "span",
+                                    { staticClass: "square light icon-left" },
+                                    [
+                                      _c("i", {
+                                        staticClass:
+                                          "far fa-star hide-screen-sm"
+                                      }),
+                                      _vm._v(_vm._s(product.focus.length))
+                                    ]
                                   )
-                                )
-                              ]
-                            )
-                          ]),
+                                ]
+                              )
+                            ]
+                          ),
                           _vm._v(" "),
-                          _c("td", { staticClass: "square-wrapper" }, [
-                            _c(
-                              "span",
-                              { staticClass: "square light icon-left" },
-                              [
-                                _c("i", {
-                                  staticClass:
-                                    "far fa-times-circle hide-screen-sm"
-                                }),
-                                _vm._v(_vm._s(product.outs.length))
-                              ]
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c("td", { staticClass: "square-wrapper nds" }, [
-                            _c(
-                              "span",
-                              { staticClass: "square light icon-left" },
-                              [
-                                _c("i", {
-                                  staticClass:
-                                    "far fa-question-circle hide-screen-sm"
-                                }),
-                                _vm._v(
-                                  _vm._s(product.nds.length) +
-                                    " /" +
-                                    _vm._s(_vm.teams.length)
+                          _c(
+                            "tooltipAlt2",
+                            {
+                              staticClass: "square-wrapper",
+                              attrs: {
+                                header: "in",
+                                array: product.ins,
+                                arrayValueKey: "email"
+                              }
+                            },
+                            [
+                              _c("td", { staticClass: "square-wrapper" }, [
+                                _c(
+                                  "span",
+                                  { staticClass: "square light icon-left" },
+                                  [
+                                    _c("i", {
+                                      staticClass: "far fa-heart hide-screen-sm"
+                                    }),
+                                    _vm._v(
+                                      _vm._s(
+                                        product.ins.length +
+                                          product.focus.length
+                                      )
+                                    )
+                                  ]
                                 )
-                              ]
-                            )
-                          ])
+                              ])
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "tooltipAlt2",
+                            {
+                              staticClass: "square-wrapper",
+                              attrs: {
+                                header: "out",
+                                array: product.outs,
+                                arrayValueKey: "email"
+                              }
+                            },
+                            [
+                              _c("td", { staticClass: "square-wrapper" }, [
+                                _c(
+                                  "span",
+                                  { staticClass: "square light icon-left" },
+                                  [
+                                    _c("i", {
+                                      staticClass:
+                                        "far fa-times-circle hide-screen-sm"
+                                    }),
+                                    _vm._v(_vm._s(product.outs.length))
+                                  ]
+                                )
+                              ])
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "tooltipAlt2",
+                            {
+                              staticClass: "square-wrapper",
+                              attrs: {
+                                header: "not decided",
+                                array: product.nds,
+                                arrayValueKey: "email"
+                              }
+                            },
+                            [
+                              _c("td", { staticClass: "square-wrapper nds" }, [
+                                _c(
+                                  "span",
+                                  { staticClass: "square light icon-left" },
+                                  [
+                                    _c("i", {
+                                      staticClass:
+                                        "far fa-question-circle hide-screen-sm"
+                                    }),
+                                    _vm._v(
+                                      _vm._s(product.nds.length) +
+                                        " /" +
+                                        _vm._s(_vm.teams.length)
+                                    )
+                                  ]
+                                )
+                              ])
+                            ]
+                          )
                         ]
                       : _vm._e(),
                     _vm._v(" "),
@@ -21040,19 +21079,19 @@ var render = function() {
                                         attrs: { src: "/assets/Path5699.svg" }
                                       }),
                                       _vm._v(" "),
-                                      _vm.currentTeamId > 0
+                                      _vm.teamFilterId > 0
                                         ? _c("span", [
                                             _vm._v(
                                               _vm._s(
                                                 _vm.teams.find(function(x) {
                                                   return (
-                                                    x.id == _vm.currentTeamId
+                                                    x.id == _vm.teamFilterId
                                                   )
                                                 }).title
                                               )
                                             )
                                           ])
-                                        : _vm.currentTeamId == 0
+                                        : _vm.teamFilterId == 0
                                         ? _c("span", [_vm._v("Global")])
                                         : _c("span", [
                                             _vm._v("No team available")
@@ -21080,13 +21119,13 @@ var render = function() {
                                     ref: "countryRadio",
                                     attrs: {
                                       options: _vm.teamsForFilter,
-                                      currentOptionId: _vm.currentTeamId,
+                                      currentOptionId: _vm.teamFilterId,
                                       optionNameKey: "title",
                                       optionValueKey: "id"
                                     },
                                     on: {
                                       change: function($event) {
-                                        _vm.setCurrentTeam($event)
+                                        _vm.setTeamFilter($event)
                                         _vm.$refs.countryDropdown.toggle()
                                       }
                                     }
@@ -21098,7 +21137,7 @@ var render = function() {
                           ],
                           null,
                           false,
-                          3104046121
+                          1320340448
                         )
                       })
                     ],
@@ -21116,7 +21155,6 @@ var render = function() {
                   _c("products", {
                     ref: "productsComponent",
                     attrs: {
-                      teamFilterId: _vm.currentTeamId,
                       teamUsers: _vm.teamUsers,
                       selectedIds: _vm.selectedProductIDs,
                       sortBy: _vm.sortBy,
@@ -21313,17 +21351,17 @@ var render = function() {
                       [
                         _c("img", { attrs: { src: "/assets/Path5699.svg" } }),
                         _vm._v(" "),
-                        _vm.currentTeamId > 0
+                        _vm.teamFilterId > 0
                           ? _c("span", [
                               _vm._v(
                                 _vm._s(
                                   _vm.teams.find(function(x) {
-                                    return x.id == _vm.currentTeamId
+                                    return x.id == _vm.teamFilterId
                                   }).title
                                 )
                               )
                             ])
-                          : _vm.currentTeamId == 0
+                          : _vm.teamFilterId == 0
                           ? _c("span", [_vm._v("Global")])
                           : _c("span", [_vm._v("No team available")]),
                         _vm._v(" "),
@@ -21347,13 +21385,13 @@ var render = function() {
                       ref: "countryRadio",
                       attrs: {
                         options: _vm.teamsForFilter,
-                        currentOptionId: _vm.currentTeamId,
+                        currentOptionId: _vm.teamFilterId,
                         optionNameKey: "title",
                         optionValueKey: "id"
                       },
                       on: {
                         change: function($event) {
-                          _vm.setCurrentTeam($event)
+                          _vm.setTeamFilter($event)
                           _vm.$refs.countryDropdown.toggle()
                         }
                       }
@@ -40570,8 +40608,32 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_phaseProducts__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./modules/phaseProducts */ "./resources/js/store/modules/phaseProducts.js");
 /* harmony import */ var _models_TeamFile__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./models/TeamFile */ "./resources/js/store/models/TeamFile.js");
 /* harmony import */ var _modules_teamFiles__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! ./modules/teamFiles */ "./resources/js/store/modules/teamFiles.js");
-/* harmony import */ var _models_PhaseTeam__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! ./models/PhaseTeam */ "./resources/js/store/models/PhaseTeam.js");
-/* harmony import */ var _modules_phaseTeams__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! ./modules/phaseTeams */ "./resources/js/store/modules/phaseTeams.js");
+/* harmony import */ var _modules_taskTeams__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! ./modules/taskTeams */ "./resources/js/store/modules/taskTeams.js");
+/* harmony import */ var _models_TaskTeam__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! ./models/TaskTeam */ "./resources/js/store/models/TaskTeam.js");
+/* harmony import */ var _modules_phases__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! ./modules/phases */ "./resources/js/store/modules/phases.js");
+/* harmony import */ var _models_Phase__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(/*! ./models/Phase */ "./resources/js/store/models/Phase.js");
+/* harmony import */ var _modules_tasks__WEBPACK_IMPORTED_MODULE_43__ = __webpack_require__(/*! ./modules/tasks */ "./resources/js/store/modules/tasks.js");
+/* harmony import */ var _models_Task__WEBPACK_IMPORTED_MODULE_44__ = __webpack_require__(/*! ./models/Task */ "./resources/js/store/models/Task.js");
+/* harmony import */ var _modules_taskParents__WEBPACK_IMPORTED_MODULE_45__ = __webpack_require__(/*! ./modules/taskParents */ "./resources/js/store/modules/taskParents.js");
+/* harmony import */ var _models_TaskParent__WEBPACK_IMPORTED_MODULE_46__ = __webpack_require__(/*! ./models/TaskParent */ "./resources/js/store/models/TaskParent.js");
+/* harmony import */ var _models_FileTask__WEBPACK_IMPORTED_MODULE_47__ = __webpack_require__(/*! ./models/FileTask */ "./resources/js/store/models/FileTask.js");
+/* harmony import */ var _modules_fileTasks__WEBPACK_IMPORTED_MODULE_48__ = __webpack_require__(/*! ./modules/fileTasks */ "./resources/js/store/modules/fileTasks.js");
+/* harmony import */ var _models_TaskAction__WEBPACK_IMPORTED_MODULE_49__ = __webpack_require__(/*! ./models/TaskAction */ "./resources/js/store/models/TaskAction.js");
+/* harmony import */ var _modules_taskActions__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(/*! ./modules/taskActions */ "./resources/js/store/modules/taskActions.js");
+/* harmony import */ var _models_Request__WEBPACK_IMPORTED_MODULE_51__ = __webpack_require__(/*! ./models/Request */ "./resources/js/store/models/Request.js");
+/* harmony import */ var _modules_requests__WEBPACK_IMPORTED_MODULE_52__ = __webpack_require__(/*! ./modules/requests */ "./resources/js/store/modules/requests.js");
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -40633,7 +40695,13 @@ database.register(_models_WorkspaceUser__WEBPACK_IMPORTED_MODULE_31__["default"]
 database.register(_models_TeamProduct__WEBPACK_IMPORTED_MODULE_33__["default"], _modules_teamProducts__WEBPACK_IMPORTED_MODULE_34__["default"]);
 database.register(_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_35__["default"], _modules_phaseProducts__WEBPACK_IMPORTED_MODULE_36__["default"]);
 database.register(_models_TeamFile__WEBPACK_IMPORTED_MODULE_37__["default"], _modules_teamFiles__WEBPACK_IMPORTED_MODULE_38__["default"]);
-database.register(_models_PhaseTeam__WEBPACK_IMPORTED_MODULE_39__["default"], _modules_phaseTeams__WEBPACK_IMPORTED_MODULE_40__["default"]);
+database.register(_models_TaskTeam__WEBPACK_IMPORTED_MODULE_40__["default"], _modules_taskTeams__WEBPACK_IMPORTED_MODULE_39__["default"]);
+database.register(_models_Phase__WEBPACK_IMPORTED_MODULE_42__["default"], _modules_phases__WEBPACK_IMPORTED_MODULE_41__["default"]);
+database.register(_models_Task__WEBPACK_IMPORTED_MODULE_44__["default"], _modules_tasks__WEBPACK_IMPORTED_MODULE_43__["default"]);
+database.register(_models_FileTask__WEBPACK_IMPORTED_MODULE_47__["default"], _modules_fileTasks__WEBPACK_IMPORTED_MODULE_48__["default"]);
+database.register(_models_TaskParent__WEBPACK_IMPORTED_MODULE_46__["default"], _modules_taskParents__WEBPACK_IMPORTED_MODULE_45__["default"]);
+database.register(_models_TaskAction__WEBPACK_IMPORTED_MODULE_49__["default"], _modules_taskActions__WEBPACK_IMPORTED_MODULE_50__["default"]);
+database.register(_models_Request__WEBPACK_IMPORTED_MODULE_51__["default"], _modules_requests__WEBPACK_IMPORTED_MODULE_52__["default"]);
 /* harmony default export */ __webpack_exports__["default"] = (database);
 
 /***/ }),
@@ -40729,6 +40797,8 @@ function (_Model) {
       var data = {
         user_id: this.attr(null),
         product_id: this.attr(''),
+        team_id: this.attr(''),
+        task_id: this.attr(''),
         action: this.attr(''),
         product: this.belongsTo(_Product__WEBPACK_IMPORTED_MODULE_1__["default"], 'product_id'),
         user: this.belongsTo(_User__WEBPACK_IMPORTED_MODULE_2__["default"], 'user_id')
@@ -41042,16 +41112,12 @@ function (_Model) {
     value: function fields() {
       var data = {
         id: this.attr(null),
-        user_id: this.attr(''),
         product_id: this.attr(''),
+        task_id: this.attr(''),
         team_id: this.attr(''),
-        phase_id: this.attr(''),
+        user_id: this.attr(''),
         comment: this.attr(''),
         important: this.attr(''),
-        team_final: this.attr(false),
-        phase_final: this.attr(false),
-        // final: this.attr(''),
-        // product_final: this.attr(''),
         user: this.belongsTo(_User__WEBPACK_IMPORTED_MODULE_1__["default"], 'user_id'),
         team: this.belongsTo(_Team__WEBPACK_IMPORTED_MODULE_3__["default"], 'team_id'),
         votes: this.hasMany(_CommentVote__WEBPACK_IMPORTED_MODULE_2__["default"], 'comment_id')
@@ -41208,6 +41274,141 @@ Country.entity = 'countries';
 
 /***/ }),
 
+/***/ "./resources/js/store/models/FileTask.js":
+/*!***********************************************!*\
+  !*** ./resources/js/store/models/FileTask.js ***!
+  \***********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return FileTask; });
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+/* harmony import */ var _TaskTeam__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TaskTeam */ "./resources/js/store/models/TaskTeam.js");
+/* harmony import */ var _Task__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Task */ "./resources/js/store/models/Task.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+
+
+var FileTask =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(FileTask, _Model);
+
+  function FileTask() {
+    _classCallCheck(this, FileTask);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(FileTask).apply(this, arguments));
+  }
+
+  _createClass(FileTask, null, [{
+    key: "fields",
+    // This is the name used as module name of the Vuex Store.
+    value: function fields() {
+      var data = {
+        file_id: this.attr(''),
+        task_id: this.attr('') // taskTeams: this.hasMany(TaskTeam, 'task_id', 'task_id'),
+        // tasks: this.belongsTo(Task, 'task_id', 'task_id'),
+
+      };
+      return data;
+    }
+  }]);
+
+  return FileTask;
+}(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
+
+FileTask.entity = 'fileTasks';
+FileTask.primaryKey = ['file_id', 'task_id'];
+
+
+/***/ }),
+
+/***/ "./resources/js/store/models/Phase.js":
+/*!********************************************!*\
+  !*** ./resources/js/store/models/Phase.js ***!
+  \********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Phase; });
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// Product Model
+
+
+var Phase =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(Phase, _Model);
+
+  function Phase() {
+    _classCallCheck(this, Phase);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(Phase).apply(this, arguments));
+  }
+
+  _createClass(Phase, null, [{
+    key: "fields",
+    // This is the name used as module name of the Vuex Store.
+    // List of all fields (schema) of the product model. `this.attr` is used
+    // for the generic field type. The argument is the default value.
+    value: function fields() {
+      var data = {
+        id: this.attr(''),
+        workspace_id: this.attr(''),
+        title: this.attr('')
+      };
+      return data;
+    }
+  }]);
+
+  return Phase;
+}(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
+
+Phase.entity = 'phases';
+
+
+/***/ }),
+
 /***/ "./resources/js/store/models/PhaseProduct.js":
 /*!***************************************************!*\
   !*** ./resources/js/store/models/PhaseProduct.js ***!
@@ -41274,73 +41475,6 @@ function (_Model) {
 
 PhaseProduct.entity = 'phaseProducts';
 PhaseProduct.primaryKey = ['phase_id', 'product_id'];
-
-
-/***/ }),
-
-/***/ "./resources/js/store/models/PhaseTeam.js":
-/*!************************************************!*\
-  !*** ./resources/js/store/models/PhaseTeam.js ***!
-  \************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return PhaseTeam; });
-/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-// Product Model
-
-
-var PhaseTeam =
-/*#__PURE__*/
-function (_Model) {
-  _inherits(PhaseTeam, _Model);
-
-  function PhaseTeam() {
-    _classCallCheck(this, PhaseTeam);
-
-    return _possibleConstructorReturn(this, _getPrototypeOf(PhaseTeam).apply(this, arguments));
-  }
-
-  _createClass(PhaseTeam, null, [{
-    key: "fields",
-    // This is the name used as module name of the Vuex Store.
-    // List of all fields (schema) of the product model. `this.attr` is used
-    // for the generic field type. The argument is the default value.
-    value: function fields() {
-      var data = {
-        phase_id: this.attr(null),
-        team_id: this.attr(null),
-        role_id: this.attr(null)
-      };
-      return data;
-    }
-  }]);
-
-  return PhaseTeam;
-}(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
-
-PhaseTeam.entity = 'phaseTeams';
-PhaseTeam.primaryKey = ['phase_id', 'team_id', 'role_id'];
 
 
 /***/ }),
@@ -41509,6 +41643,81 @@ ProductFinalAction.primaryKey = 'product_id';
 
 /***/ }),
 
+/***/ "./resources/js/store/models/Request.js":
+/*!**********************************************!*\
+  !*** ./resources/js/store/models/Request.js ***!
+  \**********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Request; });
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+/* harmony import */ var _User__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./User */ "./resources/js/store/models/User.js");
+/* harmony import */ var _Team__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Team */ "./resources/js/store/models/Team.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+
+
+var Request =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(Request, _Model);
+
+  function Request() {
+    _classCallCheck(this, Request);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(Request).apply(this, arguments));
+  }
+
+  _createClass(Request, null, [{
+    key: "fields",
+    // This is the name used as module name of the Vuex Store.
+    // List of all fields (schema) of the product model. `this.attr` is used
+    // for the generic field type. The argument is the default value.
+    value: function fields() {
+      var data = {
+        id: this.attr(null),
+        product_id: this.attr(''),
+        task_id: this.attr(''),
+        team_id: this.attr(''),
+        user_id: this.attr(''),
+        body: this.attr(''),
+        status: this.attr(''),
+        user: this.belongsTo(_User__WEBPACK_IMPORTED_MODULE_1__["default"], 'user_id'),
+        team: this.belongsTo(_Team__WEBPACK_IMPORTED_MODULE_2__["default"], 'team_id')
+      };
+      return data;
+    }
+  }]);
+
+  return Request;
+}(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
+
+Request.entity = 'requests';
+
+
+/***/ }),
+
 /***/ "./resources/js/store/models/Role.js":
 /*!*******************************************!*\
   !*** ./resources/js/store/models/Role.js ***!
@@ -41578,6 +41787,287 @@ Role.entity = 'roles';
 
 /***/ }),
 
+/***/ "./resources/js/store/models/Task.js":
+/*!*******************************************!*\
+  !*** ./resources/js/store/models/Task.js ***!
+  \*******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Task; });
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+/* harmony import */ var _FileTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FileTask */ "./resources/js/store/models/FileTask.js");
+/* harmony import */ var _TaskParent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./TaskParent */ "./resources/js/store/models/TaskParent.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// Product Model
+
+
+
+
+var Task =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(Task, _Model);
+
+  function Task() {
+    _classCallCheck(this, Task);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(Task).apply(this, arguments));
+  }
+
+  _createClass(Task, null, [{
+    key: "fields",
+    // This is the name used as module name of the Vuex Store.
+    // List of all fields (schema) of the product model. `this.attr` is used
+    // for the generic field type. The argument is the default value.
+    value: function fields() {
+      var data = {
+        id: this.attr(''),
+        phase_id: this.attr(''),
+        title: this.attr(''),
+        type: this.attr(''),
+        completed: this.hasMany(_FileTask__WEBPACK_IMPORTED_MODULE_1__["default"], 'task_id'),
+        parents: this.hasMany(_TaskParent__WEBPACK_IMPORTED_MODULE_2__["default"], 'task_id')
+      };
+      return data;
+    }
+  }]);
+
+  return Task;
+}(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
+
+Task.entity = 'tasks';
+
+
+/***/ }),
+
+/***/ "./resources/js/store/models/TaskAction.js":
+/*!*************************************************!*\
+  !*** ./resources/js/store/models/TaskAction.js ***!
+  \*************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TaskAction; });
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+var TaskAction =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(TaskAction, _Model);
+
+  function TaskAction() {
+    _classCallCheck(this, TaskAction);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(TaskAction).apply(this, arguments));
+  }
+
+  _createClass(TaskAction, null, [{
+    key: "fields",
+    // This is the name used as module name of the Vuex Store.
+    // List of all fields (schema) of the product model. `this.attr` is used
+    // for the generic field type. The argument is the default value.
+    value: function fields() {
+      var data = {
+        task_id: this.attr(null),
+        product_id: this.attr(''),
+        team_id: this.attr(''),
+        user_id: this.attr(''),
+        action: this.attr('')
+      };
+      return data;
+    }
+  }]);
+
+  return TaskAction;
+}(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
+
+TaskAction.entity = 'taskActions';
+TaskAction.primaryKey = ['task_id', 'product_id'];
+
+
+/***/ }),
+
+/***/ "./resources/js/store/models/TaskParent.js":
+/*!*************************************************!*\
+  !*** ./resources/js/store/models/TaskParent.js ***!
+  \*************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TaskParent; });
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+/* harmony import */ var _FileTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FileTask */ "./resources/js/store/models/FileTask.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// Product Model
+
+
+
+var TaskParent =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(TaskParent, _Model);
+
+  function TaskParent() {
+    _classCallCheck(this, TaskParent);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(TaskParent).apply(this, arguments));
+  }
+
+  _createClass(TaskParent, null, [{
+    key: "fields",
+    // This is the name used as module name of the Vuex Store.
+    value: function fields() {
+      var data = {
+        task_id: this.attr(''),
+        parent_id: this.attr(''),
+        completed: this.hasMany(_FileTask__WEBPACK_IMPORTED_MODULE_1__["default"], 'task_id', 'parent_id')
+      };
+      return data;
+    }
+  }]);
+
+  return TaskParent;
+}(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
+
+TaskParent.entity = 'taskParents';
+TaskParent.primaryKey = ['task_id', 'parent_id'];
+
+
+/***/ }),
+
+/***/ "./resources/js/store/models/TaskTeam.js":
+/*!***********************************************!*\
+  !*** ./resources/js/store/models/TaskTeam.js ***!
+  \***********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TaskTeam; });
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+/* harmony import */ var _FileTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FileTask */ "./resources/js/store/models/FileTask.js");
+/* harmony import */ var _Task__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Task */ "./resources/js/store/models/Task.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// Product Model
+
+
+
+
+var TaskTeam =
+/*#__PURE__*/
+function (_Model) {
+  _inherits(TaskTeam, _Model);
+
+  function TaskTeam() {
+    _classCallCheck(this, TaskTeam);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(TaskTeam).apply(this, arguments));
+  }
+
+  _createClass(TaskTeam, null, [{
+    key: "fields",
+    // This is the name used as module name of the Vuex Store.
+    // List of all fields (schema) of the product model. `this.attr` is used
+    // for the generic field type. The argument is the default value.
+    value: function fields() {
+      var data = {
+        task_id: this.attr(null),
+        team_id: this.attr(null),
+        role_id: this.attr(null),
+        completed: this.hasMany(_FileTask__WEBPACK_IMPORTED_MODULE_1__["default"], 'task_id', 'task_id'),
+        task: this.belongsTo(_Task__WEBPACK_IMPORTED_MODULE_2__["default"], 'task_id')
+      };
+      return data;
+    }
+  }]);
+
+  return TaskTeam;
+}(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
+
+TaskTeam.entity = 'taskTeams';
+TaskTeam.primaryKey = ['task_id', 'team_id', 'role_id'];
+
+
+/***/ }),
+
 /***/ "./resources/js/store/models/Team.js":
 /*!*******************************************!*\
   !*** ./resources/js/store/models/Team.js ***!
@@ -41595,7 +42085,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _TeamFile__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./TeamFile */ "./resources/js/store/models/TeamFile.js");
 /* harmony import */ var _TeamInvite__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./TeamInvite */ "./resources/js/store/models/TeamInvite.js");
 /* harmony import */ var _TeamProduct__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./TeamProduct */ "./resources/js/store/models/TeamProduct.js");
-/* harmony import */ var _PhaseTeam__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./PhaseTeam */ "./resources/js/store/models/PhaseTeam.js");
+/* harmony import */ var _TaskTeam__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./TaskTeam */ "./resources/js/store/models/TaskTeam.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -41647,12 +42137,13 @@ function (_Model) {
         title: this.attr(''),
         workspace_id: this.attr(''),
         currency: this.attr(''),
+        category_scope: this.attr(''),
         users: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_1__["default"], _UserTeam__WEBPACK_IMPORTED_MODULE_2__["default"], 'team_id', 'user_id'),
         teamFiles: this.hasMany(_TeamFile__WEBPACK_IMPORTED_MODULE_4__["default"], 'team_id'),
         actions: this.hasMany(_TeamProduct__WEBPACK_IMPORTED_MODULE_6__["default"], 'team_id'),
         files: this.belongsToMany(_Collection__WEBPACK_IMPORTED_MODULE_3__["default"], _TeamFile__WEBPACK_IMPORTED_MODULE_4__["default"], 'team_id', 'file_id'),
         invites: this.hasMany(_TeamInvite__WEBPACK_IMPORTED_MODULE_5__["default"], 'team_id'),
-        phases: this.hasMany(_PhaseTeam__WEBPACK_IMPORTED_MODULE_7__["default"], 'team_id')
+        taskTeams: this.hasMany(_TaskTeam__WEBPACK_IMPORTED_MODULE_7__["default"], 'team_id', 'id')
       };
       return data;
     }
@@ -42088,6 +42579,7 @@ function (_Model) {
         id: this.attr(null),
         name: this.attr(''),
         currency: this.attr(''),
+        phases: this.attr(''),
         users: this.belongsToMany(_User__WEBPACK_IMPORTED_MODULE_1__["default"], _WorkspaceUser__WEBPACK_IMPORTED_MODULE_2__["default"], 'workspace_id', 'user_id'),
         workspace_users: this.hasMany(_WorkspaceUser__WEBPACK_IMPORTED_MODULE_2__["default"], 'workspace_id')
       };
@@ -42789,29 +43281,71 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     currentTeamUsers: function currentTeamUsers(state, getters, rootState, rootGetters) {
       if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
-        var currentTeamId = rootGetters['persist/currentTeamId'];
+        var currentTeamId = rootGetters['persist/teamFilterId'];
         var teams = rootGetters['entities/teams/teams'];
         var currentFile = getters.currentFile;
         var usersToReturn = [];
 
-        if (currentTeamId > 0) {
-          var thisTeam = teams.find(function (team) {
-            return team.id == currentTeamId;
-          });
-
-          if (thisTeam) {
-            thisTeam.users.forEach(function (user) {
-              if (currentFile.users) {
-                var fileUser = currentFile.users.find(function (x) {
-                  return x.id == user.id;
-                });
-                if (fileUser) usersToReturn.push(fileUser);
-              }
+        if (currentFile) {
+          if (currentTeamId > 0) {
+            var thisTeam = teams.find(function (team) {
+              return team.id == currentTeamId;
             });
-          }
-        }
 
-        return usersToReturn;
+            if (thisTeam) {
+              thisTeam.users.forEach(function (user) {
+                if (currentFile.users) {
+                  var fileUser = currentFile.users.find(function (x) {
+                    return x.id == user.id;
+                  });
+                  if (fileUser) usersToReturn.push(fileUser);
+                }
+              });
+            }
+          }
+
+          return usersToReturn;
+        }
+      }
+    },
+    userTasks: function userTasks(state, getters, rootState, rootGetters) {
+      if (!rootGetters['persist/loadingInit'] && rootGetters['persist/currentTeam'] != null) {
+        var tasks = rootGetters['persist/currentTeam'].taskTeams;
+        var userPermissionLevel = rootGetters['persist/userPermissionLevel'];
+        var tasksToReturn = [];
+        tasks.forEach(function (task) {
+          if (task.role_id == userPermissionLevel) tasksToReturn.push(task.task);
+        });
+        return tasksToReturn;
+      }
+    },
+    currentTask: function currentTask(state, getters, rootState, rootGetters) {
+      if (!rootGetters['persist/loadingInit']) {
+        var taskToReturn;
+
+        if (getters.userTasks.length > 0) {
+          if (getters.userTasks != null) {
+            if (getters.userTasks[0] != null) {
+              getters.userTasks.forEach(function (task) {
+                if (task.parents != null) {
+                  if (task.parents.length > 0) {
+                    var parentsCompleted = true;
+                    task.parents.forEach(function (parent) {
+                      if (parent.completed.length < 1) {
+                        parentsCompleted = false;
+                      }
+                    });
+                    if (parentsCompleted && task.phase_id == getters.currentFile.phase) taskToReturn = task;
+                  }
+                } else if (task.phase_id == getters.currentFile.phase) {
+                  taskToReturn = task;
+                }
+              });
+            }
+          }
+
+          return taskToReturn;
+        }
       }
     }
   },
@@ -43414,6 +43948,117 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 /***/ }),
 
+/***/ "./resources/js/store/modules/fileTasks.js":
+/*!*************************************************!*\
+  !*** ./resources/js/store/modules/fileTasks.js ***!
+  \*************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _models_FileTask__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/FileTask */ "./resources/js/store/models/FileTask.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    loading: true
+  },
+  getters: {
+    loadingFileTasks: function loadingFileTasks(state) {
+      return state.loading;
+    }
+  },
+  actions: {
+    fetchFileTasks: function () {
+      var _fetchFileTasks = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, workspace_id) {
+        var commit, apiUrl, tryCount, succes, response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                commit = _ref.commit;
+                // Set the state to loading
+                commit('setLoading', true);
+                apiUrl = "/api/workspace/".concat(workspace_id, "/file-tasks");
+                tryCount = 3;
+                succes = false;
+
+              case 5:
+                if (!(tryCount-- > 0 && !succes)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                _context.prev = 6;
+                _context.next = 9;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
+
+              case 9:
+                response = _context.sent;
+                _models_FileTask__WEBPACK_IMPORTED_MODULE_2__["default"].create({
+                  data: response.data
+                });
+                commit('setLoading', false);
+                succes = true;
+                _context.next = 22;
+                break;
+
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in fileTasks.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 22;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 22:
+                _context.next = 5;
+                break;
+
+              case 24:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[6, 15]]);
+      }));
+
+      function fetchFileTasks(_x, _x2) {
+        return _fetchFileTasks.apply(this, arguments);
+      }
+
+      return fetchFileTasks;
+    }()
+  },
+  mutations: {
+    setLoading: function setLoading(state, bool) {
+      state.loading = bool;
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./resources/js/store/modules/persist.js":
 /*!***********************************************!*\
   !*** ./resources/js/store/modules/persist.js ***!
@@ -43435,6 +44080,7 @@ __webpack_require__.r(__webpack_exports__);
   namespaced: true,
   state: {
     currentTeamId: -1,
+    teamFilterId: -1,
     currentWorkspaceId: null,
     currentFileId: null,
     userPermissionLevel: 1,
@@ -43446,11 +44092,14 @@ __webpack_require__.r(__webpack_exports__);
     currentTeamId: function currentTeamId(state) {
       return state.currentTeamId;
     },
+    teamFilterId: function teamFilterId(state) {
+      return state.teamFilterId;
+    },
     currentWorkspace: function currentWorkspace(state) {
       return _store_models_Workspace__WEBPACK_IMPORTED_MODULE_0__["default"].find(state.currentWorkspaceId);
     },
     currentTeam: function currentTeam(state) {
-      return state.currentTeamId == 0 ? 'Global' : _store_models_Team__WEBPACK_IMPORTED_MODULE_1__["default"].find(state.currentTeamId);
+      return state.currentTeamId == 0 ? 'Global' : _store_models_Team__WEBPACK_IMPORTED_MODULE_1__["default"].query()["with"]('taskTeams.task.parents.completed').find(state.currentTeamId);
     },
     workspaceCurrency: function workspaceCurrency(state) {
       return 'EUR';
@@ -43488,7 +44137,7 @@ __webpack_require__.r(__webpack_exports__);
         return 'Phase action';else if (state.userPermissionLevel >= 2) return 'Team action';else return 'Your action';
     },
     authUser: function authUser() {
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_3__["default"].query()["with"]('teams.files|teamFiles|phases')["with"]('workspaces').first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_3__["default"].query()["with"]('teams.files|teamFiles|tasks.completed')["with"]('workspaces').first();
     }
   },
   actions: {
@@ -43496,26 +44145,33 @@ __webpack_require__.r(__webpack_exports__);
       var commit = _ref.commit;
       commit('setCurrentTeam', id);
     },
-    setCurrentWorkspace: function setCurrentWorkspace(_ref2, id) {
+    setTeamFilter: function setTeamFilter(_ref2, id) {
       var commit = _ref2.commit;
+      commit('setTeamFilter', id);
+    },
+    setCurrentWorkspace: function setCurrentWorkspace(_ref3, id) {
+      var commit = _ref3.commit;
       commit('setCurrentWorkspace', id);
     },
-    setCurrentFileId: function setCurrentFileId(_ref3, id) {
-      var commit = _ref3.commit;
+    setCurrentFileId: function setCurrentFileId(_ref4, id) {
+      var commit = _ref4.commit;
       commit('setcurrentFileId', id);
     },
-    setUserPermissionLevel: function setUserPermissionLevel(_ref4, id) {
-      var commit = _ref4.commit;
+    setUserPermissionLevel: function setUserPermissionLevel(_ref5, id) {
+      var commit = _ref5.commit;
       commit('setUserPermissionLevel', id);
     },
-    setLoadingInit: function setLoadingInit(_ref5, bool) {
-      var commit = _ref5.commit;
+    setLoadingInit: function setLoadingInit(_ref6, bool) {
+      var commit = _ref6.commit;
       commit('setLoadingInit', bool);
     }
   },
   mutations: {
     setCurrentTeam: function setCurrentTeam(state, id) {
       state.currentTeamId = id;
+    },
+    setTeamFilter: function setTeamFilter(state, id) {
+      state.teamFilterId = id;
     },
     setCurrentWorkspace: function setCurrentWorkspace(state, id) {
       state.currentWorkspaceId = id;
@@ -43848,10 +44504,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 /***/ }),
 
-/***/ "./resources/js/store/modules/phaseTeams.js":
-/*!**************************************************!*\
-  !*** ./resources/js/store/modules/phaseTeams.js ***!
-  \**************************************************/
+/***/ "./resources/js/store/modules/phases.js":
+/*!**********************************************!*\
+  !*** ./resources/js/store/modules/phases.js ***!
+  \**********************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -43861,7 +44517,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _models_PhaseTeam__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/PhaseTeam */ "./resources/js/store/models/PhaseTeam.js");
+/* harmony import */ var _models_Phase__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/Phase */ "./resources/js/store/models/Phase.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -43876,13 +44532,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     loading: true
   },
   getters: {
-    loadingPhaseTeams: function loadingPhaseTeams(state) {
+    loadingPhases: function loadingPhases(state) {
       return state.loading;
     }
   },
   actions: {
-    fetchPhaseTeams: function () {
-      var _fetchPhaseTeams = _asyncToGenerator(
+    fetchPhases: function () {
+      var _fetchPhases = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, workspace_id) {
         var commit, apiUrl, tryCount, succes, response;
@@ -43893,7 +44549,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit = _ref.commit;
                 // Set the state to loading
                 commit('setLoading', true);
-                apiUrl = "/api/workspace/".concat(workspace_id, "/phase-teams");
+                apiUrl = "/api/workspace/".concat(workspace_id, "/phases");
                 tryCount = 3;
                 succes = false;
 
@@ -43909,7 +44565,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 9:
                 response = _context.sent;
-                _models_PhaseTeam__WEBPACK_IMPORTED_MODULE_2__["default"].create({
+                _models_Phase__WEBPACK_IMPORTED_MODULE_2__["default"].create({
                   data: response.data
                 });
                 commit('setLoading', false);
@@ -43920,7 +44576,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 15:
                 _context.prev = 15;
                 _context.t0 = _context["catch"](6);
-                console.log('API error in phaseTeams.js :');
+                console.log('API error in phases.js :');
                 console.log(_context.t0);
                 console.log("Trying to fetch again. TryCount = ".concat(tryCount));
 
@@ -43943,11 +44599,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee, null, [[6, 15]]);
       }));
 
-      function fetchPhaseTeams(_x, _x2) {
-        return _fetchPhaseTeams.apply(this, arguments);
+      function fetchPhases(_x, _x2) {
+        return _fetchPhases.apply(this, arguments);
       }
 
-      return fetchPhaseTeams;
+      return fetchPhases;
     }()
   },
   mutations: {
@@ -44368,7 +45024,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       if (!rootGetters['persist/loadingInit'] && !state.loading) {
         var products = _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes.user.teams', 'comments.user.teams', 'comments.team'])["with"]('productFinalAction')["with"]('teamActions.team')["with"]('phaseActions').all();
         var userId = rootGetters['persist/authUser'].id;
-        var teamFilterId = rootGetters['persist/currentTeamId'];
+        var teamFilterId = rootGetters['persist/teamFilterId'];
         var currentTeam = rootGetters['persist/currentTeam'];
         var currentFile = rootGetters['entities/collections/currentFile'];
         var teamUsers = rootGetters['entities/collections/currentTeamUsers'];
@@ -44686,6 +45342,226 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 /***/ }),
 
+/***/ "./resources/js/store/modules/requests.js":
+/*!************************************************!*\
+  !*** ./resources/js/store/modules/requests.js ***!
+  \************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _models_Request__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/Request */ "./resources/js/store/models/Request.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    loading: true,
+    submitting: false
+  },
+  getters: {
+    loadingRequests: function loadingRequests(state) {
+      return state.loading;
+    },
+    submittingRequest: function submittingRequest(state) {
+      return state.submitting;
+    }
+  },
+  actions: {
+    fetchRequests: function () {
+      var _fetchRequests = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, file_id) {
+        var commit, apiUrl, tryCount, succes, response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                commit = _ref.commit;
+                // Set the state to loading
+                commit('setLoading', true);
+                apiUrl = "/api/file/".concat(file_id, "/requests");
+                tryCount = 3;
+                succes = false;
+
+              case 5:
+                if (!(tryCount-- > 0 && !succes)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                _context.prev = 6;
+                _context.next = 9;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
+
+              case 9:
+                response = _context.sent;
+                _models_Request__WEBPACK_IMPORTED_MODULE_2__["default"].create({
+                  data: response.data
+                });
+                commit('setLoading', false);
+                succes = true;
+                _context.next = 22;
+                break;
+
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in requests.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 22;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 22:
+                _context.next = 5;
+                break;
+
+              case 24:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[6, 15]]);
+      }));
+
+      function fetchRequests(_x, _x2) {
+        return _fetchRequests.apply(this, arguments);
+      }
+
+      return fetchRequests;
+    }(),
+    createRequest: function () {
+      var _createRequest = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, _ref3) {
+        var commit, request, response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                commit = _ref2.commit;
+                request = _ref3.request;
+                commit('setSubmitting', true);
+                _context2.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/request", {
+                  product_id: request.product_id,
+                  task_id: request.task_id,
+                  team_id: request.team_id,
+                  user_id: request.user_id,
+                  body: request.body
+                });
+
+              case 5:
+                response = _context2.sent;
+                // Get and set the request id equal to the id given by the database
+                request.id = response.data.id;
+                commit('addRequest', {
+                  request: request
+                });
+                commit('setSubmitting', false);
+
+              case 9:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }));
+
+      function createRequest(_x3, _x4) {
+        return _createRequest.apply(this, arguments);
+      }
+
+      return createRequest;
+    }(),
+    updateRequest: function () {
+      var _updateRequest = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref4, _ref5) {
+        var commit, request;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                commit = _ref4.commit;
+                request = _ref5.request;
+                commit('setSubmitting', true);
+                _context3.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/request", {
+                  id: request.id,
+                  product_id: request.product_id,
+                  task_id: request.task_id,
+                  team_id: request.team_id,
+                  user_id: request.user_id,
+                  body: request.body
+                });
+
+              case 5:
+                commit('updateRequest', {
+                  request: request
+                });
+                commit('setSubmitting', false);
+
+              case 7:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+
+      function updateRequest(_x5, _x6) {
+        return _updateRequest.apply(this, arguments);
+      }
+
+      return updateRequest;
+    }()
+  },
+  mutations: {
+    //Set the loading status of the app
+    setLoading: function setLoading(state, bool) {
+      state.loading = bool;
+    },
+    setSubmitting: function setSubmitting(state, bool) {
+      state.submitting = bool;
+    },
+    addRequest: function addRequest(state, _ref6) {
+      var request = _ref6.request;
+      // Submit new request
+      _models_Request__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
+        data: request
+      });
+    },
+    updateRequest: function updateRequest(state, _ref7) {
+      var request = _ref7.request;
+      // update request
+      _models_Request__WEBPACK_IMPORTED_MODULE_2__["default"].update({
+        where: request.id,
+        data: request
+      });
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./resources/js/store/modules/roles.js":
 /*!*********************************************!*\
   !*** ./resources/js/store/modules/roles.js ***!
@@ -44786,6 +45662,656 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return fetchRoles;
+    }()
+  },
+  mutations: {
+    //Set the loading status of the app
+    setLoading: function setLoading(state, bool) {
+      state.loading = bool;
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/store/modules/taskActions.js":
+/*!***************************************************!*\
+  !*** ./resources/js/store/modules/taskActions.js ***!
+  \***************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _models_TaskAction__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/TaskAction */ "./resources/js/store/models/TaskAction.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    loading: true
+  },
+  getters: {
+    loadingTaskActions: function loadingTaskActions(state) {
+      return state.loading;
+    }
+  },
+  actions: {
+    fetchTaskActions: function () {
+      var _fetchTaskActions = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, file_id) {
+        var commit, apiUrl, tryCount, succes, response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                commit = _ref.commit;
+                // Set the state to loading
+                commit('setLoading', true);
+                apiUrl = "/api/file/".concat(file_id, "/task-actions");
+                tryCount = 3;
+                succes = false;
+
+              case 5:
+                if (!(tryCount-- > 0 && !succes)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                _context.prev = 6;
+                _context.next = 9;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
+
+              case 9:
+                response = _context.sent;
+                _models_TaskAction__WEBPACK_IMPORTED_MODULE_2__["default"].create({
+                  data: response.data
+                });
+                commit('setLoading', false);
+                succes = true;
+                _context.next = 22;
+                break;
+
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in haseProducts.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 22;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 22:
+                _context.next = 5;
+                break;
+
+              case 24:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[6, 15]]);
+      }));
+
+      function fetchTaskActions(_x, _x2) {
+        return _fetchTaskActions.apply(this, arguments);
+      }
+
+      return fetchTaskActions;
+    }(),
+    // Update the action of for a product for a user
+    updateTaskAction: function () {
+      var _updateTaskAction = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, _ref3) {
+        var commit, task_id, product_id, action;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                commit = _ref2.commit;
+                task_id = _ref3.task_id, product_id = _ref3.product_id, action = _ref3.action;
+                commit('setTaskAction', {
+                  task_id: task_id,
+                  product_id: product_id,
+                  action: action
+                });
+                _context2.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/task-action", {
+                  task_id: task_id,
+                  product_id: product_id,
+                  action: action
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }));
+
+      function updateTaskAction(_x3, _x4) {
+        return _updateTaskAction.apply(this, arguments);
+      }
+
+      return updateTaskAction;
+    }(),
+    updateManyTaskActions: function () {
+      var _updateManyTaskActions = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref4, _ref5) {
+        var commit, task_id, product_ids, action;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                commit = _ref4.commit;
+                task_id = _ref5.task_id, product_ids = _ref5.product_ids, action = _ref5.action;
+                commit('setManyTaskActions', {
+                  task_id: task_id,
+                  product_ids: product_ids,
+                  action: action
+                });
+                _context3.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/many-task-actions", {
+                  task_id: task_id,
+                  product_ids: product_ids,
+                  action: action
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+
+      function updateManyTaskActions(_x5, _x6) {
+        return _updateManyTaskActions.apply(this, arguments);
+      }
+
+      return updateManyTaskActions;
+    }(),
+    createManyTaskActions: function () {
+      var _createManyTaskActions = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref6, _ref7) {
+        var commit, product_ids, task_id, action;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                commit = _ref6.commit;
+                product_ids = _ref7.product_ids, task_id = _ref7.task_id, action = _ref7.action;
+                commit('setManyTaskActions', {
+                  product_ids: product_ids,
+                  task_id: task_id,
+                  action: action
+                });
+                _context4.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/many-task-actions", {
+                  product_ids: product_ids,
+                  task_id: phase_id,
+                  action: action
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }));
+
+      function createManyTaskActions(_x7, _x8) {
+        return _createManyTaskActions.apply(this, arguments);
+      }
+
+      return createManyTaskActions;
+    }(),
+    deleteTaskAction: function () {
+      var _deleteTaskAction = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5(_ref8, _ref9) {
+        var commit, product_id, task_id;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                commit = _ref8.commit;
+                product_id = _ref9.product_id, task_id = _ref9.task_id;
+                commit('deleteTaskAction', {
+                  product_id: product_id,
+                  task_id: task_id
+                });
+                _context5.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/task-action", {
+                  data: {
+                    product_id: product_id,
+                    task_id: task_id
+                  }
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5);
+      }));
+
+      function deleteTaskAction(_x9, _x10) {
+        return _deleteTaskAction.apply(this, arguments);
+      }
+
+      return deleteTaskAction;
+    }()
+  },
+  mutations: {
+    //Set the loading status of the app
+    setLoading: function setLoading(state, bool) {
+      state.loading = bool;
+    },
+    setAction: function setAction(state, _ref10) {
+      var product_id = _ref10.product_id,
+          task_id = _ref10.task_id,
+          action = _ref10.action;
+      _models_TaskAction__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
+        data: {
+          product_id: product_id,
+          task_id: task_id,
+          action: action
+        }
+      });
+    },
+    setManyTaskActions: function setManyTaskActions(state, _ref11) {
+      var product_ids = _ref11.product_ids,
+          task_id = _ref11.task_id,
+          action = _ref11.action;
+      // Prepare the data
+      var data = [];
+      product_ids.forEach(function (product_id) {
+        var productData = {
+          product_id: product_id,
+          task_id: task_id,
+          action: action
+        };
+        data.push(productData);
+      });
+      _models_TaskAction__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
+        data: data
+      });
+    },
+    deleteTaskAction: function deleteTaskAction(state, _ref12) {
+      var product_id = _ref12.product_id,
+          task_id = _ref12.task_id;
+      _models_TaskAction__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (record) {
+        return record.product_id == product_id && record.task_id == task_id;
+      });
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/store/modules/taskParents.js":
+/*!***************************************************!*\
+  !*** ./resources/js/store/modules/taskParents.js ***!
+  \***************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _models_TaskParent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/TaskParent */ "./resources/js/store/models/TaskParent.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    loading: true
+  },
+  getters: {
+    loadingTaskParents: function loadingTaskParents(state) {
+      return state.loading;
+    }
+  },
+  actions: {
+    fetchTaskParents: function () {
+      var _fetchTaskParents = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, workspace_id) {
+        var commit, apiUrl, tryCount, succes, response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                commit = _ref.commit;
+                // Set the state to loading
+                commit('setLoading', true);
+                apiUrl = "/api/workspace/".concat(workspace_id, "/task-parents");
+                tryCount = 3;
+                succes = false;
+
+              case 5:
+                if (!(tryCount-- > 0 && !succes)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                _context.prev = 6;
+                _context.next = 9;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
+
+              case 9:
+                response = _context.sent;
+                _models_TaskParent__WEBPACK_IMPORTED_MODULE_2__["default"].create({
+                  data: response.data
+                });
+                commit('setLoading', false);
+                succes = true;
+                _context.next = 22;
+                break;
+
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in taskParents.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 22;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 22:
+                _context.next = 5;
+                break;
+
+              case 24:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[6, 15]]);
+      }));
+
+      function fetchTaskParents(_x, _x2) {
+        return _fetchTaskParents.apply(this, arguments);
+      }
+
+      return fetchTaskParents;
+    }()
+  },
+  mutations: {
+    //Set the loading status of the app
+    setLoading: function setLoading(state, bool) {
+      state.loading = bool;
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/store/modules/taskTeams.js":
+/*!*************************************************!*\
+  !*** ./resources/js/store/modules/taskTeams.js ***!
+  \*************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _models_TaskTeam__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/TaskTeam */ "./resources/js/store/models/TaskTeam.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    loading: true
+  },
+  getters: {
+    loadingTaskTeams: function loadingTaskTeams(state) {
+      return state.loading;
+    }
+  },
+  actions: {
+    fetchTaskTeams: function () {
+      var _fetchTaskTeams = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, workspace_id) {
+        var commit, apiUrl, tryCount, succes, response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                commit = _ref.commit;
+                // Set the state to loading
+                commit('setLoading', true);
+                apiUrl = "/api/workspace/".concat(workspace_id, "/task-teams");
+                tryCount = 3;
+                succes = false;
+
+              case 5:
+                if (!(tryCount-- > 0 && !succes)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                _context.prev = 6;
+                _context.next = 9;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
+
+              case 9:
+                response = _context.sent;
+                _models_TaskTeam__WEBPACK_IMPORTED_MODULE_2__["default"].create({
+                  data: response.data
+                });
+                commit('setLoading', false);
+                succes = true;
+                _context.next = 22;
+                break;
+
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in taskTeams.js :');
+                console.log(_context.t0.response);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 22;
+                  break;
+                }
+
+                throw err;
+
+              case 22:
+                _context.next = 5;
+                break;
+
+              case 24:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[6, 15]]);
+      }));
+
+      function fetchTaskTeams(_x, _x2) {
+        return _fetchTaskTeams.apply(this, arguments);
+      }
+
+      return fetchTaskTeams;
+    }()
+  },
+  mutations: {
+    //Set the loading status of the app
+    setLoading: function setLoading(state, bool) {
+      state.loading = bool;
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/store/modules/tasks.js":
+/*!*********************************************!*\
+  !*** ./resources/js/store/modules/tasks.js ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _models_Task__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/Task */ "./resources/js/store/models/Task.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  namespaced: true,
+  state: {
+    loading: true
+  },
+  getters: {
+    loadingTasks: function loadingTasks(state) {
+      return state.loading;
+    }
+  },
+  actions: {
+    fetchTasks: function () {
+      var _fetchTasks = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref, workspace_id) {
+        var commit, apiUrl, tryCount, succes, response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                commit = _ref.commit;
+                // Set the state to loading
+                commit('setLoading', true);
+                apiUrl = "/api/workspace/".concat(workspace_id, "/tasks");
+                tryCount = 3;
+                succes = false;
+
+              case 5:
+                if (!(tryCount-- > 0 && !succes)) {
+                  _context.next = 24;
+                  break;
+                }
+
+                _context.prev = 6;
+                _context.next = 9;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.get("".concat(apiUrl));
+
+              case 9:
+                response = _context.sent;
+                _models_Task__WEBPACK_IMPORTED_MODULE_2__["default"].create({
+                  data: response.data
+                });
+                commit('setLoading', false);
+                succes = true;
+                _context.next = 22;
+                break;
+
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context["catch"](6);
+                console.log('API error in tasks.js :');
+                console.log(_context.t0);
+                console.log("Trying to fetch again. TryCount = ".concat(tryCount));
+
+                if (!(tryCount <= 0)) {
+                  _context.next = 22;
+                  break;
+                }
+
+                throw _context.t0;
+
+              case 22:
+                _context.next = 5;
+                break;
+
+              case 24:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[6, 15]]);
+      }));
+
+      function fetchTasks(_x, _x2) {
+        return _fetchTasks.apply(this, arguments);
+      }
+
+      return fetchTasks;
     }()
   },
   mutations: {
