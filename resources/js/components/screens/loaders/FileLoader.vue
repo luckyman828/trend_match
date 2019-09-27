@@ -19,13 +19,20 @@ export default {
     },
     data: function () { return {
         loadingFile: true,
+        loadingTasks: true,
     }},
     computed: {
         ...mapGetters('entities/products', ['products']),
-        ...mapGetters('persist', ['currentWorkspaceId', 'currentFileId']),
+        ...mapGetters('entities/tasks', ['userTasks']),
+        ...mapGetters('persist', ['currentWorkspaceId', 'currentFileId', 'authUser']),
         loading () {
-            return (this.products != null && !this.loadingFile) ? false : true
+            return (this.products != null && !this.loadingFile && !this.loadingTasks) ? false : true
         },
+    },
+    watch: {
+        userTasks(newVal, oldVal) {
+            if (newVal.length > 0) this.initRequiresTasks()
+        }
     },
     methods: {
         ...mapActions('entities/collections', ['fetchCollections']),
@@ -35,11 +42,11 @@ export default {
         ...mapActions('entities/comments', ['fetchComments']),
         ...mapActions('entities/actions', ['updateAction']),
         ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
-        ...mapActions('persist', ['setCurrentFileId']),
-        ...mapActions('entities/teamProducts', ['fetchTeamProducts']),
-        ...mapActions('entities/phaseProducts', ['fetchPhaseProducts']),
-        ...mapActions('entities/taskActions', ['fetchTaskActions']),
-        ...mapActions('entities/requests', ['fetchRequests']),
+        ...mapActions('persist', ['setCurrentFileId', 'setCurrentTaskId']),
+        // ...mapActions('entities/teamProducts', ['fetchTeamProducts']),
+        // ...mapActions('entities/phaseProducts', ['fetchPhaseProducts']),
+        // ...mapActions('entities/taskActions', ['fetchTaskActions']),
+        // ...mapActions('entities/requests', ['fetchRequests']),
         async initRequiresWorkspace() {
             if (Collection.all().length <= 0)
                 await this.fetchCollections(this.currentWorkspaceId)
@@ -51,13 +58,31 @@ export default {
                 this.fetchProducts(this.currentFileId),
                 this.fetchActions(this.currentFileId),
                 this.fetchComments(this.currentFileId),
-                this.fetchCommentVotes(this.currentFileId),
-                this.fetchTeamProducts(this.currentFileId),
-                this.fetchPhaseProducts(this.currentFileId),
-                this.fetchTaskActions(this.currentFileId),
-                this.fetchRequests(this.currentFileId)
+                this.fetchCommentVotes(this.currentFileId)
+                // this.fetchTeamProducts(this.currentFileId),
+                // this.fetchPhaseProducts(this.currentFileId)
+                // this.fetchTaskActions(this.currentFileId),
+                // this.fetchRequests(this.currentFileId)
             )
+
             this.loadingFile = false
+        },
+        async initRequiresTasks() {
+            console.log('init tasks')
+            // START Set current task
+            let taskToSet
+            this.userTasks.forEach(task => {
+                if (task.parents.length > 0) {
+                    task.parents.forEach(parent => {
+                        if (parent.completed.length > 0) taskToSet = task
+                    })
+                } else taskToSet = task
+            })
+            if (taskToSet != null) {
+                await this.setCurrentTaskId(taskToSet.id)
+            }
+            this.loadingTasks = false
+            // END Set current task
         }
     },
     created() {
@@ -74,14 +99,19 @@ export default {
         if (this.currentWorkspaceId != null)
             this.initRequiresWorkspace()
         // Else, wait till a workspace id is set, and then fetch the data
-        this.unsub = this.$store.subscribe((mutation, state) => {
+        this.unsubWorkspace = this.$store.subscribe((mutation, state) => {
             if(mutation.type == 'persist/setCurrentWorkspace') {
                 this.initRequiresWorkspace()
             } 
         })
+
+        if (this.userTasks != null) this.initRequiresTasks()
+        else this.loadingTasks = false
+
     },
     destroyed() {
-        this.unsub()
+        this.unsubWorkspace()
+        this.unsubTasks()
     }
 }
 </script>

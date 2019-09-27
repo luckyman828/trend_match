@@ -108,43 +108,51 @@ export default {
                 }
             }
         },
-        userTasks(state, getters, rootState, rootGetters) {
-            if (!rootGetters['persist/loadingInit'] && rootGetters['persist/currentTeam'] != null) {
-                const tasks = rootGetters['persist/currentTeam'].taskTeams
-                const userPermissionLevel = rootGetters['persist/userPermissionLevel']
-                let tasksToReturn = []
-                tasks.forEach(task => {
-                    if (task.role_id == userPermissionLevel) tasksToReturn.push(task.task)
-                })
-                return tasksToReturn
-            }
-        },
-        currentTask(state, getters, rootState, rootGetters) {
-            if (!rootGetters['persist/loadingInit']) {
-                let taskToReturn
-                if (getters.userTasks.length > 0) {
-                    if (getters.userTasks != null) {
-                        if (getters.userTasks[0] != null) {
-                            getters.userTasks.forEach(task => {
-                                if (task.parents != null) {
-                                    if (task.parents.length > 0) {
-                                        let parentsCompleted = true
-                                        task.parents.forEach(parent => {
-                                            if (parent.completed.length < 1) {
-                                                parentsCompleted = false
-                                            }
-                                        })
-                                        if (parentsCompleted && task.phase_id == getters.currentFile.phase)
-                                            taskToReturn = task
-                                    }
-                                } else if (task.phase_id == getters.currentFile.phase) {
-                                    taskToReturn = task
-                                }
-                            })
-                        }
-                    }
-                    return taskToReturn
-                }
+        // userTasks(state, getters, rootState, rootGetters) {
+        //     if (!rootGetters['persist/loadingInit'] && rootGetters['persist/currentTeam'] != null) {
+        //         const tasks = rootGetters['persist/currentTeam'].taskTeams
+        //         const userPermissionLevel = rootGetters['persist/userPermissionLevel']
+        //         let tasksToReturn = []
+        //         tasks.forEach(task => {
+        //             if (task.role_id == userPermissionLevel) tasksToReturn.push(task.task)
+        //         })
+        //         return tasksToReturn
+        //     }
+        // },
+        // currentTask(state, getters, rootState, rootGetters) {
+        //     if (!rootGetters['persist/loadingInit']) {
+        //         let taskToReturn
+        //         if (getters.userTasks.length > 0 && getters.currentFile != null) {
+        //             if (getters.userTasks != null) {
+        //                 if (getters.userTasks[0] != null) {
+        //                     getters.userTasks.forEach(task => {
+        //                         if (task.parents != null) {
+        //                             if (task.parents.length > 0) {
+        //                                 let parentsCompleted = true
+        //                                 task.parents.forEach(parent => {
+        //                                     if (parent.completed.length < 1) {
+        //                                         parentsCompleted = false
+        //                                     }
+        //                                 })
+        //                                 if (parentsCompleted && task.phase_id == getters.currentFile.phase)
+        //                                     taskToReturn = task
+        //                             }
+        //                         } else if (task.phase_id == getters.currentFile.phase) {
+        //                             taskToReturn = task
+        //                         }
+        //                     })
+        //                 }
+        //             }
+        //             return taskToReturn
+        //         }
+        //     }
+        // },
+        actionScope(state, getters, rootState, rootGetters) {
+            if (getters.currentTask != null) {
+                const type = getters.currentTask.type
+                if (type == 'feedback') {
+                    return 'user'
+                } else return 'task'
             }
         },
     },

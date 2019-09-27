@@ -1,6 +1,6 @@
 // Team Model
 import { Model } from '@vuex-orm/core'
-import User from './Team'
+import User from './User'
 import UserTeam from './UserTeam'
 import Collection from './Collection'
 import TeamFile from './TeamFile'

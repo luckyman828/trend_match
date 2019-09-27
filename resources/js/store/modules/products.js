@@ -23,22 +23,17 @@ export default {
         },
         //   currentProduct: state => { return (state.currentProductId != null) ? Product.find(state.currentProductId) : null },
         products: (state, getters, rootState, rootGetters) => {
-            if (!rootGetters['persist/loadingInit'] && !state.loading) {
+            if (!rootGetters['persist/loadingInit'] && !state.loading && rootGetters['persist/currentTask'] != null) {
                 const products = Product.query()
                     .with(['actions.user.teams'])
                     .with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team'])
-                    .with('productFinalAction')
-                    .with('teamActions.team')
-                    .with('phaseActions')
                     .all()
+                const actionScope = rootGetters['collection/actionScope']
+                const currentTask = rootGetters['persist/currentTask']
                 const userId = rootGetters['persist/authUser'].id
-                const teamFilterId = rootGetters['persist/teamFilterId']
                 const currentTeam = rootGetters['persist/currentTeam']
-                const currentFile = rootGetters['entities/collections/currentFile']
-                const teamUsers = rootGetters['entities/collections/currentTeamUsers']
                 const workspace = rootGetters['persist/currentWorkspace']
                 const userPermissionLevel = rootGetters['persist/userPermissionLevel']
-                const viewAdminPermissionLevel = rootGetters['persist/viewAdminPermissionLevel']
                 const data = []
                 products.forEach(product => {
                     product.color_variants = JSON.parse(product.color_variants)
@@ -47,12 +42,18 @@ export default {
                     product.outs = []
                     product.focus = []
                     product.nds = []
-                    product.userAction = product.actions.find(x => x.user_id == userId)
+                    product.ndsTotal
                     product.commentsScoped = []
-                    product.teamAction = product.teamActions.find(x => x.team_id == teamFilterId)
-                    product.phaseAction = product.phaseActions.find(x => x.phase_id == 1)
 
-                    // Find the correct price
+                    // START Find current action for the product
+                    if (actionScope == 'user')
+                        product.currentAction = product.actions.find(
+                            action => action.user_id == userId && action.task_id == currentTask.id
+                        )
+                    else product.currentAction = product.actions.find(action => action.task_id == currentTask.id)
+                    // END Find current action for product
+
+                    // START Find the correct price
                     // Check if the chosen currency exists on the product
                     if (product.prices != null) {
                         let workspacePrices = null
@@ -74,9 +75,27 @@ export default {
                             else product.userPrices = product.prices[0]
                         }
                     }
+                    // END Find the correct price
 
-                    const comments = product.comments
+                    //START COMMENTS
 
+                    // START scope comments to task
+                    product.comments.forEach(comment => {
+                        if (currentTask.type == 'feedback') {
+                            if (comment.task_id == currentTask.id) product.commentsScoped.push(comment)
+                        } else {
+                            // If type is alignment
+                            currentTask.parentTasks.forEach(parentTask => {
+                                if (comment.task_id == parentTask.id) product.commentsScoped.push(comment)
+                            })
+                        }
+                    })
+
+                    // END scope comments to task
+
+                    // START Comment votes
+                    // Handle comment votes - group them by team
+                    const comments = product.commentsScoped
                     comments.forEach(comment => {
                         comment.teamVotes = []
                         let noTeamExists = false
@@ -105,86 +124,63 @@ export default {
                             }
                         })
                     })
-                    // Scope votes to current team filter
-                    comments.forEach(comment => {
-                        comment.votesScoped = []
-                        comment.votes.forEach(vote => {
-                            const found = teamUsers.find(x => x.id == vote.user.id)
-                            if (found) comment.votesScoped.push(vote)
+                    // END Comment votes
+
+                    // END COMMENTS
+
+                    // START Find Not decideds NDs
+                    if (currentTask.type == 'feedback') {
+                        // If type: Feedback -> Find all users with access to the task
+                        product.nds = currentTask.users
+                    } else {
+                        // If type = Alignment -> Find the parent tasks
+                        currentTask.parentTasks.forEach(parentTask => {
+                            // if parent type is feedback -> push users
+                            // else -> push task
+                            if (parentTask.type == 'feedback') product.nds = product.nds.concat(parentTask.users)
+                            else product.nds.push(parentTask)
                         })
-                    })
-
-                    // Scope comments to current teamFilter
-
-                    // If the user is a buyer function, only return global comments
-                    if (userPermissionLevel == viewAdminPermissionLevel) {
-                        comments.forEach(comment => {
-                            if (comment.team_id == 0) product.commentsScoped.push(comment)
-                        })
-                    } else if (teamFilterId > 0) {
-                        // Loop through the comments
-                        comments.forEach(comment => {
-                            // Loop through comments users teams
-                            let pushComment = false
-
-                            // Check if the comment belongs to one of auth users teams
-                            // if (comment.user != null)
-                            //     if (comment.user.teams != null)
-                            //         if ( comment.user.teams.find(x => x.id == teamFilterId) )
-                            //             pushComment = true
-                            if (comment.team_id == teamFilterId) pushComment = true
-
-                            // Check if the comment is final or global (not for sales)
-                            if (userPermissionLevel >= 2) {
-                                if (comment.team_final || comment.phase_final || comment.team_id == 0)
-                                    pushComment = true
-                            }
-
-                            if (pushComment) product.commentsScoped.push(comment)
-                        })
-                    } else if (teamFilterId == 0) {
-                        product.commentsScoped = comments
                     }
+                    product.ndsTotal = product.nds.length
+                    // END find Not decideds
 
-                    // Filter actions by the current team filter
-                    // Check if the action has a user
-                    if (teamFilterId > 0 && product.actions != null) {
-                        product.nds = JSON.parse(JSON.stringify(teamUsers)) // Copy our users into a new variable
-                        product.actions.forEach(action => {
-                            if (action.user != null) {
-                                // Check if the user has a team
-                                if (action.user.teams[0] != null) {
-                                    // Find the users team
-                                    if (action.user.teams.findIndex(x => x.id == teamFilterId) > -1) {
-                                        // if (action.user.teams[0].id == teamFilterId) {
-                                        if (action.action == 0) product.outs.push(action.user)
-                                        if (action.action == 1) product.ins.push(action.user)
-                                        if (action.action == 2) product.focus.push(action.user)
+                    // START Group actions by action type
+                    product.actions.forEach(action => {
+                        if (action.action == 2) {
+                            product.focus.push(action)
+                        } else if (action.action == 1) {
+                            product.ins.push(action)
+                        } else if (action.action == 0) {
+                            product.outs.push(action)
+                        }
+                        // START Subtract from NDs
+                        if (currentTask.type == 'feedback') {
+                            if (action.task_id == currentTask.id) {
+                                NDUserIndex = product.nds.findIndex(user => user.id == action.user_id)
+                                product.nds = product.nds.splice(NDUserIndex, 1)
+                            }
+                        } else {
+                            // If type is alignment
+                            currentTask.parentTasks.forEach(parentTask => {
+                                if (parentTask.type == 'feedback') {
+                                    // If the parent is type feedback
+                                    if (action.task_id == parentTask.id) {
+                                        NDUserIndex = product.nds.findIndex(user => user.id == action.user_id)
+                                        product.nds = product.nds.splice(NDUserIndex, 1)
+                                    }
+                                } else {
+                                    // If the parent is type alignment
+                                    if (action.task_id == parentTask.id) {
+                                        NDTaskIndex = product.nds.findIndex(task => task.id == action.task_id)
+                                        product.nds = product.nds.splice(NDTaskIndex, 1)
                                     }
                                 }
-                                // Find Not decided
-                                let index = product.nds.findIndex(nd => nd.id == action.user_id)
-                                if (index > -1) {
-                                    product.nds.splice(index, 1)
-                                }
-                            }
-                        })
-                        // Filter actions by teams if GLOBAL scope is set (= 0)
-                    } else if (teamFilterId == 0 && product.teamActions != null) {
-                        product.nds = JSON.parse(JSON.stringify(currentFile.teams)) // Copy our users into a new variable
-                        product.teamActions.forEach(action => {
-                            if (action.team != null) {
-                                if (action.action == 0) product.outs.push(action.team)
-                                if (action.action == 1) product.ins.push(action.team)
-                                if (action.action == 2) product.focus.push(action.team)
-                            }
-                            // Find Not decided
-                            let index = product.nds.findIndex(nd => nd.id == action.team_id)
-                            if (index > -1) {
-                                product.nds.splice(index, 1)
-                            }
-                        })
-                    }
+                            })
+                        }
+                        // END Substract from NDs
+                    })
+                    // END Group actions by action type
+
                     data.push(product)
                 })
                 return data

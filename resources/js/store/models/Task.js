@@ -2,6 +2,7 @@
 import { Model } from '@vuex-orm/core'
 import FileTask from './FileTask'
 import TaskParent from './TaskParent'
+import TaskTeam from './TaskTeam'
 
 export default class Task extends Model {
     // This is the name used as module name of the Vuex Store.
@@ -18,6 +19,7 @@ export default class Task extends Model {
             type: this.attr(''),
             completed: this.hasMany(FileTask, 'task_id'),
             parents: this.hasMany(TaskParent, 'task_id'),
+            taskTeams: this.hasMany(TaskTeam, 'task_id'),
         }
 
         return data

@@ -2,6 +2,7 @@ import Workspace from '../../store/models/Workspace'
 import Team from '../../store/models/Team'
 import File from '../../store/models/Collection'
 import AuthUser from '../../store/models/AuthUser'
+import { RootGetters } from '@vuex-orm/core'
 
 export default {
     namespaced: true,
@@ -11,6 +12,7 @@ export default {
         teamFilterId: -1,
         currentWorkspaceId: null,
         currentFileId: null,
+        currentTaskId: null,
         userPermissionLevel: 1,
         loadingInit: true,
         viewAdminPermissionLevel: 3,
@@ -48,6 +50,14 @@ export default {
         },
         currentFile: state => {
             return state.currentFileId != null ? File.find(state.currentFileId) : null
+        },
+        currentTaskId: state => {
+            return state.currentTaskId
+        },
+        currentTask: (state, getters, rootState, rootGetters) => {
+            return state.currentTaskId != null && rootGetters['entities/tasks/tasks'] != null
+                ? rootGetters['entities/tasks/tasks'].find(x => x.id == state.currentTaskId)
+                : null
         },
         userPermissionLevel: state => {
             return state.userPermissionLevel
@@ -99,6 +109,9 @@ export default {
         setCurrentWorkspace({ commit }, id) {
             commit('setCurrentWorkspace', id)
         },
+        setCurrentTaskId({ commit }, id) {
+            commit('setCurrentTaskId', id)
+        },
         setCurrentFileId({ commit }, id) {
             commit('setcurrentFileId', id)
         },
@@ -122,6 +135,9 @@ export default {
         },
         setcurrentFileId(state, id) {
             state.currentFileId = id
+        },
+        setCurrentTaskId(state, id) {
+            state.currentTaskId = id
         },
         setUserPermissionLevel(state, permissionLevel) {
             state.userPermissionLevel = permissionLevel

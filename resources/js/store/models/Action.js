@@ -19,6 +19,7 @@ export default class Action extends Model {
             team_id: this.attr(''),
             task_id: this.attr(''),
             action: this.attr(''),
+            is_task_action: this.attr(''),
             product: this.belongsTo(Product, 'product_id'),
             user: this.belongsTo(User, 'user_id'),
         }

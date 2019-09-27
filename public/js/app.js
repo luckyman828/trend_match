@@ -9043,11 +9043,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
 
 
 
@@ -9080,7 +9075,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       showSingle: false
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['currentFile', 'currentTask']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['currentFile', 'actionScope']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentTask', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScopeName', 'viewAdminPermissionLevel']), {
     loadingSingle: function loadingSingle() {
       var loading = false;
       return loading;
@@ -9389,11 +9384,28 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   updated: function updated() {
+    var _this2 = this;
+
     // Preset the selection
-    if (!this.selection) if (this.currentOptionId) if (document.querySelector('#radio-option-' + this.currentOptionId)) document.querySelector('#radio-option-' + this.currentOptionId).checked = true;
+    if (this.currentOptionId) if (this.optionValueKey) this.selection = this.options.find(function (x) {
+      return x.id == _this2.currentOptionId;
+    })[this.optionValueKey];else {
+      this.selection = this.options.find(function (x) {
+        return x.id == _this2.currentOptionId;
+      });
+    }
   },
   mounted: function mounted() {
-    if (this.currentOptionId) if (document.querySelector('#radio-option-' + this.currentOptionId)) document.querySelector('#radio-option-' + this.currentOptionId).checked = true;
+    var _this3 = this;
+
+    // Preset the selection
+    if (this.currentOptionId) if (this.optionValueKey) this.selection = this.options.find(function (x) {
+      return x.id == _this3.currentOptionId;
+    })[this.optionValueKey];else {
+      this.selection = this.options.find(function (x) {
+        return x.id == _this3.currentOptionId;
+      });
+    }
   }
 });
 
@@ -10694,6 +10706,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -10751,28 +10783,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.sortProducts();
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'products']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files', 'currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'teamFilterId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'products']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files', 'currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/tasks', ['userTasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']), {
     defaultTeam: function defaultTeam() {
       if (this.userPermissionLevel >= 3) return {
         id: 0,
         title: 'Global'
       };else return null;
-    },
-    userHasAccess: function userHasAccess() {
-      var _this = this;
-
-      var hasAccess = false;
-
-      if (this.userPermissionLevel <= 2) {
-        this.authUser.teams.forEach(function (team) {
-          team.teamFiles.forEach(function (file) {
-            if (file.file_id == _this.currentFileId && file.role_level <= _this.userPermissionLevel) hasAccess = true;
-          }); // if (team.teamFiles.find(x => x.file_id == this.currentFileId))
-          //     hasAccess = true
-        });
-      } else hasAccess = true;
-
-      return hasAccess;
     },
     teamProducts: function teamProducts() {
       return _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_21__["default"]["with"]('products').all();
@@ -10781,161 +10797,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_22__["default"]["with"]('products').all();
     },
     collection: function collection() {
-      var _this2 = this;
-
-      // return Collection.query().with('teams').find(this.currentFileId)
-      return this.files.find(function (x) {
-        return x.id == _this2.currentFileId;
-      });
+      return this.currentFile;
     },
-    // products () {
-    //     const products = Product.query().with(['actions.user.teams']).with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team']).with('productFinalAction')
-    //     .with('teamActions.team').with('phaseActions').all()
-    //     // const totalUsers = this.teamUsers
-    //     // const userId = this.authUser.id
-    //     const teamFilterId = this.currentTeamId
-    //     const data = []
-    //     products.forEach(product => {
-    //         product.color_variants = JSON.parse(product.color_variants)
-    //         product.prices = JSON.parse(product.prices)
-    //         product.ins = []
-    //         product.outs = []
-    //         product.focus = []
-    //         product.nds = []
-    //         product.userAction = product.actions.find(x => x.user_id == this.authUser.id)
-    //         product.commentsScoped = []
-    //         product.teamAction = product.teamActions.find(x => x.team_id == this.currentTeamId)
-    //         product.phaseAction = product.phaseActions.find(x => x.phase_id == 1)
-    //         // Find the correct price
-    //         // Check if the chosen currency exists on the product
-    //         if (product.prices != null) {
-    //             let workspacePrices = null
-    //             let teamPrices = null
-    //             if (this.currentWorkspace.currency != null)
-    //                 workspacePrices = product.prices.find(x => x.currency == this.currentWorkspace.currency)
-    //             if (this.currentTeam)
-    //                 if (this.currentTeam.currency != null)
-    //                     teamPrices = product.prices.find(x => x.currency == this.currentTeam.currency)
-    //             if ( this.userPermissionLevel <= 4 ) {
-    //             // Use team currency for low level members
-    //                 if (teamPrices != null)
-    //                     product.userPrices = teamPrices
-    //                 else if (workspacePrices != null)
-    //                     product.userPrices = workspacePrices
-    //                 else product.userPrices = product.prices[0]
-    //             } else {
-    //             // Use workspace currency for high level members
-    //                 if (workspacePrices != null)
-    //                     product.userPrices = workspacePrices
-    //                 else product.userPrices = product.prices[0]
-    //             }
-    //         }
-    //         const comments = product.comments
-    //         comments.forEach(comment => {
-    //             comment.teamVotes = [{id: 0, title: 'No team', votes: 0}]
-    //             comment.votes.forEach(vote => {
-    //                 if (vote.user != null) {
-    //                     if (vote.user.teams.length > 0) {
-    //                         const found = (comment.teamVotes.find(x => x.title == vote.user.teams[0].title))
-    //                         if (!found) {
-    //                             let voteTeam = vote.user.teams[0]
-    //                             let teamToPush = {id: voteTeam.id, title: voteTeam.title, votes: 1}
-    //                             comment.teamVotes.push(teamToPush)
-    //                         } else {
-    //                             found.votes ++
-    //                         }
-    //                     } else {
-    //                         comment.teamVotes[0].votes ++
-    //                     }
-    //                 }
-    //             })
-    //         })
-    //         // Scope comments to current teamFilter
-    //         let commentsScoped = []
-    //         // If the user is a buyer function, only return global comments
-    //         if (this.userPermissionLevel == this.viewAdminPermissionLevel) {
-    //             comments.forEach(comment => {
-    //                 if (comment.team_id == 0)
-    //                     product.commentsScoped.push(comment)
-    //             })
-    //         }
-    //         else if ( teamFilterId > 0 ) {
-    //             // Loop through the comments
-    //             comments.forEach(comment => {
-    //                 // Loop through comments users teams
-    //                 let pushComment = false
-    //                 // Check if the comment belongs to one of auth users teams
-    //                 // if (comment.user != null)
-    //                 //     if (comment.user.teams != null)
-    //                 //         if ( comment.user.teams.find(x => x.id == teamFilterId) )
-    //                 //             pushComment = true
-    //                 if (comment.team_id == teamFilterId)
-    //                     pushComment = true
-    //                 // Check if the comment is final or global (not for sales)
-    //                 if (this.userPermissionLevel >= 2) {
-    //                     if (comment.team_final || comment.phase_final || comment.team_id == 0)
-    //                         pushComment = true
-    //                 }
-    //                 if (pushComment)
-    //                     product.commentsScoped.push(comment)
-    //             })
-    //         }
-    //         else if ( teamFilterId == 0) {
-    //             product.commentsScoped = comments
-    //         }
-    //         // Filter actions by the current team filter
-    //         // Check if the action has a user
-    //         if ( teamFilterId > 0 && product.actions != null) {
-    //             product.scope = 'user scope'
-    //             product.nds = JSON.parse(JSON.stringify(this.teamUsers)) // Copy our users into a new variable
-    //             product.actions.forEach(action => {
-    //                 if (action.user != null) {
-    //                     // Check if the user has a team
-    //                     if (action.user.teams[0] != null) {
-    //                         // Find the users team
-    //                         if ( action.user.teams.findIndex(x => x.id == teamFilterId) > -1 ) {
-    //                         // if (action.user.teams[0].id == teamFilterId) {
-    //                             if (action.action == 0)
-    //                                 product.outs.push(action.user)
-    //                             if (action.action == 1)
-    //                                 product.ins.push(action.user)
-    //                             if (action.action == 2)
-    //                                 product.focus.push(action.user)
-    //                         }
-    //                     }
-    //                     // Find Not decided
-    //                     let index = product.nds.findIndex(nd => nd.id == action.user_id)
-    //                     if (index > -1) {
-    //                         product.nds.splice(index,1)
-    //                     }
-    //                 }
-    //             })
-    //         // Filter actions by teams if GLOBAL scope is set (= 0)
-    //         } else if ( teamFilterId == 0 && product.teamActions != null) {
-    //             product.scope = 'team scope'
-    //             product.nds = JSON.parse(JSON.stringify(this.collection.teams)) // Copy our users into a new variable
-    //             product.teamActions.forEach(action => {
-    //                 if (action.team != null) {
-    //                     if (action.action == 0)
-    //                         product.outs.push(action.team)
-    //                     if (action.action == 1)
-    //                         product.ins.push(action.team)
-    //                     if (action.action == 2)
-    //                         product.focus.push(action.team)
-    //                 }
-    //                 // Find Not decided
-    //                 let index = product.nds.findIndex(nd => nd.id == action.team_id)
-    //                 if (index > -1) {
-    //                     product.nds.splice(index,1)
-    //                 }
-    //             })
-    //         } else {
-    //             product.scope = 'no scope 360'
-    //         }
-    //         data.push(product)
-    //     })
-    //     return data
-    // },
     productsFilteredByCategory: function productsFilteredByCategory() {
       var products = this.products;
       var categories = this.selectedCategories;
@@ -10951,7 +10814,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return productsToReturn;
     },
     productsFiltered: function productsFiltered() {
-      var _this3 = this;
+      var _this = this;
 
       var method = this.currentProductFilter;
       var products = this.productsFilteredByCategory;
@@ -10960,11 +10823,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (['ins', 'outs', 'nds'].includes(method)) {
         var filteredByAction = productsToReturn.filter(function (product) {
           if (method == 'ins') {
-            if (product[_this3.actionScope] != null) return product[_this3.actionScope].action >= 1;
+            if (product[_this.actionScope] != null) return product[_this.actionScope].action >= 1;
           } else if (method == 'outs') {
-            if (product[_this3.actionScope] != null) return product[_this3.actionScope].action == 0;
+            if (product[_this.actionScope] != null) return product[_this.actionScope].action == 0;
           } else if (method == 'nds') {
-            return product[_this3.actionScope] == null;
+            return product[_this.actionScope] == null;
           }
         });
         productsToReturn = filteredByAction;
@@ -11003,7 +10866,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return selectedProducts;
     },
     productTotals: function productTotals() {
-      var _this4 = this;
+      var _this2 = this;
 
       var products = this.productsFilteredByCategory;
       var data = {
@@ -11035,34 +10898,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         data.outs += product.outs.length;
         data.nds += product.nds.length;
 
-        if (product[_this4.actionScope] != null) {
-          if (product[_this4.actionScope].action >= 1) data["final"].ins++;else if (product[_this4.actionScope].action == 0) data["final"].outs++;
+        if (product[_this2.actionScope] != null) {
+          if (product[_this2.actionScope].action >= 1) data["final"].ins++;else if (product[_this2.actionScope].action == 0) data["final"].outs++;
         } else data["final"].nds++;
       });
       return data;
     },
     teamUsers: function teamUsers() {
-      var _this5 = this;
+      var _this3 = this;
 
       var usersToReturn = [];
 
       if (this.teamFilterId > 0) {
         var thisTeam = this.teams.find(function (team) {
-          return team.id == _this5.teamFilterId;
+          return team.id == _this3.teamFilterId;
         });
         if (thisTeam) thisTeam.users.forEach(function (user) {
-          var fileUser = _this5.collection.users.find(function (x) {
+          var fileUser = _this3.collection.users.find(function (x) {
             return x.id == user.id;
           });
 
           if (fileUser) usersToReturn.push(fileUser);
-        }); // usersToReturn = thisTeam.users
-      } // else if (this.currentTeamId == 0) {
-      //     usersToReturn = this.users
-      // } else {
-      //     usersToReturn = []
-      // }
-
+        });
+      }
 
       return usersToReturn;
     },
@@ -11116,7 +10974,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else return this.teams;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentTeam', 'setTeamFilter', 'setCurrentFileId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setTeamFilter', 'setCurrentTaskId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']), {
     setProductFilter: function setProductFilter(filter) {
       this.currentProductFilter = filter;
       this.clearSelectedProducts();
@@ -11144,7 +11002,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this6 = this;
+      var _this4 = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
@@ -11154,7 +11012,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
-        var thisProduct = _this6.products.find(function (x) {
+        var thisProduct = _this4.products.find(function (x) {
           return x.id == product;
         });
 
@@ -11719,15 +11577,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
-      loadingFile: true
+      loadingFile: true,
+      loadingTasks: true
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['products']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentWorkspaceId', 'currentFileId']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['products']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/tasks', ['userTasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentWorkspaceId', 'currentFileId', 'authUser']), {
     loading: function loading() {
-      return this.products != null && !this.loadingFile ? false : true;
+      return this.products != null && !this.loadingFile && !this.loadingTasks ? false : true;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentFileId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['fetchTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/taskActions', ['fetchTaskActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/requests', ['fetchRequests']), {
+  watch: {
+    userTasks: function userTasks(newVal, oldVal) {
+      if (newVal.length > 0) this.initRequiresTasks();
+    }
+  },
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentFileId', 'setCurrentTaskId']), {
+    // ...mapActions('entities/teamProducts', ['fetchTeamProducts']),
+    // ...mapActions('entities/phaseProducts', ['fetchPhaseProducts']),
+    // ...mapActions('entities/taskActions', ['fetchTaskActions']),
+    // ...mapActions('entities/requests', ['fetchRequests']),
     initRequiresWorkspace: function () {
       var _initRequiresWorkspace = _asyncToGenerator(
       /*#__PURE__*/
@@ -11776,7 +11644,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.next = 2;
-                return this.fetchProducts(this.currentFileId), this.fetchActions(this.currentFileId), this.fetchComments(this.currentFileId), this.fetchCommentVotes(this.currentFileId), this.fetchTeamProducts(this.currentFileId), this.fetchPhaseProducts(this.currentFileId), this.fetchTaskActions(this.currentFileId), this.fetchRequests(this.currentFileId);
+                return this.fetchProducts(this.currentFileId), this.fetchActions(this.currentFileId), this.fetchComments(this.currentFileId), this.fetchCommentVotes(this.currentFileId) // this.fetchTeamProducts(this.currentFileId),
+                // this.fetchPhaseProducts(this.currentFileId)
+                // this.fetchTaskActions(this.currentFileId),
+                // this.fetchRequests(this.currentFileId)
+                ;
 
               case 2:
                 this.loadingFile = false;
@@ -11794,6 +11666,50 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
 
       return initRequiresFileId;
+    }(),
+    initRequiresTasks: function () {
+      var _initRequiresTasks = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        var taskToSet;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                console.log('init tasks'); // START Set current task
+
+                this.userTasks.forEach(function (task) {
+                  if (task.parents.length > 0) {
+                    task.parents.forEach(function (parent) {
+                      if (parent.completed.length > 0) taskToSet = task;
+                    });
+                  } else taskToSet = task;
+                });
+
+                if (!(taskToSet != null)) {
+                  _context3.next = 5;
+                  break;
+                }
+
+                _context3.next = 5;
+                return this.setCurrentTaskId(taskToSet.id);
+
+              case 5:
+                this.loadingTasks = false; // END Set current task
+
+              case 6:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this);
+      }));
+
+      function initRequiresTasks() {
+        return _initRequiresTasks.apply(this, arguments);
+      }
+
+      return initRequiresTasks;
     }()
   }),
   created: function created() {
@@ -11812,14 +11728,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     if (this.currentWorkspaceId != null) this.initRequiresWorkspace(); // Else, wait till a workspace id is set, and then fetch the data
 
-    this.unsub = this.$store.subscribe(function (mutation, state) {
+    this.unsubWorkspace = this.$store.subscribe(function (mutation, state) {
       if (mutation.type == 'persist/setCurrentWorkspace') {
         _this.initRequiresWorkspace();
       }
     });
+    if (this.userTasks != null) this.initRequiresTasks();else this.loadingTasks = false;
   },
   destroyed: function destroyed() {
-    this.unsub();
+    this.unsubWorkspace();
+    this.unsubTasks();
   }
 });
 
@@ -12460,7 +12378,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".filters[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 12px;\n}\n.item-filter-button[data-v-76e8b686] {\n  min-width: 120px;\n  background: #dfdfdf;\n}", ""]);
+exports.push([module.i, ".filters[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 12px;\n}\n.filters > *[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n}\n.filters > *.left > *[data-v-76e8b686] {\n  margin-right: 8px;\n}\n.filters > *.right > *[data-v-76e8b686] {\n  margin-left: 8px;\n}\n.item-filter-button[data-v-76e8b686] {\n  min-width: 120px;\n  background: #dfdfdf;\n}", ""]);
 
 // exports
 
@@ -18635,23 +18553,19 @@ var render = function() {
                       "th",
                       {
                         staticClass: "clickable action",
-                        class: { active: this.sortBy == _vm.actionScope },
+                        class: { active: this.sortBy == "action" },
                         on: {
                           click: function($event) {
-                            return _vm.onSortBy(_vm.actionScope, false)
+                            return _vm.onSortBy("action", false)
                           }
                         }
                       },
                       [
-                        _vm._v(
-                          "\n                    " +
-                            _vm._s(_vm.actionScopeName) +
-                            " "
-                        ),
+                        _vm._v("\n                    Action "),
                         _c("i", {
                           staticClass: "fas",
                           class: [
-                            this.sortBy == _vm.actionScope && !_vm.sortAsc
+                            this.sortBy == "action" && !_vm.sortAsc
                               ? "fa-long-arrow-alt-up"
                               : "fa-long-arrow-alt-down"
                           ]
@@ -18865,7 +18779,7 @@ var render = function() {
                                     _vm._v(
                                       _vm._s(product.nds.length) +
                                         " /" +
-                                        _vm._s(_vm.teams.length)
+                                        _vm._s(product.ndsTotal)
                                     )
                                   ]
                                 )
@@ -19057,6 +18971,8 @@ var render = function() {
                     expression: "selection"
                   }
                 ],
+                ref: "radio-option-" + option.id,
+                refInFor: true,
                 attrs: {
                   type: "radio",
                   name: "radio-option",
@@ -19087,19 +19003,21 @@ var render = function() {
                     expression: "selection"
                   }
                 ],
+                ref: "radio-option-" + option.id,
+                refInFor: true,
                 attrs: {
                   type: "radio",
                   name: "radio-option",
                   id: "radio-option-" + option.id
                 },
                 domProps: {
-                  value: option[_vm.optionValueKey],
-                  checked: _vm._q(_vm.selection, option[_vm.optionValueKey])
+                  value: option,
+                  checked: _vm._q(_vm.selection, option)
                 },
                 on: {
                   change: [
                     function($event) {
-                      _vm.selection = option[_vm.optionValueKey]
+                      _vm.selection = option
                     },
                     function($event) {
                       return _vm.change()
@@ -20944,7 +20862,7 @@ var render = function() {
     "div",
     { staticClass: "catalogue" },
     [
-      _vm.userHasAccess
+      true
         ? [
             !_vm.loadingCollections
               ? [
@@ -20956,193 +20874,268 @@ var render = function() {
                     }
                   }),
                   _vm._v(" "),
-                  _c(
-                    "div",
-                    { staticClass: "filters" },
-                    [
-                      _c("Dropdown", {
-                        staticClass: "dropdown-parent left",
-                        scopedSlots: _vm._u(
-                          [
-                            {
-                              key: "button",
-                              fn: function(slotProps) {
-                                return [
-                                  _c(
-                                    "div",
-                                    {
-                                      staticClass:
-                                        "dropdown-button dropdown-parent item-filter-button",
-                                      on: { click: slotProps.toggle }
-                                    },
-                                    [
-                                      _c("span", [_vm._v("Category ")]),
-                                      _vm._v(" "),
-                                      _c("i", {
-                                        staticClass: "far fa-chevron-down"
-                                      }),
-                                      _vm._v(" "),
-                                      _vm.selectedCategories.length > 0
-                                        ? _c(
-                                            "span",
-                                            { staticClass: "bubble" },
-                                            [
-                                              _vm._v(
-                                                "\n                                " +
-                                                  _vm._s(
-                                                    _vm.selectedCategories
-                                                      .length
-                                                  ) +
-                                                  "\n                            "
-                                              )
-                                            ]
-                                          )
-                                        : _vm._e()
-                                    ]
-                                  ),
-                                  _vm._v(" "),
-                                  _vm.selectedCategories.length > 0
-                                    ? _c(
-                                        "span",
-                                        {
-                                          staticClass:
-                                            "clear button invisible primary",
-                                          on: {
-                                            click: function($event) {
-                                              _vm.$refs.filterSelect.clear()
-                                              _vm.selectedCategories = []
-                                            }
-                                          }
-                                        },
-                                        [_vm._v("Clear filter")]
-                                      )
-                                    : _vm._e()
-                                ]
-                              }
-                            },
-                            {
-                              key: "header",
-                              fn: function(slotProps) {
-                                return [
-                                  _c("span", [_vm._v("Filter by category")])
-                                ]
-                              }
-                            },
-                            {
-                              key: "body",
-                              fn: function() {
-                                return [
-                                  _c("CheckboxButtons", {
-                                    ref: "filterSelect",
-                                    attrs: { options: _vm.dynamicCategories },
-                                    on: {
-                                      change: function($event) {
-                                        return _vm.$refs.filterSelect.submit()
-                                      }
-                                    },
-                                    model: {
-                                      value: _vm.selectedCategories,
-                                      callback: function($$v) {
-                                        _vm.selectedCategories = $$v
+                  _c("div", { staticClass: "filters" }, [
+                    _c(
+                      "div",
+                      { staticClass: "left" },
+                      [
+                        _c("Dropdown", {
+                          staticClass: "dropdown-parent left",
+                          scopedSlots: _vm._u(
+                            [
+                              {
+                                key: "button",
+                                fn: function(slotProps) {
+                                  return [
+                                    _c(
+                                      "div",
+                                      {
+                                        staticClass:
+                                          "dropdown-button dropdown-parent item-filter-button",
+                                        on: { click: slotProps.toggle }
                                       },
-                                      expression: "selectedCategories"
-                                    }
-                                  })
-                                ]
-                              },
-                              proxy: true
-                            }
-                          ],
-                          null,
-                          false,
-                          1962654467
-                        )
-                      }),
-                      _vm._v(" "),
-                      _c("Dropdown", {
-                        ref: "countryDropdown",
-                        staticClass: "dropdown-parent right",
-                        scopedSlots: _vm._u(
-                          [
-                            {
-                              key: "button",
-                              fn: function(slotProps) {
-                                return [
-                                  _c(
-                                    "div",
-                                    {
-                                      staticClass: "dropdown-button",
-                                      on: { click: slotProps.toggle }
-                                    },
-                                    [
-                                      _c("img", {
-                                        attrs: { src: "/assets/Path5699.svg" }
-                                      }),
-                                      _vm._v(" "),
-                                      _vm.teamFilterId > 0
-                                        ? _c("span", [
-                                            _vm._v(
-                                              _vm._s(
-                                                _vm.teams.find(function(x) {
-                                                  return (
-                                                    x.id == _vm.teamFilterId
-                                                  )
-                                                }).title
-                                              )
+                                      [
+                                        _c("span", [_vm._v("Category ")]),
+                                        _vm._v(" "),
+                                        _c("i", {
+                                          staticClass: "far fa-chevron-down"
+                                        }),
+                                        _vm._v(" "),
+                                        _vm.selectedCategories.length > 0
+                                          ? _c(
+                                              "span",
+                                              { staticClass: "bubble" },
+                                              [
+                                                _vm._v(
+                                                  "\n                                    " +
+                                                    _vm._s(
+                                                      _vm.selectedCategories
+                                                        .length
+                                                    ) +
+                                                    "\n                                "
+                                                )
+                                              ]
                                             )
-                                          ])
-                                        : _vm.teamFilterId == 0
-                                        ? _c("span", [_vm._v("Global")])
-                                        : _c("span", [
-                                            _vm._v("No team available")
-                                          ]),
-                                      _vm._v(" "),
-                                      _c("i", {
-                                        staticClass: "far fa-chevron-down"
-                                      })
-                                    ]
-                                  )
-                                ]
-                              }
-                            },
-                            {
-                              key: "header",
-                              fn: function(slotProps) {
-                                return [_c("span", [_vm._v("Switch team")])]
-                              }
-                            },
-                            {
-                              key: "body",
-                              fn: function() {
-                                return [
-                                  _c("RadioButtons", {
-                                    ref: "countryRadio",
-                                    attrs: {
-                                      options: _vm.teamsForFilter,
-                                      currentOptionId: _vm.teamFilterId,
-                                      optionNameKey: "title",
-                                      optionValueKey: "id"
-                                    },
-                                    on: {
-                                      change: function($event) {
-                                        _vm.setTeamFilter($event)
-                                        _vm.$refs.countryDropdown.toggle()
-                                      }
-                                    }
-                                  })
-                                ]
+                                          : _vm._e()
+                                      ]
+                                    ),
+                                    _vm._v(" "),
+                                    _vm.selectedCategories.length > 0
+                                      ? _c(
+                                          "span",
+                                          {
+                                            staticClass:
+                                              "clear button invisible primary",
+                                            on: {
+                                              click: function($event) {
+                                                _vm.$refs.filterSelect.clear()
+                                                _vm.selectedCategories = []
+                                              }
+                                            }
+                                          },
+                                          [_vm._v("Clear filter")]
+                                        )
+                                      : _vm._e()
+                                  ]
+                                }
                               },
-                              proxy: true
-                            }
-                          ],
-                          null,
-                          false,
-                          1320340448
-                        )
-                      })
-                    ],
-                    1
-                  ),
+                              {
+                                key: "header",
+                                fn: function(slotProps) {
+                                  return [
+                                    _c("span", [_vm._v("Filter by category")])
+                                  ]
+                                }
+                              },
+                              {
+                                key: "body",
+                                fn: function() {
+                                  return [
+                                    _c("CheckboxButtons", {
+                                      ref: "filterSelect",
+                                      attrs: { options: _vm.dynamicCategories },
+                                      on: {
+                                        change: function($event) {
+                                          return _vm.$refs.filterSelect.submit()
+                                        }
+                                      },
+                                      model: {
+                                        value: _vm.selectedCategories,
+                                        callback: function($$v) {
+                                          _vm.selectedCategories = $$v
+                                        },
+                                        expression: "selectedCategories"
+                                      }
+                                    })
+                                  ]
+                                },
+                                proxy: true
+                              }
+                            ],
+                            null,
+                            false,
+                            2314853379
+                          )
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "right" },
+                      [
+                        _c("Dropdown", {
+                          ref: "taskDropdown",
+                          staticClass: "dropdown-parent right",
+                          scopedSlots: _vm._u(
+                            [
+                              {
+                                key: "button",
+                                fn: function(slotProps) {
+                                  return [
+                                    _c(
+                                      "div",
+                                      {
+                                        staticClass: "dropdown-button",
+                                        on: { click: slotProps.toggle }
+                                      },
+                                      [
+                                        _vm.currentTask
+                                          ? _c("span", [
+                                              _vm._v(
+                                                _vm._s(_vm.currentTask.title)
+                                              )
+                                            ])
+                                          : _c("span", [_vm._v("No task")]),
+                                        _vm._v(" "),
+                                        _c("i", {
+                                          staticClass: "far fa-chevron-down"
+                                        })
+                                      ]
+                                    )
+                                  ]
+                                }
+                              },
+                              {
+                                key: "header",
+                                fn: function(slotProps) {
+                                  return [_c("span", [_vm._v("Switch task")])]
+                                }
+                              },
+                              {
+                                key: "body",
+                                fn: function() {
+                                  return [
+                                    _c("RadioButtons", {
+                                      attrs: {
+                                        options: _vm.userTasks,
+                                        currentOptionId: _vm.currentTask.id,
+                                        optionNameKey: "title",
+                                        optionValueKey: "id"
+                                      },
+                                      on: {
+                                        change: function($event) {
+                                          _vm.setCurrentTaskId($event)
+                                          _vm.$refs.taskDropdown.toggle()
+                                        }
+                                      }
+                                    })
+                                  ]
+                                },
+                                proxy: true
+                              }
+                            ],
+                            null,
+                            false,
+                            4126470804
+                          )
+                        }),
+                        _vm._v(" "),
+                        _c("Dropdown", {
+                          ref: "countryDropdown",
+                          staticClass: "dropdown-parent right",
+                          scopedSlots: _vm._u(
+                            [
+                              {
+                                key: "button",
+                                fn: function(slotProps) {
+                                  return [
+                                    _c(
+                                      "div",
+                                      {
+                                        staticClass: "dropdown-button",
+                                        on: { click: slotProps.toggle }
+                                      },
+                                      [
+                                        _c("img", {
+                                          attrs: { src: "/assets/Path5699.svg" }
+                                        }),
+                                        _vm._v(" "),
+                                        _vm.teamFilterId > 0
+                                          ? _c("span", [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.teams.find(function(x) {
+                                                    return (
+                                                      x.id == _vm.teamFilterId
+                                                    )
+                                                  }).title
+                                                )
+                                              )
+                                            ])
+                                          : _vm.teamFilterId == 0
+                                          ? _c("span", [_vm._v("Global")])
+                                          : _c("span", [
+                                              _vm._v("No team available")
+                                            ]),
+                                        _vm._v(" "),
+                                        _c("i", {
+                                          staticClass: "far fa-chevron-down"
+                                        })
+                                      ]
+                                    )
+                                  ]
+                                }
+                              },
+                              {
+                                key: "header",
+                                fn: function(slotProps) {
+                                  return [_c("span", [_vm._v("Switch team")])]
+                                }
+                              },
+                              {
+                                key: "body",
+                                fn: function() {
+                                  return [
+                                    _c("RadioButtons", {
+                                      attrs: {
+                                        options: _vm.teamsForFilter,
+                                        currentOptionId: _vm.teamFilterId,
+                                        optionNameKey: "title",
+                                        optionValueKey: "id"
+                                      },
+                                      on: {
+                                        change: function($event) {
+                                          _vm.setTeamFilter($event)
+                                          _vm.$refs.countryDropdown.toggle()
+                                        }
+                                      }
+                                    })
+                                  ]
+                                },
+                                proxy: true
+                              }
+                            ],
+                            null,
+                            false,
+                            2047353342
+                          )
+                        })
+                      ],
+                      1
+                    )
+                  ]),
                   _vm._v(" "),
                   _c("product-tabs", {
                     attrs: {
@@ -21188,33 +21181,7 @@ var render = function() {
             _vm._v(" "),
             _vm.loadingCollections ? [_c("Loader")] : _vm._e()
           ]
-        : [
-            _c(
-              "div",
-              {
-                staticStyle: {
-                  display: "flex",
-                  "justify-content": "center",
-                  "align-items": "center",
-                  "flex-direction": "column",
-                  height: "50vh"
-                }
-              },
-              [
-                _c("p", [_vm._v("You don't have access to this file")]),
-                _vm._v(" "),
-                _c(
-                  "router-link",
-                  {
-                    staticClass: "button dark wide",
-                    attrs: { to: "/collection" }
-                  },
-                  [_vm._v("Go to collections")]
-                )
-              ],
-              1
-            )
-          ]
+        : undefined
     ],
     2
   )
@@ -40800,6 +40767,7 @@ function (_Model) {
         team_id: this.attr(''),
         task_id: this.attr(''),
         action: this.attr(''),
+        is_task_action: this.attr(''),
         product: this.belongsTo(_Product__WEBPACK_IMPORTED_MODULE_1__["default"], 'product_id'),
         user: this.belongsTo(_User__WEBPACK_IMPORTED_MODULE_2__["default"], 'user_id')
       };
@@ -41495,6 +41463,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ProductFinalAction__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
 /* harmony import */ var _TeamProduct__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./TeamProduct */ "./resources/js/store/models/TeamProduct.js");
 /* harmony import */ var _PhaseProduct__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./PhaseProduct */ "./resources/js/store/models/PhaseProduct.js");
+/* harmony import */ var _TaskAction__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./TaskAction */ "./resources/js/store/models/TaskAction.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -41514,6 +41483,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // Product Model
+
 
 
 
@@ -41560,9 +41530,7 @@ function (_Model) {
         color_variants: this.attr(''),
         comments: this.hasMany(_Comment__WEBPACK_IMPORTED_MODULE_1__["default"], 'product_id'),
         actions: this.hasMany(_Action__WEBPACK_IMPORTED_MODULE_2__["default"], 'product_id'),
-        productFinalAction: this.hasOne(_ProductFinalAction__WEBPACK_IMPORTED_MODULE_3__["default"], 'product_id'),
-        teamActions: this.hasMany(_TeamProduct__WEBPACK_IMPORTED_MODULE_4__["default"], 'product_id'),
-        phaseActions: this.hasMany(_PhaseProduct__WEBPACK_IMPORTED_MODULE_5__["default"], 'product_id')
+        taskActions: this.hasMany(_TaskAction__WEBPACK_IMPORTED_MODULE_6__["default"], 'product_id')
       };
       return data;
     }
@@ -41800,6 +41768,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
 /* harmony import */ var _FileTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FileTask */ "./resources/js/store/models/FileTask.js");
 /* harmony import */ var _TaskParent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./TaskParent */ "./resources/js/store/models/TaskParent.js");
+/* harmony import */ var _TaskTeam__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./TaskTeam */ "./resources/js/store/models/TaskTeam.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -41819,6 +41788,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // Product Model
+
 
 
 
@@ -41846,7 +41816,8 @@ function (_Model) {
         title: this.attr(''),
         type: this.attr(''),
         completed: this.hasMany(_FileTask__WEBPACK_IMPORTED_MODULE_1__["default"], 'task_id'),
-        parents: this.hasMany(_TaskParent__WEBPACK_IMPORTED_MODULE_2__["default"], 'task_id')
+        parents: this.hasMany(_TaskParent__WEBPACK_IMPORTED_MODULE_2__["default"], 'task_id'),
+        taskTeams: this.hasMany(_TaskTeam__WEBPACK_IMPORTED_MODULE_3__["default"], 'task_id')
       };
       return data;
     }
@@ -41940,6 +41911,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TaskParent; });
 /* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
 /* harmony import */ var _FileTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FileTask */ "./resources/js/store/models/FileTask.js");
+/* harmony import */ var _Task__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Task */ "./resources/js/store/models/Task.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -41962,6 +41934,7 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
+
 var TaskParent =
 /*#__PURE__*/
 function (_Model) {
@@ -41980,7 +41953,8 @@ function (_Model) {
       var data = {
         task_id: this.attr(''),
         parent_id: this.attr(''),
-        completed: this.hasMany(_FileTask__WEBPACK_IMPORTED_MODULE_1__["default"], 'task_id', 'parent_id')
+        completed: this.hasMany(_FileTask__WEBPACK_IMPORTED_MODULE_1__["default"], 'task_id', 'parent_id'),
+        parentTask: this.belongsTo(_Task__WEBPACK_IMPORTED_MODULE_2__["default"], 'parent_id')
       };
       return data;
     }
@@ -42008,6 +41982,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
 /* harmony import */ var _FileTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FileTask */ "./resources/js/store/models/FileTask.js");
 /* harmony import */ var _Task__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Task */ "./resources/js/store/models/Task.js");
+/* harmony import */ var _Team__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Team */ "./resources/js/store/models/Team.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -42027,6 +42002,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // Product Model
+
 
 
 
@@ -42052,6 +42028,7 @@ function (_Model) {
         task_id: this.attr(null),
         team_id: this.attr(null),
         role_id: this.attr(null),
+        team: this.belongsTo(_Team__WEBPACK_IMPORTED_MODULE_3__["default"], 'team_id'),
         completed: this.hasMany(_FileTask__WEBPACK_IMPORTED_MODULE_1__["default"], 'task_id', 'task_id'),
         task: this.belongsTo(_Task__WEBPACK_IMPORTED_MODULE_2__["default"], 'task_id')
       };
@@ -42079,7 +42056,7 @@ TaskTeam.primaryKey = ['task_id', 'team_id', 'role_id'];
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Team; });
 /* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
-/* harmony import */ var _Team__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var _User__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./User */ "./resources/js/store/models/User.js");
 /* harmony import */ var _UserTeam__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./UserTeam */ "./resources/js/store/models/UserTeam.js");
 /* harmony import */ var _Collection__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Collection */ "./resources/js/store/models/Collection.js");
 /* harmony import */ var _TeamFile__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./TeamFile */ "./resources/js/store/models/TeamFile.js");
@@ -42138,7 +42115,7 @@ function (_Model) {
         workspace_id: this.attr(''),
         currency: this.attr(''),
         category_scope: this.attr(''),
-        users: this.belongsToMany(_Team__WEBPACK_IMPORTED_MODULE_1__["default"], _UserTeam__WEBPACK_IMPORTED_MODULE_2__["default"], 'team_id', 'user_id'),
+        users: this.belongsToMany(_User__WEBPACK_IMPORTED_MODULE_1__["default"], _UserTeam__WEBPACK_IMPORTED_MODULE_2__["default"], 'team_id', 'user_id'),
         teamFiles: this.hasMany(_TeamFile__WEBPACK_IMPORTED_MODULE_4__["default"], 'team_id'),
         actions: this.hasMany(_TeamProduct__WEBPACK_IMPORTED_MODULE_6__["default"], 'team_id'),
         files: this.belongsToMany(_Collection__WEBPACK_IMPORTED_MODULE_3__["default"], _TeamFile__WEBPACK_IMPORTED_MODULE_4__["default"], 'team_id', 'file_id'),
@@ -42503,8 +42480,8 @@ function (_Model) {
     // for the generic field type. The argument is the default value.
     value: function fields() {
       var data = {
-        user_id: this.attr(null),
-        team_id: this.attr(null),
+        user_id: this.attr(''),
+        team_id: this.attr(''),
         team: this.belongsTo(_Team__WEBPACK_IMPORTED_MODULE_1__["default"], 'team_id', 'id'),
         user: this.belongsTo(_User__WEBPACK_IMPORTED_MODULE_2__["default"], 'user_id', 'id')
       };
@@ -43308,44 +43285,52 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }
       }
     },
-    userTasks: function userTasks(state, getters, rootState, rootGetters) {
-      if (!rootGetters['persist/loadingInit'] && rootGetters['persist/currentTeam'] != null) {
-        var tasks = rootGetters['persist/currentTeam'].taskTeams;
-        var userPermissionLevel = rootGetters['persist/userPermissionLevel'];
-        var tasksToReturn = [];
-        tasks.forEach(function (task) {
-          if (task.role_id == userPermissionLevel) tasksToReturn.push(task.task);
-        });
-        return tasksToReturn;
-      }
-    },
-    currentTask: function currentTask(state, getters, rootState, rootGetters) {
-      if (!rootGetters['persist/loadingInit']) {
-        var taskToReturn;
+    // userTasks(state, getters, rootState, rootGetters) {
+    //     if (!rootGetters['persist/loadingInit'] && rootGetters['persist/currentTeam'] != null) {
+    //         const tasks = rootGetters['persist/currentTeam'].taskTeams
+    //         const userPermissionLevel = rootGetters['persist/userPermissionLevel']
+    //         let tasksToReturn = []
+    //         tasks.forEach(task => {
+    //             if (task.role_id == userPermissionLevel) tasksToReturn.push(task.task)
+    //         })
+    //         return tasksToReturn
+    //     }
+    // },
+    // currentTask(state, getters, rootState, rootGetters) {
+    //     if (!rootGetters['persist/loadingInit']) {
+    //         let taskToReturn
+    //         if (getters.userTasks.length > 0 && getters.currentFile != null) {
+    //             if (getters.userTasks != null) {
+    //                 if (getters.userTasks[0] != null) {
+    //                     getters.userTasks.forEach(task => {
+    //                         if (task.parents != null) {
+    //                             if (task.parents.length > 0) {
+    //                                 let parentsCompleted = true
+    //                                 task.parents.forEach(parent => {
+    //                                     if (parent.completed.length < 1) {
+    //                                         parentsCompleted = false
+    //                                     }
+    //                                 })
+    //                                 if (parentsCompleted && task.phase_id == getters.currentFile.phase)
+    //                                     taskToReturn = task
+    //                             }
+    //                         } else if (task.phase_id == getters.currentFile.phase) {
+    //                             taskToReturn = task
+    //                         }
+    //                     })
+    //                 }
+    //             }
+    //             return taskToReturn
+    //         }
+    //     }
+    // },
+    actionScope: function actionScope(state, getters, rootState, rootGetters) {
+      if (getters.currentTask != null) {
+        var type = getters.currentTask.type;
 
-        if (getters.userTasks.length > 0) {
-          if (getters.userTasks != null) {
-            if (getters.userTasks[0] != null) {
-              getters.userTasks.forEach(function (task) {
-                if (task.parents != null) {
-                  if (task.parents.length > 0) {
-                    var parentsCompleted = true;
-                    task.parents.forEach(function (parent) {
-                      if (parent.completed.length < 1) {
-                        parentsCompleted = false;
-                      }
-                    });
-                    if (parentsCompleted && task.phase_id == getters.currentFile.phase) taskToReturn = task;
-                  }
-                } else if (task.phase_id == getters.currentFile.phase) {
-                  taskToReturn = task;
-                }
-              });
-            }
-          }
-
-          return taskToReturn;
-        }
+        if (type == 'feedback') {
+          return 'user';
+        } else return 'task';
       }
     }
   },
@@ -44072,6 +44057,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
 /* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
 /* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+
 
 
 
@@ -44083,6 +44070,7 @@ __webpack_require__.r(__webpack_exports__);
     teamFilterId: -1,
     currentWorkspaceId: null,
     currentFileId: null,
+    currentTaskId: null,
     userPermissionLevel: 1,
     loadingInit: true,
     viewAdminPermissionLevel: 3,
@@ -44115,6 +44103,14 @@ __webpack_require__.r(__webpack_exports__);
     },
     currentFile: function currentFile(state) {
       return state.currentFileId != null ? _store_models_Collection__WEBPACK_IMPORTED_MODULE_2__["default"].find(state.currentFileId) : null;
+    },
+    currentTaskId: function currentTaskId(state) {
+      return state.currentTaskId;
+    },
+    currentTask: function currentTask(state, getters, rootState, rootGetters) {
+      return state.currentTaskId != null && rootGetters['entities/tasks/tasks'] != null ? rootGetters['entities/tasks/tasks'].find(function (x) {
+        return x.id == state.currentTaskId;
+      }) : null;
     },
     userPermissionLevel: function userPermissionLevel(state) {
       return state.userPermissionLevel;
@@ -44153,16 +44149,20 @@ __webpack_require__.r(__webpack_exports__);
       var commit = _ref3.commit;
       commit('setCurrentWorkspace', id);
     },
-    setCurrentFileId: function setCurrentFileId(_ref4, id) {
+    setCurrentTaskId: function setCurrentTaskId(_ref4, id) {
       var commit = _ref4.commit;
+      commit('setCurrentTaskId', id);
+    },
+    setCurrentFileId: function setCurrentFileId(_ref5, id) {
+      var commit = _ref5.commit;
       commit('setcurrentFileId', id);
     },
-    setUserPermissionLevel: function setUserPermissionLevel(_ref5, id) {
-      var commit = _ref5.commit;
+    setUserPermissionLevel: function setUserPermissionLevel(_ref6, id) {
+      var commit = _ref6.commit;
       commit('setUserPermissionLevel', id);
     },
-    setLoadingInit: function setLoadingInit(_ref6, bool) {
-      var commit = _ref6.commit;
+    setLoadingInit: function setLoadingInit(_ref7, bool) {
+      var commit = _ref7.commit;
       commit('setLoadingInit', bool);
     }
   },
@@ -44178,6 +44178,9 @@ __webpack_require__.r(__webpack_exports__);
     },
     setcurrentFileId: function setcurrentFileId(state, id) {
       state.currentFileId = id;
+    },
+    setCurrentTaskId: function setCurrentTaskId(state, id) {
+      state.currentTaskId = id;
     },
     setUserPermissionLevel: function setUserPermissionLevel(state, permissionLevel) {
       state.userPermissionLevel = permissionLevel;
@@ -45021,16 +45024,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     //   currentProduct: state => { return (state.currentProductId != null) ? Product.find(state.currentProductId) : null },
     products: function products(state, getters, rootState, rootGetters) {
-      if (!rootGetters['persist/loadingInit'] && !state.loading) {
-        var products = _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes.user.teams', 'comments.user.teams', 'comments.team'])["with"]('productFinalAction')["with"]('teamActions.team')["with"]('phaseActions').all();
+      if (!rootGetters['persist/loadingInit'] && !state.loading && rootGetters['persist/currentTask'] != null) {
+        var products = _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes.user.teams', 'comments.user.teams', 'comments.team']).all();
+        var actionScope = rootGetters['collection/actionScope'];
+        var currentTask = rootGetters['persist/currentTask'];
         var userId = rootGetters['persist/authUser'].id;
-        var teamFilterId = rootGetters['persist/teamFilterId'];
         var currentTeam = rootGetters['persist/currentTeam'];
-        var currentFile = rootGetters['entities/collections/currentFile'];
-        var teamUsers = rootGetters['entities/collections/currentTeamUsers'];
         var workspace = rootGetters['persist/currentWorkspace'];
         var userPermissionLevel = rootGetters['persist/userPermissionLevel'];
-        var viewAdminPermissionLevel = rootGetters['persist/viewAdminPermissionLevel'];
         var data = [];
         products.forEach(function (product) {
           product.color_variants = JSON.parse(product.color_variants);
@@ -45039,16 +45040,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           product.outs = [];
           product.focus = [];
           product.nds = [];
-          product.userAction = product.actions.find(function (x) {
-            return x.user_id == userId;
-          });
-          product.commentsScoped = [];
-          product.teamAction = product.teamActions.find(function (x) {
-            return x.team_id == teamFilterId;
-          });
-          product.phaseAction = product.phaseActions.find(function (x) {
-            return x.phase_id == 1;
-          }); // Find the correct price
+          product.ndsTotal;
+          product.commentsScoped = []; // START Find current action for the product
+
+          if (actionScope == 'user') product.currentAction = product.actions.find(function (action) {
+            return action.user_id == userId && action.task_id == currentTask.id;
+          });else product.currentAction = product.actions.find(function (action) {
+            return action.task_id == currentTask.id;
+          }); // END Find current action for product
+          // START Find the correct price
           // Check if the chosen currency exists on the product
 
           if (product.prices != null) {
@@ -45068,9 +45068,25 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               // Use workspace currency for high level members
               if (workspacePrices != null) product.userPrices = workspacePrices;else product.userPrices = product.prices[0];
             }
-          }
+          } // END Find the correct price
+          //START COMMENTS
+          // START scope comments to task
 
-          var comments = product.comments;
+
+          product.comments.forEach(function (comment) {
+            if (currentTask.type == 'feedback') {
+              if (comment.task_id == currentTask.id) product.commentsScoped.push(comment);
+            } else {
+              // If type is alignment
+              currentTask.parentTasks.forEach(function (parentTask) {
+                if (comment.task_id == parentTask.id) product.commentsScoped.push(comment);
+              });
+            }
+          }); // END scope comments to task
+          // START Comment votes
+          // Handle comment votes - group them by team
+
+          var comments = product.commentsScoped;
           comments.forEach(function (comment) {
             comment.teamVotes = [];
             var noTeamExists = false;
@@ -45106,95 +45122,66 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 }
               }
             });
-          }); // Scope votes to current team filter
+          }); // END Comment votes
+          // END COMMENTS
+          // START Find Not decideds NDs
 
-          comments.forEach(function (comment) {
-            comment.votesScoped = [];
-            comment.votes.forEach(function (vote) {
-              var found = teamUsers.find(function (x) {
-                return x.id == vote.user.id;
-              });
-              if (found) comment.votesScoped.push(vote);
-            });
-          }); // Scope comments to current teamFilter
-          // If the user is a buyer function, only return global comments
-
-          if (userPermissionLevel == viewAdminPermissionLevel) {
-            comments.forEach(function (comment) {
-              if (comment.team_id == 0) product.commentsScoped.push(comment);
-            });
-          } else if (teamFilterId > 0) {
-            // Loop through the comments
-            comments.forEach(function (comment) {
-              // Loop through comments users teams
-              var pushComment = false; // Check if the comment belongs to one of auth users teams
-              // if (comment.user != null)
-              //     if (comment.user.teams != null)
-              //         if ( comment.user.teams.find(x => x.id == teamFilterId) )
-              //             pushComment = true
-
-              if (comment.team_id == teamFilterId) pushComment = true; // Check if the comment is final or global (not for sales)
-
-              if (userPermissionLevel >= 2) {
-                if (comment.team_final || comment.phase_final || comment.team_id == 0) pushComment = true;
-              }
-
-              if (pushComment) product.commentsScoped.push(comment);
-            });
-          } else if (teamFilterId == 0) {
-            product.commentsScoped = comments;
-          } // Filter actions by the current team filter
-          // Check if the action has a user
-
-
-          if (teamFilterId > 0 && product.actions != null) {
-            product.nds = JSON.parse(JSON.stringify(teamUsers)); // Copy our users into a new variable
-
-            product.actions.forEach(function (action) {
-              if (action.user != null) {
-                // Check if the user has a team
-                if (action.user.teams[0] != null) {
-                  // Find the users team
-                  if (action.user.teams.findIndex(function (x) {
-                    return x.id == teamFilterId;
-                  }) > -1) {
-                    // if (action.user.teams[0].id == teamFilterId) {
-                    if (action.action == 0) product.outs.push(action.user);
-                    if (action.action == 1) product.ins.push(action.user);
-                    if (action.action == 2) product.focus.push(action.user);
-                  }
-                } // Find Not decided
-
-
-                var index = product.nds.findIndex(function (nd) {
-                  return nd.id == action.user_id;
-                });
-
-                if (index > -1) {
-                  product.nds.splice(index, 1);
-                }
-              }
-            }); // Filter actions by teams if GLOBAL scope is set (= 0)
-          } else if (teamFilterId == 0 && product.teamActions != null) {
-            product.nds = JSON.parse(JSON.stringify(currentFile.teams)); // Copy our users into a new variable
-
-            product.teamActions.forEach(function (action) {
-              if (action.team != null) {
-                if (action.action == 0) product.outs.push(action.team);
-                if (action.action == 1) product.ins.push(action.team);
-                if (action.action == 2) product.focus.push(action.team);
-              } // Find Not decided
-
-
-              var index = product.nds.findIndex(function (nd) {
-                return nd.id == action.team_id;
-              });
-
-              if (index > -1) {
-                product.nds.splice(index, 1);
-              }
+          if (currentTask.type == 'feedback') {
+            // If type: Feedback -> Find all users with access to the task
+            product.nds = currentTask.users;
+          } else {
+            // If type = Alignment -> Find the parent tasks
+            currentTask.parentTasks.forEach(function (parentTask) {
+              // if parent type is feedback -> push users
+              // else -> push task
+              if (parentTask.type == 'feedback') product.nds = product.nds.concat(parentTask.users);else product.nds.push(parentTask);
             });
           }
+
+          product.ndsTotal = product.nds.length; // END find Not decideds
+          // START Group actions by action type
+
+          product.actions.forEach(function (action) {
+            if (action.action == 2) {
+              product.focus.push(action);
+            } else if (action.action == 1) {
+              product.ins.push(action);
+            } else if (action.action == 0) {
+              product.outs.push(action);
+            } // START Subtract from NDs
+
+
+            if (currentTask.type == 'feedback') {
+              if (action.task_id == currentTask.id) {
+                NDUserIndex = product.nds.findIndex(function (user) {
+                  return user.id == action.user_id;
+                });
+                product.nds = product.nds.splice(NDUserIndex, 1);
+              }
+            } else {
+              // If type is alignment
+              currentTask.parentTasks.forEach(function (parentTask) {
+                if (parentTask.type == 'feedback') {
+                  // If the parent is type feedback
+                  if (action.task_id == parentTask.id) {
+                    NDUserIndex = product.nds.findIndex(function (user) {
+                      return user.id == action.user_id;
+                    });
+                    product.nds = product.nds.splice(NDUserIndex, 1);
+                  }
+                } else {
+                  // If the parent is type alignment
+                  if (action.task_id == parentTask.id) {
+                    NDTaskIndex = product.nds.findIndex(function (task) {
+                      return task.id == action.task_id;
+                    });
+                    product.nds = product.nds.splice(NDTaskIndex, 1);
+                  }
+                }
+              });
+            } // END Substract from NDs
+
+          }); // END Group actions by action type
 
           data.push(product);
         });
@@ -46226,11 +46213,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _models_Task__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/Task */ "./resources/js/store/models/Task.js");
+/* harmony import */ var _models_Team__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../models/Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var _models_UserTeam__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _models_User__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../models/User */ "./resources/js/store/models/User.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
 
 
 
@@ -46242,6 +46235,41 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   getters: {
     loadingTasks: function loadingTasks(state) {
       return state.loading;
+    },
+    tasks: function tasks(state, getters, rootState, rootGetters) {
+      var tasks = _models_Task__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('taskTeams.team.users')["with"]('parents.completed|parentTask').get();
+      tasks.forEach(function (task) {
+        task.users = [];
+        task.taskTeams.forEach(function (taskTeam) {
+          taskTeam.team.users.forEach(function (user) {
+            if (user.role_id == taskTeam.role_id && !task.users.find(function (x) {
+              return x.id == user.id;
+            })) task.users.push(user);
+          });
+        });
+      });
+      tasks.forEach(function (task) {
+        task.parentTasks = [];
+        task.parents.forEach(function (parent) {
+          var parentTask = tasks.find(function (x) {
+            return x.id == parent.parent_id;
+          });
+          if (parentTask) task.parentTasks.push(parentTask);
+        });
+      });
+      return tasks;
+    },
+    userTasks: function userTasks(state, getters, rootState, rootGetters) {
+      if (!rootGetters['persist/loadingInit']) {
+        var userTasks = [];
+        var userId = rootGetters['persist/authUser'].id;
+        getters.tasks.forEach(function (task) {
+          if (task.users.find(function (user) {
+            return user.id == userId;
+          })) userTasks.push(task);
+        });
+        return userTasks;
+      }
     }
   },
   actions: {

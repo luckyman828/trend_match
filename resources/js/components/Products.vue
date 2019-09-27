@@ -51,8 +51,8 @@
                 </th>
 
                 <template v-if="actionsAvailable">
-                    <th :class="{active: this.sortBy == actionScope}" class="clickable action" @click="onSortBy(actionScope, false)">
-                        {{actionScopeName}} <i class="fas" :class="[(this.sortBy == actionScope && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                    <th :class="{active: this.sortBy == 'action'}" class="clickable action" @click="onSortBy('action', false)">
+                        Action <i class="fas" :class="[(this.sortBy == 'action' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                     </th>
                 </template>
                 <template v-else>
@@ -85,13 +85,8 @@
                             <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
                         </tooltipAlt2>
                         <tooltipAlt2 class="square-wrapper" :header="'not decided'" :array="product.nds" :arrayValueKey="'email'">
-                            <td class="square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{teams.length}}</span></td>
+                            <td class="square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{product.ndsTotal}}</span></td>
                         </tooltipAlt2>
-                        <!-- <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
-                        <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
-                        <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
-                        <td class="square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{teams.length}}</span></td> -->
-
                     </template>
 
                     <td v-if="commentsAvailable" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment bind-view-single"></i>{{product.commentsScoped.length}}</span></td>
@@ -172,8 +167,8 @@ export default {
     }},
     computed: {
         // ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
-        ...mapGetters('entities/collections', ['currentFile', 'currentTask']),
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']),
+        ...mapGetters('entities/collections', ['currentFile', 'actionScope']),
+        ...mapGetters('persist', ['currentTeamId', 'currentTask', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScopeName', 'viewAdminPermissionLevel']),
         loadingSingle() {
             let loading = false
             return loading
