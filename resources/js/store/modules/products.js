@@ -188,7 +188,7 @@ export default {
                                 } else {
                                     // If the parent is type alignment
                                     if (action.task_id == parentTask.id) {
-                                        NDTaskIndex = product.nds.findIndex(task => task.id == action.task_id)
+                                        let NDTaskIndex = product.nds.findIndex(task => task.id == action.task_id)
                                         product.nds.splice(NDTaskIndex, 1)
                                     }
                                 }

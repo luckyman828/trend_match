@@ -69,13 +69,38 @@ export default {
         },
         async initRequiresTasks() {
             // START Set current task
-            let taskToSet
+            let taskToSet = null
             this.userTasks.forEach(task => {
+                // Set the task to the users first uncompleted task
+                // First check if the user has any task that is ready to start
+                // If true -> Set the current task to any ready task
+                // If not -> Set the current task to any task the user has access to
+
+                if (task.parents.length <= 0) {
+                    if (task.completed.find(x => x.file_id == this.currentFileId))
+                        taskToSet = task
+                } else {
+                    let parentsCompleted = true
+                    task.parents.forEach(parent => {
+                        if (!parent.completed.find(x => x.file_id == this.currentFileId))
+                            parentsCompleted = false
+                    })
+                    if (parentsCompleted) taskToSet = task
+                    else {
+                        // If we have no active task
+                        if (!taskToSet) {
+                            // If we don't already have set a task
+                            taskToSet = task
+                        }
+                    }
+                }
+
                 if (task.parents.length > 0) {
                     task.parents.forEach(parent => {
                         if (parent.completed.length > 0) taskToSet = task
                     })
                 } else taskToSet = task
+
             })
             if (taskToSet != null) {
                 await this.setCurrentTaskId(taskToSet.id)

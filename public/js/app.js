@@ -11706,13 +11706,40 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _initRequiresTasks = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        var _this = this;
+
         var taskToSet;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 // START Set current task
+                taskToSet = null;
                 this.userTasks.forEach(function (task) {
+                  // Set the task to the users first uncompleted task
+                  // First check if the user has any task that is ready to start
+                  // If true -> Set the current task to any ready task
+                  // If not -> Set the current task to any task the user has access to
+                  if (task.parents.length <= 0) {
+                    if (task.completed.find(function (x) {
+                      return x.file_id == _this.currentFileId;
+                    })) taskToSet = task;
+                  } else {
+                    var parentsCompleted = true;
+                    task.parents.forEach(function (parent) {
+                      if (!parent.completed.find(function (x) {
+                        return x.file_id == _this.currentFileId;
+                      })) parentsCompleted = false;
+                    });
+                    if (parentsCompleted) taskToSet = task;else {
+                      // If we have no active task
+                      if (!taskToSet) {
+                        // If we don't already have set a task
+                        taskToSet = task;
+                      }
+                    }
+                  }
+
                   if (task.parents.length > 0) {
                     task.parents.forEach(function (parent) {
                       if (parent.completed.length > 0) taskToSet = task;
@@ -11721,17 +11748,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 });
 
                 if (!(taskToSet != null)) {
-                  _context3.next = 4;
+                  _context3.next = 5;
                   break;
                 }
 
-                _context3.next = 4;
+                _context3.next = 5;
                 return this.setCurrentTaskId(taskToSet.id);
 
-              case 4:
+              case 5:
                 this.loadingTasks = false; // END Set current task
 
-              case 5:
+              case 6:
               case "end":
                 return _context3.stop();
             }
@@ -11747,7 +11774,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }()
   }),
   created: function created() {
-    var _this = this;
+    var _this2 = this;
 
     // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
     var routeFileId = this.$route.params.catalogueId;
@@ -11764,7 +11791,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     this.unsubWorkspace = this.$store.subscribe(function (mutation, state) {
       if (mutation.type == 'persist/setCurrentWorkspace') {
-        _this.initRequiresWorkspace();
+        _this2.initRequiresWorkspace();
       }
     });
     if (this.userTasks != null) this.initRequiresTasks();else this.loadingTasks = false;
@@ -18708,7 +18735,7 @@ var render = function() {
                               attrs: {
                                 header: "focus",
                                 array: product.focus,
-                                arrayValueKey: "email"
+                                arrayValueKey: "name"
                               }
                             },
                             [
@@ -18738,8 +18765,9 @@ var render = function() {
                               staticClass: "square-wrapper",
                               attrs: {
                                 header: "in",
-                                array: product.ins,
-                                arrayValueKey: "email"
+                                array: product.ins.map(function(x) {
+                                  return x.user.name
+                                })
                               }
                             },
                             [
@@ -18770,7 +18798,7 @@ var render = function() {
                               attrs: {
                                 header: "out",
                                 array: product.outs,
-                                arrayValueKey: "email"
+                                arrayValueKey: "name"
                               }
                             },
                             [
@@ -18797,7 +18825,7 @@ var render = function() {
                               attrs: {
                                 header: "not decided",
                                 array: product.nds,
-                                arrayValueKey: "email"
+                                arrayValueKey: "name"
                               }
                             },
                             [
@@ -45336,7 +45364,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 } else {
                   // If the parent is type alignment
                   if (action.task_id == parentTask.id) {
-                    NDTaskIndex = product.nds.findIndex(function (task) {
+                    var NDTaskIndex = product.nds.findIndex(function (task) {
                       return task.id == action.task_id;
                     });
                     product.nds.splice(NDTaskIndex, 1);
@@ -46401,8 +46429,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return state.loading;
     },
     tasks: function tasks(state, getters, rootState, rootGetters) {
-      var tasks = _models_Task__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('taskTeams.team.users')["with"]('parents.completed|parentTask').get();
+      var tasks = _models_Task__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('taskTeams.team.users')["with"]('completed')["with"]('parents.completed|parentTask').get();
       tasks.forEach(function (task) {
+        // Find task users
         task.users = [];
         task.taskTeams.forEach(function (taskTeam) {
           taskTeam.team.users.forEach(function (user) {
@@ -46410,17 +46439,37 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               return x.id == user.id;
             })) task.users.push(user);
           });
-        });
-      });
-      tasks.forEach(function (task) {
+        }); // Find task parent tasks
+
         task.parentTasks = [];
         task.parents.forEach(function (parent) {
           var parentTask = tasks.find(function (x) {
             return x.id == parent.parent_id;
           });
           if (parentTask) task.parentTasks.push(parentTask);
-        });
-      });
+        }); // Determine if the task is active
+
+        task.isActive = false;
+
+        if (task.parents.length <= 0) {
+          // If the task has no parents
+          if (task.completed.length <= 0) // And the task is not completed
+            task.isActive = true;
+        } else {
+          task.parents.forEach(function (parent) {
+            // If the task has parents
+            if (parent.completed.length > 0) // And the parents are completed
+              task.isActive = true;
+          });
+        }
+      }); // tasks.forEach(task => {
+      //     task.parentTasks = []
+      //     task.parents.forEach(parent => {
+      //         const parentTask = tasks.find(x => x.id == parent.parent_id)
+      //         if (parentTask) task.parentTasks.push(parentTask)
+      //     })
+      // })
+
       return tasks;
     },
     userTasks: function userTasks(state, getters, rootState, rootGetters) {

@@ -18,9 +18,11 @@ export default {
         tasks: (state, getters, rootState, rootGetters) => {
             const tasks = Task.query()
                 .with('taskTeams.team.users')
+                .with('completed')
                 .with('parents.completed|parentTask')
                 .get()
             tasks.forEach(task => {
+                // Find task users
                 task.users = []
                 task.taskTeams.forEach(taskTeam => {
                     taskTeam.team.users.forEach(user => {
@@ -28,14 +30,37 @@ export default {
                             task.users.push(user)
                     })
                 })
-            })
-            tasks.forEach(task => {
+
+                // Find task parent tasks
                 task.parentTasks = []
                 task.parents.forEach(parent => {
                     const parentTask = tasks.find(x => x.id == parent.parent_id)
                     if (parentTask) task.parentTasks.push(parentTask)
                 })
+
+                // Determine if the task is active
+                task.isActive = false
+                if (task.parents.length <= 0) {
+                    // If the task has no parents
+                    if (task.completed.length <= 0)
+                        // And the task is not completed
+                        task.isActive = true
+                } else {
+                    task.parents.forEach(parent => {
+                        // If the task has parents
+                        if (parent.completed.length > 0)
+                            // And the parents are completed
+                            task.isActive = true
+                    })
+                }
             })
+            // tasks.forEach(task => {
+            //     task.parentTasks = []
+            //     task.parents.forEach(parent => {
+            //         const parentTask = tasks.find(x => x.id == parent.parent_id)
+            //         if (parentTask) task.parentTasks.push(parentTask)
+            //     })
+            // })
             return tasks
         },
         userTasks: (state, getters, rootState, rootGetters) => {

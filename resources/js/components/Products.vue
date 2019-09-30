@@ -75,16 +75,16 @@
                     <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
                     
                     <template v-if="feedbackAvailable">
-                        <tooltipAlt2 class="square-wrapper" :header="'focus'" :array="product.focus" :arrayValueKey="'email'">
+                        <tooltipAlt2 class="square-wrapper" :header="'focus'" :array="product.focus" :arrayValueKey="'name'">
                             <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
                         </tooltipAlt2>
-                        <tooltipAlt2 class="square-wrapper" :header="'in'" :array="product.ins" :arrayValueKey="'email'">
+                        <tooltipAlt2 class="square-wrapper" :header="'in'" :array="product.ins.map(x => x.user.name)">
                             <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
                         </tooltipAlt2>
-                        <tooltipAlt2 class="square-wrapper" :header="'out'" :array="product.outs" :arrayValueKey="'email'">
+                        <tooltipAlt2 class="square-wrapper" :header="'out'" :array="product.outs" :arrayValueKey="'name'">
                             <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
                         </tooltipAlt2>
-                        <tooltipAlt2 class="square-wrapper" :header="'not decided'" :array="product.nds" :arrayValueKey="'email'">
+                        <tooltipAlt2 class="square-wrapper" :header="'not decided'" :array="product.nds" :arrayValueKey="'name'">
                             <td class="square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{product.ndsTotal}}</span></td>
                         </tooltipAlt2>
                     </template>
