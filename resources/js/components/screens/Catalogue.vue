@@ -20,7 +20,6 @@
                             </template>
                             <template v-slot:header="slotProps">
                                 <span>Filter by category</span>
-                                <!-- <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span> -->
                             </template>
                             <template v-slot:body>
                                 <CheckboxButtons :options="dynamicCategories" ref="filterSelect" v-model="selectedCategories" @change="$refs.filterSelect.submit()"/>
@@ -45,7 +44,7 @@
                             </template>
                         </Dropdown>
 
-                        <Dropdown class="dropdown-parent right" ref="countryDropdown">
+                        <!-- <Dropdown class="dropdown-parent right" ref="countryDropdown">
                             <template v-slot:button="slotProps">
                                 <div class="dropdown-button" @click="slotProps.toggle">
                                     <img src="/assets/Path5699.svg">
@@ -61,7 +60,7 @@
                             <template v-slot:body>
                                 <RadioButtons :options="teamsForFilter" :currentOptionId="teamFilterId" :optionNameKey="'title'" :optionValueKey="'id'" @change="setTeamFilter($event); $refs.countryDropdown.toggle()"/>
                             </template>
-                        </Dropdown>
+                        </Dropdown> -->
                     </div>
                 </div>
                 <product-tabs :productTotals="productTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
@@ -137,8 +136,18 @@ export default{
         productsTest: [],
     }},
     watch: {
-        products: function() {
-            this.sortProducts()
+        products: function(newValue, oldValue) {
+            // CODE to make sure the products stay sorted in the same way
+            // Save the old order of the products
+            console.log('Products changed!')
+            let index = 0
+            oldValue.forEach(product => {
+                newValue.find(x => x.id == product.id).sortIndex = index
+                product.sortIndex = index
+                index++
+            })
+            // Sort the products in the same was as they were before
+            this.sortProducts('sortIndex')
         }
     },
     computed: {
@@ -148,7 +157,7 @@ export default{
         ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
         ...mapGetters('entities/teams', ['teams']),
         ...mapGetters('entities/tasks', ['userTasks']),
-        ...mapGetters('persist', ['currentTeamId', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']),
+        ...mapGetters('persist', ['currentTeamId', 'currentTask', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']),
         defaultTeam() {
             if (this.userPermissionLevel >= 3)
                 return {id: 0, title: 'Global'}
@@ -338,14 +347,12 @@ export default{
     methods: {
         ...mapActions('entities/collections', ['fetchCollections']),
         ...mapActions('entities/products', ['fetchProducts']),
-        ...mapActions('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']),
+        ...mapActions('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/comments', ['fetchComments']),
         ...mapActions('entities/actions', ['updateAction']),
         ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
         ...mapActions('persist', ['setTeamFilter', 'setCurrentTaskId']),
-        ...mapActions('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']),
-        ...mapActions('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']),
         setProductFilter(filter) {
             this.currentProductFilter = filter
             this.clearSelectedProducts()
@@ -380,34 +387,31 @@ export default{
             this.selectedProducts.forEach(product => {
                 const thisProduct = this.products.find(x => x.id == product)
 
-                if (thisProduct[actionScope] != null) {
-                    // If product has a final action
-                    if (thisProduct[actionScope].action != actionType) {
-                        // If the products final action isnt the same as the one we are trying to set
-                        productsToUpdate.push(product)
-                    }
-                } 
-                // If product does not have a final action
-                else productsToCreate.push(product)
+                if (this.currentTask.type == 'feedback') {
+                    const userAction = thisProduct.actions.find(x => x.user_id == this.authUser.id && x.task_id == this.currentTask.id)
+                    if (userAction) {
+                        // If product has a final action
+                        if (userAction.action != actionType) {
+                            // If the products final action isnt the same as the one we are trying to set
+                            productsToUpdate.push(product)
+                        }
+                    } 
+                    // If product does not have a final action
+                    else productsToCreate.push(product)
+                }
 
             })
 
             // Submit the selection
             if (productsToUpdate.length > 0) {
-                if (this.actionScope == 'userAction')
-                    this.updateManyActions({productIds: productsToUpdate, user_id: user_id, action_code: actionType})
-                if (this.actionScope == 'teamAction')
-                    this.updateManyTeamProducts({team_id: this.currentTeamId, product_ids: productsToUpdate, phase_id: 1, action: actionType})
-                if (this.actionScope == 'phaseAction')
-                    this.updateManyPhaseProducts({product_ids: productsToUpdate, phase_id: 1, action: actionType})
+                if (this.currentTask.type == 'feedback') {
+                    this.updateManyActions({productIds: productsToUpdate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: false})
+                } else this.updateManyTaskActions({productIds: productsToUpdate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: true})
             }
             if (productsToCreate.length > 0) {
-                if (this.actionScope == 'userAction')
-                    this.createManyActions({productIds: productsToCreate, user_id: user_id, action_code: actionType})
-                if (this.actionScope == 'teamAction')
-                    this.createManyTeamProducts({team_id: this.currentTeamId, product_ids: productsToCreate, phase_id: 1, action: actionType})
-                if (this.actionScope == 'phaseAction')
-                    this.createManyPhaseProducts({product_ids: productsToCreate, phase_id: 1, action: actionType})
+                if (this.currentTask.type == 'feedback') {
+                    this.createManyActions({productIds: productsToUpdate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: false})
+                } else this.createManyActions({productIds: productsToUpdate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: true})
             }
 
             // Reset the selection
@@ -422,12 +426,14 @@ export default{
             }
             this.sortProducts()
         },
-        sortProducts() {
+        sortProducts(keyOverwrite) {
+            console.log('sorting products')
 
             const products = this.productsFiltered
-            let key = this.sortBy
-            let sortAsc = this.sortAsc
-            const sortMethod = this.sortMethod
+            // let key = this.sortBy
+            let key = (keyOverwrite) ? keyOverwrite : this.sortBy
+            let sortAsc = (keyOverwrite) ? true : this.sortAsc
+            const sortMethod = (keyOverwrite) ? 'custom' : this.sortMethod
 
             // Always sort the products by datasource_id first before sorting with the chosen method, to make sure the products are always sorted in the same manner
             products.sort((a, b) => {

@@ -5,157 +5,281 @@ export default {
     namespaced: true,
 
     state: {
-      loading: true
+        loading: true,
     },
 
     getters: {
-      loadingActions: state => {
-        return state.loading
-      }
+        loadingActions: state => {
+            return state.loading
+        },
     },
-  
+
     actions: {
+        // Get the actions
+        async fetchActions({ commit }, file_id) {
+            // Set the state to loading
+            commit('setLoading', true)
 
-      // Get the actions
-      async fetchActions({commit}, file_id) {
-          // Set the state to loading
-          commit('setLoading', true)
-          
-          const apiUrl = `/api/file/${file_id}/user-products`
+            const apiUrl = `/api/file/${file_id}/user-products`
 
-          let tryCount = 3
-          let succes = false
-          while(tryCount-- > 0 && !succes) {
-            try {
-              const response = await axios.get(`${apiUrl}`)
-              Action.create({ data: response.data })
-              commit('setLoading', false)
-              succes = true
+            let tryCount = 3
+            let succes = false
+            while (tryCount-- > 0 && !succes) {
+                try {
+                    const response = await axios.get(`${apiUrl}`)
+                    Action.create({ data: response.data })
+                    commit('setLoading', false)
+                    succes = true
+                } catch (err) {
+                    console.log('API error in actions.js :')
+                    console.log(err)
+                    console.log(`Trying to fetch again. TryCount = ${tryCount}`)
+                    if (tryCount <= 0) throw err
+                }
             }
-            catch (err) {
-              console.log('API error in actions.js :')
-              console.log(err)
-              console.log(`Trying to fetch again. TryCount = ${tryCount}`)
-              if (tryCount <= 0) throw err
-            }
-          }
-      },
+        },
 
-      // Update the action of for a product for a user
-      async updateAction({commit}, {user_id, productToUpdate, action_code}) {
+        // Update the action of for a product for a user
+        async updateAction({ commit }, { user_id, task_id, productToUpdate, action_code, is_task_action }) {
+            commit('setAction', { user_id, task_id, productToUpdate, action_code, is_task_action })
+            console.log(' Updating action: ' + user_id + ', ' + productToUpdate + ', ' + action_code)
 
-        commit('setAction', {productToUpdate, user_id, action_code})
-        console.log(' Updating action: ' + user_id + ', ' + productToUpdate + ', ' + action_code)
+            await axios
+                .put(`/api/action`, {
+                    user_id: user_id,
+                    task_id: task_id,
+                    product_id: productToUpdate,
+                    action_code: action_code,
+                    is_task_action: is_task_action,
+                })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        },
+        // Update the action of for a product for a user
+        async createTaskAction({ commit }, { user_id, task_id, productToUpdate, action_code, is_task_action }) {
+            commit('setAction', { user_id, task_id, productToUpdate, action_code, is_task_action })
+            console.log(' Updating action: ' + user_id + ', ' + productToUpdate + ', ' + action_code)
 
-        await axios.put(`/api/action`, {
-          action_code: action_code,
-          user_id: user_id,
-          product_id: productToUpdate
-        }).then(response => {
-          console.log(response.data)
-        }).catch(err =>{
-          console.log(err)
-        })
+            await axios
+                .put(`/api/task-action`, {
+                    user_id: user_id,
+                    task_id: task_id,
+                    product_id: productToUpdate,
+                    action_code: action_code,
+                    is_task_action: is_task_action,
+                })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        },
+        async updateTaskAction({ commit }, { task_id, productToUpdate, action_code, is_task_action }) {
+            commit('setTaskAction', { user_id, task_id, product_id, action_code, is_task_action })
+            console.log(' Updating action: ' + user_id + ', ' + productToUpdate + ', ' + action_code)
 
-      },
+            await axios
+                .put(`/api/task-action`, {
+                    user_id: user_id,
+                    task_id: task_id,
+                    product_id: productToUpdate,
+                    action_code: action_code,
+                    is_task_action: is_task_action,
+                })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        },
 
-      async updateManyActions({commit}, {productIds, user_id, action_code}) {
+        async updateManyActions({ commit }, { productIds, task_id, user_id, action_code, is_task_action }) {
+            commit('setManyActions', { productIds, task_id, user_id, action_code, is_task_action })
+            console.log('updating actions')
 
-        commit('setManyActions', {productIds, user_id, action_code})
-        console.log('updating actions')
+            await axios
+                .put(`/api/many-actions`, {
+                    product_ids: productIds,
+                    task_id: task_id,
+                    user_id: user_id,
+                    action_code: action_code,
+                    is_task_action: is_task_action,
+                })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        },
+        async updateManyTaskActions({ commit }, { productIds, task_id, user_id, action_code, is_task_action }) {
+            commit('setManyActions', { productIds, task_id, user_id, action_code, is_task_action })
+            console.log('updating actions')
 
-        await axios.put(`/api/many-actions`, {
-          product_ids: productIds,
-          user_id: user_id,
-          action_code: action_code
-        }).then(response => {
-          console.log(response.data)
-        }).catch(err =>{
-          console.log(err);
-        })
+            await axios
+                .put(`/api/many-task-actions`, {
+                    product_ids: productIds,
+                    task_id: task_id,
+                    user_id: user_id,
+                    action_code: action_code,
+                    is_task_action: is_task_action,
+                })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        },
 
-      },
+        async createManyActions({ commit }, { productIds, task_id, user_id, action_code, is_task_action }) {
+            commit('setManyTaskActions', { productIds, task_id, user_id, action_code, is_task_action })
+            console.log('creating actions')
 
-      async createManyActions({commit}, {productIds, user_id, action_code}) {
+            await axios
+                .post(`/api/many-actions`, {
+                    product_ids: productIds,
+                    task_id: task_id,
+                    user_id: user_id,
+                    action_code: action_code,
+                    is_task_action,
+                })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        },
 
-        commit('setManyActions', {productIds, user_id, action_code})
-        console.log('creating actions')
+        async deleteAction({ commit }, { productToUpdate, task_id, user_id }) {
+            commit('deleteAction', { productToUpdate, task_id, user_id })
 
-        await axios.post(`/api/many-actions`, {
-          product_ids: productIds,
-          user_id: user_id,
-          action_code: action_code
-        }).then(response => {
-          console.log(response.data)
-        }).catch(err =>{
-          console.log(err);
-        })
+            await axios
+                .delete(`/api/action`, {
+                    data: {
+                        user_id: user_id,
+                        task_id: task_id,
+                        product_id: productToUpdate,
+                    },
+                })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        },
 
-      },
+        async deleteTaskAction({ commit }, { productToUpdate, task_id }) {
+            commit('deleteTaskAction', { productToUpdate, task_id })
 
-      async deleteAction({commit}, {productToUpdate, user_id}) {
-
-        commit('deleteAction', {productToUpdate, user_id})
-
-        await axios.delete(`/api/action`, {
-          data: {
-            user_id: user_id,
-            product_id: productToUpdate
-          }
-        }).then(response => {
-          console.log(response.data)
-        }).catch(err =>{
-          console.log(err);
-        })
-
-      },
-
-      
-
+            await axios
+                .delete(`/api/task-action`, {
+                    data: {
+                        task_id: task_id,
+                        product_id: productToUpdate,
+                    },
+                })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        },
     },
 
     mutations: {
+        //Set the loading status of the app
+        setLoading(state, bool) {
+            state.loading = bool
+        },
+        setAction: (state, { productToUpdate, task_id, user_id, action_code, is_task_action }) => {
+            Action.insert({
+                data: {
+                    action: action_code,
+                    product_id: productToUpdate,
+                    user_id: user_id,
+                    task_id: task_id,
+                    is_task_action: is_task_action,
+                },
+            })
+        },
+        setTaskAction: (state, { user_id, productToUpdate, task_id, action_code, is_task_action }) => {
+            Action.update({
+                where: {
+                    action: action_code,
+                    product_id: productToUpdate,
+                    task_id: task_id,
+                    is_task_action: is_task_action,
+                },
+                data: {
+                    user_id: user_id,
+                    action: action_code,
+                    product_id: productToUpdate,
+                    task_id: task_id,
+                    is_task_action: is_task_action,
+                },
+            })
+        },
+        deleteAction: (state, { productToUpdate, task_id, user_id }) => {
+            console.log('deleting action')
 
-      //Set the loading status of the app
-      setLoading(state, bool) {
-        state.loading = bool
-      },
-      setAction: (state, {productToUpdate, user_id, action_code} ) => {
-        Action.insert({
-          data: {
-              action: action_code,
-              product_id: productToUpdate,
-              user_id: user_id,
-            }
-        })
-      },
-      deleteAction: (state, {productToUpdate, user_id} ) => {
-        console.log('deleting action')
+            Action.delete(record => {
+                return record.product_id == productToUpdate && record.user_id == user_id && record.task_id == task_id
+            })
+        },
+        deleteTaskAction: (state, { productToUpdate, task_id }) => {
+            console.log('deleting action')
 
-        Action.delete( (record) => {
-          return record.product_id == productToUpdate && record.user_id == user_id
-        } )
+            Action.delete(record => {
+                return record.product_id == productToUpdate && record.task_id == task_id
+            })
+        },
+        setManyActions: (state, { productIds, task_id, user_id, action_code, is_task_action }) => {
+            // Prepare the data
+            let data = []
 
-      },
-      setManyActions: (state, {productIds, user_id, action_code} ) => {
+            productIds.forEach(product => {
+                const productData = {
+                    product_id: product,
+                    task_id: task_id,
+                    user_id: user_id,
+                    action: action_code,
+                    is_task_action: is_task_action,
+                }
+                data.push(productData)
+            })
 
-        // Prepare the data
-        let data = []
-        
-        productIds.forEach(product => {
-          const productData = {
-            product_id: product,
-            user_id: user_id,
-            action: action_code 
-          }
-          data.push(productData)
-        })
+            Action.insert({
+                data: data,
+            })
+        },
+        setManyTaskActions: (state, { productIds, task_id, user_id, action_code, is_task_action }) => {
+            // Prepare the data
+            let data = []
 
-        Action.insert({
-          data: data
-        })
-      },
-        
-    }
+            productIds.forEach(product => {
+                const productData = {
+                    product_id: product,
+                    task_id: task_id,
+                    user_id: user_id,
+                    action: action_code,
+                    is_task_action: is_task_action,
+                }
+                data.push(productData)
+            })
 
-  }
+            Action.insert({
+                data: data,
+            })
+        },
+    },
+}

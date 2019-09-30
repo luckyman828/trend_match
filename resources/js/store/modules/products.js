@@ -131,13 +131,14 @@ export default {
                     // START Find Not decideds NDs
                     if (currentTask.type == 'feedback') {
                         // If type: Feedback -> Find all users with access to the task
-                        product.nds = currentTask.users
+                        product.nds = JSON.parse(JSON.stringify(currentTask.users))
                     } else {
                         // If type = Alignment -> Find the parent tasks
                         currentTask.parentTasks.forEach(parentTask => {
                             // if parent type is feedback -> push users
                             // else -> push task
-                            if (parentTask.type == 'feedback') product.nds = product.nds.concat(parentTask.users)
+                            if (parentTask.type == 'feedback')
+                                product.nds = product.nds.concat(JSON.parse(JSON.stringify(parentTask.users)))
                             else product.nds.push(parentTask)
                         })
                     }
@@ -156,8 +157,8 @@ export default {
                         // START Subtract from NDs
                         if (currentTask.type == 'feedback') {
                             if (action.task_id == currentTask.id) {
-                                NDUserIndex = product.nds.findIndex(user => user.id == action.user_id)
-                                product.nds = product.nds.splice(NDUserIndex, 1)
+                                let NDUserIndex = product.nds.findIndex(user => user.id == action.user_id)
+                                product.nds.splice(NDUserIndex, 1)
                             }
                         } else {
                             // If type is alignment
@@ -165,14 +166,14 @@ export default {
                                 if (parentTask.type == 'feedback') {
                                     // If the parent is type feedback
                                     if (action.task_id == parentTask.id) {
-                                        NDUserIndex = product.nds.findIndex(user => user.id == action.user_id)
-                                        product.nds = product.nds.splice(NDUserIndex, 1)
+                                        let NDUserIndex = product.nds.findIndex(user => user.id == action.user_id)
+                                        product.nds.splice(NDUserIndex, 1)
                                     }
                                 } else {
                                     // If the parent is type alignment
                                     if (action.task_id == parentTask.id) {
                                         NDTaskIndex = product.nds.findIndex(task => task.id == action.task_id)
-                                        product.nds = product.nds.splice(NDTaskIndex, 1)
+                                        product.nds.splice(NDTaskIndex, 1)
                                     }
                                 }
                             })

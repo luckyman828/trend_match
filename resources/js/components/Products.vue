@@ -63,7 +63,7 @@
             <template v-if="!loading">
                 <div class="product-row flex-table-row"
                 v-for="(product, index) in products" :key="product.id"
-                :class="[(actionsAvailable) ? (product[actionScope] != null) ? (product[actionScope].action == 0) ? 'out' : 'in' : '' : '']">
+                :class="[(actionsAvailable) ? (product.currentAction != null) ? (product.currentAction.action == 0) ? 'out' : 'in' : '' : '']">
                     <td class="select" v-if="selectAvailable">
                         <label class="checkbox">
                             <input type="checkbox" @change="onSelect(index)" :ref="'checkbox-for-' + index"/>
@@ -93,13 +93,13 @@
 
                     <template v-if="actionsAvailable">
                         <td class="action">
-                            <span v-if="userPermissionLevel == 2" class="square light-2 true-square clickable focus-action" :class="[(product[actionScope] != null) ? (product[actionScope].action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 2)">
+                            <span v-if="userPermissionLevel == 2" class="square light-2 true-square clickable focus-action" :class="[(product.currentAction != null) ? (product.currentAction.action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 2)">
                             <i class="far fa-star"></i>
                             </span>
-                            <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 1)">
+                            <span class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 1)">
                             In  <i class="far fa-heart"></i>
                             </span>
-                            <span class="button icon-right" :class="[(product[actionScope] != null) ? (product[actionScope].action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {'disabled': authUser.role_id == 3}]"  @click="toggleInOut(product, 0)">
+                            <span class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {'disabled': authUser.role_id == 3}]"  @click="toggleInOut(product, 0)">
                             Out  <i class="far fa-times-circle"></i>
                             </span>
                             <span class="view-single button invisible" @click="onViewSingle(product.id)">View</span>
@@ -193,9 +193,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('entities/actions', ['updateAction', 'deleteAction']),
-        ...mapActions('entities/teamProducts', ['deleteTeamProduct', 'updateTeamProduct']),
-        ...mapActions('entities/phaseProducts', ['deletePhaseProduct', 'updatePhaseProduct']),
+        ...mapActions('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction']),
         ...mapActions('entities/products', ['setCurrentProductId', 'setAvailableProductIds']),
         productImg(variant) {
             if (!variant.error && variant.blob_id != null)
@@ -206,45 +204,46 @@ export default {
              variant.error = true
         },
         toggleInOut(product, action) {
-            if (product[this.actionScope] != null) {
-                // If the product has an action
-
-                if(product[this.actionScope].action != action) {
-                    // UPDATE ACTION
-                    if (this.actionScope == 'userAction')
-                        this.updateAction({user_id: this.authUser.id, productToUpdate: product.id, action_code: actionType})
-                    if (this.actionScope == 'teamAction')
-                        this.updateTeamProduct({team_id: this.currentTeamId, product_id: product.id, phase_id: 1, action: action})
-                    if (this.actionScope == 'phaseAction')
-                        this.updatePhaseProduct({product_id: product.id, phase_id: 1, action: action})
+            if (this.currentTask.type == 'feedback') {
+                // Check if we already have an action
+                if (product.currentAction) {
+                    // If we already have an action
+                    if(product.currentAction.action != action) {
+                        // UPDATE ACTION
+                        this.updateAction({user_id: this.authUser.id, task_id: this.currentTask.id, productToUpdate: product.id, action_code: action, is_task_action: false})
+                    }
+                    else if(product.currentAction.action == 2 && action == 2) {
+                        // TOGGLE FOCUS
+                        this.updateAction({user_id: this.authUser.id, task_id: this.currentTask.id, productToUpdate: product.id, action_code: 1})
+                    }
+                    else {
+                        // DELETE ACTION
+                        this.deleteAction({user_id: this.authUser.id, task_id: this.currentTask.id, productToUpdate: product.id})
+                    }
+                } else {
+                    // CREATE ACTION
+                    this.updateAction({user_id: this.authUser.id, task_id: this.currentTask.id, productToUpdate: product.id, action_code: action, is_task_action: false})
                 }
-                else if(product[this.actionScope].action == 2 && action == 2) {
-                    // TOGGLE FOCUS
-                    if (this.actionScope == 'userAction')
-                        this.updateAction({user_id: this.authUser.id, productToUpdate: product.id, action_code: 1})
-                    if (this.actionScope == 'teamAction')
-                        this.updateTeamProduct({team_id: this.currentTeamId, product_id: product.id, phase_id: 1, action: 1})
-                    if (this.actionScope == 'phaseAction')
-                        this.updatePhaseProduct({product_id: product.id, phase_id: 1, action: 1})
-                }
-                else {
-                    // DELETE ACTION
-                    if (this.actionScope == 'userAction')
-                        this.deleteAction({user_id: this.authUser.id, productToUpdate: product.id})
-                    if (this.actionScope == 'teamAction')
-                        this.deleteTeamProduct({team_id: this.currentTeamId, product_id: product.id, phase_id: 1})
-                    if (this.actionScope == 'phaseAction')
-                        this.deletePhaseProduct({product_id: product.id, phase_id: 1})
-                }
-
             } else {
-                // CREATE ACTION
-                if (this.actionScope == 'userAction')
-                    this.updateAction({user_id: this.authUser.id, productToUpdate: product.id, action_code: actionType})
-                if (this.actionScope == 'teamAction')
-                    this.updateTeamProduct({team_id: this.currentTeamId, product_id: product.id, phase_id: 1, action: action})
-                if (this.actionScope == 'phaseAction')
-                    this.updatePhaseProduct({product_id: product.id, phase_id: 1, action: action})
+                // Check if we already have an action
+                if (product.currentAction) {
+                    // If we already have an action
+                    if(product.currentAction.action != action) {
+                        // UPDATE ACTION
+                        this.updateTaskAction({user_id: this.authUser.id, task_id: this.currentTask.id, productToUpdate: product.id, action_code: action, is_task_action: true})
+                    }
+                    else if(product.currentAction.action == 2 && action == 2) {
+                        // TOGGLE FOCUS
+                        this.updateTaskAction({user_id: this.authUser.id, task_id: this.currentTask.id, productToUpdate: product.id, action_code: 1})
+                    }
+                    else {
+                        // DELETE ACTION
+                        this.deleteTaskAction({task_id: this.currentTask.id, productToUpdate: product.id})
+                    }
+                } else {
+                    // CREATE ACTION
+                    this.createTaskAction({user_id: this.authUser.id, task_id: this.currentTask.id, productToUpdate: product.id, action_code: action, is_task_action: true})
+                }
             }
         },
         onViewSingle(id) {

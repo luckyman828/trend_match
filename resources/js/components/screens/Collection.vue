@@ -23,23 +23,41 @@
                 </template>
             </Dropdown>
 
-            <Dropdown class="dropdown-parent right" ref="countryDropdown">
-                <template v-slot:button="slotProps">
-                    <div class="dropdown-button" @click="slotProps.toggle">
-                        <img src="/assets/Path5699.svg">
-                        <span v-if="teamFilterId > 0">{{teams.find(x => x.id == teamFilterId).title}}</span>
-                        <span v-else-if="teamFilterId == 0">Global</span>
-                        <span v-else>No team available</span>
-                        <i class="far fa-chevron-down"></i>
-                    </div>
-                </template>
-                <template v-slot:header="slotProps">
-                    <span>Switch team</span>
-                </template>
-                <template v-slot:body>
-                    <RadioButtons :options="teamsForFilter" :currentOptionId="teamFilterId" :optionNameKey="'title'" :optionValueKey="'id'" ref="countryRadio" @change="setTeamFilter($event); $refs.countryDropdown.toggle()"/>
-                </template>
-            </Dropdown>
+            <div class="right">
+                <!-- <Dropdown class="dropdown-parent right" ref="taskDropdown">
+                    <template v-slot:button="slotProps">
+                        <div class="dropdown-button" @click="slotProps.toggle">
+                            <span v-if="currentTask">{{currentTask.title}}</span>
+                            <span v-else>No task</span>
+                            <i class="far fa-chevron-down"></i>
+                        </div>
+                    </template>
+                    <template v-slot:header="slotProps">
+                        <span>Switch task</span>
+                    </template>
+                    <template v-slot:body>
+                        <RadioButtons :options="userTasks" :currentOptionId="currentTask.id" :optionNameKey="'title'" :optionValueKey="'id'" @change="setCurrentTaskId($event); $refs.taskDropdown.toggle()"/>
+                    </template>
+                </Dropdown> -->
+            
+                <!-- <Dropdown class="dropdown-parent right" ref="countryDropdown">
+                    <template v-slot:button="slotProps">
+                        <div class="dropdown-button" @click="slotProps.toggle">
+                            <img src="/assets/Path5699.svg">
+                            <span v-if="teamFilterId > 0">{{teams.find(x => x.id == teamFilterId).title}}</span>
+                            <span v-else-if="teamFilterId == 0">Global</span>
+                            <span v-else>No team available</span>
+                            <i class="far fa-chevron-down"></i>
+                        </div>
+                    </template>
+                    <template v-slot:header="slotProps">
+                        <span>Switch team</span>
+                    </template>
+                    <template v-slot:body>
+                        <RadioButtons :options="teamsForFilter" :currentOptionId="teamFilterId" :optionNameKey="'title'" :optionValueKey="'id'" ref="countryRadio" @change="setTeamFilter($event); $refs.countryDropdown.toggle()"/>
+                    </template>
+                </Dropdown> -->
+            </div>
         </div>
         <FilesTable :isLoading="isLoading" :authUser="authUser" :files="userFiles" :loading="loadingCollections" :selected="selected" @onSelect="onSelect"/>
     </div>

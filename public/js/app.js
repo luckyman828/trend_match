@@ -9099,7 +9099,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return this.hasAccess ? true : false;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction', 'deleteAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['deleteTeamProduct', 'updateTeamProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['deletePhaseProduct', 'updatePhaseProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['setCurrentProductId', 'setAvailableProductIds']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['setCurrentProductId', 'setAvailableProductIds']), {
     productImg: function productImg(variant) {
       if (!variant.error && variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
     },
@@ -9107,78 +9107,83 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       variant.error = true;
     },
     toggleInOut: function toggleInOut(product, action) {
-      if (product[this.actionScope] != null) {
-        // If the product has an action
-        if (product[this.actionScope].action != action) {
-          // UPDATE ACTION
-          if (this.actionScope == 'userAction') this.updateAction({
-            user_id: this.authUser.id,
-            productToUpdate: product.id,
-            action_code: actionType
-          });
-          if (this.actionScope == 'teamAction') this.updateTeamProduct({
-            team_id: this.currentTeamId,
-            product_id: product.id,
-            phase_id: 1,
-            action: action
-          });
-          if (this.actionScope == 'phaseAction') this.updatePhaseProduct({
-            product_id: product.id,
-            phase_id: 1,
-            action: action
-          });
-        } else if (product[this.actionScope].action == 2 && action == 2) {
-          // TOGGLE FOCUS
-          if (this.actionScope == 'userAction') this.updateAction({
-            user_id: this.authUser.id,
-            productToUpdate: product.id,
-            action_code: 1
-          });
-          if (this.actionScope == 'teamAction') this.updateTeamProduct({
-            team_id: this.currentTeamId,
-            product_id: product.id,
-            phase_id: 1,
-            action: 1
-          });
-          if (this.actionScope == 'phaseAction') this.updatePhaseProduct({
-            product_id: product.id,
-            phase_id: 1,
-            action: 1
-          });
+      if (this.currentTask.type == 'feedback') {
+        // Check if we already have an action
+        if (product.currentAction) {
+          // If we already have an action
+          if (product.currentAction.action != action) {
+            // UPDATE ACTION
+            this.updateAction({
+              user_id: this.authUser.id,
+              task_id: this.currentTask.id,
+              productToUpdate: product.id,
+              action_code: action,
+              is_task_action: false
+            });
+          } else if (product.currentAction.action == 2 && action == 2) {
+            // TOGGLE FOCUS
+            this.updateAction({
+              user_id: this.authUser.id,
+              task_id: this.currentTask.id,
+              productToUpdate: product.id,
+              action_code: 1
+            });
+          } else {
+            // DELETE ACTION
+            this.deleteAction({
+              user_id: this.authUser.id,
+              task_id: this.currentTask.id,
+              productToUpdate: product.id
+            });
+          }
         } else {
-          // DELETE ACTION
-          if (this.actionScope == 'userAction') this.deleteAction({
+          // CREATE ACTION
+          this.updateAction({
             user_id: this.authUser.id,
-            productToUpdate: product.id
-          });
-          if (this.actionScope == 'teamAction') this.deleteTeamProduct({
-            team_id: this.currentTeamId,
-            product_id: product.id,
-            phase_id: 1
-          });
-          if (this.actionScope == 'phaseAction') this.deletePhaseProduct({
-            product_id: product.id,
-            phase_id: 1
+            task_id: this.currentTask.id,
+            productToUpdate: product.id,
+            action_code: action,
+            is_task_action: false
           });
         }
       } else {
-        // CREATE ACTION
-        if (this.actionScope == 'userAction') this.updateAction({
-          user_id: this.authUser.id,
-          productToUpdate: product.id,
-          action_code: actionType
-        });
-        if (this.actionScope == 'teamAction') this.updateTeamProduct({
-          team_id: this.currentTeamId,
-          product_id: product.id,
-          phase_id: 1,
-          action: action
-        });
-        if (this.actionScope == 'phaseAction') this.updatePhaseProduct({
-          product_id: product.id,
-          phase_id: 1,
-          action: action
-        });
+        // Check if we already have an action
+        if (product.currentAction) {
+          // If we already have an action
+          if (product.currentAction.action != action) {
+            // UPDATE ACTION
+            this.updateTaskAction({
+              user_id: this.authUser.id,
+              task_id: this.currentTask.id,
+              productToUpdate: product.id,
+              action_code: action,
+              is_task_action: true
+            });
+          } else if (product.currentAction.action == 2 && action == 2) {
+            // TOGGLE FOCUS
+            this.updateTaskAction({
+              user_id: this.authUser.id,
+              task_id: this.currentTask.id,
+              productToUpdate: product.id,
+              action_code: 1
+            });
+          } else {
+            // DELETE ACTION
+            this.deleteTaskAction({
+              task_id: this.currentTask.id,
+              productToUpdate: product.id
+            });
+          }
+        } else {
+          // CREATE ACTION
+          this.createTaskAction({
+            user_id: this.authUser.id,
+            task_id: this.currentTask.id,
+            productToUpdate: product.id,
+            action_code: action,
+            is_task_action: true
+          });
+        }
       }
     },
     onViewSingle: function onViewSingle(id) {
@@ -10725,7 +10730,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 
 
@@ -10779,11 +10783,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   watch: {
-    products: function products() {
-      this.sortProducts();
+    products: function products(newValue, oldValue) {
+      // CODE to make sure the products stay sorted in the same way
+      // Save the old order of the products
+      console.log('Products changed!');
+      var index = 0;
+      oldValue.forEach(function (product) {
+        newValue.find(function (x) {
+          return x.id == product.id;
+        }).sortIndex = index;
+        product.sortIndex = index;
+        index++;
+      }); // Sort the products in the same was as they were before
+
+      this.sortProducts('sortIndex');
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'products']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files', 'currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/tasks', ['userTasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'products']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files', 'currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/tasks', ['userTasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentTask', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']), {
     defaultTeam: function defaultTeam() {
       if (this.userPermissionLevel >= 3) return {
         id: 0,
@@ -10974,7 +10990,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else return this.teams;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setTeamFilter', 'setCurrentTaskId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setTeamFilter', 'setCurrentTaskId']), {
     setProductFilter: function setProductFilter(filter) {
       this.currentProductFilter = filter;
       this.clearSelectedProducts();
@@ -11016,51 +11032,55 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           return x.id == product;
         });
 
-        if (thisProduct[actionScope] != null) {
-          // If product has a final action
-          if (thisProduct[actionScope].action != actionType) {
-            // If the products final action isnt the same as the one we are trying to set
-            productsToUpdate.push(product);
-          }
-        } // If product does not have a final action
-        else productsToCreate.push(product);
+        if (_this4.currentTask.type == 'feedback') {
+          var userAction = thisProduct.actions.find(function (x) {
+            return x.user_id == _this4.authUser.id && x.task_id == _this4.currentTask.id;
+          });
+
+          if (userAction) {
+            // If product has a final action
+            if (userAction.action != actionType) {
+              // If the products final action isnt the same as the one we are trying to set
+              productsToUpdate.push(product);
+            }
+          } // If product does not have a final action
+          else productsToCreate.push(product);
+        }
       }); // Submit the selection
 
       if (productsToUpdate.length > 0) {
-        if (this.actionScope == 'userAction') this.updateManyActions({
+        if (this.currentTask.type == 'feedback') {
+          this.updateManyActions({
+            productIds: productsToUpdate,
+            task_id: this.currentTask.id,
+            user_id: user_id,
+            action_code: actionType,
+            is_task_action: false
+          });
+        } else this.updateManyTaskActions({
           productIds: productsToUpdate,
+          task_id: this.currentTask.id,
           user_id: user_id,
-          action_code: actionType
-        });
-        if (this.actionScope == 'teamAction') this.updateManyTeamProducts({
-          team_id: this.currentTeamId,
-          product_ids: productsToUpdate,
-          phase_id: 1,
-          action: actionType
-        });
-        if (this.actionScope == 'phaseAction') this.updateManyPhaseProducts({
-          product_ids: productsToUpdate,
-          phase_id: 1,
-          action: actionType
+          action_code: actionType,
+          is_task_action: true
         });
       }
 
       if (productsToCreate.length > 0) {
-        if (this.actionScope == 'userAction') this.createManyActions({
-          productIds: productsToCreate,
+        if (this.currentTask.type == 'feedback') {
+          this.createManyActions({
+            productIds: productsToUpdate,
+            task_id: this.currentTask.id,
+            user_id: user_id,
+            action_code: actionType,
+            is_task_action: false
+          });
+        } else this.createManyActions({
+          productIds: productsToUpdate,
+          task_id: this.currentTask.id,
           user_id: user_id,
-          action_code: actionType
-        });
-        if (this.actionScope == 'teamAction') this.createManyTeamProducts({
-          team_id: this.currentTeamId,
-          product_ids: productsToCreate,
-          phase_id: 1,
-          action: actionType
-        });
-        if (this.actionScope == 'phaseAction') this.createManyPhaseProducts({
-          product_ids: productsToCreate,
-          phase_id: 1,
-          action: actionType
+          action_code: actionType,
+          is_task_action: true
         });
       } // Reset the selection
 
@@ -11077,11 +11097,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       this.sortProducts();
     },
-    sortProducts: function sortProducts() {
-      var products = this.productsFiltered;
-      var key = this.sortBy;
-      var sortAsc = this.sortAsc;
-      var sortMethod = this.sortMethod; // Always sort the products by datasource_id first before sorting with the chosen method, to make sure the products are always sorted in the same manner
+    sortProducts: function sortProducts(keyOverwrite) {
+      console.log('sorting products');
+      var products = this.productsFiltered; // let key = this.sortBy
+
+      var key = keyOverwrite ? keyOverwrite : this.sortBy;
+      var sortAsc = keyOverwrite ? true : this.sortAsc;
+      var sortMethod = keyOverwrite ? 'custom' : this.sortMethod; // Always sort the products by datasource_id first before sorting with the chosen method, to make sure the products are always sorted in the same manner
 
       products.sort(function (a, b) {
         if (a.datasource_id == b.datasource_id) {
@@ -11182,6 +11204,24 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -11676,8 +11716,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                console.log('init tasks'); // START Set current task
-
+                // START Set current task
                 this.userTasks.forEach(function (task) {
                   if (task.parents.length > 0) {
                     task.parents.forEach(function (parent) {
@@ -11687,17 +11726,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 });
 
                 if (!(taskToSet != null)) {
-                  _context3.next = 5;
+                  _context3.next = 4;
                   break;
                 }
 
-                _context3.next = 5;
+                _context3.next = 4;
                 return this.setCurrentTaskId(taskToSet.id);
 
-              case 5:
+              case 4:
                 this.loadingTasks = false; // END Set current task
 
-              case 6:
+              case 5:
               case "end":
                 return _context3.stop();
             }
@@ -18587,8 +18626,8 @@ var render = function() {
                     staticClass: "product-row flex-table-row",
                     class: [
                       _vm.actionsAvailable
-                        ? product[_vm.actionScope] != null
-                          ? product[_vm.actionScope].action == 0
+                        ? product.currentAction != null
+                          ? product.currentAction.action == 0
                             ? "out"
                             : "in"
                           : ""
@@ -18822,8 +18861,8 @@ var render = function() {
                                     staticClass:
                                       "square light-2 true-square clickable focus-action",
                                     class: [
-                                      product[_vm.actionScope] != null
-                                        ? product[_vm.actionScope].action == 2
+                                      product.currentAction != null
+                                        ? product.currentAction.action == 2
                                           ? "active light"
                                           : "ghost primary-hover"
                                         : "ghost primary-hover",
@@ -18844,8 +18883,8 @@ var render = function() {
                               {
                                 staticClass: "button icon-right",
                                 class: [
-                                  product[_vm.actionScope] != null
-                                    ? product[_vm.actionScope].action != 0
+                                  product.currentAction != null
+                                    ? product.currentAction.action != 0
                                       ? "active green"
                                       : "ghost green-hover"
                                     : "ghost green-hover",
@@ -18868,8 +18907,8 @@ var render = function() {
                               {
                                 staticClass: "button icon-right",
                                 class: [
-                                  product[_vm.actionScope] != null
-                                    ? product[_vm.actionScope].action == 0
+                                  product.currentAction != null
+                                    ? product.currentAction.action == 0
                                       ? "active red"
                                       : "ghost red-hover"
                                     : "ghost red-hover",
@@ -21050,87 +21089,6 @@ var render = function() {
                             false,
                             4126470804
                           )
-                        }),
-                        _vm._v(" "),
-                        _c("Dropdown", {
-                          ref: "countryDropdown",
-                          staticClass: "dropdown-parent right",
-                          scopedSlots: _vm._u(
-                            [
-                              {
-                                key: "button",
-                                fn: function(slotProps) {
-                                  return [
-                                    _c(
-                                      "div",
-                                      {
-                                        staticClass: "dropdown-button",
-                                        on: { click: slotProps.toggle }
-                                      },
-                                      [
-                                        _c("img", {
-                                          attrs: { src: "/assets/Path5699.svg" }
-                                        }),
-                                        _vm._v(" "),
-                                        _vm.teamFilterId > 0
-                                          ? _c("span", [
-                                              _vm._v(
-                                                _vm._s(
-                                                  _vm.teams.find(function(x) {
-                                                    return (
-                                                      x.id == _vm.teamFilterId
-                                                    )
-                                                  }).title
-                                                )
-                                              )
-                                            ])
-                                          : _vm.teamFilterId == 0
-                                          ? _c("span", [_vm._v("Global")])
-                                          : _c("span", [
-                                              _vm._v("No team available")
-                                            ]),
-                                        _vm._v(" "),
-                                        _c("i", {
-                                          staticClass: "far fa-chevron-down"
-                                        })
-                                      ]
-                                    )
-                                  ]
-                                }
-                              },
-                              {
-                                key: "header",
-                                fn: function(slotProps) {
-                                  return [_c("span", [_vm._v("Switch team")])]
-                                }
-                              },
-                              {
-                                key: "body",
-                                fn: function() {
-                                  return [
-                                    _c("RadioButtons", {
-                                      attrs: {
-                                        options: _vm.teamsForFilter,
-                                        currentOptionId: _vm.teamFilterId,
-                                        optionNameKey: "title",
-                                        optionValueKey: "id"
-                                      },
-                                      on: {
-                                        change: function($event) {
-                                          _vm.setTeamFilter($event)
-                                          _vm.$refs.countryDropdown.toggle()
-                                        }
-                                      }
-                                    })
-                                  ]
-                                },
-                                proxy: true
-                              }
-                            ],
-                            null,
-                            false,
-                            2047353342
-                          )
                         })
                       ],
                       1
@@ -21301,74 +21259,7 @@ var render = function() {
             ])
           }),
           _vm._v(" "),
-          _c("Dropdown", {
-            ref: "countryDropdown",
-            staticClass: "dropdown-parent right",
-            scopedSlots: _vm._u([
-              {
-                key: "button",
-                fn: function(slotProps) {
-                  return [
-                    _c(
-                      "div",
-                      {
-                        staticClass: "dropdown-button",
-                        on: { click: slotProps.toggle }
-                      },
-                      [
-                        _c("img", { attrs: { src: "/assets/Path5699.svg" } }),
-                        _vm._v(" "),
-                        _vm.teamFilterId > 0
-                          ? _c("span", [
-                              _vm._v(
-                                _vm._s(
-                                  _vm.teams.find(function(x) {
-                                    return x.id == _vm.teamFilterId
-                                  }).title
-                                )
-                              )
-                            ])
-                          : _vm.teamFilterId == 0
-                          ? _c("span", [_vm._v("Global")])
-                          : _c("span", [_vm._v("No team available")]),
-                        _vm._v(" "),
-                        _c("i", { staticClass: "far fa-chevron-down" })
-                      ]
-                    )
-                  ]
-                }
-              },
-              {
-                key: "header",
-                fn: function(slotProps) {
-                  return [_c("span", [_vm._v("Switch team")])]
-                }
-              },
-              {
-                key: "body",
-                fn: function() {
-                  return [
-                    _c("RadioButtons", {
-                      ref: "countryRadio",
-                      attrs: {
-                        options: _vm.teamsForFilter,
-                        currentOptionId: _vm.teamFilterId,
-                        optionNameKey: "title",
-                        optionValueKey: "id"
-                      },
-                      on: {
-                        change: function($event) {
-                          _vm.setTeamFilter($event)
-                          _vm.$refs.countryDropdown.toggle()
-                        }
-                      }
-                    })
-                  ]
-                },
-                proxy: true
-              }
-            ])
-          })
+          _c("div", { staticClass: "right" })
         ],
         1
       ),
@@ -42752,24 +42643,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _updateAction = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, _ref3) {
-        var commit, user_id, productToUpdate, action_code;
+        var commit, user_id, task_id, productToUpdate, action_code, is_task_action;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 commit = _ref2.commit;
-                user_id = _ref3.user_id, productToUpdate = _ref3.productToUpdate, action_code = _ref3.action_code;
+                user_id = _ref3.user_id, task_id = _ref3.task_id, productToUpdate = _ref3.productToUpdate, action_code = _ref3.action_code, is_task_action = _ref3.is_task_action;
                 commit('setAction', {
-                  productToUpdate: productToUpdate,
                   user_id: user_id,
-                  action_code: action_code
+                  task_id: task_id,
+                  productToUpdate: productToUpdate,
+                  action_code: action_code,
+                  is_task_action: is_task_action
                 });
                 console.log(' Updating action: ' + user_id + ', ' + productToUpdate + ', ' + action_code);
                 _context2.next = 6;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/action", {
-                  action_code: action_code,
                   user_id: user_id,
-                  product_id: productToUpdate
+                  task_id: task_id,
+                  product_id: productToUpdate,
+                  action_code: action_code,
+                  is_task_action: is_task_action
                 }).then(function (response) {
                   console.log(response.data);
                 })["catch"](function (err) {
@@ -42790,28 +42685,33 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       return updateAction;
     }(),
-    updateManyActions: function () {
-      var _updateManyActions = _asyncToGenerator(
+    // Update the action of for a product for a user
+    createTaskAction: function () {
+      var _createTaskAction = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref4, _ref5) {
-        var commit, productIds, user_id, action_code;
+        var commit, user_id, task_id, productToUpdate, action_code, is_task_action;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 commit = _ref4.commit;
-                productIds = _ref5.productIds, user_id = _ref5.user_id, action_code = _ref5.action_code;
-                commit('setManyActions', {
-                  productIds: productIds,
+                user_id = _ref5.user_id, task_id = _ref5.task_id, productToUpdate = _ref5.productToUpdate, action_code = _ref5.action_code, is_task_action = _ref5.is_task_action;
+                commit('setAction', {
                   user_id: user_id,
-                  action_code: action_code
+                  task_id: task_id,
+                  productToUpdate: productToUpdate,
+                  action_code: action_code,
+                  is_task_action: is_task_action
                 });
-                console.log('updating actions');
+                console.log(' Updating action: ' + user_id + ', ' + productToUpdate + ', ' + action_code);
                 _context3.next = 6;
-                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/many-actions", {
-                  product_ids: productIds,
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/task-action", {
                   user_id: user_id,
-                  action_code: action_code
+                  task_id: task_id,
+                  product_id: productToUpdate,
+                  action_code: action_code,
+                  is_task_action: is_task_action
                 }).then(function (response) {
                   console.log(response.data);
                 })["catch"](function (err) {
@@ -42826,34 +42726,38 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee3);
       }));
 
-      function updateManyActions(_x5, _x6) {
-        return _updateManyActions.apply(this, arguments);
+      function createTaskAction(_x5, _x6) {
+        return _createTaskAction.apply(this, arguments);
       }
 
-      return updateManyActions;
+      return createTaskAction;
     }(),
-    createManyActions: function () {
-      var _createManyActions = _asyncToGenerator(
+    updateTaskAction: function () {
+      var _updateTaskAction = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref6, _ref7) {
-        var commit, productIds, user_id, action_code;
+        var commit, task_id, productToUpdate, action_code, is_task_action;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
                 commit = _ref6.commit;
-                productIds = _ref7.productIds, user_id = _ref7.user_id, action_code = _ref7.action_code;
-                commit('setManyActions', {
-                  productIds: productIds,
+                task_id = _ref7.task_id, productToUpdate = _ref7.productToUpdate, action_code = _ref7.action_code, is_task_action = _ref7.is_task_action;
+                commit('setTaskAction', {
                   user_id: user_id,
-                  action_code: action_code
+                  task_id: task_id,
+                  product_id: product_id,
+                  action_code: action_code,
+                  is_task_action: is_task_action
                 });
-                console.log('creating actions');
+                console.log(' Updating action: ' + user_id + ', ' + productToUpdate + ', ' + action_code);
                 _context4.next = 6;
-                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/many-actions", {
-                  product_ids: productIds,
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/task-action", {
                   user_id: user_id,
-                  action_code: action_code
+                  task_id: task_id,
+                  product_id: productToUpdate,
+                  action_code: action_code,
+                  is_task_action: is_task_action
                 }).then(function (response) {
                   console.log(response.data);
                 })["catch"](function (err) {
@@ -42868,7 +42772,145 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee4);
       }));
 
-      function createManyActions(_x7, _x8) {
+      function updateTaskAction(_x7, _x8) {
+        return _updateTaskAction.apply(this, arguments);
+      }
+
+      return updateTaskAction;
+    }(),
+    updateManyActions: function () {
+      var _updateManyActions = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5(_ref8, _ref9) {
+        var commit, productIds, task_id, user_id, action_code, is_task_action;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                commit = _ref8.commit;
+                productIds = _ref9.productIds, task_id = _ref9.task_id, user_id = _ref9.user_id, action_code = _ref9.action_code, is_task_action = _ref9.is_task_action;
+                commit('setManyActions', {
+                  productIds: productIds,
+                  task_id: task_id,
+                  user_id: user_id,
+                  action_code: action_code,
+                  is_task_action: is_task_action
+                });
+                console.log('updating actions');
+                _context5.next = 6;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/many-actions", {
+                  product_ids: productIds,
+                  task_id: task_id,
+                  user_id: user_id,
+                  action_code: action_code,
+                  is_task_action: is_task_action
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 6:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5);
+      }));
+
+      function updateManyActions(_x9, _x10) {
+        return _updateManyActions.apply(this, arguments);
+      }
+
+      return updateManyActions;
+    }(),
+    updateManyTaskActions: function () {
+      var _updateManyTaskActions = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee6(_ref10, _ref11) {
+        var commit, productIds, task_id, user_id, action_code, is_task_action;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee6$(_context6) {
+          while (1) {
+            switch (_context6.prev = _context6.next) {
+              case 0:
+                commit = _ref10.commit;
+                productIds = _ref11.productIds, task_id = _ref11.task_id, user_id = _ref11.user_id, action_code = _ref11.action_code, is_task_action = _ref11.is_task_action;
+                commit('setManyActions', {
+                  productIds: productIds,
+                  task_id: task_id,
+                  user_id: user_id,
+                  action_code: action_code,
+                  is_task_action: is_task_action
+                });
+                console.log('updating actions');
+                _context6.next = 6;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/many-task-actions", {
+                  product_ids: productIds,
+                  task_id: task_id,
+                  user_id: user_id,
+                  action_code: action_code,
+                  is_task_action: is_task_action
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 6:
+              case "end":
+                return _context6.stop();
+            }
+          }
+        }, _callee6);
+      }));
+
+      function updateManyTaskActions(_x11, _x12) {
+        return _updateManyTaskActions.apply(this, arguments);
+      }
+
+      return updateManyTaskActions;
+    }(),
+    createManyActions: function () {
+      var _createManyActions = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee7(_ref12, _ref13) {
+        var commit, productIds, task_id, user_id, action_code, is_task_action;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee7$(_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                commit = _ref12.commit;
+                productIds = _ref13.productIds, task_id = _ref13.task_id, user_id = _ref13.user_id, action_code = _ref13.action_code, is_task_action = _ref13.is_task_action;
+                commit('setManyTaskActions', {
+                  productIds: productIds,
+                  task_id: task_id,
+                  user_id: user_id,
+                  action_code: action_code,
+                  is_task_action: is_task_action
+                });
+                console.log('creating actions');
+                _context7.next = 6;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/many-actions", {
+                  product_ids: productIds,
+                  task_id: task_id,
+                  user_id: user_id,
+                  action_code: action_code,
+                  is_task_action: is_task_action
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 6:
+              case "end":
+                return _context7.stop();
+            }
+          }
+        }, _callee7);
+      }));
+
+      function createManyActions(_x13, _x14) {
         return _createManyActions.apply(this, arguments);
       }
 
@@ -42877,22 +42919,24 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     deleteAction: function () {
       var _deleteAction = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5(_ref8, _ref9) {
-        var commit, productToUpdate, user_id;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee8(_ref14, _ref15) {
+        var commit, productToUpdate, task_id, user_id;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee8$(_context8) {
           while (1) {
-            switch (_context5.prev = _context5.next) {
+            switch (_context8.prev = _context8.next) {
               case 0:
-                commit = _ref8.commit;
-                productToUpdate = _ref9.productToUpdate, user_id = _ref9.user_id;
+                commit = _ref14.commit;
+                productToUpdate = _ref15.productToUpdate, task_id = _ref15.task_id, user_id = _ref15.user_id;
                 commit('deleteAction', {
                   productToUpdate: productToUpdate,
+                  task_id: task_id,
                   user_id: user_id
                 });
-                _context5.next = 5;
+                _context8.next = 5;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/action", {
                   data: {
                     user_id: user_id,
+                    task_id: task_id,
                     product_id: productToUpdate
                   }
                 }).then(function (response) {
@@ -42903,17 +42947,58 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 5:
               case "end":
-                return _context5.stop();
+                return _context8.stop();
             }
           }
-        }, _callee5);
+        }, _callee8);
       }));
 
-      function deleteAction(_x9, _x10) {
+      function deleteAction(_x15, _x16) {
         return _deleteAction.apply(this, arguments);
       }
 
       return deleteAction;
+    }(),
+    deleteTaskAction: function () {
+      var _deleteTaskAction = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee9(_ref16, _ref17) {
+        var commit, productToUpdate, task_id;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee9$(_context9) {
+          while (1) {
+            switch (_context9.prev = _context9.next) {
+              case 0:
+                commit = _ref16.commit;
+                productToUpdate = _ref17.productToUpdate, task_id = _ref17.task_id;
+                commit('deleteTaskAction', {
+                  productToUpdate: productToUpdate,
+                  task_id: task_id
+                });
+                _context9.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/task-action", {
+                  data: {
+                    task_id: task_id,
+                    product_id: productToUpdate
+                  }
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context9.stop();
+            }
+          }
+        }, _callee9);
+      }));
+
+      function deleteTaskAction(_x17, _x18) {
+        return _deleteTaskAction.apply(this, arguments);
+      }
+
+      return deleteTaskAction;
     }()
   },
   mutations: {
@@ -42921,37 +43006,98 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     setLoading: function setLoading(state, bool) {
       state.loading = bool;
     },
-    setAction: function setAction(state, _ref10) {
-      var productToUpdate = _ref10.productToUpdate,
-          user_id = _ref10.user_id,
-          action_code = _ref10.action_code;
+    setAction: function setAction(state, _ref18) {
+      var productToUpdate = _ref18.productToUpdate,
+          task_id = _ref18.task_id,
+          user_id = _ref18.user_id,
+          action_code = _ref18.action_code,
+          is_task_action = _ref18.is_task_action;
       _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: {
           action: action_code,
           product_id: productToUpdate,
-          user_id: user_id
+          user_id: user_id,
+          task_id: task_id,
+          is_task_action: is_task_action
         }
       });
     },
-    deleteAction: function deleteAction(state, _ref11) {
-      var productToUpdate = _ref11.productToUpdate,
-          user_id = _ref11.user_id;
-      console.log('deleting action');
-      _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (record) {
-        return record.product_id == productToUpdate && record.user_id == user_id;
+    setTaskAction: function setTaskAction(state, _ref19) {
+      var user_id = _ref19.user_id,
+          productToUpdate = _ref19.productToUpdate,
+          task_id = _ref19.task_id,
+          action_code = _ref19.action_code,
+          is_task_action = _ref19.is_task_action;
+      _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].update({
+        where: {
+          action: action_code,
+          product_id: productToUpdate,
+          task_id: task_id,
+          is_task_action: is_task_action
+        },
+        data: {
+          user_id: user_id,
+          action: action_code,
+          product_id: productToUpdate,
+          task_id: task_id,
+          is_task_action: is_task_action
+        }
       });
     },
-    setManyActions: function setManyActions(state, _ref12) {
-      var productIds = _ref12.productIds,
-          user_id = _ref12.user_id,
-          action_code = _ref12.action_code;
+    deleteAction: function deleteAction(state, _ref20) {
+      var productToUpdate = _ref20.productToUpdate,
+          task_id = _ref20.task_id,
+          user_id = _ref20.user_id;
+      console.log('deleting action');
+      _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (record) {
+        return record.product_id == productToUpdate && record.user_id == user_id && record.task_id == task_id;
+      });
+    },
+    deleteTaskAction: function deleteTaskAction(state, _ref21) {
+      var productToUpdate = _ref21.productToUpdate,
+          task_id = _ref21.task_id;
+      console.log('deleting action');
+      _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](function (record) {
+        return record.product_id == productToUpdate && record.task_id == task_id;
+      });
+    },
+    setManyActions: function setManyActions(state, _ref22) {
+      var productIds = _ref22.productIds,
+          task_id = _ref22.task_id,
+          user_id = _ref22.user_id,
+          action_code = _ref22.action_code,
+          is_task_action = _ref22.is_task_action;
       // Prepare the data
       var data = [];
       productIds.forEach(function (product) {
         var productData = {
           product_id: product,
+          task_id: task_id,
           user_id: user_id,
-          action: action_code
+          action: action_code,
+          is_task_action: is_task_action
+        };
+        data.push(productData);
+      });
+      _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
+        data: data
+      });
+    },
+    setManyTaskActions: function setManyTaskActions(state, _ref23) {
+      var productIds = _ref23.productIds,
+          task_id = _ref23.task_id,
+          user_id = _ref23.user_id,
+          action_code = _ref23.action_code,
+          is_task_action = _ref23.is_task_action;
+      // Prepare the data
+      var data = [];
+      productIds.forEach(function (product) {
+        var productData = {
+          product_id: product,
+          task_id: task_id,
+          user_id: user_id,
+          action: action_code,
+          is_task_action: is_task_action
         };
         data.push(productData);
       });
@@ -45128,13 +45274,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
           if (currentTask.type == 'feedback') {
             // If type: Feedback -> Find all users with access to the task
-            product.nds = currentTask.users;
+            product.nds = JSON.parse(JSON.stringify(currentTask.users));
           } else {
             // If type = Alignment -> Find the parent tasks
             currentTask.parentTasks.forEach(function (parentTask) {
               // if parent type is feedback -> push users
               // else -> push task
-              if (parentTask.type == 'feedback') product.nds = product.nds.concat(parentTask.users);else product.nds.push(parentTask);
+              if (parentTask.type == 'feedback') product.nds = product.nds.concat(JSON.parse(JSON.stringify(parentTask.users)));else product.nds.push(parentTask);
             });
           }
 
@@ -45153,10 +45299,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
             if (currentTask.type == 'feedback') {
               if (action.task_id == currentTask.id) {
-                NDUserIndex = product.nds.findIndex(function (user) {
+                var NDUserIndex = product.nds.findIndex(function (user) {
                   return user.id == action.user_id;
                 });
-                product.nds = product.nds.splice(NDUserIndex, 1);
+                product.nds.splice(NDUserIndex, 1);
               }
             } else {
               // If type is alignment
@@ -45164,10 +45310,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 if (parentTask.type == 'feedback') {
                   // If the parent is type feedback
                   if (action.task_id == parentTask.id) {
-                    NDUserIndex = product.nds.findIndex(function (user) {
+                    var _NDUserIndex = product.nds.findIndex(function (user) {
                       return user.id == action.user_id;
                     });
-                    product.nds = product.nds.splice(NDUserIndex, 1);
+
+                    product.nds.splice(_NDUserIndex, 1);
                   }
                 } else {
                   // If the parent is type alignment
@@ -45175,7 +45322,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                     NDTaskIndex = product.nds.findIndex(function (task) {
                       return task.id == action.task_id;
                     });
-                    product.nds = product.nds.splice(NDTaskIndex, 1);
+                    product.nds.splice(NDTaskIndex, 1);
                   }
                 }
               });

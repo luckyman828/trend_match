@@ -87,47 +87,17 @@ Route::middleware('auth:api')->group( function(){
     // xxx ACTIONS xxx
     // Update action
     Route::put('action', 'ActionController@store');
+    Route::put('task-action', 'ActionController@storeTask');
     // Delete action
     Route::delete('action', 'ActionController@destroy');
+    Route::delete('task-action', 'ActionController@destroyTask');
     // Update many actions
     Route::put('many-actions', 'ActionController@updateMany');
+    Route::put('many-task-actions', 'ActionController@updateManyTask');
     // Create many actions
     Route::post('many-actions', 'ActionController@storeMany');
-    // Delete many actions
-    Route::delete('many-actions', 'ActionController@destroyMany');
-    
-    // Update final action
-    Route::put('final-action', 'ActionController@storeFinal');
-    // Delete final action
-    Route::delete('final-action', 'ActionController@destroyFinal');
-    // Update many final action
-    Route::put('many-final-action', 'ActionController@updateManyFinal');
-    // Create many final action
-    Route::post('many-final-action', 'ActionController@storeManyFinal');
-    // Delete many final action
-    Route::delete('many-final-action', 'ActionController@destroyManyFinal');
+    Route::post('many-task-actions', 'ActionController@storeManyTask');
 
-    // Update team product
-    Route::put('team-product', 'ActionController@storeTeam');
-    // Delete team product
-    Route::delete('team-product', 'ActionController@destroyTeam');
-    // Update many team product
-    Route::put('many-team-products', 'ActionController@updateManyTeam');
-    // Create many team product
-    Route::post('many-team-products', 'ActionController@storeManyTeam');
-    // Delete many team product
-    Route::delete('many-team-products', 'ActionController@destroyManyTeam');
-
-    // Update phase product
-    Route::put('phase-product', 'ActionController@storePhase');
-    // Delete phase product
-    Route::delete('phase-product', 'ActionController@destroyPhase');
-    // Update many phase product
-    Route::put('many-phase-products', 'ActionController@updateManyPhase');
-    // Create many phase product
-    Route::post('many-phase-products', 'ActionController@storeManyPhase');
-    // Delete many phase product
-    Route::delete('many-phase-products', 'ActionController@destroyManyPhase');
 
     // xxx USERS xxx
     // Get countries

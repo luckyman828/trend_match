@@ -68,7 +68,6 @@ export default {
             this.loadingFile = false
         },
         async initRequiresTasks() {
-            console.log('init tasks')
             // START Set current task
             let taskToSet
             this.userTasks.forEach(task => {
