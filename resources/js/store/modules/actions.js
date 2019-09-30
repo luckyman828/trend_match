@@ -42,7 +42,11 @@ export default {
         // Update the action of for a product for a user
         async updateAction({ commit }, { user_id, task_id, productToUpdate, action_code, is_task_action }) {
             commit('setAction', { user_id, task_id, productToUpdate, action_code, is_task_action })
-            console.log(' Updating action: ' + user_id + ', ' + productToUpdate + ', ' + action_code)
+            console.log('Task: ' + task_id)
+            console.log('Is task: ' + is_task_action)
+            console.log('user_id: ' + user_id)
+            console.log('product_id: ' + productToUpdate)
+            console.log('action_code: ' + action_code)
 
             await axios
                 .put(`/api/action`, {
@@ -202,6 +206,7 @@ export default {
             state.loading = bool
         },
         setAction: (state, { productToUpdate, task_id, user_id, action_code, is_task_action }) => {
+            console.log('setting action!')
             Action.insert({
                 data: {
                     action: action_code,
@@ -213,12 +218,6 @@ export default {
             })
         },
         setTaskAction: (state, { user_id, productToUpdate, task_id, action_code, is_task_action }) => {
-            console.log('Updating task action!')
-            console.log(user_id)
-            console.log(productToUpdate)
-            console.log(task_id)
-            console.log(action_code)
-            console.log(is_task_action)
             Action.update({
                 where: action => {
                     return action.task_id == task_id && action.product_id == productToUpdate

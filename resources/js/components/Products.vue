@@ -210,7 +210,7 @@ export default {
                     // If we already have an action
                     if(product.currentAction.action != action) {
                         // UPDATE ACTION
-                        this.updateAction({user_id: this.authUser.id, task_id: this.currentTask.id, productToUpdate: product.id, action_code: action, is_task_action: false})
+                        this.updateAction({user_id: this.authUser.id, task_id: this.currentTask.id, productToUpdate: product.id, action_code: action, is_task_action: null})
                     }
                     else if(product.currentAction.action == 2 && action == 2) {
                         // TOGGLE FOCUS
@@ -222,7 +222,7 @@ export default {
                     }
                 } else {
                     // CREATE ACTION
-                    this.updateAction({user_id: this.authUser.id, task_id: this.currentTask.id, productToUpdate: product.id, action_code: action, is_task_action: false})
+                    this.updateAction({user_id: this.authUser.id, task_id: this.currentTask.id, productToUpdate: product.id, action_code: action, is_task_action: null})
                 }
             } else {
                 // Check if we already have an action

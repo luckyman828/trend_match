@@ -9118,7 +9118,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
               task_id: this.currentTask.id,
               productToUpdate: product.id,
               action_code: action,
-              is_task_action: false
+              is_task_action: null
             });
           } else if (product.currentAction.action == 2 && action == 2) {
             // TOGGLE FOCUS
@@ -9143,7 +9143,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             task_id: this.currentTask.id,
             productToUpdate: product.id,
             action_code: action,
-            is_task_action: false
+            is_task_action: null
           });
         }
       } else {
@@ -11025,7 +11025,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var user_id = this.authUser.id;
       var actionScope = this.actionScope;
       var actionType = method;
-      console.log(actionType);
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
@@ -11042,9 +11041,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           }
         } // If product does not have a final action
         else productsToCreate.push(product);
-      });
-      console.log('Update: ' + productsToUpdate.length);
-      console.log('Create: ' + productsToCreate.length); // Submit the selection
+      }); // Submit the selection
 
       if (productsToUpdate.length > 0) {
         if (this.currentTask.type == 'feedback') {
@@ -11053,14 +11050,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             task_id: this.currentTask.id,
             user_id: user_id,
             action_code: actionType,
-            is_task_action: false
+            is_task_action: null
           });
         } else this.updateManyTaskActions({
           productIds: productsToUpdate,
           task_id: this.currentTask.id,
           user_id: user_id,
           action_code: actionType,
-          is_task_action: true
+          is_task_action: null
         });
       }
 
@@ -42647,8 +42644,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   action_code: action_code,
                   is_task_action: is_task_action
                 });
-                console.log(' Updating action: ' + user_id + ', ' + productToUpdate + ', ' + action_code);
-                _context2.next = 6;
+                console.log('Task: ' + task_id);
+                console.log('Is task: ' + is_task_action);
+                console.log('user_id: ' + user_id);
+                console.log('product_id: ' + productToUpdate);
+                console.log('action_code: ' + action_code);
+                _context2.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/action", {
                   user_id: user_id,
                   task_id: task_id,
@@ -42661,7 +42662,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   console.log(err);
                 });
 
-              case 6:
+              case 10:
               case "end":
                 return _context2.stop();
             }
@@ -43002,6 +43003,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           user_id = _ref18.user_id,
           action_code = _ref18.action_code,
           is_task_action = _ref18.is_task_action;
+      console.log('setting action!');
       _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: {
           action: action_code,
@@ -43018,12 +43020,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           task_id = _ref19.task_id,
           action_code = _ref19.action_code,
           is_task_action = _ref19.is_task_action;
-      console.log('Updating task action!');
-      console.log(user_id);
-      console.log(productToUpdate);
-      console.log(task_id);
-      console.log(action_code);
-      console.log(is_task_action);
       _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].update({
         where: function where(action) {
           return action.task_id == task_id && action.product_id == productToUpdate;
@@ -45194,7 +45190,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           product.ndsTotal;
           product.commentsScoped = []; // START Find current action for the product
 
-          if (actionScope == 'user') product.currentAction = product.actions.find(function (action) {
+          if (currentTask.type == 'feedback') product.currentAction = product.actions.find(function (action) {
             return action.user_id == userId && action.task_id == currentTask.id;
           });else product.currentAction = product.actions.find(function (action) {
             return action.task_id == currentTask.id;
@@ -45293,12 +45289,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           // START Group actions by action type
 
           product.actions.forEach(function (action) {
-            if (action.action == 2) {
-              product.focus.push(action);
-            } else if (action.action == 1) {
-              product.ins.push(action);
-            } else if (action.action == 0) {
-              product.outs.push(action);
+            if (currentTask.type == 'feedback') {
+              if (action.task_id == currentTask.id) {
+                if (action.action == 2) {
+                  product.focus.push(action);
+                } else if (action.action == 1) {
+                  product.ins.push(action);
+                } else if (action.action == 0) {
+                  product.outs.push(action);
+                }
+              }
+            } else {
+              currentTask.parentTasks.forEach(function (parentTask) {
+                if (action.task_id == parentTask.id) {
+                  if (action.action == 2) {
+                    product.focus.push(action);
+                  } else if (action.action == 1) {
+                    product.ins.push(action);
+                  } else if (action.action == 0) {
+                    product.outs.push(action);
+                  }
+                }
+              });
             } // START Subtract from NDs
 
 

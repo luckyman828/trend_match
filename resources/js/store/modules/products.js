@@ -46,7 +46,7 @@ export default {
                     product.commentsScoped = []
 
                     // START Find current action for the product
-                    if (actionScope == 'user')
+                    if (currentTask.type == 'feedback')
                         product.currentAction = product.actions.find(
                             action => action.user_id == userId && action.task_id == currentTask.id
                         )
@@ -147,12 +147,28 @@ export default {
 
                     // START Group actions by action type
                     product.actions.forEach(action => {
-                        if (action.action == 2) {
-                            product.focus.push(action)
-                        } else if (action.action == 1) {
-                            product.ins.push(action)
-                        } else if (action.action == 0) {
-                            product.outs.push(action)
+                        if (currentTask.type == 'feedback') {
+                            if (action.task_id == currentTask.id) {
+                                if (action.action == 2) {
+                                    product.focus.push(action)
+                                } else if (action.action == 1) {
+                                    product.ins.push(action)
+                                } else if (action.action == 0) {
+                                    product.outs.push(action)
+                                }
+                            }
+                        } else {
+                            currentTask.parentTasks.forEach(parentTask => {
+                                if (action.task_id == parentTask.id) {
+                                    if (action.action == 2) {
+                                        product.focus.push(action)
+                                    } else if (action.action == 1) {
+                                        product.ins.push(action)
+                                    } else if (action.action == 0) {
+                                        product.outs.push(action)
+                                    }
+                                }
+                            })
                         }
                         // START Subtract from NDs
                         if (currentTask.type == 'feedback') {

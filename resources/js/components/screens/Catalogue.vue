@@ -381,7 +381,6 @@ export default{
             const user_id = this.authUser.id
             const actionScope = this.actionScope
             const actionType = method
-            console.log(actionType)
             let productsToUpdate = []
             let productsToCreate = []
 
@@ -400,14 +399,12 @@ export default{
                 else productsToCreate.push(product)
 
             })
-            console.log('Update: ' + productsToUpdate.length)
-            console.log('Create: ' + productsToCreate.length)
 
             // Submit the selection
             if (productsToUpdate.length > 0) {
                 if (this.currentTask.type == 'feedback') {
-                    this.updateManyActions({productIds: productsToUpdate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: false})
-                } else this.updateManyTaskActions({productIds: productsToUpdate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: true})
+                    this.updateManyActions({productIds: productsToUpdate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: null})
+                } else this.updateManyTaskActions({productIds: productsToUpdate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: null})
             }
             if (productsToCreate.length > 0) {
                 if (this.currentTask.type == 'feedback') {
