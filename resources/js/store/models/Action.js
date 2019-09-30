@@ -10,7 +10,7 @@ export default class Action extends Model {
     // List of all fields (schema) of the product model. `this.attr` is used
     // for the generic field type. The argument is the default value.
 
-    static primaryKey = ['user_id', 'product_id']
+    static primaryKey = ['user_id', 'product_id', 'task_id']
 
     static fields() {
         const data = {

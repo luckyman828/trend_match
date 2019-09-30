@@ -387,20 +387,20 @@ export default{
             this.selectedProducts.forEach(product => {
                 const thisProduct = this.products.find(x => x.id == product)
 
-                if (this.currentTask.type == 'feedback') {
-                    const userAction = thisProduct.actions.find(x => x.user_id == this.authUser.id && x.task_id == this.currentTask.id)
-                    if (userAction) {
-                        // If product has a final action
-                        if (userAction.action != actionType) {
-                            // If the products final action isnt the same as the one we are trying to set
-                            productsToUpdate.push(product)
-                        }
-                    } 
-                    // If product does not have a final action
-                    else productsToCreate.push(product)
-                }
+                if (thisProduct.currentAction != null) {
+                    console.log('There is an action!')
+                    // If product has a final action
+                    if (thisProduct.currentAction.action != actionType) {
+                        // If the products final action isnt the same as the one we are trying to set
+                        productsToUpdate.push(product)
+                    }
+                } 
+                // If product does not have a final action
+                else productsToCreate.push(product)
 
             })
+            console.log('Update: ' + productsToUpdate.length)
+            console.log('Create: ' + productsToCreate.length)
 
             // Submit the selection
             if (productsToUpdate.length > 0) {
@@ -410,8 +410,8 @@ export default{
             }
             if (productsToCreate.length > 0) {
                 if (this.currentTask.type == 'feedback') {
-                    this.createManyActions({productIds: productsToUpdate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: false})
-                } else this.createManyActions({productIds: productsToUpdate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: true})
+                    this.createManyActions({productIds: productsToCreate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: false})
+                } else this.createManyActions({productIds: productsToCreate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: true})
             }
 
             // Reset the selection

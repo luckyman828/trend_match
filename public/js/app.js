@@ -11032,21 +11032,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           return x.id == product;
         });
 
-        if (_this4.currentTask.type == 'feedback') {
-          var userAction = thisProduct.actions.find(function (x) {
-            return x.user_id == _this4.authUser.id && x.task_id == _this4.currentTask.id;
-          });
+        if (thisProduct.currentAction != null) {
+          console.log('There is an action!'); // If product has a final action
 
-          if (userAction) {
-            // If product has a final action
-            if (userAction.action != actionType) {
-              // If the products final action isnt the same as the one we are trying to set
-              productsToUpdate.push(product);
-            }
-          } // If product does not have a final action
-          else productsToCreate.push(product);
-        }
-      }); // Submit the selection
+          if (thisProduct.currentAction.action != actionType) {
+            // If the products final action isnt the same as the one we are trying to set
+            productsToUpdate.push(product);
+          }
+        } // If product does not have a final action
+        else productsToCreate.push(product);
+      });
+      console.log('Update: ' + productsToUpdate.length);
+      console.log('Create: ' + productsToCreate.length); // Submit the selection
 
       if (productsToUpdate.length > 0) {
         if (this.currentTask.type == 'feedback') {
@@ -11069,14 +11066,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (productsToCreate.length > 0) {
         if (this.currentTask.type == 'feedback') {
           this.createManyActions({
-            productIds: productsToUpdate,
+            productIds: productsToCreate,
             task_id: this.currentTask.id,
             user_id: user_id,
             action_code: actionType,
             is_task_action: false
           });
         } else this.createManyActions({
-          productIds: productsToUpdate,
+          productIds: productsToCreate,
           task_id: this.currentTask.id,
           user_id: user_id,
           action_code: actionType,
@@ -40670,7 +40667,7 @@ function (_Model) {
 }(_vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__["Model"]);
 
 Action.entity = 'actions';
-Action.primaryKey = ['user_id', 'product_id'];
+Action.primaryKey = ['user_id', 'product_id', 'task_id'];
 
 
 /***/ }),
@@ -42736,17 +42733,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _updateTaskAction = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref6, _ref7) {
-        var commit, task_id, productToUpdate, action_code, is_task_action;
+        var commit, task_id, user_id, productToUpdate, action_code, is_task_action;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
                 commit = _ref6.commit;
-                task_id = _ref7.task_id, productToUpdate = _ref7.productToUpdate, action_code = _ref7.action_code, is_task_action = _ref7.is_task_action;
+                task_id = _ref7.task_id, user_id = _ref7.user_id, productToUpdate = _ref7.productToUpdate, action_code = _ref7.action_code, is_task_action = _ref7.is_task_action;
                 commit('setTaskAction', {
                   user_id: user_id,
                   task_id: task_id,
-                  product_id: product_id,
+                  productToUpdate: productToUpdate,
                   action_code: action_code,
                   is_task_action: is_task_action
                 });
@@ -43028,12 +43025,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           task_id = _ref19.task_id,
           action_code = _ref19.action_code,
           is_task_action = _ref19.is_task_action;
+      console.log('Updating task action!');
+      console.log(user_id);
+      console.log(productToUpdate);
+      console.log(task_id);
+      console.log(action_code);
+      console.log(is_task_action);
       _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].update({
-        where: {
-          action: action_code,
-          product_id: productToUpdate,
-          task_id: task_id,
-          is_task_action: is_task_action
+        where: function where(action) {
+          return action.task_id == task_id && action.product_id == productToUpdate;
         },
         data: {
           user_id: user_id,
@@ -43042,7 +43042,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           task_id: task_id,
           is_task_action: is_task_action
         }
-      });
+      }); // Action.update({
+      //     where: {
+      //         product_id: productToUpdate,
+      //         task_id: task_id,
+      //     },
+      //     data: {
+      //         user_id: user_id,
+      //         action: action_code,
+      //         product_id: productToUpdate,
+      //         task_id: task_id,
+      //         is_task_action: is_task_action,
+      //     },
+      // })
     },
     deleteAction: function deleteAction(state, _ref20) {
       var productToUpdate = _ref20.productToUpdate,

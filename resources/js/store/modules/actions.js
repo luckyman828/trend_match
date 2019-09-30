@@ -79,8 +79,8 @@ export default {
                     console.log(err)
                 })
         },
-        async updateTaskAction({ commit }, { task_id, productToUpdate, action_code, is_task_action }) {
-            commit('setTaskAction', { user_id, task_id, product_id, action_code, is_task_action })
+        async updateTaskAction({ commit }, { task_id, user_id, productToUpdate, action_code, is_task_action }) {
+            commit('setTaskAction', { user_id, task_id, productToUpdate, action_code, is_task_action })
             console.log(' Updating action: ' + user_id + ', ' + productToUpdate + ', ' + action_code)
 
             await axios
@@ -213,12 +213,15 @@ export default {
             })
         },
         setTaskAction: (state, { user_id, productToUpdate, task_id, action_code, is_task_action }) => {
+            console.log('Updating task action!')
+            console.log(user_id)
+            console.log(productToUpdate)
+            console.log(task_id)
+            console.log(action_code)
+            console.log(is_task_action)
             Action.update({
-                where: {
-                    action: action_code,
-                    product_id: productToUpdate,
-                    task_id: task_id,
-                    is_task_action: is_task_action,
+                where: action => {
+                    return action.task_id == task_id && action.product_id == productToUpdate
                 },
                 data: {
                     user_id: user_id,
@@ -228,6 +231,19 @@ export default {
                     is_task_action: is_task_action,
                 },
             })
+            // Action.update({
+            //     where: {
+            //         product_id: productToUpdate,
+            //         task_id: task_id,
+            //     },
+            //     data: {
+            //         user_id: user_id,
+            //         action: action_code,
+            //         product_id: productToUpdate,
+            //         task_id: task_id,
+            //         is_task_action: is_task_action,
+            //     },
+            // })
         },
         deleteAction: (state, { productToUpdate, task_id, user_id }) => {
             console.log('deleting action')
