@@ -9491,12 +9491,12 @@ __webpack_require__.r(__webpack_exports__);
   props: ['selected', 'totalCount'],
   data: function data() {
     return {
-      method: ''
+      method: null
     };
   },
   methods: {
     setMethod: function setMethod(method) {
-      if (this.method == method) this.method = '';else this.method = method;
+      if (this.method === method) this.method = null;else this.method = method;
     },
     onSubmitAction: function onSubmitAction() {
       this.$emit('onSelectedAction', this.method);
@@ -11024,7 +11024,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var phase = this.collection.phase;
       var user_id = this.authUser.id;
       var actionScope = this.actionScope;
-      var actionType = method == 'in' ? 1 : 0;
+      var actionType = method;
+      console.log(actionType);
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
@@ -12205,7 +12206,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "span[data-v-9a749a7c] {\n  display: inline-block;\n  font-size: 14px;\n  font-weight: 700;\n}\nspan[data-v-9a749a7c]:first-child {\n  margin-right: 12px;\n}\n.selected-controller[data-v-9a749a7c] {\n  position: fixed;\n  bottom: 20px;\n  left: calc(50% + 100px);\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);\n  -webkit-transform: translateX(-50%) translateY(calc(100% + 20px));\n          transform: translateX(-50%) translateY(calc(100% + 20px));\n  margin: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  background: #f3f3f3;\n  padding: 28px 32px 20px;\n}\n.selected-controller.active[data-v-9a749a7c] {\n  -webkit-transform: translateX(-50%) translateY(0);\n          transform: translateX(-50%) translateY(0);\n}\n.clear-selection[data-v-9a749a7c] {\n  position: absolute;\n  z-index: 1;\n  top: 8px;\n  color: #ff6565;\n  cursor: pointer;\n  font-size: 12px;\n}\n.clear-selection[data-v-9a749a7c]:hover {\n  opacity: 0.8;\n}\n.button[data-v-9a749a7c] {\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  padding-right: 22px;\n}\n.button.submit[data-v-9a749a7c] {\n  width: 155px;\n  background: #5ee2a0;\n  color: white;\n  border-color: #5ee2a0;\n  padding: 0;\n}\n.button.submit.disabled[data-v-9a749a7c] {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.button i[data-v-9a749a7c] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-9a749a7c] {\n  font-weight: 900;\n}", ""]);
+exports.push([module.i, ".selected-controller[data-v-9a749a7c] {\n  position: fixed;\n  bottom: 20px;\n  left: calc(50% + 100px);\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);\n  -webkit-transform: translateX(-50%) translateY(calc(100% + 20px));\n          transform: translateX(-50%) translateY(calc(100% + 20px));\n  margin: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  background: #f3f3f3;\n  padding: 28px 32px 20px;\n}\n.selected-controller.active[data-v-9a749a7c] {\n  -webkit-transform: translateX(-50%) translateY(0);\n          transform: translateX(-50%) translateY(0);\n}\n.selected-controller .inner > *[data-v-9a749a7c]:not(:last-child) {\n  margin-right: 8px;\n}\n.selected-controller .inner > *[data-v-9a749a7c]:first-child {\n  display: inline-block;\n  font-size: 14px;\n  font-weight: 700;\n  margin-right: 12px;\n}\n.clear-selection[data-v-9a749a7c] {\n  position: absolute;\n  z-index: 1;\n  top: 8px;\n  color: #ff6565;\n  cursor: pointer;\n  font-size: 12px;\n}\n.clear-selection[data-v-9a749a7c]:hover {\n  opacity: 0.8;\n}", ""]);
 
 // exports
 
@@ -18851,29 +18852,27 @@ var render = function() {
                     _vm.actionsAvailable
                       ? [
                           _c("td", { staticClass: "action" }, [
-                            _vm.userPermissionLevel == 2
-                              ? _c(
-                                  "span",
-                                  {
-                                    staticClass:
-                                      "square light-2 true-square clickable focus-action",
-                                    class: [
-                                      product.currentAction != null
-                                        ? product.currentAction.action == 2
-                                          ? "active light"
-                                          : "ghost primary-hover"
-                                        : "ghost primary-hover",
-                                      { disabled: _vm.authUser.role_id == 3 }
-                                    ],
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.toggleInOut(product, 2)
-                                      }
-                                    }
-                                  },
-                                  [_c("i", { staticClass: "far fa-star" })]
-                                )
-                              : _vm._e(),
+                            _c(
+                              "span",
+                              {
+                                staticClass:
+                                  "square light-2 true-square clickable focus-action",
+                                class: [
+                                  product.currentAction != null
+                                    ? product.currentAction.action == 2
+                                      ? "active light"
+                                      : "ghost primary-hover"
+                                    : "ghost primary-hover",
+                                  { disabled: _vm.authUser.role_id == 3 }
+                                ],
+                                on: {
+                                  click: function($event) {
+                                    return _vm.toggleInOut(product, 2)
+                                  }
+                                }
+                              },
+                              [_c("i", { staticClass: "far fa-star" })]
+                            ),
                             _vm._v(" "),
                             _c(
                               "span",
@@ -19189,14 +19188,11 @@ var render = function() {
         _c(
           "span",
           {
-            staticClass: "button green-hover",
-            class: [
-              { active: _vm.method == "in" },
-              { green: _vm.method == "in" }
-            ],
+            staticClass: "button icon-right green-hover",
+            class: [{ green: _vm.method === 1 }, { ghost: _vm.method !== 1 }],
             on: {
               click: function($event) {
-                return _vm.setMethod("in")
+                return _vm.setMethod(1)
               }
             }
           },
@@ -19206,14 +19202,11 @@ var render = function() {
         _c(
           "span",
           {
-            staticClass: "button red-hover",
-            class: [
-              { active: _vm.method == "out" },
-              { red: _vm.method == "out" }
-            ],
+            staticClass: "button icon-right red-hover",
+            class: [{ red: _vm.method === 0 }, { ghost: _vm.method !== 0 }],
             on: {
               click: function($event) {
-                return _vm.setMethod("out")
+                return _vm.setMethod(0)
               }
             }
           },
@@ -19223,8 +19216,8 @@ var render = function() {
         _c(
           "span",
           {
-            staticClass: "button green submit",
-            class: { disabled: _vm.method == "" },
+            staticClass: "button primary wide submit",
+            class: { disabled: _vm.method === null },
             on: {
               click: function($event) {
                 return _vm.onSubmitAction()

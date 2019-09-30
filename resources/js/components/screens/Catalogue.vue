@@ -380,7 +380,8 @@ export default{
             const phase = this.collection.phase
             const user_id = this.authUser.id
             const actionScope = this.actionScope
-            const actionType = (method == 'in') ? 1 : 0
+            const actionType = method
+            console.log(actionType)
             let productsToUpdate = []
             let productsToCreate = []
 

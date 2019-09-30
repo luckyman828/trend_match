@@ -2,9 +2,9 @@
     <div class="card selected-controller" :class="{active: selected.length}">
         <div class="inner">
             <span>{{selected.length}} of {{totalCount}} selected</span>
-            <span :class="[{active: method == 'in'}, {green: method == 'in'}]" class="button green-hover" @click="setMethod('in')">In <i class="far fa-heart"></i></span>
-            <span :class="[{active: method == 'out'}, {red: method == 'out'}]" class="button red-hover" @click="setMethod('out')">Out <i class="far fa-times-circle"></i></span>
-            <span :class="{disabled: method == ''}" class="button green submit" @click="onSubmitAction()">Choose action</span>
+            <span :class="[{green: method === 1}, {ghost: method !== 1}]" class="button icon-right green-hover" @click="setMethod(1)">In <i class="far fa-heart"></i></span>
+            <span :class="[{red: method === 0}, {ghost: method !== 0}]" class="button icon-right red-hover" @click="setMethod(0)">Out <i class="far fa-times-circle"></i></span>
+            <span :class="{disabled: method === null}" class="button primary wide submit" @click="onSubmitAction()">Choose action</span>
         </div>
         <span class="clear-selection" @click="clearSelection">Clear selection</span>
     </div>
@@ -18,12 +18,12 @@ export default {
         'totalCount'
     ],
     data: function() { return {
-        method: ''
+        method: null
     }},
     methods: {
         setMethod(method) {
-            if (this.method == method)
-                this.method = ''
+            if (this.method === method)
+                this.method = null
                 else this.method = method
         },
         onSubmitAction() {
@@ -40,14 +40,6 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-    span {
-        display: inline-block;
-        font-size: 14px;
-        font-weight: 700;
-        &:first-child {
-            margin-right: 12px;
-        }
-    }
     .selected-controller {
         position: fixed;
         bottom: 20px;
@@ -61,6 +53,17 @@ export default {
         &.active {
             transform: translateX(-50%) translateY(0);
         }
+        .inner > * {
+            &:not(:last-child) {
+                margin-right: 8px;
+            }
+            &:first-child {
+                display: inline-block;
+                font-size: 14px;
+                font-weight: 700;
+                margin-right: 12px;
+            }
+        }
     }
     .clear-selection {
         position: absolute;
@@ -73,42 +76,42 @@ export default {
             opacity: .8;
         }
     }
-    .button {
-        width: 86px;
-        height: 32px;
-        line-height: 32px;
-        font-size: 12px;
-        border-radius: 4px;
-        padding: 0;
-        line-height: 28px;
-        position: relative;
-        font-weight: 700;
-        padding-right: 22px;
-        // color: $dark;
-        // border-color: white;
-        // background: white;
-        &.submit {
-            width: 155px;
-            background: $green;
-            color: white;
-            border-color: $green;
-            padding: 0;
-            &.disabled {
-                pointer-events: none;
-                opacity: .5;
-            }
-        }
-        i {
-            font-size: 16px;
-            position: absolute;
-            right: 10px;
-            top: 5px;
-            margin: 0;
-        }
-        &.active {
-            i {
-                font-weight: 900;
-            }
-        }
-    }
+    // .button {
+    //     width: 86px;
+    //     height: 32px;
+    //     line-height: 32px;
+    //     font-size: 12px;
+    //     border-radius: 4px;
+    //     padding: 0;
+    //     line-height: 28px;
+    //     position: relative;
+    //     font-weight: 700;
+    //     padding-right: 22px;
+    //     // color: $dark;
+    //     // border-color: white;
+    //     // background: white;
+    //     &.submit {
+    //         width: 155px;
+    //         background: $green;
+    //         color: white;
+    //         border-color: $green;
+    //         padding: 0;
+    //         &.disabled {
+    //             pointer-events: none;
+    //             opacity: .5;
+    //         }
+    //     }
+    //     i {
+    //         font-size: 16px;
+    //         position: absolute;
+    //         right: 10px;
+    //         top: 5px;
+    //         margin: 0;
+    //     }
+    //     &.active {
+    //         i {
+    //             font-weight: 900;
+    //         }
+    //     }
+    // }
 </style>
