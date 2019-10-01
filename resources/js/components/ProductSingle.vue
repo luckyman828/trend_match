@@ -329,6 +329,7 @@ export default {
                 .comments {
                     display: flex;
                     flex-direction: column;
+                    overflow: hidden;
                 }
             }
         }  

@@ -8560,6 +8560,36 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -8577,15 +8607,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       newComment: {
         comment: '',
         important: false,
-        is_request: false
+        id: null
       },
       newRequest: {
         comment: '',
-        is_request: true
+        important: false,
+        id: null
       },
       user_id: this.authUser.id,
-      finalOnly: true,
-      commentFilter: '',
       commentScope: 'comments',
       writeScope: 'comment',
       writeActive: false
@@ -8593,35 +8622,46 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['submittingComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']), {
     submitDisabled: function submitDisabled() {
-      if (this.newComment.comment.length < 1 || this.submittingComment) return true;else return false;
+      if (this.writeScope == 'comment') {
+        if (this.newComment.comment.length < 1 || this.submittingComment) return true;else return false;
+      } else {
+        if (this.newRequest.comment.length < 1 || this.submittingComment) return true;else return false;
+      }
+    },
+    taskRequest: function taskRequest() {
+      var _this = this;
+
+      var taskRequest = this.requests.find(function (x) {
+        return x.task_id == _this.currentTask.id;
+      });
+
+      if (taskRequest) {
+        return taskRequest;
+      }
     },
     commentToPost: function commentToPost() {
-      return {
-        user_id: this.authUser.id,
-        product_id: this.product.id,
-        team_id: this.currentTeamId,
-        comment: this.newComment.comment,
-        important: this.newComment.important,
-        is_request: this.newComment.is_request
-      };
-    },
-    RequestToPost: function RequestToPost() {
-      return {
-        user_id: this.authUser.id,
-        product_id: this.product.id,
-        team_id: this.currentTeamId,
-        comment: this.newRequest.comment,
-        is_request: this.newRequest.is_request
-      };
-    },
-    placeholderText: function placeholderText() {
-      var filter = this.commentFilter;
-      if (this.userPermissionLevel >= 2) return 'Write a new remark..';else return 'Write a comment..';
-    },
-    submitText: function submitText() {
-      var filter = this.commentFilter; // if (filter == 'remarks') return 'Submit remark'
-
-      if (this.userPermissionLevel >= 2) return 'Submit remark';else return 'Submit comment';
+      if (this.writeScope == 'comment') {
+        return {
+          id: this.newComment.id,
+          user_id: this.authUser.id,
+          product_id: this.product.id,
+          task_id: this.currentTask.id,
+          team_id: this.currentTeamId,
+          comment: this.newComment.comment,
+          important: this.newComment.important
+        };
+      } else {
+        return {
+          id: this.newRequest.id,
+          user_id: this.authUser.id,
+          product_id: this.product.id,
+          task_id: this.currentTask.id,
+          team_id: this.currentTeamId,
+          comment: this.newRequest.comment,
+          important: this.newRequest.important,
+          is_request: true
+        };
+      }
     },
     commentsGroupedBySender: function commentsGroupedBySender() {
       var comments = this.comments;
@@ -8656,7 +8696,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 if (e) e.preventDefault();
 
                 if (this.submitDisabled) {
-                  _context.next = 9;
+                  _context.next = 6;
                   break;
                 }
 
@@ -8667,14 +8707,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
               case 4:
                 // Reset comment
-                this.newComment.comment = '';
-                this.newComment.important = false;
-                this.newComment.team_final = false;
-                this.newComment.phase_final = false; // Reset textarea height
+                if (this.writeScope == 'comment') {
+                  this.newComment.comment = '';
+                  this.newComment.important = false; // Reset textarea height
 
-                this.$refs.commentField.style.height = '';
+                  this.$refs.commentField.style.height = '';
+                } else {
+                  this.newRequest.comment = this.taskRequest ? this.taskRequest.comment : '';
+                  this.newRequest.important = false; // Reset textarea height
 
-              case 9:
+                  this.$refs.requestField.style.height = '';
+                }
+
+                this.writeActive = false;
+
+              case 6:
               case "end":
                 return _context.stop();
             }
@@ -8688,8 +8735,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       return onSubmitComment;
     }(),
-    resizeTextarea: function resizeTextarea() {
-      var commentField = this.$refs.commentField;
+    resizeTextarea: function resizeTextarea(event) {
+      var commentField = event.target;
       commentField.style.height = '';
       commentField.style.height = commentField.scrollHeight + "px";
     },
@@ -8701,7 +8748,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.writeScope = scope;
     }
   }),
-  mounted: function mounted() {},
+  mounted: function mounted() {
+    if (this.taskRequest) this.newRequest.comment = this.taskRequest.comment;
+  },
   updated: function updated() {},
   created: function created() {},
   destroyed: function destroyed() {}
@@ -11885,7 +11934,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".overlay[data-v-019a7388] {\n  z-index: 10;\n  position: fixed;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  background: rgba(27, 28, 29, 0.5);\n}\n.product-single.visible > .card[data-v-019a7388] {\n  width: 100%;\n  right: 0;\n}\n.product-single.visible .overlay[data-v-019a7388] {\n  display: block;\n}\n.product-single > .card[data-v-019a7388] {\n  right: -100%;\n  margin: 0;\n  max-width: 60vw;\n  z-index: 11;\n  top: 0;\n  position: fixed;\n  height: 100vh;\n  overflow: hidden;\n  width: 100%;\n  -webkit-transition-timing-function: ease-out;\n          transition-timing-function: ease-out;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  background: #f9f9f9;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.product-single > .card .inner .comments[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #dfdfdf;\n  width: 100%;\n}\n.product-single .description .stat[data-v-019a7388] > :first-child {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\nh3[data-v-019a7388] {\n  font-size: 16px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #a8a8a8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #dfdfdf;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.controls-wrapper > *[data-v-019a7388] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.controls-wrapper .close[data-v-019a7388] {\n  margin-right: 24px;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  border-bottom: solid 2px #dfdfdf;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #f9f9f9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1b1c1d;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #f3f3f3;\n  color: #1b1c1d;\n  border-color: #3b86ff;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tab-body[data-v-019a7388] {\n  background: #f3f3f3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #dfdfdf;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3b86ff;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #f3f3f3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3c3b54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}\n.details[data-v-019a7388] {\n  padding-right: 1px;\n}", ""]);
+exports.push([module.i, ".overlay[data-v-019a7388] {\n  z-index: 10;\n  position: fixed;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  background: rgba(27, 28, 29, 0.5);\n}\n.product-single.visible > .card[data-v-019a7388] {\n  width: 100%;\n  right: 0;\n}\n.product-single.visible .overlay[data-v-019a7388] {\n  display: block;\n}\n.product-single > .card[data-v-019a7388] {\n  right: -100%;\n  margin: 0;\n  max-width: 60vw;\n  z-index: 11;\n  top: 0;\n  position: fixed;\n  height: 100vh;\n  overflow: hidden;\n  width: 100%;\n  -webkit-transition-timing-function: ease-out;\n          transition-timing-function: ease-out;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  background: #f9f9f9;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.product-single > .card .inner .comments[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  overflow: hidden;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #dfdfdf;\n  width: 100%;\n}\n.product-single .description .stat[data-v-019a7388] > :first-child {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\nh3[data-v-019a7388] {\n  font-size: 16px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #a8a8a8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #dfdfdf;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.controls-wrapper > *[data-v-019a7388] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.controls-wrapper .close[data-v-019a7388] {\n  margin-right: 24px;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  border-bottom: solid 2px #dfdfdf;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #f9f9f9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1b1c1d;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #f3f3f3;\n  color: #1b1c1d;\n  border-color: #3b86ff;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tab-body[data-v-019a7388] {\n  background: #f3f3f3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #dfdfdf;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3b86ff;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #f3f3f3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3c3b54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}\n.details[data-v-019a7388] {\n  padding-right: 1px;\n}", ""]);
 
 // exports
 
@@ -11904,7 +11953,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.tab-headers .tab[data-v-6d61fa50] {\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.sender-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  margin-bottom: 20px;\n}\n.sender-wrapper.own[data-v-6d61fa50] {\n  -webkit-box-align: end;\n          align-items: flex-end;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #f3f3f3;\n  border-radius: 0 8px 0 0;\n  padding: 16px 4px 16px 0;\n  height: 100%;\n}\n.comments-wrapper .inner[data-v-6d61fa50] {\n  padding: 0 12px;\n  height: 100%;\n  overflow-y: auto;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comments-wrapper .sender[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\nform[data-v-6d61fa50] {\n  margin-bottom: 42px;\n  padding: 8px 0 24px;\n  background: white;\n  box-shadow: 0 -3px 6px rgba(27, 28, 29, 0.1);\n}\n@media screen and (max-width: 1480px) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-webkit-min-device-pixel-ratio: 1.25), only screen and (min-resolution: 120dpi) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\nform .controls[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 8px;\n}\nform .controls .set-scope span[data-v-6d61fa50] {\n  font-size: 14px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\nform .controls .set-scope span[data-v-6d61fa50]:not(:last-child) {\n  margin-right: -8px;\n}\nform .controls .set-scope span.active[data-v-6d61fa50] {\n  color: #1b1c1d;\n  cursor: auto;\n}\nform .form-input[data-v-6d61fa50] {\n  padding: 0 12px;\n}\nform .form-input .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #dfdfdf;\n  background: #dfdfdf;\n  box-sizing: border-box;\n  padding: 8px 12px 4px 12px;\n  font-size: 14px;\n  font-weight: 500;\n  color: #a8a8a8;\n  max-height: 200px;\n  overflow: auto;\n  cursor: pointer;\n}\nform .form-input textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  color: #535353;\n  background: transparent;\n  cursor: pointer;\n}\nform .form-input textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform .form-input textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::placeholder {\n  color: #a8a8a8;\n}\nform .form-input.active .input-wrapper[data-v-6d61fa50] {\n  border: solid 2px #dfdfdf;\n  background: white;\n  cursor: auto;\n}\nform .form-input.active textarea[data-v-6d61fa50] {\n  cursor: auto;\n}\nform .form-input .flex-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: 8px;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #f3f3f3;\n  color: #a8a8a8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3b86ff;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}", ""]);
+exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.hotkey-tip[data-v-6d61fa50] {\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.hotkey-tip .square[data-v-6d61fa50] {\n  border-width: 1px;\n  height: auto;\n  padding: 2px 4px;\n  min-width: 0;\n  font-weight: 400;\n  border-radius: 2px;\n  font-size: 9px;\n  margin-right: 2px;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.tab-headers .tab[data-v-6d61fa50] {\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.sender-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  margin-bottom: 20px;\n}\n.sender-wrapper.own[data-v-6d61fa50] {\n  -webkit-box-align: end;\n          align-items: flex-end;\n}\n.break-line[data-v-6d61fa50] {\n  color: #a8a8a8;\n  font-size: 12px;\n  font-weight: 500;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-top: 20px;\n  margin-bottom: 12px;\n}\n.break-line[data-v-6d61fa50]::after, .break-line[data-v-6d61fa50]::before {\n  content: \"\";\n  display: block;\n  height: 2px;\n  background: #a8a8a8;\n  -webkit-box-flex: 1;\n          flex: 1;\n}\n.break-line[data-v-6d61fa50]::after {\n  margin-left: 12px;\n}\n.break-line[data-v-6d61fa50]::before {\n  margin-right: 12px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #f3f3f3;\n  border-radius: 0 8px 0 0;\n  padding: 16px 4px 16px 0;\n  height: 100%;\n}\n.comments-wrapper .inner[data-v-6d61fa50] {\n  padding: 0 12px;\n  height: 100%;\n  overflow-y: auto;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comments-wrapper .sender[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\nform[data-v-6d61fa50] {\n  margin-bottom: 42px;\n  padding: 8px 0 24px;\n  background: white;\n  box-shadow: 0 -3px 6px rgba(27, 28, 29, 0.1);\n}\n@media screen and (max-width: 1480px) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-webkit-min-device-pixel-ratio: 1.25), only screen and (min-resolution: 120dpi) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\nform .controls[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 8px;\n}\nform .controls .set-scope span[data-v-6d61fa50] {\n  font-size: 14px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\nform .controls .set-scope span[data-v-6d61fa50]:not(:last-child) {\n  margin-right: -8px;\n}\nform .controls .set-scope span.active[data-v-6d61fa50] {\n  color: #1b1c1d;\n  cursor: auto;\n}\nform .form-input[data-v-6d61fa50] {\n  padding: 0 12px;\n}\nform .form-input.hidden[data-v-6d61fa50] {\n  display: none;\n}\nform .form-input .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #dfdfdf;\n  background: #dfdfdf;\n  box-sizing: border-box;\n  padding: 8px 12px 0px 12px;\n  font-size: 14px;\n  color: #a8a8a8;\n  max-height: 200px;\n  overflow: auto;\n  cursor: pointer;\n  position: relative;\n}\nform .form-input .input-wrapper .edit-request[data-v-6d61fa50] {\n  position: absolute;\n  right: 12px;\n  font-size: 10px;\n  color: #1b1c1d;\n  font-weight: 500;\n  top: 50%;\n  -webkit-transform: translateY(-50%);\n          transform: translateY(-50%);\n}\nform .form-input .input-wrapper .edit-request .circle[data-v-6d61fa50] {\n  height: 24px;\n  width: 24px;\n  margin-left: 4px;\n}\nform .form-input textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  color: #535353;\n  background: transparent;\n  cursor: pointer;\n}\nform .form-input textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform .form-input textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::placeholder {\n  color: #a8a8a8;\n}\nform .form-input.active .input-wrapper[data-v-6d61fa50] {\n  border: solid 2px #dfdfdf;\n  background: white;\n  cursor: auto;\n}\nform .form-input.active textarea[data-v-6d61fa50] {\n  cursor: auto;\n}\nform .form-input .flex-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: 8px;\n  -webkit-box-align: center;\n          align-items: center;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #f3f3f3;\n  color: #a8a8a8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3b86ff;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}", ""]);
 
 // exports
 
@@ -17512,7 +17561,7 @@ var render = function() {
               staticClass: "circle small",
               class: _vm.commentScope == "comments" ? "white" : "light"
             },
-            [_vm._v(_vm._s(_vm.product.requests.length))]
+            [_vm._v(_vm._s(_vm.comments.length))]
           )
         ]
       ),
@@ -17536,7 +17585,7 @@ var render = function() {
               staticClass: "circle small",
               class: _vm.commentScope == "requests" ? "white" : "light"
             },
-            [_vm._v(_vm._s(_vm.product.requests.length))]
+            [_vm._v(_vm._s(_vm.requests.length))]
           )
         ]
       )
@@ -17547,25 +17596,6 @@ var render = function() {
         "div",
         { staticClass: "inner" },
         [
-          _c(
-            "div",
-            { staticClass: "own-request" },
-            [
-              _vm.requests.find(function(x) {
-                return x.task_id == _vm.currentTask.id
-              })
-                ? _c("request", {
-                    attrs: {
-                      request: _vm.requests.find(function(x) {
-                        return x.task_id == _vm.currentTask.id
-                      })
-                    }
-                  })
-                : _vm._e()
-            ],
-            1
-          ),
-          _vm._v(" "),
           _vm.commentScope == "comments"
             ? _vm._l(_vm.commentsGroupedBySender, function(sender, index) {
                 return _c(
@@ -17602,22 +17632,83 @@ var render = function() {
           _vm._v(" "),
           _vm.commentScope == "requests"
             ? [
-                _c(
-                  "div",
-                  { staticClass: "requests-wrapper" },
-                  _vm._l(
-                    _vm.requests.filter(function(x) {
-                      return x.task_id != _vm.currentTask.id
-                    }),
-                    function(request) {
-                      return _c("request", {
-                        key: request.id,
-                        attrs: { request: request }
+                _vm.taskRequest
+                  ? _c(
+                      "div",
+                      { staticClass: "task-request" },
+                      [_c("request", { attrs: { request: _vm.taskRequest } })],
+                      1
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.currentTask.parentTasks.find(function(x) {
+                  return x.type == "approval"
+                })
+                  ? [
+                      _c("div", { staticClass: "break-line" }, [
+                        _vm._v(
+                          "Waiting for response from " +
+                            _vm._s(
+                              _vm.currentTask.parentTasks.find(function(x) {
+                                return x.type == "approval"
+                              }).title
+                            )
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _vm._l(_vm.comments, function(comment) {
+                        return _c(
+                          "div",
+                          {
+                            key: comment.id,
+                            staticClass: "sender-wrapper",
+                            class: { own: comment.user.id == _vm.authUser.id }
+                          },
+                          [
+                            _c("comment", { attrs: { comment: comment } }),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "sender" }, [
+                              _vm._v(
+                                _vm._s(comment.task.title) +
+                                  " | " +
+                                  _vm._s(
+                                    comment.user.id == _vm.authUser.id
+                                      ? "You"
+                                      : comment.user.name
+                                  )
+                              )
+                            ])
+                          ],
+                          1
+                        )
                       })
-                    }
-                  ),
-                  1
-                )
+                    ]
+                  : [
+                      _vm.requests.find(function(x) {
+                        return x.task_id != _vm.currentTask.id
+                      })
+                        ? _c("div", { staticClass: "break-line" }, [
+                            _vm._v("Showing requests from prev. task(s)")
+                          ])
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        { staticClass: "requests-wrapper" },
+                        _vm._l(
+                          _vm.requests.filter(function(x) {
+                            return x.task_id != _vm.currentTask.id
+                          }),
+                          function(request) {
+                            return _c("request", {
+                              key: request.id,
+                              attrs: { request: request }
+                            })
+                          }
+                        ),
+                        1
+                      )
+                    ]
               ]
             : _vm._e()
         ],
@@ -17665,7 +17756,13 @@ var render = function() {
       _vm.writeScope == "request"
         ? _c(
             "div",
-            { staticClass: "form-input", class: { active: _vm.writeActive } },
+            {
+              staticClass: "form-input",
+              class: [
+                { active: _vm.writeActive },
+                { hidden: _vm.writeScope != "request" }
+              ]
+            },
             [
               _c("div", { staticClass: "input-wrapper request" }, [
                 _c("textarea", {
@@ -17729,98 +17826,174 @@ var render = function() {
                         }
                         _vm.$set(_vm.newRequest, "comment", $event.target.value)
                       },
-                      _vm.resizeTextarea
+                      function($event) {
+                        return _vm.resizeTextarea($event)
+                      }
                     ]
                   }
-                })
+                }),
+                _vm._v(" "),
+                _vm.taskRequest
+                  ? _c("div", { staticClass: "edit-request" }, [_vm._m(0)])
+                  : _vm._e()
               ]),
               _vm._v(" "),
-              _vm.writeActive
-                ? _c("div", { staticClass: "flex-wrapper" }, [
-                    _c("div", { staticClass: "left" }),
-                    _vm._v(" "),
-                    _vm._m(0)
-                  ])
-                : _vm._e()
+              _c("div", { staticClass: "flex-wrapper" }, [
+                _c("div", { staticClass: "left" }, [
+                  _vm.writeActive
+                    ? _c("div", { staticClass: "hotkey-tip" }, [
+                        _c("span", { staticClass: "square ghost" }, [
+                          _vm._v("ENTER")
+                        ]),
+                        _vm._v(" "),
+                        _c("span", [_vm._v("To save")])
+                      ])
+                    : _vm._e()
+                ]),
+                _vm._v(" "),
+                _vm.writeActive
+                  ? _c("div", { staticClass: "right" }, [
+                      _c(
+                        "span",
+                        {
+                          staticClass: "button invisible",
+                          on: {
+                            click: function($event) {
+                              _vm.writeActive = false
+                            }
+                          }
+                        },
+                        [_vm._v("Cancel")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticClass: "button green",
+                          class: { disabled: _vm.submitDisabled },
+                          on: { click: _vm.onSubmitComment }
+                        },
+                        [_vm._v("Save")]
+                      )
+                    ])
+                  : _vm._e()
+              ])
             ]
           )
         : _vm._e(),
       _vm._v(" "),
-      _vm.writeScope == "comment"
-        ? _c(
-            "div",
-            { staticClass: "form-input", class: { active: _vm.writeActive } },
-            [
-              _c("div", { staticClass: "input-wrapper comment" }, [
-                _c("textarea", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.newComment.comment,
-                      expression: "newComment.comment"
-                    }
-                  ],
-                  ref: "commentField",
-                  attrs: {
-                    name: "comment",
-                    id: "comment-input",
-                    placeholder: _vm.placeholderText
-                  },
-                  domProps: { value: _vm.newComment.comment },
-                  on: {
-                    click: function($event) {
-                      _vm.writeActive = true
-                    },
-                    keydown: function($event) {
-                      if (
-                        !$event.type.indexOf("key") &&
-                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                      ) {
-                        return null
-                      }
-                      if (
-                        $event.ctrlKey ||
-                        $event.shiftKey ||
-                        $event.altKey ||
-                        $event.metaKey
-                      ) {
-                        return null
-                      }
-                      $event.preventDefault()
-                    },
-                    keyup: function($event) {
-                      if (
-                        !$event.type.indexOf("key") &&
-                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                      ) {
-                        return null
-                      }
-                      if (
-                        $event.ctrlKey ||
-                        $event.shiftKey ||
-                        $event.altKey ||
-                        $event.metaKey
-                      ) {
-                        return null
-                      }
-                      return _vm.onSubmitComment($event)
-                    },
-                    input: [
-                      function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(_vm.newComment, "comment", $event.target.value)
-                      },
-                      _vm.resizeTextarea
-                    ]
+      _c(
+        "div",
+        {
+          staticClass: "form-input",
+          class: [
+            { active: _vm.writeActive },
+            { hidden: _vm.writeScope != "comment" }
+          ]
+        },
+        [
+          _c("div", { staticClass: "input-wrapper comment" }, [
+            _c("textarea", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.newComment.comment,
+                  expression: "newComment.comment"
+                }
+              ],
+              ref: "commentField",
+              attrs: {
+                name: "comment",
+                id: "comment-input",
+                placeholder: "Write your comment here..."
+              },
+              domProps: { value: _vm.newComment.comment },
+              on: {
+                click: function($event) {
+                  _vm.writeActive = true
+                },
+                keydown: function($event) {
+                  if (
+                    !$event.type.indexOf("key") &&
+                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                  ) {
+                    return null
                   }
-                })
+                  if (
+                    $event.ctrlKey ||
+                    $event.shiftKey ||
+                    $event.altKey ||
+                    $event.metaKey
+                  ) {
+                    return null
+                  }
+                  $event.preventDefault()
+                },
+                keyup: function($event) {
+                  if (
+                    !$event.type.indexOf("key") &&
+                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                  ) {
+                    return null
+                  }
+                  if (
+                    $event.ctrlKey ||
+                    $event.shiftKey ||
+                    $event.altKey ||
+                    $event.metaKey
+                  ) {
+                    return null
+                  }
+                  return _vm.onSubmitComment($event)
+                },
+                input: [
+                  function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(_vm.newComment, "comment", $event.target.value)
+                  },
+                  function($event) {
+                    return _vm.resizeTextarea($event)
+                  }
+                ]
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _vm.writeActive
+            ? _c("div", { staticClass: "flex-wrapper" }, [
+                _vm._m(1),
+                _vm._v(" "),
+                _c("div", { staticClass: "right" }, [
+                  _c(
+                    "span",
+                    {
+                      staticClass: "button invisible",
+                      on: {
+                        click: function($event) {
+                          _vm.writeActive = false
+                        }
+                      }
+                    },
+                    [_vm._v("Cancel")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "span",
+                    {
+                      staticClass: "button green",
+                      class: { disabled: _vm.submitDisabled },
+                      on: { click: _vm.onSubmitComment }
+                    },
+                    [_vm._v("Submit")]
+                  )
+                ])
               ])
-            ]
-          )
-        : _vm._e()
+            : _vm._e()
+        ]
+      )
     ])
   ])
 }
@@ -17829,10 +18002,23 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "right" }, [
-      _c("span", { staticClass: "button invisible" }, [_vm._v("Cancel")]),
-      _vm._v(" "),
-      _c("span", { staticClass: "button green" }, [_vm._v("Save")])
+    return _c("span", [
+      _vm._v("Edit Request "),
+      _c("span", { staticClass: "circle small light" }, [
+        _c("i", { staticClass: "fas fa-pencil" })
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "left" }, [
+      _c("div", { staticClass: "hotkey-tip" }, [
+        _c("span", { staticClass: "square ghost" }, [_vm._v("ENTER")]),
+        _vm._v(" "),
+        _c("span", [_vm._v("To submit")])
+      ])
     ])
   }
 ]
@@ -43480,14 +43666,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 if (comment.team_id) team_id = comment.team_id;
                 _context2.next = 7;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/comment", {
+                  id: comment.id,
                   user_id: comment.user_id,
                   product_id: comment.product_id,
+                  task_id: comment.task_id,
                   team_id: team_id,
                   phase_id: comment.phase,
                   comment_body: comment.comment,
                   important: comment.important,
-                  team_final: comment.team_final,
-                  phase_final: comment.phase_final
+                  is_request: comment.is_request
                 });
 
               case 7:
@@ -43513,84 +43700,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return createComment;
-    }(),
-    // Update the action of for a product for a user
-    markAsTeamFinal: function () {
-      var _markAsTeamFinal = _asyncToGenerator(
-      /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref4, _ref5) {
-        var commit, comment;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                commit = _ref4.commit;
-                comment = _ref5.comment;
-                commit('updateFinal', {
-                  comment: comment
-                });
-                _context3.next = 5;
-                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/comment/update-final", {
-                  id: comment.id,
-                  team_final: comment.team_final
-                }).then(function (response) {
-                  console.log(response.data);
-                })["catch"](function (err) {
-                  console.log(err);
-                });
-
-              case 5:
-              case "end":
-                return _context3.stop();
-            }
-          }
-        }, _callee3);
-      }));
-
-      function markAsTeamFinal(_x5, _x6) {
-        return _markAsTeamFinal.apply(this, arguments);
-      }
-
-      return markAsTeamFinal;
-    }(),
-    // Update the action of for a product for a user
-    markAsPhaseFinal: function () {
-      var _markAsPhaseFinal = _asyncToGenerator(
-      /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref6, _ref7) {
-        var commit, comment;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
-          while (1) {
-            switch (_context4.prev = _context4.next) {
-              case 0:
-                commit = _ref6.commit;
-                comment = _ref7.comment;
-                commit('updateFinal', {
-                  comment: comment
-                });
-                _context4.next = 5;
-                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/comment/update-final", {
-                  id: comment.id,
-                  phase_final: comment.phase_final
-                }).then(function (response) {
-                  console.log(response.data);
-                })["catch"](function (err) {
-                  console.log(err);
-                });
-
-              case 5:
-              case "end":
-                return _context4.stop();
-            }
-          }
-        }, _callee4);
-      }));
-
-      function markAsPhaseFinal(_x7, _x8) {
-        return _markAsPhaseFinal.apply(this, arguments);
-      }
-
-      return markAsPhaseFinal;
     }()
   },
   mutations: {
@@ -43601,51 +43710,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     setSubmitting: function setSubmitting(state, bool) {
       state.submitting = bool;
     },
-    addComment: function addComment(state, _ref8) {
-      var comment = _ref8.comment;
-      // Remove existing final status if the new comment is set as final
-      if (comment.team_final) _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].update({
-        where: function where(existing_comment) {
-          return existing_comment.product_id === comment.product_id && existing_comment.team_id === comment.team_id && existing_comment.team_final;
-        },
-        data: {
-          team_final: 0
-        }
-      });
-      if (comment.phase_final) _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].update({
-        where: function where(existing_comment) {
-          return existing_comment.product_id === comment.product_id && existing_comment.phase_final;
-        },
-        data: {
-          phase_final: 0
-        }
-      }); // Submit new comment
-
+    addComment: function addComment(state, _ref4) {
+      var comment = _ref4.comment;
+      // Submit new comment
       _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
-        data: comment
-      });
-    },
-    updateFinal: function updateFinal(state, _ref9) {
-      var comment = _ref9.comment;
-      // Remove final status from this products comments
-      if (comment.team_final) _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].update({
-        where: function where(existing_comment) {
-          return existing_comment.product_id === comment.product_id && existing_comment.team_id === comment.team_id && existing_comment.team_final;
-        },
-        data: {
-          team_final: 0
-        }
-      });
-      if (comment.phase_final) _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].update({
-        where: function where(existing_comment) {
-          return existing_comment.product_id === comment.product_id && existing_comment.phase_final;
-        },
-        data: {
-          phase_final: 0
-        }
-      }); // Set new comment as final
-
-      _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].update({
         data: comment
       });
     }

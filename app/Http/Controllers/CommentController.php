@@ -17,33 +17,21 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        // Make sure that no multiple comments are made final
-        $oldPhaseFinal = ($request->phase_final == true) ? Comment::where('product_id', $request->product_id)->where('phase_final', true)->first() : false;
-        $oldTeamFinal = ($request->team_final == true) ? Comment::where('product_id', $request->product_id)->where('team_id', $request->team_id)->where('team_final', true)->first() : false;
-
-        if($oldPhaseFinal) {
-            $oldPhaseFinal->phase_final = 0;
-            $oldPhaseFinal->save();
-        }
-        if($oldTeamFinal) {
-            $oldTeamFinal->team_final = 0;
-            $oldTeamFinal->save();
-        }
-
-
         // Check if the comment already exists. If it does - update it
-        $existingComment = Comment::find($request->comment_id);
-        $comment = ($existingComment) ? $existingComment : new Comment;
-        
+        if ($request->id) {
+            $existingComment = Comment::find($request->id);
+            $comment = ($existingComment) ? $existingComment : new Comment;
+        } else {
+            $comment = new Comment;
+        }
    
         $comment->user_id = $request->input('user_id');
         $comment->product_id = $request->input('product_id');
         $comment->team_id = $request->input('team_id');
-        $comment->phase_id = $request->input('phase_id');
+        $comment->task_id = $request->input('task_id');
         $comment->comment = $request->input('comment_body');
         $comment->important = $request->input('important');
-        $comment->team_final = $request->input('team_final');
-        $comment->phase_final = $request->input('phase_final');
+        $comment->is_request = $request->input('is_request');
 
         if($comment->save()) {
             return new CommentResource($comment);

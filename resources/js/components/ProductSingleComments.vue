@@ -3,19 +3,15 @@
         
         <div class="tab-headers">
             <span :class="{active: commentScope == 'comments'}" class="tab" @click="setCommentScope('comments')">
-                Comments <span class="circle small" :class="(commentScope == 'comments') ? 'white' : 'light'">{{product.requests.length}}</span>
+                Comments <span class="circle small" :class="(commentScope == 'comments') ? 'white' : 'light'">{{comments.length}}</span>
             </span>
             <span :class="{active: commentScope == 'requests'}" class="tab" @click="setCommentScope('requests')">
-                Requests <span class="circle small" :class="(commentScope == 'requests') ? 'white' : 'light'">{{product.requests.length}}</span>
+                Requests <span class="circle small" :class="(commentScope == 'requests') ? 'white' : 'light'">{{requests.length}}</span>
             </span>
         </div>
 
         <div class="comments-wrapper">
             <div class="inner">
-
-                <div class="own-request">
-                    <request v-if="requests.find(x => x.task_id == currentTask.id)" :request="requests.find(x => x.task_id == currentTask.id)"/>
-                </div>
 
                 <template v-if="commentScope == 'comments'">
                     <div class="sender-wrapper" v-for="(sender, index) in commentsGroupedBySender" :key="index" :class="{own: sender.user.id == authUser.id}">
@@ -25,9 +21,22 @@
                 </template>
 
                 <template v-if="commentScope == 'requests'">
-                    <div class="requests-wrapper">
-                        <request :request="request" v-for="request in requests.filter(x => x.task_id != currentTask.id)" :key="request.id"/>
+                    <div class="task-request" v-if="taskRequest">
+                        <request :request="taskRequest"/>
                     </div>
+                    <template v-if="currentTask.parentTasks.find(x => x.type == 'approval')">
+                        <div class="break-line">Waiting for response from {{currentTask.parentTasks.find(x => x.type == 'approval').title}}</div>
+                        <div class="sender-wrapper" v-for="comment in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
+                            <comment :comment="comment"/>
+                            <div class="sender">{{comment.task.title}} | {{(comment.user.id == authUser.id) ? 'You' : comment.user.name}}</div>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <div v-if="requests.find(x => x.task_id != currentTask.id)" class="break-line">Showing requests from prev. task(s)</div>
+                        <div class="requests-wrapper">
+                            <request :request="request" v-for="request in requests.filter(x => x.task_id != currentTask.id)" :key="request.id"/>
+                        </div>
+                    </template>
                 </template>
 
             </div>
@@ -47,24 +56,45 @@
                 </div>
             </div>
 
-            <div class="form-input" v-if="writeScope == 'request'" :class="{active: writeActive}">
+            <div class="form-input" v-if="writeScope == 'request'" :class="[{active: writeActive}, {hidden: writeScope != 'request'}]">
                 <div class="input-wrapper request">
                     <textarea @click="writeActive = true" ref="requestField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="request" id="request-input" placeholder="Write your request here..." v-model="newRequest.comment" 
-                    @input="resizeTextarea"></textarea>
+                    @input="resizeTextarea($event)"></textarea>
+                    <div class="edit-request" v-if="taskRequest">
+                        <span>Edit Request <span class="circle small light"><i class="fas fa-pencil"></i></span></span>
+                    </div>
                 </div>
-                <div class="flex-wrapper" v-if="writeActive">
-                    <div class="left"></div>
-                    <div class="right">
-                        <span class="button invisible">Cancel</span>
-                        <span class="button green">Save</span>
+                <div class="flex-wrapper">
+                    <div class="left">
+                        <!-- <small class="id" v-if="taskRequest">Request ID: {{taskRequest.id}}</small> -->
+                        <div class="hotkey-tip" v-if="writeActive">
+                            <span class="square ghost">ENTER</span>
+                            <span>To save</span>
+                        </div>
+                    </div>
+                    <div class="right" v-if="writeActive">
+                        <span class="button invisible" @click="writeActive = false">Cancel</span>
+                        <span class="button green" :class="{disabled: submitDisabled}" @click="onSubmitComment">Save</span>
                     </div>
                 </div>
             </div>
 
-            <div class="form-input" v-if="writeScope == 'comment'" :class="{active: writeActive}">
+            <div class="form-input" :class="[{active: writeActive}, {hidden: writeScope != 'comment'}]">
                 <div class="input-wrapper comment">
-                    <textarea @click="writeActive = true" ref="commentField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="comment" id="comment-input" :placeholder="placeholderText" v-model="newComment.comment" 
-                    @input="resizeTextarea"></textarea>
+                    <textarea @click="writeActive = true" ref="commentField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="comment" id="comment-input" placeholder="Write your comment here..." v-model="newComment.comment" 
+                    @input="resizeTextarea($event)"></textarea>
+                </div>
+                <div class="flex-wrapper" v-if="writeActive">
+                    <div class="left">
+                        <div class="hotkey-tip">
+                            <span class="square ghost">ENTER</span>
+                            <span>To submit</span>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <span class="button invisible" @click="writeActive = false">Cancel</span>
+                        <span class="button green" :class="{disabled: submitDisabled}" @click="onSubmitComment">Submit</span>
+                    </div>
                 </div>
             </div>
 
@@ -95,15 +125,14 @@ export default {
         newComment: {
             comment: '',
             important: false,
-            is_request: false,
+            id: null
         },
         newRequest: {
             comment: '',
-            is_request: true,
+            important: false,
+            id: null
         },
         user_id: this.authUser.id,
-        finalOnly: true,
-        commentFilter: '',
         commentScope: 'comments',
         writeScope: 'comment',
         writeActive: false,
@@ -112,39 +141,46 @@ export default {
         ...mapGetters('entities/comments', ['submittingComment']),
         ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']),
         submitDisabled () {
-            if(this.newComment.comment.length < 1 || this.submittingComment)
+            if (this.writeScope == 'comment') {
+                if(this.newComment.comment.length < 1 || this.submittingComment)
                 return true
-            else return false
+                else return false
+            }
+            else {
+                if(this.newRequest.comment.length < 1 || this.submittingComment)
+                return true
+                else return false
+            }
+        },
+        taskRequest() {
+            const taskRequest = this.requests.find(x => x.task_id == this.currentTask.id)
+            if (taskRequest) {
+                return taskRequest
+            }
         },
         commentToPost () {
-            return {
-                user_id: this.authUser.id,
-                product_id: this.product.id,
-                team_id: this.currentTeamId,
-                comment: this.newComment.comment,
-                important: this.newComment.important,
-                is_request: this.newComment.is_request,
+            if (this.writeScope == 'comment') {
+                return {
+                    id: this.newComment.id,
+                    user_id: this.authUser.id,
+                    product_id: this.product.id,
+                    task_id: this.currentTask.id,
+                    team_id: this.currentTeamId,
+                    comment: this.newComment.comment,
+                    important: this.newComment.important,
+                }
+            } else {
+                return {
+                    id: this.newRequest.id,
+                    user_id: this.authUser.id,
+                    product_id: this.product.id,
+                    task_id: this.currentTask.id,
+                    team_id: this.currentTeamId,
+                    comment: this.newRequest.comment,
+                    important: this.newRequest.important,
+                    is_request: true,
+                }
             }
-        },
-        RequestToPost () {
-            return {
-                user_id: this.authUser.id,
-                product_id: this.product.id,
-                team_id: this.currentTeamId,
-                comment: this.newRequest.comment,
-                is_request: this.newRequest.is_request,
-            }
-        },
-        placeholderText () {
-            const filter = this.commentFilter
-            if (this.userPermissionLevel >= 2) return 'Write a new remark..'
-            else return 'Write a comment..'
-        },
-        submitText () {
-            const filter = this.commentFilter
-            // if (filter == 'remarks') return 'Submit remark'
-            if (this.userPermissionLevel >= 2) return 'Submit remark'
-            else return 'Submit comment'
         },
         commentsGroupedBySender() {
             const comments = this.comments
@@ -169,17 +205,23 @@ export default {
                 await this.createComment({comment: this.commentToPost})
     
                 // Reset comment
-                this.newComment.comment = ''
-                this.newComment.important = false
-                this.newComment.team_final = false
-                this.newComment.phase_final = false
+                if (this.writeScope == 'comment') {
+                    this.newComment.comment = ''
+                    this.newComment.important = false
+                    // Reset textarea height
+                    this.$refs.commentField.style.height = ''
+                } else {
+                    this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
+                    this.newRequest.important = false
+                    // Reset textarea height
+                    this.$refs.requestField.style.height = ''
+                }
+                this.writeActive = false
 
-                // Reset textarea height
-                this.$refs.commentField.style.height = ''
             }
         },
-        resizeTextarea() {
-            const commentField = this.$refs.commentField
+        resizeTextarea(event) {
+            const commentField = event.target
             commentField.style.height = ''
             commentField.style.height = commentField.scrollHeight + "px"
         },
@@ -192,6 +234,7 @@ export default {
         },
     },
     mounted() {
+        if (this.taskRequest) this.newRequest.comment = this.taskRequest.comment
     },
     updated() {
     },
@@ -208,6 +251,20 @@ export default {
         font-size: 18px;
         font-weight: 400;
         margin: 0;
+    }
+    .hotkey-tip {
+        .square {
+            border-width: 1px;
+            height: auto;
+            padding: 2px 4px;
+            min-width: 0;
+            font-weight: 400;
+            border-radius: 2px;
+            font-size: 9px;
+            margin-right: 2px;
+        }
+        font-size: 10px;
+        color: $dark2;
     }
     .header {
         display: flex;
@@ -228,6 +285,28 @@ export default {
         &.own {
             align-items: flex-end
         }
+    }
+    .break-line {
+        &::after, &::before {
+            content: '';
+            display: block;
+            height: 2px;
+            background: $dark2;
+            flex: 1;
+        }
+        &::after {
+            margin-left: 12px;
+        }
+        &::before {
+            margin-right: 12px;
+        }
+        color: $dark2;
+        font-size: 12px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
+        margin-bottom: 12px;
     }
     .comments-wrapper {
         background: $light1;
@@ -285,18 +364,35 @@ export default {
         }
         .form-input {
             padding: 0 12px;
+            &.hidden {
+                display: none;
+            }
             .input-wrapper {
                 border-radius: 6px;
                 border: solid 2px $light2;
                 background: $light2;
                 box-sizing: border-box;
-                padding: 8px 12px 4px 12px;
+                padding: 8px 12px 0px 12px;
                 font-size: 14px;
-                font-weight: 500;
                 color: $dark2;
                 max-height: 200px;
                 overflow: auto;
                 cursor: pointer;
+                position: relative;
+                .edit-request {
+                    position: absolute;
+                    right: 12px;
+                    font-size: 10px;
+                    color: $dark;
+                    font-weight: 500;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    .circle {
+                        height: 24px;
+                        width: 24px;
+                        margin-left: 4px;
+                    }
+                }
             }
             textarea {
                 border: none;
@@ -328,6 +424,7 @@ export default {
                 display: flex;
                 justify-content: space-between;
                 margin-top: 8px;
+                align-items: center;
             }
         }
         .checkmark {
