@@ -8596,7 +8596,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 
 
@@ -8629,7 +8628,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       commentFilter: ''
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['submittingComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['submittingComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'currentTask']), {
     submitDisabled: function submitDisabled() {
       if (this.newComment.comment.length < 1 || this.submittingComment || this.currentTeamId < 0) return true;else return false;
     },
@@ -17834,25 +17833,10 @@ var render = function() {
         [
           _c("h4", [_vm._v("Comments")]),
           _vm._v(" "),
-          _vm.userPermissionLevel < 2
+          _vm.currentTask.type == "feedback"
             ? _c("toggle", {
                 ref: "toggle",
-                attrs: { options: ["team comments"] },
-                model: {
-                  value: _vm.commentFilter,
-                  callback: function($$v) {
-                    _vm.commentFilter = $$v
-                  },
-                  expression: "commentFilter"
-                }
-              })
-            : _vm.userPermissionLevel == 2
-            ? _c("toggle", {
-                ref: "toggle",
-                attrs: {
-                  options: ["team comments", "remarks"],
-                  defaultOption: 1
-                },
+                attrs: { options: ["Comments"] },
                 model: {
                   value: _vm.commentFilter,
                   callback: function($$v) {
@@ -17863,10 +17847,7 @@ var render = function() {
               })
             : _c("toggle", {
                 ref: "toggle",
-                attrs: {
-                  options: ["all comments", "remarks"],
-                  defaultOption: 2
-                },
+                attrs: { options: ["Comments", "Remarks"], defaultOption: 1 },
                 model: {
                   value: _vm.commentFilter,
                   callback: function($$v) {
@@ -20849,11 +20830,7 @@ var render = function() {
             !_vm.loadingCollections
               ? [
                   _c("catalogueHeader", {
-                    attrs: {
-                      collection: _vm.collection,
-                      teamUsers: _vm.teamUsers,
-                      productTotals: _vm.productTotals
-                    }
+                    attrs: { collection: _vm.collection }
                   }),
                   _vm._v(" "),
                   _c("div", { staticClass: "filters" }, [
@@ -40923,6 +40900,7 @@ function (_Model) {
         user_id: this.attr(''),
         comment: this.attr(''),
         important: this.attr(''),
+        is_request: this.attr(''),
         user: this.belongsTo(_User__WEBPACK_IMPORTED_MODULE_1__["default"], 'user_id'),
         team: this.belongsTo(_Team__WEBPACK_IMPORTED_MODULE_3__["default"], 'team_id'),
         votes: this.hasMany(_CommentVote__WEBPACK_IMPORTED_MODULE_2__["default"], 'comment_id')
@@ -45193,16 +45171,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             }
           } // END Find the correct price
           //START COMMENTS
-          // START scope comments to task
 
+
+          product.requests = []; // START scope comments to task
 
           product.comments.forEach(function (comment) {
             if (currentTask.type == 'feedback') {
-              if (comment.task_id == currentTask.id) product.commentsScoped.push(comment);
+              if (comment.task_id == currentTask.id) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
             } else {
               // If type is alignment
+              if (comment.task_id == currentTask.id) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
               currentTask.parentTasks.forEach(function (parentTask) {
-                if (comment.task_id == parentTask.id) product.commentsScoped.push(comment);
+                if (comment.task_id == parentTask.id) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
               });
             }
           }); // END scope comments to task

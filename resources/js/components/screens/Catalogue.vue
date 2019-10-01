@@ -4,7 +4,7 @@
         <template v-if="true">
 
             <template v-if="!loadingCollections">
-                <catalogueHeader :collection="collection" :teamUsers="teamUsers" :productTotals="productTotals"/>
+                <catalogueHeader :collection="collection"/>
                 <div class="filters">
                     <div class="left">
                         <Dropdown class="dropdown-parent left">

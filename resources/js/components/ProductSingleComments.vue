@@ -3,9 +3,8 @@
         <div class="header">
             <h4>Comments</h4>
 
-            <toggle v-if="userPermissionLevel < 2" :options="['team comments']" v-model="commentFilter" ref="toggle"/>
-            <toggle v-else-if="userPermissionLevel == 2" :options="['team comments', 'remarks']" :defaultOption="1" v-model="commentFilter" ref="toggle"/>
-            <toggle v-else :options="['all comments', 'remarks']" :defaultOption="2" v-model="commentFilter" ref="toggle"/>
+            <toggle v-if="currentTask.type == 'feedback'" :options="['Comments']" v-model="commentFilter" ref="toggle"/>
+            <toggle v-else :options="['Comments', 'Remarks']" :defaultOption="1" v-model="commentFilter" ref="toggle"/>
 
         </div>
 
@@ -77,7 +76,7 @@ export default {
     }},
     computed: {
         ...mapGetters('entities/comments', ['submittingComment']),
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']),
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'currentTask']),
         submitDisabled () {
             if(this.newComment.comment.length < 1 || this.submittingComment || this.currentTeamId < 0)
                 return true

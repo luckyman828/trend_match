@@ -78,15 +78,26 @@ export default {
                     // END Find the correct price
 
                     //START COMMENTS
+                    product.requests = []
 
                     // START scope comments to task
                     product.comments.forEach(comment => {
                         if (currentTask.type == 'feedback') {
-                            if (comment.task_id == currentTask.id) product.commentsScoped.push(comment)
+                            if (comment.task_id == currentTask.id)
+                                comment.is_request
+                                    ? product.requests.push(comment)
+                                    : product.commentsScoped.push(comment)
                         } else {
                             // If type is alignment
+                            if (comment.task_id == currentTask.id)
+                                comment.is_request
+                                    ? product.requests.push(comment)
+                                    : product.commentsScoped.push(comment)
                             currentTask.parentTasks.forEach(parentTask => {
-                                if (comment.task_id == parentTask.id) product.commentsScoped.push(comment)
+                                if (comment.task_id == parentTask.id)
+                                    comment.is_request
+                                        ? product.requests.push(comment)
+                                        : product.commentsScoped.push(comment)
                             })
                         }
                     })

@@ -19,6 +19,7 @@ export default class Comment extends Model {
             user_id: this.attr(''),
             comment: this.attr(''),
             important: this.attr(''),
+            is_request: this.attr(''),
             user: this.belongsTo(User, 'user_id'),
             team: this.belongsTo(Team, 'team_id'),
             votes: this.hasMany(CommentVote, 'comment_id'),
