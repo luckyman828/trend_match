@@ -2,8 +2,8 @@
     <div class="comments">
         
         <div class="tab-headers">
-            <span :class="{active: commentScope == 'commentsScoped'}" class="tab" @click="setCommentScope('commentsScoped')">
-                Comments <span class="circle small" :class="(commentScope == 'commentsScoped') ? 'white' : 'light'">{{product.requests.length}}</span>
+            <span :class="{active: commentScope == 'comments'}" class="tab" @click="setCommentScope('comments')">
+                Comments <span class="circle small" :class="(commentScope == 'comments') ? 'white' : 'light'">{{product.requests.length}}</span>
             </span>
             <span :class="{active: commentScope == 'requests'}" class="tab" @click="setCommentScope('requests')">
                 Requests <span class="circle small" :class="(commentScope == 'requests') ? 'white' : 'light'">{{product.requests.length}}</span>
@@ -12,25 +12,62 @@
 
         <div class="comments-wrapper">
             <div class="inner">
-                <div class="sender-wrapper" v-for="(sender, index) in commentsGroupedBySender" :key="index" :class="{own: sender.user.id == authUser.id}">
-                    <comment :comment="comment" v-for="comment in sender.comments" :key="comment.id"/>
-                    <div class="sender">{{sender.task.title}} | {{sender.user.name}}</div>
+
+                <div class="own-request">
+                    <request v-if="requests.find(x => x.task_id == currentTask.id)" :request="requests.find(x => x.task_id == currentTask.id)"/>
                 </div>
+
+                <template v-if="commentScope == 'comments'">
+                    <div class="sender-wrapper" v-for="(sender, index) in commentsGroupedBySender" :key="index" :class="{own: sender.user.id == authUser.id}">
+                        <comment :comment="comment" v-for="comment in sender.comments" :key="comment.id"/>
+                        <div class="sender">{{sender.task.title}} | {{(sender.user.id == authUser.id) ? 'You' : sender.user.name}}</div>
+                    </div>
+                </template>
+
+                <template v-if="commentScope == 'requests'">
+                    <div class="requests-wrapper">
+                        <request :request="request" v-for="request in requests.filter(x => x.task_id != currentTask.id)" :key="request.id"/>
+                    </div>
+                </template>
+
             </div>
         </div>
 
 
         <form @submit="onSubmitComment">
-            <div class="input-wrapper">
-                <i class="far fa-comment"></i>
-                <textarea ref="commentField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="comment" id="comment-input" :placeholder="placeholderText" v-model="newComment.comment" 
-                @input="resizeTextarea"></textarea>
-                <label>
-                    <input type="checkbox" v-model="newComment.important" name="comment-important">
-                    <span class="checkmark" :class="{active: newComment.important}"><i class="fas fa-exclamation"></i></span>
-                </label>
+            <div class="controls">
+                <div class="left">
+                    <div class="set-scope">
+                        <span class="button invisible" :class="{active: writeScope == 'request'}" @click="setWriteScope('request')">Your Request</span>
+                        <span class="button invisible" :class="{active: writeScope == 'comment'}" @click="setWriteScope('comment')">Comment</span>
+                    </div>
+                </div>
+                <div class="right">
+
+                </div>
             </div>
-            <input type="submit" class="button primary xl" :value="submitText" :class="{disabled: submitDisabled}">
+
+            <div class="form-input" v-if="writeScope == 'request'" :class="{active: writeActive}">
+                <div class="input-wrapper request">
+                    <textarea @click="writeActive = true" ref="requestField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="request" id="request-input" placeholder="Write your request here..." v-model="newRequest.comment" 
+                    @input="resizeTextarea"></textarea>
+                </div>
+                <div class="flex-wrapper" v-if="writeActive">
+                    <div class="left"></div>
+                    <div class="right">
+                        <span class="button invisible">Cancel</span>
+                        <span class="button green">Save</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-input" v-if="writeScope == 'comment'" :class="{active: writeActive}">
+                <div class="input-wrapper comment">
+                    <textarea @click="writeActive = true" ref="commentField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="comment" id="comment-input" :placeholder="placeholderText" v-model="newComment.comment" 
+                    @input="resizeTextarea"></textarea>
+                </div>
+            </div>
+
         </form>
     </div>
 </template>
@@ -39,6 +76,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import TooltipAlt2 from './TooltipAlt2'
 import Comment from './Comment'
+import Request from './Request'
 
 export default {
     name: 'productSingleComments',
@@ -51,22 +89,28 @@ export default {
     components: {
         TooltipAlt2,
         Comment,
+        Request,
     },
     data: function () { return {
         newComment: {
-            phase: 1,
             comment: '',
             important: false,
             is_request: false,
         },
+        newRequest: {
+            comment: '',
+            is_request: true,
+        },
         user_id: this.authUser.id,
         finalOnly: true,
         commentFilter: '',
-        commentScope: 'commentsScoped',
+        commentScope: 'comments',
+        writeScope: 'comment',
+        writeActive: false,
     }},
     computed: {
         ...mapGetters('entities/comments', ['submittingComment']),
-        ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel']),
+        ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']),
         submitDisabled () {
             if(this.newComment.comment.length < 1 || this.submittingComment)
                 return true
@@ -77,10 +121,18 @@ export default {
                 user_id: this.authUser.id,
                 product_id: this.product.id,
                 team_id: this.currentTeamId,
-                phase: 1,
                 comment: this.newComment.comment,
                 important: this.newComment.important,
                 is_request: this.newComment.is_request,
+            }
+        },
+        RequestToPost () {
+            return {
+                user_id: this.authUser.id,
+                product_id: this.product.id,
+                team_id: this.currentTeamId,
+                comment: this.newRequest.comment,
+                is_request: this.newRequest.is_request,
             }
         },
         placeholderText () {
@@ -134,6 +186,10 @@ export default {
         setCommentScope(scope) {
             this.commentScope = scope
         },
+        setWriteScope(scope) {
+            this.writeActive = false
+            this.writeScope = scope
+        },
     },
     mounted() {
     },
@@ -179,7 +235,7 @@ export default {
         padding: 16px 4px 16px 0;
         height: 100%;
         .inner {
-            padding: 0 24px;
+            padding: 0 12px;
             height: 100%;
             overflow-y: auto;
             overflow-x: hidden;
@@ -193,8 +249,10 @@ export default {
         }
     }
     form {
-        margin-top: 12px;
         margin-bottom: 42px;
+        padding: 8px 0 24px;
+        background: white;
+        box-shadow: 0 -3px 6px rgba($dark, 10%);
         @media screen and (max-width: $screenSmall) {
             margin-bottom: 0px;
         }
@@ -204,45 +262,72 @@ export default {
         {
             margin-bottom: 0px;
         }
-        .input-wrapper {
-            border-radius: 6px;
-            border: solid 2px $light2;
-            box-sizing: border-box;
-            padding: 10px 52px 2px 44px;
-            font-size: 14px;
-            font-weight: 500;
-            position: relative;
-            color: $dark2;
-            max-height: 200px;
-            overflow: auto;
-            > i {
-                position: absolute;
-                left: 14px;
-                top: 12px;
-                font-size: 20px;
-            }
-            input[type=checkbox] {
-                display: none;
-            }
-            label {
-                position: absolute;
-                right: 0;
-                top: 0;
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            .set-scope {
+                span {
+                    font-size: 14px;
+                    font-weight: 500;
+                    color: $dark2;
+                    cursor: pointer;
+                    user-select: none;
+                    &:not(:last-child) {
+                        margin-right: -8px;
+                    }
+                    &.active {
+                        color: $dark;
+                        cursor: auto;
+                    }
+                }
             }
         }
-        textarea {
-            border: none;
-            height: 22px;
-            overflow: hidden;
-            width: 100%;
-            resize: none;
-            font-weight: 500;
-            color: $dark1;
-            &:focus {
-                outline: none;
-            }
-            &::placeholder {
+        .form-input {
+            padding: 0 12px;
+            .input-wrapper {
+                border-radius: 6px;
+                border: solid 2px $light2;
+                background: $light2;
+                box-sizing: border-box;
+                padding: 8px 12px 4px 12px;
+                font-size: 14px;
+                font-weight: 500;
                 color: $dark2;
+                max-height: 200px;
+                overflow: auto;
+                cursor: pointer;
+            }
+            textarea {
+                border: none;
+                height: 22px;
+                overflow: hidden;
+                width: 100%;
+                resize: none;
+                color: $dark1;
+                background: transparent;
+                cursor: pointer;
+                &:focus {
+                    outline: none;
+                }
+                &::placeholder {
+                    color: $dark2;
+                }
+            }
+            &.active {
+                .input-wrapper {
+                    border: solid 2px $light2;
+                    background: white;
+                    cursor: auto;
+                }
+                textarea {
+                    cursor: auto;
+                }
+            }
+            .flex-wrapper {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 8px;
             }
         }
         .checkmark {
