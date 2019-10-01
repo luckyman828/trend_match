@@ -26,7 +26,7 @@ export default {
             if (!rootGetters['persist/loadingInit'] && !state.loading && rootGetters['persist/currentTask'] != null) {
                 const products = Product.query()
                     .with(['actions.task|user.teams'])
-                    .with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team'])
+                    .with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team|task'])
                     .all()
                 const actionScope = rootGetters['collection/actionScope']
                 const currentTask = rootGetters['persist/currentTask']

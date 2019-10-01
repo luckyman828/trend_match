@@ -38,14 +38,6 @@
                     <span class="value">{{currentTask.progress}}%</span>
                 </div>
             </TooltipAlt2>
-            <!-- <div v-else class="stat progress">
-                <span class="title">Progress</span>
-                <svg height="4">
-                    <rect class="background" v-if="currentTask.progress > 0" width="100%" height="4"/>
-                    <rect class="value" v-if="currentTask.progress > 0" :width="currentTask.progress + '%'" height="4"/>
-                </svg>
-                <span class="value">{{currentTask.progress}}%</span>
-            </div> -->
 
         </div>
     </div>

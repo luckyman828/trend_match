@@ -9078,6 +9078,45 @@ textarea {
   background: transparent;
 }
 
+.button.white,
+.button.white-hover:hover,
+.square.white,
+.square.white-hover:hover,
+.pill.white,
+.pill.white-hover:hover,
+.bubble.white,
+.bubble.white-hover:hover,
+.circle.white,
+.circle.white-hover:hover {
+  border-color: white;
+  background: white;
+  color: #1b1c1d;
+}
+
+.button.white.invisible,
+.button.white.ghost,
+.button.white-hover:hover.invisible,
+.button.white-hover:hover.ghost,
+.square.white.invisible,
+.square.white.ghost,
+.square.white-hover:hover.invisible,
+.square.white-hover:hover.ghost,
+.pill.white.invisible,
+.pill.white.ghost,
+.pill.white-hover:hover.invisible,
+.pill.white-hover:hover.ghost,
+.bubble.white.invisible,
+.bubble.white.ghost,
+.bubble.white-hover:hover.invisible,
+.bubble.white-hover:hover.ghost,
+.circle.white.invisible,
+.circle.white.ghost,
+.circle.white-hover:hover.invisible,
+.circle.white-hover:hover.ghost {
+  color: white;
+  background: transparent;
+}
+
 .button.light,
 .button.light-hover:hover,
 .square.light,
@@ -9090,7 +9129,7 @@ textarea {
 .circle.light-hover:hover {
   border-color: #f3f3f3;
   background: #f3f3f3;
-  color: #3c3b54;
+  color: #1b1c1d;
 }
 
 .button.light.invisible,
@@ -9321,6 +9360,12 @@ textarea {
   border-radius: 50%;
   height: 40px;
   width: 40px;
+}
+
+.circle.small {
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
 }
 
 .close {
@@ -9770,6 +9815,40 @@ textarea {
 .checkbox-buttons.dark label:hover,
 .dark .checkbox-buttons label:hover {
   background: #43425d;
+}
+
+.tab-headers {
+  display: -webkit-box;
+  display: flex;
+}
+
+.tab-headers .tab {
+  height: 40px;
+  width: 152px;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+          align-items: center;
+  color: #a8a8a8;
+  background: #dfdfdf;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  padding: 0 16px;
+  font-weight: 500;
+}
+
+.tab-headers .tab.active {
+  color: #1b1c1d;
+  background: #f3f3f3;
+  cursor: auto;
+}
+
+.tab-headers .tab:not(:last-child) {
+  margin-right: 4px;
 }
 
 form > label,

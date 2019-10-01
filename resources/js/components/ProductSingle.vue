@@ -5,9 +5,11 @@
             <div class="card">
                 <template v-if="!loading">
                     <div class="controls-wrapper">
+                        <div class="left">
                             <span class="square true-square light close clickable" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
-                        <div class="controls">
-
+                            <h3>{{product.title}}</h3>
+                        </div>
+                        <div class="right controls">
                             <template v-if="userPermissionLevel >= 2">
                                 <span v-if="userPermissionLevel == 2" class="square true-square clickable focus-action" :class="[(product[actionScope] != null) ? (product[actionScope].action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': userPermissionLevel == 3}]" @click="toggleInOut(product, 2)">
                                     <i class="far fa-star"></i>
@@ -26,7 +28,6 @@
                     </div>
                     <div class="grid-2 grid-border-between inner">
                         <div class="details">
-                            <h3>{{product.title}}</h3>
                             <div class="grid-2">
                                 <div class="image" @click="cycleImage()">
                                     <img :src="variantImg(product.color_variants[currentImgIndex])" @error="imgError(product.color_variants[currentImgIndex])">
@@ -127,7 +128,7 @@
                                 </div>
                             </div>
                         </div>
-                        <ProductSingleComments :comments="product.commentsScoped" :authUser="authUser" :product="product"/>
+                        <ProductSingleComments :comments="product.commentsScoped" :requests="product.requests" :authUser="authUser" :product="product"/>
                     </div>
                 </template>
                 <template v-else>
@@ -285,13 +286,13 @@ export default {
         left: 0;
         height: 100%;
         width: 100%;
-        background: transparent;
+        background: rgba($dark, 50%);
     }
     .product-single {
         &.visible {
             > .card {
                 width: 100%;
-                right: 62px;
+                right: 0;
                 // transform: translateX(0);
             }
             .overlay {
@@ -304,9 +305,9 @@ export default {
             margin: 0;
             max-width: 60vw;
             z-index: 11;
-            top: 130px;
+            top: 0;
             position: fixed;
-            height: calc(100vh - 130px);
+            height: 100vh;
             overflow: hidden;
             // height: 100%;
             width: 100%;
@@ -349,7 +350,7 @@ export default {
         }
     }
     h3 {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 400;
     }
     @keyframes slide-in {
@@ -374,7 +375,7 @@ export default {
         > :first-child {
             overflow-x: hidden;
             overflow-y: auto;
-            height: 77vh;
+            height: 100%;
         }
     }
     .grid-border-between {
@@ -401,20 +402,26 @@ export default {
     .controls-wrapper {
         display: flex;
         border-bottom: solid 2px $light1;
-        padding: 6px 0;
+        padding: 6px 20px;
         position: sticky;
         top: 0;
         z-index: 2;
         background: white;
-        .square {
-            margin-left: 1em;
+        height: 72px;
+        align-items: center;
+        > * {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        .close {
+            margin-right: 24px;
         }
     }
     .controls {
         display: flex;
         justify-content: flex-end;
         width: 100%;
-        padding-right: 1em;
         :last-child {
             margin-right: 0;
         }

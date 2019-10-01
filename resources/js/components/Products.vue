@@ -250,8 +250,6 @@ export default {
             this.setCurrentProductId(id)
             this.setAvailableProductIds(this.products) // Save array of available products
             this.showSingle = true;
-            if (document.getElementById('main').scrollTop < 130)
-                document.getElementById('main').scrollTo(0, 130)
         },
         onSelect(index) {
             this.$emit('onSelect', index)

@@ -1,24 +1,22 @@
 <template>
     <div class="comments">
-        <div class="header">
-            <h4>Comments</h4>
-
-            <toggle v-if="currentTask.type == 'feedback'" :options="['Comments']" v-model="commentFilter" ref="toggle"/>
-            <toggle v-else :options="['Comments', 'Remarks']" :defaultOption="1" v-model="commentFilter" ref="toggle"/>
-
+        
+        <div class="tab-headers">
+            <span :class="{active: commentScope == 'commentsScoped'}" class="tab" @click="setCommentScope('commentsScoped')">
+                Comments <span class="circle small" :class="(commentScope == 'commentsScoped') ? 'white' : 'light'">{{product.requests.length}}</span>
+            </span>
+            <span :class="{active: commentScope == 'requests'}" class="tab" @click="setCommentScope('requests')">
+                Requests <span class="circle small" :class="(commentScope == 'requests') ? 'white' : 'light'">{{product.requests.length}}</span>
+            </span>
         </div>
 
-
-        <div class="comments-wrapper" v-if="commentFilter == 'all comments'">
-            <div class="team" v-for="team in commentTeams" :key="team.id">
-                    <comment :comment="comment" v-for="comment in team.comments" :key="comment.id" 
-                    :class="[{'own-team': comment.team_id == currentTeamId}, {'own': comment.user_id == authUser.id}]"/>
+        <div class="comments-wrapper">
+            <div class="inner">
+                <div class="sender-wrapper" v-for="(sender, index) in commentsGroupedBySender" :key="index" :class="{own: sender.user.id == authUser.id}">
+                    <comment :comment="comment" v-for="comment in sender.comments" :key="comment.id"/>
+                    <div class="sender">{{sender.task.title}} | {{sender.user.name}}</div>
+                </div>
             </div>
-        </div>
-
-        <div class="comments-wrapper" v-else>
-            <comment :comment="comment" v-for="comment in commentsFiltered" :key="comment.id" 
-            :class="[{'own-team': comment.team_id == currentTeamId}, {'own': comment.user_id == authUser.id}]"/>
         </div>
 
 
@@ -29,18 +27,16 @@
                 @input="resizeTextarea"></textarea>
                 <label>
                     <input type="checkbox" v-model="newComment.important" name="comment-important">
-                    <span class="checkmark" :class="{active: newComment.important}" @mouseover="showTooltip($event, 'Important comment')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
+                    <span class="checkmark" :class="{active: newComment.important}"><i class="fas fa-exclamation"></i></span>
                 </label>
             </div>
             <input type="submit" class="button primary xl" :value="submitText" :class="{disabled: submitDisabled}">
         </form>
-        <Tooltip :tooltip="tooltip"/>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import Tooltip from './Tooltip'
 import TooltipAlt2 from './TooltipAlt2'
 import Comment from './Comment'
 
@@ -48,11 +44,11 @@ export default {
     name: 'productSingleComments',
     props: [
         'comments',
+        'requests',
         'authUser',
         'product',
     ],
     components: {
-        Tooltip,
         TooltipAlt2,
         Comment,
     },
@@ -61,24 +57,18 @@ export default {
             phase: 1,
             comment: '',
             important: false,
-            team_final: false,
-            phase_final: false,
+            is_request: false,
         },
         user_id: this.authUser.id,
-        tooltip: {
-            active: false,
-            position: {},
-            type: 'text',
-            data: ''
-        },
         finalOnly: true,
         commentFilter: '',
+        commentScope: 'commentsScoped',
     }},
     computed: {
         ...mapGetters('entities/comments', ['submittingComment']),
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'currentTask']),
+        ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel']),
         submitDisabled () {
-            if(this.newComment.comment.length < 1 || this.submittingComment || this.currentTeamId < 0)
+            if(this.newComment.comment.length < 1 || this.submittingComment)
                 return true
             else return false
         },
@@ -90,8 +80,7 @@ export default {
                 phase: 1,
                 comment: this.newComment.comment,
                 important: this.newComment.important,
-                team_final: this.newComment.team_final,
-                phase_final: this.newComment.phase_final,
+                is_request: this.newComment.is_request,
             }
         },
         placeholderText () {
@@ -105,64 +94,18 @@ export default {
             if (this.userPermissionLevel >= 2) return 'Submit remark'
             else return 'Submit comment'
         },
-        commentsFiltered () {
+        commentsGroupedBySender() {
             const comments = this.comments
-            const filter = this.commentFilter
-            let commentsFiltered = []
-            // let commentTeams = []
-
-
-            if (filter == 'team comments') {
-                comments.forEach(comment => {
-                    if (comment.team_id == this.currentTeamId)
-                        commentsFiltered.push(comment)
-                })
-            } else if (filter == 'remarks') {
-                comments.forEach(comment => {
-                    if (comment.team_final || comment.phase_final || comment.team_id == 0)
-                        commentsFiltered.push(comment)
-                })
-            } else if (filter == 'all comments') {
-                commentsFiltered = comments
-            }
-
-
-            // Find the users actions and users teams actions
-            commentsFiltered.forEach(comment => {
-                // Check if the auth user made the comment
-                comment.userComment = false
-                if (comment.user_id == this.authUser.id && comment.team_id == this.currentTeamId)
-                    comment.userComment = true
-
-                // Check if the comment is the auth users final comment
-                comment.user_final = false
-                if (comment.team_final || comment.phase_final) {
-                    if (this.actionScope == 'phaseAction')
-                        if (comment.user_id == this.authUser.id)
-                            comment.user_final = true
-                    if (this.actionScope == 'teamAction')
-                        if (comment.team_id == this.currentTeamId)
-                            comment.user_final = true
+            let senders = []
+            comments.forEach(comment => {
+                const existingSender = senders.find(x => x.task.id == comment.task_id && x.user.id == comment.user_id)
+                if (existingSender == null) {
+                    senders.push({task: comment.task, user: comment.user, comments: [comment]})
+                } else {
+                    existingSender.comments.push(comment)
                 }
             })
-            return commentsFiltered
-        },
-        commentTeams () {
-            const comments = this.commentsFiltered
-            let commentTeams = []
-
-            // Group comments by team
-            comments.forEach(comment => {
-                if (!commentTeams.find(x => x.id == comment.team_id) )
-                    if (comment.team_id > 0) {
-                        comment.team.comments = []
-                        commentTeams.push(comment.team)
-                    }
-                    else commentTeams.push ({id: 0, title: 'Global', comments: []})
-
-                commentTeams.find(x => x.id == comment.team_id).comments.push(comment)
-            })
-            return commentTeams
+            return senders
         }
     },
     methods: {
@@ -183,66 +126,18 @@ export default {
                 this.$refs.commentField.style.height = ''
             }
         },
-        onMarkAsFinal(comment) {
-            if (this.actionScope == 'phaseAction') {
-                comment.phase_final = !comment.phase_final
-                this.markAsPhaseFinal({comment: comment})
-            }
-            else if (this.actionScope == 'teamAction') {
-                comment.team_final = !comment.team_final
-                this.markAsTeamFinal({comment: comment})
-            }
-        },
-        showTooltip(event, data) {
-            const rect = event.target.getBoundingClientRect()
-
-            // Set tooltip position
-            this.tooltip.position.top = rect.top - rect.height - 12
-            this.tooltip.position.center = rect.left
-
-            // Set tooltip data
-            this.tooltip.data = data
-
-            // Make tooltip active
-            this.tooltip.active = true;
-        },
-            
-        hideTooltip() {
-            this.tooltip.active = false;
-        },
         resizeTextarea() {
             const commentField = this.$refs.commentField
             commentField.style.height = ''
             commentField.style.height = commentField.scrollHeight + "px"
-        }
+        },
+        setCommentScope(scope) {
+            this.commentScope = scope
+        },
     },
     mounted() {
-        if (this.actionScope == 'phaseAction')
-            this.finalOnly = true
-        else
-            this.finalOnly = false
-
-        // Set the default comment filter by the value of the toggle
-        if (this.$refs.toggle._props.defaultOption) {
-            this.commentFilter = this.$refs.toggle._props.options[this.$refs.toggle._props.defaultOption - 1]
-        } else {
-            this.commentFilter = this.$refs.toggle._props.options[0]
-        }
     },
     updated() {
-        // Set comment scope
-        if (this.actionScope == 'phaseAction') {
-            this.newComment.team_id = 0
-        } else {
-            this.newComment.team_id = this.currentTeamId
-        }
-        // Set comment final per default
-        if (this.userPermissionLevel >= 3) {
-            this.newComment.phase_final = true
-        } else if (this.userPermissionLevel >= 2) {
-            this.newComment.team_final = true
-        }
-
     },
     created() {
     },
@@ -264,42 +159,37 @@ export default {
         align-items: center;
         margin-bottom: 8px;
     }
-    .toggle {
-        border: solid 1px $light2;
-        border-radius: 50px;
-        user-select: none;
-        cursor: pointer;
-        .option {
-            font-size: 12px;
-            padding: 6px 14px;
-            font-weight: 700;
-            color: $dark2;
-            text-transform: uppercase;
-            display: inline-block;
-            &.active {
-                color: $dark;
-                background: $light2;
-                border-radius: 50px;
-            }
+    .tab-headers {
+        .tab {
+            justify-content: space-between;
+        }
+    }
+    .sender-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        &.own {
+            align-items: flex-end
         }
     }
     .comments-wrapper {
         background: $light1;
-        border-radius: 8px;
-        padding: 36px 24px;
-        height: 57vh;
-        max-height: 57vh;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        box-sizing: border-box;
-    }
-    .comment-wrapper {
-        margin-bottom: 24px;
-        &:hover .circle {
-            opacity: 1;
+        border-radius: 0 8px 0 0;
+        padding: 16px 4px 16px 0;
+        height: 100%;
+        .inner {
+            padding: 0 24px;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            box-sizing: border-box;
         }
-        &.own {
-            text-align: right;
+        .sender {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: $dark2;
         }
     }
     form {

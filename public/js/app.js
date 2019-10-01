@@ -7371,14 +7371,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'catalogueHeader',
@@ -7411,80 +7403,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'comment',
   props: ['comment'],
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['authUser', 'userPermissionLevel']), {
     authUser: function authUser() {
       return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_1__["default"].query().first();
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']), {
-    onMarkAsFinal: function onMarkAsFinal(comment) {
-      if (this.actionScope == 'phaseAction') {
-        comment.phase_final = !comment.phase_final;
-        this.markAsPhaseFinal({
-          comment: comment
-        });
-      } else if (this.actionScope == 'teamAction') {
-        comment.team_final = !comment.team_final;
-        this.markAsTeamFinal({
-          comment: comment
-        });
-      }
-    }
-  })
+  methods: {}
 });
 
 /***/ }),
@@ -8412,6 +8341,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 
@@ -8543,9 +8473,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _Tooltip__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tooltip */ "./resources/js/components/Tooltip.vue");
-/* harmony import */ var _TooltipAlt2__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./TooltipAlt2 */ "./resources/js/components/TooltipAlt2.vue");
-/* harmony import */ var _Comment__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Comment */ "./resources/js/components/Comment.vue");
+/* harmony import */ var _TooltipAlt2__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./TooltipAlt2 */ "./resources/js/components/TooltipAlt2.vue");
+/* harmony import */ var _Comment__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Comment */ "./resources/js/components/Comment.vue");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -8593,20 +8522,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'productSingleComments',
-  props: ['comments', 'authUser', 'product'],
+  props: ['comments', 'requests', 'authUser', 'product'],
   components: {
-    Tooltip: _Tooltip__WEBPACK_IMPORTED_MODULE_2__["default"],
-    TooltipAlt2: _TooltipAlt2__WEBPACK_IMPORTED_MODULE_3__["default"],
-    Comment: _Comment__WEBPACK_IMPORTED_MODULE_4__["default"]
+    TooltipAlt2: _TooltipAlt2__WEBPACK_IMPORTED_MODULE_2__["default"],
+    Comment: _Comment__WEBPACK_IMPORTED_MODULE_3__["default"]
   },
   data: function data() {
     return {
@@ -8614,23 +8538,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         phase: 1,
         comment: '',
         important: false,
-        team_final: false,
-        phase_final: false
+        is_request: false
       },
       user_id: this.authUser.id,
-      tooltip: {
-        active: false,
-        position: {},
-        type: 'text',
-        data: ''
-      },
       finalOnly: true,
-      commentFilter: ''
+      commentFilter: '',
+      commentScope: 'commentsScoped'
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['submittingComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'currentTask']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['submittingComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel']), {
     submitDisabled: function submitDisabled() {
-      if (this.newComment.comment.length < 1 || this.submittingComment || this.currentTeamId < 0) return true;else return false;
+      if (this.newComment.comment.length < 1 || this.submittingComment) return true;else return false;
     },
     commentToPost: function commentToPost() {
       return {
@@ -8640,8 +8558,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         phase: 1,
         comment: this.newComment.comment,
         important: this.newComment.important,
-        team_final: this.newComment.team_final,
-        phase_final: this.newComment.phase_final
+        is_request: this.newComment.is_request
       };
     },
     placeholderText: function placeholderText() {
@@ -8653,60 +8570,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       if (this.userPermissionLevel >= 2) return 'Submit remark';else return 'Submit comment';
     },
-    commentsFiltered: function commentsFiltered() {
-      var _this = this;
-
+    commentsGroupedBySender: function commentsGroupedBySender() {
       var comments = this.comments;
-      var filter = this.commentFilter;
-      var commentsFiltered = []; // let commentTeams = []
-
-      if (filter == 'team comments') {
-        comments.forEach(function (comment) {
-          if (comment.team_id == _this.currentTeamId) commentsFiltered.push(comment);
+      var senders = [];
+      comments.forEach(function (comment) {
+        var existingSender = senders.find(function (x) {
+          return x.task.id == comment.task_id && x.user.id == comment.user_id;
         });
-      } else if (filter == 'remarks') {
-        comments.forEach(function (comment) {
-          if (comment.team_final || comment.phase_final || comment.team_id == 0) commentsFiltered.push(comment);
-        });
-      } else if (filter == 'all comments') {
-        commentsFiltered = comments;
-      } // Find the users actions and users teams actions
 
-
-      commentsFiltered.forEach(function (comment) {
-        // Check if the auth user made the comment
-        comment.userComment = false;
-        if (comment.user_id == _this.authUser.id && comment.team_id == _this.currentTeamId) comment.userComment = true; // Check if the comment is the auth users final comment
-
-        comment.user_final = false;
-
-        if (comment.team_final || comment.phase_final) {
-          if (_this.actionScope == 'phaseAction') if (comment.user_id == _this.authUser.id) comment.user_final = true;
-          if (_this.actionScope == 'teamAction') if (comment.team_id == _this.currentTeamId) comment.user_final = true;
+        if (existingSender == null) {
+          senders.push({
+            task: comment.task,
+            user: comment.user,
+            comments: [comment]
+          });
+        } else {
+          existingSender.comments.push(comment);
         }
       });
-      return commentsFiltered;
-    },
-    commentTeams: function commentTeams() {
-      var comments = this.commentsFiltered;
-      var commentTeams = []; // Group comments by team
-
-      comments.forEach(function (comment) {
-        if (!commentTeams.find(function (x) {
-          return x.id == comment.team_id;
-        })) if (comment.team_id > 0) {
-          comment.team.comments = [];
-          commentTeams.push(comment.team);
-        } else commentTeams.push({
-          id: 0,
-          title: 'Global',
-          comments: []
-        });
-        commentTeams.find(function (x) {
-          return x.id == comment.team_id;
-        }).comments.push(comment);
-      });
-      return commentTeams;
+      return senders;
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']), {
@@ -8753,62 +8635,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       return onSubmitComment;
     }(),
-    onMarkAsFinal: function onMarkAsFinal(comment) {
-      if (this.actionScope == 'phaseAction') {
-        comment.phase_final = !comment.phase_final;
-        this.markAsPhaseFinal({
-          comment: comment
-        });
-      } else if (this.actionScope == 'teamAction') {
-        comment.team_final = !comment.team_final;
-        this.markAsTeamFinal({
-          comment: comment
-        });
-      }
-    },
-    showTooltip: function showTooltip(event, data) {
-      var rect = event.target.getBoundingClientRect(); // Set tooltip position
-
-      this.tooltip.position.top = rect.top - rect.height - 12;
-      this.tooltip.position.center = rect.left; // Set tooltip data
-
-      this.tooltip.data = data; // Make tooltip active
-
-      this.tooltip.active = true;
-    },
-    hideTooltip: function hideTooltip() {
-      this.tooltip.active = false;
-    },
     resizeTextarea: function resizeTextarea() {
       var commentField = this.$refs.commentField;
       commentField.style.height = '';
       commentField.style.height = commentField.scrollHeight + "px";
+    },
+    setCommentScope: function setCommentScope(scope) {
+      this.commentScope = scope;
     }
   }),
-  mounted: function mounted() {
-    if (this.actionScope == 'phaseAction') this.finalOnly = true;else this.finalOnly = false; // Set the default comment filter by the value of the toggle
-
-    if (this.$refs.toggle._props.defaultOption) {
-      this.commentFilter = this.$refs.toggle._props.options[this.$refs.toggle._props.defaultOption - 1];
-    } else {
-      this.commentFilter = this.$refs.toggle._props.options[0];
-    }
-  },
-  updated: function updated() {
-    // Set comment scope
-    if (this.actionScope == 'phaseAction') {
-      this.newComment.team_id = 0;
-    } else {
-      this.newComment.team_id = this.currentTeamId;
-    } // Set comment final per default
-
-
-    if (this.userPermissionLevel >= 3) {
-      this.newComment.phase_final = true;
-    } else if (this.userPermissionLevel >= 2) {
-      this.newComment.team_final = true;
-    }
-  },
+  mounted: function mounted() {},
+  updated: function updated() {},
   created: function created() {},
   destroyed: function destroyed() {}
 });
@@ -9160,7 +8997,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.setAvailableProductIds(this.products); // Save array of available products
 
       this.showSingle = true;
-      if (document.getElementById('main').scrollTop < 130) document.getElementById('main').scrollTo(0, 130);
     },
     onSelect: function onSelect(index) {
       this.$emit('onSelect', index);
@@ -10168,117 +10004,6 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     if (this.defaultOption) {
       this.activeOption = this.defaultOption - 1;
-    }
-  }
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Tooltip.vue?vue&type=script&lang=js&":
-/*!******************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Tooltip.vue?vue&type=script&lang=js& ***!
-  \******************************************************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-/* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'tooltip',
-  props: ['tooltip'],
-  computed: {
-    teams: function teams() {
-      var tooltip = this.tooltip;
-      var data = [];
-
-      if (tooltip.type == 'userTeams') {
-        // const uniqueTeams = [...new Set(tooltip.data.map(x => x.team.title))]
-        // Create an array of unique teams from the users in data
-        var uniqueTeams = [];
-        var noTeam = {
-          title: 'No team',
-          users: [] // if (tooltip.data.length > 0) {
-          //     uniqueTeams.push({
-          //         title: 'NO TEAM',
-          //         users: [],
-          //     })
-          // }
-
-        };
-        var users = tooltip.data;
-        users.forEach(function (user) {
-          // Check if the user has any teams
-          if (user.teams[0] != null) {
-            if ('id' in user.teams[0]) {
-              // Loop through the users teams to find the unique teams
-              user.teams.forEach(function (team) {
-                // If the uniqueTeams array does not include the current team -> add it
-                var foundTeam = uniqueTeams.find(function (x) {
-                  return x.title == team.title;
-                });
-
-                if (foundTeam == null) {
-                  // If there the team doesnt exist in the array, add the team to the table
-                  // Construct a new teeam
-                  var newTeam = {
-                    title: team.title,
-                    users: []
-                  };
-                  newTeam.users.push(user);
-                  uniqueTeams.push(newTeam); // Also add the user to the new team
-                } else {
-                  // If the team already exists, add the user to the team
-                  foundTeam.users.push(user);
-                }
-              });
-            }
-          } // If the user does not have a team, add them to a "No team" group
-          else {
-              noTeam.users.push(user);
-            }
-        }); // Add a "No team" option to the tooltip if it exists
-
-        if (noTeam.users.length > 0) uniqueTeams.unshift(noTeam);
-        return uniqueTeams;
-      }
-    },
-    users: function users() {
-      var tooltip = this.tooltip;
-
-      if (tooltip.type == 'users') {
-        return tooltip.users;
-      }
     }
   }
 });
@@ -11915,7 +11640,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".comment-wrapper[data-v-54ded044] {\n  margin-bottom: 24px;\n}\n.comment-wrapper:hover .circle[data-v-54ded044] {\n  opacity: 1;\n}\n.comment-wrapper.own[data-v-54ded044] {\n  text-align: right;\n}\n.comment[data-v-54ded044] {\n  position: relative;\n  padding: 12px;\n  background: #dfdfdf;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  min-width: 170px;\n  max-width: calc(100% - 56px);\n}\n.own .comment[data-v-54ded044] {\n  background: #3b86ff;\n  color: white;\n  text-align: left;\n  margin-right: 0;\n  margin-left: 56px;\n}\n.comment .body[data-v-54ded044] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n}\n.user[data-v-54ded044] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #a8a8a8;\n  margin-top: 4px;\n}\n.bubble[data-v-54ded044] {\n  display: inline-block;\n  height: 20px;\n  width: 20px;\n  border-radius: 10px;\n  line-height: 20px;\n  text-align: center;\n  color: #1b1c1d;\n  left: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #f3f3f3;\n  position: absolute;\n  z-index: 1;\n  font-weight: 700;\n  font-size: 12px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n.bubble i[data-v-54ded044] {\n  font-size: 9px;\n}\n.bubble.votes[data-v-54ded044] {\n  color: #3b86ff;\n}\n.bubble.second[data-v-54ded044] {\n  left: 18px;\n}\n.circle[data-v-54ded044] {\n  position: absolute;\n  right: -56px;\n  height: 44px;\n  width: 44px;\n  display: block;\n  top: 2px;\n  line-height: 46px;\n  text-align: center;\n  background: #dfdfdf;\n  border-radius: 20px;\n  color: #a8a8a8;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  opacity: 0;\n}\n.comment-wrapper.own .circle[data-v-54ded044] {\n  right: auto;\n  left: -56px;\n}\n.circle i[data-v-54ded044] {\n  font-size: 20px;\n}\n.circle[data-v-54ded044]:hover {\n  color: #3b86ff;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.active[data-v-54ded044] {\n  color: #3b86ff;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n  opacity: 1;\n}\n.circle.disabled[data-v-54ded044]:not(.active) {\n  display: none;\n}\n.circle.disabled[data-v-54ded044] {\n  cursor: auto;\n}\n.pill[data-v-54ded044] {\n  display: inline-block;\n  position: absolute;\n  z-index: 1;\n  width: auto;\n  height: 20px;\n  padding: 0 12px;\n  line-height: 20px;\n  text-align: center;\n  color: #3b86ff;\n  right: -10px;\n  top: -10px;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  background: #f3f3f3;\n  font-weight: 500;\n}\n.pill.phase-final[data-v-54ded044] {\n  background: #3b86ff;\n  color: white;\n}\n.pill[data-v-54ded044]:nth-child(2) {\n  right: 100px;\n}", ""]);
+exports.push([module.i, ".comment-wrapper[data-v-54ded044] {\n  margin-bottom: 4px;\n}\n.comment[data-v-54ded044] {\n  position: relative;\n  padding: 12px;\n  background: #dfdfdf;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  max-width: calc(100% - 56px);\n}\n.own .comment[data-v-54ded044] {\n  background: #3b86ff;\n  color: white;\n  text-align: left;\n  margin-right: 0;\n  margin-left: 56px;\n}\n.comment .body[data-v-54ded044] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n}", ""]);
 
 // exports
 
@@ -12067,7 +11792,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".overlay[data-v-019a7388] {\n  z-index: 10;\n  position: fixed;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  background: transparent;\n}\n.product-single.visible > .card[data-v-019a7388] {\n  width: 100%;\n  right: 62px;\n}\n.product-single.visible .overlay[data-v-019a7388] {\n  display: block;\n}\n.product-single > .card[data-v-019a7388] {\n  right: -100%;\n  margin: 0;\n  max-width: 60vw;\n  z-index: 11;\n  top: 130px;\n  position: fixed;\n  height: calc(100vh - 130px);\n  overflow: hidden;\n  width: 100%;\n  -webkit-transition-timing-function: ease-out;\n          transition-timing-function: ease-out;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  background: white;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.product-single > .card .inner .comments[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #dfdfdf;\n  width: 100%;\n}\n.product-single .description .stat[data-v-019a7388] > :first-child {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\nh3[data-v-019a7388] {\n  font-size: 18px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #a8a8a8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 77vh;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #dfdfdf;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 0;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n}\n.controls-wrapper .square[data-v-019a7388] {\n  margin-left: 1em;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  padding-right: 1em;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  border-bottom: solid 2px #dfdfdf;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #f9f9f9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1b1c1d;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #f3f3f3;\n  color: #1b1c1d;\n  border-color: #3b86ff;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tab-body[data-v-019a7388] {\n  background: #f3f3f3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #dfdfdf;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3b86ff;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #f3f3f3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3c3b54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}\n.details[data-v-019a7388] {\n  padding-right: 1px;\n}", ""]);
+exports.push([module.i, ".overlay[data-v-019a7388] {\n  z-index: 10;\n  position: fixed;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  background: rgba(27, 28, 29, 0.5);\n}\n.product-single.visible > .card[data-v-019a7388] {\n  width: 100%;\n  right: 0;\n}\n.product-single.visible .overlay[data-v-019a7388] {\n  display: block;\n}\n.product-single > .card[data-v-019a7388] {\n  right: -100%;\n  margin: 0;\n  max-width: 60vw;\n  z-index: 11;\n  top: 0;\n  position: fixed;\n  height: 100vh;\n  overflow: hidden;\n  width: 100%;\n  -webkit-transition-timing-function: ease-out;\n          transition-timing-function: ease-out;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  background: white;\n  -webkit-animation: slide-in-data-v-019a7388 0.3s;\n          animation: slide-in-data-v-019a7388 0.3s;\n  -webkit-animation-iteration-count: 1;\n          animation-iteration-count: 1;\n  -webkit-animation-timing-function: ease-out;\n          animation-timing-function: ease-out;\n  padding: 0;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single > .card .inner[data-v-019a7388] {\n  padding: 1em;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.product-single > .card .inner .comments[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #dfdfdf;\n  width: 100%;\n}\n.product-single .description .stat[data-v-019a7388] > :first-child {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\nh3[data-v-019a7388] {\n  font-size: 16px;\n  font-weight: 400;\n}\n@-webkit-keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n@keyframes slide-in-data-v-019a7388 {\n0% {\n    -webkit-transform: translateX(100%);\n            transform: translateX(100%);\n}\n100% {\n    -webkit-transform: translateX(0);\n            transform: translateX(0);\n}\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #a8a8a8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #dfdfdf;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.controls-wrapper[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.controls-wrapper > *[data-v-019a7388] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.controls-wrapper .close[data-v-019a7388] {\n  margin-right: 24px;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  border-bottom: solid 2px #dfdfdf;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #f9f9f9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1b1c1d;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #f3f3f3;\n  color: #1b1c1d;\n  border-color: #3b86ff;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tab-body[data-v-019a7388] {\n  background: #f3f3f3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #dfdfdf;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3b86ff;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #f3f3f3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3c3b54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}\n.details[data-v-019a7388] {\n  padding-right: 1px;\n}", ""]);
 
 // exports
 
@@ -12086,7 +11811,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.toggle[data-v-6d61fa50] {\n  border: solid 1px #dfdfdf;\n  border-radius: 50px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.toggle .option[data-v-6d61fa50] {\n  font-size: 12px;\n  padding: 6px 14px;\n  font-weight: 700;\n  color: #a8a8a8;\n  text-transform: uppercase;\n  display: inline-block;\n}\n.toggle .option.active[data-v-6d61fa50] {\n  color: #1b1c1d;\n  background: #dfdfdf;\n  border-radius: 50px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #f3f3f3;\n  border-radius: 8px;\n  padding: 36px 24px;\n  height: 57vh;\n  max-height: 57vh;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comment-wrapper[data-v-6d61fa50] {\n  margin-bottom: 24px;\n}\n.comment-wrapper:hover .circle[data-v-6d61fa50] {\n  opacity: 1;\n}\n.comment-wrapper.own[data-v-6d61fa50] {\n  text-align: right;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n  margin-bottom: 42px;\n}\n@media screen and (max-width: 1480px) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-webkit-min-device-pixel-ratio: 1.25), only screen and (min-resolution: 120dpi) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #dfdfdf;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #a8a8a8;\n  max-height: 200px;\n  overflow: auto;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #a8a8a8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #a8a8a8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #a8a8a8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #f3f3f3;\n  color: #a8a8a8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3b86ff;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}", ""]);
+exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.tab-headers .tab[data-v-6d61fa50] {\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.sender-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  margin-bottom: 20px;\n}\n.sender-wrapper.own[data-v-6d61fa50] {\n  -webkit-box-align: end;\n          align-items: flex-end;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #f3f3f3;\n  border-radius: 0 8px 0 0;\n  padding: 16px 4px 16px 0;\n  height: 100%;\n}\n.comments-wrapper .inner[data-v-6d61fa50] {\n  padding: 0 24px;\n  height: 100%;\n  overflow-y: auto;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comments-wrapper .sender[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\nform[data-v-6d61fa50] {\n  margin-top: 12px;\n  margin-bottom: 42px;\n}\n@media screen and (max-width: 1480px) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-webkit-min-device-pixel-ratio: 1.25), only screen and (min-resolution: 120dpi) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\nform .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #dfdfdf;\n  box-sizing: border-box;\n  padding: 10px 52px 2px 44px;\n  font-size: 14px;\n  font-weight: 500;\n  position: relative;\n  color: #a8a8a8;\n  max-height: 200px;\n  overflow: auto;\n}\nform .input-wrapper > i[data-v-6d61fa50] {\n  position: absolute;\n  left: 14px;\n  top: 12px;\n  font-size: 20px;\n}\nform .input-wrapper input[type=checkbox][data-v-6d61fa50] {\n  display: none;\n}\nform .input-wrapper label[data-v-6d61fa50] {\n  position: absolute;\n  right: 0;\n  top: 0;\n}\nform textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  font-weight: 500;\n  color: #535353;\n}\nform textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #a8a8a8;\n}\nform textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #a8a8a8;\n}\nform textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform textarea[data-v-6d61fa50]::placeholder {\n  color: #a8a8a8;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #f3f3f3;\n  color: #a8a8a8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3b86ff;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}", ""]);
 
 // exports
 
@@ -12315,25 +12040,6 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 // module
 exports.push([module.i, ".toggle[data-v-47b09f7f] {\n  border: solid 1px #dfdfdf;\n  border-radius: 50px;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  cursor: pointer;\n}\n.toggle .option[data-v-47b09f7f] {\n  font-size: 12px;\n  padding: 6px 14px;\n  font-weight: 700;\n  color: #a8a8a8;\n  text-transform: uppercase;\n  display: inline-block;\n}\n.toggle .option.active[data-v-47b09f7f] {\n  color: #1b1c1d;\n  background: #dfdfdf;\n  border-radius: 50px;\n}", ""]);
-
-// exports
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Tooltip.vue?vue&type=style&index=0&id=09733fe8&scoped=true&lang=scss&":
-/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Tooltip.vue?vue&type=style&index=0&id=09733fe8&scoped=true&lang=scss& ***!
-  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".vue-component-tooltip[data-v-09733fe8] {\n  background: #43425d;\n  border: solid 1px #43425d;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);\n  position: fixed;\n  z-index: 9;\n  color: white;\n  border-radius: 4px;\n}\n.vue-component-tooltip.teams[data-v-09733fe8] {\n  width: 140px;\n}\n.vue-component-tooltip.users[data-v-09733fe8] {\n  width: 200px;\n}\n.vue-component-tooltip.text[data-v-09733fe8] {\n  padding: 8px;\n  position: fixed;\n}\n.header[data-v-09733fe8] {\n  text-align: center;\n  padding: 10px 0;\n  color: #a8a8a8;\n  font-size: 14px;\n  font-weight: 400;\n}\n.tooltip-row[data-v-09733fe8] {\n  font-size: 12px;\n  padding: 8px;\n  background: rgba(255, 255, 255, 0.1);\n}\n.tooltip-row[data-v-09733fe8]:nth-child(even) {\n  background: rgba(255, 255, 255, 0.2);\n}\n.tooltip-row .team[data-v-09733fe8] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.tooltip-row .count[data-v-09733fe8] {\n  font-weight: 700;\n}", ""]);
 
 // exports
 
@@ -14432,36 +14138,6 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Tooltip.vue?vue&type=style&index=0&id=09733fe8&scoped=true&lang=scss&":
-/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Tooltip.vue?vue&type=style&index=0&id=09733fe8&scoped=true&lang=scss& ***!
-  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./Tooltip.vue?vue&type=style&index=0&id=09733fe8&scoped=true&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Tooltip.vue?vue&type=style&index=0&id=09733fe8&scoped=true&lang=scss&");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TooltipAlt.vue?vue&type=style&index=0&id=d2cb0f5e&scoped=true&lang=scss&":
 /*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/TooltipAlt.vue?vue&type=style&index=0&id=d2cb0f5e&scoped=true&lang=scss& ***!
@@ -15485,162 +15161,9 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "comment-wrapper" }, [
-    _c(
-      "div",
-      { staticClass: "comment" },
-      [
-        _vm.comment.important
-          ? _c("TooltipAlt2", { attrs: { body: "Important" } }, [
-              _c("span", { staticClass: "important bubble" }, [
-                _c("i", { staticClass: "fas fa-exclamation" })
-              ])
-            ])
-          : _vm._e(),
-        _vm._v(" "),
-        _vm.comment.votes.length > 0
-          ? [
-              _vm.userPermissionLevel == 2
-                ? _c(
-                    "tooltipAlt2",
-                    {
-                      attrs: {
-                        header: "Comment votes",
-                        array: _vm.comment.votesScoped.map(function(vote) {
-                          return vote.user.email
-                        })
-                      }
-                    },
-                    [
-                      _c(
-                        "span",
-                        {
-                          staticClass: "votes bubble",
-                          class: { second: _vm.comment.important }
-                        },
-                        [_vm._v(_vm._s(_vm.comment.votesScoped.length))]
-                      )
-                    ]
-                  )
-                : _vm.userPermissionLevel > 2
-                ? _c(
-                    "tooltipAlt2",
-                    {
-                      attrs: {
-                        header: "Comment votes",
-                        array: _vm.comment.teamVotes,
-                        arrayLabelKey: "title",
-                        arrayValueKey: "votes"
-                      }
-                    },
-                    [
-                      _c(
-                        "span",
-                        {
-                          staticClass: "votes bubble",
-                          class: { second: _vm.comment.important }
-                        },
-                        [_vm._v(_vm._s(_vm.comment.votes.length))]
-                      )
-                    ]
-                  )
-                : _c(
-                    "span",
-                    {
-                      staticClass: "votes bubble",
-                      class: { second: _vm.comment.important }
-                    },
-                    [_vm._v(_vm._s(_vm.comment.votesScoped.length))]
-                  )
-            ]
-          : _vm._e(),
-        _vm._v(" "),
-        _c("div", { staticClass: "pill-wrapper" }, [
-          _vm.comment.phase_final && _vm.actionScope != "phaseAction"
-            ? _c("span", { staticClass: "votes phase-final pill" }, [
-                _vm._v("Phase final "),
-                _c("i", { staticClass: "far fa-comment-check" })
-              ])
-            : _vm._e()
-        ]),
-        _vm._v(" "),
-        _c("span", { staticClass: "body" }, [
-          _vm._v(_vm._s(_vm.comment.comment))
-        ]),
-        _vm._v(" "),
-        _vm.userPermissionLevel >= 2
-          ? [
-              _vm.actionScope == "phaseAction" && _vm.comment.phase_final
-                ? _c("TooltipAlt2", { attrs: { body: "Remark" } }, [
-                    _c(
-                      "span",
-                      {
-                        staticClass: "circle",
-                        class: { active: _vm.comment.phase_final }
-                      },
-                      [_c("i", { staticClass: "far fa-comment-check" })]
-                    )
-                  ])
-                : _vm.actionScope == "teamAction" && _vm.comment.team_final
-                ? _c("TooltipAlt2", { attrs: { body: "Remark" } }, [
-                    _c(
-                      "span",
-                      {
-                        staticClass: "circle",
-                        class: {
-                          active:
-                            _vm.comment.team_final &&
-                            _vm.comment.team_id == _vm.currentTeamId
-                        }
-                      },
-                      [_c("i", { staticClass: "far fa-comment-check" })]
-                    )
-                  ])
-                : _vm._e()
-            ]
-          : _vm._e()
-      ],
-      2
-    ),
-    _vm._v(" "),
-    _vm.comment.user != null
-      ? _c(
-          "span",
-          { staticClass: "user" },
-          [
-            _vm.comment.team_id > 0
-              ? _c(
-                  "span",
-                  { staticClass: "team" },
-                  [
-                    _vm.comment.team
-                      ? [
-                          _vm._v(
-                            "\n                " +
-                              _vm._s(_vm.comment.team.title) +
-                              "\n            "
-                          )
-                        ]
-                      : _vm._e()
-                  ],
-                  2
-                )
-              : _c("span", { staticClass: "team" }, [_vm._v("Global")]),
-            _vm._v(" "),
-            _vm.comment.user_id == _vm.authUser.id
-              ? [_vm._v("\n            | You\n        ")]
-              : _vm.userPermissionLevel >= 2
-              ? [
-                  _vm._v(
-                    "\n            | " +
-                      _vm._s(_vm.comment.user.email) +
-                      "\n        "
-                  )
-                ]
-              : _vm._e()
-          ],
-          2
-        )
-      : _vm._e()
+    _c("div", { staticClass: "comment" }, [
+      _c("span", { staticClass: "body" }, [_vm._v(_vm._s(_vm.comment.comment))])
+    ])
   ])
 }
 var staticRenderFns = []
@@ -17110,23 +16633,27 @@ var render = function() {
                 !_vm.loading
                   ? [
                       _c("div", { staticClass: "controls-wrapper" }, [
-                        _c(
-                          "span",
-                          {
-                            staticClass:
-                              "square true-square light close clickable",
-                            on: {
-                              click: function($event) {
-                                return _vm.onCloseSingle()
+                        _c("div", { staticClass: "left" }, [
+                          _c(
+                            "span",
+                            {
+                              staticClass:
+                                "square true-square light close clickable",
+                              on: {
+                                click: function($event) {
+                                  return _vm.onCloseSingle()
+                                }
                               }
-                            }
-                          },
-                          [_c("i", { staticClass: "fal fa-times" })]
-                        ),
+                            },
+                            [_c("i", { staticClass: "fal fa-times" })]
+                          ),
+                          _vm._v(" "),
+                          _c("h3", [_vm._v(_vm._s(_vm.product.title))])
+                        ]),
                         _vm._v(" "),
                         _c(
                           "div",
-                          { staticClass: "controls" },
+                          { staticClass: "right controls" },
                           [
                             _vm.userPermissionLevel >= 2
                               ? [
@@ -17268,8 +16795,6 @@ var render = function() {
                         { staticClass: "grid-2 grid-border-between inner" },
                         [
                           _c("div", { staticClass: "details" }, [
-                            _c("h3", [_vm._v(_vm._s(_vm.product.title))]),
-                            _vm._v(" "),
                             _c("div", { staticClass: "grid-2" }, [
                               _c(
                                 "div",
@@ -17758,6 +17283,7 @@ var render = function() {
                           _c("ProductSingleComments", {
                             attrs: {
                               comments: _vm.product.commentsScoped,
+                              requests: _vm.product.requests,
                               authUser: _vm.authUser,
                               product: _vm.product
                             }
@@ -17823,220 +17349,218 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "comments" },
-    [
+  return _c("div", { staticClass: "comments" }, [
+    _c("div", { staticClass: "tab-headers" }, [
       _c(
-        "div",
-        { staticClass: "header" },
+        "span",
+        {
+          staticClass: "tab",
+          class: { active: _vm.commentScope == "commentsScoped" },
+          on: {
+            click: function($event) {
+              return _vm.setCommentScope("commentsScoped")
+            }
+          }
+        },
         [
-          _c("h4", [_vm._v("Comments")]),
-          _vm._v(" "),
-          _vm.currentTask.type == "feedback"
-            ? _c("toggle", {
-                ref: "toggle",
-                attrs: { options: ["Comments"] },
-                model: {
-                  value: _vm.commentFilter,
-                  callback: function($$v) {
-                    _vm.commentFilter = $$v
-                  },
-                  expression: "commentFilter"
-                }
-              })
-            : _c("toggle", {
-                ref: "toggle",
-                attrs: { options: ["Comments", "Remarks"], defaultOption: 1 },
-                model: {
-                  value: _vm.commentFilter,
-                  callback: function($$v) {
-                    _vm.commentFilter = $$v
-                  },
-                  expression: "commentFilter"
-                }
-              })
-        ],
-        1
+          _vm._v("\n            Comments "),
+          _c(
+            "span",
+            {
+              staticClass: "circle small",
+              class: _vm.commentScope == "commentsScoped" ? "white" : "light"
+            },
+            [_vm._v(_vm._s(_vm.product.requests.length))]
+          )
+        ]
       ),
       _vm._v(" "),
-      _vm.commentFilter == "all comments"
-        ? _c(
-            "div",
-            { staticClass: "comments-wrapper" },
-            _vm._l(_vm.commentTeams, function(team) {
-              return _c(
-                "div",
-                { key: team.id, staticClass: "team" },
-                _vm._l(team.comments, function(comment) {
-                  return _c("comment", {
-                    key: comment.id,
-                    class: [
-                      { "own-team": comment.team_id == _vm.currentTeamId },
-                      { own: comment.user_id == _vm.authUser.id }
-                    ],
-                    attrs: { comment: comment }
-                  })
-                }),
-                1
-              )
-            }),
-            0
+      _c(
+        "span",
+        {
+          staticClass: "tab",
+          class: { active: _vm.commentScope == "requests" },
+          on: {
+            click: function($event) {
+              return _vm.setCommentScope("requests")
+            }
+          }
+        },
+        [
+          _vm._v("\n            Requests "),
+          _c(
+            "span",
+            {
+              staticClass: "circle small",
+              class: _vm.commentScope == "requests" ? "white" : "light"
+            },
+            [_vm._v(_vm._s(_vm.product.requests.length))]
           )
-        : _c(
+        ]
+      )
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "comments-wrapper" }, [
+      _c(
+        "div",
+        { staticClass: "inner" },
+        _vm._l(_vm.commentsGroupedBySender, function(sender, index) {
+          return _c(
             "div",
-            { staticClass: "comments-wrapper" },
-            _vm._l(_vm.commentsFiltered, function(comment) {
-              return _c("comment", {
-                key: comment.id,
-                class: [
-                  { "own-team": comment.team_id == _vm.currentTeamId },
-                  { own: comment.user_id == _vm.authUser.id }
-                ],
-                attrs: { comment: comment }
-              })
-            }),
-            1
-          ),
-      _vm._v(" "),
-      _c("form", { on: { submit: _vm.onSubmitComment } }, [
-        _c("div", { staticClass: "input-wrapper" }, [
-          _c("i", { staticClass: "far fa-comment" }),
-          _vm._v(" "),
-          _c("textarea", {
+            {
+              key: index,
+              staticClass: "sender-wrapper",
+              class: { own: sender.user.id == _vm.authUser.id }
+            },
+            [
+              _vm._l(sender.comments, function(comment) {
+                return _c("comment", {
+                  key: comment.id,
+                  attrs: { comment: comment }
+                })
+              }),
+              _vm._v(" "),
+              _c("div", { staticClass: "sender" }, [
+                _vm._v(
+                  _vm._s(sender.task.title) + " | " + _vm._s(sender.user.name)
+                )
+              ])
+            ],
+            2
+          )
+        }),
+        0
+      )
+    ]),
+    _vm._v(" "),
+    _c("form", { on: { submit: _vm.onSubmitComment } }, [
+      _c("div", { staticClass: "input-wrapper" }, [
+        _c("i", { staticClass: "far fa-comment" }),
+        _vm._v(" "),
+        _c("textarea", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.newComment.comment,
+              expression: "newComment.comment"
+            }
+          ],
+          ref: "commentField",
+          attrs: {
+            name: "comment",
+            id: "comment-input",
+            placeholder: _vm.placeholderText
+          },
+          domProps: { value: _vm.newComment.comment },
+          on: {
+            keydown: function($event) {
+              if (
+                !$event.type.indexOf("key") &&
+                _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+              ) {
+                return null
+              }
+              if (
+                $event.ctrlKey ||
+                $event.shiftKey ||
+                $event.altKey ||
+                $event.metaKey
+              ) {
+                return null
+              }
+              $event.preventDefault()
+            },
+            keyup: function($event) {
+              if (
+                !$event.type.indexOf("key") &&
+                _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+              ) {
+                return null
+              }
+              if (
+                $event.ctrlKey ||
+                $event.shiftKey ||
+                $event.altKey ||
+                $event.metaKey
+              ) {
+                return null
+              }
+              return _vm.onSubmitComment($event)
+            },
+            input: [
+              function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.$set(_vm.newComment, "comment", $event.target.value)
+              },
+              _vm.resizeTextarea
+            ]
+          }
+        }),
+        _vm._v(" "),
+        _c("label", [
+          _c("input", {
             directives: [
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.newComment.comment,
-                expression: "newComment.comment"
+                value: _vm.newComment.important,
+                expression: "newComment.important"
               }
             ],
-            ref: "commentField",
-            attrs: {
-              name: "comment",
-              id: "comment-input",
-              placeholder: _vm.placeholderText
+            attrs: { type: "checkbox", name: "comment-important" },
+            domProps: {
+              checked: Array.isArray(_vm.newComment.important)
+                ? _vm._i(_vm.newComment.important, null) > -1
+                : _vm.newComment.important
             },
-            domProps: { value: _vm.newComment.comment },
             on: {
-              keydown: function($event) {
-                if (
-                  !$event.type.indexOf("key") &&
-                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                ) {
-                  return null
-                }
-                if (
-                  $event.ctrlKey ||
-                  $event.shiftKey ||
-                  $event.altKey ||
-                  $event.metaKey
-                ) {
-                  return null
-                }
-                $event.preventDefault()
-              },
-              keyup: function($event) {
-                if (
-                  !$event.type.indexOf("key") &&
-                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                ) {
-                  return null
-                }
-                if (
-                  $event.ctrlKey ||
-                  $event.shiftKey ||
-                  $event.altKey ||
-                  $event.metaKey
-                ) {
-                  return null
-                }
-                return _vm.onSubmitComment($event)
-              },
-              input: [
-                function($event) {
-                  if ($event.target.composing) {
-                    return
+              change: function($event) {
+                var $$a = _vm.newComment.important,
+                  $$el = $event.target,
+                  $$c = $$el.checked ? true : false
+                if (Array.isArray($$a)) {
+                  var $$v = null,
+                    $$i = _vm._i($$a, $$v)
+                  if ($$el.checked) {
+                    $$i < 0 &&
+                      _vm.$set(_vm.newComment, "important", $$a.concat([$$v]))
+                  } else {
+                    $$i > -1 &&
+                      _vm.$set(
+                        _vm.newComment,
+                        "important",
+                        $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                      )
                   }
-                  _vm.$set(_vm.newComment, "comment", $event.target.value)
-                },
-                _vm.resizeTextarea
-              ]
+                } else {
+                  _vm.$set(_vm.newComment, "important", $$c)
+                }
+              }
             }
           }),
           _vm._v(" "),
-          _c("label", [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.newComment.important,
-                  expression: "newComment.important"
-                }
-              ],
-              attrs: { type: "checkbox", name: "comment-important" },
-              domProps: {
-                checked: Array.isArray(_vm.newComment.important)
-                  ? _vm._i(_vm.newComment.important, null) > -1
-                  : _vm.newComment.important
-              },
-              on: {
-                change: function($event) {
-                  var $$a = _vm.newComment.important,
-                    $$el = $event.target,
-                    $$c = $$el.checked ? true : false
-                  if (Array.isArray($$a)) {
-                    var $$v = null,
-                      $$i = _vm._i($$a, $$v)
-                    if ($$el.checked) {
-                      $$i < 0 &&
-                        _vm.$set(_vm.newComment, "important", $$a.concat([$$v]))
-                    } else {
-                      $$i > -1 &&
-                        _vm.$set(
-                          _vm.newComment,
-                          "important",
-                          $$a.slice(0, $$i).concat($$a.slice($$i + 1))
-                        )
-                    }
-                  } else {
-                    _vm.$set(_vm.newComment, "important", $$c)
-                  }
-                }
-              }
-            }),
-            _vm._v(" "),
-            _c(
-              "span",
-              {
-                staticClass: "checkmark",
-                class: { active: _vm.newComment.important },
-                on: {
-                  mouseover: function($event) {
-                    return _vm.showTooltip($event, "Important comment")
-                  },
-                  mouseleave: _vm.hideTooltip
-                }
-              },
-              [_c("i", { staticClass: "fas fa-exclamation" })]
-            )
-          ])
-        ]),
-        _vm._v(" "),
-        _c("input", {
-          staticClass: "button primary xl",
-          class: { disabled: _vm.submitDisabled },
-          attrs: { type: "submit" },
-          domProps: { value: _vm.submitText }
-        })
+          _c(
+            "span",
+            {
+              staticClass: "checkmark",
+              class: { active: _vm.newComment.important }
+            },
+            [_c("i", { staticClass: "fas fa-exclamation" })]
+          )
+        ])
       ]),
       _vm._v(" "),
-      _c("Tooltip", { attrs: { tooltip: _vm.tooltip } })
-    ],
-    1
-  )
+      _c("input", {
+        staticClass: "button primary xl",
+        class: { disabled: _vm.submitDisabled },
+        attrs: { type: "submit" },
+        domProps: { value: _vm.submitText }
+      })
+    ])
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -20365,113 +19889,6 @@ var render = function() {
     }),
     0
   )
-}
-var staticRenderFns = []
-render._withStripped = true
-
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Tooltip.vue?vue&type=template&id=09733fe8&scoped=true&":
-/*!**********************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Tooltip.vue?vue&type=template&id=09733fe8&scoped=true& ***!
-  \**********************************************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _vm.tooltip.active == true
-    ? _c(
-        "div",
-        {
-          staticClass: "vue-component-tooltip",
-          class: _vm.tooltip.type,
-          style: {
-            top: _vm.tooltip.position.top + "px",
-            left: _vm.tooltip.position.center - 70 + "px"
-          }
-        },
-        [
-          _vm.tooltip.header != null
-            ? _c("div", { staticClass: "header" }, [
-                _c("span", [
-                  _vm._v(
-                    _vm._s(_vm.tooltip.data.length) +
-                      " " +
-                      _vm._s(_vm.tooltip.header)
-                  )
-                ])
-              ])
-            : _vm._e(),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "body" },
-            [
-              _vm.tooltip.type == "users"
-                ? _vm._l(_vm.tooltip.data, function(user, index) {
-                    return _c(
-                      "div",
-                      { key: index, staticClass: "tooltip-row" },
-                      [
-                        _c("span", { staticClass: "user" }, [
-                          _c("span", { staticClass: "email" }, [
-                            _vm._v(_vm._s(user.email))
-                          ])
-                        ])
-                      ]
-                    )
-                  })
-                : _vm._e(),
-              _vm._v(" "),
-              _vm.tooltip.type == "userTeams"
-                ? _vm._l(_vm.teams, function(team, index) {
-                    return _c(
-                      "div",
-                      { key: index, staticClass: "tooltip-row" },
-                      [
-                        _c("span", { staticClass: "team" }, [
-                          _vm._v(_vm._s(team.title) + " "),
-                          _c("span", { staticClass: "count" }, [
-                            _vm._v(_vm._s(team.users.length))
-                          ])
-                        ])
-                      ]
-                    )
-                  })
-                : _vm._e(),
-              _vm._v(" "),
-              _vm.tooltip.type == "teams"
-                ? _vm._l(_vm.tooltip.data, function(team, index) {
-                    return _c(
-                      "div",
-                      { key: index, staticClass: "tooltip-row" },
-                      [
-                        _c("span", { staticClass: "team" }, [
-                          _vm._v(_vm._s(team.title))
-                        ])
-                      ]
-                    )
-                  })
-                : _vm._e(),
-              _vm._v(" "),
-              _vm.tooltip.type == "text"
-                ? [_c("span", [_vm._v(_vm._s(_vm.tooltip.data))])]
-                : _vm._e()
-            ],
-            2
-          )
-        ]
-      )
-    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -39435,93 +38852,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/Tooltip.vue":
-/*!*********************************************!*\
-  !*** ./resources/js/components/Tooltip.vue ***!
-  \*********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tooltip_vue_vue_type_template_id_09733fe8_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tooltip.vue?vue&type=template&id=09733fe8&scoped=true& */ "./resources/js/components/Tooltip.vue?vue&type=template&id=09733fe8&scoped=true&");
-/* harmony import */ var _Tooltip_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tooltip.vue?vue&type=script&lang=js& */ "./resources/js/components/Tooltip.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _Tooltip_vue_vue_type_style_index_0_id_09733fe8_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tooltip.vue?vue&type=style&index=0&id=09733fe8&scoped=true&lang=scss& */ "./resources/js/components/Tooltip.vue?vue&type=style&index=0&id=09733fe8&scoped=true&lang=scss&");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-
-/* normalize component */
-
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
-  _Tooltip_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _Tooltip_vue_vue_type_template_id_09733fe8_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _Tooltip_vue_vue_type_template_id_09733fe8_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
-  false,
-  null,
-  "09733fe8",
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/js/components/Tooltip.vue"
-/* harmony default export */ __webpack_exports__["default"] = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/js/components/Tooltip.vue?vue&type=script&lang=js&":
-/*!**********************************************************************!*\
-  !*** ./resources/js/components/Tooltip.vue?vue&type=script&lang=js& ***!
-  \**********************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Tooltip_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./Tooltip.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Tooltip.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Tooltip_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/js/components/Tooltip.vue?vue&type=style&index=0&id=09733fe8&scoped=true&lang=scss&":
-/*!*******************************************************************************************************!*\
-  !*** ./resources/js/components/Tooltip.vue?vue&type=style&index=0&id=09733fe8&scoped=true&lang=scss& ***!
-  \*******************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Tooltip_vue_vue_type_style_index_0_id_09733fe8_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./Tooltip.vue?vue&type=style&index=0&id=09733fe8&scoped=true&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Tooltip.vue?vue&type=style&index=0&id=09733fe8&scoped=true&lang=scss&");
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Tooltip_vue_vue_type_style_index_0_id_09733fe8_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Tooltip_vue_vue_type_style_index_0_id_09733fe8_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Tooltip_vue_vue_type_style_index_0_id_09733fe8_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Tooltip_vue_vue_type_style_index_0_id_09733fe8_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
- /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Tooltip_vue_vue_type_style_index_0_id_09733fe8_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
-
-/***/ }),
-
-/***/ "./resources/js/components/Tooltip.vue?vue&type=template&id=09733fe8&scoped=true&":
-/*!****************************************************************************************!*\
-  !*** ./resources/js/components/Tooltip.vue?vue&type=template&id=09733fe8&scoped=true& ***!
-  \****************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Tooltip_vue_vue_type_template_id_09733fe8_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./Tooltip.vue?vue&type=template&id=09733fe8&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Tooltip.vue?vue&type=template&id=09733fe8&scoped=true&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Tooltip_vue_vue_type_template_id_09733fe8_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Tooltip_vue_vue_type_template_id_09733fe8_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
-
-
-
-/***/ }),
-
 /***/ "./resources/js/components/TooltipAlt.vue":
 /*!************************************************!*\
   !*** ./resources/js/components/TooltipAlt.vue ***!
@@ -40851,6 +40181,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _User__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./User */ "./resources/js/store/models/User.js");
 /* harmony import */ var _CommentVote__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CommentVote */ "./resources/js/store/models/CommentVote.js");
 /* harmony import */ var _Team__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var _Task__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Task */ "./resources/js/store/models/Task.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -40870,6 +40201,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // Product Model
+
 
 
 
@@ -40903,6 +40235,7 @@ function (_Model) {
         is_request: this.attr(''),
         user: this.belongsTo(_User__WEBPACK_IMPORTED_MODULE_1__["default"], 'user_id'),
         team: this.belongsTo(_Team__WEBPACK_IMPORTED_MODULE_3__["default"], 'team_id'),
+        task: this.belongsTo(_Task__WEBPACK_IMPORTED_MODULE_4__["default"], 'task_id'),
         votes: this.hasMany(_CommentVote__WEBPACK_IMPORTED_MODULE_2__["default"], 'comment_id')
       };
       return data;
@@ -45126,7 +44459,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     //   currentProduct: state => { return (state.currentProductId != null) ? Product.find(state.currentProductId) : null },
     products: function products(state, getters, rootState, rootGetters) {
       if (!rootGetters['persist/loadingInit'] && !state.loading && rootGetters['persist/currentTask'] != null) {
-        var products = _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"](['actions.task|user.teams'])["with"](['comments.votes.user.teams', 'comments.user.teams', 'comments.team']).all();
+        var products = _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"](['actions.task|user.teams'])["with"](['comments.votes.user.teams', 'comments.user.teams', 'comments.team|task']).all();
         var actionScope = rootGetters['collection/actionScope'];
         var currentTask = rootGetters['persist/currentTask'];
         var userId = rootGetters['persist/authUser'].id;

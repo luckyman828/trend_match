@@ -3,6 +3,7 @@ import { Model } from '@vuex-orm/core'
 import User from './User'
 import CommentVote from './CommentVote'
 import Team from './Team'
+import Task from './Task'
 
 export default class Comment extends Model {
     // This is the name used as module name of the Vuex Store.
@@ -22,6 +23,7 @@ export default class Comment extends Model {
             is_request: this.attr(''),
             user: this.belongsTo(User, 'user_id'),
             team: this.belongsTo(Team, 'team_id'),
+            task: this.belongsTo(Task, 'task_id'),
             votes: this.hasMany(CommentVote, 'comment_id'),
         }
 
