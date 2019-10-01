@@ -18727,11 +18727,19 @@ var render = function() {
                               staticClass: "square-wrapper",
                               attrs: {
                                 header: "in",
-                                array: product.ins.map(function(x) {
-                                  return x.user.name != null
-                                    ? x.user.name
-                                    : x.title
-                                })
+                                array: product.ins
+                                  .map(function(x) {
+                                    return x.user.name != null
+                                      ? x.user.name
+                                      : x.title
+                                  })
+                                  .concat(
+                                    product.focus.map(function(x) {
+                                      return x.user.name != null
+                                        ? x.user.name
+                                        : x.title
+                                    })
+                                  )
                               }
                             },
                             [

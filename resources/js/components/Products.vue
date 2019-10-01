@@ -78,7 +78,7 @@
                         <tooltipAlt2 class="square-wrapper" :header="'focus'" :array="product.focus.map(x => (x.user.name != null) ? x.user.name : x.title)">
                             <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
                         </tooltipAlt2>
-                        <tooltipAlt2 class="square-wrapper" :header="'in'" :array="product.ins.map(x => (x.user.name != null) ? x.user.name : x.title)">
+                        <tooltipAlt2 class="square-wrapper" :header="'in'" :array="product.ins.map(x => (x.user.name != null) ? x.user.name : x.title).concat(product.focus.map(x => (x.user.name != null) ? x.user.name : x.title))">
                             <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
                         </tooltipAlt2>
                         <tooltipAlt2 class="square-wrapper" :header="'out'" :array="product.outs.map(x => (x.user.name != null) ? x.user.name : x.title)">
