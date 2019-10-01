@@ -21,11 +21,11 @@
                         <p class="row" v-for="(row, index) in array" :key="index">
                             <template v-if="arrayLabelKey != null">
                                 <span class="label">{{row[arrayLabelKey]}}: </span>
-                                <strong class="value" v-if="arrayValueKey != null">{{row[arrayValueKey]}}</strong>
+                                <strong class="value" v-if="arrayValueKey != null">{{row[arrayValueKey]}}<template v-if="arrayValueUnit">{{arrayValueUnit}}</template></strong>
                                 <strong class="value" v-else>{{row}}</strong>
                             </template>
                             <template v-else>
-                                <span class="value" v-if="arrayValueKey != null">{{row[arrayValueKey]}}</span>
+                                <span class="value" v-if="arrayValueKey != null">{{row[arrayValueKey]}}<template v-if="arrayValueUnit">{{arrayValueUnit}}</template></span>
                                 <span class="value" v-else>{{row}}</span>
                             </template>
                         </p>
@@ -50,7 +50,8 @@ export default {
         'body',
         'array',
         'arrayLabelKey',
-        'arrayValueKey'
+        'arrayValueKey',
+        'arrayValueUnit'
     ],
     methods: {
         toggle() {

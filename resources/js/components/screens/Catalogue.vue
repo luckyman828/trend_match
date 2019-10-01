@@ -245,8 +245,9 @@ export default{
             return selectedProducts
         },
         productTotals() {
-            const products = this.productsFilteredByCategory
+            const products = this.products
             const data = {
+                // Product actions for the currect task dividided by the total amount of products times the length og NDs
                 get actions () {
                     return this.ins + this.outs
                 },

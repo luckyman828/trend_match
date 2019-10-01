@@ -118,8 +118,8 @@
                                 <div class="tab-body">
                                     <strong class="tab-title">{{currentTab.substr(0, currentTab.length - 1)}}</strong>
                                     <p v-for="(row, index) in tabBody" :key="index">
-                                        <span class="team">{{(row.task.title != null) ? row.task.title : row.title}}</span>
-                                        <span class="user">{{(row.name) ? row.name : (row.user.name != null) ? row.user.name : row.title}}</span>
+                                        <span class="team">{{(row.task) ? row.task.title : row.title}}</span>
+                                        <span class="user">{{(row.name) ? row.name : (row.user) ? row.user.name : row.title}}</span>
                                         <template v-if="row.focus != null">
                                             <span class="focus" v-if="row.focus">Focus <i class="fas fa-star"></i></span>
                                         </template>

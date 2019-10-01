@@ -7379,31 +7379,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'catalogueHeader',
-  props: ['collection', 'productTotals', 'startDate', 'endDate', 'teamUsers'],
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel']))
+  props: ['collection'],
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']))
 });
 
 /***/ }),
@@ -10468,7 +10448,7 @@ __webpack_require__.r(__webpack_exports__);
       showDelay: 300
     };
   },
-  props: ['header', 'body', 'array', 'arrayLabelKey', 'arrayValueKey'],
+  props: ['header', 'body', 'array', 'arrayLabelKey', 'arrayValueKey', 'arrayValueUnit'],
   methods: {
     toggle: function toggle() {
       this.hidden = !this.hidden;
@@ -10874,8 +10854,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     productTotals: function productTotals() {
       var _this2 = this;
 
-      var products = this.productsFilteredByCategory;
+      var products = this.products;
       var data = {
+        // Product actions for the currect task dividided by the total amount of products times the length og NDs
         get actions() {
           return this.ins + this.outs;
         },
@@ -15367,14 +15348,6 @@ var render = function() {
       "div",
       [
         _c("div", { staticClass: "stat" }, [
-          _c("span", { staticClass: "title" }, [_vm._v("Teams")]),
-          _vm._v(" "),
-          _c("span", { staticClass: "square light" }, [
-            _vm._v(_vm._s(_vm.collection.teams.length) + " Teams")
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "stat" }, [
           _c("span", { staticClass: "title" }, [_vm._v("Start date")]),
           _vm._v(" "),
           _c("span", { staticClass: "square light" }, [
@@ -15404,126 +15377,89 @@ var render = function() {
           ])
         ]),
         _vm._v(" "),
-        _vm.userPermissionLevel >= 2
-          ? [
-              _vm.currentTeamId == 0
-                ? [
-                    _c(
-                      "TooltipAlt2",
-                      {
-                        attrs: {
-                          header: "Progress",
-                          array: _vm.collection.teams,
-                          arrayLabelKey: "title",
-                          arrayValueKey: "progress"
-                        }
-                      },
-                      [
-                        _c("div", { staticClass: "stat progress" }, [
-                          _c("span", { staticClass: "title" }, [
-                            _vm._v("Progress")
-                          ]),
-                          _vm._v(" "),
-                          _c("svg", { attrs: { height: "4" } }, [
-                            _vm.productTotals.progress > 0
-                              ? _c("rect", {
-                                  staticClass: "background",
-                                  attrs: { width: "100%", height: "4" }
-                                })
-                              : _vm._e(),
-                            _vm._v(" "),
-                            _vm.productTotals.progress > 0
-                              ? _c("rect", {
-                                  staticClass: "value",
-                                  attrs: {
-                                    width: _vm.productTotals.progress + "%",
-                                    height: "4"
-                                  }
-                                })
-                              : _vm._e()
-                          ]),
-                          _vm._v(" "),
-                          _c("span", { staticClass: "value" }, [
-                            _vm._v(_vm._s(_vm.productTotals.progress) + "%")
-                          ])
-                        ])
-                      ]
-                    )
-                  ]
-                : [
-                    _c(
-                      "TooltipAlt2",
-                      {
-                        attrs: {
-                          header: "Team progress",
-                          array: _vm.teamUsers,
-                          arrayLabelKey: "email",
-                          arrayValueKey: "progress"
-                        }
-                      },
-                      [
-                        _c("div", { staticClass: "stat progress" }, [
-                          _c("span", { staticClass: "title" }, [
-                            _vm._v("Progress")
-                          ]),
-                          _vm._v(" "),
-                          _c("svg", { attrs: { height: "4" } }, [
-                            _vm.productTotals.progress > 0
-                              ? _c("rect", {
-                                  staticClass: "background",
-                                  attrs: { width: "100%", height: "4" }
-                                })
-                              : _vm._e(),
-                            _vm._v(" "),
-                            _vm.productTotals.progress > 0
-                              ? _c("rect", {
-                                  staticClass: "value",
-                                  attrs: {
-                                    width: _vm.productTotals.progress + "%",
-                                    height: "4"
-                                  }
-                                })
-                              : _vm._e()
-                          ]),
-                          _vm._v(" "),
-                          _c("span", { staticClass: "value" }, [
-                            _vm._v(_vm._s(_vm.productTotals.progress) + "%")
-                          ])
-                        ])
-                      ]
-                    )
-                  ]
-            ]
-          : [
-              _c("div", { staticClass: "stat progress" }, [
-                _c("span", { staticClass: "title" }, [_vm._v("Progress")]),
-                _vm._v(" "),
-                _c("svg", { attrs: { height: "4" } }, [
-                  _vm.productTotals.progress > 0
-                    ? _c("rect", {
-                        staticClass: "background",
-                        attrs: { width: "100%", height: "4" }
-                      })
-                    : _vm._e(),
+        _vm.currentTask.type == "feedback"
+          ? _c(
+              "TooltipAlt2",
+              {
+                attrs: {
+                  header: "Progress",
+                  array: _vm.currentTask.input,
+                  arrayLabelKey: "name",
+                  arrayValueKey: "progress",
+                  arrayValueUnit: "%"
+                }
+              },
+              [
+                _c("div", { staticClass: "stat progress" }, [
+                  _c("span", { staticClass: "title" }, [_vm._v("Progress")]),
                   _vm._v(" "),
-                  _vm.productTotals.progress > 0
-                    ? _c("rect", {
-                        staticClass: "value",
-                        attrs: {
-                          width: _vm.productTotals.progress + "%",
-                          height: "4"
-                        }
-                      })
-                    : _vm._e()
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "value" }, [
-                  _vm._v(_vm._s(_vm.productTotals.progress) + "%")
+                  _c("svg", { attrs: { height: "4" } }, [
+                    _vm.currentTask.progress > 0
+                      ? _c("rect", {
+                          staticClass: "background",
+                          attrs: { width: "100%", height: "4" }
+                        })
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.currentTask.progress > 0
+                      ? _c("rect", {
+                          staticClass: "value",
+                          attrs: {
+                            width: _vm.currentTask.progress + "%",
+                            height: "4"
+                          }
+                        })
+                      : _vm._e()
+                  ]),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "value" }, [
+                    _vm._v(_vm._s(_vm.currentTask.progress) + "%")
+                  ])
                 ])
-              ])
-            ]
+              ]
+            )
+          : _c(
+              "TooltipAlt2",
+              {
+                attrs: {
+                  header: "Progress",
+                  array: [_vm.currentTask],
+                  arrayLabelKey: "title",
+                  arrayValueKey: "progress",
+                  arrayValueUnit: "%"
+                }
+              },
+              [
+                _c("div", { staticClass: "stat progress" }, [
+                  _c("span", { staticClass: "title" }, [_vm._v("Progress")]),
+                  _vm._v(" "),
+                  _c("svg", { attrs: { height: "4" } }, [
+                    _vm.currentTask.progress > 0
+                      ? _c("rect", {
+                          staticClass: "background",
+                          attrs: { width: "100%", height: "4" }
+                        })
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.currentTask.progress > 0
+                      ? _c("rect", {
+                          staticClass: "value",
+                          attrs: {
+                            width: _vm.currentTask.progress + "%",
+                            height: "4"
+                          }
+                        })
+                      : _vm._e()
+                  ]),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "value" }, [
+                    _vm._v(_vm._s(_vm.currentTask.progress) + "%")
+                  ])
+                ])
+              ]
+            )
       ],
-      2
+      1
     )
   ])
 }
@@ -17774,7 +17710,7 @@ var render = function() {
                                         _c("span", { staticClass: "team" }, [
                                           _vm._v(
                                             _vm._s(
-                                              row.task.title != null
+                                              row.task
                                                 ? row.task.title
                                                 : row.title
                                             )
@@ -17786,7 +17722,7 @@ var render = function() {
                                             _vm._s(
                                               row.name
                                                 ? row.name
-                                                : row.user.name != null
+                                                : row.user
                                                 ? row.user.name
                                                 : row.title
                                             )
@@ -20693,18 +20629,34 @@ var render = function() {
                               ]),
                               _vm._v(" "),
                               _vm.arrayValueKey != null
-                                ? _c("strong", { staticClass: "value" }, [
-                                    _vm._v(_vm._s(row[_vm.arrayValueKey]))
-                                  ])
+                                ? _c(
+                                    "strong",
+                                    { staticClass: "value" },
+                                    [
+                                      _vm._v(_vm._s(row[_vm.arrayValueKey])),
+                                      _vm.arrayValueUnit
+                                        ? [_vm._v(_vm._s(_vm.arrayValueUnit))]
+                                        : _vm._e()
+                                    ],
+                                    2
+                                  )
                                 : _c("strong", { staticClass: "value" }, [
                                     _vm._v(_vm._s(row))
                                   ])
                             ]
                           : [
                               _vm.arrayValueKey != null
-                                ? _c("span", { staticClass: "value" }, [
-                                    _vm._v(_vm._s(row[_vm.arrayValueKey]))
-                                  ])
+                                ? _c(
+                                    "span",
+                                    { staticClass: "value" },
+                                    [
+                                      _vm._v(_vm._s(row[_vm.arrayValueKey])),
+                                      _vm.arrayValueUnit
+                                        ? [_vm._v(_vm._s(_vm.arrayValueUnit))]
+                                        : _vm._e()
+                                    ],
+                                    2
+                                  )
                                 : _c("span", { staticClass: "value" }, [
                                     _vm._v(_vm._s(row))
                                   ])
@@ -41654,6 +41606,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _FileTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FileTask */ "./resources/js/store/models/FileTask.js");
 /* harmony import */ var _TaskParent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./TaskParent */ "./resources/js/store/models/TaskParent.js");
 /* harmony import */ var _TaskTeam__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./TaskTeam */ "./resources/js/store/models/TaskTeam.js");
+/* harmony import */ var _Action__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Action */ "./resources/js/store/models/Action.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -41673,6 +41626,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // Product Model
+
 
 
 
@@ -41702,7 +41656,8 @@ function (_Model) {
         type: this.attr(''),
         completed: this.hasMany(_FileTask__WEBPACK_IMPORTED_MODULE_1__["default"], 'task_id'),
         parents: this.hasMany(_TaskParent__WEBPACK_IMPORTED_MODULE_2__["default"], 'task_id'),
-        taskTeams: this.hasMany(_TaskTeam__WEBPACK_IMPORTED_MODULE_3__["default"], 'task_id')
+        taskTeams: this.hasMany(_TaskTeam__WEBPACK_IMPORTED_MODULE_3__["default"], 'task_id'),
+        actions: this.hasMany(_Action__WEBPACK_IMPORTED_MODULE_4__["default"], 'task_id')
       };
       return data;
     }
@@ -44262,9 +44217,23 @@ __webpack_require__.r(__webpack_exports__);
       return state.currentTaskId;
     },
     currentTask: function currentTask(state, getters, rootState, rootGetters) {
-      return state.currentTaskId != null && rootGetters['entities/tasks/tasks'] != null ? rootGetters['entities/tasks/tasks'].find(function (x) {
+      var currentTask = state.currentTaskId != null && rootGetters['entities/tasks/tasks'] != null ? rootGetters['entities/tasks/tasks'].find(function (x) {
         return x.id == state.currentTaskId;
-      }) : null;
+      }) : null; // Find task progress
+
+      if (currentTask) {
+        currentTask.progress = currentTask.type == 'feedback' ? Math.round(currentTask.actions.length / (currentTask.input.length * getters.currentFile.products.length) * 100 * 1) / 1 : Math.round(currentTask.actions.length / getters.currentFile.products.length * 100 * 1) / 1;
+
+        if (currentTask.type == 'feedback') {
+          currentTask.input.forEach(function (user) {
+            user.progress = Math.round(currentTask.actions.filter(function (x) {
+              return x.user_id == user.id;
+            }).length / getters.currentFile.products.length * 100 * 1) / 1;
+          });
+        }
+      }
+
+      return currentTask;
     },
     userPermissionLevel: function userPermissionLevel(state) {
       return state.userPermissionLevel;
@@ -45282,8 +45251,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
           if (currentTask.type == 'feedback') {
             // If type: Feedback -> Find all users with access to the task
-            var userCopy = JSON.parse(JSON.stringify(currentTask.users));
-            userCopy;
             product.nds = JSON.parse(JSON.stringify(currentTask.users)).map(function (x) {
               x.task = currentTask;
               return x;
@@ -46416,7 +46383,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return state.loading;
     },
     tasks: function tasks(state, getters, rootState, rootGetters) {
-      var tasks = _models_Task__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('taskTeams.team.users')["with"]('completed')["with"]('parents.completed|parentTask').get();
+      var tasks = _models_Task__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('taskTeams.team.users')["with"]('completed|actions')["with"]('parents.completed|parentTask').get();
       tasks.forEach(function (task) {
         // Find task users
         task.users = [];
@@ -46448,15 +46415,23 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             if (parent.completed.length > 0) // And the parents are completed
               task.isActive = true;
           });
-        }
-      }); // tasks.forEach(task => {
-      //     task.parentTasks = []
-      //     task.parents.forEach(parent => {
-      //         const parentTask = tasks.find(x => x.id == parent.parent_id)
-      //         if (parentTask) task.parentTasks.push(parentTask)
-      //     })
-      // })
+        } // Find task input (users/tasks that have to give input to the task)
 
+
+        task.input = [];
+
+        if (task.type == 'feedback') {
+          // If type: Feedback -> Find all users with access to the task
+          task.input = task.input.concat(task.users);
+        } else {
+          // If type = Alignment -> Find the parent tasks
+          task.parentTasks.forEach(function (parentTask) {
+            // if parent type is feedback -> push users
+            // else -> push task
+            if (parentTask.type == 'feedback') task.input = task.input.concat(parentTask.users);else task.input = task.input.concat(parentTask);
+          });
+        }
+      });
       return tasks;
     },
     userTasks: function userTasks(state, getters, rootState, rootGetters) {

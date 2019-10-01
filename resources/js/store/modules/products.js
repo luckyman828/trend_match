@@ -131,8 +131,6 @@ export default {
                     // START Find Not decideds NDs
                     if (currentTask.type == 'feedback') {
                         // If type: Feedback -> Find all users with access to the task
-                        const userCopy = JSON.parse(JSON.stringify(currentTask.users))
-                        userCopy
                         product.nds = JSON.parse(JSON.stringify(currentTask.users)).map(x => {
                             x.task = currentTask
                             return x

@@ -18,7 +18,7 @@ export default {
         tasks: (state, getters, rootState, rootGetters) => {
             const tasks = Task.query()
                 .with('taskTeams.team.users')
-                .with('completed')
+                .with('completed|actions')
                 .with('parents.completed|parentTask')
                 .get()
             tasks.forEach(task => {
@@ -53,14 +53,24 @@ export default {
                             task.isActive = true
                     })
                 }
+
+                // Find task input (users/tasks that have to give input to the task)
+                task.input = []
+
+                if (task.type == 'feedback') {
+                    // If type: Feedback -> Find all users with access to the task
+                    task.input = task.input.concat(task.users)
+                } else {
+                    // If type = Alignment -> Find the parent tasks
+                    task.parentTasks.forEach(parentTask => {
+                        // if parent type is feedback -> push users
+                        // else -> push task
+                        if (parentTask.type == 'feedback') task.input = task.input.concat(parentTask.users)
+                        else task.input = task.input.concat(parentTask)
+                    })
+                }
             })
-            // tasks.forEach(task => {
-            //     task.parentTasks = []
-            //     task.parents.forEach(parent => {
-            //         const parentTask = tasks.find(x => x.id == parent.parent_id)
-            //         if (parentTask) task.parentTasks.push(parentTask)
-            //     })
-            // })
+
             return tasks
         },
         userTasks: (state, getters, rootState, rootGetters) => {
