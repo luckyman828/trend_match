@@ -117,23 +117,13 @@
                                 </div>
                                 <div class="tab-body">
                                     <strong class="tab-title">{{currentTab.substr(0, currentTab.length - 1)}}</strong>
-                                    <template v-if="currentTeamId == 0">
-                                        <p v-for="team in tabBody" :key="team.id">
-                                            <span class="user">{{team.title}}</span>
-                                            <template v-if="team.focus != null">
-                                                <span class="focus" v-if="team.focus">Focus <i class="fas fa-star"></i></span>
-                                            </template>
-                                        </p>
-                                    </template>
-                                    <template v-else>
-                                        <p v-for="user in tabBody" :key="user.id">
-                                            <span class="team">{{user.teams[0].title}}</span>
-                                            <span class="user">{{user.email}}</span>
-                                            <template v-if="user.focus != null">
-                                                <span class="focus" v-if="user.focus">Focus <i class="fas fa-star"></i></span>
-                                            </template>
-                                        </p>
-                                    </template>
+                                    <p v-for="(row, index) in tabBody" :key="index">
+                                        <span class="team">{{(row.task.title != null) ? row.task.title : row.title}}</span>
+                                        <span class="user">{{(row.name) ? row.name : (row.user.name != null) ? row.user.name : row.title}}</span>
+                                        <template v-if="row.focus != null">
+                                            <span class="focus" v-if="row.focus">Focus <i class="fas fa-star"></i></span>
+                                        </template>
+                                    </p>
                                 </div>
                             </div>
                         </div>

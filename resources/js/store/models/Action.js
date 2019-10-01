@@ -2,6 +2,7 @@
 import { Model } from '@vuex-orm/core'
 import Product from './Product'
 import User from './User'
+import Task from './Task'
 
 export default class Action extends Model {
     // This is the name used as module name of the Vuex Store.
@@ -22,6 +23,7 @@ export default class Action extends Model {
             is_task_action: this.attr(''),
             product: this.belongsTo(Product, 'product_id'),
             user: this.belongsTo(User, 'user_id'),
+            task: this.belongsTo(Task, 'task_id'),
         }
 
         return data

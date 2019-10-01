@@ -8432,16 +8432,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -17776,85 +17766,54 @@ var render = function() {
                                     )
                                   ]),
                                   _vm._v(" "),
-                                  _vm.currentTeamId == 0
-                                    ? _vm._l(_vm.tabBody, function(team) {
-                                        return _c(
-                                          "p",
-                                          { key: team.id },
-                                          [
-                                            _c(
-                                              "span",
-                                              { staticClass: "user" },
-                                              [_vm._v(_vm._s(team.title))]
-                                            ),
-                                            _vm._v(" "),
-                                            team.focus != null
-                                              ? [
-                                                  team.focus
-                                                    ? _c(
-                                                        "span",
-                                                        {
-                                                          staticClass: "focus"
-                                                        },
-                                                        [
-                                                          _vm._v("Focus "),
-                                                          _c("i", {
-                                                            staticClass:
-                                                              "fas fa-star"
-                                                          })
-                                                        ]
-                                                      )
-                                                    : _vm._e()
-                                                ]
-                                              : _vm._e()
-                                          ],
-                                          2
-                                        )
-                                      })
-                                    : _vm._l(_vm.tabBody, function(user) {
-                                        return _c(
-                                          "p",
-                                          { key: user.id },
-                                          [
-                                            _c(
-                                              "span",
-                                              { staticClass: "team" },
-                                              [
-                                                _vm._v(
-                                                  _vm._s(user.teams[0].title)
-                                                )
-                                              ]
-                                            ),
-                                            _vm._v(" "),
-                                            _c(
-                                              "span",
-                                              { staticClass: "user" },
-                                              [_vm._v(_vm._s(user.email))]
-                                            ),
-                                            _vm._v(" "),
-                                            user.focus != null
-                                              ? [
-                                                  user.focus
-                                                    ? _c(
-                                                        "span",
-                                                        {
-                                                          staticClass: "focus"
-                                                        },
-                                                        [
-                                                          _vm._v("Focus "),
-                                                          _c("i", {
-                                                            staticClass:
-                                                              "fas fa-star"
-                                                          })
-                                                        ]
-                                                      )
-                                                    : _vm._e()
-                                                ]
-                                              : _vm._e()
-                                          ],
-                                          2
-                                        )
-                                      })
+                                  _vm._l(_vm.tabBody, function(row, index) {
+                                    return _c(
+                                      "p",
+                                      { key: index },
+                                      [
+                                        _c("span", { staticClass: "team" }, [
+                                          _vm._v(
+                                            _vm._s(
+                                              row.task.title != null
+                                                ? row.task.title
+                                                : row.title
+                                            )
+                                          )
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("span", { staticClass: "user" }, [
+                                          _vm._v(
+                                            _vm._s(
+                                              row.name
+                                                ? row.name
+                                                : row.user.name != null
+                                                ? row.user.name
+                                                : row.title
+                                            )
+                                          )
+                                        ]),
+                                        _vm._v(" "),
+                                        row.focus != null
+                                          ? [
+                                              row.focus
+                                                ? _c(
+                                                    "span",
+                                                    { staticClass: "focus" },
+                                                    [
+                                                      _vm._v("Focus "),
+                                                      _c("i", {
+                                                        staticClass:
+                                                          "fas fa-star"
+                                                      })
+                                                    ]
+                                                  )
+                                                : _vm._e()
+                                            ]
+                                          : _vm._e()
+                                      ],
+                                      2
+                                    )
+                                  })
                                 ],
                                 2
                               )
@@ -40636,6 +40595,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
 /* harmony import */ var _Product__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Product */ "./resources/js/store/models/Product.js");
 /* harmony import */ var _User__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./User */ "./resources/js/store/models/User.js");
+/* harmony import */ var _Task__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Task */ "./resources/js/store/models/Task.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -40655,6 +40615,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 // Product Model
+
 
 
 
@@ -40684,7 +40645,8 @@ function (_Model) {
         action: this.attr(''),
         is_task_action: this.attr(''),
         product: this.belongsTo(_Product__WEBPACK_IMPORTED_MODULE_1__["default"], 'product_id'),
-        user: this.belongsTo(_User__WEBPACK_IMPORTED_MODULE_2__["default"], 'user_id')
+        user: this.belongsTo(_User__WEBPACK_IMPORTED_MODULE_2__["default"], 'user_id'),
+        task: this.belongsTo(_Task__WEBPACK_IMPORTED_MODULE_3__["default"], 'task_id')
       };
       return data;
     }
@@ -45209,7 +45171,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     //   currentProduct: state => { return (state.currentProductId != null) ? Product.find(state.currentProductId) : null },
     products: function products(state, getters, rootState, rootGetters) {
       if (!rootGetters['persist/loadingInit'] && !state.loading && rootGetters['persist/currentTask'] != null) {
-        var products = _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"](['actions.user.teams'])["with"](['comments.votes.user.teams', 'comments.user.teams', 'comments.team']).all();
+        var products = _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"](['actions.task|user.teams'])["with"](['comments.votes.user.teams', 'comments.user.teams', 'comments.team']).all();
         var actionScope = rootGetters['collection/actionScope'];
         var currentTask = rootGetters['persist/currentTask'];
         var userId = rootGetters['persist/authUser'].id;
@@ -45312,13 +45274,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
           if (currentTask.type == 'feedback') {
             // If type: Feedback -> Find all users with access to the task
-            product.nds = JSON.parse(JSON.stringify(currentTask.users));
+            var userCopy = JSON.parse(JSON.stringify(currentTask.users));
+            userCopy;
+            product.nds = JSON.parse(JSON.stringify(currentTask.users)).map(function (x) {
+              x.task = currentTask;
+              return x;
+            });
           } else {
             // If type = Alignment -> Find the parent tasks
             currentTask.parentTasks.forEach(function (parentTask) {
               // if parent type is feedback -> push users
               // else -> push task
-              if (parentTask.type == 'feedback') product.nds = product.nds.concat(JSON.parse(JSON.stringify(parentTask.users)));else product.nds.push(parentTask);
+              if (parentTask.type == 'feedback') product.nds = product.nds.concat(JSON.parse(JSON.stringify(parentTask.users)).map(function (x) {
+                x.task = currentTask;
+                return x;
+              }));else product.nds.push(parentTask);
             });
           }
 

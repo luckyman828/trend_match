@@ -25,7 +25,7 @@ export default {
         products: (state, getters, rootState, rootGetters) => {
             if (!rootGetters['persist/loadingInit'] && !state.loading && rootGetters['persist/currentTask'] != null) {
                 const products = Product.query()
-                    .with(['actions.user.teams'])
+                    .with(['actions.task|user.teams'])
                     .with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team'])
                     .all()
                 const actionScope = rootGetters['collection/actionScope']
@@ -131,14 +131,24 @@ export default {
                     // START Find Not decideds NDs
                     if (currentTask.type == 'feedback') {
                         // If type: Feedback -> Find all users with access to the task
-                        product.nds = JSON.parse(JSON.stringify(currentTask.users))
+                        const userCopy = JSON.parse(JSON.stringify(currentTask.users))
+                        userCopy
+                        product.nds = JSON.parse(JSON.stringify(currentTask.users)).map(x => {
+                            x.task = currentTask
+                            return x
+                        })
                     } else {
                         // If type = Alignment -> Find the parent tasks
                         currentTask.parentTasks.forEach(parentTask => {
                             // if parent type is feedback -> push users
                             // else -> push task
                             if (parentTask.type == 'feedback')
-                                product.nds = product.nds.concat(JSON.parse(JSON.stringify(parentTask.users)))
+                                product.nds = product.nds.concat(
+                                    JSON.parse(JSON.stringify(parentTask.users)).map(x => {
+                                        x.task = currentTask
+                                        return x
+                                    })
+                                )
                             else product.nds.push(parentTask)
                         })
                     }
