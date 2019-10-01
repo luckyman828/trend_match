@@ -18734,8 +18734,11 @@ var render = function() {
                               staticClass: "square-wrapper",
                               attrs: {
                                 header: "focus",
-                                array: product.focus,
-                                arrayValueKey: "name"
+                                array: product.focus.map(function(x) {
+                                  return x.user.name != null
+                                    ? x.user.name
+                                    : x.title
+                                })
                               }
                             },
                             [
@@ -18766,7 +18769,9 @@ var render = function() {
                               attrs: {
                                 header: "in",
                                 array: product.ins.map(function(x) {
-                                  return x.user.name
+                                  return x.user.name != null
+                                    ? x.user.name
+                                    : x.title
                                 })
                               }
                             },
@@ -18797,8 +18802,11 @@ var render = function() {
                               staticClass: "square-wrapper",
                               attrs: {
                                 header: "out",
-                                array: product.outs,
-                                arrayValueKey: "name"
+                                array: product.outs.map(function(x) {
+                                  return x.user.name != null
+                                    ? x.user.name
+                                    : x.title
+                                })
                               }
                             },
                             [
@@ -18824,8 +18832,9 @@ var render = function() {
                               staticClass: "square-wrapper",
                               attrs: {
                                 header: "not decided",
-                                array: product.nds,
-                                arrayValueKey: "name"
+                                array: product.nds.map(function(x) {
+                                  return x.name != null ? x.name : x.title
+                                })
                               }
                             },
                             [
