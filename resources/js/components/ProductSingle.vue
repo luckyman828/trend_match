@@ -1,141 +1,138 @@
 <template>
-    <div class="product-single" :class="[{visible: visible}, {sticky: sticky}]">
-        <div class="overlay" @mousedown="onCloseSingle"></div>
-        <template v-if="product != null">
-            <div class="card">
-                <template v-if="!loading">
-                    <div class="controls-wrapper">
-                        <div class="left">
-                            <span class="square true-square light close clickable" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
-                            <h3>{{product.title}}</h3>
-                        </div>
-                        <div class="right controls">
-                            <template v-if="userPermissionLevel >= 2">
-                                <span v-if="userPermissionLevel == 2" class="square true-square clickable focus-action" :class="[(product.currentAction != null) ? (product.currentAction.action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': userPermissionLevel == 3}]" @click="toggleInOut(product, 2)">
-                                    <i class="far fa-star"></i>
-                                </span>
-                                <span class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': userPermissionLevel == 3}]" @click="toggleInOut(product, 1)">
-                                In  <i class="far fa-heart"></i>
-                                </span>
-                                <span class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {'disabled': userPermissionLevel == 3}]"  @click="toggleInOut(product, 0)">
-                                Out  <i class="far fa-times-circle"></i>
-                                </span>
-                            </template>
+    <div class="product-single">
+        <div class="inner">
+            <template v-if="!loading">
+                <div class="header">
+                    <div class="left">
+                        <span class="square true-square light close clickable" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
+                        <h3>{{product.title}}</h3>
+                    </div>
+                    <div class="right controls">
+                        <template v-if="userPermissionLevel >= 2">
+                            <span v-if="userPermissionLevel == 2" class="square true-square clickable focus-action" :class="[(product.currentAction != null) ? (product.currentAction.action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': userPermissionLevel == 3}]" @click="toggleInOut(product, 2)">
+                                <i class="far fa-star"></i>
+                            </span>
+                            <span class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': userPermissionLevel == 3}]" @click="toggleInOut(product, 1)">
+                            In  <i class="far fa-heart"></i>
+                            </span>
+                            <span class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {'disabled': userPermissionLevel == 3}]"  @click="toggleInOut(product, 0)">
+                            Out  <i class="far fa-times-circle"></i>
+                            </span>
+                        </template>
 
-                            <span class="button primary active wide" @click="onPrevSingle()" :class="[{ disabled: prevProductId == null}]">Previous style</span>
-                            <span class="button primary active wide" @click="onNextSingle()" :class="[{ disabled: nextProductId == null}]">Next style</span>
+                        <span class="button primary active wide" @click="onPrevSingle()" :class="[{ disabled: prevProductId == null}]">Previous style</span>
+                        <span class="button primary active wide" @click="onNextSingle()" :class="[{ disabled: nextProductId == null}]">Next style</span>
+                    </div>
+                </div>
+                <div class="grid-2 grid-border-between body">
+                    <div class="details">
+                        <div class="grid-2">
+                            <div class="image" @click="cycleImage()">
+                                <img :src="variantImg(product.color_variants[currentImgIndex])" @error="imgError(product.color_variants[currentImgIndex])">
+                            </div>
+                            <div class="description">
+                                <div class="stat">
+                                    <p><strong>Style number</strong></p>
+                                    <p><span>{{product.datasource_id}}</span></p>
+                                </div>
+                                <div class="stat">
+                                    <p><strong>Category</strong></p>
+                                    <span>{{product.category}}</span>
+                                </div>
+                                <div class="stat">
+                                    <strong>Minimum production</strong>
+                                    <span>{{product.quantity}}</span>
+                                </div>
+
+                                <TooltipAlt2 v-if="userPermissionLevel >= 4" :header="'Wholesale price'" :array="product.prices" :arrayValueKey="'wholesale_price'" :arrayLabelKey="'currency'">
+                                    <div class="stat">
+                                        <p><strong>WHS ({{product.userPrices.currency}})</strong></p>
+                                        <p>{{product.userPrices.wholesale_price}} <i class="far fa-info-circle"></i></p>
+                                    </div>
+                                </TooltipAlt2>
+                                <template v-else>
+                                    <div class="stat">
+                                        <p><strong>WHS ({{product.userPrices.currency}})</strong></p>
+                                        <p>{{product.userPrices.wholesale_price}}</p>
+                                    </div>
+                                </template>
+
+                                <TooltipAlt2 v-if="userPermissionLevel >= 4" :header="'Recommended retail price'" :array="product.prices" :arrayValueKey="'recommended_retail_price'" :arrayLabelKey="'currency'">
+                                    <div class="stat">
+                                        <p><strong>RRP ({{product.userPrices.currency}})</strong></p>
+                                        <p>{{product.userPrices.recommended_retail_price}} <i class="far fa-info-circle"></i></p>
+                                    </div>
+                                </TooltipAlt2>
+                                <template v-else>
+                                    <div class="stat">
+                                        <p><strong>RRP ({{product.userPrices.currency}})</strong></p>
+                                        <p>{{product.userPrices.recommended_retail_price}}</p>
+                                    </div>
+                                </template>
+
+                                <TooltipAlt2 v-if="userPermissionLevel >= 4" :header="'Mark up'" :array="product.prices" :arrayValueKey="'markup'" :arrayLabelKey="'currency'">
+                                    <div class="stat">
+                                        <p><strong>MU</strong></p>
+                                        <p>{{product.userPrices.markup}} <i class="far fa-info-circle"></i></p>
+                                    </div>
+                                </TooltipAlt2>
+                                <template v-else>
+                                    <div class="stat">
+                                        <p><strong>MU</strong></p>
+                                        <p>{{product.userPrices.markup}}</p>
+                                    </div>
+                                </template>
+
+                            </div>
+                        </div>
+
+                        <div class="stat">
+                            <p><strong>Composition</strong></p>
+                            <p>{{product.composition}}</p>
+                        </div>
+                        <div class="stat">
+                            <p><strong>Delivery date</strong></p>
+                            <p>{{new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})}}</p>
+                        </div>
+
+                        <div class="product-variants" v-dragscroll>
+                            <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
+                                <div class="img-wrapper">
+                                    <img :src="variantImg(variant)" @error="imgError(variant)">
+                                </div>
+                                <div class="color-wrapper">
+                                    <div class="circle-img"><img :src="variantImg(variant)" @error="imgError(variant)"></div>
+                                    <span>{{variant.color}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tabs-wrapper">
+                            <strong>Distribution</strong>
+                            <div class="tab-headers">
+                                <span :class="{active: currentTab == 'ins'}" class="tab" @click="setCurrentTab('ins')"><span class="count">{{product.ins.length + product.focus.length}}</span>In</span>
+                                <span :class="{active: currentTab == 'outs'}" class="tab" @click="setCurrentTab('outs')"><span class="count">{{product.outs.length}}</span>Out</span>
+                                <span :class="{active: currentTab == 'nds'}" class="tab" @click="setCurrentTab('nds')"><span class="count">{{product.nds.length}}</span>Not decided</span>
+                            </div>
+                            <div class="tab-body">
+                                <strong class="tab-title">{{currentTab.substr(0, currentTab.length - 1)}}</strong>
+                                <p v-for="(row, index) in tabBody" :key="index">
+                                    <span class="team">{{(row.task) ? row.task.title : row.title}}</span>
+                                    <span class="user">{{(row.name) ? row.name : (row.user) ? row.user.name : row.title}}</span>
+                                    <template v-if="row.focus != null">
+                                        <span class="focus" v-if="row.focus">Focus <i class="fas fa-star"></i></span>
+                                    </template>
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    <div class="grid-2 grid-border-between inner">
-                        <div class="details">
-                            <div class="grid-2">
-                                <div class="image" @click="cycleImage()">
-                                    <img :src="variantImg(product.color_variants[currentImgIndex])" @error="imgError(product.color_variants[currentImgIndex])">
-                                </div>
-                                <div class="description">
-                                    <div class="stat">
-                                        <p><strong>Style number</strong></p>
-                                        <p><span>{{product.datasource_id}}</span></p>
-                                    </div>
-                                    <div class="stat">
-                                        <p><strong>Category</strong></p>
-                                        <span>{{product.category}}</span>
-                                    </div>
-                                    <div class="stat">
-                                        <strong>Minimum production</strong>
-                                        <span>{{product.quantity}}</span>
-                                    </div>
-
-                                    <TooltipAlt2 v-if="userPermissionLevel >= 4" :header="'Wholesale price'" :array="product.prices" :arrayValueKey="'wholesale_price'" :arrayLabelKey="'currency'">
-                                        <div class="stat">
-                                            <p><strong>WHS ({{product.userPrices.currency}})</strong></p>
-                                            <p>{{product.userPrices.wholesale_price}} <i class="far fa-info-circle"></i></p>
-                                        </div>
-                                    </TooltipAlt2>
-                                    <template v-else>
-                                        <div class="stat">
-                                            <p><strong>WHS ({{product.userPrices.currency}})</strong></p>
-                                            <p>{{product.userPrices.wholesale_price}}</p>
-                                        </div>
-                                    </template>
- 
-                                    <TooltipAlt2 v-if="userPermissionLevel >= 4" :header="'Recommended retail price'" :array="product.prices" :arrayValueKey="'recommended_retail_price'" :arrayLabelKey="'currency'">
-                                        <div class="stat">
-                                            <p><strong>RRP ({{product.userPrices.currency}})</strong></p>
-                                            <p>{{product.userPrices.recommended_retail_price}} <i class="far fa-info-circle"></i></p>
-                                        </div>
-                                    </TooltipAlt2>
-                                    <template v-else>
-                                        <div class="stat">
-                                            <p><strong>RRP ({{product.userPrices.currency}})</strong></p>
-                                            <p>{{product.userPrices.recommended_retail_price}}</p>
-                                        </div>
-                                    </template>
-
-                                    <TooltipAlt2 v-if="userPermissionLevel >= 4" :header="'Mark up'" :array="product.prices" :arrayValueKey="'markup'" :arrayLabelKey="'currency'">
-                                        <div class="stat">
-                                            <p><strong>MU</strong></p>
-                                            <p>{{product.userPrices.markup}} <i class="far fa-info-circle"></i></p>
-                                        </div>
-                                    </TooltipAlt2>
-                                    <template v-else>
-                                        <div class="stat">
-                                            <p><strong>MU</strong></p>
-                                            <p>{{product.userPrices.markup}}</p>
-                                        </div>
-                                    </template>
-
-                                </div>
-                            </div>
-
-                            <div class="stat">
-                                <p><strong>Composition</strong></p>
-                                <p>{{product.composition}}</p>
-                            </div>
-                            <div class="stat">
-                                <p><strong>Delivery date</strong></p>
-                                <p>{{new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})}}</p>
-                            </div>
-
-                            <div class="product-variants" v-dragscroll>
-                                <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
-                                    <div class="img-wrapper">
-                                        <img :src="variantImg(variant)" @error="imgError(variant)">
-                                    </div>
-                                    <div class="color-wrapper">
-                                        <div class="circle-img"><img :src="variantImg(variant)" @error="imgError(variant)"></div>
-                                        <span>{{variant.color}}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="tabs-wrapper">
-                                <strong>Distribution</strong>
-                                <div class="tab-headers">
-                                    <span :class="{active: currentTab == 'ins'}" class="tab" @click="setCurrentTab('ins')"><span class="count">{{product.ins.length + product.focus.length}}</span>In</span>
-                                    <span :class="{active: currentTab == 'outs'}" class="tab" @click="setCurrentTab('outs')"><span class="count">{{product.outs.length}}</span>Out</span>
-                                    <span :class="{active: currentTab == 'nds'}" class="tab" @click="setCurrentTab('nds')"><span class="count">{{product.nds.length}}</span>Not decided</span>
-                                </div>
-                                <div class="tab-body">
-                                    <strong class="tab-title">{{currentTab.substr(0, currentTab.length - 1)}}</strong>
-                                    <p v-for="(row, index) in tabBody" :key="index">
-                                        <span class="team">{{(row.task) ? row.task.title : row.title}}</span>
-                                        <span class="user">{{(row.name) ? row.name : (row.user) ? row.user.name : row.title}}</span>
-                                        <template v-if="row.focus != null">
-                                            <span class="focus" v-if="row.focus">Focus <i class="fas fa-star"></i></span>
-                                        </template>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <ProductSingleComments :comments="product.commentsScoped" :requests="product.requests" :authUser="authUser" :product="product"/>
-                    </div>
-                </template>
-                <template v-else>
-                    <loader/>
-                </template>
-            </div>
-        </template>
+                    <ProductSingleComments :comments="product.commentsScoped" :requests="product.requests" :authUser="authUser" :product="product"/>
+                </div>
+            </template>
+            <template v-else>
+                <loader/>
+            </template>
+        </div>
     </div>
 </template>
 
@@ -279,48 +276,15 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
-    .overlay {
-        z-index: 10;
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-        background: rgba($dark, 50%);
-    }
     .product-single {
-        &.visible {
-            > .card {
-                width: 100%;
-                right: 0;
-                // transform: translateX(0);
-            }
-            .overlay {
-                display: block;
-            }
-        }
-        > .card {
-            right: -100%;
-            // transform: translateX(100%);
-            margin: 0;
-            max-width: 60vw;
-            z-index: 11;
-            top: 0;
-            position: fixed;
-            height: 100vh;
-            overflow: hidden;
-            // height: 100%;
+        height: 100%;
+        > .inner {
+            height: 100%;
             width: 100%;
-            transition-timing-function: ease-out;
-            transition: .3s;
             background: $light;
-            animation: slide-in .3s;
-            animation-iteration-count: 1;
-            animation-timing-function: ease-out;
-            padding: 0;
             display: flex;
             flex-direction: column;
-            .inner {
+            .body {
                 padding: 1em;
                 height: 50%;
                 flex: 1;
@@ -353,10 +317,6 @@ export default {
     h3 {
         font-size: 16px;
         font-weight: 400;
-    }
-    @keyframes slide-in {
-        0% {transform: translateX(100%);}
-        100% {transform: translateX(0);}
     }
     .close i {
         font-size: 22px;
@@ -400,7 +360,7 @@ export default {
             margin-left: 8px;
         }
     }
-    .controls-wrapper {
+    .header {
         display: flex;
         border-bottom: solid 2px $light1;
         padding: 6px 20px;

@@ -2,10 +2,10 @@
     <div class="comments">
         
         <div class="tab-headers">
-            <span :class="{active: commentScope == 'comments'}" class="tab" @click="setCommentScope('comments')">
+            <span v-if="currentTask.type != 'approval'" :class="{active: commentScope == 'comments'}" class="tab" @click="setCommentScope('comments')">
                 Comments <span class="circle small" :class="(commentScope == 'comments') ? 'white' : 'light'">{{comments.length}}</span>
             </span>
-            <span :class="{active: commentScope == 'requests'}" class="tab" @click="setCommentScope('requests')">
+            <span v-if="currentTask.type != 'feedback'" :class="{active: commentScope == 'requests'}" class="tab" @click="setCommentScope('requests')">
                 Requests <span class="circle small" :class="(commentScope == 'requests') ? 'white' : 'light'">{{requests.length}}</span>
             </span>
         </div>
@@ -47,8 +47,8 @@
             <div class="controls">
                 <div class="left">
                     <div class="set-scope">
-                        <span class="button invisible" :class="{active: writeScope == 'request'}" @click="setWriteScope('request')">Your Request</span>
-                        <span class="button invisible" :class="{active: writeScope == 'comment'}" @click="setWriteScope('comment')">Comment</span>
+                        <span v-if="currentTask.type != 'feedback'" class="button invisible" :class="{active: writeScope == 'request'}" @click="setWriteScope('request')">Your Request</span>
+                        <span v-if="currentTask.type != 'approval'" class="button invisible" :class="{active: writeScope == 'comment'}" @click="setWriteScope('comment')">Comment</span>
                     </div>
                 </div>
                 <div class="right">
@@ -56,7 +56,7 @@
                 </div>
             </div>
 
-            <div class="form-input" v-if="writeScope == 'request'" :class="[{active: writeActive}, {hidden: writeScope != 'request'}]">
+            <div class="form-input" :class="[{active: writeActive}, {hidden: writeScope != 'request'}]">
                 <div class="input-wrapper request">
                     <textarea @click="writeActive = true" ref="requestField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="request" id="request-input" placeholder="Write your request here..." v-model="newRequest.comment" 
                     @input="resizeTextarea($event)"></textarea>
@@ -137,6 +137,11 @@ export default {
         writeScope: 'comment',
         writeActive: false,
     }},
+    watch: {
+        product() {
+            this.update()
+        }
+    },
     computed: {
         ...mapGetters('entities/comments', ['submittingComment']),
         ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']),
@@ -232,16 +237,24 @@ export default {
             this.writeActive = false
             this.writeScope = scope
         },
+        update() {
+            // Set the new request equal to the existing if one exists
+            this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
+
+            // Set the default write / view scope
+            const type = this.currentTask.type
+            if (type != 'feedback') {
+                this.commentScope = 'requests'
+                this.writeScope = 'request'
+            } else {
+                this.commentScope = 'comments'
+                this.writeScope = 'comment'
+            }
+        }
     },
     mounted() {
-        if (this.taskRequest) this.newRequest.comment = this.taskRequest.comment
+        this.update()
     },
-    updated() {
-    },
-    created() {
-    },
-    destroyed() {
-    }
 }
 </script>
 

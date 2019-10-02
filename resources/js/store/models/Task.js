@@ -18,6 +18,7 @@ export default class Task extends Model {
             phase_id: this.attr(''),
             title: this.attr(''),
             type: this.attr(''),
+            inherit_from_id: this.attr(''),
             completed: this.hasMany(FileTask, 'task_id'),
             parents: this.hasMany(TaskParent, 'task_id'),
             taskTeams: this.hasMany(TaskTeam, 'task_id'),

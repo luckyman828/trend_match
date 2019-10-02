@@ -10,6 +10,7 @@ import File from '../Catalogue'
 import ScreenLoader from './ScreenLoader'
 import Collection from '../../../store/models/Collection'
 import User from '../../../store/models/User'
+import Product from '../../../store/models/Product'
 
 export default {
     name: 'fileLoader',
@@ -36,7 +37,7 @@ export default {
     },
     methods: {
         ...mapActions('entities/collections', ['fetchCollections']),
-        ...mapActions('entities/products', ['fetchProducts']),
+        ...mapActions('entities/products', ['fetchProducts', 'setCurrentProductId']),
         ...mapActions('entities/actions', ['fetchActions']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/comments', ['fetchComments']),
@@ -64,7 +65,7 @@ export default {
                 // this.fetchTaskActions(this.currentFileId),
                 // this.fetchRequests(this.currentFileId)
             )
-
+            this.setCurrentProductId(Product.query().first().id)
             this.loadingFile = false
         },
         async initRequiresTasks() {

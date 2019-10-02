@@ -38,6 +38,9 @@ export default {
                     if (parentTask) task.parentTasks.push(parentTask)
                 })
 
+                // Find task parent tasks
+                task.inheritFromTask = tasks.find(x => x.id == task.inherit_from_id)
+
                 // Determine if the task is active
                 task.isActive = false
                 if (task.parents.length <= 0) {

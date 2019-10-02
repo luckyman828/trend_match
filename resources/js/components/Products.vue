@@ -1,8 +1,10 @@
 <template>
     <div class="products card" :class="[{sticky: sticky}]">
         <div class="scroll-bg"></div>
-        <product-single :loading="loadingSingle" :visible="showSingle" :sticky="sticky" :authUser="authUser" @closeSingle="onCloseSingle" @onToggleInOut="toggleInOut"/>
-        <div class="flex-table" :class="[{disabled: showSingle}]">
+        <FlyIn ref="singleFlyIn">
+            <product-single :loading="loadingSingle" :authUser="authUser" @closeSingle="onCloseSingle" @onToggleInOut="toggleInOut"/>
+        </FlyIn>
+        <div class="flex-table">
             <div class="header-row flex-table-row">
                 <div class="product-totals">
                     <span>{{selectedCount}} selected</span>
@@ -128,6 +130,7 @@ import ProductSingle from './ProductSingle'
 import SelectDropdown from './SelectDropdown'
 import RadioButtons from './RadioButtons'
 import Dropdown from './Dropdown'
+import FlyIn from './FlyIn'
 
 import products from '../store/modules/products';
 
@@ -153,6 +156,7 @@ export default {
         SelectDropdown,
         Dropdown,
         RadioButtons,
+        FlyIn,
     },
     data: function() { return {
         tooltip: {
@@ -163,7 +167,6 @@ export default {
             data: {},
         },
         sticky: false,
-        showSingle: false,
     }},
     computed: {
         // ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
@@ -249,7 +252,7 @@ export default {
         onViewSingle(id) {
             this.setCurrentProductId(id)
             this.setAvailableProductIds(this.products) // Save array of available products
-            this.showSingle = true;
+            this.$refs.singleFlyIn.toggle()
         },
         onSelect(index) {
             this.$emit('onSelect', index)
@@ -292,7 +295,7 @@ export default {
             this.$emit('onSortBy', key, method)
         },
         onCloseSingle() {
-            this.showSingle = false;
+            this.$refs.singleFlyIn.close()
         },
         resetSelected() {
             document.querySelectorAll('.product-row input[type=checkbox]').forEach(input => {
