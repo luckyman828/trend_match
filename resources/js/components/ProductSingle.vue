@@ -1,15 +1,15 @@
 <template>
     <div class="product-single">
         <div class="inner">
-            <template v-if="!loading">
+            <template v-if="!loading && product != null">
                 <div class="header">
                     <div class="left">
                         <span class="square true-square light close clickable" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
                         <h3>{{product.title}}</h3>
                     </div>
                     <div class="right controls">
-                        <template v-if="userPermissionLevel >= 2">
-                            <span v-if="userPermissionLevel == 2" class="square true-square clickable focus-action" :class="[(product.currentAction != null) ? (product.currentAction.action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': userPermissionLevel == 3}]" @click="toggleInOut(product, 2)">
+                        <template v-if="currentTaskPermissions.actions">
+                            <span v-if="currentTaskPermissions.focus" class="square true-square clickable focus-action" :class="[(product.currentAction != null) ? (product.currentAction.action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': userPermissionLevel == 3}]" @click="toggleInOut(product, 2)">
                                 <i class="far fa-star"></i>
                             </span>
                             <span class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': userPermissionLevel == 3}]" @click="toggleInOut(product, 1)">
@@ -164,7 +164,7 @@ export default {
             currentImgIndex: 0,
     }},
     computed: {
-        ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope']),
+        ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope', 'currentTaskPermissions']),
         ...mapGetters('entities/products', ['currentProductId', 'currentProduct', 'nextProductId', 'prevProductId']),
         product () {
             return this.currentProduct

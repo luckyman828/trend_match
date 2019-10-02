@@ -31,21 +31,17 @@ export default {
 
     .comment-wrapper {
         margin-bottom: 4px;
+        max-width: calc(100% - 56px);
     }
     .comment {
         position: relative;
         padding: 12px;
         background: $light2;
         border-radius: 6px;
-        display: inline-block;
-        clear: both;
-        max-width: calc(100% - 56px);
+        width: 100%;
         .own & {
             background: $primary;
             color: white;
-            text-align: left;
-            margin-right: 0;
-            margin-left: 56px;
         }
         .body {
             white-space: pre-wrap;

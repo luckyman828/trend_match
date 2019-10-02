@@ -21,6 +21,7 @@ export default class Task extends Model {
             inherit_from_id: this.attr(''),
             completed: this.hasMany(FileTask, 'task_id'),
             parents: this.hasMany(TaskParent, 'task_id'),
+            children: this.hasMany(TaskParent, 'parent_id'),
             taskTeams: this.hasMany(TaskTeam, 'task_id'),
             actions: this.hasMany(Action, 'task_id'),
         }

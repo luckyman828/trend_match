@@ -133,35 +133,59 @@ export default{
         sortAsc: true,
         unsub: '',
         test: '',
-        productsTest: [],
     }},
     watch: {
         products: function(newValue, oldValue) {
             // CODE to make sure the products stay sorted in the same way
             // Save the old order of the products
-            console.log('Products changed!')
-            let index = 0
-            oldValue.forEach(product => {
-                newValue.find(x => x.id == product.id).sortIndex = index
-                product.sortIndex = index
-                index++
-            })
-            // Sort the products in the same was as they were before
-            this.sortProducts('sortIndex')
+            console.log('Products recalculated')
+            console.log(newValue)
+            // if (newValue.length == oldValue.length) {
+                // let index = 0
+                // oldValue.forEach(product => {
+                //     const newIndex = newValue.find(x => x.id == product.id)
+                //     if (newIndex) {
+                //         newIndex.sortIndex = index
+                //     }
+                //     product.sortIndex = index
+                //     index++
+                // })
+                // // Sort the products in the same was as they were before
+                // this.sortProducts('sortIndex')
+            // }
+        },
+        tasks: function(newValue, oldValue) {
+            console.log('Tasks recalculated')
+        },
+        userTasks: function(newValue, oldValue) {
+            console.log('User Tasks recalculated')
         }
     },
     computed: {
-        ...mapGetters('entities/products', ['loadingProducts', 'products']),
+        // ...mapGetters('entities/products', ['loadingProducts', {allProducts: 'products'}, 'productsScopedByInheritance']),
+        ...mapGetters('entities/products', ['loadingProducts', 'productsScopedByInheritance']),
+        ...mapGetters('entities/products', {allProducts: 'products'}),
         ...mapGetters('entities/actions', ['loadingActions']),
         ...mapGetters('entities/comments', ['loadingComments']),
         ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
         ...mapGetters('entities/teams', ['teams']),
-        ...mapGetters('entities/tasks', ['userTasks']),
+        ...mapGetters('entities/tasks', ['userTasks', 'tasks']),
         ...mapGetters('persist', ['currentTeamId', 'currentTask', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']),
         defaultTeam() {
             if (this.userPermissionLevel >= 3)
                 return {id: 0, title: 'Global'}
             else return null
+        },
+        products() {
+            if (this.currentTask.inherit_from_id) {
+                if (this.currentTask.type == 'approval' || this.currentTask.approvalParent) {
+                    return this.productsScopedByInheritance.filter(x => x.requests.length > 0)
+                } else {
+                    return this.productsScopedByInheritance
+                }
+            } else {
+                return this.allProducts
+            }
         },
         teamProducts() {
             return TeamProduct.with('products').all()
@@ -541,7 +565,6 @@ export default{
     },
     mounted() {
         this.sortProducts
-        this.productsTest = this.productsFiltered
     },
 }
 </script>

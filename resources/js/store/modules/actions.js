@@ -230,19 +230,6 @@ export default {
                     is_task_action: is_task_action,
                 },
             })
-            // Action.update({
-            //     where: {
-            //         product_id: productToUpdate,
-            //         task_id: task_id,
-            //     },
-            //     data: {
-            //         user_id: user_id,
-            //         action: action_code,
-            //         product_id: productToUpdate,
-            //         task_id: task_id,
-            //         is_task_action: is_task_action,
-            //     },
-            // })
         },
         deleteAction: (state, { productToUpdate, task_id, user_id }) => {
             console.log('deleting action')

@@ -8410,7 +8410,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       currentImgIndex: 0
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/products', ['currentProductId', 'currentProduct', 'nextProductId', 'prevProductId']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope', 'currentTaskPermissions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/products', ['currentProductId', 'currentProduct', 'nextProductId', 'prevProductId']), {
     product: function product() {
       return this.currentProduct;
     },
@@ -8636,6 +8636,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -8667,8 +8675,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   watch: {
-    product: function product() {
-      this.update();
+    product: function product(newVal, oldVal) {
+      if (newVal.id != oldVal.id) this.update();
     }
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['submittingComment']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']), {
@@ -8733,6 +8741,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
       });
       return senders;
+    },
+    commentsAvailable: function commentsAvailable() {
+      return true;
+    },
+    requestsAvailable: function requestsAvailable() {
+      return !['feedback', 'approval', 'decision'].includes(this.currentTask.type);
+    },
+    commentsClosed: function commentsClosed() {
+      var _this2 = this;
+
+      var isClosed = false;
+
+      if (this.currentTask.type == 'approval') {
+        if (this.product.actions.find(function (x) {
+          return x.task_id == _this2.currentTask.children[0];
+        }).task_id) isClosed = true;
+      } else if (this.currentTask.type == 'decision') {
+        if (this.currentTask.approvalParent && this.product.currentAction) isClosed = true;
+      }
+
+      return isClosed;
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']), {
@@ -8747,7 +8776,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 if (e) e.preventDefault();
 
                 if (this.submitDisabled) {
-                  _context.next = 6;
+                  _context.next = 7;
                   break;
                 }
 
@@ -8770,9 +8799,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   this.$refs.requestField.style.height = '';
                 }
 
-                this.writeActive = false;
+                this.writeActive = false; // Unset the focus
 
-              case 6:
+                document.activeElement.blur();
+
+              case 7:
               case "end":
                 return _context.stop();
             }
@@ -8800,16 +8831,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     update: function update() {
       // Set the new request equal to the existing if one exists
-      this.newRequest.comment = this.taskRequest ? this.taskRequest.comment : ''; // Set the default write / view scope
+      this.newRequest.comment = this.taskRequest ? this.taskRequest.comment : '';
+      this.newRequest.id = this.taskRequest ? this.taskRequest.id : null; // Set the default write / view scope
 
       var type = this.currentTask.type;
 
-      if (type != 'feedback') {
-        this.commentScope = 'requests';
-        this.writeScope = 'request';
-      } else {
+      if (['feedback', 'approval', 'decision'].includes(type)) {
         this.commentScope = 'comments';
         this.writeScope = 'comment';
+      } else {
+        this.commentScope = 'requests';
+        this.writeScope = 'request';
       }
     }
   }),
@@ -9020,6 +9052,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -9053,28 +9089,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       sticky: false
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['currentFile', 'actionScope']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentTask', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScopeName', 'viewAdminPermissionLevel']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['currentFile', 'actionScope']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTask', 'currentTaskPermissions']), {
     loadingSingle: function loadingSingle() {
       var loading = false;
       return loading;
     },
     hasAccess: function hasAccess() {
       return this.currentTask != null ? true : false;
-    },
-    massSelectAvailable: function massSelectAvailable() {
-      return this.currentTask != null ? this.currentTask.type == 'alignment' ? true : false : false;
-    },
-    selectAvailable: function selectAvailable() {
-      return this.hasAccess ? true : false;
-    },
-    feedbackAvailable: function feedbackAvailable() {
-      return this.currentTask != null ? this.currentTask.type != 'approval' ? true : false : false;
-    },
-    commentsAvailable: function commentsAvailable() {
-      return true;
-    },
-    actionsAvailable: function actionsAvailable() {
-      return this.hasAccess ? true : false;
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['setCurrentProductId', 'setAvailableProductIds']), {
@@ -10680,33 +10701,56 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       sortBy: 'datasource_id',
       sortAsc: true,
       unsub: '',
-      test: '',
-      productsTest: []
+      test: ''
     };
   },
   watch: {
     products: function products(newValue, oldValue) {
       // CODE to make sure the products stay sorted in the same way
       // Save the old order of the products
-      console.log('Products changed!');
-      var index = 0;
-      oldValue.forEach(function (product) {
-        newValue.find(function (x) {
-          return x.id == product.id;
-        }).sortIndex = index;
-        product.sortIndex = index;
-        index++;
-      }); // Sort the products in the same was as they were before
-
-      this.sortProducts('sortIndex');
+      console.log('Products recalculated');
+      console.log(newValue); // if (newValue.length == oldValue.length) {
+      // let index = 0
+      // oldValue.forEach(product => {
+      //     const newIndex = newValue.find(x => x.id == product.id)
+      //     if (newIndex) {
+      //         newIndex.sortIndex = index
+      //     }
+      //     product.sortIndex = index
+      //     index++
+      // })
+      // // Sort the products in the same was as they were before
+      // this.sortProducts('sortIndex')
+      // }
+    },
+    tasks: function tasks(newValue, oldValue) {
+      console.log('Tasks recalculated');
+    },
+    userTasks: function userTasks(newValue, oldValue) {
+      console.log('User Tasks recalculated');
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'products']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files', 'currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/tasks', ['userTasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentTask', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'productsScopedByInheritance']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', {
+    allProducts: 'products'
+  }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files', 'currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/tasks', ['userTasks', 'tasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentTask', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']), {
     defaultTeam: function defaultTeam() {
       if (this.userPermissionLevel >= 3) return {
         id: 0,
         title: 'Global'
       };else return null;
+    },
+    products: function products() {
+      if (this.currentTask.inherit_from_id) {
+        if (this.currentTask.type == 'approval' || this.currentTask.approvalParent) {
+          return this.productsScopedByInheritance.filter(function (x) {
+            return x.requests.length > 0;
+          });
+        } else {
+          return this.productsScopedByInheritance;
+        }
+      } else {
+        return this.allProducts;
+      }
     },
     teamProducts: function teamProducts() {
       return _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_21__["default"]["with"]('products').all();
@@ -11071,7 +11115,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   mounted: function mounted() {
     this.sortProducts;
-    this.productsTest = this.productsFiltered;
   }
 });
 
@@ -11528,7 +11571,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   watch: {
     userTasks: function userTasks(newVal, oldVal) {
-      if (newVal.length > 0) this.initRequiresTasks();
+      if (newVal.length > oldVal) this.initRequiresTasks();
     }
   },
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts', 'setCurrentProductId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentFileId', 'setCurrentTaskId']), {
@@ -11591,10 +11634,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 ;
 
               case 2:
-                this.setCurrentProductId(_store_models_Product__WEBPACK_IMPORTED_MODULE_6__["default"].query().first().id);
+                // this.setCurrentProductId(Product.query().first().id)
                 this.loadingFile = false;
 
-              case 4:
+              case 3:
               case "end":
                 return _context2.stop();
             }
@@ -11619,7 +11662,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                // START Set current task
+                console.log('FileLoader: Init Requires Tasks'); // START Set current task
+
                 taskToSet = null;
                 this.userTasks.forEach(function (task) {
                   // Set the task to the users first uncompleted task
@@ -11654,17 +11698,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 });
 
                 if (!(taskToSet != null)) {
-                  _context3.next = 5;
+                  _context3.next = 6;
                   break;
                 }
 
-                _context3.next = 5;
+                _context3.next = 6;
                 return this.setCurrentTaskId(taskToSet.id);
 
-              case 5:
+              case 6:
                 this.loadingTasks = false; // END Set current task
 
-              case 6:
+              case 7:
               case "end":
                 return _context3.stop();
             }
@@ -11700,7 +11744,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _this2.initRequiresWorkspace();
       }
     });
-    if (this.userTasks != null) this.initRequiresTasks();else this.loadingTasks = false;
+    if (this.userTasks != null) this.initRequiresTasks();else this.loadingTasks = false; // this.$store.subscribe((mutation, state) => {
+    //     console.log(mutation)
+    // })
   },
   destroyed: function destroyed() {
     this.unsubWorkspace();
@@ -11813,7 +11859,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\nhtml, body, #app {\n  color: #1b1c1d;\n}\n.app {\n  scroll-behavior: smooth;\n  display: grid;\n  min-height: 100vh;\n  min-width: 100vw;\n  grid-template-columns: 260px auto;\n  grid-template-rows: 70px auto;\n  grid-template-areas: \"logo navbar\" \"sidebar main\";\n}\n@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-webkit-min-device-pixel-ratio: 1.25), only screen and (min-resolution: 120dpi) {\n.app .app {\n    grid-template-columns: 200px auto;\n}\n}\n@media screen and (max-width: 1480px) {\n.app {\n    grid-template-columns: 80px auto;\n}\n}\n.main {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05) inset, 5px 0 6px rgba(0, 0, 0, 0.02) inset;\n  padding: 20px 60px;\n  overflow-y: scroll;\n  overflow-x: auto;\n  background: #f9f9f9;\n}\nh1 {\n  margin-bottom: 30px;\n}\n.grid-2, .grid-3 {\n  display: grid;\n  grid-gap: 17px;\n}\n.grid-2.small-gap, .grid-3.small-gap {\n  grid-gap: 12px;\n}\n.grid-3 {\n  grid-template-columns: repeat(3, 1fr);\n}\n.grid-2 {\n  grid-template-columns: repeat(2, 1fr);\n}\n.card {\n  padding: 1em;\n  border-radius: 6px;\n  margin: 30px 0;\n  border: none;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n}\n.pill {\n  background: #f3f3f3;\n  height: 20px;\n  font-size: 13px;\n  border-radius: 20px;\n  width: 85px;\n  height: 25px;\n  display: inline-block;\n  line-height: 25px;\n  text-align: center;\n}\n.pill.positive {\n  background: rgba(105, 228, 166, 0.35);\n}\n.tabs {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.tabs .tab {\n  display: inline-block;\n  font-size: 18px;\n  opacity: 0.5;\n  padding: 10px 25px;\n  border-bottom: solid 3px transparent;\n  margin-bottom: 8px;\n}\n.tabs .tab.active {\n  opacity: 1;\n  border-color: #3b86ff;\n}\n.tabs .tab:not(.active):hover {\n  border-color: rgba(59, 134, 255, 0.5);\n  cursor: pointer;\n}\n.vdp-datepicker {\n  display: grid;\n  justify-items: end;\n}\n.vdp-datepicker.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.vdp-datepicker > div::after {\n  content: \"\\F078\";\n  font-size: 11px;\n  color: #a8a8a8;\n  display: block;\n  position: absolute;\n  z-index: 1;\n  right: 12px;\n  height: 32px;\n  top: 0;\n  line-height: 32px;\n  font-weight: 900;\n  font-family: \"Font Awesome 5 Pro\";\n}\n.vdp-datepicker input {\n  border: solid 1px #dfdfdf;\n  border-radius: 4px;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  padding-left: 12px;\n  height: 32px;\n  width: 150px;\n  font-size: 14px;\n  cursor: pointer;\n}\n.loading {\n  -webkit-animation: loading 2s;\n          animation: loading 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.card > .flex-table {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled .flex-table-row:not(.header-row) {\n  opacity: 0.5;\n}\n.flex-table .flex-table-row {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n  min-height: 45px;\n}\n.flex-table .flex-table-row > *.select {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table .header-row {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #f3f3f3;\n}\n.flex-table .item-row {\n  border-bottom: solid 1px #f3f3f3;\n}\n.flex-table .item-row:hover {\n  background: #f9f9f9;\n}\n.flex-table th {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #a8a8a8;\n}\n.flex-table th i {\n  color: #dfdfdf;\n  margin: 0;\n  margin-left: 4px;\n}\n.flex-table th.active i {\n  color: #3b86ff;\n}\n.clickable {\n  cursor: pointer;\n}\nbody::after {\n  content: \"\";\n  display: none;\n  position: fixed;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(27, 28, 29, 0.7);\n  z-index: 110;\n}\nbody.disabled::after {\n  display: block;\n}\ni.green {\n  color: #5ee2a0;\n}\ni.red {\n  color: #ff6565;\n}\ni.dark {\n  color: #1b1c1d;\n}\ni.primary {\n  color: #3b86ff;\n}\n*:not(.app) {\n  /* width */\n  /* Track */\n  /* Handle */\n}\n*:not(.app)::-webkit-scrollbar {\n  width: 3px;\n  height: 7px;\n}\n*:not(.app)::-webkit-scrollbar-track {\n  background: #dfdfdf;\n}\n*:not(.app)::-webkit-scrollbar-thumb {\n  background: #a8a8a8;\n  border-radius: 2px;\n}\n*:not(.app)::-webkit-scrollbar-thumb:hover {\n  background: #888;\n}\n*:not(.app) .dark > *, *:not(.app) .dark {\n  /* width */\n  /* Track */\n  /* Handle */\n}\n*:not(.app) .dark > *::-webkit-scrollbar, *:not(.app) .dark::-webkit-scrollbar {\n  width: 5px;\n  height: 7px;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-track, *:not(.app) .dark::-webkit-scrollbar-track {\n  background: transparent;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-thumb, *:not(.app) .dark::-webkit-scrollbar-thumb {\n  background: white;\n  box-shadow: -2px 0 #333 inset;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-thumb:hover, *:not(.app) .dark::-webkit-scrollbar-thumb:hover {\n  background: #3b86ff;\n}", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\nhtml, body, #app {\n  color: #1b1c1d;\n}\n.app {\n  scroll-behavior: smooth;\n  display: grid;\n  min-height: 100vh;\n  min-width: 100vw;\n  grid-template-columns: 260px auto;\n  grid-template-rows: 70px auto;\n  grid-template-areas: \"logo navbar\" \"sidebar main\";\n}\n@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-webkit-min-device-pixel-ratio: 1.25), only screen and (min-resolution: 120dpi) {\n.app .app {\n    grid-template-columns: 200px auto;\n}\n}\n@media screen and (max-width: 1600px) {\n.app {\n    grid-template-columns: 80px auto;\n}\n}\n.main {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05) inset, 5px 0 6px rgba(0, 0, 0, 0.02) inset;\n  padding: 20px 60px;\n  overflow-y: scroll;\n  overflow-x: auto;\n  background: #f9f9f9;\n}\nh1 {\n  margin-bottom: 30px;\n}\n.grid-2, .grid-3 {\n  display: grid;\n  grid-gap: 17px;\n}\n.grid-2.small-gap, .grid-3.small-gap {\n  grid-gap: 12px;\n}\n.grid-3 {\n  grid-template-columns: repeat(3, 1fr);\n}\n.grid-2 {\n  grid-template-columns: repeat(2, 1fr);\n}\n.card {\n  padding: 1em;\n  border-radius: 6px;\n  margin: 30px 0;\n  border: none;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n}\n.tabs {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.tabs .tab {\n  display: inline-block;\n  font-size: 18px;\n  opacity: 0.5;\n  padding: 10px 25px;\n  border-bottom: solid 3px transparent;\n  margin-bottom: 8px;\n}\n.tabs .tab.active {\n  opacity: 1;\n  border-color: #3b86ff;\n}\n.tabs .tab:not(.active):hover {\n  border-color: rgba(59, 134, 255, 0.5);\n  cursor: pointer;\n}\n.vdp-datepicker {\n  display: grid;\n  justify-items: end;\n}\n.vdp-datepicker.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.vdp-datepicker > div::after {\n  content: \"\\F078\";\n  font-size: 11px;\n  color: #a8a8a8;\n  display: block;\n  position: absolute;\n  z-index: 1;\n  right: 12px;\n  height: 32px;\n  top: 0;\n  line-height: 32px;\n  font-weight: 900;\n  font-family: \"Font Awesome 5 Pro\";\n}\n.vdp-datepicker input {\n  border: solid 1px #dfdfdf;\n  border-radius: 4px;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  padding-left: 12px;\n  height: 32px;\n  width: 150px;\n  font-size: 14px;\n  cursor: pointer;\n}\n.loading {\n  -webkit-animation: loading 2s;\n          animation: loading 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.card > .flex-table {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled .flex-table-row:not(.header-row) {\n  opacity: 0.5;\n}\n.flex-table .flex-table-row {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n  min-height: 45px;\n}\n.flex-table .flex-table-row > *.select {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table .header-row {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #f3f3f3;\n}\n.flex-table .item-row {\n  border-bottom: solid 1px #f3f3f3;\n}\n.flex-table .item-row:hover {\n  background: #f9f9f9;\n}\n.flex-table th {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #a8a8a8;\n}\n.flex-table th i {\n  color: #dfdfdf;\n  margin: 0;\n  margin-left: 4px;\n}\n.flex-table th.active i {\n  color: #3b86ff;\n}\n.clickable {\n  cursor: pointer;\n}\nbody::after {\n  content: \"\";\n  display: none;\n  position: fixed;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(27, 28, 29, 0.7);\n  z-index: 110;\n}\nbody.disabled::after {\n  display: block;\n}\ni.green {\n  color: #5ee2a0;\n}\ni.red {\n  color: #ff6565;\n}\ni.dark {\n  color: #1b1c1d;\n}\ni.primary {\n  color: #3b86ff;\n}\n*:not(.app) {\n  /* width */\n  /* Track */\n  /* Handle */\n}\n*:not(.app)::-webkit-scrollbar {\n  width: 3px;\n  height: 7px;\n}\n*:not(.app)::-webkit-scrollbar-track {\n  background: #dfdfdf;\n}\n*:not(.app)::-webkit-scrollbar-thumb {\n  background: #a8a8a8;\n  border-radius: 2px;\n}\n*:not(.app)::-webkit-scrollbar-thumb:hover {\n  background: #888;\n}\n*:not(.app) .dark > *, *:not(.app) .dark {\n  /* width */\n  /* Track */\n  /* Handle */\n}\n*:not(.app) .dark > *::-webkit-scrollbar, *:not(.app) .dark::-webkit-scrollbar {\n  width: 5px;\n  height: 7px;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-track, *:not(.app) .dark::-webkit-scrollbar-track {\n  background: transparent;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-thumb, *:not(.app) .dark::-webkit-scrollbar-thumb {\n  background: white;\n  box-shadow: -2px 0 #333 inset;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-thumb:hover, *:not(.app) .dark::-webkit-scrollbar-thumb:hover {\n  background: #3b86ff;\n}", ""]);
 
 // exports
 
@@ -11851,7 +11897,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".comment-wrapper[data-v-54ded044] {\n  margin-bottom: 4px;\n}\n.comment[data-v-54ded044] {\n  position: relative;\n  padding: 12px;\n  background: #dfdfdf;\n  border-radius: 6px;\n  display: inline-block;\n  clear: both;\n  max-width: calc(100% - 56px);\n}\n.own .comment[data-v-54ded044] {\n  background: #3b86ff;\n  color: white;\n  text-align: left;\n  margin-right: 0;\n  margin-left: 56px;\n}\n.comment .body[data-v-54ded044] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n}", ""]);
+exports.push([module.i, ".comment-wrapper[data-v-54ded044] {\n  margin-bottom: 4px;\n  max-width: calc(100% - 56px);\n}\n.comment[data-v-54ded044] {\n  position: relative;\n  padding: 12px;\n  background: #dfdfdf;\n  border-radius: 6px;\n  width: 100%;\n}\n.own .comment[data-v-54ded044] {\n  background: #3b86ff;\n  color: white;\n}\n.comment .body[data-v-54ded044] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n}", ""]);
 
 // exports
 
@@ -11908,7 +11954,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".fly-in-wrapper.visible .overlay[data-v-3c33819d] {\n  display: block;\n}\n.fly-in-wrapper.visible .fly-in[data-v-3c33819d] {\n  right: 0%;\n}\n.overlay[data-v-3c33819d] {\n  z-index: 10;\n  position: fixed;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  background: rgba(27, 28, 29, 0.5);\n  display: none;\n}\n.fly-in[data-v-3c33819d] {\n  right: -100%;\n  margin: 0;\n  max-width: 900px;\n  z-index: 11;\n  top: 0;\n  position: fixed;\n  height: 100vh;\n  overflow: hidden;\n  width: 100%;\n  -webkit-transition-timing-function: ease-out;\n          transition-timing-function: ease-out;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  border-radius: 6px;\n}", ""]);
+exports.push([module.i, ".fly-in-wrapper.visible .overlay[data-v-3c33819d] {\n  display: block;\n}\n.fly-in-wrapper.visible .fly-in[data-v-3c33819d] {\n  right: 0%;\n}\n.overlay[data-v-3c33819d] {\n  z-index: 10;\n  position: fixed;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  background: rgba(27, 28, 29, 0.5);\n  display: none;\n}\n.fly-in[data-v-3c33819d] {\n  right: -100%;\n  margin: 0;\n  max-width: 1032px;\n  z-index: 11;\n  top: 0;\n  position: fixed;\n  height: 100vh;\n  overflow: hidden;\n  width: 100%;\n  -webkit-transition-timing-function: ease-out;\n          transition-timing-function: ease-out;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  border-radius: 6px;\n}", ""]);
 
 // exports
 
@@ -12003,7 +12049,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "@media screen and (max-width: 1480px) {\n.logo[data-v-d1f7d5f4] {\n    display: -webkit-box;\n    display: flex;\n    -webkit-box-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n            align-items: center;\n}\n}\n@media screen and (min-width: 1481px) {\n.logo[data-v-d1f7d5f4] {\n    padding: 24px 20px 16px;\n}\n}", ""]);
+exports.push([module.i, "@media screen and (max-width: 1600px) {\n.logo[data-v-d1f7d5f4] {\n    display: -webkit-box;\n    display: flex;\n    -webkit-box-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n            align-items: center;\n}\n}\n@media screen and (min-width: 1601px) {\n.logo[data-v-d1f7d5f4] {\n    padding: 24px 20px 16px;\n}\n}", ""]);
 
 // exports
 
@@ -12041,7 +12087,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.hotkey-tip[data-v-6d61fa50] {\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.hotkey-tip .square[data-v-6d61fa50] {\n  border-width: 1px;\n  height: auto;\n  padding: 2px 4px;\n  min-width: 0;\n  font-weight: 400;\n  border-radius: 2px;\n  font-size: 9px;\n  margin-right: 2px;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.tab-headers .tab[data-v-6d61fa50] {\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.sender-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  margin-bottom: 20px;\n}\n.sender-wrapper.own[data-v-6d61fa50] {\n  -webkit-box-align: end;\n          align-items: flex-end;\n}\n.break-line[data-v-6d61fa50] {\n  color: #a8a8a8;\n  font-size: 12px;\n  font-weight: 500;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-top: 20px;\n  margin-bottom: 12px;\n}\n.break-line[data-v-6d61fa50]::after, .break-line[data-v-6d61fa50]::before {\n  content: \"\";\n  display: block;\n  height: 2px;\n  background: #a8a8a8;\n  -webkit-box-flex: 1;\n          flex: 1;\n}\n.break-line[data-v-6d61fa50]::after {\n  margin-left: 12px;\n}\n.break-line[data-v-6d61fa50]::before {\n  margin-right: 12px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #f3f3f3;\n  border-radius: 0 8px 0 0;\n  padding: 16px 4px 16px 0;\n  height: 100%;\n}\n.comments-wrapper .inner[data-v-6d61fa50] {\n  padding: 0 12px;\n  height: 100%;\n  overflow-y: auto;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comments-wrapper .sender[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\nform[data-v-6d61fa50] {\n  margin-bottom: 42px;\n  padding: 8px 0 24px;\n  background: white;\n  box-shadow: 0 -3px 6px rgba(27, 28, 29, 0.1);\n}\n@media screen and (max-width: 1480px) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-webkit-min-device-pixel-ratio: 1.25), only screen and (min-resolution: 120dpi) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\nform .controls[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 8px;\n}\nform .controls .set-scope span[data-v-6d61fa50] {\n  font-size: 14px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\nform .controls .set-scope span[data-v-6d61fa50]:not(:last-child) {\n  margin-right: -8px;\n}\nform .controls .set-scope span.active[data-v-6d61fa50] {\n  color: #1b1c1d;\n  cursor: auto;\n}\nform .form-input[data-v-6d61fa50] {\n  padding: 0 12px;\n}\nform .form-input.hidden[data-v-6d61fa50] {\n  display: none;\n}\nform .form-input .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #dfdfdf;\n  background: #dfdfdf;\n  box-sizing: border-box;\n  padding: 8px 12px 0px 12px;\n  font-size: 14px;\n  color: #a8a8a8;\n  max-height: 200px;\n  overflow: auto;\n  cursor: pointer;\n  position: relative;\n}\nform .form-input .input-wrapper .edit-request[data-v-6d61fa50] {\n  position: absolute;\n  right: 12px;\n  font-size: 10px;\n  color: #1b1c1d;\n  font-weight: 500;\n  top: 50%;\n  -webkit-transform: translateY(-50%);\n          transform: translateY(-50%);\n}\nform .form-input .input-wrapper .edit-request .circle[data-v-6d61fa50] {\n  height: 24px;\n  width: 24px;\n  margin-left: 4px;\n}\nform .form-input textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  color: #535353;\n  background: transparent;\n  cursor: pointer;\n}\nform .form-input textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform .form-input textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::placeholder {\n  color: #a8a8a8;\n}\nform .form-input.active .input-wrapper[data-v-6d61fa50] {\n  border: solid 2px #dfdfdf;\n  background: white;\n  cursor: auto;\n}\nform .form-input.active textarea[data-v-6d61fa50] {\n  cursor: auto;\n}\nform .form-input .flex-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: 8px;\n  -webkit-box-align: center;\n          align-items: center;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #f3f3f3;\n  color: #a8a8a8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3b86ff;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}", ""]);
+exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.hotkey-tip[data-v-6d61fa50] {\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.hotkey-tip .square[data-v-6d61fa50] {\n  border-width: 1px;\n  height: auto;\n  padding: 2px 4px;\n  min-width: 0;\n  font-weight: 400;\n  border-radius: 2px;\n  font-size: 9px;\n  margin-right: 2px;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.tab-headers .tab[data-v-6d61fa50] {\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.request-wrapper[data-v-6d61fa50] {\n  margin-bottom: 16px;\n}\n.sender-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  margin-bottom: 20px;\n}\n.sender-wrapper.own[data-v-6d61fa50] {\n  -webkit-box-align: end;\n          align-items: flex-end;\n}\n.break-line[data-v-6d61fa50] {\n  color: #a8a8a8;\n  font-size: 12px;\n  font-weight: 500;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-top: 20px;\n  margin-bottom: 12px;\n}\n.break-line[data-v-6d61fa50]::after, .break-line[data-v-6d61fa50]::before {\n  content: \"\";\n  display: block;\n  height: 2px;\n  background: #a8a8a8;\n  -webkit-box-flex: 1;\n          flex: 1;\n}\n.break-line[data-v-6d61fa50]::after {\n  margin-left: 12px;\n}\n.break-line[data-v-6d61fa50]::before {\n  margin-right: 12px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #f3f3f3;\n  border-radius: 0 8px 0 0;\n  padding: 16px 4px 16px 0;\n  height: 100%;\n  width: 100%;\n}\n.comments-wrapper .inner[data-v-6d61fa50] {\n  padding: 0 12px;\n  height: 100%;\n  overflow-y: auto;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comments-wrapper .sender[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\nform[data-v-6d61fa50] {\n  margin-bottom: 42px;\n  padding: 8px 0 24px;\n  background: white;\n  box-shadow: 0 -3px 6px rgba(27, 28, 29, 0.1);\n}\n@media screen and (max-width: 1600px) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-webkit-min-device-pixel-ratio: 1.25), only screen and (min-resolution: 120dpi) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\nform .controls[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 8px;\n}\nform .controls .set-scope span[data-v-6d61fa50] {\n  font-size: 14px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\nform .controls .set-scope span[data-v-6d61fa50]:not(:last-child) {\n  margin-right: -8px;\n}\nform .controls .set-scope span.active[data-v-6d61fa50] {\n  color: #1b1c1d;\n  cursor: auto;\n}\nform .form-input[data-v-6d61fa50] {\n  padding: 0 12px;\n}\nform .form-input.hidden[data-v-6d61fa50] {\n  display: none;\n}\nform .form-input .id[data-v-6d61fa50] {\n  font-size: 12px;\n  color: #a8a8a8;\n  display: block;\n  margin-top: -2px;\n}\nform .form-input .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #dfdfdf;\n  background: #dfdfdf;\n  box-sizing: border-box;\n  padding: 8px 12px 0px 12px;\n  font-size: 14px;\n  color: #a8a8a8;\n  max-height: 200px;\n  overflow: auto;\n  cursor: pointer;\n  position: relative;\n}\nform .form-input .input-wrapper .edit-request[data-v-6d61fa50] {\n  position: absolute;\n  right: 12px;\n  font-size: 10px;\n  color: #1b1c1d;\n  font-weight: 500;\n  top: 50%;\n  -webkit-transform: translateY(-50%);\n          transform: translateY(-50%);\n  pointer-events: none;\n}\nform .form-input .input-wrapper .edit-request .circle[data-v-6d61fa50] {\n  height: 24px;\n  width: 24px;\n  margin-left: 4px;\n}\nform .form-input textarea[data-v-6d61fa50] {\n  border: none;\n  height: 22px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  color: #535353;\n  background: transparent;\n  cursor: pointer;\n}\nform .form-input textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform .form-input textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::placeholder {\n  color: #a8a8a8;\n}\nform .form-input.active .input-wrapper[data-v-6d61fa50] {\n  border: solid 2px #dfdfdf;\n  background: white;\n  cursor: auto;\n}\nform .form-input.active textarea[data-v-6d61fa50] {\n  cursor: auto;\n}\nform .form-input .flex-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: 8px;\n  -webkit-box-align: center;\n          align-items: center;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #f3f3f3;\n  color: #a8a8a8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3b86ff;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}", ""]);
 
 // exports
 
@@ -12193,7 +12239,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".sidebar[data-v-81fbb27e] {\n  margin: 0;\n  padding: 0;\n  grid-area: sidebar;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  overflow: hidden;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.sidebar .nav[data-v-81fbb27e] {\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.sidebar .nav > *[data-v-81fbb27e] {\n  width: 100%;\n}\n.sidebar .stick-to-bottom[data-v-81fbb27e] {\n  position: absolute;\n  left: 0;\n  width: 100%;\n  bottom: 200px;\n}\n.sidebar .link[data-v-81fbb27e] {\n  display: block;\n  color: #a8a8a8;\n  padding: 16px;\n  text-decoration: none;\n  border-left: solid 5px white;\n  cursor: pointer;\n}\n.sidebar .link.router-link-active[data-v-81fbb27e] {\n  background-color: #f9f9f9;\n  color: #1b1c1d;\n  border-left: 5px solid #4facfe;\n}\n.sidebar .link.router-link-active i[data-v-81fbb27e] {\n  color: #3b86ff;\n}\n.sidebar .link[data-v-81fbb27e]:hover {\n  background: #f3f3f3;\n}\n.sidebar .link[data-v-81fbb27e]:hover:not(.router-link-active) {\n  border-color: #f3f3f3;\n}\n.sidebar .link i[data-v-81fbb27e] {\n  font-size: 16px;\n  margin-right: 8px;\n}\n.sidebar .bottom-drawer.collapsed .drawer[data-v-81fbb27e] {\n  max-height: 0 !important;\n}\n.sidebar .bottom-drawer .header[data-v-81fbb27e] {\n  padding: 16px;\n  cursor: pointer;\n}\n.sidebar .bottom-drawer .header[data-v-81fbb27e]:hover {\n  background: #f9f9f9;\n}\n.sidebar .bottom-drawer .user[data-v-81fbb27e] {\n  font-size: 14px;\n  font-weight: 500;\n}\n.sidebar .bottom-drawer .role[data-v-81fbb27e] {\n  margin: auto;\n  font-size: 14px;\n  color: #a8a8a8;\n}\n.sidebar .bottom-drawer .drawer[data-v-81fbb27e] {\n  background: #f3f3f3;\n  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.3);\n  height: 200px;\n  max-height: 200px;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.sidebar .bottom-drawer .drawer .link[data-v-81fbb27e] {\n  border-left: none;\n}\n.sidebar .bottom-drawer .drawer .link[data-v-81fbb27e]:hover {\n  background: white;\n}\n.sidebar .bottom-drawer .flex-center[data-v-81fbb27e] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  color: #a8a8a8;\n}\n.sidebar .bottom-drawer .flex-center i[data-v-81fbb27e] {\n  margin-bottom: 8px;\n}\n@media screen and (max-width: 1480px) {\n.sidebar .link[data-v-81fbb27e] {\n    display: -webkit-box;\n    display: flex;\n    -webkit-box-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n            align-items: center;\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n            flex-direction: column;\n}\n.sidebar .link i[data-v-81fbb27e] {\n    margin: 0;\n    margin-bottom: 8px;\n}\n}\n@media only screen and (max-width: 1480px) and (-webkit-min-device-pixel-ratio: 1.3), only screen and (max-width: 1480px) and (-webkit-min-device-pixel-ratio: 1.25), only screen and (max-width: 1480px) and (min-resolution: 120dpi) {\n.sidebar .link[data-v-81fbb27e] {\n    font-size: 12px;\n}\n.sidebar .link i[data-v-81fbb27e] {\n    font-size: 16px;\n}\n}", ""]);
+exports.push([module.i, ".sidebar[data-v-81fbb27e] {\n  margin: 0;\n  padding: 0;\n  grid-area: sidebar;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  overflow: hidden;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.sidebar .nav[data-v-81fbb27e] {\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.sidebar .nav > *[data-v-81fbb27e] {\n  width: 100%;\n}\n.sidebar .stick-to-bottom[data-v-81fbb27e] {\n  position: absolute;\n  left: 0;\n  width: 100%;\n  bottom: 200px;\n}\n.sidebar .link[data-v-81fbb27e] {\n  display: block;\n  color: #a8a8a8;\n  padding: 16px;\n  text-decoration: none;\n  border-left: solid 5px white;\n  cursor: pointer;\n}\n.sidebar .link.router-link-active[data-v-81fbb27e] {\n  background-color: #f9f9f9;\n  color: #1b1c1d;\n  border-left: 5px solid #4facfe;\n}\n.sidebar .link.router-link-active i[data-v-81fbb27e] {\n  color: #3b86ff;\n}\n.sidebar .link[data-v-81fbb27e]:hover {\n  background: #f3f3f3;\n}\n.sidebar .link[data-v-81fbb27e]:hover:not(.router-link-active) {\n  border-color: #f3f3f3;\n}\n.sidebar .link i[data-v-81fbb27e] {\n  font-size: 16px;\n  margin-right: 8px;\n}\n.sidebar .bottom-drawer.collapsed .drawer[data-v-81fbb27e] {\n  max-height: 0 !important;\n}\n.sidebar .bottom-drawer .header[data-v-81fbb27e] {\n  padding: 16px;\n  cursor: pointer;\n}\n.sidebar .bottom-drawer .header[data-v-81fbb27e]:hover {\n  background: #f9f9f9;\n}\n.sidebar .bottom-drawer .user[data-v-81fbb27e] {\n  font-size: 14px;\n  font-weight: 500;\n}\n.sidebar .bottom-drawer .role[data-v-81fbb27e] {\n  margin: auto;\n  font-size: 14px;\n  color: #a8a8a8;\n}\n.sidebar .bottom-drawer .drawer[data-v-81fbb27e] {\n  background: #f3f3f3;\n  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.3);\n  height: 200px;\n  max-height: 200px;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.sidebar .bottom-drawer .drawer .link[data-v-81fbb27e] {\n  border-left: none;\n}\n.sidebar .bottom-drawer .drawer .link[data-v-81fbb27e]:hover {\n  background: white;\n}\n.sidebar .bottom-drawer .flex-center[data-v-81fbb27e] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  color: #a8a8a8;\n}\n.sidebar .bottom-drawer .flex-center i[data-v-81fbb27e] {\n  margin-bottom: 8px;\n}\n@media screen and (max-width: 1600px) {\n.sidebar .link[data-v-81fbb27e] {\n    display: -webkit-box;\n    display: flex;\n    -webkit-box-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n            align-items: center;\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n            flex-direction: column;\n}\n.sidebar .link i[data-v-81fbb27e] {\n    margin: 0;\n    margin-bottom: 8px;\n}\n}\n@media only screen and (max-width: 1600px) and (-webkit-min-device-pixel-ratio: 1.3), only screen and (max-width: 1600px) and (-webkit-min-device-pixel-ratio: 1.25), only screen and (max-width: 1600px) and (min-resolution: 120dpi) {\n.sidebar .link[data-v-81fbb27e] {\n    font-size: 12px;\n}\n.sidebar .link i[data-v-81fbb27e] {\n    font-size: 16px;\n}\n}", ""]);
 
 // exports
 
@@ -16963,7 +17009,7 @@ var render = function() {
       "div",
       { staticClass: "inner" },
       [
-        !_vm.loading
+        !_vm.loading && _vm.product != null
           ? [
               _c("div", { staticClass: "header" }, [
                 _c("div", { staticClass: "left" }, [
@@ -16987,9 +17033,9 @@ var render = function() {
                   "div",
                   { staticClass: "right controls" },
                   [
-                    _vm.userPermissionLevel >= 2
+                    _vm.currentTaskPermissions.actions
                       ? [
-                          _vm.userPermissionLevel == 2
+                          _vm.currentTaskPermissions.focus
                             ? _c(
                                 "span",
                                 {
@@ -17601,7 +17647,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "comments" }, [
     _c("div", { staticClass: "tab-headers" }, [
-      _vm.currentTask.type != "approval"
+      _vm.commentsAvailable
         ? _c(
             "span",
             {
@@ -17627,7 +17673,7 @@ var render = function() {
           )
         : _vm._e(),
       _vm._v(" "),
-      _vm.currentTask.type != "feedback"
+      _vm.requestsAvailable
         ? _c(
             "span",
             {
@@ -17660,64 +17706,30 @@ var render = function() {
         { staticClass: "inner" },
         [
           _vm.commentScope == "comments"
-            ? _vm._l(_vm.commentsGroupedBySender, function(sender, index) {
-                return _c(
-                  "div",
-                  {
-                    key: index,
-                    staticClass: "sender-wrapper",
-                    class: { own: sender.user.id == _vm.authUser.id }
-                  },
-                  [
-                    _vm._l(sender.comments, function(comment) {
-                      return _c("comment", {
-                        key: comment.id,
-                        attrs: { comment: comment }
-                      })
-                    }),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "sender" }, [
-                      _vm._v(
-                        _vm._s(sender.task.title) +
-                          " | " +
-                          _vm._s(
-                            sender.user.id == _vm.authUser.id
-                              ? "You"
-                              : sender.user.name
-                          )
-                      )
-                    ])
-                  ],
-                  2
-                )
-              })
-            : _vm._e(),
-          _vm._v(" "),
-          _vm.commentScope == "requests"
             ? [
-                _vm.taskRequest
-                  ? _c(
-                      "div",
-                      { staticClass: "task-request" },
-                      [_c("request", { attrs: { request: _vm.taskRequest } })],
-                      1
-                    )
-                  : _vm._e(),
-                _vm._v(" "),
-                _vm.currentTask.parentTasks.find(function(x) {
-                  return x.type == "approval"
-                })
+                _vm.currentTask.type == "approval" ||
+                _vm.currentTask.approvalParent
                   ? [
-                      _c("div", { staticClass: "break-line" }, [
-                        _vm._v(
-                          "Waiting for response from " +
-                            _vm._s(
-                              _vm.currentTask.parentTasks.find(function(x) {
-                                return x.type == "approval"
-                              }).title
-                            )
-                        )
-                      ]),
+                      _vm.requests.length > 0
+                        ? _c(
+                            "div",
+                            { staticClass: "requests-wrapper" },
+                            _vm._l(
+                              _vm.requests.filter(function(x) {
+                                return (
+                                  x.task_id == _vm.currentTask.inherit_from_id
+                                )
+                              }),
+                              function(request) {
+                                return _c("request", {
+                                  key: request.id,
+                                  attrs: { request: request }
+                                })
+                              }
+                            ),
+                            1
+                          )
+                        : _vm._e(),
                       _vm._v(" "),
                       _vm._l(_vm.comments, function(comment) {
                         return _c(
@@ -17744,34 +17756,124 @@ var render = function() {
                           ],
                           1
                         )
-                      })
-                    ]
-                  : [
-                      _vm.requests.find(function(x) {
-                        return x.task_id != _vm.currentTask.id
-                      })
-                        ? _c("div", { staticClass: "break-line" }, [
-                            _vm._v("Showing requests from prev. task(s)")
-                          ])
-                        : _vm._e(),
+                      }),
                       _vm._v(" "),
-                      _c(
-                        "div",
-                        { staticClass: "requests-wrapper" },
-                        _vm._l(
-                          _vm.requests.filter(function(x) {
-                            return x.task_id != _vm.currentTask.id
-                          }),
-                          function(request) {
-                            return _c("request", {
-                              key: request.id,
-                              attrs: { request: request }
-                            })
-                          }
-                        ),
-                        1
-                      )
+                      _vm.product.currentAction
+                        ? _c("div", { staticClass: "break-line" }, [
+                            _c(
+                              "span",
+                              {
+                                staticClass: "pill",
+                                class:
+                                  _vm.product.currentAction.action == 1
+                                    ? "green"
+                                    : "red"
+                              },
+                              [
+                                _vm._v(
+                                  "Marked as " +
+                                    _vm._s(
+                                      _vm.product.currentAction.action == 1
+                                        ? "IN"
+                                        : "OUT"
+                                    ) +
+                                    " by " +
+                                    _vm._s(
+                                      _vm.product.currentAction.user_id ==
+                                        _vm.authUser.id
+                                        ? "You"
+                                        : _vm.product.currentAction.user.name
+                                    )
+                                )
+                              ]
+                            )
+                          ])
+                        : (_vm.comments.length > 0
+                          ? _vm.comments[_vm.comments.length - 1].task_id !=
+                            _vm.currentTask.approvalParent.id
+                          : false)
+                        ? _c("div", { staticClass: "break-line" }, [
+                            _vm._v(
+                              "Waiting for response from " +
+                                _vm._s(_vm.currentTask.approvalParent.title)
+                            )
+                          ])
+                        : _vm._e()
                     ]
+                  : _vm.currentTask.type == "decision"
+                  ? void 0
+                  : _vm._l(_vm.commentsGroupedBySender, function(
+                      sender,
+                      index
+                    ) {
+                      return _c(
+                        "div",
+                        {
+                          key: index,
+                          staticClass: "sender-wrapper",
+                          class: { own: sender.user.id == _vm.authUser.id }
+                        },
+                        [
+                          _vm._l(sender.comments, function(comment) {
+                            return _c("comment", {
+                              key: comment.id,
+                              attrs: { comment: comment }
+                            })
+                          }),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "sender" }, [
+                            _vm._v(
+                              _vm._s(sender.task.title) +
+                                " | " +
+                                _vm._s(
+                                  sender.user.id == _vm.authUser.id
+                                    ? "You"
+                                    : sender.user.name
+                                )
+                            )
+                          ])
+                        ],
+                        2
+                      )
+                    })
+              ]
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.commentScope == "requests"
+            ? [
+                _vm.taskRequest
+                  ? _c(
+                      "div",
+                      { staticClass: "task-request" },
+                      [_c("request", { attrs: { request: _vm.taskRequest } })],
+                      1
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.requests.find(function(x) {
+                  return x.task_id != _vm.currentTask.id
+                })
+                  ? _c("div", { staticClass: "break-line" }, [
+                      _vm._v("Showing requests from prev. task(s)")
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "requests-wrapper" },
+                  _vm._l(
+                    _vm.requests.filter(function(x) {
+                      return x.task_id != _vm.currentTask.id
+                    }),
+                    function(request) {
+                      return _c("request", {
+                        key: request.id,
+                        attrs: { request: request }
+                      })
+                    }
+                  ),
+                  1
+                )
               ]
             : _vm._e()
         ],
@@ -17779,28 +17881,30 @@ var render = function() {
       )
     ]),
     _vm._v(" "),
-    _c("form", { on: { submit: _vm.onSubmitComment } }, [
-      _c("div", { staticClass: "controls" }, [
-        _c("div", { staticClass: "left" }, [
-          _c("div", { staticClass: "set-scope" }, [
-            _vm.currentTask.type != "feedback"
-              ? _c(
-                  "span",
-                  {
-                    staticClass: "button invisible",
-                    class: { active: _vm.writeScope == "request" },
-                    on: {
-                      click: function($event) {
-                        return _vm.setWriteScope("request")
-                      }
-                    }
-                  },
-                  [_vm._v("Your Request")]
+    !_vm.commentsClosed
+      ? _c("form", { on: { submit: _vm.onSubmitComment } }, [
+          _c("div", { staticClass: "controls" }, [
+            _c("div", { staticClass: "left" }, [
+              _c("div", { staticClass: "set-scope" }, [
+                !["feedback", "approval", "decision"].includes(
+                  _vm.currentTask.type
                 )
-              : _vm._e(),
-            _vm._v(" "),
-            _vm.currentTask.type != "approval"
-              ? _c(
+                  ? _c(
+                      "span",
+                      {
+                        staticClass: "button invisible",
+                        class: { active: _vm.writeScope == "request" },
+                        on: {
+                          click: function($event) {
+                            return _vm.setWriteScope("request")
+                          }
+                        }
+                      },
+                      [_vm._v("Your Request")]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _c(
                   "span",
                   {
                     staticClass: "button invisible",
@@ -17813,253 +17917,259 @@ var render = function() {
                   },
                   [_vm._v("Comment")]
                 )
-              : _vm._e()
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "right" })
-      ]),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "form-input",
-          class: [
-            { active: _vm.writeActive },
-            { hidden: _vm.writeScope != "request" }
-          ]
-        },
-        [
-          _c("div", { staticClass: "input-wrapper request" }, [
-            _c("textarea", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.newRequest.comment,
-                  expression: "newRequest.comment"
-                }
-              ],
-              ref: "requestField",
-              attrs: {
-                name: "request",
-                id: "request-input",
-                placeholder: "Write your request here..."
-              },
-              domProps: { value: _vm.newRequest.comment },
-              on: {
-                click: function($event) {
-                  _vm.writeActive = true
-                },
-                keydown: function($event) {
-                  if (
-                    !$event.type.indexOf("key") &&
-                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                  ) {
-                    return null
-                  }
-                  if (
-                    $event.ctrlKey ||
-                    $event.shiftKey ||
-                    $event.altKey ||
-                    $event.metaKey
-                  ) {
-                    return null
-                  }
-                  $event.preventDefault()
-                },
-                keyup: function($event) {
-                  if (
-                    !$event.type.indexOf("key") &&
-                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                  ) {
-                    return null
-                  }
-                  if (
-                    $event.ctrlKey ||
-                    $event.shiftKey ||
-                    $event.altKey ||
-                    $event.metaKey
-                  ) {
-                    return null
-                  }
-                  return _vm.onSubmitComment($event)
-                },
-                input: [
-                  function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.newRequest, "comment", $event.target.value)
-                  },
-                  function($event) {
-                    return _vm.resizeTextarea($event)
-                  }
-                ]
-              }
-            }),
-            _vm._v(" "),
-            _vm.taskRequest
-              ? _c("div", { staticClass: "edit-request" }, [_vm._m(0)])
-              : _vm._e()
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "flex-wrapper" }, [
-            _c("div", { staticClass: "left" }, [
-              _vm.writeActive
-                ? _c("div", { staticClass: "hotkey-tip" }, [
-                    _c("span", { staticClass: "square ghost" }, [
-                      _vm._v("ENTER")
-                    ]),
-                    _vm._v(" "),
-                    _c("span", [_vm._v("To save")])
-                  ])
-                : _vm._e()
+              ])
             ]),
             _vm._v(" "),
-            _vm.writeActive
-              ? _c("div", { staticClass: "right" }, [
-                  _c(
-                    "span",
-                    {
-                      staticClass: "button invisible",
-                      on: {
-                        click: function($event) {
-                          _vm.writeActive = false
-                        }
-                      }
-                    },
-                    [_vm._v("Cancel")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "span",
-                    {
-                      staticClass: "button green",
-                      class: { disabled: _vm.submitDisabled },
-                      on: { click: _vm.onSubmitComment }
-                    },
-                    [_vm._v("Save")]
-                  )
-                ])
-              : _vm._e()
-          ])
-        ]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "form-input",
-          class: [
-            { active: _vm.writeActive },
-            { hidden: _vm.writeScope != "comment" }
-          ]
-        },
-        [
-          _c("div", { staticClass: "input-wrapper comment" }, [
-            _c("textarea", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.newComment.comment,
-                  expression: "newComment.comment"
-                }
-              ],
-              ref: "commentField",
-              attrs: {
-                name: "comment",
-                id: "comment-input",
-                placeholder: "Write your comment here..."
-              },
-              domProps: { value: _vm.newComment.comment },
-              on: {
-                click: function($event) {
-                  _vm.writeActive = true
-                },
-                keydown: function($event) {
-                  if (
-                    !$event.type.indexOf("key") &&
-                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                  ) {
-                    return null
-                  }
-                  if (
-                    $event.ctrlKey ||
-                    $event.shiftKey ||
-                    $event.altKey ||
-                    $event.metaKey
-                  ) {
-                    return null
-                  }
-                  $event.preventDefault()
-                },
-                keyup: function($event) {
-                  if (
-                    !$event.type.indexOf("key") &&
-                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                  ) {
-                    return null
-                  }
-                  if (
-                    $event.ctrlKey ||
-                    $event.shiftKey ||
-                    $event.altKey ||
-                    $event.metaKey
-                  ) {
-                    return null
-                  }
-                  return _vm.onSubmitComment($event)
-                },
-                input: [
-                  function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.newComment, "comment", $event.target.value)
-                  },
-                  function($event) {
-                    return _vm.resizeTextarea($event)
-                  }
-                ]
-              }
-            })
+            _c("div", { staticClass: "right" })
           ]),
           _vm._v(" "),
-          _vm.writeActive
-            ? _c("div", { staticClass: "flex-wrapper" }, [
-                _vm._m(1),
-                _vm._v(" "),
-                _c("div", { staticClass: "right" }, [
-                  _c(
-                    "span",
+          _c(
+            "div",
+            {
+              staticClass: "form-input",
+              class: [
+                { active: _vm.writeActive },
+                { hidden: _vm.writeScope != "request" }
+              ]
+            },
+            [
+              _c("div", { staticClass: "input-wrapper request" }, [
+                _c("textarea", {
+                  directives: [
                     {
-                      staticClass: "button invisible",
-                      on: {
-                        click: function($event) {
-                          _vm.writeActive = false
-                        }
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.newRequest.comment,
+                      expression: "newRequest.comment"
+                    }
+                  ],
+                  ref: "requestField",
+                  attrs: {
+                    name: "request",
+                    id: "request-input",
+                    placeholder: "Write your request here..."
+                  },
+                  domProps: { value: _vm.newRequest.comment },
+                  on: {
+                    click: function($event) {
+                      _vm.writeActive = true
+                    },
+                    keydown: function($event) {
+                      if (
+                        !$event.type.indexOf("key") &&
+                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                      ) {
+                        return null
                       }
+                      if (
+                        $event.ctrlKey ||
+                        $event.shiftKey ||
+                        $event.altKey ||
+                        $event.metaKey
+                      ) {
+                        return null
+                      }
+                      $event.preventDefault()
                     },
-                    [_vm._v("Cancel")]
-                  ),
+                    keyup: function($event) {
+                      if (
+                        !$event.type.indexOf("key") &&
+                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                      ) {
+                        return null
+                      }
+                      if (
+                        $event.ctrlKey ||
+                        $event.shiftKey ||
+                        $event.altKey ||
+                        $event.metaKey
+                      ) {
+                        return null
+                      }
+                      return _vm.onSubmitComment($event)
+                    },
+                    input: [
+                      function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.newRequest, "comment", $event.target.value)
+                      },
+                      function($event) {
+                        return _vm.resizeTextarea($event)
+                      }
+                    ]
+                  }
+                }),
+                _vm._v(" "),
+                _vm.taskRequest && !_vm.writeActive
+                  ? _c("div", { staticClass: "edit-request" }, [_vm._m(0)])
+                  : _vm._e()
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "flex-wrapper" }, [
+                _c("div", { staticClass: "left" }, [
+                  _vm.taskRequest && !_vm.writeActive
+                    ? _c("small", { staticClass: "id" }, [
+                        _vm._v("Request ID: " + _vm._s(_vm.taskRequest.id))
+                      ])
+                    : _vm._e(),
                   _vm._v(" "),
-                  _c(
-                    "span",
-                    {
-                      staticClass: "button green",
-                      class: { disabled: _vm.submitDisabled },
-                      on: { click: _vm.onSubmitComment }
-                    },
-                    [_vm._v("Submit")]
-                  )
-                ])
+                  _vm.writeActive
+                    ? _c("div", { staticClass: "hotkey-tip" }, [
+                        _c("span", { staticClass: "square ghost" }, [
+                          _vm._v("ENTER")
+                        ]),
+                        _vm._v(" "),
+                        _c("span", [_vm._v("To save")])
+                      ])
+                    : _vm._e()
+                ]),
+                _vm._v(" "),
+                _vm.writeActive
+                  ? _c("div", { staticClass: "right" }, [
+                      _c(
+                        "span",
+                        {
+                          staticClass: "button invisible",
+                          on: {
+                            click: function($event) {
+                              _vm.writeActive = false
+                            }
+                          }
+                        },
+                        [_vm._v("Cancel")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticClass: "button green",
+                          class: { disabled: _vm.submitDisabled },
+                          on: { click: _vm.onSubmitComment }
+                        },
+                        [_vm._v("Save")]
+                      )
+                    ])
+                  : _vm._e()
               ])
-            : _vm._e()
-        ]
-      )
-    ])
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "form-input",
+              class: [
+                { active: _vm.writeActive },
+                { hidden: _vm.writeScope != "comment" }
+              ]
+            },
+            [
+              _c("div", { staticClass: "input-wrapper comment" }, [
+                _c("textarea", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.newComment.comment,
+                      expression: "newComment.comment"
+                    }
+                  ],
+                  ref: "commentField",
+                  attrs: {
+                    name: "comment",
+                    id: "comment-input",
+                    placeholder: "Write your comment here..."
+                  },
+                  domProps: { value: _vm.newComment.comment },
+                  on: {
+                    click: function($event) {
+                      _vm.writeActive = true
+                    },
+                    keydown: function($event) {
+                      if (
+                        !$event.type.indexOf("key") &&
+                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                      ) {
+                        return null
+                      }
+                      if (
+                        $event.ctrlKey ||
+                        $event.shiftKey ||
+                        $event.altKey ||
+                        $event.metaKey
+                      ) {
+                        return null
+                      }
+                      $event.preventDefault()
+                    },
+                    keyup: function($event) {
+                      if (
+                        !$event.type.indexOf("key") &&
+                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                      ) {
+                        return null
+                      }
+                      if (
+                        $event.ctrlKey ||
+                        $event.shiftKey ||
+                        $event.altKey ||
+                        $event.metaKey
+                      ) {
+                        return null
+                      }
+                      return _vm.onSubmitComment($event)
+                    },
+                    input: [
+                      function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.newComment, "comment", $event.target.value)
+                      },
+                      function($event) {
+                        return _vm.resizeTextarea($event)
+                      }
+                    ]
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _vm.writeActive
+                ? _c("div", { staticClass: "flex-wrapper" }, [
+                    _vm._m(1),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "right" }, [
+                      _c(
+                        "span",
+                        {
+                          staticClass: "button invisible",
+                          on: {
+                            click: function($event) {
+                              _vm.writeActive = false
+                            }
+                          }
+                        },
+                        [_vm._v("Cancel")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticClass: "button green",
+                          class: { disabled: _vm.submitDisabled },
+                          on: { click: _vm.onSubmitComment }
+                        },
+                        [_vm._v("Submit")]
+                      )
+                    ])
+                  ])
+                : _vm._e()
+            ]
+          )
+        ])
+      : _vm._e()
   ])
 }
 var staticRenderFns = [
@@ -18284,7 +18394,7 @@ var render = function() {
                     ])
               ]),
               _vm._v(" "),
-              _vm.massSelectAvailable
+              _vm.currentTaskPermissions.select
                 ? _c(
                     "th",
                     {
@@ -18355,7 +18465,7 @@ var render = function() {
                     ],
                     1
                   )
-                : _vm.selectAvailable
+                : _vm.currentTaskPermissions.select
                 ? _c("th", { staticClass: "select" }, [
                     _c("span", [_vm._v("Select")])
                   ])
@@ -18411,7 +18521,7 @@ var render = function() {
                 ]
               ),
               _vm._v(" "),
-              _vm.feedbackAvailable
+              _vm.currentTaskPermissions.feedback
                 ? [
                     _c(
                       "th",
@@ -18511,7 +18621,7 @@ var render = function() {
                   ]
                 : _vm._e(),
               _vm._v(" "),
-              _vm.commentsAvailable
+              _vm.currentTaskPermissions.comments
                 ? _c(
                     "th",
                     {
@@ -18537,7 +18647,33 @@ var render = function() {
                   )
                 : _vm._e(),
               _vm._v(" "),
-              _vm.actionsAvailable
+              _vm.currentTaskPermissions.requests
+                ? _c(
+                    "th",
+                    {
+                      staticClass: "clickable square-wrapper comments",
+                      class: { active: this.sortBy == "requests" },
+                      on: {
+                        click: function($event) {
+                          return _vm.onSortBy("requests", false)
+                        }
+                      }
+                    },
+                    [
+                      _vm._v("\n                Requests "),
+                      _c("i", {
+                        staticClass: "fas",
+                        class: [
+                          this.sortBy == "requests" && !_vm.sortAsc
+                            ? "fa-long-arrow-alt-up"
+                            : "fa-long-arrow-alt-down"
+                        ]
+                      })
+                    ]
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.currentTaskPermissions.actions
                 ? [
                     _c(
                       "th",
@@ -18576,7 +18712,7 @@ var render = function() {
                     key: product.id,
                     staticClass: "product-row flex-table-row",
                     class: [
-                      _vm.actionsAvailable
+                      _vm.currentTaskPermissions.actions
                         ? product.currentAction != null
                           ? product.currentAction.action == 0
                             ? "out"
@@ -18586,7 +18722,7 @@ var render = function() {
                     ]
                   },
                   [
-                    _vm.selectAvailable
+                    _vm.currentTaskPermissions.select
                       ? _c("td", { staticClass: "select" }, [
                           _c("label", { staticClass: "checkbox" }, [
                             _c("input", {
@@ -18655,7 +18791,7 @@ var render = function() {
                       [_c("span", [_vm._v(_vm._s(product.title))])]
                     ),
                     _vm._v(" "),
-                    _vm.feedbackAvailable
+                    _vm.currentTaskPermissions.feedback
                       ? [
                           _c(
                             "tooltipAlt2",
@@ -18797,7 +18933,28 @@ var render = function() {
                         ]
                       : _vm._e(),
                     _vm._v(" "),
-                    _vm.commentsAvailable
+                    _vm.currentTaskPermissions.comments
+                      ? _c("td", { staticClass: "square-wrapper comments" }, [
+                          _c(
+                            "span",
+                            {
+                              staticClass:
+                                "square light icon-left clickable bind-view-single",
+                              on: {
+                                click: function($event) {
+                                  return _vm.onViewSingle(product.id)
+                                }
+                              }
+                            },
+                            [
+                              _c("i", { staticClass: "far fa-comment" }),
+                              _vm._v(_vm._s(product.commentsScoped.length))
+                            ]
+                          )
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.currentTaskPermissions.requests
                       ? _c("td", { staticClass: "square-wrapper comments" }, [
                           _c(
                             "span",
@@ -18812,38 +18969,40 @@ var render = function() {
                             },
                             [
                               _c("i", {
-                                staticClass: "far fa-comment bind-view-single"
+                                staticClass: "far fa-comment-exclamation"
                               }),
-                              _vm._v(_vm._s(product.commentsScoped.length))
+                              _vm._v(_vm._s(product.requests.length))
                             ]
                           )
                         ])
                       : _vm._e(),
                     _vm._v(" "),
-                    _vm.actionsAvailable
+                    _vm.currentTaskPermissions.actions
                       ? [
                           _c("td", { staticClass: "action" }, [
-                            _c(
-                              "span",
-                              {
-                                staticClass:
-                                  "square light-2 true-square clickable focus-action",
-                                class: [
-                                  product.currentAction != null
-                                    ? product.currentAction.action == 2
-                                      ? "active light"
-                                      : "ghost primary-hover"
-                                    : "ghost primary-hover",
-                                  { disabled: _vm.authUser.role_id == 3 }
-                                ],
-                                on: {
-                                  click: function($event) {
-                                    return _vm.toggleInOut(product, 2)
-                                  }
-                                }
-                              },
-                              [_c("i", { staticClass: "far fa-star" })]
-                            ),
+                            _vm.currentTaskPermissions.focus
+                              ? _c(
+                                  "span",
+                                  {
+                                    staticClass:
+                                      "square light-2 true-square clickable focus-action",
+                                    class: [
+                                      product.currentAction != null
+                                        ? product.currentAction.action == 2
+                                          ? "active light"
+                                          : "ghost primary-hover"
+                                        : "ghost primary-hover",
+                                      { disabled: _vm.authUser.role_id == 3 }
+                                    ],
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.toggleInOut(product, 2)
+                                      }
+                                    }
+                                  },
+                                  [_c("i", { staticClass: "far fa-star" })]
+                                )
+                              : _vm._e(),
                             _vm._v(" "),
                             _c(
                               "span",
@@ -41724,6 +41883,7 @@ function (_Model) {
         inherit_from_id: this.attr(''),
         completed: this.hasMany(_FileTask__WEBPACK_IMPORTED_MODULE_1__["default"], 'task_id'),
         parents: this.hasMany(_TaskParent__WEBPACK_IMPORTED_MODULE_2__["default"], 'task_id'),
+        children: this.hasMany(_TaskParent__WEBPACK_IMPORTED_MODULE_2__["default"], 'parent_id'),
         taskTeams: this.hasMany(_TaskTeam__WEBPACK_IMPORTED_MODULE_3__["default"], 'task_id'),
         actions: this.hasMany(_Action__WEBPACK_IMPORTED_MODULE_4__["default"], 'task_id')
       };
@@ -43061,19 +43221,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           task_id: task_id,
           is_task_action: is_task_action
         }
-      }); // Action.update({
-      //     where: {
-      //         product_id: productToUpdate,
-      //         task_id: task_id,
-      //     },
-      //     data: {
-      //         user_id: user_id,
-      //         action: action_code,
-      //         product_id: productToUpdate,
-      //         task_id: task_id,
-      //         is_task_action: is_task_action,
-      //     },
-      // })
+      });
     },
     deleteAction: function deleteAction(state, _ref20) {
       var productToUpdate = _ref20.productToUpdate,
@@ -44207,6 +44355,18 @@ __webpack_require__.r(__webpack_exports__);
     },
     authUser: function authUser() {
       return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_3__["default"].query()["with"]('teams.files|teamFiles|tasks.completed')["with"]('workspaces').first();
+    },
+    currentTaskPermissions: function currentTaskPermissions(state, getters, rootState, rootGetters) {
+      if (getters.currentTask) {
+        return {
+          select: getters.currentTask.type != 'approval' ? true : false,
+          feedback: getters.currentTask.type != 'approval' ? true : false,
+          comments: true,
+          requests: getters.currentTask.type != 'feedback' ? true : false,
+          actions: getters.currentTask.type != 'approval' ? true : false,
+          focus: getters.currentTask.type != 'decision' ? true : false
+        };
+      }
     }
   },
   actions: {
@@ -44224,6 +44384,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     setCurrentTaskId: function setCurrentTaskId(_ref4, id) {
       var commit = _ref4.commit;
+      console.log('Setting current task ID!');
       commit('setCurrentTaskId', id);
     },
     setCurrentFileId: function setCurrentFileId(_ref5, id) {
@@ -45099,7 +45260,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     products: function products(state, getters, rootState, rootGetters) {
       if (!rootGetters['persist/loadingInit'] && !state.loading && rootGetters['persist/currentTask'] != null) {
         var products = _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"](['actions.task|user.teams'])["with"](['comments.votes.user.teams', 'comments.user.teams', 'comments.team|task']).all();
-        var actionScope = rootGetters['collection/actionScope'];
         var currentTask = rootGetters['persist/currentTask'];
         var userId = rootGetters['persist/authUser'].id;
         var currentTeam = rootGetters['persist/currentTeam'];
@@ -45148,7 +45308,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           product.requests = []; // START scope comments to task
 
           product.comments.forEach(function (comment) {
-            if (currentTask.type == 'feedback') {
+            if (comment.task_id == currentTask.inherit_from_id) {
+              comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
+            } else if (currentTask.type == 'feedback') {
               if (comment.task_id == currentTask.id) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
             } else {
               // If type is alignment
@@ -45284,6 +45446,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           data.push(product);
         });
         return data;
+      }
+    },
+    productsScopedByInheritance: function productsScopedByInheritance(state, getters, rootState, rootGetters) {
+      var products = getters.products;
+      var currentTask = rootGetters['persist/currentTask'];
+
+      if (products) {
+        return products.filter(function (x) {
+          return x.actions.find(function (action) {
+            return action.task_id == currentTask.inherit_from_id && action.action != 0;
+          });
+        });
+      } else {
+        return [];
       }
     },
     availableProductIds: function availableProductIds(state) {
@@ -46335,7 +46511,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return state.loading;
     },
     tasks: function tasks(state, getters, rootState, rootGetters) {
-      var tasks = _models_Task__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('taskTeams.team.users')["with"]('completed|actions')["with"]('parents.completed|parentTask').get();
+      var tasks = _models_Task__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('taskTeams.team.users')["with"]('completed|actions|children')["with"]('parents.completed|parentTask').get();
       tasks.forEach(function (task) {
         // Find task users
         task.users = [];
@@ -46353,10 +46529,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             return x.id == parent.parent_id;
           });
           if (parentTask) task.parentTasks.push(parentTask);
-        }); // Find task parent tasks
+        }); // Find tasks the parent inherits from
 
         task.inheritFromTask = tasks.find(function (x) {
           return x.id == task.inherit_from_id;
+        });
+        task.approvalParent = task.parentTasks.find(function (x) {
+          return x.type == 'approval';
         }); // Determine if the task is active
 
         task.isActive = false;

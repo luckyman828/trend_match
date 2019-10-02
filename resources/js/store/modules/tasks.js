@@ -18,7 +18,7 @@ export default {
         tasks: (state, getters, rootState, rootGetters) => {
             const tasks = Task.query()
                 .with('taskTeams.team.users')
-                .with('completed|actions')
+                .with('completed|actions|children')
                 .with('parents.completed|parentTask')
                 .get()
             tasks.forEach(task => {
@@ -38,8 +38,10 @@ export default {
                     if (parentTask) task.parentTasks.push(parentTask)
                 })
 
-                // Find task parent tasks
+                // Find tasks the parent inherits from
                 task.inheritFromTask = tasks.find(x => x.id == task.inherit_from_id)
+
+                task.approvalParent = task.parentTasks.find(x => x.type == 'approval')
 
                 // Determine if the task is active
                 task.isActive = false

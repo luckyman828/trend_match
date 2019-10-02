@@ -191,20 +191,6 @@ export default{
         box-shadow: 0 2px 6px rgba(0,0,0,.1);
         background: white;
     }
-    .pill {
-        background: $light1;
-        height: 20px;
-        font-size: 13px;
-        border-radius: 20px;
-        width: 85px;
-        height: 25px;
-        display: inline-block;
-        line-height: 25px;
-        text-align: center;
-        &.positive {
-            background: $secondaryLight;
-        }
-    }
     .tabs {
         margin-left: -16px;
         margin-right: -16px;

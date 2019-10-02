@@ -32,7 +32,7 @@ export default {
     },
     watch: {
         userTasks(newVal, oldVal) {
-            if (newVal.length > 0) this.initRequiresTasks()
+            if (newVal.length > oldVal) this.initRequiresTasks()
         }
     },
     methods: {
@@ -65,10 +65,11 @@ export default {
                 // this.fetchTaskActions(this.currentFileId),
                 // this.fetchRequests(this.currentFileId)
             )
-            this.setCurrentProductId(Product.query().first().id)
+            // this.setCurrentProductId(Product.query().first().id)
             this.loadingFile = false
         },
         async initRequiresTasks() {
+            console.log('FileLoader: Init Requires Tasks')
             // START Set current task
             let taskToSet = null
             this.userTasks.forEach(task => {
@@ -132,6 +133,11 @@ export default {
 
         if (this.userTasks != null) this.initRequiresTasks()
         else this.loadingTasks = false
+
+
+        // this.$store.subscribe((mutation, state) => {
+        //     console.log(mutation)
+        // })
 
     },
     destroyed() {

@@ -125,6 +125,18 @@ export default {
                 .with('workspaces')
                 .first()
         },
+        currentTaskPermissions: (state, getters, rootState, rootGetters) => {
+            if (getters.currentTask) {
+                return {
+                    select: getters.currentTask.type != 'approval' ? true : false,
+                    feedback: getters.currentTask.type != 'approval' ? true : false,
+                    comments: true,
+                    requests: getters.currentTask.type != 'feedback' ? true : false,
+                    actions: getters.currentTask.type != 'approval' ? true : false,
+                    focus: getters.currentTask.type != 'decision' ? true : false,
+                }
+            }
+        },
     },
 
     actions: {
@@ -138,6 +150,7 @@ export default {
             commit('setCurrentWorkspace', id)
         },
         setCurrentTaskId({ commit }, id) {
+            console.log('Setting current task ID!')
             commit('setCurrentTaskId', id)
         },
         setCurrentFileId({ commit }, id) {

@@ -12,7 +12,7 @@
                     <span v-else>{{totalProductCount}} records</span>
                 </div>
 
-                <th class="select dropdown-parent" @click="toggleDropdown($event)" v-if="massSelectAvailable">
+                <th class="select dropdown-parent" @click="toggleDropdown($event)" v-if="currentTaskPermissions.select">
                     <Dropdown ref="multiSelectDropdown">
                         <template v-slot:button="slotProps">
                             <span @click="slotProps.toggle">Select <i class="fas fa-chevron-down"></i></span>
@@ -22,7 +22,7 @@
                         </template>
                     </Dropdown>
                 </th>
-                <th class="select" v-else-if="selectAvailable">
+                <th class="select" v-else-if="currentTaskPermissions.select">
                     <span>Select</span>
                 </th>
                 <th class="clickable id" :class="{active: this.sortBy == 'datasource_id'}" @click="onSortBy('datasource_id', true)">
@@ -33,7 +33,7 @@
                    Product name <i class="fas" :class="[(this.sortBy == 'title' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
 
-                <template v-if="feedbackAvailable">
+                <template v-if="currentTaskPermissions.feedback">
                     <th :class="{active: this.sortBy == 'focus'}" class="clickable square-wrapper focus" @click="onSortBy('focus', false)">
                         Focus <i class="fas" :class="[(this.sortBy == 'focus' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                     </th>
@@ -48,11 +48,14 @@
                     </th>
                 </template>
 
-                <th v-if="commentsAvailable" :class="{active: this.sortBy == 'commentsScoped'}" class="clickable square-wrapper comments" @click="onSortBy('commentsScoped', false)">
+                <th v-if="currentTaskPermissions.comments" :class="{active: this.sortBy == 'commentsScoped'}" class="clickable square-wrapper comments" @click="onSortBy('commentsScoped', false)">
                     Comments <i class="fas" :class="[(this.sortBy == 'commentsScoped' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
+                <th v-if="currentTaskPermissions.requests" :class="{active: this.sortBy == 'requests'}" class="clickable square-wrapper comments" @click="onSortBy('requests', false)">
+                    Requests <i class="fas" :class="[(this.sortBy == 'requests' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                </th>
 
-                <template v-if="actionsAvailable">
+                <template v-if="currentTaskPermissions.actions">
                     <th :class="{active: this.sortBy == 'action'}" class="clickable action" @click="onSortBy('action', false)">
                         Action <i class="fas" :class="[(this.sortBy == 'action' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                     </th>
@@ -65,8 +68,8 @@
             <template v-if="!loading">
                 <div class="product-row flex-table-row"
                 v-for="(product, index) in products" :key="product.id"
-                :class="[(actionsAvailable) ? (product.currentAction != null) ? (product.currentAction.action == 0) ? 'out' : 'in' : '' : '']">
-                    <td class="select" v-if="selectAvailable">
+                :class="[(currentTaskPermissions.actions) ? (product.currentAction != null) ? (product.currentAction.action == 0) ? 'out' : 'in' : '' : '']">
+                    <td class="select" v-if="currentTaskPermissions.select">
                         <label class="checkbox">
                             <input type="checkbox" @change="onSelect(index)" :ref="'checkbox-for-' + index"/>
                             <span class="checkmark"></span>
@@ -76,7 +79,7 @@
                     <td class="image clickable" @click="onViewSingle(product.id)"><img :src="productImg(product.color_variants[0])" @error="imgError(product.color_variants[0])"></td>
                     <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
                     
-                    <template v-if="feedbackAvailable">
+                    <template v-if="currentTaskPermissions.feedback">
                         <tooltipAlt2 class="square-wrapper" :header="'focus'" :array="product.focus.map(x => (x.user.name != null) ? x.user.name : x.title)">
                             <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
                         </tooltipAlt2>
@@ -91,11 +94,12 @@
                         </tooltipAlt2>
                     </template>
 
-                    <td v-if="commentsAvailable" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment bind-view-single"></i>{{product.commentsScoped.length}}</span></td>
+                    <td v-if="currentTaskPermissions.comments" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.commentsScoped.length}}</span></td>
+                    <td v-if="currentTaskPermissions.requests" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment-exclamation"></i>{{product.requests.length}}</span></td>
 
-                    <template v-if="actionsAvailable">
+                    <template v-if="currentTaskPermissions.actions">
                         <td class="action">
-                            <span class="square light-2 true-square clickable focus-action" :class="[(product.currentAction != null) ? (product.currentAction.action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 2)">
+                            <span v-if="currentTaskPermissions.focus" class="square light-2 true-square clickable focus-action" :class="[(product.currentAction != null) ? (product.currentAction.action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 2)">
                             <i class="far fa-star"></i>
                             </span>
                             <span class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 1)">
@@ -171,28 +175,13 @@ export default {
     computed: {
         // ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
         ...mapGetters('entities/collections', ['currentFile', 'actionScope']),
-        ...mapGetters('persist', ['currentTeamId', 'currentTask', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScopeName', 'viewAdminPermissionLevel']),
+        ...mapGetters('persist', ['currentTask', 'currentTaskPermissions']),
         loadingSingle() {
             let loading = false
             return loading
         },
         hasAccess() {
             return (this.currentTask != null) ? true : false
-        },
-        massSelectAvailable () {
-            return (this.currentTask != null) ? (this.currentTask.type == 'alignment') ? true : false : false
-        },
-        selectAvailable () {
-            return (this.hasAccess) ? true : false
-        },
-        feedbackAvailable () {
-            return (this.currentTask != null) ? (this.currentTask.type != 'approval') ? true : false :false
-        },
-        commentsAvailable () {
-            return true
-        },
-        actionsAvailable () {
-            return (this.hasAccess) ? true : false
         },
     },
     methods: {

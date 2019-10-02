@@ -2,10 +2,10 @@
     <div class="comments">
         
         <div class="tab-headers">
-            <span v-if="currentTask.type != 'approval'" :class="{active: commentScope == 'comments'}" class="tab" @click="setCommentScope('comments')">
+            <span v-if="commentsAvailable" :class="{active: commentScope == 'comments'}" class="tab" @click="setCommentScope('comments')">
                 Comments <span class="circle small" :class="(commentScope == 'comments') ? 'white' : 'light'">{{comments.length}}</span>
             </span>
-            <span v-if="currentTask.type != 'feedback'" :class="{active: commentScope == 'requests'}" class="tab" @click="setCommentScope('requests')">
+            <span v-if="requestsAvailable" :class="{active: commentScope == 'requests'}" class="tab" @click="setCommentScope('requests')">
                 Requests <span class="circle small" :class="(commentScope == 'requests') ? 'white' : 'light'">{{requests.length}}</span>
             </span>
         </div>
@@ -14,7 +14,24 @@
             <div class="inner">
 
                 <template v-if="commentScope == 'comments'">
-                    <div class="sender-wrapper" v-for="(sender, index) in commentsGroupedBySender" :key="index" :class="{own: sender.user.id == authUser.id}">
+
+                    <template v-if="currentTask.type == 'approval' || currentTask.approvalParent">
+                        <div class="requests-wrapper" v-if="requests.length > 0">
+                            <request :request="request" v-for="request in requests.filter(x => x.task_id == currentTask.inherit_from_id)" :key="request.id"/>
+                        </div>
+                        <div class="sender-wrapper" v-for="comment in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
+                            <comment :comment="comment"/>
+                            <div class="sender">{{comment.task.title}} | {{(comment.user.id == authUser.id) ? 'You' : comment.user.name}}</div>
+                        </div>
+                        <div class="break-line" v-if="(product.currentAction)"><span class="pill" :class="product.currentAction.action == 1 ? 'green' : 'red'">Marked as {{product.currentAction.action == 1 ? 'IN' : 'OUT'}} by {{(product.currentAction.user_id == authUser.id) ? 'You' : product.currentAction.user.name}}</span></div>
+                        <div class="break-line" v-else-if="comments.length > 0 ? comments[comments.length-1].task_id != currentTask.approvalParent.id : false">Waiting for response from {{currentTask.approvalParent.title}}</div>
+                    </template>
+
+                    <template v-else-if="currentTask.type == 'decision'">
+
+                    </template>
+
+                    <div v-else class="sender-wrapper" v-for="(sender, index) in commentsGroupedBySender" :key="index" :class="{own: sender.user.id == authUser.id}">
                         <comment :comment="comment" v-for="comment in sender.comments" :key="comment.id"/>
                         <div class="sender">{{sender.task.title}} | {{(sender.user.id == authUser.id) ? 'You' : sender.user.name}}</div>
                     </div>
@@ -24,31 +41,22 @@
                     <div class="task-request" v-if="taskRequest">
                         <request :request="taskRequest"/>
                     </div>
-                    <template v-if="currentTask.parentTasks.find(x => x.type == 'approval')">
-                        <div class="break-line">Waiting for response from {{currentTask.parentTasks.find(x => x.type == 'approval').title}}</div>
-                        <div class="sender-wrapper" v-for="comment in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
-                            <comment :comment="comment"/>
-                            <div class="sender">{{comment.task.title}} | {{(comment.user.id == authUser.id) ? 'You' : comment.user.name}}</div>
-                        </div>
-                    </template>
-                    <template v-else>
-                        <div v-if="requests.find(x => x.task_id != currentTask.id)" class="break-line">Showing requests from prev. task(s)</div>
-                        <div class="requests-wrapper">
-                            <request :request="request" v-for="request in requests.filter(x => x.task_id != currentTask.id)" :key="request.id"/>
-                        </div>
-                    </template>
+                    <div v-if="requests.find(x => x.task_id != currentTask.id)" class="break-line">Showing requests from prev. task(s)</div>
+                    <div class="requests-wrapper">
+                        <request :request="request" v-for="request in requests.filter(x => x.task_id != currentTask.id)" :key="request.id"/>
+                    </div>
                 </template>
 
             </div>
         </div>
 
 
-        <form @submit="onSubmitComment">
+        <form @submit="onSubmitComment" v-if="!commentsClosed">
             <div class="controls">
                 <div class="left">
                     <div class="set-scope">
-                        <span v-if="currentTask.type != 'feedback'" class="button invisible" :class="{active: writeScope == 'request'}" @click="setWriteScope('request')">Your Request</span>
-                        <span v-if="currentTask.type != 'approval'" class="button invisible" :class="{active: writeScope == 'comment'}" @click="setWriteScope('comment')">Comment</span>
+                        <span v-if="!['feedback','approval','decision'].includes(currentTask.type)" class="button invisible" :class="{active: writeScope == 'request'}" @click="setWriteScope('request')">Your Request</span>
+                        <span class="button invisible" :class="{active: writeScope == 'comment'}" @click="setWriteScope('comment')">Comment</span>
                     </div>
                 </div>
                 <div class="right">
@@ -60,13 +68,13 @@
                 <div class="input-wrapper request">
                     <textarea @click="writeActive = true" ref="requestField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="request" id="request-input" placeholder="Write your request here..." v-model="newRequest.comment" 
                     @input="resizeTextarea($event)"></textarea>
-                    <div class="edit-request" v-if="taskRequest">
+                    <div class="edit-request" v-if="taskRequest && !writeActive">
                         <span>Edit Request <span class="circle small light"><i class="fas fa-pencil"></i></span></span>
                     </div>
                 </div>
                 <div class="flex-wrapper">
                     <div class="left">
-                        <!-- <small class="id" v-if="taskRequest">Request ID: {{taskRequest.id}}</small> -->
+                        <small class="id" v-if="taskRequest && !writeActive">Request ID: {{taskRequest.id}}</small>
                         <div class="hotkey-tip" v-if="writeActive">
                             <span class="square ghost">ENTER</span>
                             <span>To save</span>
@@ -138,8 +146,9 @@ export default {
         writeActive: false,
     }},
     watch: {
-        product() {
-            this.update()
+        product(newVal, oldVal) {
+            if (newVal.id != oldVal.id)
+                this.update()
         }
     },
     computed: {
@@ -199,6 +208,24 @@ export default {
                 }
             })
             return senders
+        },
+        commentsAvailable() {
+            return true
+        },
+        requestsAvailable() {
+            return !(['feedback','approval', 'decision'].includes(this.currentTask.type))
+        },
+        commentsClosed() {
+            let isClosed = false
+            if (this.currentTask.type == 'approval') {
+                if (this.product.actions.find(x => x.task_id == this.currentTask.children[0]).task_id)
+                    isClosed = true
+            }
+            else if (this.currentTask.type == 'decision') {
+                if (this.currentTask.approvalParent && this.product.currentAction)
+                    isClosed = true
+            }
+            return isClosed
         }
     },
     methods: {
@@ -222,6 +249,8 @@ export default {
                     this.$refs.requestField.style.height = ''
                 }
                 this.writeActive = false
+                // Unset the focus
+                document.activeElement.blur()
 
             }
         },
@@ -240,15 +269,17 @@ export default {
         update() {
             // Set the new request equal to the existing if one exists
             this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
+            this.newRequest.id = (this.taskRequest) ? this.taskRequest.id : null
 
             // Set the default write / view scope
             const type = this.currentTask.type
-            if (type != 'feedback') {
-                this.commentScope = 'requests'
-                this.writeScope = 'request'
-            } else {
+            if (['feedback','approval', 'decision'].includes(type)) {
                 this.commentScope = 'comments'
                 this.writeScope = 'comment'
+            } 
+            else {
+                this.commentScope = 'requests'
+                this.writeScope = 'request'
             }
         }
     },
@@ -290,6 +321,9 @@ export default {
             justify-content: space-between;
         }
     }
+    .request-wrapper {
+        margin-bottom: 16px;
+    }
     .sender-wrapper {
         display: flex;
         flex-direction: column;
@@ -326,6 +360,7 @@ export default {
         border-radius: 0 8px 0 0;
         padding: 16px 4px 16px 0;
         height: 100%;
+        width: 100%;
         .inner {
             padding: 0 12px;
             height: 100%;
@@ -380,6 +415,12 @@ export default {
             &.hidden {
                 display: none;
             }
+            .id {
+                font-size: 12px;
+                color: $dark2;
+                display: block;
+                margin-top: -2px;
+            }
             .input-wrapper {
                 border-radius: 6px;
                 border: solid 2px $light2;
@@ -400,6 +441,7 @@ export default {
                     font-weight: 500;
                     top: 50%;
                     transform: translateY(-50%);
+                    pointer-events: none;
                     .circle {
                         height: 24px;
                         width: 24px;

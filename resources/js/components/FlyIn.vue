@@ -64,7 +64,7 @@ export default {
     .fly-in {
         right: -100%;
         margin: 0;
-        max-width: 900px;
+        max-width: 1032px;
         z-index: 11;
         top: 0;
         position: fixed;

@@ -28,7 +28,6 @@ export default {
                     .with(['actions.task|user.teams'])
                     .with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team|task'])
                     .all()
-                const actionScope = rootGetters['collection/actionScope']
                 const currentTask = rootGetters['persist/currentTask']
                 const userId = rootGetters['persist/authUser'].id
                 const currentTeam = rootGetters['persist/currentTeam']
@@ -82,7 +81,9 @@ export default {
 
                     // START scope comments to task
                     product.comments.forEach(comment => {
-                        if (currentTask.type == 'feedback') {
+                        if (comment.task_id == currentTask.inherit_from_id) {
+                            comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment)
+                        } else if (currentTask.type == 'feedback') {
                             if (comment.task_id == currentTask.id)
                                 comment.is_request
                                     ? product.requests.push(comment)
@@ -220,6 +221,17 @@ export default {
                     data.push(product)
                 })
                 return data
+            }
+        },
+        productsScopedByInheritance: (state, getters, rootState, rootGetters) => {
+            const products = getters.products
+            const currentTask = rootGetters['persist/currentTask']
+            if (products) {
+                return products.filter(x =>
+                    x.actions.find(action => action.task_id == currentTask.inherit_from_id && action.action != 0)
+                )
+            } else {
+                return []
             }
         },
         availableProductIds: state => {

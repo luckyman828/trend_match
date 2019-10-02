@@ -341,13 +341,6 @@ textarea {
         width: 32px;
         padding: 0;
     }
-    &.xs {
-        min-width: 0;
-        padding: 0;
-        border-width: 1px;
-        font-weight: 400;
-        font-size: 10px;
-    }
     &.tiny {
         min-width: 0;
         padding: 0;
@@ -383,10 +376,9 @@ textarea {
     font-weight: 700;
 }
 .pill {
-    height: 20px;
-    padding: 0 12px;
-    border-radius: 50%;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    height: 32px;
+    padding: 0 20px;
+    border-radius: 50px;
     background: $light1;
     font-weight: 500;
 }
