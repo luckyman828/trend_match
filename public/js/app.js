@@ -8478,21 +8478,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     hotkeyHandler: function hotkeyHandler(event) {
       var key = event.code;
-      if (key == 'Escape') this.onCloseSingle(); // Only do these if the current target is not the comment box
+      console.log(key); // Only do these if the current target is not the comment box
 
       if (event.target.type != 'textarea') {
+        if (key == 'Escape') this.onCloseSingle();
         if (key == 'ArrowRight') this.onNextSingle();
         if (key == 'ArrowLeft') this.onPrevSingle();
         if (key == 'ArrowUp') event.preventDefault(), this.cycleImage();
         if (key == 'ArrowDown') event.preventDefault(), this.cycleImageReverse();
 
-        if (this.userPermissionLevel >= 2 && this.userPermissionLevel != 3) {
+        if (this.currentTaskPermissions.actions) {
           if (key == 'KeyI') this.toggleInOut(this.product, 1);
           if (key == 'KeyO') this.toggleInOut(this.product, 0);
-        }
 
-        if (this.userPermissionLevel == 2) {
-          if (key == 'KeyF') this.toggleInOut(this.product, 2);
+          if (this.currentTaskPermissions.focus) {
+            if (key == 'KeyF') this.toggleInOut(this.product, 2);
+          }
         }
       }
     }
