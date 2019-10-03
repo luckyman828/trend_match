@@ -31,15 +31,19 @@
                         <div class="requests-wrapper" v-if="requests.length > 0">
                             <request :request="request" v-for="request in requests.filter(x => x.task_id == currentTask.inherit_from_id)" :key="request.id"/>
                         </div>
-                        <div class="sender-wrapper" v-for="comment in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
+                        <div v-else class="sender-wrapper" v-for="(comment, index) in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
                             <comment :comment="comment"/>
-                            <div class="sender">{{comment.task.title}} | {{(comment.user.id == authUser.id) ? 'You' : comment.user.name}}</div>
+                            <div class="sender" v-if="comments[index+1] ? comments[index+1].user_id != comment.user_id : true">{{comment.task.title}} {{(comment.user_id == authUser.id) ? '| You' : userPermissionLevel > 1 ? '| ' + comment.user.name : ''}}</div>
                         </div>
                     </template>
 
-                    <div v-else class="sender-wrapper" v-for="(sender, index) in commentsGroupedBySender" :key="index" :class="{own: sender.user.id == authUser.id}">
+                    <!-- <div v-else class="sender-wrapper" v-for="(sender, index) in commentsGroupedBySender" :key="index" :class="{own: sender.user.id == authUser.id}">
                         <comment :comment="comment" v-for="comment in sender.comments" :key="comment.id"/>
                         <div class="sender">{{sender.task.title}} {{(sender.user.id == authUser.id) ? '| You' : userPermissionLevel > 1 ? '| ' + sender.user.name : ''}}</div>
+                    </div> -->
+                    <div v-else class="sender-wrapper" v-for="(comment, index) in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
+                        <comment :comment="comment"/>
+                        <div class="sender" v-if="comments[index+1] ? comments[index+1].user_id != comment.user_id : true">{{comment.task.title}} {{(comment.user_id == authUser.id) ? '| You' : userPermissionLevel > 1 ? '| ' + comment.user.name : ''}}</div>
                     </div>
                 </template>
 
@@ -202,19 +206,19 @@ export default {
                 }
             }
         },
-        commentsGroupedBySender() {
-            const comments = this.comments
-            let senders = []
-            comments.forEach(comment => {
-                const existingSender = senders.find(x => x.task.id == comment.task_id && x.user.id == comment.user_id)
-                if (existingSender == null) {
-                    senders.push({task: comment.task, user: comment.user, comments: [comment]})
-                } else {
-                    existingSender.comments.push(comment)
-                }
-            })
-            return senders
-        },
+        // commentsGroupedBySender() {
+        //     const comments = this.comments
+        //     let senders = []
+        //     comments.forEach(comment => {
+        //         const existingSender = senders.find(x => x.task.id == comment.task_id && x.user.id == comment.user_id)
+        //         if (existingSender == null) {
+        //             senders.push({task: comment.task, user: comment.user, comments: [comment]})
+        //         } else {
+        //             existingSender.comments.push(comment)
+        //         }
+        //     })
+        //     return senders
+        // },
         commentsAvailable() {
             return true
         },
@@ -334,10 +338,13 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        margin-bottom: 20px;
+        margin-bottom: 4px;
         &.own {
             align-items: flex-end
         }
+    }
+    .sender {
+        margin-bottom: 20px;
     }
     .break-line {
         &::after, &::before {
