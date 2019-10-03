@@ -62,15 +62,26 @@ export default {
 
             // Find task progress
             if (currentTask) {
-                currentTask.progress =
-                    currentTask.type == 'feedback'
-                        ? Math.round(
-                              (currentTask.actions.length /
-                                  (currentTask.input.length * getters.currentFile.products.length)) *
-                                  100 *
-                                  1
-                          ) / 1
-                        : Math.round((currentTask.actions.length / getters.currentFile.products.length) * 100 * 1) / 1
+                if (getters.userPermissionLevel > 1) {
+                    currentTask.progress =
+                        currentTask.type == 'feedback'
+                            ? Math.round(
+                                  (currentTask.actions.length /
+                                      (currentTask.input.length * getters.currentFile.products.length)) *
+                                      100 *
+                                      1
+                              ) / 1
+                            : Math.round((currentTask.actions.length / getters.currentFile.products.length) * 100 * 1) /
+                              1
+                } else {
+                    currentTask.progress =
+                        Math.round(
+                            (currentTask.actions.filter(x => x.user_id == getters.authUser.id).length /
+                                getters.currentFile.products.length) *
+                                100 *
+                                1
+                        ) / 1
+                }
 
                 if (currentTask.type == 'feedback') {
                     currentTask.input.forEach(user => {

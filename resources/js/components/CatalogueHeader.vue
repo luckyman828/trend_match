@@ -18,7 +18,7 @@
                 <span class="square light">{{new Date(collection.start_date).toLocaleDateString('en-GB', {day: '2-digit', month: '2-digit', year: 'numeric'})}}</span>
             </div>
 
-            <TooltipAlt2 v-if="currentTask.type == 'feedback'" :header="'Progress'" :array="currentTask.input" :arrayLabelKey="'name'" :arrayValueKey="'progress'" :arrayValueUnit="'%'">
+            <TooltipAlt2 v-if="currentTask.type == 'feedback' && userPermissionLevel > 1" :header="'Progress'" :array="currentTask.input" :arrayLabelKey="'name'" :arrayValueKey="'progress'" :arrayValueUnit="'%'">
                 <div class="stat progress">
                     <span class="title">Progress</span>
                     <svg height="4">
