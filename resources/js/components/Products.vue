@@ -79,7 +79,7 @@
                     <td class="image clickable" @click="onViewSingle(product.id)"><img :src="productImg(product.color_variants[0])" @error="imgError(product.color_variants[0])"></td>
                     <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
                     
-                    <template v-if="currentTaskPermissions.feedback">
+                    <template v-if="currentTaskPermissions.feedback && userPermissionLevel > 1">
                         <tooltipAlt2 class="square-wrapper" :header="'focus'" :array="product.focus.map(x => (x.user.name != null) ? x.user.name : x.title)">
                             <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
                         </tooltipAlt2>
@@ -92,6 +92,12 @@
                         <tooltipAlt2 class="square-wrapper" :header="'not decided'" :array="product.nds.map(x => (x.name != null) ? x.name : x.title)">
                             <td class="square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{product.ndsTotal}}</span></td>
                         </tooltipAlt2>
+                    </template>
+                    <template v-else-if="currentTaskPermissions.feedback">
+                        <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
+                        <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
+                        <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
+                        <td class="square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{product.ndsTotal}}</span></td>
                     </template>
 
                     <td v-if="currentTaskPermissions.comments" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.commentsScoped.length}}</span></td>
@@ -175,7 +181,7 @@ export default {
     computed: {
         // ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
         ...mapGetters('entities/collections', ['currentFile', 'actionScope']),
-        ...mapGetters('persist', ['currentTask', 'currentTaskPermissions']),
+        ...mapGetters('persist', ['currentTask', 'currentTaskPermissions', 'userPermissionLevel']),
         loadingSingle() {
             let loading = false
             return loading

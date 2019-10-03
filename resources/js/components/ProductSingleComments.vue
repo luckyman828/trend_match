@@ -39,7 +39,7 @@
 
                     <div v-else class="sender-wrapper" v-for="(sender, index) in commentsGroupedBySender" :key="index" :class="{own: sender.user.id == authUser.id}">
                         <comment :comment="comment" v-for="comment in sender.comments" :key="comment.id"/>
-                        <div class="sender">{{sender.task.title}} | {{(sender.user.id == authUser.id) ? 'You' : sender.user.name}}</div>
+                        <div class="sender">{{sender.task.title}} {{(sender.user.id == authUser.id) ? '| You' : userPermissionLevel > 1 ? '| ' + sender.user.name : ''}}</div>
                     </div>
                 </template>
 

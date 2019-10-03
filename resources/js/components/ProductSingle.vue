@@ -118,7 +118,7 @@
                                 <strong class="tab-title">{{currentTab.substr(0, currentTab.length - 1)}}</strong>
                                 <p v-for="(row, index) in tabBody" :key="index">
                                     <span class="team">{{(row.task) ? row.task.title : row.title}}</span>
-                                    <span class="user">{{(row.name) ? row.name : (row.user) ? row.user.name : row.title}}</span>
+                                    <span class="user" v-if="userPermissionLevel > 1">{{(row.name) ? row.name : (row.user) ? row.user.name : row.title}}</span>
                                     <template v-if="row.focus != null">
                                         <span class="focus" v-if="row.focus">Focus <i class="fas fa-star"></i></span>
                                     </template>
@@ -238,7 +238,6 @@ export default {
         },
         hotkeyHandler(event) {
             const key = event.code
-            console.log(key)
             // Only do these if the current target is not the comment box
             if (event.target.type != 'textarea') {
                 if (key == 'Escape')

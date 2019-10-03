@@ -8477,8 +8477,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     hotkeyHandler: function hotkeyHandler(event) {
-      var key = event.code;
-      console.log(key); // Only do these if the current target is not the comment box
+      var key = event.code; // Only do these if the current target is not the comment box
 
       if (event.target.type != 'textarea') {
         if (key == 'Escape') this.onCloseSingle();
@@ -9063,6 +9062,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -9096,7 +9101,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       sticky: false
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['currentFile', 'actionScope']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTask', 'currentTaskPermissions']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['currentFile', 'actionScope']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTask', 'currentTaskPermissions', 'userPermissionLevel']), {
     loadingSingle: function loadingSingle() {
       var loading = false;
       return loading;
@@ -17573,17 +17578,19 @@ var render = function() {
                                   )
                                 ]),
                                 _vm._v(" "),
-                                _c("span", { staticClass: "user" }, [
-                                  _vm._v(
-                                    _vm._s(
-                                      row.name
-                                        ? row.name
-                                        : row.user
-                                        ? row.user.name
-                                        : row.title
-                                    )
-                                  )
-                                ]),
+                                _vm.userPermissionLevel > 1
+                                  ? _c("span", { staticClass: "user" }, [
+                                      _vm._v(
+                                        _vm._s(
+                                          row.name
+                                            ? row.name
+                                            : row.user
+                                            ? row.user.name
+                                            : row.title
+                                        )
+                                      )
+                                    ])
+                                  : _vm._e(),
                                 _vm._v(" "),
                                 row.focus != null
                                   ? [
@@ -17901,11 +17908,13 @@ var render = function() {
                           _c("div", { staticClass: "sender" }, [
                             _vm._v(
                               _vm._s(sender.task.title) +
-                                " | " +
+                                " " +
                                 _vm._s(
                                   sender.user.id == _vm.authUser.id
-                                    ? "You"
-                                    : sender.user.name
+                                    ? "| You"
+                                    : _vm.userPermissionLevel > 1
+                                    ? "| " + sender.user.name
+                                    : ""
                                 )
                             )
                           ])
@@ -18868,7 +18877,8 @@ var render = function() {
                       [_c("span", [_vm._v(_vm._s(product.title))])]
                     ),
                     _vm._v(" "),
-                    _vm.currentTaskPermissions.feedback
+                    _vm.currentTaskPermissions.feedback &&
+                    _vm.userPermissionLevel > 1
                       ? [
                           _c(
                             "tooltipAlt2",
@@ -19007,6 +19017,70 @@ var render = function() {
                               ])
                             ]
                           )
+                        ]
+                      : _vm.currentTaskPermissions.feedback
+                      ? [
+                          _c("td", { staticClass: "square-wrapper focus" }, [
+                            _c(
+                              "span",
+                              { staticClass: "square light icon-left" },
+                              [
+                                _c("i", {
+                                  staticClass: "far fa-star hide-screen-sm"
+                                }),
+                                _vm._v(_vm._s(product.focus.length))
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "square-wrapper" }, [
+                            _c(
+                              "span",
+                              { staticClass: "square light icon-left" },
+                              [
+                                _c("i", {
+                                  staticClass: "far fa-heart hide-screen-sm"
+                                }),
+                                _vm._v(
+                                  _vm._s(
+                                    product.ins.length + product.focus.length
+                                  )
+                                )
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "square-wrapper" }, [
+                            _c(
+                              "span",
+                              { staticClass: "square light icon-left" },
+                              [
+                                _c("i", {
+                                  staticClass:
+                                    "far fa-times-circle hide-screen-sm"
+                                }),
+                                _vm._v(_vm._s(product.outs.length))
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", { staticClass: "square-wrapper nds" }, [
+                            _c(
+                              "span",
+                              { staticClass: "square light icon-left" },
+                              [
+                                _c("i", {
+                                  staticClass:
+                                    "far fa-question-circle hide-screen-sm"
+                                }),
+                                _vm._v(
+                                  _vm._s(product.nds.length) +
+                                    " /" +
+                                    _vm._s(product.ndsTotal)
+                                )
+                              ]
+                            )
+                          ])
                         ]
                       : _vm._e(),
                     _vm._v(" "),
