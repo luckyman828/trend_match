@@ -140,19 +140,19 @@ export default{
             // Save the old order of the products
             console.log('Products recalculated')
             console.log(newValue)
-            // if (newValue.length == oldValue.length) {
-                // let index = 0
-                // oldValue.forEach(product => {
-                //     const newIndex = newValue.find(x => x.id == product.id)
-                //     if (newIndex) {
-                //         newIndex.sortIndex = index
-                //     }
-                //     product.sortIndex = index
-                //     index++
-                // })
-                // // Sort the products in the same was as they were before
-                // this.sortProducts('sortIndex')
-            // }
+            if (newValue.length == oldValue.length) {
+                let index = 0
+                oldValue.forEach(product => {
+                    const newIndex = newValue.find(x => x.id == product.id)
+                    if (newIndex) {
+                        newIndex.sortIndex = index
+                    }
+                    product.sortIndex = index
+                    index++
+                })
+                // Sort the products in the same was as they were before
+                this.sortProducts('sortIndex')
+            }
         },
         tasks: function(newValue, oldValue) {
             console.log('Tasks recalculated')
@@ -178,8 +178,12 @@ export default{
         },
         products() {
             if (this.currentTask.inherit_from_id) {
-                if (this.currentTask.type == 'approval' || this.currentTask.approvalParent) {
-                    return this.productsScopedByInheritance.filter(x => x.requests.length > 0)
+                if (this.currentTask.type == 'approval' || this.currentTask.parentTasks.find(x => x.type == 'approval')) {
+                // if (this.currentTask.type == 'approval') {
+                    if (this.currentTeam.category_scope) {
+                        return this.productsScopedByInheritance.filter(x => x.requests.length > 0 && this.currentTeam.category_scope.split(',').includes(x.category.toLowerCase()))
+                    }
+                    else return this.productsScopedByInheritance.filter(x => x.requests.length > 0)
                 } else {
                     return this.productsScopedByInheritance
                 }

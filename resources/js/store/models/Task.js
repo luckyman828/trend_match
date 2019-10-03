@@ -19,6 +19,7 @@ export default class Task extends Model {
             title: this.attr(''),
             type: this.attr(''),
             inherit_from_id: this.attr(''),
+            filter_products_by_id: this.attr(''),
             completed: this.hasMany(FileTask, 'task_id'),
             parents: this.hasMany(TaskParent, 'task_id'),
             children: this.hasMany(TaskParent, 'parent_id'),

@@ -49,7 +49,9 @@ export default {
                         product.currentAction = product.actions.find(
                             action => action.user_id == userId && action.task_id == currentTask.id
                         )
-                    else product.currentAction = product.actions.find(action => action.task_id == currentTask.id)
+                    else if (currentTask.type == 'approval') {
+                        product.currentAction = product.actions.find(x => x.task_id == currentTask.children[0].task_id)
+                    } else product.currentAction = product.actions.find(action => action.task_id == currentTask.id)
                     // END Find current action for product
 
                     // START Find the correct price
@@ -227,9 +229,26 @@ export default {
             const products = getters.products
             const currentTask = rootGetters['persist/currentTask']
             if (products) {
-                return products.filter(x =>
-                    x.actions.find(action => action.task_id == currentTask.inherit_from_id && action.action != 0)
-                )
+                return products.filter(x => {
+                    // If current task = decision -> Get products that where IN in the task before the approval and not OUT in approval
+                    if (currentTask.type == 'decision') {
+                        const taskBeforeApproval = currentTask.approvalParent.parentTasks[0]
+                        if (
+                            x.actions.find(
+                                action => action.task_id == currentTask.inherit_from_id && action.action != 0
+                            ) &&
+                            x.actions.find(action => action.task_id == taskBeforeApproval.id && action.action != 0) &&
+                            !x.actions.find(
+                                action => action.task_id == currentTask.filter_products_by_id && action.action == 0
+                            )
+                        )
+                            return true
+                    } else {
+                        return x.actions.find(
+                            action => action.task_id == currentTask.inherit_from_id && action.action != 0
+                        )
+                    }
+                })
             } else {
                 return []
             }

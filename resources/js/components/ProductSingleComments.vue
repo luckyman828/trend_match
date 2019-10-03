@@ -24,11 +24,17 @@
                             <div class="sender">{{comment.task.title}} | {{(comment.user.id == authUser.id) ? 'You' : comment.user.name}}</div>
                         </div>
                         <div class="break-line" v-if="(product.currentAction)"><span class="pill" :class="product.currentAction.action == 1 ? 'green' : 'red'">Marked as {{product.currentAction.action == 1 ? 'IN' : 'OUT'}} by {{(product.currentAction.user_id == authUser.id) ? 'You' : product.currentAction.user.name}}</span></div>
-                        <div class="break-line" v-else-if="comments.length > 0 ? comments[comments.length-1].task_id != currentTask.approvalParent.id : false">Waiting for response from {{currentTask.approvalParent.title}}</div>
+                        <div class="break-line" v-else-if="currentTask.type == 'decision' ? comments.length > 0 ? comments[comments.length-1].task_id != currentTask.approvalParent.id : true : false">Waiting for response from {{currentTask.approvalParent.title}}</div>
                     </template>
 
                     <template v-else-if="currentTask.type == 'decision'">
-
+                        <div class="requests-wrapper" v-if="requests.length > 0">
+                            <request :request="request" v-for="request in requests.filter(x => x.task_id == currentTask.inherit_from_id)" :key="request.id"/>
+                        </div>
+                        <div class="sender-wrapper" v-for="comment in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
+                            <comment :comment="comment"/>
+                            <div class="sender">{{comment.task.title}} | {{(comment.user.id == authUser.id) ? 'You' : comment.user.name}}</div>
+                        </div>
                     </template>
 
                     <div v-else class="sender-wrapper" v-for="(sender, index) in commentsGroupedBySender" :key="index" :class="{own: sender.user.id == authUser.id}">
@@ -218,7 +224,7 @@ export default {
         commentsClosed() {
             let isClosed = false
             if (this.currentTask.type == 'approval') {
-                if (this.product.actions.find(x => x.task_id == this.currentTask.children[0]).task_id)
+                if (this.product.actions.find(x => x.task_id == this.currentTask.children[0].task_id))
                     isClosed = true
             }
             else if (this.currentTask.type == 'decision') {

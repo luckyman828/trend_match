@@ -76,11 +76,8 @@ class ActionController extends Controller
     }
     public function destroyTask(Request $request)
     {
-        // First, check if an action for the following product and user already exists
-        $existingAction = Action::where('product_id', $request->product_id)->where('task_id', $request->task_id)->first();
-
-        if( $existingAction->delete() ) {
-            return new ActionResource($existingAction);
+        if( Action::where([['product_id', $request->product_id], ['task_id', $request->task_id]])->delete() ) {
+            return $request;
         } else {
             return 'nothing found';
         }

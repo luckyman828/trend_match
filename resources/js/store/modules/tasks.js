@@ -41,7 +41,7 @@ export default {
                 // Find tasks the parent inherits from
                 task.inheritFromTask = tasks.find(x => x.id == task.inherit_from_id)
 
-                task.approvalParent = task.parentTasks.find(x => x.type == 'approval')
+                if (task.type == 'decision') task.approvalParent = tasks.find(x => x.type == 'approval')
 
                 // Determine if the task is active
                 task.isActive = false

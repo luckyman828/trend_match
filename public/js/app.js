@@ -8644,6 +8644,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -8755,8 +8761,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       if (this.currentTask.type == 'approval') {
         if (this.product.actions.find(function (x) {
-          return x.task_id == _this2.currentTask.children[0];
-        }).task_id) isClosed = true;
+          return x.task_id == _this2.currentTask.children[0].task_id;
+        })) isClosed = true;
       } else if (this.currentTask.type == 'decision') {
         if (this.currentTask.approvalParent && this.product.currentAction) isClosed = true;
       }
@@ -10709,19 +10715,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // CODE to make sure the products stay sorted in the same way
       // Save the old order of the products
       console.log('Products recalculated');
-      console.log(newValue); // if (newValue.length == oldValue.length) {
-      // let index = 0
-      // oldValue.forEach(product => {
-      //     const newIndex = newValue.find(x => x.id == product.id)
-      //     if (newIndex) {
-      //         newIndex.sortIndex = index
-      //     }
-      //     product.sortIndex = index
-      //     index++
-      // })
-      // // Sort the products in the same was as they were before
-      // this.sortProducts('sortIndex')
-      // }
+      console.log(newValue);
+
+      if (newValue.length == oldValue.length) {
+        var index = 0;
+        oldValue.forEach(function (product) {
+          var newIndex = newValue.find(function (x) {
+            return x.id == product.id;
+          });
+
+          if (newIndex) {
+            newIndex.sortIndex = index;
+          }
+
+          product.sortIndex = index;
+          index++;
+        }); // Sort the products in the same was as they were before
+
+        this.sortProducts('sortIndex');
+      }
     },
     tasks: function tasks(newValue, oldValue) {
       console.log('Tasks recalculated');
@@ -10740,9 +10752,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       };else return null;
     },
     products: function products() {
+      var _this = this;
+
       if (this.currentTask.inherit_from_id) {
-        if (this.currentTask.type == 'approval' || this.currentTask.approvalParent) {
-          return this.productsScopedByInheritance.filter(function (x) {
+        if (this.currentTask.type == 'approval' || this.currentTask.parentTasks.find(function (x) {
+          return x.type == 'approval';
+        })) {
+          // if (this.currentTask.type == 'approval') {
+          if (this.currentTeam.category_scope) {
+            return this.productsScopedByInheritance.filter(function (x) {
+              return x.requests.length > 0 && _this.currentTeam.category_scope.split(',').includes(x.category.toLowerCase());
+            });
+          } else return this.productsScopedByInheritance.filter(function (x) {
             return x.requests.length > 0;
           });
         } else {
@@ -10776,7 +10797,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return productsToReturn;
     },
     productsFiltered: function productsFiltered() {
-      var _this = this;
+      var _this2 = this;
 
       var method = this.currentProductFilter;
       var products = this.productsFilteredByCategory;
@@ -10785,11 +10806,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (['ins', 'outs', 'nds'].includes(method)) {
         var filteredByAction = productsToReturn.filter(function (product) {
           if (method == 'ins') {
-            if (product[_this.actionScope] != null) return product[_this.actionScope].action >= 1;
+            if (product[_this2.actionScope] != null) return product[_this2.actionScope].action >= 1;
           } else if (method == 'outs') {
-            if (product[_this.actionScope] != null) return product[_this.actionScope].action == 0;
+            if (product[_this2.actionScope] != null) return product[_this2.actionScope].action == 0;
           } else if (method == 'nds') {
-            return product[_this.actionScope] == null;
+            return product[_this2.actionScope] == null;
           }
         });
         productsToReturn = filteredByAction;
@@ -10828,7 +10849,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return selectedProducts;
     },
     productTotals: function productTotals() {
-      var _this2 = this;
+      var _this3 = this;
 
       var products = this.products;
       var data = {
@@ -10861,23 +10882,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         data.outs += product.outs.length;
         data.nds += product.nds.length;
 
-        if (product[_this2.actionScope] != null) {
-          if (product[_this2.actionScope].action >= 1) data["final"].ins++;else if (product[_this2.actionScope].action == 0) data["final"].outs++;
+        if (product[_this3.actionScope] != null) {
+          if (product[_this3.actionScope].action >= 1) data["final"].ins++;else if (product[_this3.actionScope].action == 0) data["final"].outs++;
         } else data["final"].nds++;
       });
       return data;
     },
     teamUsers: function teamUsers() {
-      var _this3 = this;
+      var _this4 = this;
 
       var usersToReturn = [];
 
       if (this.teamFilterId > 0) {
         var thisTeam = this.teams.find(function (team) {
-          return team.id == _this3.teamFilterId;
+          return team.id == _this4.teamFilterId;
         });
         if (thisTeam) thisTeam.users.forEach(function (user) {
-          var fileUser = _this3.collection.users.find(function (x) {
+          var fileUser = _this4.collection.users.find(function (x) {
             return x.id == user.id;
           });
 
@@ -10965,7 +10986,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this4 = this;
+      var _this5 = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
@@ -10975,7 +10996,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
-        var thisProduct = _this4.products.find(function (x) {
+        var thisProduct = _this5.products.find(function (x) {
           return x.id == product;
         });
 
@@ -17788,9 +17809,11 @@ var render = function() {
                               ]
                             )
                           ])
-                        : (_vm.comments.length > 0
-                          ? _vm.comments[_vm.comments.length - 1].task_id !=
-                            _vm.currentTask.approvalParent.id
+                        : (_vm.currentTask.type == "decision"
+                          ? _vm.comments.length > 0
+                            ? _vm.comments[_vm.comments.length - 1].task_id !=
+                              _vm.currentTask.approvalParent.id
+                            : true
                           : false)
                         ? _c("div", { staticClass: "break-line" }, [
                             _vm._v(
@@ -17801,7 +17824,55 @@ var render = function() {
                         : _vm._e()
                     ]
                   : _vm.currentTask.type == "decision"
-                  ? void 0
+                  ? [
+                      _vm.requests.length > 0
+                        ? _c(
+                            "div",
+                            { staticClass: "requests-wrapper" },
+                            _vm._l(
+                              _vm.requests.filter(function(x) {
+                                return (
+                                  x.task_id == _vm.currentTask.inherit_from_id
+                                )
+                              }),
+                              function(request) {
+                                return _c("request", {
+                                  key: request.id,
+                                  attrs: { request: request }
+                                })
+                              }
+                            ),
+                            1
+                          )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _vm._l(_vm.comments, function(comment) {
+                        return _c(
+                          "div",
+                          {
+                            key: comment.id,
+                            staticClass: "sender-wrapper",
+                            class: { own: comment.user.id == _vm.authUser.id }
+                          },
+                          [
+                            _c("comment", { attrs: { comment: comment } }),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "sender" }, [
+                              _vm._v(
+                                _vm._s(comment.task.title) +
+                                  " | " +
+                                  _vm._s(
+                                    comment.user.id == _vm.authUser.id
+                                      ? "You"
+                                      : comment.user.name
+                                  )
+                              )
+                            ])
+                          ],
+                          1
+                        )
+                      })
+                    ]
                   : _vm._l(_vm.commentsGroupedBySender, function(
                       sender,
                       index
@@ -41881,6 +41952,7 @@ function (_Model) {
         title: this.attr(''),
         type: this.attr(''),
         inherit_from_id: this.attr(''),
+        filter_products_by_id: this.attr(''),
         completed: this.hasMany(_FileTask__WEBPACK_IMPORTED_MODULE_1__["default"], 'task_id'),
         parents: this.hasMany(_TaskParent__WEBPACK_IMPORTED_MODULE_2__["default"], 'task_id'),
         children: this.hasMany(_TaskParent__WEBPACK_IMPORTED_MODULE_2__["default"], 'parent_id'),
@@ -45278,7 +45350,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
           if (currentTask.type == 'feedback') product.currentAction = product.actions.find(function (action) {
             return action.user_id == userId && action.task_id == currentTask.id;
-          });else product.currentAction = product.actions.find(function (action) {
+          });else if (currentTask.type == 'approval') {
+            product.currentAction = product.actions.find(function (x) {
+              return x.task_id == currentTask.children[0].task_id;
+            });
+          } else product.currentAction = product.actions.find(function (action) {
             return action.task_id == currentTask.id;
           }); // END Find current action for product
           // START Find the correct price
@@ -45454,9 +45530,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       if (products) {
         return products.filter(function (x) {
-          return x.actions.find(function (action) {
-            return action.task_id == currentTask.inherit_from_id && action.action != 0;
-          });
+          // If current task = decision -> Get products that where IN in the task before the approval and not OUT in approval
+          if (currentTask.type == 'decision') {
+            var taskBeforeApproval = currentTask.approvalParent.parentTasks[0];
+            if (x.actions.find(function (action) {
+              return action.task_id == currentTask.inherit_from_id && action.action != 0;
+            }) && x.actions.find(function (action) {
+              return action.task_id == taskBeforeApproval.id && action.action != 0;
+            }) && !x.actions.find(function (action) {
+              return action.task_id == currentTask.filter_products_by_id && action.action == 0;
+            })) return true;
+          } else {
+            return x.actions.find(function (action) {
+              return action.task_id == currentTask.inherit_from_id && action.action != 0;
+            });
+          }
         });
       } else {
         return [];
@@ -46534,7 +46622,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         task.inheritFromTask = tasks.find(function (x) {
           return x.id == task.inherit_from_id;
         });
-        task.approvalParent = task.parentTasks.find(function (x) {
+        if (task.type == 'decision') task.approvalParent = tasks.find(function (x) {
           return x.type == 'approval';
         }); // Determine if the task is active
 
