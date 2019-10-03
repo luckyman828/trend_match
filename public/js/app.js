@@ -10754,23 +10754,28 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     products: function products() {
       var _this = this;
 
+      var productsToReturn = [];
+
       if (this.currentTask.inherit_from_id) {
         if (this.currentTask.type == 'approval' || this.currentTask.parentTasks.find(function (x) {
           return x.type == 'approval';
         })) {
-          // if (this.currentTask.type == 'approval') {
-          if (this.currentTeam.category_scope) {
-            return this.productsScopedByInheritance.filter(function (x) {
-              return x.requests.length > 0 && _this.currentTeam.category_scope.split(',').includes(x.category.toLowerCase());
-            });
-          } else return this.productsScopedByInheritance.filter(function (x) {
+          productsToReturn = this.productsScopedByInheritance.filter(function (x) {
             return x.requests.length > 0;
           });
         } else {
-          return this.productsScopedByInheritance;
+          productsToReturn = this.productsScopedByInheritance;
         }
       } else {
-        return this.allProducts;
+        productsToReturn = this.allProducts;
+      }
+
+      if (this.currentTeam.category_scope) {
+        return productsToReturn.filter(function (x) {
+          return _this.currentTeam.category_scope.split(',').includes(x.category.toLowerCase());
+        });
+      } else {
+        return productsToReturn;
       }
     },
     teamProducts: function teamProducts() {

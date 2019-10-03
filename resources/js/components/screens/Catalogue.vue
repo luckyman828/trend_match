@@ -177,18 +177,21 @@ export default{
             else return null
         },
         products() {
+            let productsToReturn = []
             if (this.currentTask.inherit_from_id) {
                 if (this.currentTask.type == 'approval' || this.currentTask.parentTasks.find(x => x.type == 'approval')) {
-                // if (this.currentTask.type == 'approval') {
-                    if (this.currentTeam.category_scope) {
-                        return this.productsScopedByInheritance.filter(x => x.requests.length > 0 && this.currentTeam.category_scope.split(',').includes(x.category.toLowerCase()))
-                    }
-                    else return this.productsScopedByInheritance.filter(x => x.requests.length > 0)
+                    productsToReturn = this.productsScopedByInheritance.filter(x => x.requests.length > 0)
                 } else {
-                    return this.productsScopedByInheritance
+                    productsToReturn = this.productsScopedByInheritance
                 }
             } else {
-                return this.allProducts
+                productsToReturn = this.allProducts
+            }
+
+            if (this.currentTeam.category_scope) {
+                return productsToReturn.filter(x => this.currentTeam.category_scope.split(',').includes(x.category.toLowerCase()))
+            } else {
+                return productsToReturn
             }
         },
         teamProducts() {
