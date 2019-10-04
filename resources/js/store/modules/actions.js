@@ -42,11 +42,6 @@ export default {
         // Update the action of for a product for a user
         async updateAction({ commit }, { user_id, task_id, productToUpdate, action_code, is_task_action }) {
             commit('setAction', { user_id, task_id, productToUpdate, action_code, is_task_action })
-            console.log('Task: ' + task_id)
-            console.log('Is task: ' + is_task_action)
-            console.log('user_id: ' + user_id)
-            console.log('product_id: ' + productToUpdate)
-            console.log('action_code: ' + action_code)
 
             await axios
                 .put(`/api/action`, {

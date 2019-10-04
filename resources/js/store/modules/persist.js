@@ -3,6 +3,7 @@ import Team from '../../store/models/Team'
 import File from '../../store/models/Collection'
 import AuthUser from '../../store/models/AuthUser'
 import { RootGetters } from '@vuex-orm/core'
+import axios from 'axios'
 
 export default {
     namespaced: true,
@@ -157,8 +158,21 @@ export default {
         setTeamFilter({ commit }, id) {
             commit('setTeamFilter', id)
         },
-        setCurrentWorkspace({ commit }, id) {
-            commit('setCurrentWorkspace', id)
+        async setCurrentWorkspace({ commit }, { workspace_id, user_id }) {
+            commit('setCurrentWorkspace', workspace_id)
+
+            // Cache the curent workspace id
+            await axios
+                .put(`/api/cache/workspace`, {
+                    workspace_id: workspace_id,
+                    user_id: user_id,
+                })
+                .then(response => {
+                    console.log('cached workspace id')
+                })
+                .catch(err => {
+                    console.log(err)
+                })
         },
         setCurrentTaskId({ commit }, id) {
             console.log('Setting current task ID!')

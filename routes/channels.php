@@ -11,6 +11,12 @@
 |
 */
 
+use Illuminate\Support\Facades\Cache;
+
 Broadcast::channel('App.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
+});
+
+Broadcast::channel('workspace.{id}', function ($user, $id) {
+    return Cache::get('user_'.Auth::id()) === $id;
 });

@@ -73,8 +73,7 @@ export default{
                 this.fetchWorkspaces(),
             ])
             this.setUserPermissionLevel(this.authUser.role_id)
-            this.setCurrentWorkspace(this.authUser.workspaces[0].id)
-            // this.currentWorkspaceId = this.authUser.workspaces[0].id
+            this.setCurrentWorkspace({workspace_id: this.authUser.workspaces[0].id, user_id: this.authUser.id})
         },
     },
     watch : {
@@ -121,6 +120,13 @@ export default{
                     this.setTeamFilter(this.authUser.teams[0].id)
                 }
                 this.setLoadingInit(false)
+
+                // Setup event broadcast listening
+                // window.Echo.private(`workspace.${this.currentWorkspaceId}`)
+                // .listen('actionUpdated', (e) => {
+                //     console.log('Actions Updated! I heard this through Pusher!')
+                //     console.log(e);
+                // });
                 
             } else {
                 this.loadingOverwrite = true

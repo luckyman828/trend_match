@@ -7220,7 +7220,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
               case 3:
                 this.setUserPermissionLevel(this.authUser.role_id);
-                this.setCurrentWorkspace(this.authUser.workspaces[0].id); // this.currentWorkspaceId = this.authUser.workspaces[0].id
+                this.setCurrentWorkspace({
+                  workspace_id: this.authUser.workspaces[0].id,
+                  user_id: this.authUser.id
+                });
 
               case 5:
               case "end":
@@ -7287,7 +7290,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   _this.setTeamFilter(_this.authUser.teams[0].id);
                 }
 
-                _this.setLoadingInit(false);
+                _this.setLoadingInit(false); // Setup event broadcast listening
+                // window.Echo.private(`workspace.${this.currentWorkspaceId}`)
+                // .listen('actionUpdated', (e) => {
+                //     console.log('Actions Updated! I heard this through Pusher!')
+                //     console.log(e);
+                // });
+
 
                 _context2.next = 9;
                 break;
@@ -42986,12 +42995,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   action_code: action_code,
                   is_task_action: is_task_action
                 });
-                console.log('Task: ' + task_id);
-                console.log('Is task: ' + is_task_action);
-                console.log('user_id: ' + user_id);
-                console.log('product_id: ' + productToUpdate);
-                console.log('action_code: ' + action_code);
-                _context2.next = 10;
+                _context2.next = 5;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/action", {
                   user_id: user_id,
                   task_id: task_id,
@@ -43004,7 +43008,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   console.log(err);
                 });
 
-              case 10:
+              case 5:
               case "end":
                 return _context2.stop();
             }
@@ -44412,11 +44416,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _store_models_Workspace__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../store/models/Workspace */ "./resources/js/store/models/Workspace.js");
-/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
-/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
-/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _store_models_Workspace__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../store/models/Workspace */ "./resources/js/store/models/Workspace.js");
+/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_6__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
 
 
 
@@ -44443,10 +44458,10 @@ __webpack_require__.r(__webpack_exports__);
       return state.teamFilterId;
     },
     currentWorkspace: function currentWorkspace(state) {
-      return _store_models_Workspace__WEBPACK_IMPORTED_MODULE_0__["default"].find(state.currentWorkspaceId);
+      return _store_models_Workspace__WEBPACK_IMPORTED_MODULE_1__["default"].find(state.currentWorkspaceId);
     },
     currentTeam: function currentTeam(state) {
-      return state.currentTeamId == 0 ? 'Global' : _store_models_Team__WEBPACK_IMPORTED_MODULE_1__["default"].query()["with"]('taskTeams.task.parents.completed').find(state.currentTeamId);
+      return state.currentTeamId == 0 ? 'Global' : _store_models_Team__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('taskTeams.task.parents.completed').find(state.currentTeamId);
     },
     workspaceCurrency: function workspaceCurrency(state) {
       return 'EUR';
@@ -44461,7 +44476,7 @@ __webpack_require__.r(__webpack_exports__);
       return state.currentFileId;
     },
     currentFile: function currentFile(state) {
-      return state.currentFileId != null ? _store_models_Collection__WEBPACK_IMPORTED_MODULE_2__["default"].find(state.currentFileId) : null;
+      return state.currentFileId != null ? _store_models_Collection__WEBPACK_IMPORTED_MODULE_3__["default"].find(state.currentFileId) : null;
     },
     currentTaskId: function currentTaskId(state) {
       return state.currentTaskId;
@@ -44512,7 +44527,7 @@ __webpack_require__.r(__webpack_exports__);
         return 'Phase action';else if (state.userPermissionLevel >= 2) return 'Team action';else return 'Your action';
     },
     authUser: function authUser() {
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_3__["default"].query()["with"]('teams.files|teamFiles|tasks.completed')["with"]('workspaces').first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_4__["default"].query()["with"]('teams.files|teamFiles|tasks.completed')["with"]('workspaces').first();
     },
     currentTaskPermissions: function currentTaskPermissions(state, getters, rootState, rootGetters) {
       if (getters.currentTask) {
@@ -44536,25 +44551,58 @@ __webpack_require__.r(__webpack_exports__);
       var commit = _ref2.commit;
       commit('setTeamFilter', id);
     },
-    setCurrentWorkspace: function setCurrentWorkspace(_ref3, id) {
-      var commit = _ref3.commit;
-      commit('setCurrentWorkspace', id);
-    },
-    setCurrentTaskId: function setCurrentTaskId(_ref4, id) {
-      var commit = _ref4.commit;
+    setCurrentWorkspace: function () {
+      var _setCurrentWorkspace = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(_ref3, _ref4) {
+        var commit, workspace_id, user_id;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                commit = _ref3.commit;
+                workspace_id = _ref4.workspace_id, user_id = _ref4.user_id;
+                commit('setCurrentWorkspace', workspace_id); // Cache the curent workspace id
+
+                _context.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_6___default.a.put("/api/cache/workspace", {
+                  workspace_id: workspace_id,
+                  user_id: user_id
+                }).then(function (response) {
+                  console.log('cached workspace id');
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 5:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }));
+
+      function setCurrentWorkspace(_x, _x2) {
+        return _setCurrentWorkspace.apply(this, arguments);
+      }
+
+      return setCurrentWorkspace;
+    }(),
+    setCurrentTaskId: function setCurrentTaskId(_ref5, id) {
+      var commit = _ref5.commit;
       console.log('Setting current task ID!');
       commit('setCurrentTaskId', id);
     },
-    setCurrentFileId: function setCurrentFileId(_ref5, id) {
-      var commit = _ref5.commit;
+    setCurrentFileId: function setCurrentFileId(_ref6, id) {
+      var commit = _ref6.commit;
       commit('setcurrentFileId', id);
     },
-    setUserPermissionLevel: function setUserPermissionLevel(_ref6, id) {
-      var commit = _ref6.commit;
+    setUserPermissionLevel: function setUserPermissionLevel(_ref7, id) {
+      var commit = _ref7.commit;
       commit('setUserPermissionLevel', id);
     },
-    setLoadingInit: function setLoadingInit(_ref7, bool) {
-      var commit = _ref7.commit;
+    setLoadingInit: function setLoadingInit(_ref8, bool) {
+      var commit = _ref8.commit;
       commit('setLoadingInit', bool);
     }
   },

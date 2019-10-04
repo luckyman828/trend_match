@@ -124,13 +124,12 @@ Route::middleware('auth:api')->group( function(){
     // xxxx Teams xxx
     Route::delete('user-team', 'TeamController@destroy');
 
+    // xxxx Cache xxx
+    Route::put('cache/workspace', 'WorkspaceController@cacheCurrentWorkspace');
 
 });
 
 // Public requests
-
-// xxxx OWN APP WEBHOOKS
-Route::webhooks('webhook');
 
 // xxxx CLUBHOUSE WEBHOOK xxx
 Route::post('clubhouse', 'ClubhouseController@index');

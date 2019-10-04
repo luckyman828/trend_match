@@ -23,6 +23,7 @@ use App\Task;
 use App\TaskParent;
 use App\TaskTeam;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 
 class WorkspaceController extends Controller
 {
@@ -40,6 +41,12 @@ class WorkspaceController extends Controller
         $workspaceUsers = WorkspaceUser::get();
         // Return collection of products as a resource
         return WorkspaceUserResource::collection($workspaceUsers);
+    }
+
+    // Return all workspaceUsers available to the logged in user
+    public function cacheCurrentWorkspace(Request $request)
+    {
+        Cache::put('user_'.$request->user_id.'_currentWorkspaceId', $request->workspace_id, 86400);
     }
 
     // Reutrn all teams of the workspace
