@@ -5,14 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Action;
+use App\Events\ActionDeleted;
+use App\Events\ActionUpdated;
+use App\Events\ManyActionsCreated;
+use App\Events\ManyActionsUpdated;
 Use App\Http\Resources\Action as ActionResource;
 use Illuminate\Support\Facades\DB;
-use App\ProductFinalAction;
-Use App\Http\Resources\ProductFinalAction as ProductFinalActionResource;
-use App\TeamProduct;
-Use App\Http\Resources\TeamProduct as TeamProductResource;
-use App\PhaseProduct;
-Use App\Http\Resources\PhaseProduct as PhaseProductResource;
 
 class ActionController extends Controller
 {
@@ -39,7 +37,12 @@ class ActionController extends Controller
         // return $action;
 
         if($action->save()) {
-            return new ActionResource($action);
+
+            // Fire event
+            $actionToReturn = new ActionResource($action);
+            event(new ActionUpdated($actionToReturn));
+
+            return $actionToReturn;
         }
     }
 
@@ -59,7 +62,12 @@ class ActionController extends Controller
         // return $action;
 
         if($action->save()) {
-            return new ActionResource($action);
+
+            // Fire event
+            $actionToReturn = new ActionResource($action);
+            event(new ActionUpdated($actionToReturn));
+
+            return $actionToReturn;
         }
     }
 
@@ -69,15 +77,27 @@ class ActionController extends Controller
         $existingAction = Action::where('product_id', $request->product_id)->where('task_id', $request->task_id)->where('user_id', $request->user_id)->first();
 
         if( $existingAction->delete() ) {
-            return new ActionResource($existingAction);
+
+             // Fire event
+            $actionToReturn = new ActionResource($existingAction);
+            event(new ActionDeleted($actionToReturn));
+            return $actionToReturn;
+
         } else {
             return 'nothing found';
         }
     }
     public function destroyTask(Request $request)
     {
+        $existingAction = Action::where([['product_id', $request->product_id], ['task_id', $request->task_id]])->first();
+
         if( Action::where([['product_id', $request->product_id], ['task_id', $request->task_id]])->delete() ) {
-            return $request;
+
+            // Fire event
+            $actionToReturn = new ActionResource($existingAction);
+            event(new ActionDeleted($actionToReturn));
+            return $actionToReturn;
+
         } else {
             return 'nothing found';
         }
@@ -103,6 +123,10 @@ class ActionController extends Controller
         $endtime = microtime(true);
         $timediff = $endtime - $starttime;
         Action::insert($dataToInsert);
+
+        // Fire event
+        event(new ManyActionsCreated($dataToInsert));
+
         return 'Inserted ' . $count . ' records. Time elapsed: ' . $timediff;
     }
 
@@ -112,6 +136,10 @@ class ActionController extends Controller
         $starttime = microtime(true);
 
         Action::whereIn('product_id', $request->product_ids)->where('task_id', $request->task_id)->where('user_id', $request->user_id)->update(['action' => $request->action_code]);
+
+        // Fire event
+        event(new ManyActionsUpdated($request->all()));
+
         $endtime = microtime(true);
         $timediff = $endtime - $starttime;
         return 'Updated ' . $count . ' records. Time elapsed: ' . $timediff;
@@ -122,6 +150,10 @@ class ActionController extends Controller
         $starttime = microtime(true);
 
         Action::whereIn('product_id', $request->product_ids)->where('task_id', $request->task_id)->update(['action' => $request->action_code]);
+
+        // Fire event
+        event(new ManyActionsUpdated($request->all()));
+
         $endtime = microtime(true);
         $timediff = $endtime - $starttime;
         return 'Updated ' . $count . ' records. Time elapsed: ' . $timediff;

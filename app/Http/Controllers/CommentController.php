@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Comment;
+use App\Events\CommentUpdated;
 use App\http\resources\Comment as CommentResource;
 
 class CommentController extends Controller
@@ -34,7 +35,13 @@ class CommentController extends Controller
         $comment->is_request = $request->input('is_request');
 
         if($comment->save()) {
-            return new CommentResource($comment);
+
+            $commentToReturn = new CommentUpdated($comment);
+            // Fire dynamic update event
+            event(new CommentUpdated($commentToReturn));
+
+            // Return new comment
+            return $comment;
         }
     }
 

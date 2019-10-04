@@ -12,6 +12,10 @@ class Action extends Model
     public $incrementing = false;
     protected $table = 'user_products';
 
+    protected $fillable = [
+        'action'
+    ];
+
     /**
      * The name of the "created at" column.
      *
