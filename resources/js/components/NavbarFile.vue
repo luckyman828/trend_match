@@ -1,36 +1,32 @@
 <template>
-    <nav class="navbar" style="height: 70px;">
-        <!-- <div class="logo-wrapper">
-            <router-link to="/collection" class="navbar-brand">
-                <img src="/images/kollekt-logo-color-1.svg" />
-            </router-link>
-        </div> -->
-        <template v-if="$route.name == 'catalogue'">
-            <NavbarFile/>
-        </template>
-        <template v-if="$route.name == 'teams'">
-            <NavbarTeam/>
-        </template>
-  </nav>
+    <div class="navbar-file flex-wrapper">
+
+        <div class="items-left">
+
+            <router-link :to="{name: 'collection'}" class="back-link"><span class="circle primary"><i class="far fa-arrow-left"></i></span><span>Back to Collections</span></router-link>
+            <div class="breadcrumbs">
+                <router-link class="text-link" :to="{name: 'collection'}">Collections</router-link>
+                <span class="current"><strong>{{(currentFile != null) ? currentFile.title : 'Fetching..'}}</strong></span>
+            </div>
+
+        </div>
+
+        <div class="items-right">
+
+        </div>
+
+    </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import Modal from './Modal'
-import NavbarFile from './NavbarFile'
-import NavbarTeam from './NavbarTeam'
-import ModalCreateTeam from './ModalCreateTeam'
-import Team from '../store/models/Team'
 
 export default {
-    name: "navbar",
+    name: "navbarFile",
     components: {
-        Modal,
-        ModalCreateTeam,
-        NavbarFile,
-        NavbarTeam,
     },
     computed: {
+        ...mapGetters('persist', ['userPermissionLevel', 'currentFile']),
     },
     methods: {
     }
@@ -41,19 +37,6 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 
-.navbar {
-    grid-area: navbar;
-    width: 100%;
-    align-items: center;
-    display: flex;
-    .logo-wrapper {
-        min-width: $sidebarWidth;
-        padding-left: 20px;
-    }
-    img {
-        display: block;
-        height: 100%;
-    }
     .flex-wrapper {
         width: 100%;
         padding: 8px 60px;
@@ -101,6 +84,5 @@ export default {
             content: '';
         }
     }
-}
 
 </style>

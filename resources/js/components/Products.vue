@@ -404,14 +404,14 @@ export default {
         })
         .listen('.actions.many.created', (e) => {
             const actions = e.actions
-            // console.log('%cPusher: Action Many Created', 'font-weight: 900')
-            // console.log(e)
+            console.log('%cPusher: Action Many Created', 'font-weight: 900')
+            console.log(e)
             if (actions[0].is_task_action) {
                 this.setManyTaskActions({ 
                     productIds: actions.map(x => x.product_id), 
                     task_id: actions[0].task_id,
                     user_id: actions[0].user_id,
-                    action_code: actions[0].action_code,
+                    action_code: actions[0].action,
                     is_task_action: actions[0].is_task_action,
                 })
             } else {
@@ -419,7 +419,7 @@ export default {
                     productIds: actions.map(x => x.product_id),
                     task_id: actions[0].task_id,
                     user_id: actions[0].user_id,
-                    action_code: actions[0].action_code,
+                    action_code: actions[0].action,
                     is_task_action: actions[0].is_task_action, 
                 })
             }
