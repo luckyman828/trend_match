@@ -10,7 +10,7 @@
             </div>
             <div class="items-right">
 
-                <span class="button wide primary" @click="$refs.createTeamModal.toggle()">Add team</span>
+                <span v-if="userPermissionLevel >= 4" class="button wide primary" @click="$refs.createTeamModal.toggle()">Add team</span>
 
             </div>
         </div>
@@ -66,7 +66,7 @@ export default {
         display: flex;
         justify-content: space-between;
     }
-    .items-left {
+    .items-left, .items-right {
         display: flex;
         align-items: center;
     }

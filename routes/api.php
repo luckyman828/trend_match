@@ -100,6 +100,11 @@ Route::middleware('auth:api')->group( function(){
     Route::post('many-task-actions', 'ActionController@storeManyTask');
 
 
+    // xxx TASKS xxx
+    Route::put('task/complete', 'TaskController@markComplete');
+    Route::delete('task/complete', 'TaskController@undoMarkComplete');
+
+
     // xxx USERS xxx
     // Get countries
     // Route::get('countries', 'UserController@countries');

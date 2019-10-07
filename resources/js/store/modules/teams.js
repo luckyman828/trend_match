@@ -21,7 +21,7 @@ export default {
                 // If you can make it work, please be my guest
                 const adminPermissionLevel = rootGetters['persist/adminPermissionLevel']
                 const teams = Team.query()
-                    .with('users')
+                    .with('users.role')
                     .with('invites')
                     .with('teamFiles')
                     .with('files')
@@ -34,25 +34,7 @@ export default {
                 const authUser = AuthUser.query()
                     .with('teams')
                     .first()
-                // Loop through the users and sort them between the teams
-                users.forEach(user => {
-                    // First check that the user has a team and that the team has an id
-                    if (user.teams[0] != null) {
-                        if ('id' in user.teams[0]) {
-                            // If we have a team with an id
-                            // Set the users role
-                            user.teams.forEach(userTeam => {
-                                // Loop through each of the users teams and add the user
-                                // Find the corresponding team
-                                const foundTeam = teams.find(team => team.id == userTeam.id)
-                                // Check that the user doesnt already exist in this team
-                                if (!foundTeam.users.includes(user))
-                                    // Push the user to the team if the user is not already a member
-                                    foundTeam.users.push(user)
-                            })
-                        }
-                    }
-                })
+
                 if (authUser.role_id >= adminPermissionLevel) return teams
                 else {
                     // Get the users teams
@@ -64,6 +46,56 @@ export default {
                 }
             }
         },
+        // teams: (state, getters, rootState, rootGetters) => {
+        //     if (!rootGetters['persist/loadingInit']) {
+        //         // Manually find the teams and the users belonging to each team.
+        //         // This is only necessary because I cannot make the Vuex ORM realtionship work
+        //         // If you can make it work, please be my guest
+        //         const adminPermissionLevel = rootGetters['persist/adminPermissionLevel']
+        //         const teams = Team.query()
+        //             .with('users')
+        //             .with('invites')
+        //             .with('teamFiles')
+        //             .with('files')
+        //             .with('phases')
+        //             .all()
+        //         const users = User.query()
+        //             .with('teams')
+        //             .with('role')
+        //             .all()
+        //         const authUser = AuthUser.query()
+        //             .with('teams')
+        //             .first()
+        //         // Loop through the users and sort them between the teams
+        //         users.forEach(user => {
+        //             // First check that the user has a team and that the team has an id
+        //             if (user.teams[0] != null) {
+        //                 if ('id' in user.teams[0]) {
+        //                     // If we have a team with an id
+        //                     // Set the users role
+        //                     user.teams.forEach(userTeam => {
+        //                         // Loop through each of the users teams and add the user
+        //                         // Find the corresponding team
+        //                         const foundTeam = teams.find(team => team.id == userTeam.id)
+        //                         // Check that the user doesnt already exist in this team
+        //                         if (!foundTeam.users.includes(user))
+        //                             // Push the user to the team if the user is not already a member
+        //                             foundTeam.users.push(user)
+        //                     })
+        //                 }
+        //             }
+        //         })
+        //         if (authUser.role_id >= adminPermissionLevel) return teams
+        //         else {
+        //             // Get the users teams
+        //             let userTeams = []
+        //             teams.forEach(team => {
+        //                 if (authUser.teams.find(x => x.id == team.id)) userTeams.push(team)
+        //             })
+        //             return userTeams
+        //         }
+        //     }
+        // },
     },
 
     actions: {

@@ -3,6 +3,7 @@ import Task from '../models/Task'
 import Team from '../models/Team'
 import UserTeam from '../models/UserTeam'
 import User from '../models/User'
+import FileTask from '../models/FileTask'
 
 export default {
     namespaced: true,
@@ -113,12 +114,65 @@ export default {
                 }
             }
         },
+        async completeTask({ commit }, { file_id, task_id }) {
+            commit('setTaskComplete', { file_id, task_id })
+
+            let succes
+            await axios
+                .put(`/api/task/complete`, {
+                    file_id: file_id,
+                    task_id: task_id,
+                })
+                .then(response => {
+                    succes = true
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    succes = false
+                    console.log(err)
+                })
+            return succes
+        },
+        async undoCompleteTask({ commit }, { file_id, task_id }) {
+            commit('setTaskIncomplete', { file_id, task_id })
+
+            let succes
+            await axios
+                .delete(`/api/task/complete`, {
+                    data: {
+                        file_id: file_id,
+                        task_id: task_id,
+                    },
+                })
+                .then(response => {
+                    succes = true
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    succes = false
+                    console.log(err)
+                })
+            return succes
+        },
     },
 
     mutations: {
         //Set the loading status of the app
         setLoading(state, bool) {
             state.loading = bool
+        },
+        setTaskComplete(state, { file_id, task_id }) {
+            FileTask.insert({
+                data: {
+                    file_id: file_id,
+                    task_id: task_id,
+                },
+            })
+        },
+        setTaskIncomplete(state, { file_id, task_id }) {
+            FileTask.delete(record => {
+                return record.file_id == file_id && record.task_id == task_id
+            })
         },
     },
 }

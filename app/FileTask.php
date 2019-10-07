@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class fileTask extends Model
+class FileTask extends Model
 {
     use Traits\HasCompositePrimaryKey;
 

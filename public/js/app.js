@@ -8182,7 +8182,16 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Loader */ "./resources/js/components/Loader.vue");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -8207,12 +8216,93 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "navbarFile",
-  components: {},
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['userPermissionLevel', 'currentFile'])),
-  methods: {}
+  components: {
+    Loader: _Loader__WEBPACK_IMPORTED_MODULE_2__["default"]
+  },
+  data: function data() {
+    return {
+      submittingTaskComplete: false
+    };
+  },
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['userPermissionLevel', 'currentFile', 'currentTask'])),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/tasks', ['completeTask', 'undoCompleteTask']), {
+    onCompleteTask: function () {
+      var _onCompleteTask = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(file_id, task_id) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                this.submittingTaskComplete = true;
+                _context.next = 3;
+                return this.completeTask({
+                  file_id: file_id,
+                  task_id: task_id
+                });
+
+              case 3:
+                // .then(reponse => succes = response)
+                this.submittingTaskComplete = false;
+
+              case 4:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function onCompleteTask(_x, _x2) {
+        return _onCompleteTask.apply(this, arguments);
+      }
+
+      return onCompleteTask;
+    }(),
+    onUndoCompleteTask: function () {
+      var _onUndoCompleteTask = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(file_id, task_id) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                this.submittingTaskComplete = true;
+                _context2.next = 3;
+                return this.undoCompleteTask({
+                  file_id: file_id,
+                  task_id: task_id
+                });
+
+              case 3:
+                // .then(reponse => succes = response)
+                this.submittingTaskComplete = false;
+
+              case 4:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function onUndoCompleteTask(_x3, _x4) {
+        return _onUndoCompleteTask.apply(this, arguments);
+      }
+
+      return onUndoCompleteTask;
+    }()
+  })
 });
 
 /***/ }),
@@ -11607,8 +11697,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     return {
       selected: [],
       singleTeam: null,
-      loadingOverwrite: false,
-      unsub: ''
+      loadingOverwrite: false // unsub: '',
+
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/teams', ['loadingTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/userTeams', ['loadingUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/users', ['loadingUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId']), {
@@ -11630,46 +11720,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     teams: function teams() {
       return this.$store.getters['entities/teams/teams'];
     },
-    // teams () {
-    //     // Manually find the teams and the users belonging to each team.
-    //     // This is only necessary because I cannot make the Vuex ORM realtionship work 
-    //     // If you can make it work, please be my guest
-    //     const teams = Team.query().with('users').with('invites').all()
-    //     const users = this.users
-    //     // Loop through the users and sort them between the teams
-    //     users.forEach(user => {
-    //         // First check that the user has a team and that the team has an id
-    //         if (user.teams[0] != null) {
-    //             if ('id' in user.teams[0]) {
-    //                 // If we have a team with an id
-    //                 // Set the users role
-    //                 user.teams.forEach(userTeam => {
-    //                     // Loop through each of the users teams and add the user
-    //                     // Find the corresponding team
-    //                     const foundTeam = teams.find(team => team.id == userTeam.id)
-    //                     // Check that the user doesnt already exist in this team
-    //                     if ( !foundTeam.users.includes(user) )
-    //                         // Push the user to the team if the user is not already a member
-    //                         foundTeam.users.push(user)
-    //                 })
-    //             }
-    //         }
-    //     })
-    //     if (!this.isLoading) {
-    //         if (this.authUser.role_id == 2) {
-    //             // Get the users teams
-    //             let userTeams = []
-    //             teams.forEach(team => {
-    //                 if (this.authUser.teams.find(x => x.id == team.id))
-    //                     userTeams.push(team)
-    //             })
-    //             return userTeams
-    //         }
-    //         else if (this.authUser.role_id >= 3)
-    //             return teams
-    //     }
-    //     return []
-    // },
     isLoading: function isLoading() {
       var loading = false;
       if (!this.loadingOverwrite) if (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.users[0].role == null || this.authUser == null) loading = true;
@@ -11689,27 +11739,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.singleTeam = team;
       console.log('Teams: Openeing');
       this.$refs.modal.toggle();
-    },
-    initRequiresWorkspace: function initRequiresWorkspace() {
-      if (_store_models_User__WEBPACK_IMPORTED_MODULE_6__["default"].all().length <= 0) this.fetchUsers(this.currentWorkspaceId);
-      if (_store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_8__["default"].all().length <= 0) this.fetchTeamInvites(this.currentWorkspaceId);
-      this.singleTeam = this.teams[0];
     }
   }),
   created: function created() {
-    var _this = this;
-
-    // If we already have a workspace id, fetch the data we are missing
-    if (this.currentWorkspaceId != null) this.initRequiresWorkspace(); // Else, wait till a workspace id is set, and then fetch the data
-
-    this.unsub = this.$store.subscribe(function (mutation, state) {
-      if (mutation.type == 'persist/setCurrentWorkspace') {
-        _this.initRequiresWorkspace();
-      }
-    });
+    this.singleTeam = this.$store.getters['entities/teams/teams'][0]; // If we already have a workspace id, fetch the data we are missing
+    // if (this.currentWorkspaceId != null)
+    //     this.initRequiresWorkspace()
+    // // Else, wait till a workspace id is set, and then fetch the data
+    // this.unsub = this.$store.subscribe((mutation, state) => {
+    //     if(mutation.type == 'persist/setCurrentWorkspace') {
+    //         this.initRequiresWorkspace()
+    //     } 
+    // })
   },
-  destroyed: function destroyed() {
-    this.unsub();
+  destroyed: function destroyed() {// this.unsub()
   }
 });
 
@@ -12029,21 +12072,113 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Teams__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Teams */ "./resources/js/components/screens/Teams.vue");
-/* harmony import */ var _ScreenLoader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ScreenLoader */ "./resources/js/components/screens/loaders/ScreenLoader.vue");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Teams__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Teams */ "./resources/js/components/screens/Teams.vue");
+/* harmony import */ var _ScreenLoader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ScreenLoader */ "./resources/js/components/screens/loaders/ScreenLoader.vue");
+/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../store/models/User */ "./resources/js/store/models/User.js");
+/* harmony import */ var _store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../store/models/TeamInvite */ "./resources/js/store/models/TeamInvite.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
 //
 //
 //
+
+
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'fileLoader',
+  name: 'teamsLoader',
   components: {
-    Teams: _Teams__WEBPACK_IMPORTED_MODULE_0__["default"],
-    ScreenLoader: _ScreenLoader__WEBPACK_IMPORTED_MODULE_1__["default"]
+    Teams: _Teams__WEBPACK_IMPORTED_MODULE_2__["default"],
+    ScreenLoader: _ScreenLoader__WEBPACK_IMPORTED_MODULE_3__["default"]
+  },
+  data: function data() {
+    return {
+      unsub: '',
+      loadingInit: true
+    };
+  },
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentWorkspaceId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['loadingTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/userTeams', ['loadingUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teamInvites', ['loadingTeamInvites']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/users', ['loadingUsers']), {
+    loading: function loading() {
+      return this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.loadingTeamInvites || this.loadingInit ? true : false;
+    }
+  }),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamInvites', ['fetchTeamInvites']), {
+    initRequiresWorkspace: function () {
+      var _initRequiresWorkspace = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                console.log('init');
+
+                if (!(_store_models_User__WEBPACK_IMPORTED_MODULE_4__["default"].all().length <= 0)) {
+                  _context.next = 4;
+                  break;
+                }
+
+                _context.next = 4;
+                return this.fetchUsers(this.currentWorkspaceId);
+
+              case 4:
+                if (!(_store_models_TeamInvite__WEBPACK_IMPORTED_MODULE_5__["default"].all().length <= 0)) {
+                  _context.next = 7;
+                  break;
+                }
+
+                _context.next = 7;
+                return this.fetchTeamInvites(this.currentWorkspaceId);
+
+              case 7:
+                this.loadingInit = false;
+
+              case 8:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function initRequiresWorkspace() {
+        return _initRequiresWorkspace.apply(this, arguments);
+      }
+
+      return initRequiresWorkspace;
+    }()
+  }),
+  created: function created() {
+    var _this = this;
+
+    if (this.currentWorkspaceId != null) {
+      this.initRequiresWorkspace();
+    } // Else, wait till a workspace id is set, and then fetch the data
+
+
+    this.unsub = this.$store.subscribe(function (mutation, state) {
+      if (mutation.type == 'persist/setCurrentWorkspace') {
+        _this.initRequiresWorkspace();
+      }
+    });
+  },
+  destroyed: function destroyed() {
+    this.unsub();
   }
 });
 
@@ -14140,7 +14275,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".loader[data-v-e79ec684] {\n  height: 100%;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n}\nsvg[data-v-e79ec684] {\n  height: 50px;\n  width: 100%;\n  margin: 12px 0;\n}", ""]);
+exports.push([module.i, ".loader[data-v-e79ec684] {\n  height: 100%;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n}\nsvg[data-v-e79ec684] {\n  height: 100%;\n  max-height: 50px;\n  width: 100%;\n  margin: 12px 0;\n}", ""]);
 
 // exports
 
@@ -14197,7 +14332,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\n.navbar[data-v-6dde423b] {\n  grid-area: navbar;\n  width: 100%;\n  -webkit-box-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: flex;\n}\n.navbar .logo-wrapper[data-v-6dde423b] {\n  min-width: 260px;\n  padding-left: 20px;\n}\n.navbar img[data-v-6dde423b] {\n  display: block;\n  height: 100%;\n}\n.navbar .flex-wrapper[data-v-6dde423b] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.navbar .items-left[data-v-6dde423b] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.navbar .back-link[data-v-6dde423b] {\n  padding-right: 28px;\n  border-right: solid 2px #dfdfdf;\n  margin-right: 28px;\n}\n.navbar .back-link .circle[data-v-6dde423b] {\n  margin-right: 8px;\n}\n.navbar .breadcrumbs[data-v-6dde423b] {\n  display: -webkit-box;\n  display: flex;\n}\n.navbar .breadcrumbs > *[data-v-6dde423b] {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.navbar .breadcrumbs > *[data-v-6dde423b]:not(:first-child)::before {\n  content: \"\\F054\";\n  pointer-events: none;\n  color: #535353;\n  margin-left: 8px;\n  margin-right: 10px;\n  margin-bottom: 2px;\n  font-size: 10px;\n  font-family: \"Font Awesome 5 Pro\";\n  font-weight: 900;\n  -moz-osx-font-smoothing: grayscale;\n  -webkit-font-smoothing: antialiased;\n  display: inline-block;\n  font-style: normal;\n  font-variant: normal;\n  text-rendering: auto;\n  line-height: 1;\n}\n.navbar .breadcrumbs > *[data-v-6dde423b]:last-child::before {\n  content: \"\\F061\";\n}", ""]);
+exports.push([module.i, ".navbar[data-v-6dde423b] {\n  grid-area: navbar;\n  width: 100%;\n  -webkit-box-align: center;\n          align-items: center;\n  display: -webkit-box;\n  display: flex;\n}\n.navbar > *[data-v-6dde423b] {\n  width: 100%;\n}", ""]);
 
 // exports
 
@@ -14216,7 +14351,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\n.flex-wrapper[data-v-1b5a1752] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.items-left[data-v-1b5a1752] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.back-link[data-v-1b5a1752] {\n  padding-right: 28px;\n  border-right: solid 2px #dfdfdf;\n  margin-right: 28px;\n}\n.back-link .circle[data-v-1b5a1752] {\n  margin-right: 8px;\n}\n.breadcrumbs[data-v-1b5a1752] {\n  display: -webkit-box;\n  display: flex;\n}\n.breadcrumbs > *[data-v-1b5a1752] {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.breadcrumbs > *[data-v-1b5a1752]:not(:first-child)::before {\n  content: \"\\F054\";\n  pointer-events: none;\n  color: #535353;\n  margin-left: 8px;\n  margin-right: 10px;\n  margin-bottom: 2px;\n  font-size: 10px;\n  font-family: \"Font Awesome 5 Pro\";\n  font-weight: 900;\n  -moz-osx-font-smoothing: grayscale;\n  -webkit-font-smoothing: antialiased;\n  display: inline-block;\n  font-style: normal;\n  font-variant: normal;\n  text-rendering: auto;\n  line-height: 1;\n}\n.breadcrumbs > *[data-v-1b5a1752]:last-child::before {\n  content: \"\\F061\";\n}", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\n.flex-wrapper[data-v-1b5a1752] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.items-left[data-v-1b5a1752], .items-right[data-v-1b5a1752] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.back-link[data-v-1b5a1752] {\n  padding-right: 28px;\n  border-right: solid 2px #dfdfdf;\n  margin-right: 28px;\n}\n.back-link .circle[data-v-1b5a1752] {\n  margin-right: 8px;\n}\n.breadcrumbs[data-v-1b5a1752] {\n  display: -webkit-box;\n  display: flex;\n}\n.breadcrumbs > *[data-v-1b5a1752] {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.breadcrumbs > *[data-v-1b5a1752]:not(:first-child)::before {\n  content: \"\\F054\";\n  pointer-events: none;\n  color: #535353;\n  margin-left: 8px;\n  margin-right: 10px;\n  margin-bottom: 2px;\n  font-size: 10px;\n  font-family: \"Font Awesome 5 Pro\";\n  font-weight: 900;\n  -moz-osx-font-smoothing: grayscale;\n  -webkit-font-smoothing: antialiased;\n  display: inline-block;\n  font-style: normal;\n  font-variant: normal;\n  text-rendering: auto;\n  line-height: 1;\n}\n.breadcrumbs > *[data-v-1b5a1752]:last-child::before {\n  content: \"\\F061\";\n}", ""]);
 
 // exports
 
@@ -14254,7 +14389,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\n.flex-wrapper[data-v-8a942e90] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.items-left[data-v-8a942e90] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.back-link[data-v-8a942e90] {\n  padding-right: 28px;\n  border-right: solid 2px #dfdfdf;\n  margin-right: 28px;\n}\n.back-link .circle[data-v-8a942e90] {\n  margin-right: 8px;\n}\n.breadcrumbs[data-v-8a942e90] {\n  display: -webkit-box;\n  display: flex;\n}\n.breadcrumbs > *[data-v-8a942e90] {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.breadcrumbs > *[data-v-8a942e90]:not(:first-child)::before {\n  content: \"\\F054\";\n  pointer-events: none;\n  color: #535353;\n  margin-left: 8px;\n  margin-right: 10px;\n  margin-bottom: 2px;\n  font-size: 10px;\n  font-family: \"Font Awesome 5 Pro\";\n  font-weight: 900;\n  -moz-osx-font-smoothing: grayscale;\n  -webkit-font-smoothing: antialiased;\n  display: inline-block;\n  font-style: normal;\n  font-variant: normal;\n  text-rendering: auto;\n  line-height: 1;\n}\n.breadcrumbs > *[data-v-8a942e90]:last-child::before {\n  content: \"\\F061\";\n}", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\n.flex-wrapper[data-v-8a942e90] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.items-left[data-v-8a942e90], .items-right[data-v-8a942e90] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.back-link[data-v-8a942e90] {\n  padding-right: 28px;\n  border-right: solid 2px #dfdfdf;\n  margin-right: 28px;\n}\n.back-link .circle[data-v-8a942e90] {\n  margin-right: 8px;\n}\n.breadcrumbs[data-v-8a942e90] {\n  display: -webkit-box;\n  display: flex;\n}\n.breadcrumbs > *[data-v-8a942e90] {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.breadcrumbs > *[data-v-8a942e90]:not(:first-child)::before {\n  content: \"\\F054\";\n  pointer-events: none;\n  color: #535353;\n  margin-left: 8px;\n  margin-right: 10px;\n  margin-bottom: 2px;\n  font-size: 10px;\n  font-family: \"Font Awesome 5 Pro\";\n  font-weight: 900;\n  -moz-osx-font-smoothing: grayscale;\n  -webkit-font-smoothing: antialiased;\n  display: inline-block;\n  font-style: normal;\n  font-variant: normal;\n  text-rendering: auto;\n  line-height: 1;\n}\n.breadcrumbs > *[data-v-8a942e90]:last-child::before {\n  content: \"\\F061\";\n}", ""]);
 
 // exports
 
@@ -27068,7 +27203,55 @@ var render = function() {
       1
     ),
     _vm._v(" "),
-    _c("div", { staticClass: "items-right" })
+    _c(
+      "div",
+      { staticClass: "items-right" },
+      [
+        _vm.userPermissionLevel >= 2 && _vm.currentTask
+          ? [
+              _vm.submittingTaskComplete
+                ? _c(
+                    "span",
+                    { staticClass: "button wide light-2" },
+                    [_c("Loader")],
+                    1
+                  )
+                : _vm.currentTask.completed.length <= 0
+                ? _c(
+                    "span",
+                    {
+                      staticClass: "button wide primary",
+                      on: {
+                        click: function($event) {
+                          return _vm.onCompleteTask(
+                            _vm.currentFile.id,
+                            _vm.currentTask.id
+                          )
+                        }
+                      }
+                    },
+                    [_vm._v("Complete task")]
+                  )
+                : _c(
+                    "span",
+                    {
+                      staticClass: "button wide red",
+                      on: {
+                        click: function($event) {
+                          return _vm.onUndoCompleteTask(
+                            _vm.currentFile.id,
+                            _vm.currentTask.id
+                          )
+                        }
+                      }
+                    },
+                    [_vm._v("Reopen task")]
+                  )
+            ]
+          : _vm._e()
+      ],
+      2
+    )
   ])
 }
 var staticRenderFns = []
@@ -27141,18 +27324,20 @@ var render = function() {
         _c("div", { staticClass: "items-left" }),
         _vm._v(" "),
         _c("div", { staticClass: "items-right" }, [
-          _c(
-            "span",
-            {
-              staticClass: "button wide primary",
-              on: {
-                click: function($event) {
-                  return _vm.$refs.createTeamModal.toggle()
-                }
-              }
-            },
-            [_vm._v("Add team")]
-          )
+          _vm.userPermissionLevel >= 4
+            ? _c(
+                "span",
+                {
+                  staticClass: "button wide primary",
+                  on: {
+                    click: function($event) {
+                      return _vm.$refs.createTeamModal.toggle()
+                    }
+                  }
+                },
+                [_vm._v("Add team")]
+              )
+            : _vm._e()
         ])
       ])
     ],
@@ -31815,7 +32000,12 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("ScreenLoader", [_c("Teams")], 1)
+  return _c(
+    "ScreenLoader",
+    { attrs: { loading: _vm.loading } },
+    [_c("Teams")],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -57141,11 +57331,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _models_Team__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../models/Team */ "./resources/js/store/models/Team.js");
 /* harmony import */ var _models_UserTeam__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../models/UserTeam */ "./resources/js/store/models/UserTeam.js");
 /* harmony import */ var _models_User__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../models/User */ "./resources/js/store/models/User.js");
+/* harmony import */ var _models_FileTask__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../models/FileTask */ "./resources/js/store/models/FileTask.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -57301,12 +57493,119 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return fetchTasks;
+    }(),
+    completeTask: function () {
+      var _completeTask = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, _ref3) {
+        var commit, file_id, task_id, succes;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                commit = _ref2.commit;
+                file_id = _ref3.file_id, task_id = _ref3.task_id;
+                commit('setTaskComplete', {
+                  file_id: file_id,
+                  task_id: task_id
+                });
+                _context2.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/task/complete", {
+                  file_id: file_id,
+                  task_id: task_id
+                }).then(function (response) {
+                  succes = true;
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  succes = false;
+                  console.log(err);
+                });
+
+              case 5:
+                return _context2.abrupt("return", succes);
+
+              case 6:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }));
+
+      function completeTask(_x3, _x4) {
+        return _completeTask.apply(this, arguments);
+      }
+
+      return completeTask;
+    }(),
+    undoCompleteTask: function () {
+      var _undoCompleteTask = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref4, _ref5) {
+        var commit, file_id, task_id, succes;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                commit = _ref4.commit;
+                file_id = _ref5.file_id, task_id = _ref5.task_id;
+                commit('setTaskIncomplete', {
+                  file_id: file_id,
+                  task_id: task_id
+                });
+                _context3.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/task/complete", {
+                  data: {
+                    file_id: file_id,
+                    task_id: task_id
+                  }
+                }).then(function (response) {
+                  succes = true;
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  succes = false;
+                  console.log(err);
+                });
+
+              case 5:
+                return _context3.abrupt("return", succes);
+
+              case 6:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+
+      function undoCompleteTask(_x5, _x6) {
+        return _undoCompleteTask.apply(this, arguments);
+      }
+
+      return undoCompleteTask;
     }()
   },
   mutations: {
     //Set the loading status of the app
     setLoading: function setLoading(state, bool) {
       state.loading = bool;
+    },
+    setTaskComplete: function setTaskComplete(state, _ref6) {
+      var file_id = _ref6.file_id,
+          task_id = _ref6.task_id;
+      _models_FileTask__WEBPACK_IMPORTED_MODULE_6__["default"].insert({
+        data: {
+          file_id: file_id,
+          task_id: task_id
+        }
+      });
+    },
+    setTaskIncomplete: function setTaskIncomplete(state, _ref7) {
+      var file_id = _ref7.file_id,
+          task_id = _ref7.task_id;
+      _models_FileTask__WEBPACK_IMPORTED_MODULE_6__["default"]["delete"](function (record) {
+        return record.file_id == file_id && record.task_id == task_id;
+      });
     }
   }
 });
@@ -58013,29 +58312,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         // This is only necessary because I cannot make the Vuex ORM realtionship work
         // If you can make it work, please be my guest
         var adminPermissionLevel = rootGetters['persist/adminPermissionLevel'];
-        var teams = _models_Team__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('users')["with"]('invites')["with"]('teamFiles')["with"]('files')["with"]('phases').all();
+        var teams = _models_Team__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('users.role')["with"]('invites')["with"]('teamFiles')["with"]('files')["with"]('phases').all();
         var users = _models_User__WEBPACK_IMPORTED_MODULE_3__["default"].query()["with"]('teams')["with"]('role').all();
-        var authUser = _models_AuthUser__WEBPACK_IMPORTED_MODULE_4__["default"].query()["with"]('teams').first(); // Loop through the users and sort them between the teams
-
-        users.forEach(function (user) {
-          // First check that the user has a team and that the team has an id
-          if (user.teams[0] != null) {
-            if ('id' in user.teams[0]) {
-              // If we have a team with an id
-              // Set the users role
-              user.teams.forEach(function (userTeam) {
-                // Loop through each of the users teams and add the user
-                // Find the corresponding team
-                var foundTeam = teams.find(function (team) {
-                  return team.id == userTeam.id;
-                }); // Check that the user doesnt already exist in this team
-
-                if (!foundTeam.users.includes(user)) // Push the user to the team if the user is not already a member
-                  foundTeam.users.push(user);
-              });
-            }
-          }
-        });
+        var authUser = _models_AuthUser__WEBPACK_IMPORTED_MODULE_4__["default"].query()["with"]('teams').first();
         if (authUser.role_id >= adminPermissionLevel) return teams;else {
           // Get the users teams
           var userTeams = [];
@@ -58047,7 +58326,57 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           return userTeams;
         }
       }
-    }
+    } // teams: (state, getters, rootState, rootGetters) => {
+    //     if (!rootGetters['persist/loadingInit']) {
+    //         // Manually find the teams and the users belonging to each team.
+    //         // This is only necessary because I cannot make the Vuex ORM realtionship work
+    //         // If you can make it work, please be my guest
+    //         const adminPermissionLevel = rootGetters['persist/adminPermissionLevel']
+    //         const teams = Team.query()
+    //             .with('users')
+    //             .with('invites')
+    //             .with('teamFiles')
+    //             .with('files')
+    //             .with('phases')
+    //             .all()
+    //         const users = User.query()
+    //             .with('teams')
+    //             .with('role')
+    //             .all()
+    //         const authUser = AuthUser.query()
+    //             .with('teams')
+    //             .first()
+    //         // Loop through the users and sort them between the teams
+    //         users.forEach(user => {
+    //             // First check that the user has a team and that the team has an id
+    //             if (user.teams[0] != null) {
+    //                 if ('id' in user.teams[0]) {
+    //                     // If we have a team with an id
+    //                     // Set the users role
+    //                     user.teams.forEach(userTeam => {
+    //                         // Loop through each of the users teams and add the user
+    //                         // Find the corresponding team
+    //                         const foundTeam = teams.find(team => team.id == userTeam.id)
+    //                         // Check that the user doesnt already exist in this team
+    //                         if (!foundTeam.users.includes(user))
+    //                             // Push the user to the team if the user is not already a member
+    //                             foundTeam.users.push(user)
+    //                     })
+    //                 }
+    //             }
+    //         })
+    //         if (authUser.role_id >= adminPermissionLevel) return teams
+    //         else {
+    //             // Get the users teams
+    //             let userTeams = []
+    //             teams.forEach(team => {
+    //                 if (authUser.teams.find(x => x.id == team.id)) userTeams.push(team)
+    //             })
+    //             return userTeams
+    //         }
+    //     }
+    // },
+
   },
   actions: {
     fetchTeams: function () {

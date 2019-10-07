@@ -13,6 +13,12 @@
 
         <div class="items-right">
 
+            <template v-if="userPermissionLevel >= 2 && currentTask">
+                <span class="button wide light-2" v-if="submittingTaskComplete"><Loader/></span>
+                <span class="button wide primary" v-else-if="currentTask.completed.length <= 0" @click="onCompleteTask(currentFile.id, currentTask.id)">Complete task</span>
+                <span class="button wide red" v-else @click="onUndoCompleteTask(currentFile.id, currentTask.id)">Reopen task</span>
+            </template>
+
         </div>
 
     </div>
@@ -20,15 +26,33 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import Loader from './Loader'
 
 export default {
     name: "navbarFile",
     components: {
+        Loader
     },
+    data: function () { return {
+        submittingTaskComplete: false,
+    }},
     computed: {
-        ...mapGetters('persist', ['userPermissionLevel', 'currentFile']),
+        ...mapGetters('persist', ['userPermissionLevel', 'currentFile', 'currentTask']),
     },
     methods: {
+        ...mapActions('entities/tasks', ['completeTask', 'undoCompleteTask']),
+        async onCompleteTask(file_id, task_id) {
+            this.submittingTaskComplete = true
+            await this.completeTask({file_id: file_id, task_id: task_id})
+            // .then(reponse => succes = response)
+            this.submittingTaskComplete = false
+        },
+        async onUndoCompleteTask(file_id, task_id) {
+            this.submittingTaskComplete = true
+            await this.undoCompleteTask({file_id: file_id, task_id: task_id})
+            // .then(reponse => succes = response)
+            this.submittingTaskComplete = false
+        }
     }
 };
 </script>
@@ -44,7 +68,7 @@ export default {
         display: flex;
         justify-content: space-between;
     }
-    .items-left {
+    .items-left, .items-right {
         display: flex;
         align-items: center;
     }
