@@ -8959,6 +8959,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']), {
+    activateWrite: function activateWrite() {
+      if (this.writeScope == 'request') {
+        this.newRequest.id = this.taskRequest ? this.taskRequest.id : null;
+      } else {// If scope is comment set the newComment id equal to the edited comment
+      }
+
+      this.writeActive = true;
+    },
     onSubmitComment: function () {
       var _onSubmitComment = _asyncToGenerator(
       /*#__PURE__*/
@@ -28428,9 +28436,7 @@ var render = function() {
                   },
                   domProps: { value: _vm.newRequest.comment },
                   on: {
-                    click: function($event) {
-                      _vm.writeActive = true
-                    },
+                    click: _vm.activateWrite,
                     keydown: function($event) {
                       if (
                         !$event.type.indexOf("key") &&
@@ -28561,9 +28567,7 @@ var render = function() {
                   },
                   domProps: { value: _vm.newComment.comment },
                   on: {
-                    click: function($event) {
-                      _vm.writeActive = true
-                    },
+                    click: _vm.activateWrite,
                     keydown: function($event) {
                       if (
                         !$event.type.indexOf("key") &&

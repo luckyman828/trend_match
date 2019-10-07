@@ -76,7 +76,7 @@
 
             <div class="form-input" :class="[{active: writeActive}, {hidden: writeScope != 'request'}]">
                 <div class="input-wrapper request">
-                    <textarea @click="writeActive = true" ref="requestField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="request" id="request-input" placeholder="Write your request here..." v-model="newRequest.comment" 
+                    <textarea @click="activateWrite" ref="requestField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="request" id="request-input" placeholder="Write your request here..." v-model="newRequest.comment" 
                     @input="resizeTextarea($event)"></textarea>
                     <div class="edit-request" v-if="taskRequest && !writeActive">
                         <span>Edit Request <span class="circle small light"><i class="fas fa-pencil"></i></span></span>
@@ -99,7 +99,7 @@
 
             <div class="form-input" :class="[{active: writeActive}, {hidden: writeScope != 'comment'}]">
                 <div class="input-wrapper comment">
-                    <textarea @click="writeActive = true" ref="commentField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="comment" id="comment-input" placeholder="Write your comment here..." v-model="newComment.comment" 
+                    <textarea @click="activateWrite" ref="commentField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="comment" id="comment-input" placeholder="Write your comment here..." v-model="newComment.comment" 
                     @input="resizeTextarea($event)"></textarea>
                 </div>
                 <div class="flex-wrapper" v-if="writeActive">
@@ -240,6 +240,14 @@ export default {
     },
     methods: {
         ...mapActions('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']),
+        activateWrite() {
+            if (this.writeScope == 'request') {
+                this.newRequest.id = (this.taskRequest) ? this.taskRequest.id : null
+            } else {
+                // If scope is comment set the newComment id equal to the edited comment
+            }
+            this.writeActive = true
+        },
         async onSubmitComment(e) {
             if (e) e.preventDefault()
 
