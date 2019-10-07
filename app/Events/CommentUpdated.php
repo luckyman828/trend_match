@@ -36,11 +36,11 @@ class CommentUpdated implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('workspace.'.Cache::get('user_'.Auth::id()).'_currentWorkspaceId');
+        return new PrivateChannel('workspace.'.Cache::get('user_'.Auth::id().'_currentWorkspaceId'));
     }
 
     public function broadcastAs()
     {
-        return 'commentUpdated';
+        return 'comment.updated';
     }
 }

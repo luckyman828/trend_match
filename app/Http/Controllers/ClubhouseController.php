@@ -21,5 +21,3 @@ class ClubhouseController extends Controller
             Log::info('It is false');
     }
 }
-
-}

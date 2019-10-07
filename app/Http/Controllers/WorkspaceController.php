@@ -24,6 +24,7 @@ use App\TaskParent;
 use App\TaskTeam;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class WorkspaceController extends Controller
 {
@@ -46,7 +47,12 @@ class WorkspaceController extends Controller
     // Return all workspaceUsers available to the logged in user
     public function cacheCurrentWorkspace(Request $request)
     {
+        // $request->session()->put('key', 'value');
+        // session(['key' => 'value']);
+        // Log::info('Workspace controller sessions:');
+        // Log::info(session()->all());
         Cache::put('user_'.$request->user_id.'_currentWorkspaceId', $request->workspace_id, 86400);
+        // Cache::put('token_'.session('token').'_currentWorkspaceId', $request->workspace_id, 86400);
     }
 
     // Reutrn all teams of the workspace

@@ -63,6 +63,7 @@ export default{
         ...mapActions('entities/tasks', ['fetchTasks']),
         ...mapActions('entities/taskParents', ['fetchTaskParents']),
         ...mapActions('entities/fileTasks', ['fetchFileTasks']),
+        ...mapActions('entities/actions', ['updateAction']),
         ...mapActions('persist', ['setCurrentTeam', 'setTeamFilter', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']),
         async fetchInitialData() {
             // Get user
@@ -120,13 +121,6 @@ export default{
                     this.setTeamFilter(this.authUser.teams[0].id)
                 }
                 this.setLoadingInit(false)
-
-                // Setup event broadcast listening
-                // window.Echo.private(`workspace.${this.currentWorkspaceId}`)
-                // .listen('actionUpdated', (e) => {
-                //     console.log('Actions Updated! I heard this through Pusher!')
-                //     console.log(e);
-                // });
                 
             } else {
                 this.loadingOverwrite = true

@@ -61,7 +61,7 @@ export default {
 
             // Get and set the comment id equal to the id given by the database
             comment.id = response.data.id
-            commit('addComment', { comment: comment })
+            commit('setComment', { comment: comment })
 
             console.log(response.data)
             commit('setSubmitting', false)
@@ -76,7 +76,7 @@ export default {
         setSubmitting(state, bool) {
             state.submitting = bool
         },
-        addComment: (state, { comment }) => {
+        setComment: (state, { comment }) => {
             // Submit new comment
             Comment.insert({
                 data: comment,

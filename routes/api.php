@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -126,10 +127,12 @@ Route::middleware('auth:api')->group( function(){
 
     // xxxx Cache xxx
     Route::put('cache/workspace', 'WorkspaceController@cacheCurrentWorkspace');
-
+    
 });
+
+
 
 // Public requests
 
 // xxxx CLUBHOUSE WEBHOOK xxx
-Route::post('clubhouse', 'ClubhouseController@index');
+// Route::post('clubhouse', 'ClubhouseController@index');

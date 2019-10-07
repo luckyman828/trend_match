@@ -158,7 +158,7 @@ export default {
         },
 
         async deleteAction({ commit }, { productToUpdate, task_id, user_id }) {
-            commit('deleteAction', { productToUpdate, task_id, user_id })
+            commit('destroyAction', { productToUpdate, task_id, user_id })
 
             await axios
                 .delete(`/api/action`, {
@@ -177,7 +177,7 @@ export default {
         },
 
         async deleteTaskAction({ commit }, { productToUpdate, task_id }) {
-            commit('deleteTaskAction', { productToUpdate, task_id })
+            commit('destroyTaskAction', { productToUpdate, task_id })
 
             await axios
                 .delete(`/api/task-action`, {
@@ -226,14 +226,14 @@ export default {
                 },
             })
         },
-        deleteAction: (state, { productToUpdate, task_id, user_id }) => {
+        destroyAction: (state, { productToUpdate, task_id, user_id }) => {
             console.log('deleting action')
 
             Action.delete(record => {
                 return record.product_id == productToUpdate && record.user_id == user_id && record.task_id == task_id
             })
         },
-        deleteTaskAction: (state, { productToUpdate, task_id }) => {
+        destroyTaskAction: (state, { productToUpdate, task_id }) => {
             console.log('deleting action')
 
             Action.delete(record => {

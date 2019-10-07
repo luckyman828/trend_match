@@ -36,11 +36,12 @@ class ActionDeleted implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('workspace.'.Cache::get('user_'.Auth::id()).'_currentWorkspaceId');
+        return new PrivateChannel('workspace.'.Cache::get('user_'.Auth::id().'_currentWorkspaceId'));
+        // return new Channel('all');
     }
 
     public function broadcastAs()
     {
-        return 'actionDeleted';
+        return 'action.deleted';
     }
 }

@@ -38,7 +38,7 @@ class CommentController extends Controller
 
             $commentToReturn = new CommentUpdated($comment);
             // Fire dynamic update event
-            event(new CommentUpdated($commentToReturn));
+            broadcast(new CommentUpdated($commentToReturn))->toOthers();
 
             // Return new comment
             return $comment;

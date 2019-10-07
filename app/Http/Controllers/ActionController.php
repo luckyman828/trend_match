@@ -40,7 +40,8 @@ class ActionController extends Controller
 
             // Fire event
             $actionToReturn = new ActionResource($action);
-            event(new ActionUpdated($actionToReturn));
+            broadcast(new ActionUpdated($actionToReturn))->toOthers();
+            // broadcast(new ActionUpdated($actionToReturn))->toOthers();
 
             return $actionToReturn;
         }
@@ -65,7 +66,8 @@ class ActionController extends Controller
 
             // Fire event
             $actionToReturn = new ActionResource($action);
-            event(new ActionUpdated($actionToReturn));
+            broadcast(new ActionUpdated($actionToReturn))->toOthers();
+            // broadcast(new ActionUpdated($actionToReturn))->toOthers();
 
             return $actionToReturn;
         }
@@ -80,7 +82,7 @@ class ActionController extends Controller
 
              // Fire event
             $actionToReturn = new ActionResource($existingAction);
-            event(new ActionDeleted($actionToReturn));
+            broadcast(new ActionDeleted($actionToReturn))->toOthers();
             return $actionToReturn;
 
         } else {
@@ -95,7 +97,7 @@ class ActionController extends Controller
 
             // Fire event
             $actionToReturn = new ActionResource($existingAction);
-            event(new ActionDeleted($actionToReturn));
+            broadcast(new ActionDeleted($actionToReturn))->toOthers();
             return $actionToReturn;
 
         } else {
@@ -125,7 +127,7 @@ class ActionController extends Controller
         Action::insert($dataToInsert);
 
         // Fire event
-        event(new ManyActionsCreated($dataToInsert));
+        broadcast(new ManyActionsCreated($dataToInsert))->toOthers();
 
         return 'Inserted ' . $count . ' records. Time elapsed: ' . $timediff;
     }
@@ -138,7 +140,7 @@ class ActionController extends Controller
         Action::whereIn('product_id', $request->product_ids)->where('task_id', $request->task_id)->where('user_id', $request->user_id)->update(['action' => $request->action_code]);
 
         // Fire event
-        event(new ManyActionsUpdated($request->all()));
+        broadcast(new ManyActionsUpdated($request->all()))->toOthers();
 
         $endtime = microtime(true);
         $timediff = $endtime - $starttime;
@@ -152,7 +154,7 @@ class ActionController extends Controller
         Action::whereIn('product_id', $request->product_ids)->where('task_id', $request->task_id)->update(['action' => $request->action_code]);
 
         // Fire event
-        event(new ManyActionsUpdated($request->all()));
+        broadcast(new ManyActionsUpdated($request->all()))->toOthers();
 
         $endtime = microtime(true);
         $timediff = $endtime - $starttime;
