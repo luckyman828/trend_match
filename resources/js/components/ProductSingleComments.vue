@@ -283,7 +283,11 @@ export default {
 
             // Set the default write / view scope
             const type = this.currentTask.type
-            if (['feedback','approval', 'decision'].includes(type)) {
+            if (this.currentTask.parentTasks.find(x => x.type == 'feedback')){
+                this.commentScope = 'comments'
+                this.writeScope = 'request'
+            }
+            else if (['feedback','approval', 'decision'].includes(type)) {
                 this.commentScope = 'comments'
                 this.writeScope = 'comment'
             } 

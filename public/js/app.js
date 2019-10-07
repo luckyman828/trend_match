@@ -7325,6 +7325,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Dropdown */ "./resources/js/components/Dropdown.vue");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -7374,11 +7375,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'catalogueHeader',
+  components: {
+    Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
   props: ['collection'],
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']))
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/tasks', ['userTasks', 'tasks']))
 });
 
 /***/ }),
@@ -9011,7 +9030,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       var type = this.currentTask.type;
 
-      if (['feedback', 'approval', 'decision'].includes(type)) {
+      if (this.currentTask.parentTasks.find(function (x) {
+        return x.type == 'feedback';
+      })) {
+        this.commentScope = 'comments';
+        this.writeScope = 'request';
+      } else if (['feedback', 'approval', 'decision'].includes(type)) {
         this.commentScope = 'comments';
         this.writeScope = 'comment';
       } else {
@@ -11068,20 +11092,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return productsToReturn;
     },
     productsFiltered: function productsFiltered() {
-      var _this2 = this;
-
       var method = this.currentProductFilter;
       var products = this.productsFilteredByCategory;
       var productsToReturn = products; // filter by in/out
 
       if (['ins', 'outs', 'nds'].includes(method)) {
-        var filteredByAction = productsToReturn.filter(function (product) {
-          if (method == 'ins') {
-            if (product[_this2.actionScope] != null) return product[_this2.actionScope].action >= 1;
+        var filteredByAction = products.filter(function (product) {
+          if (method == 'nds') {
+            return product.currentAction == null;
+          } else if (method == 'ins') {
+            if (product.currentAction) return product.currentAction.action >= 1;
           } else if (method == 'outs') {
-            if (product[_this2.actionScope] != null) return product[_this2.actionScope].action == 0;
-          } else if (method == 'nds') {
-            return product[_this2.actionScope] == null;
+            if (product.currentAction) return product.currentAction.action < 1;
           }
         });
         productsToReturn = filteredByAction;
@@ -11120,56 +11142,37 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return selectedProducts;
     },
     productTotals: function productTotals() {
-      var _this3 = this;
-
-      var products = this.products;
+      var products = this.productsFilteredByCategory;
       var data = {
-        // Product actions for the currect task dividided by the total amount of products times the length og NDs
-        get actions() {
-          return this.ins + this.outs;
-        },
-
-        get progress() {
-          var progress = 100;
-          if (this.actions != null || this.nds != null) progress = parseInt((this.actions / (this.actions + this.nds) * 100).toFixed(0));
-          return progress;
-        },
-
+        products: products.length,
         ins: 0,
         outs: 0,
-        nds: 0,
-        "final": {
-          get products() {
-            return products.length;
-          },
-
-          ins: 0,
-          outs: 0,
-          nds: 0
-        }
+        nds: 0
       };
       products.forEach(function (product) {
-        data.ins += product.ins.length;
-        data.outs += product.outs.length;
-        data.nds += product.nds.length;
-
-        if (product[_this3.actionScope] != null) {
-          if (product[_this3.actionScope].action >= 1) data["final"].ins++;else if (product[_this3.actionScope].action == 0) data["final"].outs++;
-        } else data["final"].nds++;
+        if (product.currentAction) {
+          if (product.currentAction.action == 0) {
+            data.outs++;
+          } else {
+            data.ins++;
+          }
+        } else {
+          data.nds++;
+        }
       });
       return data;
     },
     teamUsers: function teamUsers() {
-      var _this4 = this;
+      var _this2 = this;
 
       var usersToReturn = [];
 
       if (this.teamFilterId > 0) {
         var thisTeam = this.teams.find(function (team) {
-          return team.id == _this4.teamFilterId;
+          return team.id == _this2.teamFilterId;
         });
         if (thisTeam) thisTeam.users.forEach(function (user) {
-          var fileUser = _this4.collection.users.find(function (x) {
+          var fileUser = _this2.collection.users.find(function (x) {
             return x.id == user.id;
           });
 
@@ -11257,7 +11260,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this5 = this;
+      var _this3 = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
@@ -11267,7 +11270,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
-        var thisProduct = _this5.products.find(function (x) {
+        var thisProduct = _this3.products.find(function (x) {
           return x.id == product;
         });
 
@@ -25636,13 +25639,68 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "header" }, [
-    _c("div", [
-      _c("h1", [_vm._v(_vm._s(_vm.collection.title))]),
-      _vm._v(" "),
-      _c("span", { staticClass: "square light" }, [
-        _vm._v("Stage " + _vm._s(_vm.collection.phase))
-      ])
-    ]),
+    _c(
+      "div",
+      [
+        _c("h1", [_vm._v(_vm._s(_vm.collection.title))]),
+        _vm._v(" "),
+        _c("Dropdown", {
+          staticClass: "dark dropdown-parent",
+          scopedSlots: _vm._u([
+            {
+              key: "button",
+              fn: function(slotProps) {
+                return [
+                  _c(
+                    "span",
+                    {
+                      staticClass: "square light",
+                      on: { click: slotProps.toggle }
+                    },
+                    [_vm._v("Stage " + _vm._s(_vm.currentTask.title))]
+                  )
+                ]
+              }
+            },
+            {
+              key: "header",
+              fn: function(slotProps) {
+                return [_c("span", [_vm._v("Task overview")])]
+              }
+            },
+            {
+              key: "body",
+              fn: function() {
+                return _vm._l(_vm.userTasks, function(task) {
+                  return _c(
+                    "p",
+                    { key: task.id },
+                    [
+                      _vm.currentTask.id == task.id
+                        ? _c("strong", [
+                            _vm._v(_vm._s(task.title) + " "),
+                            task.completed.length > 0
+                              ? _c("span", [_vm._v("(Done)")])
+                              : _vm._e()
+                          ])
+                        : [
+                            _vm._v(_vm._s(task.title) + " "),
+                            task.completed.length > 0
+                              ? _c("span", [_vm._v("(Done)")])
+                              : _vm._e()
+                          ]
+                    ],
+                    2
+                  )
+                })
+              },
+              proxy: true
+            }
+          ])
+        })
+      ],
+      1
+    ),
     _vm._v(" "),
     _c(
       "div",
@@ -28652,7 +28710,7 @@ var render = function() {
       [
         _vm._v("Overview "),
         _c("span", { staticClass: "count" }, [
-          _vm._v(_vm._s(_vm.productTotals.final.products))
+          _vm._v(_vm._s(_vm.productTotals.products))
         ])
       ]
     ),
@@ -28671,7 +28729,7 @@ var render = function() {
       [
         _vm._v("ND Styles "),
         _c("span", { staticClass: "count" }, [
-          _vm._v(_vm._s(_vm.productTotals.final.nds))
+          _vm._v(_vm._s(_vm.productTotals.nds))
         ])
       ]
     ),
@@ -28690,7 +28748,7 @@ var render = function() {
       [
         _vm._v("IN Styles "),
         _c("span", { staticClass: "count" }, [
-          _vm._v(_vm._s(_vm.productTotals.final.ins))
+          _vm._v(_vm._s(_vm.productTotals.ins))
         ])
       ]
     ),
@@ -28709,7 +28767,7 @@ var render = function() {
       [
         _vm._v("OUT Styles "),
         _c("span", { staticClass: "count" }, [
-          _vm._v(_vm._s(_vm.productTotals.final.outs))
+          _vm._v(_vm._s(_vm.productTotals.outs))
         ])
       ]
     )

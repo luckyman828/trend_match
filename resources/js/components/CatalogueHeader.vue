@@ -2,7 +2,21 @@
   <div class="header">
         <div>
             <h1>{{collection.title}}</h1>
-            <span class="square light">Stage {{collection.phase}}</span>
+            
+            <Dropdown class="dark dropdown-parent">
+                <template v-slot:button="slotProps">
+                    <span class="square light" @click="slotProps.toggle">Stage {{currentTask.title}}</span>
+                </template>
+                <template v-slot:header="slotProps">
+                    <span>Task overview</span>
+                </template>
+                <template v-slot:body>
+                    <p v-for="task in userTasks" :key="task.id">
+                        <strong v-if="currentTask.id == task.id">{{task.title}} <span v-if="task.completed.length > 0">(Done)</span></strong>
+                        <template v-else>{{task.title}} <span v-if="task.completed.length > 0">(Done)</span></template>
+                    </p>
+                </template>
+            </Dropdown>
         </div>
         <div>
             <!-- <div class="stat">
@@ -45,14 +59,19 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import Dropdown from './Dropdown'
 
 export default {
     name: 'catalogueHeader',
+    components: {
+        Dropdown,
+    },
     props: [
         'collection',
     ],
     computed: {
         ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']),
+        ...mapGetters('entities/tasks', ['userTasks', 'tasks']),
     }
 }
 </script>

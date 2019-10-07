@@ -226,15 +226,17 @@ export default{
 
             // filter by in/out
             if ( ['ins', 'outs', 'nds'].includes(method) ) {
-                const filteredByAction = productsToReturn.filter(product => {
-                    if (method == 'ins') {
-                        if (product[this.actionScope] != null)
-                            return product[this.actionScope].action >= 1
+                const filteredByAction = products.filter(product => {
+                    
+                    if (method == 'nds') {
+                        return product.currentAction == null
+                    }
+                    else if (method == 'ins') {
+                        if (product.currentAction)
+                            return product.currentAction.action >= 1
                     } else if (method == 'outs') {
-                        if (product[this.actionScope] != null)
-                            return product[this.actionScope].action == 0
-                    } else if (method == 'nds') {
-                        return product[this.actionScope] == null
+                        if (product.currentAction)
+                            return product.currentAction.action < 1
                     }
                 })
                 productsToReturn = filteredByAction
@@ -276,40 +278,24 @@ export default{
             return selectedProducts
         },
         productTotals() {
-            const products = this.products
+            const products = this.productsFilteredByCategory
             const data = {
-                // Product actions for the currect task dividided by the total amount of products times the length og NDs
-                get actions () {
-                    return this.ins + this.outs
-                },
-                get progress () {
-                    let progress = 100
-                    if (this.actions != null || this.nds != null)
-                        progress = parseInt( ( (this.actions / (this.actions + this.nds)) * 100 ).toFixed(0) )
-                    return progress
-                },
+                products: products.length,
                 ins: 0,
                 outs: 0,
                 nds: 0,
-                final: {
-                    get products () { return products.length },
-                    ins: 0,
-                    outs: 0,
-                    nds: 0,
-                }
             }
             products.forEach(product => {
-                    data.ins += product.ins.length
-                    data.outs += product.outs.length
-                    data.nds += product.nds.length
-
-                if (product[this.actionScope] != null) {
-                    if (product[this.actionScope].action >= 1)
-                        data.final.ins ++
-                    else if (product[this.actionScope].action == 0)
-                        data.final.outs ++
+                if (product.currentAction) {
+                    if (product.currentAction.action == 0) {
+                        data.outs++
+                    } else {
+                        data.ins++
+                    }
+                } else {
+                    data.nds++
                 }
-                else data.final.nds ++
+
             })
             return data
         },
