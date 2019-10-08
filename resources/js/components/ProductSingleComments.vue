@@ -211,19 +211,6 @@ export default {
                 }
             }
         },
-        // commentsGroupedBySender() {
-        //     const comments = this.comments
-        //     let senders = []
-        //     comments.forEach(comment => {
-        //         const existingSender = senders.find(x => x.task.id == comment.task_id && x.user.id == comment.user_id)
-        //         if (existingSender == null) {
-        //             senders.push({task: comment.task, user: comment.user, comments: [comment]})
-        //         } else {
-        //             existingSender.comments.push(comment)
-        //         }
-        //     })
-        //     return senders
-        // },
         commentsAvailable() {
             return true
         },
@@ -307,7 +294,11 @@ export default {
         update() {
             // Set the new request equal to the existing if one exists
             this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
+            // Set the id of the new request if one exists
             this.newRequest.id = (this.taskRequest) ? this.taskRequest.id : null
+            // Reset the new comment field
+            this.newComment.comment = ''
+            this.writeActive = false
 
             // Set the default write / view scope
             const type = this.currentTask.type
@@ -471,7 +462,7 @@ export default {
                 border: solid 2px $light2;
                 background: $light2;
                 box-sizing: border-box;
-                padding: 8px 12px 0px 12px;
+                // padding: 8px 12px 0px 12px;
                 font-size: 14px;
                 color: $dark2;
                 max-height: 200px;
@@ -495,8 +486,9 @@ export default {
                 }
             }
             textarea {
+                padding: 8px 12px;
                 border: none;
-                height: 22px;
+                height: 30px;
                 overflow: hidden;
                 width: 100%;
                 resize: none;
