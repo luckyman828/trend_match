@@ -8961,6 +8961,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       this.writeActive = true;
     },
+    deactivateWrite: function deactivateWrite() {
+      // Unset the focus
+      this.writeActive = false;
+      document.activeElement.blur();
+    },
     onSubmitComment: function () {
       var _onSubmitComment = _asyncToGenerator(
       /*#__PURE__*/
@@ -9094,10 +9099,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.commentScope = 'requests';
         this.writeScope = 'request';
       }
+    },
+    hotkeyHandler: function hotkeyHandler(e) {
+      var key = e.code;
+      console.log(key);
+      if (key == 'Enter' && !this.writeActive) this.activateWrite();
     }
   }),
   mounted: function mounted() {
     this.update();
+  },
+  created: function created() {
+    document.body.addEventListener('keydown', this.hotkeyHandler);
+  },
+  destroyed: function destroyed() {
+    document.body.removeEventListener('keydown', this.hotkeyHandler);
   }
 });
 
@@ -9179,6 +9195,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
 //
 //
 //
@@ -28591,23 +28610,43 @@ var render = function() {
                       }
                       $event.preventDefault()
                     },
-                    keyup: function($event) {
-                      if (
-                        !$event.type.indexOf("key") &&
-                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                      ) {
-                        return null
+                    keyup: [
+                      function($event) {
+                        if (
+                          !$event.type.indexOf("key") &&
+                          _vm._k(
+                            $event.keyCode,
+                            "enter",
+                            13,
+                            $event.key,
+                            "Enter"
+                          )
+                        ) {
+                          return null
+                        }
+                        if (
+                          $event.ctrlKey ||
+                          $event.shiftKey ||
+                          $event.altKey ||
+                          $event.metaKey
+                        ) {
+                          return null
+                        }
+                        return _vm.onSubmitComment($event)
+                      },
+                      function($event) {
+                        if (
+                          !$event.type.indexOf("key") &&
+                          _vm._k($event.keyCode, "esc", 27, $event.key, [
+                            "Esc",
+                            "Escape"
+                          ])
+                        ) {
+                          return null
+                        }
+                        return _vm.deactivateWrite($event)
                       }
-                      if (
-                        $event.ctrlKey ||
-                        $event.shiftKey ||
-                        $event.altKey ||
-                        $event.metaKey
-                      ) {
-                        return null
-                      }
-                      return _vm.onSubmitComment($event)
-                    },
+                    ],
                     input: [
                       function($event) {
                         if ($event.target.composing) {
@@ -28745,23 +28784,43 @@ var render = function() {
                       }
                       $event.preventDefault()
                     },
-                    keyup: function($event) {
-                      if (
-                        !$event.type.indexOf("key") &&
-                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                      ) {
-                        return null
+                    keyup: [
+                      function($event) {
+                        if (
+                          !$event.type.indexOf("key") &&
+                          _vm._k(
+                            $event.keyCode,
+                            "enter",
+                            13,
+                            $event.key,
+                            "Enter"
+                          )
+                        ) {
+                          return null
+                        }
+                        if (
+                          $event.ctrlKey ||
+                          $event.shiftKey ||
+                          $event.altKey ||
+                          $event.metaKey
+                        ) {
+                          return null
+                        }
+                        return _vm.onSubmitComment($event)
+                      },
+                      function($event) {
+                        if (
+                          !$event.type.indexOf("key") &&
+                          _vm._k($event.keyCode, "esc", 27, $event.key, [
+                            "Esc",
+                            "Escape"
+                          ])
+                        ) {
+                          return null
+                        }
+                        return _vm.deactivateWrite($event)
                       }
-                      if (
-                        $event.ctrlKey ||
-                        $event.shiftKey ||
-                        $event.altKey ||
-                        $event.metaKey
-                      ) {
-                        return null
-                      }
-                      return _vm.onSubmitComment($event)
-                    },
+                    ],
                     input: [
                       function($event) {
                         if ($event.target.composing) {
@@ -29268,6 +29327,30 @@ var render = function() {
                       ]
                     )
                   ]
+                : _vm.currentTaskPermissions.focus
+                ? _c(
+                    "th",
+                    {
+                      staticClass: "clickable square-wrapper focus",
+                      class: { active: this.sortBy == "focus" },
+                      on: {
+                        click: function($event) {
+                          return _vm.onSortBy("focus", false)
+                        }
+                      }
+                    },
+                    [
+                      _vm._v("\n                Focus "),
+                      _c("i", {
+                        staticClass: "fas",
+                        class: [
+                          this.sortBy == "focus" && !_vm.sortAsc
+                            ? "fa-long-arrow-alt-up"
+                            : "fa-long-arrow-alt-down"
+                        ]
+                      })
+                    ]
+                  )
                 : _vm._e(),
               _vm._v(" "),
               _vm.currentTaskPermissions.comments
@@ -29440,15 +29523,16 @@ var render = function() {
                       [_c("span", [_vm._v(_vm._s(product.title))])]
                     ),
                     _vm._v(" "),
-                    _vm.currentTaskPermissions.feedback &&
-                    _vm.userPermissionLevel > 1
+                    _vm.currentTaskPermissions.feedback
                       ? [
                           _c(
                             "tooltipAlt2",
                             {
                               staticClass: "square-wrapper",
                               attrs: {
-                                disabled: product.focus.length <= 0,
+                                disabled:
+                                  product.focus.length <= 0 ||
+                                  _vm.userPermissionLevel <= 1,
                                 header: "focus",
                                 array: product.focus.map(function(x) {
                                   return x.user.name != null
@@ -29483,7 +29567,9 @@ var render = function() {
                             {
                               staticClass: "square-wrapper",
                               attrs: {
-                                disabled: product.ins.length <= 0,
+                                disabled:
+                                  product.ins.length <= 0 ||
+                                  _vm.userPermissionLevel <= 1,
                                 header: "in",
                                 array: product.ins
                                   .map(function(x) {
@@ -29526,7 +29612,9 @@ var render = function() {
                             {
                               staticClass: "square-wrapper",
                               attrs: {
-                                disabled: product.outs.length <= 0,
+                                disabled:
+                                  product.outs.length <= 0 ||
+                                  _vm.userPermissionLevel <= 1,
                                 header: "out",
                                 array: product.outs.map(function(x) {
                                   return x.user.name != null
@@ -29557,7 +29645,9 @@ var render = function() {
                             {
                               staticClass: "square-wrapper",
                               attrs: {
-                                disabled: product.nds.length <= 0,
+                                disabled:
+                                  product.nds.length <= 0 ||
+                                  _vm.userPermissionLevel <= 1,
                                 header: "not decided",
                                 array: product.nds.map(function(x) {
                                   return x.name != null ? x.name : x.title
@@ -29585,69 +29675,44 @@ var render = function() {
                             ]
                           )
                         ]
-                      : _vm.currentTaskPermissions.feedback
+                      : _vm.currentTaskPermissions.focus
                       ? [
-                          _c("td", { staticClass: "square-wrapper focus" }, [
-                            _c(
-                              "span",
-                              { staticClass: "square light icon-left" },
-                              [
-                                _c("i", {
-                                  staticClass: "far fa-star hide-screen-sm"
-                                }),
-                                _vm._v(_vm._s(product.focus.length))
-                              ]
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c("td", { staticClass: "square-wrapper" }, [
-                            _c(
-                              "span",
-                              { staticClass: "square light icon-left" },
-                              [
-                                _c("i", {
-                                  staticClass: "far fa-heart hide-screen-sm"
-                                }),
-                                _vm._v(
-                                  _vm._s(
-                                    product.ins.length + product.focus.length
+                          _c(
+                            "tooltipAlt2",
+                            {
+                              staticClass: "square-wrapper",
+                              attrs: {
+                                disabled:
+                                  product.focus.length <= 0 ||
+                                  _vm.userPermissionLevel <= 1,
+                                header: "focus",
+                                array: product.focus.map(function(x) {
+                                  return x.user.name != null
+                                    ? x.user.name
+                                    : x.title
+                                })
+                              }
+                            },
+                            [
+                              _c(
+                                "td",
+                                { staticClass: "square-wrapper focus" },
+                                [
+                                  _c(
+                                    "span",
+                                    { staticClass: "square light icon-left" },
+                                    [
+                                      _c("i", {
+                                        staticClass:
+                                          "far fa-star hide-screen-sm"
+                                      }),
+                                      _vm._v(_vm._s(product.focus.length))
+                                    ]
                                   )
-                                )
-                              ]
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c("td", { staticClass: "square-wrapper" }, [
-                            _c(
-                              "span",
-                              { staticClass: "square light icon-left" },
-                              [
-                                _c("i", {
-                                  staticClass:
-                                    "far fa-times-circle hide-screen-sm"
-                                }),
-                                _vm._v(_vm._s(product.outs.length))
-                              ]
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c("td", { staticClass: "square-wrapper nds" }, [
-                            _c(
-                              "span",
-                              { staticClass: "square light icon-left" },
-                              [
-                                _c("i", {
-                                  staticClass:
-                                    "far fa-question-circle hide-screen-sm"
-                                }),
-                                _vm._v(
-                                  _vm._s(product.nds.length) +
-                                    " /" +
-                                    _vm._s(product.ndsTotal)
-                                )
-                              ]
-                            )
-                          ])
+                                ]
+                              )
+                            ]
+                          )
                         ]
                       : _vm._e(),
                     _vm._v(" "),

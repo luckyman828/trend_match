@@ -50,6 +50,10 @@
                     </th>
                 </template>
 
+                <th v-else-if="currentTaskPermissions.focus" :class="{active: this.sortBy == 'focus'}" class="clickable square-wrapper focus" @click="onSortBy('focus', false)">
+                    Focus <i class="fas" :class="[(this.sortBy == 'focus' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                </th>
+
                 <th v-if="currentTaskPermissions.comments" :class="{active: this.sortBy == 'commentsScoped'}" class="clickable square-wrapper comments" @click="onSortBy('commentsScoped', false)">
                     Comments <i class="fas" :class="[(this.sortBy == 'commentsScoped' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
@@ -81,25 +85,24 @@
                     <td class="image clickable" @click="onViewSingle(product.id)"><img :src="productImg(product.color_variants[0])" @error="imgError(product.color_variants[0])"></td>
                     <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
                     
-                    <template v-if="currentTaskPermissions.feedback && userPermissionLevel > 1">
-                        <tooltipAlt2 class="square-wrapper" :disabled="product.focus.length <= 0" :header="'focus'" :array="product.focus.map(x => (x.user.name != null) ? x.user.name : x.title)">
+                    <template v-if="currentTaskPermissions.feedback">
+                        <tooltipAlt2 class="square-wrapper" :disabled="product.focus.length <= 0 || userPermissionLevel <= 1" :header="'focus'" :array="product.focus.map(x => (x.user.name != null) ? x.user.name : x.title)">
                             <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
                         </tooltipAlt2>
-                        <tooltipAlt2 class="square-wrapper" :disabled="product.ins.length <= 0" :header="'in'" :array="product.ins.map(x => (x.user.name != null) ? x.user.name : x.title).concat(product.focus.map(x => (x.user.name != null) ? x.user.name : x.title))">
+                        <tooltipAlt2 class="square-wrapper" :disabled="product.ins.length <= 0 || userPermissionLevel <= 1" :header="'in'" :array="product.ins.map(x => (x.user.name != null) ? x.user.name : x.title).concat(product.focus.map(x => (x.user.name != null) ? x.user.name : x.title))">
                             <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
                         </tooltipAlt2>
-                        <tooltipAlt2 class="square-wrapper" :disabled="product.outs.length <= 0" :header="'out'" :array="product.outs.map(x => (x.user.name != null) ? x.user.name : x.title)">
+                        <tooltipAlt2 class="square-wrapper" :disabled="product.outs.length <= 0 || userPermissionLevel <= 1" :header="'out'" :array="product.outs.map(x => (x.user.name != null) ? x.user.name : x.title)">
                             <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
                         </tooltipAlt2>
-                        <tooltipAlt2 class="square-wrapper" :disabled="product.nds.length <= 0" :header="'not decided'" :array="product.nds.map(x => (x.name != null) ? x.name : x.title)">
+                        <tooltipAlt2 class="square-wrapper" :disabled="product.nds.length <= 0 || userPermissionLevel <= 1" :header="'not decided'" :array="product.nds.map(x => (x.name != null) ? x.name : x.title)">
                             <td class="square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{product.ndsTotal}}</span></td>
                         </tooltipAlt2>
                     </template>
-                    <template v-else-if="currentTaskPermissions.feedback">
-                        <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
-                        <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
-                        <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
-                        <td class="square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{product.ndsTotal}}</span></td>
+                    <template v-else-if="currentTaskPermissions.focus">
+                        <tooltipAlt2 class="square-wrapper" :disabled="product.focus.length <= 0 || userPermissionLevel <= 1" :header="'focus'" :array="product.focus.map(x => (x.user.name != null) ? x.user.name : x.title)">
+                            <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
+                        </tooltipAlt2>
                     </template>
 
                     <td v-if="currentTaskPermissions.comments" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.commentsScoped.length}}</span></td>
