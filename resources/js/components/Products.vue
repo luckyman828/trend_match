@@ -80,16 +80,16 @@
                     <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
                     
                     <template v-if="currentTaskPermissions.feedback && userPermissionLevel > 1">
-                        <tooltipAlt2 class="square-wrapper" :header="'focus'" :array="product.focus.map(x => (x.user.name != null) ? x.user.name : x.title)">
+                        <tooltipAlt2 class="square-wrapper" :disabled="product.focus.length <= 0" :header="'focus'" :array="product.focus.map(x => (x.user.name != null) ? x.user.name : x.title)">
                             <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
                         </tooltipAlt2>
-                        <tooltipAlt2 class="square-wrapper" :header="'in'" :array="product.ins.map(x => (x.user.name != null) ? x.user.name : x.title).concat(product.focus.map(x => (x.user.name != null) ? x.user.name : x.title))">
+                        <tooltipAlt2 class="square-wrapper" :disabled="product.ins.length <= 0" :header="'in'" :array="product.ins.map(x => (x.user.name != null) ? x.user.name : x.title).concat(product.focus.map(x => (x.user.name != null) ? x.user.name : x.title))">
                             <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
                         </tooltipAlt2>
-                        <tooltipAlt2 class="square-wrapper" :header="'out'" :array="product.outs.map(x => (x.user.name != null) ? x.user.name : x.title)">
+                        <tooltipAlt2 class="square-wrapper" :disabled="product.outs.length <= 0" :header="'out'" :array="product.outs.map(x => (x.user.name != null) ? x.user.name : x.title)">
                             <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
                         </tooltipAlt2>
-                        <tooltipAlt2 class="square-wrapper" :header="'not decided'" :array="product.nds.map(x => (x.name != null) ? x.name : x.title)">
+                        <tooltipAlt2 class="square-wrapper" :disabled="product.nds.length <= 0" :header="'not decided'" :array="product.nds.map(x => (x.name != null) ? x.name : x.title)">
                             <td class="square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{product.ndsTotal}}</span></td>
                         </tooltipAlt2>
                     </template>

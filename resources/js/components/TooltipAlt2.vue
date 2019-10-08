@@ -5,7 +5,7 @@
             <slot><p>Show tooltip</p></slot>
         </div>
 
-        <div class="tooltip dark" :class="{hidden: hidden}" ref="tooltip">
+        <div v-if="!disabled" class="tooltip dark" :class="{hidden: hidden}" ref="tooltip">
 
             <div class="arrow"></div>
 
@@ -51,7 +51,8 @@ export default {
         'array',
         'arrayLabelKey',
         'arrayValueKey',
-        'arrayValueUnit'
+        'arrayValueUnit',
+        'disabled'
     ],
     methods: {
         toggle() {
@@ -62,8 +63,10 @@ export default {
             clearTimeout(this.showDelay)
         },
         show() {
-            this.setHeight()
-            this.showDelay = setTimeout( () => {this.hidden = false}, this.showDelay)
+            if (!this.disabled) {
+                this.setHeight()
+                this.showDelay = setTimeout( () => {this.hidden = false}, this.showDelay)
+            }
         },
         // getPosition(element) {
         //     var xPosition = 0;
@@ -118,11 +121,13 @@ export default {
         },
     },
     mounted() {
-        this.setHeight()
+        if (!this.disabled)
+            this.setHeight()
 
     },
     updated() {
-        this.setHeight()
+        if (!this.disabled)
+            this.setHeight()
     },
 }
 </script>

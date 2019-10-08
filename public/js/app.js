@@ -10798,7 +10798,7 @@ __webpack_require__.r(__webpack_exports__);
       showDelay: 300
     };
   },
-  props: ['header', 'body', 'array', 'arrayLabelKey', 'arrayValueKey', 'arrayValueUnit'],
+  props: ['header', 'body', 'array', 'arrayLabelKey', 'arrayValueKey', 'arrayValueUnit', 'disabled'],
   methods: {
     toggle: function toggle() {
       this.hidden = !this.hidden;
@@ -10810,10 +10810,12 @@ __webpack_require__.r(__webpack_exports__);
     show: function show() {
       var _this = this;
 
-      this.setHeight();
-      this.showDelay = setTimeout(function () {
-        _this.hidden = false;
-      }, this.showDelay);
+      if (!this.disabled) {
+        this.setHeight();
+        this.showDelay = setTimeout(function () {
+          _this.hidden = false;
+        }, this.showDelay);
+      }
     },
     // getPosition(element) {
     //     var xPosition = 0;
@@ -10857,10 +10859,10 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    this.setHeight();
+    if (!this.disabled) this.setHeight();
   },
   updated: function updated() {
-    this.setHeight();
+    if (!this.disabled) this.setHeight();
   }
 });
 
@@ -29445,6 +29447,7 @@ var render = function() {
                             {
                               staticClass: "square-wrapper",
                               attrs: {
+                                disabled: product.focus.length <= 0,
                                 header: "focus",
                                 array: product.focus.map(function(x) {
                                   return x.user.name != null
@@ -29479,6 +29482,7 @@ var render = function() {
                             {
                               staticClass: "square-wrapper",
                               attrs: {
+                                disabled: product.ins.length <= 0,
                                 header: "in",
                                 array: product.ins
                                   .map(function(x) {
@@ -29521,6 +29525,7 @@ var render = function() {
                             {
                               staticClass: "square-wrapper",
                               attrs: {
+                                disabled: product.outs.length <= 0,
                                 header: "out",
                                 array: product.outs.map(function(x) {
                                   return x.user.name != null
@@ -29551,6 +29556,7 @@ var render = function() {
                             {
                               staticClass: "square-wrapper",
                               attrs: {
+                                disabled: product.nds.length <= 0,
                                 header: "not decided",
                                 array: product.nds.map(function(x) {
                                   return x.name != null ? x.name : x.title
@@ -31469,91 +31475,107 @@ var render = function() {
       2
     ),
     _vm._v(" "),
-    _c(
-      "div",
-      {
-        ref: "tooltip",
-        staticClass: "tooltip dark",
-        class: { hidden: _vm.hidden }
-      },
-      [
-        _c("div", { staticClass: "arrow" }),
-        _vm._v(" "),
-        _c("div", { staticClass: "inner" }, [
-          _vm.header != null
-            ? _c("div", {
-                staticClass: "header",
-                domProps: { innerHTML: _vm._s(_vm.header) }
-              })
-            : _vm._e(),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "body" },
-            [
-              _vm.body != null
-                ? _c("span", {
-                    staticClass: "body-wrapper",
-                    domProps: { innerHTML: _vm._s(_vm.body) }
+    !_vm.disabled
+      ? _c(
+          "div",
+          {
+            ref: "tooltip",
+            staticClass: "tooltip dark",
+            class: { hidden: _vm.hidden }
+          },
+          [
+            _c("div", { staticClass: "arrow" }),
+            _vm._v(" "),
+            _c("div", { staticClass: "inner" }, [
+              _vm.header != null
+                ? _c("div", {
+                    staticClass: "header",
+                    domProps: { innerHTML: _vm._s(_vm.header) }
                   })
                 : _vm._e(),
               _vm._v(" "),
-              _vm.array != null
-                ? _vm._l(_vm.array, function(row, index) {
-                    return _c(
-                      "p",
-                      { key: index, staticClass: "row" },
-                      [
-                        _vm.arrayLabelKey != null
-                          ? [
-                              _c("span", { staticClass: "label" }, [
-                                _vm._v(_vm._s(row[_vm.arrayLabelKey]) + ": ")
-                              ]),
-                              _vm._v(" "),
-                              _vm.arrayValueKey != null
-                                ? _c(
-                                    "strong",
-                                    { staticClass: "value" },
-                                    [
-                                      _vm._v(_vm._s(row[_vm.arrayValueKey])),
-                                      _vm.arrayValueUnit
-                                        ? [_vm._v(_vm._s(_vm.arrayValueUnit))]
-                                        : _vm._e()
-                                    ],
-                                    2
-                                  )
-                                : _c("strong", { staticClass: "value" }, [
-                                    _vm._v(_vm._s(row))
-                                  ])
-                            ]
-                          : [
-                              _vm.arrayValueKey != null
-                                ? _c(
-                                    "span",
-                                    { staticClass: "value" },
-                                    [
-                                      _vm._v(_vm._s(row[_vm.arrayValueKey])),
-                                      _vm.arrayValueUnit
-                                        ? [_vm._v(_vm._s(_vm.arrayValueUnit))]
-                                        : _vm._e()
-                                    ],
-                                    2
-                                  )
-                                : _c("span", { staticClass: "value" }, [
-                                    _vm._v(_vm._s(row))
-                                  ])
-                            ]
-                      ],
-                      2
-                    )
-                  })
-                : _vm._e()
-            ],
-            2
-          )
-        ])
-      ]
-    )
+              _c(
+                "div",
+                { staticClass: "body" },
+                [
+                  _vm.body != null
+                    ? _c("span", {
+                        staticClass: "body-wrapper",
+                        domProps: { innerHTML: _vm._s(_vm.body) }
+                      })
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.array != null
+                    ? _vm._l(_vm.array, function(row, index) {
+                        return _c(
+                          "p",
+                          { key: index, staticClass: "row" },
+                          [
+                            _vm.arrayLabelKey != null
+                              ? [
+                                  _c("span", { staticClass: "label" }, [
+                                    _vm._v(
+                                      _vm._s(row[_vm.arrayLabelKey]) + ": "
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _vm.arrayValueKey != null
+                                    ? _c(
+                                        "strong",
+                                        { staticClass: "value" },
+                                        [
+                                          _vm._v(
+                                            _vm._s(row[_vm.arrayValueKey])
+                                          ),
+                                          _vm.arrayValueUnit
+                                            ? [
+                                                _vm._v(
+                                                  _vm._s(_vm.arrayValueUnit)
+                                                )
+                                              ]
+                                            : _vm._e()
+                                        ],
+                                        2
+                                      )
+                                    : _c("strong", { staticClass: "value" }, [
+                                        _vm._v(_vm._s(row))
+                                      ])
+                                ]
+                              : [
+                                  _vm.arrayValueKey != null
+                                    ? _c(
+                                        "span",
+                                        { staticClass: "value" },
+                                        [
+                                          _vm._v(
+                                            _vm._s(row[_vm.arrayValueKey])
+                                          ),
+                                          _vm.arrayValueUnit
+                                            ? [
+                                                _vm._v(
+                                                  _vm._s(_vm.arrayValueUnit)
+                                                )
+                                              ]
+                                            : _vm._e()
+                                        ],
+                                        2
+                                      )
+                                    : _c("span", { staticClass: "value" }, [
+                                        _vm._v(_vm._s(row))
+                                      ])
+                                ]
+                          ],
+                          2
+                        )
+                      })
+                    : _vm._e()
+                ],
+                2
+              )
+            ])
+          ]
+        )
+      : _vm._e()
   ])
 }
 var staticRenderFns = []
