@@ -59,7 +59,7 @@
                 </Dropdown> -->
             </div>
         </div>
-        <FilesTable :isLoading="isLoading" :authUser="authUser" :files="userFiles" :loading="loadingCollections" :selected="selected" @onSelect="onSelect"/>
+        <FilesTable :authUser="authUser" :files="userFiles" :selected="selected" @onSelect="onSelect"/>
     </div>
 </template>
 
@@ -72,11 +72,10 @@ import RadioButtons from '../RadioButtons'
 import CheckboxButtons from '../input/CheckboxButtons'
 import Dropdown from '../Dropdown'
 
-import Collection from '../../store/models/Collection'
-import Team from '../../store/models/Team'
-import User from '../../store/models/User'
-import UserTeam from '../../store/models/UserTeam';
-import AuthUser from '../../store/models/AuthUser';
+// import Team from '../../store/models/Team'
+// import User from '../../store/models/User'
+// import UserTeam from '../../store/models/UserTeam';
+// import AuthUser from '../../store/models/AuthUser';
 
 export default {
     name: 'collection',
@@ -97,17 +96,11 @@ export default {
     }},
     computed: {
         ...mapGetters('entities/collections', ['loadingCollections', 'files']),
-        ...mapGetters('persist', ['currentTeamId', 'teamFilterId', 'currentTeam', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'authUser']),
+        ...mapGetters('persist', ['teamFilterId', 'currentTeam', 'currentWorkspaceId', 'userPermissionLevel', 'authUser']),
         defaultTeam() {
             if (this.userPermissionLevel >= 3)
                 return {id: 0, title: 'Global'}
             else return null
-        },
-        // collections () {
-        //     return Collection.query().all()
-        // },
-        filesRef() {
-            return this.files
         },
         userFiles() {
             const files = this.files
@@ -139,9 +132,6 @@ export default {
             })
             return uniqueData
         },
-        users() {
-            return User.query().with('teams').all()
-        },
         teams () {
             return this.$store.getters['entities/teams/teams']
         },
@@ -153,23 +143,9 @@ export default {
             }
             else return this.teams
         },
-        isLoading () {
-            let loading = false
-            if (!this.loadingOverwrite)
-                if (this.loadingCollections || this.authUser == null)
-                    loading = true
-            return loading
-        }
     },
     methods: {
-        ...mapActions('entities/authUser', ['getAuthUser']),
-        ...mapActions('entities/collections', ['fetchCollections']),
-        ...mapActions('entities/teams', ['fetchTeams']),
-        ...mapActions('entities/users', ['fetchUsers']),
-        ...mapActions('entities/userTeams', ['fetchUserTeams']),
-        ...mapActions('entities/workspaces', ['fetchWorkspaces']),
-        ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
-        ...mapActions('persist', ['setCurrentTeam', 'setTeamFilter']),
+        ...mapActions('persist', ['setTeamFilter']),
         onSelect(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
             const selected = this.selected
@@ -179,27 +155,27 @@ export default {
         onViewSingle(collectionID) {
             this.$router.push({name: 'catalogue', params: {catalogueId: collectionID}})
         },
-        initRequiresWorkspace() {
-            if (Collection.all().length <= 0)
-                this.fetchCollections(this.currentWorkspaceId)
-            if (User.all().length <= 0)
-                this.fetchUsers(this.currentWorkspaceId)
-        }
+        // initRequiresWorkspace() {
+        //     if (Collection.all().length <= 0)
+        //         this.fetchCollections(this.currentWorkspaceId)
+        //     if (User.all().length <= 0)
+        //         this.fetchUsers(this.currentWorkspaceId)
+        // }
     },
-    created() {
-        // If we already have a workspace id, fetch the data we are missing
-        if (this.currentWorkspaceId != null)
-            this.initRequiresWorkspace()
-        // Else, wait till a workspace id is set, and then fetch the data
-        this.unsub = this.$store.subscribe((mutation, state) => {
-            if(mutation.type == 'persist/setCurrentWorkspace') {
-                this.initRequiresWorkspace()
-            } 
-        })
-    },
-    destroyed() {
-        this.unsub()
-    }
+    // created() {
+    //     // If we already have a workspace id, fetch the data we are missing
+    //     if (this.currentWorkspaceId != null)
+    //         this.initRequiresWorkspace()
+    //     // Else, wait till a workspace id is set, and then fetch the data
+    //     this.unsub = this.$store.subscribe((mutation, state) => {
+    //         if(mutation.type == 'persist/setCurrentWorkspace') {
+    //             this.initRequiresWorkspace()
+    //         } 
+    //     })
+    // },
+    // destroyed() {
+    //     this.unsub()
+    // }
 
 }
 </script>

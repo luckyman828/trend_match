@@ -1,5 +1,5 @@
 <template>
-    <div class="catalogues-table card" v-if="!isLoading">
+    <div class="catalogues-table card">
         <div class="catalogue-totals">
             <span>{{selectedCount}} selected</span>
             <span>{{files.length}} records</span>
@@ -72,13 +72,9 @@
             </div>
         </div>
     </div>
-    <div v-else>
-        <Loader/>
-    </div>
 </template>
 
 <script>
-import Loader from './Loader'
 import { mapActions, mapGetters } from 'vuex'
 import ProductTotals from './ProductTotals'
 import ProductSingle from './ProductSingle'
@@ -87,13 +83,10 @@ export default {
     name: 'filesTable',
     props: [
         'files',
-        'loading',
         'selected',
         'authUser',
-        'isLoading'
     ],
     components: {
-        Loader,
     },
     data: function() { return {
         sortBy: 'id',
@@ -238,15 +231,6 @@ export default {
         margin: 16px auto 0;
         text-align: center;
         display: inline-block;
-    }
-    .loading {
-        animation: loading 2s;
-        animation-iteration-count: infinite;
-    }
-    @keyframes loading {
-        0% {opacity: 0;}
-        50% {opacity: 1;}
-        100% {opacity: 0;}
     }
     .checkbox {
       display: block;

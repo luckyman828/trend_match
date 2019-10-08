@@ -7544,10 +7544,9 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Loader */ "./resources/js/components/Loader.vue");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _ProductTotals__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ProductTotals */ "./resources/js/components/ProductTotals.vue");
-/* harmony import */ var _ProductSingle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ProductSingle */ "./resources/js/components/ProductSingle.vue");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _ProductTotals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ProductTotals */ "./resources/js/components/ProductTotals.vue");
+/* harmony import */ var _ProductSingle__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ProductSingle */ "./resources/js/components/ProductSingle.vue");
 //
 //
 //
@@ -7624,19 +7623,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'filesTable',
-  props: ['files', 'loading', 'selected', 'authUser', 'isLoading'],
-  components: {
-    Loader: _Loader__WEBPACK_IMPORTED_MODULE_0__["default"]
-  },
+  props: ['files', 'selected', 'authUser'],
+  components: {},
   data: function data() {
     return {
       sortBy: 'id',
@@ -11591,11 +11584,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../RadioButtons */ "./resources/js/components/RadioButtons.vue");
 /* harmony import */ var _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../input/CheckboxButtons */ "./resources/js/components/input/CheckboxButtons.vue");
 /* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../Dropdown */ "./resources/js/components/Dropdown.vue");
-/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
-/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
-/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
-/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -11671,11 +11659,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
-
-
-
-
-
+ // import Team from '../../store/models/Team'
+// import User from '../../store/models/User'
+// import UserTeam from '../../store/models/UserTeam';
+// import AuthUser from '../../store/models/AuthUser';
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'collection',
@@ -11696,18 +11683,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       unsub: ''
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'teamFilterId', 'currentTeam', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'authUser']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['teamFilterId', 'currentTeam', 'currentWorkspaceId', 'userPermissionLevel', 'authUser']), {
     defaultTeam: function defaultTeam() {
       if (this.userPermissionLevel >= 3) return {
         id: 0,
         title: 'Global'
       };else return null;
-    },
-    // collections () {
-    //     return Collection.query().all()
-    // },
-    filesRef: function filesRef() {
-      return this.files;
     },
     userFiles: function userFiles() {
       var _this = this;
@@ -11741,9 +11722,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       return uniqueData;
     },
-    users: function users() {
-      return _store_models_User__WEBPACK_IMPORTED_MODULE_9__["default"].query()["with"]('teams').all();
-    },
     teams: function teams() {
       return this.$store.getters['entities/teams/teams'];
     },
@@ -11756,14 +11734,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
         return teamsToReturn;
       } else return this.teams;
-    },
-    isLoading: function isLoading() {
-      var loading = false;
-      if (!this.loadingOverwrite) if (this.loadingCollections || this.authUser == null) loading = true;
-      return loading;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/authUser', ['getAuthUser']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teams', ['fetchTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/userTeams', ['fetchUserTeams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaces', ['fetchWorkspaces']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/workspaceUsers', ['fetchWorkspaceUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentTeam', 'setTeamFilter']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setTeamFilter']), {
     onSelect: function onSelect(index) {
       // Check if index already exists in array. If it exists remove it, else add it to array
       var selected = this.selected;
@@ -11779,27 +11752,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           catalogueId: collectionID
         }
       });
-    },
-    initRequiresWorkspace: function initRequiresWorkspace() {
-      if (_store_models_Collection__WEBPACK_IMPORTED_MODULE_7__["default"].all().length <= 0) this.fetchCollections(this.currentWorkspaceId);
-      if (_store_models_User__WEBPACK_IMPORTED_MODULE_9__["default"].all().length <= 0) this.fetchUsers(this.currentWorkspaceId);
     }
-  }),
-  created: function created() {
-    var _this2 = this;
+  }) // created() {
+  //     // If we already have a workspace id, fetch the data we are missing
+  //     if (this.currentWorkspaceId != null)
+  //         this.initRequiresWorkspace()
+  //     // Else, wait till a workspace id is set, and then fetch the data
+  //     this.unsub = this.$store.subscribe((mutation, state) => {
+  //         if(mutation.type == 'persist/setCurrentWorkspace') {
+  //             this.initRequiresWorkspace()
+  //         } 
+  //     })
+  // },
+  // destroyed() {
+  //     this.unsub()
+  // }
 
-    // If we already have a workspace id, fetch the data we are missing
-    if (this.currentWorkspaceId != null) this.initRequiresWorkspace(); // Else, wait till a workspace id is set, and then fetch the data
-
-    this.unsub = this.$store.subscribe(function (mutation, state) {
-      if (mutation.type == 'persist/setCurrentWorkspace') {
-        _this2.initRequiresWorkspace();
-      }
-    });
-  },
-  destroyed: function destroyed() {
-    this.unsub();
-  }
 });
 
 /***/ }),
@@ -12173,21 +12141,108 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Collection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Collection */ "./resources/js/components/screens/Collection.vue");
-/* harmony import */ var _ScreenLoader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ScreenLoader */ "./resources/js/components/screens/loaders/ScreenLoader.vue");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Collection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Collection */ "./resources/js/components/screens/Collection.vue");
+/* harmony import */ var _ScreenLoader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ScreenLoader */ "./resources/js/components/screens/loaders/ScreenLoader.vue");
+/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../store/models/Collection */ "./resources/js/store/models/Collection.js");
+/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../store/models/User */ "./resources/js/store/models/User.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
 //
 //
 //
+
+
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'fileLoader',
+  name: 'folderLoader',
   components: {
-    Folder: _Collection__WEBPACK_IMPORTED_MODULE_0__["default"],
-    ScreenLoader: _ScreenLoader__WEBPACK_IMPORTED_MODULE_1__["default"]
+    Folder: _Collection__WEBPACK_IMPORTED_MODULE_2__["default"],
+    ScreenLoader: _ScreenLoader__WEBPACK_IMPORTED_MODULE_3__["default"]
+  },
+  data: function data() {
+    return {
+      loadingInit: true
+    };
+  },
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentWorkspaceId']), {
+    loading: function loading() {
+      return this.loadingCollections || this.files == null || this.loadingInit ? true : false;
+    }
+  }),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {
+    initRequiresWorkspace: function () {
+      var _initRequiresWorkspace = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (!(_store_models_Collection__WEBPACK_IMPORTED_MODULE_4__["default"].all().length <= 0)) {
+                  _context.next = 3;
+                  break;
+                }
+
+                _context.next = 3;
+                return this.fetchCollections(this.currentWorkspaceId);
+
+              case 3:
+                if (!(_store_models_User__WEBPACK_IMPORTED_MODULE_5__["default"].all().length <= 0)) {
+                  _context.next = 6;
+                  break;
+                }
+
+                _context.next = 6;
+                return this.fetchUsers(this.currentWorkspaceId);
+
+              case 6:
+                this.loadingInit = false;
+
+              case 7:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function initRequiresWorkspace() {
+        return _initRequiresWorkspace.apply(this, arguments);
+      }
+
+      return initRequiresWorkspace;
+    }()
+  }),
+  created: function created() {
+    var _this = this;
+
+    // If we already have a workspace id, fetch the data we are missing
+    if (this.currentWorkspaceId != null) this.initRequiresWorkspace(); // Else, wait till a workspace id is set, and then fetch the data
+
+    this.unsub = this.$store.subscribe(function (mutation, state) {
+      if (mutation.type == 'persist/setCurrentWorkspace') {
+        _this.initRequiresWorkspace();
+      }
+    });
+  },
+  destroyed: function destroyed() {
+    this.unsub();
   }
 });
 
@@ -14400,7 +14455,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".catalogues-table[data-v-18d38cc2] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.clickable[data-v-18d38cc2] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-18d38cc2] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n}\n.flex-table .flex-group:nth-child(2) > *[data-v-18d38cc2] {\n  -webkit-box-flex: 0;\n          flex: none;\n  flex-basis: 100px;\n}\n.flex-table .flex-group:nth-child(2) > *.stage[data-v-18d38cc2] {\n  flex-basis: 132px;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-18d38cc2] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-18d38cc2] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-18d38cc2] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-18d38cc2] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.flex-table .flex-group > td.action[data-v-18d38cc2] {\n  text-align: right;\n}\n.flex-table .flex-table-row[data-v-18d38cc2] {\n  height: 82px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2]:last-child {\n  margin-right: 16px;\n}\n.flex-table .flex-table-row th.action[data-v-18d38cc2] {\n  text-align: right;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.show-more[data-v-18d38cc2] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-18d38cc2] {\n  -webkit-animation: loading-data-v-18d38cc2 2s;\n          animation: loading-data-v-18d38cc2 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-18d38cc2 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-18d38cc2 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-18d38cc2] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-18d38cc2]:hover {\n  background: #f9f9f9;\n}\n.checkbox input[data-v-18d38cc2] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-18d38cc2] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-18d38cc2] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-18d38cc2]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-18d38cc2]:after {\n  display: block;\n}\n.button[data-v-18d38cc2] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #a8a8a8;\n  border-color: #dfdfdf;\n  margin: 0;\n}\n.button i[data-v-18d38cc2] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-18d38cc2] {\n  font-weight: 900;\n}\n.view-single[data-v-18d38cc2] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-18d38cc2] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-18d38cc2] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
+exports.push([module.i, ".catalogues-table[data-v-18d38cc2] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.clickable[data-v-18d38cc2] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-18d38cc2] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n}\n.flex-table .flex-group:nth-child(2) > *[data-v-18d38cc2] {\n  -webkit-box-flex: 0;\n          flex: none;\n  flex-basis: 100px;\n}\n.flex-table .flex-group:nth-child(2) > *.stage[data-v-18d38cc2] {\n  flex-basis: 132px;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-18d38cc2] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-18d38cc2] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-18d38cc2] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-18d38cc2] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.flex-table .flex-group > td.action[data-v-18d38cc2] {\n  text-align: right;\n}\n.flex-table .flex-table-row[data-v-18d38cc2] {\n  height: 82px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2]:last-child {\n  margin-right: 16px;\n}\n.flex-table .flex-table-row th.action[data-v-18d38cc2] {\n  text-align: right;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.show-more[data-v-18d38cc2] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.checkbox[data-v-18d38cc2] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-18d38cc2]:hover {\n  background: #f9f9f9;\n}\n.checkbox input[data-v-18d38cc2] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-18d38cc2] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-18d38cc2] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-18d38cc2]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-18d38cc2]:after {\n  display: block;\n}\n.button[data-v-18d38cc2] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #a8a8a8;\n  border-color: #dfdfdf;\n  margin: 0;\n}\n.button i[data-v-18d38cc2] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-18d38cc2] {\n  font-weight: 900;\n}\n.view-single[data-v-18d38cc2] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-18d38cc2] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-18d38cc2] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
 
 // exports
 
@@ -26103,296 +26158,292 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return !_vm.isLoading
-    ? _c("div", { staticClass: "catalogues-table card" }, [
-        _c("div", { staticClass: "catalogue-totals" }, [
-          _c("span", [_vm._v(_vm._s(_vm.selectedCount) + " selected")]),
+  return _c("div", { staticClass: "catalogues-table card" }, [
+    _c("div", { staticClass: "catalogue-totals" }, [
+      _c("span", [_vm._v(_vm._s(_vm.selectedCount) + " selected")]),
+      _vm._v(" "),
+      _c("span", [_vm._v(_vm._s(_vm.files.length) + " records")])
+    ]),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "flex-table" },
+      [
+        _c("div", { staticClass: "header-row flex-table-row" }, [
+          _c("div", { staticClass: "flex-group" }, [
+            _vm.authUser.role_id >= 3
+              ? _c("th", { staticClass: "select" }, [
+                  _vm._v("Select "),
+                  _c("i", { staticClass: "fas fa-chevron-down" })
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _c(
+              "th",
+              {
+                staticClass: "clickable id",
+                class: { active: this.sortBy == "id" },
+                on: {
+                  click: function($event) {
+                    return _vm.onSortBy("id", true)
+                  }
+                }
+              },
+              [
+                _vm._v("\n                    ID "),
+                _c("i", {
+                  staticClass: "fas",
+                  class: [
+                    this.sortBy == "id" && !_vm.sortAsc
+                      ? "fa-long-arrow-alt-up"
+                      : "fa-long-arrow-alt-down"
+                  ]
+                })
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "th",
+              {
+                staticClass: "clickable title",
+                class: { active: this.sortBy == "title" },
+                on: {
+                  click: function($event) {
+                    return _vm.onSortBy("title", true)
+                  }
+                }
+              },
+              [
+                _vm._v("\n                Catalogue "),
+                _c("i", {
+                  staticClass: "fas",
+                  class: [
+                    this.sortBy == "title" && !_vm.sortAsc
+                      ? "fa-long-arrow-alt-up"
+                      : "fa-long-arrow-alt-down"
+                  ]
+                })
+              ]
+            )
+          ]),
           _vm._v(" "),
-          _c("span", [_vm._v(_vm._s(_vm.files.length) + " records")])
+          _c("div", { staticClass: "flex-group" }, [
+            _c(
+              "th",
+              {
+                staticClass: "clickable",
+                class: { active: this.sortBy == "start_time" },
+                on: {
+                  click: function($event) {
+                    return _vm.onSortBy("start_time", false)
+                  }
+                }
+              },
+              [
+                _vm._v("\n                    Created "),
+                _c("i", {
+                  staticClass: "fas",
+                  class: [
+                    this.sortBy == "start_time" && !_vm.sortAsc
+                      ? "fa-long-arrow-alt-up"
+                      : "fa-long-arrow-alt-down"
+                  ]
+                })
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "th",
+              {
+                staticClass: "clickable",
+                class: { active: this.sortBy == "end_time" },
+                on: {
+                  click: function($event) {
+                    return _vm.onSortBy("end_time", false)
+                  }
+                }
+              },
+              [
+                _vm._v("\n                    Deadline "),
+                _c("i", {
+                  staticClass: "fas",
+                  class: [
+                    this.sortBy == "end_time" && !_vm.sortAsc
+                      ? "fa-long-arrow-alt-up"
+                      : "fa-long-arrow-alt-down"
+                  ]
+                })
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "th",
+              {
+                staticClass: "clickable",
+                class: { active: this.sortBy == "phase" },
+                on: {
+                  click: function($event) {
+                    return _vm.onSortBy("phase", false)
+                  }
+                }
+              },
+              [
+                _vm._v("\n                    Status "),
+                _c("i", {
+                  staticClass: "fas",
+                  class: [
+                    this.sortBy == "phase" && !_vm.sortAsc
+                      ? "fa-long-arrow-alt-up"
+                      : "fa-long-arrow-alt-down"
+                  ]
+                })
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _vm._m(0)
         ]),
         _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "flex-table" },
-          [
-            _c("div", { staticClass: "header-row flex-table-row" }, [
+        _vm.cataloguesSorted.length <= 0
+          ? _c(
+              "div",
+              { staticClass: "catalogue-row flex-table-row item-row" },
+              [
+                _c("span", { staticStyle: { "text-align": "center" } }, [
+                  _vm._v("You don't have access to any catalogues")
+                ])
+              ]
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _vm._l(_vm.cataloguesSorted, function(catalogue, index) {
+          return _c(
+            "div",
+            {
+              key: catalogue.id,
+              staticClass: "catalogue-row flex-table-row item-row"
+            },
+            [
               _c("div", { staticClass: "flex-group" }, [
                 _vm.authUser.role_id >= 3
-                  ? _c("th", { staticClass: "select" }, [
-                      _vm._v("Select "),
-                      _c("i", { staticClass: "fas fa-chevron-down" })
+                  ? _c("td", { staticClass: "select" }, [
+                      _c("label", { staticClass: "checkbox" }, [
+                        _c("input", {
+                          attrs: { type: "checkbox" },
+                          on: {
+                            change: function($event) {
+                              return _vm.onSelect(index)
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("span", { staticClass: "checkmark" })
+                      ])
                     ])
                   : _vm._e(),
                 _vm._v(" "),
                 _c(
-                  "th",
+                  "td",
                   {
-                    staticClass: "clickable id",
-                    class: { active: this.sortBy == "id" },
+                    staticClass: "id clickable",
                     on: {
                       click: function($event) {
-                        return _vm.onSortBy("id", true)
+                        return _vm.viewSingle(catalogue.id, catalogue.title)
                       }
                     }
                   },
                   [
-                    _vm._v("\n                    ID "),
-                    _c("i", {
-                      staticClass: "fas",
-                      class: [
-                        this.sortBy == "id" && !_vm.sortAsc
-                          ? "fa-long-arrow-alt-up"
-                          : "fa-long-arrow-alt-down"
-                      ]
-                    })
+                    _c("span", { attrs: { title: catalogue.id } }, [
+                      _vm._v(_vm._s(_vm._f("truncate")(catalogue.id, 10)))
+                    ])
                   ]
                 ),
                 _vm._v(" "),
                 _c(
-                  "th",
+                  "td",
                   {
-                    staticClass: "clickable title",
-                    class: { active: this.sortBy == "title" },
+                    staticClass: "title clickable",
                     on: {
                       click: function($event) {
-                        return _vm.onSortBy("title", true)
+                        return _vm.viewSingle(catalogue.id, catalogue.title)
                       }
                     }
                   },
-                  [
-                    _vm._v("\n                Catalogue "),
-                    _c("i", {
-                      staticClass: "fas",
-                      class: [
-                        this.sortBy == "title" && !_vm.sortAsc
-                          ? "fa-long-arrow-alt-up"
-                          : "fa-long-arrow-alt-down"
-                      ]
-                    })
-                  ]
+                  [_vm._v(_vm._s(catalogue.title))]
                 )
               ]),
               _vm._v(" "),
               _c("div", { staticClass: "flex-group" }, [
-                _c(
-                  "th",
-                  {
-                    staticClass: "clickable",
-                    class: { active: this.sortBy == "start_time" },
-                    on: {
-                      click: function($event) {
-                        return _vm.onSortBy("start_time", false)
-                      }
-                    }
-                  },
-                  [
-                    _vm._v("\n                    Created "),
-                    _c("i", {
-                      staticClass: "fas",
-                      class: [
-                        this.sortBy == "start_time" && !_vm.sortAsc
-                          ? "fa-long-arrow-alt-up"
-                          : "fa-long-arrow-alt-down"
-                      ]
-                    })
-                  ]
-                ),
+                _c("td", { staticClass: "created" }, [
+                  _c("span", { staticClass: "square light" }, [
+                    _vm._v(
+                      _vm._s(
+                        catalogue.start_date != null
+                          ? new Date(catalogue.start_date).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric"
+                              }
+                            )
+                          : "Unset"
+                      )
+                    )
+                  ])
+                ]),
                 _vm._v(" "),
-                _c(
-                  "th",
-                  {
-                    staticClass: "clickable",
-                    class: { active: this.sortBy == "end_time" },
-                    on: {
-                      click: function($event) {
-                        return _vm.onSortBy("end_time", false)
-                      }
-                    }
-                  },
-                  [
-                    _vm._v("\n                    Deadline "),
-                    _c("i", {
-                      staticClass: "fas",
-                      class: [
-                        this.sortBy == "end_time" && !_vm.sortAsc
-                          ? "fa-long-arrow-alt-up"
-                          : "fa-long-arrow-alt-down"
-                      ]
-                    })
-                  ]
-                ),
+                _c("td", { staticClass: "deadline" }, [
+                  _c("span", { staticClass: "square light" }, [
+                    _vm._v(
+                      _vm._s(
+                        catalogue.end_date != null
+                          ? new Date(catalogue.end_date).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric"
+                              }
+                            )
+                          : "Unset"
+                      )
+                    )
+                  ])
+                ]),
                 _vm._v(" "),
-                _c(
-                  "th",
-                  {
-                    staticClass: "clickable",
-                    class: { active: this.sortBy == "phase" },
-                    on: {
-                      click: function($event) {
-                        return _vm.onSortBy("phase", false)
-                      }
-                    }
-                  },
-                  [
-                    _vm._v("\n                    Status "),
-                    _c("i", {
-                      staticClass: "fas",
-                      class: [
-                        this.sortBy == "phase" && !_vm.sortAsc
-                          ? "fa-long-arrow-alt-up"
-                          : "fa-long-arrow-alt-down"
-                      ]
-                    })
-                  ]
-                )
+                _c("td", { staticClass: "stage" }, [
+                  _c("span", { staticClass: "square light stage" }, [
+                    _vm._v("STAGE " + _vm._s(catalogue.phase))
+                  ])
+                ])
               ]),
               _vm._v(" "),
-              _vm._m(0)
-            ]),
-            _vm._v(" "),
-            _vm.cataloguesSorted.length <= 0
-              ? _c(
-                  "div",
-                  { staticClass: "catalogue-row flex-table-row item-row" },
-                  [
-                    _c("span", { staticStyle: { "text-align": "center" } }, [
-                      _vm._v("You don't have access to any catalogues")
-                    ])
-                  ]
-                )
-              : _vm._e(),
-            _vm._v(" "),
-            _vm._l(_vm.cataloguesSorted, function(catalogue, index) {
-              return _c(
-                "div",
-                {
-                  key: catalogue.id,
-                  staticClass: "catalogue-row flex-table-row item-row"
-                },
-                [
-                  _c("div", { staticClass: "flex-group" }, [
-                    _vm.authUser.role_id >= 3
-                      ? _c("td", { staticClass: "select" }, [
-                          _c("label", { staticClass: "checkbox" }, [
-                            _c("input", {
-                              attrs: { type: "checkbox" },
-                              on: {
-                                change: function($event) {
-                                  return _vm.onSelect(index)
-                                }
-                              }
-                            }),
-                            _vm._v(" "),
-                            _c("span", { staticClass: "checkmark" })
-                          ])
-                        ])
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _c(
-                      "td",
-                      {
-                        staticClass: "id clickable",
-                        on: {
-                          click: function($event) {
-                            return _vm.viewSingle(catalogue.id, catalogue.title)
-                          }
-                        }
-                      },
-                      [
-                        _c("span", { attrs: { title: catalogue.id } }, [
-                          _vm._v(_vm._s(_vm._f("truncate")(catalogue.id, 10)))
-                        ])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "td",
-                      {
-                        staticClass: "title clickable",
-                        on: {
-                          click: function($event) {
-                            return _vm.viewSingle(catalogue.id, catalogue.title)
-                          }
-                        }
-                      },
-                      [_vm._v(_vm._s(catalogue.title))]
-                    )
-                  ]),
+              _c("div", { staticClass: "flex-group" }, [
+                _c("td", { staticClass: "action" }, [
+                  _c("span", { staticClass: "placeholder" }),
                   _vm._v(" "),
-                  _c("div", { staticClass: "flex-group" }, [
-                    _c("td", { staticClass: "created" }, [
-                      _c("span", { staticClass: "square light" }, [
-                        _vm._v(
-                          _vm._s(
-                            catalogue.start_date != null
-                              ? new Date(
-                                  catalogue.start_date
-                                ).toLocaleDateString("en-GB", {
-                                  day: "2-digit",
-                                  month: "2-digit",
-                                  year: "numeric"
-                                })
-                              : "Unset"
-                          )
-                        )
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "deadline" }, [
-                      _c("span", { staticClass: "square light" }, [
-                        _vm._v(
-                          _vm._s(
-                            catalogue.end_date != null
-                              ? new Date(catalogue.end_date).toLocaleDateString(
-                                  "en-GB",
-                                  {
-                                    day: "2-digit",
-                                    month: "2-digit",
-                                    year: "numeric"
-                                  }
-                                )
-                              : "Unset"
-                          )
-                        )
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "stage" }, [
-                      _c("span", { staticClass: "square light stage" }, [
-                        _vm._v("STAGE " + _vm._s(catalogue.phase))
-                      ])
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "flex-group" }, [
-                    _c("td", { staticClass: "action" }, [
-                      _c("span", { staticClass: "placeholder" }),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticClass: "clickable view-single button invisible",
-                          on: {
-                            click: function($event) {
-                              return _vm.viewSingle(
-                                catalogue.id,
-                                catalogue.title
-                              )
-                            }
-                          }
-                        },
-                        [_vm._v("View")]
-                      )
-                    ])
-                  ])
-                ]
-              )
-            })
-          ],
-          2
-        )
-      ])
-    : _c("div", [_c("Loader")], 1)
+                  _c(
+                    "span",
+                    {
+                      staticClass: "clickable view-single button invisible",
+                      on: {
+                        click: function($event) {
+                          return _vm.viewSingle(catalogue.id, catalogue.title)
+                        }
+                      }
+                    },
+                    [_vm._v("View")]
+                  )
+                ])
+              ])
+            ]
+          )
+        })
+      ],
+      2
+    )
+  ])
 }
 var staticRenderFns = [
   function() {
@@ -32396,10 +32447,8 @@ var render = function() {
       _vm._v(" "),
       _c("FilesTable", {
         attrs: {
-          isLoading: _vm.isLoading,
           authUser: _vm.authUser,
           files: _vm.userFiles,
-          loading: _vm.loadingCollections,
           selected: _vm.selected
         },
         on: { onSelect: _vm.onSelect }
@@ -32515,7 +32564,12 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("ScreenLoader", [_c("Folder")], 1)
+  return _c(
+    "ScreenLoader",
+    { attrs: { loading: _vm.loading } },
+    [_c("Folder")],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
