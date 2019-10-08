@@ -1,5 +1,7 @@
 <template>
     <div class="products card" :class="[{sticky: sticky}]">
+        <div class="overlay" v-if="currentTask.completed.length > 0">Task done</div>
+        <div class="overlay" v-else-if="!currentTask.isActive">Task not started yet</div>
         <div class="scroll-bg"></div>
         <FlyIn ref="singleFlyIn">
             <product-single :loading="loadingSingle" :authUser="authUser" @closeSingle="onCloseSingle" @onToggleInOut="toggleInOut"/>
@@ -449,6 +451,17 @@ export default {
 
 <style scoped lang="scss">
     @import '~@/_variables.scss';
+
+    .overlay {
+        display: block;
+        position: absolute;
+        color: white;
+        justify-content: center;
+        text-align: center;
+        padding-top: 100px;
+        font-size: 20px;
+        z-index: 1;
+    }
 
     .dropdown-parent {
         position: relative;
