@@ -54,9 +54,7 @@ export default {
                         product.decisionAction = product.actions.find(x => x.task_id == currentTask.children[0].task_id)
                     } else if (currentTask.parentTasks.find(x => x.type == 'approval')) {
                         product.currentAction = product.actions.find(action => action.task_id == currentTask.id)
-                        product.buyerAction = product.actions.find(
-                            x => x.task_id == currentTask.parentActions[0].task_id
-                        )
+                        product.buyerAction = product.actions.find(x => x.task_id == currentTask.parents[0].parent_id)
                     } else product.currentAction = product.actions.find(action => action.task_id == currentTask.id)
                     // END Find current action for product
 

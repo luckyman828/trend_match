@@ -222,11 +222,11 @@ export default {
         commentsClosed() {
             let isClosed = false
             if (this.currentTask.type == 'approval') {
-                if (this.product.actions.find(x => x.task_id == this.currentTask.children[0].task_id))
+                if (this.product.decisionAction || this.product.currentAction)
                     isClosed = true
             }
             else if (this.currentTask.type == 'decision') {
-                if (this.currentTask.approvalParent && this.product.currentAction)
+                if (this.currentTask.approvalParent && (this.product.currentAction || this.product.buyerAction))
                     isClosed = true
             }
             return isClosed

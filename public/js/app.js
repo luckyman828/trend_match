@@ -8241,6 +8241,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -8441,6 +8443,27 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -8942,16 +8965,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return !['feedback', 'approval', 'decision'].includes(this.currentTask.type);
     },
     commentsClosed: function commentsClosed() {
-      var _this2 = this;
-
       var isClosed = false;
 
       if (this.currentTask.type == 'approval') {
-        if (this.product.actions.find(function (x) {
-          return x.task_id == _this2.currentTask.children[0].task_id;
-        })) isClosed = true;
+        if (this.product.decisionAction || this.product.currentAction) isClosed = true;
       } else if (this.currentTask.type == 'decision') {
-        if (this.currentTask.approvalParent && this.product.currentAction) isClosed = true;
+        if (this.currentTask.approvalParent && (this.product.currentAction || this.product.buyerAction)) isClosed = true;
       }
 
       return isClosed;
@@ -9211,6 +9230,16 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -27392,44 +27421,48 @@ var render = function() {
       [
         _vm.userPermissionLevel >= 2 && _vm.currentTask
           ? [
-              _vm.submittingTaskComplete
-                ? _c(
-                    "span",
-                    { staticClass: "button wide light-2" },
-                    [_c("Loader")],
-                    1
-                  )
-                : _vm.currentTask.completed.length <= 0
-                ? _c(
-                    "span",
-                    {
-                      staticClass: "button wide primary",
-                      on: {
-                        click: function($event) {
-                          return _vm.onCompleteTask(
-                            _vm.currentFile.id,
-                            _vm.currentTask.id
-                          )
-                        }
-                      }
-                    },
-                    [_vm._v("Complete task")]
-                  )
-                : _c(
-                    "span",
-                    {
-                      staticClass: "button wide red",
-                      on: {
-                        click: function($event) {
-                          return _vm.onUndoCompleteTask(
-                            _vm.currentFile.id,
-                            _vm.currentTask.id
-                          )
-                        }
-                      }
-                    },
-                    [_vm._v("Reopen task")]
-                  )
+              _vm.currentTask.isActive
+                ? [
+                    _vm.submittingTaskComplete
+                      ? _c(
+                          "span",
+                          { staticClass: "button wide light-2" },
+                          [_c("Loader")],
+                          1
+                        )
+                      : _vm.currentTask.completed.length <= 0
+                      ? _c(
+                          "span",
+                          {
+                            staticClass: "button wide primary",
+                            on: {
+                              click: function($event) {
+                                return _vm.onCompleteTask(
+                                  _vm.currentFile.id,
+                                  _vm.currentTask.id
+                                )
+                              }
+                            }
+                          },
+                          [_vm._v("Complete task")]
+                        )
+                      : _c(
+                          "span",
+                          {
+                            staticClass: "button wide red",
+                            on: {
+                              click: function($event) {
+                                return _vm.onUndoCompleteTask(
+                                  _vm.currentFile.id,
+                                  _vm.currentTask.id
+                                )
+                              }
+                            }
+                          },
+                          [_vm._v("Reopen task")]
+                        )
+                  ]
+                : _vm._e()
             ]
           : _vm._e()
       ],
@@ -27603,75 +27636,193 @@ var render = function() {
                               )
                             : _vm._e(),
                           _vm._v(" "),
-                          _c(
-                            "span",
-                            {
-                              staticClass: "button icon-right",
-                              class: [
-                                _vm.product.currentAction != null
-                                  ? _vm.product.currentAction.action != 0
-                                    ? "active green"
-                                    : "ghost green-hover"
-                                  : "ghost green-hover"
-                              ],
-                              on: {
-                                click: function($event) {
-                                  return _vm.toggleInOut(_vm.product, 1)
-                                }
-                              }
-                            },
-                            [
-                              _vm._v("\n                        In  "),
-                              _c("i", { staticClass: "far fa-heart" })
-                            ]
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "span",
-                            {
-                              staticClass: "button icon-right",
-                              class: [
-                                _vm.product.currentAction != null
-                                  ? _vm.product.currentAction.action == 0
-                                    ? "active red"
-                                    : "ghost red-hover"
-                                  : "ghost red-hover"
-                              ],
-                              on: {
-                                click: function($event) {
-                                  return _vm.toggleInOut(_vm.product, 0)
-                                }
-                              }
-                            },
-                            [
-                              _vm._v("\n                        Out  "),
-                              _c("i", { staticClass: "far fa-times-circle" })
-                            ]
-                          )
+                          _vm.product.buyerAction
+                            ? [
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "button icon-right disabled",
+                                    class: [
+                                      _vm.product.buyerAction
+                                        ? _vm.product.buyerAction.action != 0
+                                          ? "active green"
+                                          : "ghost green-hover"
+                                        : "ghost green-hover"
+                                    ],
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.toggleInOut(_vm.product, 1)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n                            In  "
+                                    ),
+                                    _c("i", { staticClass: "far fa-heart" })
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "button icon-right disabled",
+                                    class: [
+                                      _vm.product.buyerAction != null
+                                        ? _vm.product.buyerAction.action == 0
+                                          ? "active red"
+                                          : "ghost red-hover"
+                                        : "ghost red-hover"
+                                    ],
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.toggleInOut(_vm.product, 0)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n                            Out  "
+                                    ),
+                                    _c("i", {
+                                      staticClass: "far fa-times-circle"
+                                    })
+                                  ]
+                                )
+                              ]
+                            : [
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "button icon-right",
+                                    class: [
+                                      _vm.product.currentAction != null
+                                        ? _vm.product.currentAction.action != 0
+                                          ? "active green"
+                                          : "ghost green-hover"
+                                        : "ghost green-hover"
+                                    ],
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.toggleInOut(_vm.product, 1)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n                            In  "
+                                    ),
+                                    _c("i", { staticClass: "far fa-heart" })
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "button icon-right",
+                                    class: [
+                                      _vm.product.currentAction != null
+                                        ? _vm.product.currentAction.action == 0
+                                          ? "active red"
+                                          : "ghost red-hover"
+                                        : "ghost red-hover"
+                                    ],
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.toggleInOut(_vm.product, 0)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n                            Out  "
+                                    ),
+                                    _c("i", {
+                                      staticClass: "far fa-times-circle"
+                                    })
+                                  ]
+                                )
+                              ]
                         ]
                       : _vm.userPermissionLevel == 3
-                      ? _c(
-                          "span",
-                          {
-                            staticClass: "button icon-right",
-                            class: [
-                              _vm.product.currentAction != null
-                                ? _vm.product.currentAction.action != 0
-                                  ? "active green"
-                                  : "ghost green-hover"
-                                : "ghost green-hover"
-                            ],
-                            on: {
-                              click: function($event) {
-                                return _vm.toggleInOut(_vm.product, 1)
-                              }
-                            }
-                          },
-                          [
-                            _vm._v("\n                        In  "),
-                            _c("i", { staticClass: "far fa-heart" })
-                          ]
-                        )
+                      ? [
+                          _vm.product.decisionAction
+                            ? [
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "button icon-right disabled",
+                                    class: [
+                                      _vm.product.decisionAction
+                                        ? _vm.product.decisionAction.action != 0
+                                          ? "active green"
+                                          : "ghost green-hover"
+                                        : "ghost green-hover"
+                                    ],
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.toggleInOut(_vm.product, 1)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n                            In  "
+                                    ),
+                                    _c("i", { staticClass: "far fa-heart" })
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass: "button icon-right disabled",
+                                    class: [
+                                      _vm.product.decisionAction != null
+                                        ? _vm.product.decisionAction.action == 0
+                                          ? "active red"
+                                          : "ghost red-hover"
+                                        : "ghost red-hover"
+                                    ],
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.toggleInOut(_vm.product, 0)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "\n                            Out  "
+                                    ),
+                                    _c("i", {
+                                      staticClass: "far fa-times-circle"
+                                    })
+                                  ]
+                                )
+                              ]
+                            : _c(
+                                "span",
+                                {
+                                  staticClass: "button icon-right",
+                                  class: [
+                                    _vm.product.currentAction != null
+                                      ? _vm.product.currentAction.action != 0
+                                        ? "active green"
+                                        : "ghost green-hover"
+                                      : "ghost green-hover"
+                                  ],
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.toggleInOut(_vm.product, 1)
+                                    }
+                                  }
+                                },
+                                [
+                                  _vm._v("\n                            In  "),
+                                  _c("i", { staticClass: "far fa-heart" })
+                                ]
+                              )
+                        ]
                       : _vm._e(),
                     _vm._v(" "),
                     _c(
@@ -29753,92 +29904,171 @@ var render = function() {
                     _vm._v(" "),
                     _vm.currentTaskPermissions.actions
                       ? [
-                          _c("td", { staticClass: "action" }, [
-                            _vm.currentTaskPermissions.focus
-                              ? _c(
-                                  "span",
-                                  {
-                                    staticClass:
-                                      "square light-2 true-square clickable focus-action",
-                                    class: [
-                                      product.currentAction != null
-                                        ? product.currentAction.action == 2
-                                          ? "active light"
-                                          : "ghost primary-hover"
-                                        : "ghost primary-hover",
-                                      { disabled: _vm.authUser.role_id == 3 }
-                                    ],
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.toggleInOut(product, 2)
+                          _c(
+                            "td",
+                            { staticClass: "action" },
+                            [
+                              _vm.currentTaskPermissions.focus
+                                ? _c(
+                                    "span",
+                                    {
+                                      staticClass:
+                                        "square light-2 true-square clickable focus-action",
+                                      class: [
+                                        product.currentAction != null
+                                          ? product.currentAction.action == 2
+                                            ? "active light"
+                                            : "ghost primary-hover"
+                                          : "ghost primary-hover",
+                                        { disabled: _vm.authUser.role_id == 3 }
+                                      ],
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.toggleInOut(product, 2)
+                                        }
                                       }
+                                    },
+                                    [_c("i", { staticClass: "far fa-star" })]
+                                  )
+                                : _vm._e(),
+                              _vm._v(" "),
+                              product.buyerAction
+                                ? [
+                                    _c(
+                                      "span",
+                                      {
+                                        staticClass:
+                                          "button icon-right disabled",
+                                        class: [
+                                          product.buyerAction
+                                            ? product.buyerAction.action != 0
+                                              ? "active green"
+                                              : "ghost green-hover"
+                                            : "ghost green-hover",
+                                          {
+                                            disabled: _vm.authUser.role_id == 3
+                                          }
+                                        ],
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.toggleInOut(product, 1)
+                                          }
+                                        }
+                                      },
+                                      [
+                                        _vm._v(
+                                          "\n                            In  "
+                                        ),
+                                        _c("i", { staticClass: "far fa-heart" })
+                                      ]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "span",
+                                      {
+                                        staticClass:
+                                          "button icon-right disabled",
+                                        class: [
+                                          product.buyerAction
+                                            ? product.buyerAction.action == 0
+                                              ? "active red"
+                                              : "ghost red-hover"
+                                            : "ghost red-hover",
+                                          {
+                                            disabled: _vm.authUser.role_id == 3
+                                          }
+                                        ],
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.toggleInOut(product, 0)
+                                          }
+                                        }
+                                      },
+                                      [
+                                        _vm._v(
+                                          "\n                            Out  "
+                                        ),
+                                        _c("i", {
+                                          staticClass: "far fa-times-circle"
+                                        })
+                                      ]
+                                    )
+                                  ]
+                                : [
+                                    _c(
+                                      "span",
+                                      {
+                                        staticClass: "button icon-right",
+                                        class: [
+                                          product.currentAction
+                                            ? product.currentAction.action != 0
+                                              ? "active green"
+                                              : "ghost green-hover"
+                                            : "ghost green-hover",
+                                          {
+                                            disabled: _vm.authUser.role_id == 3
+                                          }
+                                        ],
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.toggleInOut(product, 1)
+                                          }
+                                        }
+                                      },
+                                      [
+                                        _vm._v(
+                                          "\n                            In  "
+                                        ),
+                                        _c("i", { staticClass: "far fa-heart" })
+                                      ]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "span",
+                                      {
+                                        staticClass: "button icon-right",
+                                        class: [
+                                          product.currentAction
+                                            ? product.currentAction.action == 0
+                                              ? "active red"
+                                              : "ghost red-hover"
+                                            : "ghost red-hover",
+                                          {
+                                            disabled: _vm.authUser.role_id == 3
+                                          }
+                                        ],
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.toggleInOut(product, 0)
+                                          }
+                                        }
+                                      },
+                                      [
+                                        _vm._v(
+                                          "\n                            Out  "
+                                        ),
+                                        _c("i", {
+                                          staticClass: "far fa-times-circle"
+                                        })
+                                      ]
+                                    )
+                                  ],
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticClass: "view-single button invisible",
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.onViewSingle(product.id)
                                     }
-                                  },
-                                  [_c("i", { staticClass: "far fa-star" })]
-                                )
-                              : _vm._e(),
-                            _vm._v(" "),
-                            _c(
-                              "span",
-                              {
-                                staticClass: "button icon-right",
-                                class: [
-                                  product.currentAction != null
-                                    ? product.currentAction.action != 0
-                                      ? "active green"
-                                      : "ghost green-hover"
-                                    : "ghost green-hover",
-                                  { disabled: _vm.authUser.role_id == 3 }
-                                ],
-                                on: {
-                                  click: function($event) {
-                                    return _vm.toggleInOut(product, 1)
                                   }
-                                }
-                              },
-                              [
-                                _vm._v("\n                        In  "),
-                                _c("i", { staticClass: "far fa-heart" })
-                              ]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "span",
-                              {
-                                staticClass: "button icon-right",
-                                class: [
-                                  product.currentAction != null
-                                    ? product.currentAction.action == 0
-                                      ? "active red"
-                                      : "ghost red-hover"
-                                    : "ghost red-hover",
-                                  { disabled: _vm.authUser.role_id == 3 }
-                                ],
-                                on: {
-                                  click: function($event) {
-                                    return _vm.toggleInOut(product, 0)
-                                  }
-                                }
-                              },
-                              [
-                                _vm._v("\n                        Out  "),
-                                _c("i", { staticClass: "far fa-times-circle" })
-                              ]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "span",
-                              {
-                                staticClass: "view-single button invisible",
-                                on: {
-                                  click: function($event) {
-                                    return _vm.onViewSingle(product.id)
-                                  }
-                                }
-                              },
-                              [_vm._v("View")]
-                            )
-                          ])
+                                },
+                                [_vm._v("View")]
+                              )
+                            ],
+                            2
+                          )
                         ]
                       : [
                           _c("td", { staticClass: "action" }, [
@@ -56542,7 +56772,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               return action.task_id == currentTask.id;
             });
             product.buyerAction = product.actions.find(function (x) {
-              return x.task_id == currentTask.parentActions[0].task_id;
+              return x.task_id == currentTask.parents[0].parent_id;
             });
           } else product.currentAction = product.actions.find(function (action) {
             return action.task_id == currentTask.id;
