@@ -8956,7 +8956,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     activateWrite: function activateWrite() {
       if (this.writeScope == 'request') {
         this.newRequest.id = this.taskRequest ? this.taskRequest.id : null;
-      } else {// If scope is comment set the newComment id equal to the edited comment
+        this.$refs.requestField.focus();
+      } else {
+        this.$refs.commentField.focus(); // If scope is comment set the newComment id equal to the edited comment
       }
 
       this.writeActive = true;
@@ -9102,18 +9104,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     hotkeyHandler: function hotkeyHandler(e) {
       var key = e.code;
-      console.log(key);
-      if (key == 'Enter' && !this.writeActive) this.activateWrite();
+      console.log(e);
+
+      if (key == 'Enter') {
+        if (this.writeActive && !e.shiftKey) {
+          e.preventDefault();
+          this.onSubmitComment();
+        } else {
+          this.activateWrite();
+        }
+      } // SET FOCUS ON ACTIVE TEXTFIELD
+
     }
   }),
   mounted: function mounted() {
     this.update();
   },
   created: function created() {
-    document.body.addEventListener('keydown', this.hotkeyHandler);
+    document.body.addEventListener('keyup', this.hotkeyHandler);
   },
   destroyed: function destroyed() {
-    document.body.removeEventListener('keydown', this.hotkeyHandler);
+    document.body.removeEventListener('keyup', this.hotkeyHandler);
   }
 });
 
@@ -28610,43 +28621,6 @@ var render = function() {
                       }
                       $event.preventDefault()
                     },
-                    keyup: [
-                      function($event) {
-                        if (
-                          !$event.type.indexOf("key") &&
-                          _vm._k(
-                            $event.keyCode,
-                            "enter",
-                            13,
-                            $event.key,
-                            "Enter"
-                          )
-                        ) {
-                          return null
-                        }
-                        if (
-                          $event.ctrlKey ||
-                          $event.shiftKey ||
-                          $event.altKey ||
-                          $event.metaKey
-                        ) {
-                          return null
-                        }
-                        return _vm.onSubmitComment($event)
-                      },
-                      function($event) {
-                        if (
-                          !$event.type.indexOf("key") &&
-                          _vm._k($event.keyCode, "esc", 27, $event.key, [
-                            "Esc",
-                            "Escape"
-                          ])
-                        ) {
-                          return null
-                        }
-                        return _vm.deactivateWrite($event)
-                      }
-                    ],
                     input: [
                       function($event) {
                         if ($event.target.composing) {
@@ -28657,7 +28631,19 @@ var render = function() {
                       function($event) {
                         return _vm.resizeTextarea($event)
                       }
-                    ]
+                    ],
+                    keyup: function($event) {
+                      if (
+                        !$event.type.indexOf("key") &&
+                        _vm._k($event.keyCode, "esc", 27, $event.key, [
+                          "Esc",
+                          "Escape"
+                        ])
+                      ) {
+                        return null
+                      }
+                      return _vm.deactivateWrite($event)
+                    }
                   }
                 }),
                 _vm._v(" "),
@@ -28784,43 +28770,6 @@ var render = function() {
                       }
                       $event.preventDefault()
                     },
-                    keyup: [
-                      function($event) {
-                        if (
-                          !$event.type.indexOf("key") &&
-                          _vm._k(
-                            $event.keyCode,
-                            "enter",
-                            13,
-                            $event.key,
-                            "Enter"
-                          )
-                        ) {
-                          return null
-                        }
-                        if (
-                          $event.ctrlKey ||
-                          $event.shiftKey ||
-                          $event.altKey ||
-                          $event.metaKey
-                        ) {
-                          return null
-                        }
-                        return _vm.onSubmitComment($event)
-                      },
-                      function($event) {
-                        if (
-                          !$event.type.indexOf("key") &&
-                          _vm._k($event.keyCode, "esc", 27, $event.key, [
-                            "Esc",
-                            "Escape"
-                          ])
-                        ) {
-                          return null
-                        }
-                        return _vm.deactivateWrite($event)
-                      }
-                    ],
                     input: [
                       function($event) {
                         if ($event.target.composing) {
@@ -28831,7 +28780,19 @@ var render = function() {
                       function($event) {
                         return _vm.resizeTextarea($event)
                       }
-                    ]
+                    ],
+                    keyup: function($event) {
+                      if (
+                        !$event.type.indexOf("key") &&
+                        _vm._k($event.keyCode, "esc", 27, $event.key, [
+                          "Esc",
+                          "Escape"
+                        ])
+                      ) {
+                        return null
+                      }
+                      return _vm.deactivateWrite($event)
+                    }
                   }
                 })
               ]),

@@ -76,7 +76,7 @@
 
             <div class="form-input" :class="[{active: writeActive}, {hidden: writeScope != 'request'}]">
                 <div class="input-wrapper request">
-                    <textarea @click="activateWrite" ref="requestField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="request" id="request-input" placeholder="Write your request here..." v-model="newRequest.comment" 
+                    <textarea @click="activateWrite" ref="requestField" @keydown.enter.exact.prevent name="request" id="request-input" placeholder="Write your request here..." v-model="newRequest.comment" 
                     @input="resizeTextarea($event)" @keyup.esc="deactivateWrite"></textarea>
                     <div class="edit-request" v-if="taskRequest && !writeActive">
                         <span>Edit Request <span class="circle small light"><i class="fas fa-pencil"></i></span></span>
@@ -102,7 +102,7 @@
 
             <div class="form-input" :class="[{active: writeActive}, {hidden: writeScope != 'comment'}]">
                 <div class="input-wrapper comment">
-                    <textarea @click="activateWrite" ref="commentField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="comment" id="comment-input" placeholder="Write your comment here..." v-model="newComment.comment" 
+                    <textarea @click="activateWrite" ref="commentField" @keydown.enter.exact.prevent name="comment" id="comment-input" placeholder="Write your comment here..." v-model="newComment.comment" 
                     @input="resizeTextarea($event)" @keyup.esc="deactivateWrite"></textarea>
                 </div>
                 <div class="flex-wrapper" v-if="writeActive">
@@ -235,7 +235,9 @@ export default {
         activateWrite() {
             if (this.writeScope == 'request') {
                 this.newRequest.id = (this.taskRequest) ? this.taskRequest.id : null
+                this.$refs.requestField.focus()
             } else {
+                this.$refs.commentField.focus()
                 // If scope is comment set the newComment id equal to the edited comment
             }
             this.writeActive = true
@@ -322,19 +324,26 @@ export default {
         },
         hotkeyHandler(e) {
             const key = e.code
-            console.log(key)
-            if (key == 'Enter' && !this.writeActive)
-                this.activateWrite()
+            console.log(e)
+            if (key == 'Enter') {
+                if (this.writeActive && !e.shiftKey) {
+                    e.preventDefault()
+                    this.onSubmitComment()
+                } else {
+                    this.activateWrite()
+                }
+            }
+                // SET FOCUS ON ACTIVE TEXTFIELD
         }
     },
     mounted() {
         this.update()
     },
     created() {
-        document.body.addEventListener('keydown', this.hotkeyHandler)
+        document.body.addEventListener('keyup', this.hotkeyHandler)
     },
     destroyed() {
-        document.body.removeEventListener('keydown', this.hotkeyHandler)
+        document.body.removeEventListener('keyup', this.hotkeyHandler)
     }
 }
 </script>
