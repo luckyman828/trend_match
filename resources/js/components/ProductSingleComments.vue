@@ -84,15 +84,18 @@
                 </div>
                 <div class="flex-wrapper">
                     <div class="left">
-                        <small class="id" v-if="taskRequest && !writeActive">Request ID: {{taskRequest.id}}</small>
+                        <small class="id" v-if="taskRequest">Request ID: {{taskRequest.id}}</small>
                         <div class="hotkey-tip" v-if="writeActive">
                             <span class="square ghost">ENTER</span>
                             <span>To save</span>
                         </div>
                     </div>
-                    <div class="right" v-if="writeActive">
-                        <span class="button invisible" @click="writeActive = false">Cancel</span>
-                        <span class="button green" :class="{disabled: submitDisabled}" @click="onSubmitComment">Save</span>
+                    <div class="right">
+                        <TempAlert :duration="2000" ref="requestSucces" :hidden="writeActive"><small class="request-succes">Request saved <i class="fas fa-clipboard-check green"></i></small></TempAlert>
+                        <template v-if="writeActive">
+                            <span class="button invisible" @click="writeActive = false">Cancel</span>
+                            <span class="button green" :class="{disabled: submitDisabled}" @click="onSubmitComment">Save</span>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -125,6 +128,7 @@ import { mapActions, mapGetters } from 'vuex'
 import TooltipAlt2 from './TooltipAlt2'
 import Comment from './Comment'
 import Request from './Request'
+import TempAlert from './TempAlert'
 
 export default {
     name: 'productSingleComments',
@@ -138,6 +142,7 @@ export default {
         TooltipAlt2,
         Comment,
         Request,
+        TempAlert
     },
     data: function () { return {
         newComment: {
@@ -154,6 +159,7 @@ export default {
         commentScope: 'comments',
         writeScope: 'comment',
         writeActive: false,
+        submittingComment: false,
     }},
     watch: {
         product(newVal, oldVal) {
@@ -162,7 +168,6 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('entities/comments', ['submittingComment']),
         ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']),
         submitDisabled () {
             if (this.writeScope == 'comment') {
@@ -252,25 +257,40 @@ export default {
             if (e) e.preventDefault()
 
             if (!this.submitDisabled) {
-                await this.createComment({comment: this.commentToPost})
-    
-                // Reset comment
-                if (this.writeScope == 'comment') {
-                    this.newComment.comment = ''
-                    this.newComment.important = false
-                    // Reset textarea height
-                    this.$refs.commentField.style.height = ''
-                } else {
-                    this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
-                    this.newRequest.important = false
-                    // Reset textarea height
-                    this.$refs.requestField.style.height = ''
+                this.submittingComment = true
+                try {
+                    // Succes
+                    await this.createComment({comment: this.commentToPost})
+                    this.$refs.requestSucces.show()
+                    
+                    // Reset comment
+                    if (this.writeScope == 'comment') {
+                        this.newComment.comment = ''
+                        this.newComment.important = false
+                        // Reset textarea height
+                        this.$refs.commentField.style.height = ''
+                    } else {
+                        this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
+                        this.newRequest.important = false
+                        // Reset textarea height
+                        this.$refs.requestField.style.height = ''
+                    }
+                } catch (err) {
+                    // Error
                 }
+                // In any case
+                this.submittingComment = false
                 this.writeActive = false
                 // Unset the focus
                 document.activeElement.blur()
 
             }
+        },
+        async onCompleteTask(file_id, task_id) {
+            this.submittingTaskComplete = true
+            await this.completeTask({file_id: file_id, task_id: task_id})
+            // .then(reponse => succes = response)
+            this.submittingTaskComplete = false
         },
         resizeTextarea(event) {
             const commentField = event.target
@@ -504,7 +524,7 @@ export default {
                 display: flex;
                 justify-content: space-between;
                 margin-top: 8px;
-                align-items: center;
+                // align-items: center;
             }
         }
         .checkmark {
@@ -526,5 +546,9 @@ export default {
         input[type=submit] {
             margin-top: 12px;
         }
+    }
+    .request-succes {
+        margin-right: 8px;
+        font-weight: 500;
     }
 </style>
