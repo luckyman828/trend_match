@@ -24,6 +24,8 @@
                             <div class="sender">{{comment.task.title}} | {{(comment.user.id == authUser.id) ? 'You' : comment.user.name}}</div>
                         </div>
                         <div class="break-line" v-if="(product.currentAction)"><span class="pill" :class="product.currentAction.action == 1 ? 'green' : 'red'">Marked as {{product.currentAction.action == 1 ? 'IN' : 'OUT'}} by {{(product.currentAction.user_id == authUser.id) ? 'You' : product.currentAction.user.name}}</span></div>
+                        <div class="break-line" v-else-if="(product.buyerAction)"><span class="pill" :class="product.buyerAction.action == 1 ? 'green' : 'red'">Marked as {{product.buyerAction.action == 1 ? 'IN' : 'OUT'}} by {{(product.buyerAction.user_id == authUser.id) ? 'You' : product.buyerAction.user.name}}</span></div>
+                        <div class="break-line" v-else-if="(product.decisionAction)"><span class="pill" :class="product.decisionAction.action == 1 ? 'green' : 'red'">Marked as {{product.decisionAction.action == 1 ? 'IN' : 'OUT'}} by {{(product.decisionAction.user_id == authUser.id) ? 'You' : product.decisionAction.user.name}}</span></div>
                         <div class="break-line" v-else-if="currentTask.type == 'decision' ? comments.length > 0 ? comments[comments.length-1].task_id != currentTask.approvalParent.id : true : false">Waiting for response from {{currentTask.approvalParent.title}}</div>
                     </template>
 

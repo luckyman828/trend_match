@@ -8579,6 +8579,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 
 
@@ -8724,6 +8727,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
 //
 //
 //
@@ -25814,68 +25819,13 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "header" }, [
-    _c(
-      "div",
-      [
-        _c("h1", [_vm._v(_vm._s(_vm.collection.title))]),
-        _vm._v(" "),
-        _c("Dropdown", {
-          staticClass: "dark dropdown-parent",
-          scopedSlots: _vm._u([
-            {
-              key: "button",
-              fn: function(slotProps) {
-                return [
-                  _c(
-                    "span",
-                    {
-                      staticClass: "square light",
-                      on: { click: slotProps.toggle }
-                    },
-                    [_vm._v("Stage " + _vm._s(_vm.currentTask.title))]
-                  )
-                ]
-              }
-            },
-            {
-              key: "header",
-              fn: function(slotProps) {
-                return [_c("span", [_vm._v("Task overview")])]
-              }
-            },
-            {
-              key: "body",
-              fn: function() {
-                return _vm._l(_vm.userTasks, function(task) {
-                  return _c(
-                    "p",
-                    { key: task.id },
-                    [
-                      _vm.currentTask.id == task.id
-                        ? _c("strong", [
-                            _vm._v(_vm._s(task.title) + " "),
-                            task.completed.length > 0
-                              ? _c("span", [_vm._v("(Done)")])
-                              : _vm._e()
-                          ])
-                        : [
-                            _vm._v(_vm._s(task.title) + " "),
-                            task.completed.length > 0
-                              ? _c("span", [_vm._v("(Done)")])
-                              : _vm._e()
-                          ]
-                    ],
-                    2
-                  )
-                })
-              },
-              proxy: true
-            }
-          ])
-        })
-      ],
-      1
-    ),
+    _c("div", [
+      _c("h1", [_vm._v(_vm._s(_vm.collection.title))]),
+      _vm._v(" "),
+      _c("span", { staticClass: "square light" }, [
+        _vm._v("Stage " + _vm._s(_vm.currentTask.title))
+      ])
+    ]),
     _vm._v(" "),
     _c(
       "div",
@@ -27641,8 +27591,7 @@ var render = function() {
                                       ? _vm.product.currentAction.action == 2
                                         ? "active light"
                                         : "ghost primary-hover"
-                                      : "ghost primary-hover",
-                                    { disabled: _vm.userPermissionLevel == 3 }
+                                      : "ghost primary-hover"
                                   ],
                                   on: {
                                     click: function($event) {
@@ -27663,8 +27612,7 @@ var render = function() {
                                   ? _vm.product.currentAction.action != 0
                                     ? "active green"
                                     : "ghost green-hover"
-                                  : "ghost green-hover",
-                                { disabled: _vm.userPermissionLevel == 3 }
+                                  : "ghost green-hover"
                               ],
                               on: {
                                 click: function($event) {
@@ -27687,8 +27635,7 @@ var render = function() {
                                   ? _vm.product.currentAction.action == 0
                                     ? "active red"
                                     : "ghost red-hover"
-                                  : "ghost red-hover",
-                                { disabled: _vm.userPermissionLevel == 3 }
+                                  : "ghost red-hover"
                               ],
                               on: {
                                 click: function($event) {
@@ -27702,6 +27649,29 @@ var render = function() {
                             ]
                           )
                         ]
+                      : _vm.userPermissionLevel == 3
+                      ? _c(
+                          "span",
+                          {
+                            staticClass: "button icon-right",
+                            class: [
+                              _vm.product.currentAction != null
+                                ? _vm.product.currentAction.action != 0
+                                  ? "active green"
+                                  : "ghost green-hover"
+                                : "ghost green-hover"
+                            ],
+                            on: {
+                              click: function($event) {
+                                return _vm.toggleInOut(_vm.product, 1)
+                              }
+                            }
+                          },
+                          [
+                            _vm._v("\n                        In  "),
+                            _c("i", { staticClass: "far fa-heart" })
+                          ]
+                        )
                       : _vm._e(),
                     _vm._v(" "),
                     _c(
@@ -28380,6 +28350,66 @@ var render = function() {
                                         _vm.authUser.id
                                         ? "You"
                                         : _vm.product.currentAction.user.name
+                                    )
+                                )
+                              ]
+                            )
+                          ])
+                        : _vm.product.buyerAction
+                        ? _c("div", { staticClass: "break-line" }, [
+                            _c(
+                              "span",
+                              {
+                                staticClass: "pill",
+                                class:
+                                  _vm.product.buyerAction.action == 1
+                                    ? "green"
+                                    : "red"
+                              },
+                              [
+                                _vm._v(
+                                  "Marked as " +
+                                    _vm._s(
+                                      _vm.product.buyerAction.action == 1
+                                        ? "IN"
+                                        : "OUT"
+                                    ) +
+                                    " by " +
+                                    _vm._s(
+                                      _vm.product.buyerAction.user_id ==
+                                        _vm.authUser.id
+                                        ? "You"
+                                        : _vm.product.buyerAction.user.name
+                                    )
+                                )
+                              ]
+                            )
+                          ])
+                        : _vm.product.decisionAction
+                        ? _c("div", { staticClass: "break-line" }, [
+                            _c(
+                              "span",
+                              {
+                                staticClass: "pill",
+                                class:
+                                  _vm.product.decisionAction.action == 1
+                                    ? "green"
+                                    : "red"
+                              },
+                              [
+                                _vm._v(
+                                  "Marked as " +
+                                    _vm._s(
+                                      _vm.product.decisionAction.action == 1
+                                        ? "IN"
+                                        : "OUT"
+                                    ) +
+                                    " by " +
+                                    _vm._s(
+                                      _vm.product.decisionAction.user_id ==
+                                        _vm.authUser.id
+                                        ? "You"
+                                        : _vm.product.decisionAction.user.name
                                     )
                                 )
                               ]
@@ -56499,8 +56529,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           if (currentTask.type == 'feedback') product.currentAction = product.actions.find(function (action) {
             return action.user_id == userId && action.task_id == currentTask.id;
           });else if (currentTask.type == 'approval') {
-            product.currentAction = product.actions.find(function (x) {
+            product.currentAction = product.actions.find(function (action) {
+              return action.task_id == currentTask.id;
+            });
+            product.decisionAction = product.actions.find(function (x) {
               return x.task_id == currentTask.children[0].task_id;
+            });
+          } else if (currentTask.parentTasks.find(function (x) {
+            return x.type == 'approval';
+          })) {
+            product.currentAction = product.actions.find(function (action) {
+              return action.task_id == currentTask.id;
+            });
+            product.buyerAction = product.actions.find(function (x) {
+              return x.task_id == currentTask.parentActions[0].task_id;
             });
           } else product.currentAction = product.actions.find(function (action) {
             return action.task_id == currentTask.id;

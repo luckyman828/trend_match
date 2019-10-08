@@ -2,8 +2,8 @@
   <div class="header">
         <div>
             <h1>{{collection.title}}</h1>
-            
-            <Dropdown class="dark dropdown-parent">
+            <span class="square light">Stage {{currentTask.title}}</span>
+            <!-- <Dropdown class="dark dropdown-parent">
                 <template v-slot:button="slotProps">
                     <span class="square light" @click="slotProps.toggle">Stage {{currentTask.title}}</span>
                 </template>
@@ -16,7 +16,7 @@
                         <template v-else>{{task.title}} <span v-if="task.completed.length > 0">(Done)</span></template>
                     </p>
                 </template>
-            </Dropdown>
+            </Dropdown> -->
         </div>
         <div>
             <!-- <div class="stat">
