@@ -9077,7 +9077,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction', 'deleteAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamProducts', ['deleteTeamProduct', 'updateTeamProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/phaseProducts', ['deletePhaseProduct', 'updatePhaseProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['setCurrentProductId', 'setAvailableProductIds']), {
     productImg: function productImg(variant) {
-      if (!variant.error && variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
+      if (!variant.error && variant.blob_id != null) // return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
+        return "https://devenviromentdiag.blob.core.windows.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
     },
     imgError: function imgError(variant) {
       variant.error = true;
