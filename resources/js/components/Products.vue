@@ -182,7 +182,8 @@ export default {
         ...mapActions('entities/products', ['setCurrentProductId', 'setAvailableProductIds']),
         productImg(variant) {
             if (!variant.error && variant.blob_id != null)
-                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
+                // return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
+                return `https://devenviromentdiag.blob.core.windows.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
             else return variant.image
         },
         imgError (variant) {
