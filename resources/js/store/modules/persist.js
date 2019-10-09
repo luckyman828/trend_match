@@ -144,7 +144,8 @@ export default {
                     feedback: getters.currentTask.type != 'approval' ? true : false,
                     comments: true,
                     requests: getters.currentTask.type != 'feedback' ? true : false,
-                    actions: getters.currentTask.type != 'approval' ? true : false,
+                    // actions: getters.currentTask.type != 'approval' ? true : false,
+                    actions: true,
                     focus: getters.currentTask.type != 'decision' ? true : false,
                 }
             }

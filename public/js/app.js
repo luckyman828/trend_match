@@ -9377,6 +9377,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -29988,19 +30008,19 @@ var render = function() {
                             "td",
                             { staticClass: "action" },
                             [
-                              _vm.currentTaskPermissions.focus
+                              _vm.currentTaskPermissions.focus &&
+                              _vm.currentTask.type != "approval"
                                 ? _c(
                                     "span",
                                     {
                                       staticClass:
                                         "square light-2 true-square clickable focus-action",
                                       class: [
-                                        product.currentAction != null
+                                        product.currentAction
                                           ? product.currentAction.action == 2
                                             ? "active light"
                                             : "ghost primary-hover"
-                                          : "ghost primary-hover",
-                                        { disabled: _vm.authUser.role_id == 3 }
+                                          : "ghost primary-hover"
                                       ],
                                       on: {
                                         click: function($event) {
@@ -30012,126 +30032,304 @@ var render = function() {
                                   )
                                 : _vm._e(),
                               _vm._v(" "),
-                              product.buyerAction
+                              _vm.currentTask.type == "approval"
                                 ? [
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass:
-                                          "button icon-right disabled",
-                                        class: [
-                                          product.buyerAction
-                                            ? product.buyerAction.action != 0
-                                              ? "active green"
-                                              : "ghost green-hover"
-                                            : "ghost green-hover",
-                                          {
-                                            disabled: _vm.authUser.role_id == 3
-                                          }
-                                        ],
-                                        on: {
-                                          click: function($event) {
-                                            return _vm.toggleInOut(product, 1)
-                                          }
-                                        }
-                                      },
-                                      [
-                                        _vm._v(
-                                          "\n                            In  "
-                                        ),
-                                        _c("i", { staticClass: "far fa-heart" })
-                                      ]
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass:
-                                          "button icon-right disabled",
-                                        class: [
-                                          product.buyerAction
-                                            ? product.buyerAction.action == 0
-                                              ? "active red"
-                                              : "ghost red-hover"
-                                            : "ghost red-hover",
-                                          {
-                                            disabled: _vm.authUser.role_id == 3
-                                          }
-                                        ],
-                                        on: {
-                                          click: function($event) {
-                                            return _vm.toggleInOut(product, 0)
-                                          }
-                                        }
-                                      },
-                                      [
-                                        _vm._v(
-                                          "\n                            Out  "
-                                        ),
-                                        _c("i", {
-                                          staticClass: "far fa-times-circle"
-                                        })
-                                      ]
-                                    )
+                                    product.decisionAction
+                                      ? [
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass:
+                                                "button icon-right disabled",
+                                              class: [
+                                                product.decisionAction
+                                                  ? product.decisionAction
+                                                      .action != 0
+                                                    ? "active green"
+                                                    : "ghost green-hover"
+                                                  : "ghost green-hover",
+                                                {
+                                                  disabled:
+                                                    _vm.authUser.role_id == 3
+                                                }
+                                              ],
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.toggleInOut(
+                                                    product,
+                                                    1
+                                                  )
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                                In  "
+                                              ),
+                                              _c("i", {
+                                                staticClass: "far fa-heart"
+                                              })
+                                            ]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass:
+                                                "button icon-right disabled",
+                                              class: [
+                                                product.decisionAction
+                                                  ? product.decisionAction
+                                                      .action == 0
+                                                    ? "active red"
+                                                    : "ghost red-hover"
+                                                  : "ghost red-hover",
+                                                {
+                                                  disabled:
+                                                    _vm.authUser.role_id == 3
+                                                }
+                                              ],
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.toggleInOut(
+                                                    product,
+                                                    0
+                                                  )
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                                Out  "
+                                              ),
+                                              _c("i", {
+                                                staticClass:
+                                                  "far fa-times-circle"
+                                              })
+                                            ]
+                                          )
+                                        ]
+                                      : [
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass: "button icon-right",
+                                              class: [
+                                                product.currentAction
+                                                  ? product.currentAction
+                                                      .action != 0
+                                                    ? "active green"
+                                                    : "ghost green-hover"
+                                                  : "ghost green-hover",
+                                                {
+                                                  disabled:
+                                                    _vm.authUser.role_id == 3
+                                                }
+                                              ],
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.toggleInOut(
+                                                    product,
+                                                    1
+                                                  )
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                                In  "
+                                              ),
+                                              _c("i", {
+                                                staticClass: "far fa-heart"
+                                              })
+                                            ]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass: "button icon-right",
+                                              class: [
+                                                product.currentAction
+                                                  ? product.currentAction
+                                                      .action == 0
+                                                    ? "active red"
+                                                    : "ghost red-hover"
+                                                  : "ghost red-hover",
+                                                {
+                                                  disabled:
+                                                    _vm.authUser.role_id == 3
+                                                }
+                                              ],
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.toggleInOut(
+                                                    product,
+                                                    0
+                                                  )
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                                Out  "
+                                              ),
+                                              _c("i", {
+                                                staticClass:
+                                                  "far fa-times-circle"
+                                              })
+                                            ]
+                                          )
+                                        ]
                                   ]
                                 : [
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass: "button icon-right",
-                                        class: [
-                                          product.currentAction
-                                            ? product.currentAction.action != 0
-                                              ? "active green"
-                                              : "ghost green-hover"
-                                            : "ghost green-hover",
-                                          {
-                                            disabled: _vm.authUser.role_id == 3
-                                          }
-                                        ],
-                                        on: {
-                                          click: function($event) {
-                                            return _vm.toggleInOut(product, 1)
-                                          }
-                                        }
-                                      },
-                                      [
-                                        _vm._v(
-                                          "\n                            In  "
-                                        ),
-                                        _c("i", { staticClass: "far fa-heart" })
-                                      ]
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass: "button icon-right",
-                                        class: [
-                                          product.currentAction
-                                            ? product.currentAction.action == 0
-                                              ? "active red"
-                                              : "ghost red-hover"
-                                            : "ghost red-hover",
-                                          {
-                                            disabled: _vm.authUser.role_id == 3
-                                          }
-                                        ],
-                                        on: {
-                                          click: function($event) {
-                                            return _vm.toggleInOut(product, 0)
-                                          }
-                                        }
-                                      },
-                                      [
-                                        _vm._v(
-                                          "\n                            Out  "
-                                        ),
-                                        _c("i", {
-                                          staticClass: "far fa-times-circle"
-                                        })
-                                      ]
-                                    )
+                                    product.buyerAction
+                                      ? [
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass:
+                                                "button icon-right disabled",
+                                              class: [
+                                                product.buyerAction
+                                                  ? product.buyerAction
+                                                      .action != 0
+                                                    ? "active green"
+                                                    : "ghost green-hover"
+                                                  : "ghost green-hover",
+                                                {
+                                                  disabled:
+                                                    _vm.authUser.role_id == 3
+                                                }
+                                              ],
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.toggleInOut(
+                                                    product,
+                                                    1
+                                                  )
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                                In  "
+                                              ),
+                                              _c("i", {
+                                                staticClass: "far fa-heart"
+                                              })
+                                            ]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass:
+                                                "button icon-right disabled",
+                                              class: [
+                                                product.buyerAction
+                                                  ? product.buyerAction
+                                                      .action == 0
+                                                    ? "active red"
+                                                    : "ghost red-hover"
+                                                  : "ghost red-hover",
+                                                {
+                                                  disabled:
+                                                    _vm.authUser.role_id == 3
+                                                }
+                                              ],
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.toggleInOut(
+                                                    product,
+                                                    0
+                                                  )
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                                Out  "
+                                              ),
+                                              _c("i", {
+                                                staticClass:
+                                                  "far fa-times-circle"
+                                              })
+                                            ]
+                                          )
+                                        ]
+                                      : [
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass: "button icon-right",
+                                              class: [
+                                                product.currentAction
+                                                  ? product.currentAction
+                                                      .action != 0
+                                                    ? "active green"
+                                                    : "ghost green-hover"
+                                                  : "ghost green-hover",
+                                                {
+                                                  disabled:
+                                                    _vm.authUser.role_id == 3
+                                                }
+                                              ],
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.toggleInOut(
+                                                    product,
+                                                    1
+                                                  )
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                                In  "
+                                              ),
+                                              _c("i", {
+                                                staticClass: "far fa-heart"
+                                              })
+                                            ]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass: "button icon-right",
+                                              class: [
+                                                product.currentAction
+                                                  ? product.currentAction
+                                                      .action == 0
+                                                    ? "active red"
+                                                    : "ghost red-hover"
+                                                  : "ghost red-hover",
+                                                {
+                                                  disabled:
+                                                    _vm.authUser.role_id == 3
+                                                }
+                                              ],
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.toggleInOut(
+                                                    product,
+                                                    0
+                                                  )
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                                Out  "
+                                              ),
+                                              _c("i", {
+                                                staticClass:
+                                                  "far fa-times-circle"
+                                              })
+                                            ]
+                                          )
+                                        ]
                                   ],
                               _vm._v(" "),
                               _c(
@@ -55893,7 +56091,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           feedback: getters.currentTask.type != 'approval' ? true : false,
           comments: true,
           requests: getters.currentTask.type != 'feedback' ? true : false,
-          actions: getters.currentTask.type != 'approval' ? true : false,
+          // actions: getters.currentTask.type != 'approval' ? true : false,
+          actions: true,
           focus: getters.currentTask.type != 'decision' ? true : false
         };
       }
