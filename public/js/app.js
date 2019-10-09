@@ -11270,6 +11270,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return productsToReturn;
     },
     productsFiltered: function productsFiltered() {
+      var _this2 = this;
+
       var method = this.currentProductFilter;
       var products = this.productsFilteredByCategory;
       var productsToReturn = products; // filter by in/out
@@ -11277,7 +11279,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (['ins', 'outs', 'nds'].includes(method)) {
         var filteredByAction = products.filter(function (product) {
           if (method == 'nds') {
-            return product.currentAction == null;
+            if (_this2.currentTask.type == 'approval') {
+              return product.currentAction == null && product.decisionAction == null;
+            } else return product.currentAction == null;
           } else if (method == 'ins') {
             if (product.currentAction) return product.currentAction.action >= 1;
           } else if (method == 'outs') {
@@ -11341,16 +11345,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return data;
     },
     teamUsers: function teamUsers() {
-      var _this2 = this;
+      var _this3 = this;
 
       var usersToReturn = [];
 
       if (this.teamFilterId > 0) {
         var thisTeam = this.teams.find(function (team) {
-          return team.id == _this2.teamFilterId;
+          return team.id == _this3.teamFilterId;
         });
         if (thisTeam) thisTeam.users.forEach(function (user) {
-          var fileUser = _this2.collection.users.find(function (x) {
+          var fileUser = _this3.collection.users.find(function (x) {
             return x.id == user.id;
           });
 
@@ -11438,7 +11442,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this3 = this;
+      var _this4 = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
@@ -11448,7 +11452,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
-        var thisProduct = _this3.products.find(function (x) {
+        var thisProduct = _this4.products.find(function (x) {
           return x.id == product;
         });
 

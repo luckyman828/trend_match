@@ -229,7 +229,10 @@ export default{
                 const filteredByAction = products.filter(product => {
                     
                     if (method == 'nds') {
-                        return product.currentAction == null
+                        if (this.currentTask.type == 'approval') {
+                            return (product.currentAction == null && product.decisionAction == null)
+                        }
+                        else return product.currentAction == null
                     }
                     else if (method == 'ins') {
                         if (product.currentAction)
