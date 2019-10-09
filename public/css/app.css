@@ -9367,6 +9367,12 @@ textarea {
   font-size: 12px;
 }
 
+.circle.tiny {
+  width: 14px;
+  height: 14px;
+  font-size: 10px;
+}
+
 .close {
   -webkit-transition: 0.3s;
   transition: 0.3s;

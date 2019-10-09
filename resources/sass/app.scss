@@ -391,6 +391,11 @@ textarea {
         height: 20px;
         font-size: 12px;
     }
+    &.tiny {
+        width: 14px;
+        height: 14px;
+        font-size: 10px;
+    }
 }
 
 // CLOSE BUTTONS / ICONS

@@ -54,7 +54,7 @@
                     Focus <i class="fas" :class="[(this.sortBy == 'focus' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
 
-                <th v-if="currentTaskPermissions.comments" :class="{active: this.sortBy == 'commentsScoped'}" class="clickable square-wrapper comments" @click="onSortBy('commentsScoped', false)">
+                <th v-if="currentTaskPermissions.comments && !currentTask.parentTasks.find(x => x.type == 'alignment')" :class="{active: this.sortBy == 'commentsScoped'}" class="clickable square-wrapper comments" @click="onSortBy('commentsScoped', false)">
                     Comments <i class="fas" :class="[(this.sortBy == 'commentsScoped' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
                 <th v-if="currentTaskPermissions.requests" :class="{active: this.sortBy == 'requests'}" class="clickable square-wrapper comments" @click="onSortBy('requests', false)">
@@ -75,6 +75,11 @@
                 <div class="product-row flex-table-row"
                 v-for="(product, index) in products" :key="product.id"
                 :class="[(currentTaskPermissions.actions) ? (product.currentAction != null) ? (product.currentAction.action == 0) ? 'out' : 'in' : '' : '']">
+                
+                    <span v-if="currentTask.parentTasks.find(x => x.type == 'approval') && product.currentAction == null && product.buyerAction == null && product.comments[product.comments.length-1].task_id == currentTask.parentTasks.find(x => x.type == 'approval').id" class="circle tiny primary"></span>
+                    <!-- <span v-else-if="currentTask.type == 'decision' && product.currentAction == null && product.decisionAction == null && product.comments[product.comments.length-1].task_id == currentTask.children[0].task_id" class="circle tiny primary"></span> -->
+                    <span v-else-if="currentTask.type == 'approval' && product.currentAction == null && product.decisionAction == null && product.comments[product.comments.length-1].task_id != currentTask.id" class="circle tiny primary"></span>
+                    
                     <td class="select" v-if="currentTaskPermissions.select">
                         <label class="checkbox">
                             <input type="checkbox" @change="onSelect(index)" :ref="'checkbox-for-' + index"/>
@@ -105,8 +110,8 @@
                         </tooltipAlt2>
                     </template>
 
-                    <td v-if="currentTaskPermissions.comments" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.commentsScoped.length}}</span></td>
-                    <td v-if="currentTaskPermissions.requests" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment-exclamation"></i>{{product.requests.length}}</span></td>
+                    <td v-if="currentTaskPermissions.comments && !currentTask.parentTasks.find(x => x.type == 'alignment')" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.commentsScoped.length}}</span></td>
+                    <td v-if="currentTaskPermissions.requests" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-clipboard-check"></i>{{product.requests.length}}</span></td>
 
                     <template v-if="currentTaskPermissions.actions">
                         <td class="action">
@@ -487,6 +492,10 @@ export default {
         margin-top: 0;
         position: relative;
         padding: 0;
+        .circle.tiny {
+            position: absolute;
+            left: -26px;
+        }
         &.sticky {
             margin-top: 90px;
             .scroll-bg {
@@ -674,6 +683,8 @@ export default {
       margin-bottom: 0;
       padding-top: 5px;
       padding-bottom: 5px;
+      display: flex;
+      align-items: center;
       &:hover {
           background: $light;
       }

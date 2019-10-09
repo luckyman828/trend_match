@@ -9372,6 +9372,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 
@@ -14702,7 +14707,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".overlay[data-v-57b394cf] {\n  display: block;\n  position: absolute;\n  color: white;\n  -webkit-box-pack: center;\n          justify-content: center;\n  text-align: center;\n  padding-top: 100px;\n  font-size: 20px;\n  z-index: 1;\n}\n.dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1b1c1d;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n  position: relative;\n  padding: 0;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 70px;\n  right: 0;\n  background: #f9f9f9;\n  width: 100%;\n  height: 60px;\n  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05) inset;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  margin-left: 1px;\n  border-radius: 0 6px 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.card > .flex-table[data-v-57b394cf] {\n  margin-left: 0;\n  margin-right: 0;\n  width: 100%;\n}\n.flex-table.disabled .product-row[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  min-width: 120px;\n  margin-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf], .flex-table-row > *.tooltip-wrapper .square-wrapper[data-v-57b394cf] {\n  min-width: 56px;\n  margin-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.square-wrapper .square[data-v-57b394cf], .flex-table-row > *.tooltip-wrapper .square-wrapper .square[data-v-57b394cf] {\n  min-width: 56px;\n  width: auto;\n  padding: 0 4px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 82px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: 16px;\n  margin-right: 16px;\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 284px;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table-row > *.action[data-v-57b394cf]:not(th) {\n  display: -webkit-box;\n  display: flex;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #f3f3f3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #f3f3f3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5ee2a0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #ff6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #f9f9f9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #dfdfdf;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #a8a8a8;\n  white-space: nowrap;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #dfdfdf;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3b86ff;\n}\nth.action[data-v-57b394cf] {\n  text-align: right;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1b1c1d;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #f9f9f9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.square[data-v-57b394cf] {\n  color: #1b1c1d;\n  font-weight: 600;\n}\n.square[data-v-57b394cf]:not(.true-square) {\n  min-width: 58px;\n}\n.square i[data-v-57b394cf] {\n  color: #a8a8a8;\n}\n.square.focus-action.active i[data-v-57b394cf] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.button[data-v-57b394cf] {\n  min-width: 72px;\n}\n.button[data-v-57b394cf]:nth-child(1n+2) {\n  margin-left: 12px;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.product-totals[data-v-57b394cf] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.product-totals span[data-v-57b394cf] {\n  font-weight: 500;\n  font-size: 14px;\n}\n.product-totals span[data-v-57b394cf]:not(:last-child) {\n  margin-right: 20px;\n}", ""]);
+exports.push([module.i, ".overlay[data-v-57b394cf] {\n  display: block;\n  position: absolute;\n  color: white;\n  -webkit-box-pack: center;\n          justify-content: center;\n  text-align: center;\n  padding-top: 100px;\n  font-size: 20px;\n  z-index: 1;\n}\n.dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1b1c1d;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n  position: relative;\n  padding: 0;\n}\n.products .circle.tiny[data-v-57b394cf] {\n  position: absolute;\n  left: -26px;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 70px;\n  right: 0;\n  background: #f9f9f9;\n  width: 100%;\n  height: 60px;\n  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05) inset;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  margin-left: 1px;\n  border-radius: 0 6px 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.card > .flex-table[data-v-57b394cf] {\n  margin-left: 0;\n  margin-right: 0;\n  width: 100%;\n}\n.flex-table.disabled .product-row[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  min-width: 120px;\n  margin-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf], .flex-table-row > *.tooltip-wrapper .square-wrapper[data-v-57b394cf] {\n  min-width: 56px;\n  margin-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.square-wrapper .square[data-v-57b394cf], .flex-table-row > *.tooltip-wrapper .square-wrapper .square[data-v-57b394cf] {\n  min-width: 56px;\n  width: auto;\n  padding: 0 4px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 82px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: 16px;\n  margin-right: 16px;\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 284px;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table-row > *.action[data-v-57b394cf]:not(th) {\n  display: -webkit-box;\n  display: flex;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #f3f3f3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #f3f3f3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5ee2a0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #ff6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #f9f9f9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #dfdfdf;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #a8a8a8;\n  white-space: nowrap;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #dfdfdf;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3b86ff;\n}\nth.action[data-v-57b394cf] {\n  text-align: right;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1b1c1d;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #f9f9f9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.square[data-v-57b394cf] {\n  color: #1b1c1d;\n  font-weight: 600;\n}\n.square[data-v-57b394cf]:not(.true-square) {\n  min-width: 58px;\n}\n.square i[data-v-57b394cf] {\n  color: #a8a8a8;\n}\n.square.focus-action.active i[data-v-57b394cf] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.button[data-v-57b394cf] {\n  min-width: 72px;\n}\n.button[data-v-57b394cf]:nth-child(1n+2) {\n  margin-left: 12px;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.product-totals[data-v-57b394cf] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.product-totals span[data-v-57b394cf] {\n  font-weight: 500;\n  font-size: 14px;\n}\n.product-totals span[data-v-57b394cf]:not(:last-child) {\n  margin-right: 20px;\n}", ""]);
 
 // exports
 
@@ -29546,7 +29551,10 @@ var render = function() {
                   )
                 : _vm._e(),
               _vm._v(" "),
-              _vm.currentTaskPermissions.comments
+              _vm.currentTaskPermissions.comments &&
+              !_vm.currentTask.parentTasks.find(function(x) {
+                return x.type == "alignment"
+              })
                 ? _c(
                     "th",
                     {
@@ -29647,6 +29655,24 @@ var render = function() {
                     ]
                   },
                   [
+                    _vm.currentTask.parentTasks.find(function(x) {
+                      return x.type == "approval"
+                    }) &&
+                    product.currentAction == null &&
+                    product.buyerAction == null &&
+                    product.comments[product.comments.length - 1].task_id ==
+                      _vm.currentTask.parentTasks.find(function(x) {
+                        return x.type == "approval"
+                      }).id
+                      ? _c("span", { staticClass: "circle tiny primary" })
+                      : _vm.currentTask.type == "approval" &&
+                        product.currentAction == null &&
+                        product.decisionAction == null &&
+                        product.comments[product.comments.length - 1].task_id !=
+                          _vm.currentTask.id
+                      ? _c("span", { staticClass: "circle tiny primary" })
+                      : _vm._e(),
+                    _vm._v(" "),
                     _vm.currentTaskPermissions.select
                       ? _c("td", { staticClass: "select" }, [
                           _c("label", { staticClass: "checkbox" }, [
@@ -29909,7 +29935,10 @@ var render = function() {
                         ]
                       : _vm._e(),
                     _vm._v(" "),
-                    _vm.currentTaskPermissions.comments
+                    _vm.currentTaskPermissions.comments &&
+                    !_vm.currentTask.parentTasks.find(function(x) {
+                      return x.type == "alignment"
+                    })
                       ? _c("td", { staticClass: "square-wrapper comments" }, [
                           _c(
                             "span",
@@ -29945,7 +29974,7 @@ var render = function() {
                             },
                             [
                               _c("i", {
-                                staticClass: "far fa-comment-exclamation"
+                                staticClass: "far fa-clipboard-check"
                               }),
                               _vm._v(_vm._s(product.requests.length))
                             ]
