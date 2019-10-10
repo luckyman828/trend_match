@@ -9409,7 +9409,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 
 
@@ -11292,8 +11291,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return productsToReturn;
     },
     productsFiltered: function productsFiltered() {
-      var _this2 = this;
-
       var method = this.currentProductFilter;
       var products = this.productsFilteredByCategory;
       var productsToReturn = products; // filter by in/out
@@ -11301,13 +11298,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (['ins', 'outs', 'nds'].includes(method)) {
         var filteredByAction = products.filter(function (product) {
           if (method == 'nds') {
-            if (_this2.currentTask.type == 'approval') {
-              return product.currentAction == null && product.decisionAction == null;
-            } else return product.currentAction == null;
+            return product.currentAction == null && product.decisionAction == null && product.buyerAction == null; // if (this.currentTask.type == 'approval') {
+            //     return (product.currentAction == null && product.decisionAction == null)
+            // }
+            // else if (this.currentTask.parentTasks.find(x => x.type =='approval')) {
+            //     return (product.currentAction == null && product.buyingAction == null)
+            // }
+            // else return product.currentAction == null
           } else if (method == 'ins') {
-            if (product.currentAction) return product.currentAction.action >= 1;
+            if (product.currentAction) return product.currentAction.action >= 1;else if (product.buyerAction) return product.buyerAction.action >= 1;else if (product.decisionAction) return product.decisionAction.action >= 1;
           } else if (method == 'outs') {
-            if (product.currentAction) return product.currentAction.action < 1;
+            if (product.currentAction) return product.currentAction.action < 1;else if (product.buyerAction) return product.buyerAction.action < 1;else if (product.decisionAction) return product.decisionAction.action < 1;
           }
         });
         productsToReturn = filteredByAction;
@@ -11346,8 +11347,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return selectedProducts;
     },
     productTotals: function productTotals() {
-      var _this3 = this;
-
       var products = this.productsFilteredByCategory;
       var data = {
         products: products.length,
@@ -11356,33 +11355,43 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         nds: 0
       };
       products.forEach(function (product) {
-        if (_this3.currentTask.type == 'approval') {
-          if (!product.currentAction && !product.decisionAction) {
-            data.nds++;
-          }
-        } else if (product.currentAction) {
-          if (product.currentAction.action == 0) {
-            data.outs++;
-          } else {
-            data.ins++;
-          }
-        } else {
+        if (product.currentAction == null && product.decisionAction == null && product.buyerAction == null) {
           data.nds++;
+        } else {
+          if (product.currentAction) {
+            if (product.currentAction.action == 0) {
+              data.outs++;
+            } else {
+              data.ins++;
+            }
+          } else if (product.buyerAction) {
+            if (product.buyerAction.action == 0) {
+              data.outs++;
+            } else {
+              data.ins++;
+            }
+          } else if (product.decisionAction) {
+            if (product.decisionAction.action == 0) {
+              data.outs++;
+            } else {
+              data.ins++;
+            }
+          }
         }
       });
       return data;
     },
     teamUsers: function teamUsers() {
-      var _this4 = this;
+      var _this2 = this;
 
       var usersToReturn = [];
 
       if (this.teamFilterId > 0) {
         var thisTeam = this.teams.find(function (team) {
-          return team.id == _this4.teamFilterId;
+          return team.id == _this2.teamFilterId;
         });
         if (thisTeam) thisTeam.users.forEach(function (user) {
-          var fileUser = _this4.collection.users.find(function (x) {
+          var fileUser = _this2.collection.users.find(function (x) {
             return x.id == user.id;
           });
 
@@ -11470,7 +11479,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this5 = this;
+      var _this3 = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
@@ -11480,7 +11489,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
-        var thisProduct = _this5.products.find(function (x) {
+        var thisProduct = _this3.products.find(function (x) {
           return x.id == product;
         });
 
@@ -29168,92 +29177,83 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "product-tabs" },
-    [
-      _c(
-        "span",
-        {
-          staticClass: "tab",
-          class: { active: _vm.currentFilter == "overview" },
-          on: {
-            click: function($event) {
-              return _vm.setProductFilter("overview")
-            }
+  return _c("div", { staticClass: "product-tabs" }, [
+    _c(
+      "span",
+      {
+        staticClass: "tab",
+        class: { active: _vm.currentFilter == "overview" },
+        on: {
+          click: function($event) {
+            return _vm.setProductFilter("overview")
           }
-        },
-        [
-          _vm._v("Overview "),
-          _c("span", { staticClass: "count" }, [
-            _vm._v(_vm._s(_vm.productTotals.products))
-          ])
-        ]
-      ),
-      _vm._v(" "),
-      _c(
-        "span",
-        {
-          staticClass: "tab",
-          class: { active: _vm.currentFilter == "nds" },
-          on: {
-            click: function($event) {
-              return _vm.setProductFilter("nds")
-            }
+        }
+      },
+      [
+        _vm._v("Overview "),
+        _c("span", { staticClass: "count" }, [
+          _vm._v(_vm._s(_vm.productTotals.products))
+        ])
+      ]
+    ),
+    _vm._v(" "),
+    _c(
+      "span",
+      {
+        staticClass: "tab",
+        class: { active: _vm.currentFilter == "nds" },
+        on: {
+          click: function($event) {
+            return _vm.setProductFilter("nds")
           }
-        },
-        [
-          _vm._v("ND Styles "),
-          _c("span", { staticClass: "count" }, [
-            _vm._v(_vm._s(_vm.productTotals.nds))
-          ])
-        ]
-      ),
-      _vm._v(" "),
-      _vm.currentTask.type != "approval"
-        ? [
-            _c(
-              "span",
-              {
-                staticClass: "tab",
-                class: { active: _vm.currentFilter == "ins" },
-                on: {
-                  click: function($event) {
-                    return _vm.setProductFilter("ins")
-                  }
-                }
-              },
-              [
-                _vm._v("IN Styles "),
-                _c("span", { staticClass: "count" }, [
-                  _vm._v(_vm._s(_vm.productTotals.ins))
-                ])
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "span",
-              {
-                staticClass: "tab",
-                class: { active: _vm.currentFilter == "outs" },
-                on: {
-                  click: function($event) {
-                    return _vm.setProductFilter("outs")
-                  }
-                }
-              },
-              [
-                _vm._v("OUT Styles "),
-                _c("span", { staticClass: "count" }, [
-                  _vm._v(_vm._s(_vm.productTotals.outs))
-                ])
-              ]
-            )
-          ]
-        : _vm._e()
-    ],
-    2
-  )
+        }
+      },
+      [
+        _vm._v("ND Styles "),
+        _c("span", { staticClass: "count" }, [
+          _vm._v(_vm._s(_vm.productTotals.nds))
+        ])
+      ]
+    ),
+    _vm._v(" "),
+    _c(
+      "span",
+      {
+        staticClass: "tab",
+        class: { active: _vm.currentFilter == "ins" },
+        on: {
+          click: function($event) {
+            return _vm.setProductFilter("ins")
+          }
+        }
+      },
+      [
+        _vm._v("IN Styles "),
+        _c("span", { staticClass: "count" }, [
+          _vm._v(_vm._s(_vm.productTotals.ins))
+        ])
+      ]
+    ),
+    _vm._v(" "),
+    _c(
+      "span",
+      {
+        staticClass: "tab",
+        class: { active: _vm.currentFilter == "outs" },
+        on: {
+          click: function($event) {
+            return _vm.setProductFilter("outs")
+          }
+        }
+      },
+      [
+        _vm._v("OUT Styles "),
+        _c("span", { staticClass: "count" }, [
+          _vm._v(_vm._s(_vm.productTotals.outs))
+        ])
+      ]
+    )
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true

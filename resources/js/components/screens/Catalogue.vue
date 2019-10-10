@@ -229,17 +229,29 @@ export default{
                 const filteredByAction = products.filter(product => {
                     
                     if (method == 'nds') {
-                        if (this.currentTask.type == 'approval') {
-                            return (product.currentAction == null && product.decisionAction == null)
-                        }
-                        else return product.currentAction == null
+                        return (product.currentAction == null && product.decisionAction == null && product.buyerAction == null)
+                        // if (this.currentTask.type == 'approval') {
+                        //     return (product.currentAction == null && product.decisionAction == null)
+                        // }
+                        // else if (this.currentTask.parentTasks.find(x => x.type =='approval')) {
+                        //     return (product.currentAction == null && product.buyingAction == null)
+                        // }
+                        // else return product.currentAction == null
                     }
                     else if (method == 'ins') {
                         if (product.currentAction)
                             return product.currentAction.action >= 1
+                        else if (product.buyerAction)
+                            return product.buyerAction.action >= 1
+                        else if (product.decisionAction)
+                            return product.decisionAction.action >= 1
                     } else if (method == 'outs') {
                         if (product.currentAction)
                             return product.currentAction.action < 1
+                        else if (product.buyerAction)
+                            return product.buyerAction.action < 1
+                        else if (product.decisionAction)
+                            return product.decisionAction.action < 1
                     }
                 })
                 productsToReturn = filteredByAction
@@ -289,19 +301,30 @@ export default{
                 nds: 0,
             }
             products.forEach(product => {
-                if (this.currentTask.type == 'approval') {
-                    if (!product.currentAction && !product.decisionAction) {
-                        data.nds++
-                    }
-                }
-                else if (product.currentAction) {
-                    if (product.currentAction.action == 0) {
-                        data.outs++
-                    } else {
-                        data.ins++
-                    }
-                } else {
+                if (product.currentAction == null && product.decisionAction == null && product.buyerAction == null) {
                     data.nds++
+                } else {
+                    if (product.currentAction) {
+                        if (product.currentAction.action == 0) {
+                            data.outs++
+                        } else {
+                            data.ins++
+                        }
+                    }
+                    else if (product.buyerAction) {
+                        if (product.buyerAction.action == 0) {
+                            data.outs++
+                        } else {
+                            data.ins++
+                        }
+                    }
+                    else if (product.decisionAction) {
+                        if (product.decisionAction.action == 0) {
+                            data.outs++
+                        } else {
+                            data.ins++
+                        }
+                    }
                 }
 
             })

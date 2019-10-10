@@ -77,7 +77,6 @@
                 :class="[(currentTaskPermissions.actions) ? (product.currentAction != null) ? (product.currentAction.action == 0) ? 'out' : 'in' : '' : '']">
                 
                     <span v-if="currentTask.parentTasks.find(x => x.type == 'approval') && product.currentAction == null && product.buyerAction == null && product.comments[product.comments.length-1].task_id == currentTask.parentTasks.find(x => x.type == 'approval').id" class="circle tiny primary"></span>
-                    <!-- <span v-else-if="currentTask.type == 'decision' && product.currentAction == null && product.decisionAction == null && product.comments[product.comments.length-1].task_id == currentTask.children[0].task_id" class="circle tiny primary"></span> -->
                     <span v-else-if="currentTask.type == 'approval' && product.currentAction == null && product.decisionAction == null && product.comments[product.comments.length-1].task_id != currentTask.id" class="circle tiny primary"></span>
                     
                     <td class="select" v-if="currentTaskPermissions.select">

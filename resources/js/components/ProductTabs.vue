@@ -2,10 +2,10 @@
     <div class="product-tabs">
         <span :class="{active: currentFilter == 'overview'}" class="tab" @click="setProductFilter('overview')">Overview <span class="count">{{productTotals.products}}</span></span>
         <span :class="{active: currentFilter == 'nds'}" class="tab" @click="setProductFilter('nds')">ND Styles <span class="count">{{productTotals.nds}}</span></span>
-        <template v-if="currentTask.type != 'approval'">
+        <!-- <template v-if="currentTask.type != 'approval'"> -->
             <span :class="{active: currentFilter == 'ins'}" class="tab" @click="setProductFilter('ins')">IN Styles <span class="count">{{productTotals.ins}}</span></span>
             <span :class="{active: currentFilter == 'outs'}" class="tab" @click="setProductFilter('outs')">OUT Styles <span class="count">{{productTotals.outs}}</span></span>
-        </template>
+        <!-- </template> -->
     </div>
 </template>
 
