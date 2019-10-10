@@ -289,7 +289,12 @@ export default{
                 nds: 0,
             }
             products.forEach(product => {
-                if (product.currentAction) {
+                if (this.currentTask.type == 'approval') {
+                    if (!product.currentAction && !product.decisionAction) {
+                        data.nds++
+                    }
+                }
+                else if (product.currentAction) {
                     if (product.currentAction.action == 0) {
                         data.outs++
                     } else {

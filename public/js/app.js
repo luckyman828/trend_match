@@ -9156,6 +9156,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -9165,13 +9170,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'productTabs',
   props: ['productTotals', 'currentFilter'],
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTask'])),
   methods: {
     setProductFilter: function setProductFilter(filter) {
       this.$emit('setProductFilter', filter);
     }
+  },
+  mounted: function mounted() {
+    if (this.currentTask.type == 'approval') this.setProductFilter('nds');
   }
 });
 
@@ -9397,6 +9409,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 
@@ -9427,7 +9440,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         header: '',
         data: {}
       },
-      sticky: false
+      sticky: false,
+      itemsPerPage: 5,
+      pageLimit: 5
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['currentFile', 'actionScope']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTask', 'currentTaskPermissions', 'userPermissionLevel', 'currentWorkspaceId']), {
@@ -9437,9 +9452,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     hasAccess: function hasAccess() {
       return this.currentTask != null ? true : false;
+    },
+    productsToShow: function productsToShow() {
+      // const products = this.products.slice(0, this.pageLimit)
+      return this.products;
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['setCurrentProductId', 'setAvailableProductIds']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapMutations"])('entities/actions', ['setAction', 'setTaskAction', 'destroyAction', 'destroyTaskAction', 'setManyActions', 'setManyTaskActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapMutations"])('entities/comments', ['setComment']), {
+    loadMore: function loadMore() {
+      this.pageLimit += this.itemsPerPage;
+    },
     productImg: function productImg(variant) {
       if (!variant.error && variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
     },
@@ -11324,6 +11346,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return selectedProducts;
     },
     productTotals: function productTotals() {
+      var _this3 = this;
+
       var products = this.productsFilteredByCategory;
       var data = {
         products: products.length,
@@ -11332,7 +11356,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         nds: 0
       };
       products.forEach(function (product) {
-        if (product.currentAction) {
+        if (_this3.currentTask.type == 'approval') {
+          if (!product.currentAction && !product.decisionAction) {
+            data.nds++;
+          }
+        } else if (product.currentAction) {
           if (product.currentAction.action == 0) {
             data.outs++;
           } else {
@@ -11345,16 +11373,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return data;
     },
     teamUsers: function teamUsers() {
-      var _this3 = this;
+      var _this4 = this;
 
       var usersToReturn = [];
 
       if (this.teamFilterId > 0) {
         var thisTeam = this.teams.find(function (team) {
-          return team.id == _this3.teamFilterId;
+          return team.id == _this4.teamFilterId;
         });
         if (thisTeam) thisTeam.users.forEach(function (user) {
-          var fileUser = _this3.collection.users.find(function (x) {
+          var fileUser = _this4.collection.users.find(function (x) {
             return x.id == user.id;
           });
 
@@ -11442,7 +11470,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this4 = this;
+      var _this5 = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
@@ -11452,7 +11480,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
-        var thisProduct = _this4.products.find(function (x) {
+        var thisProduct = _this5.products.find(function (x) {
           return x.id == product;
         });
 
@@ -14731,7 +14759,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".overlay[data-v-57b394cf] {\n  display: block;\n  position: absolute;\n  color: white;\n  -webkit-box-pack: center;\n          justify-content: center;\n  text-align: center;\n  padding-top: 100px;\n  font-size: 20px;\n  z-index: 1;\n}\n.dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1b1c1d;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n  position: relative;\n  padding: 0;\n}\n.products .circle.tiny[data-v-57b394cf] {\n  position: absolute;\n  left: -26px;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 70px;\n  right: 0;\n  background: #f9f9f9;\n  width: 100%;\n  height: 60px;\n  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05) inset;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  margin-left: 1px;\n  border-radius: 0 6px 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.card > .flex-table[data-v-57b394cf] {\n  margin-left: 0;\n  margin-right: 0;\n  width: 100%;\n}\n.flex-table.disabled .product-row[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  min-width: 120px;\n  margin-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf], .flex-table-row > *.tooltip-wrapper .square-wrapper[data-v-57b394cf] {\n  min-width: 56px;\n  margin-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.square-wrapper .square[data-v-57b394cf], .flex-table-row > *.tooltip-wrapper .square-wrapper .square[data-v-57b394cf] {\n  min-width: 56px;\n  width: auto;\n  padding: 0 4px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 82px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: 16px;\n  margin-right: 16px;\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 284px;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table-row > *.action[data-v-57b394cf]:not(th) {\n  display: -webkit-box;\n  display: flex;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #f3f3f3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #f3f3f3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5ee2a0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #ff6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #f9f9f9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #dfdfdf;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #a8a8a8;\n  white-space: nowrap;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #dfdfdf;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3b86ff;\n}\nth.action[data-v-57b394cf] {\n  text-align: right;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1b1c1d;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #f9f9f9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.square[data-v-57b394cf] {\n  color: #1b1c1d;\n  font-weight: 600;\n}\n.square[data-v-57b394cf]:not(.true-square) {\n  min-width: 58px;\n}\n.square i[data-v-57b394cf] {\n  color: #a8a8a8;\n}\n.square.focus-action.active i[data-v-57b394cf] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.button[data-v-57b394cf] {\n  min-width: 72px;\n}\n.button[data-v-57b394cf]:nth-child(1n+2) {\n  margin-left: 12px;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.product-totals[data-v-57b394cf] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.product-totals span[data-v-57b394cf] {\n  font-weight: 500;\n  font-size: 14px;\n}\n.product-totals span[data-v-57b394cf]:not(:last-child) {\n  margin-right: 20px;\n}", ""]);
+exports.push([module.i, ".overlay[data-v-57b394cf] {\n  display: block;\n  position: absolute;\n  color: white;\n  -webkit-box-pack: center;\n          justify-content: center;\n  text-align: center;\n  padding-top: 100px;\n  font-size: 20px;\n  z-index: 1;\n}\n.dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1b1c1d;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n  position: relative;\n  padding: 0;\n}\n.products .circle.tiny[data-v-57b394cf] {\n  position: absolute;\n  left: -26px;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 70px;\n  right: 0;\n  background: #f9f9f9;\n  width: 100%;\n  height: 60px;\n  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05) inset;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  margin-left: 1px;\n  border-radius: 0 6px 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.card > .flex-table[data-v-57b394cf] {\n  margin-left: 0;\n  margin-right: 0;\n  width: 100%;\n}\n.flex-table.disabled .product-row[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  min-width: 120px;\n  margin-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf], .flex-table-row > *.tooltip-wrapper .square-wrapper[data-v-57b394cf] {\n  min-width: 56px;\n  margin-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.square-wrapper .square[data-v-57b394cf], .flex-table-row > *.tooltip-wrapper .square-wrapper .square[data-v-57b394cf] {\n  min-width: 56px;\n  width: auto;\n  padding: 0 4px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 82px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: 16px;\n  margin-right: 16px;\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 284px;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table-row > *.action[data-v-57b394cf]:not(th) {\n  display: -webkit-box;\n  display: flex;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #f3f3f3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #f3f3f3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5ee2a0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #ff6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #f9f9f9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #dfdfdf;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #a8a8a8;\n  white-space: nowrap;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #dfdfdf;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3b86ff;\n}\nth.action[data-v-57b394cf] {\n  text-align: right;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1b1c1d;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #f9f9f9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.square[data-v-57b394cf] {\n  color: #1b1c1d;\n  font-weight: 600;\n}\n.square[data-v-57b394cf]:not(.true-square) {\n  min-width: 58px;\n}\n.square i[data-v-57b394cf] {\n  color: #a8a8a8;\n}\n.square.focus-action.active i[data-v-57b394cf] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.button[data-v-57b394cf] {\n  min-width: 72px;\n}\n.button[data-v-57b394cf]:nth-child(1n+2) {\n  margin-left: 12px;\n}\n.button.load-more[data-v-57b394cf] {\n  position: absolute;\n  width: 100%;\n  margin-left: 0;\n  margin: 12px 0;\n  height: 44px;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.product-totals[data-v-57b394cf] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.product-totals span[data-v-57b394cf] {\n  font-weight: 500;\n  font-size: 14px;\n}\n.product-totals span[data-v-57b394cf]:not(:last-child) {\n  margin-right: 20px;\n}", ""]);
 
 // exports
 
@@ -29140,83 +29168,92 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "product-tabs" }, [
-    _c(
-      "span",
-      {
-        staticClass: "tab",
-        class: { active: _vm.currentFilter == "overview" },
-        on: {
-          click: function($event) {
-            return _vm.setProductFilter("overview")
+  return _c(
+    "div",
+    { staticClass: "product-tabs" },
+    [
+      _c(
+        "span",
+        {
+          staticClass: "tab",
+          class: { active: _vm.currentFilter == "overview" },
+          on: {
+            click: function($event) {
+              return _vm.setProductFilter("overview")
+            }
           }
-        }
-      },
-      [
-        _vm._v("Overview "),
-        _c("span", { staticClass: "count" }, [
-          _vm._v(_vm._s(_vm.productTotals.products))
-        ])
-      ]
-    ),
-    _vm._v(" "),
-    _c(
-      "span",
-      {
-        staticClass: "tab",
-        class: { active: _vm.currentFilter == "nds" },
-        on: {
-          click: function($event) {
-            return _vm.setProductFilter("nds")
+        },
+        [
+          _vm._v("Overview "),
+          _c("span", { staticClass: "count" }, [
+            _vm._v(_vm._s(_vm.productTotals.products))
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "span",
+        {
+          staticClass: "tab",
+          class: { active: _vm.currentFilter == "nds" },
+          on: {
+            click: function($event) {
+              return _vm.setProductFilter("nds")
+            }
           }
-        }
-      },
-      [
-        _vm._v("ND Styles "),
-        _c("span", { staticClass: "count" }, [
-          _vm._v(_vm._s(_vm.productTotals.nds))
-        ])
-      ]
-    ),
-    _vm._v(" "),
-    _c(
-      "span",
-      {
-        staticClass: "tab",
-        class: { active: _vm.currentFilter == "ins" },
-        on: {
-          click: function($event) {
-            return _vm.setProductFilter("ins")
-          }
-        }
-      },
-      [
-        _vm._v("IN Styles "),
-        _c("span", { staticClass: "count" }, [
-          _vm._v(_vm._s(_vm.productTotals.ins))
-        ])
-      ]
-    ),
-    _vm._v(" "),
-    _c(
-      "span",
-      {
-        staticClass: "tab",
-        class: { active: _vm.currentFilter == "outs" },
-        on: {
-          click: function($event) {
-            return _vm.setProductFilter("outs")
-          }
-        }
-      },
-      [
-        _vm._v("OUT Styles "),
-        _c("span", { staticClass: "count" }, [
-          _vm._v(_vm._s(_vm.productTotals.outs))
-        ])
-      ]
-    )
-  ])
+        },
+        [
+          _vm._v("ND Styles "),
+          _c("span", { staticClass: "count" }, [
+            _vm._v(_vm._s(_vm.productTotals.nds))
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _vm.currentTask.type != "approval"
+        ? [
+            _c(
+              "span",
+              {
+                staticClass: "tab",
+                class: { active: _vm.currentFilter == "ins" },
+                on: {
+                  click: function($event) {
+                    return _vm.setProductFilter("ins")
+                  }
+                }
+              },
+              [
+                _vm._v("IN Styles "),
+                _c("span", { staticClass: "count" }, [
+                  _vm._v(_vm._s(_vm.productTotals.ins))
+                ])
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "span",
+              {
+                staticClass: "tab",
+                class: { active: _vm.currentFilter == "outs" },
+                on: {
+                  click: function($event) {
+                    return _vm.setProductFilter("outs")
+                  }
+                }
+              },
+              [
+                _vm._v("OUT Styles "),
+                _c("span", { staticClass: "count" }, [
+                  _vm._v(_vm._s(_vm.productTotals.outs))
+                ])
+              ]
+            )
+          ]
+        : _vm._e()
+    ],
+    2
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -29662,7 +29699,7 @@ var render = function() {
           ),
           _vm._v(" "),
           !_vm.loading
-            ? _vm._l(_vm.products, function(product, index) {
+            ? _vm._l(_vm.productsToShow, function(product, index) {
                 return _c(
                   "div",
                   {

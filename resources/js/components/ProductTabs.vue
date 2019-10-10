@@ -2,22 +2,33 @@
     <div class="product-tabs">
         <span :class="{active: currentFilter == 'overview'}" class="tab" @click="setProductFilter('overview')">Overview <span class="count">{{productTotals.products}}</span></span>
         <span :class="{active: currentFilter == 'nds'}" class="tab" @click="setProductFilter('nds')">ND Styles <span class="count">{{productTotals.nds}}</span></span>
-        <span :class="{active: currentFilter == 'ins'}" class="tab" @click="setProductFilter('ins')">IN Styles <span class="count">{{productTotals.ins}}</span></span>
-        <span :class="{active: currentFilter == 'outs'}" class="tab" @click="setProductFilter('outs')">OUT Styles <span class="count">{{productTotals.outs}}</span></span>
+        <template v-if="currentTask.type != 'approval'">
+            <span :class="{active: currentFilter == 'ins'}" class="tab" @click="setProductFilter('ins')">IN Styles <span class="count">{{productTotals.ins}}</span></span>
+            <span :class="{active: currentFilter == 'outs'}" class="tab" @click="setProductFilter('outs')">OUT Styles <span class="count">{{productTotals.outs}}</span></span>
+        </template>
     </div>
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
+
 export default {
     name: 'productTabs',
     props: [
         'productTotals',
         'currentFilter',
     ],
+    computed: {
+        ...mapGetters('persist', ['currentTask']),
+    },
     methods: {
         setProductFilter(filter) {
             this.$emit('setProductFilter', filter)
         }
+    },
+    mounted() {
+        if (this.currentTask.type == 'approval')
+            this.setProductFilter('nds')
     }
 }
 </script>

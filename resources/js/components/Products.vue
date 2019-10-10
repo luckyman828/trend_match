@@ -73,7 +73,7 @@
             </div>
             <template v-if="!loading">
                 <div class="product-row flex-table-row"
-                v-for="(product, index) in products" :key="product.id"
+                v-for="(product, index) in productsToShow" :key="product.id"
                 :class="[(currentTaskPermissions.actions) ? (product.currentAction != null) ? (product.currentAction.action == 0) ? 'out' : 'in' : '' : '']">
                 
                     <span v-if="currentTask.parentTasks.find(x => x.type == 'approval') && product.currentAction == null && product.buyerAction == null && product.comments[product.comments.length-1].task_id == currentTask.parentTasks.find(x => x.type == 'approval').id" class="circle tiny primary"></span>
@@ -166,6 +166,7 @@
                 </div>
             </template>
         </div>
+        <!-- <span class="load-more button primary wide" v-if="products.length > pageLimit" @click="loadMore">Loasd more</span> -->
         <template v-if="loading">
             <Loader/>
         </template>
@@ -217,6 +218,8 @@ export default {
             data: {},
         },
         sticky: false,
+        itemsPerPage: 5,
+        pageLimit: 5,
     }},
     computed: {
         // ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
@@ -229,12 +232,19 @@ export default {
         hasAccess() {
             return (this.currentTask != null) ? true : false
         },
+        productsToShow() {
+            // const products = this.products.slice(0, this.pageLimit)
+            return this.products
+        }
     },
     methods: {
         ...mapActions('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction']),
         ...mapActions('entities/products', ['setCurrentProductId', 'setAvailableProductIds']),
         ...mapMutations('entities/actions', ['setAction', 'setTaskAction', 'destroyAction', 'destroyTaskAction', 'setManyActions', 'setManyTaskActions']),
         ...mapMutations('entities/comments', ['setComment']),
+        loadMore() {
+            this.pageLimit += this.itemsPerPage
+        },
         productImg(variant) {
             if (!variant.error && variant.blob_id != null)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
@@ -744,6 +754,13 @@ export default {
         min-width: 72px;
         &:nth-child(1n+2) {
             margin-left: 12px;
+        }
+        &.load-more {
+            position: absolute;
+            width: 100%;
+            margin-left: 0;
+            margin: 12px 0;
+            height: 44px;
         }
     }
     .view-single {
