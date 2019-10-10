@@ -87,7 +87,7 @@ export default {
 
                     // START scope comments to task
                     product.comments.forEach(comment => {
-                        if (comment.task_id == currentTask.inherit_from_id) {
+                        if (comment.task_id == currentTask.inherit_from_id || comment.task_id == currentTask.id) {
                             comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment)
                         } else if (currentTask.type == 'feedback') {
                             if (comment.task_id == currentTask.id)
@@ -96,6 +96,18 @@ export default {
                                     : product.commentsScoped.push(comment)
                         } else if (currentTask.type == 'approval') {
                             if (comment.task_id == currentTask.children[0].task_id || comment.task_id == currentTask.id)
+                                comment.is_request
+                                    ? product.requests.push(comment)
+                                    : product.commentsScoped.push(comment)
+                        } else if (
+                            !currentTask.parentTasks.find(x => x.type == 'approval') &&
+                            currentTask.approvalParent
+                        ) {
+                            // CSM DECISION
+                            if (
+                                comment.task_id == currentTask.approvalParent.id ||
+                                currentTask.parentTasks.find(x => x.id == comment.task_id)
+                            )
                                 comment.is_request
                                     ? product.requests.push(comment)
                                     : product.commentsScoped.push(comment)

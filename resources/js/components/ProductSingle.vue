@@ -8,7 +8,7 @@
                         <h3>{{product.title}}</h3>
                     </div>
                     <div class="right controls">
-                        <template v-if="currentTaskPermissions.actions">
+                        <template v-if="currentTaskPermissions.actions && userPermissionLevel != 3">
                             <span v-if="currentTaskPermissions.focus" class="square true-square clickable focus-action" :class="[(product.currentAction != null) ? (product.currentAction.action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover']" @click="toggleInOut(product, 2)">
                                 <i class="far fa-star"></i>
                             </span>
