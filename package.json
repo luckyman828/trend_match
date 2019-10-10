@@ -23,6 +23,7 @@
     },
     "dependencies": {
         "@vuex-orm/core": "^0.31.13",
+        "jspdf": "^1.5.3",
         "laravel-echo": "^1.6.1",
         "pusher-js": "^5.0.2",
         "vue-dragscroll": "^1.10.2",

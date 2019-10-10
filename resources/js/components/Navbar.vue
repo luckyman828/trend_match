@@ -5,7 +5,7 @@
                 <img src="/images/kollekt-logo-color-1.svg" />
             </router-link>
         </div> -->
-        <template v-if="$route.name == 'catalogue'">
+        <template v-if="$route.name == 'catalogue' && currentTask">
             <NavbarFile/>
         </template>
         <template v-if="$route.name == 'teams'">
@@ -31,6 +31,7 @@ export default {
         NavbarTeam,
     },
     computed: {
+        ...mapGetters('persist', ['currentTask']),
     },
     methods: {
     }

@@ -8149,6 +8149,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _NavbarTeam__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./NavbarTeam */ "./resources/js/components/NavbarTeam.vue");
 /* harmony import */ var _ModalCreateTeam__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ModalCreateTeam */ "./resources/js/components/ModalCreateTeam.vue");
 /* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../store/models/Team */ "./resources/js/store/models/Team.js");
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -8179,7 +8183,7 @@ __webpack_require__.r(__webpack_exports__);
     NavbarFile: _NavbarFile__WEBPACK_IMPORTED_MODULE_2__["default"],
     NavbarTeam: _NavbarTeam__WEBPACK_IMPORTED_MODULE_3__["default"]
   },
-  computed: {},
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTask'])),
   methods: {}
 });
 
@@ -8196,8 +8200,10 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Loader */ "./resources/js/components/Loader.vue");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Loader */ "./resources/js/components/Loader.vue");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -8236,40 +8242,121 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "navbarFile",
   components: {
-    Loader: _Loader__WEBPACK_IMPORTED_MODULE_2__["default"]
+    Loader: _Loader__WEBPACK_IMPORTED_MODULE_3__["default"]
   },
   data: function data() {
     return {
       submittingTaskComplete: false
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['userPermissionLevel', 'currentFile', 'currentTask'])),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/tasks', ['completeTask', 'undoCompleteTask']), {
-    onCompleteTask: function () {
-      var _onCompleteTask = _asyncToGenerator(
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['productsScopedByInheritance']), {
+    host: function host() {
+      return window.location.origin;
+    }
+  }),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/tasks', ['completeTask', 'undoCompleteTask']), {
+    printToPdf: function () {
+      var _printToPdf = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(file_id, task_id) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(event) {
+        var endpoint, apiKey, config, payload;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                this.submittingTaskComplete = true;
-                _context.next = 3;
-                return this.completeTask({
-                  file_id: file_id,
-                  task_id: task_id
+                endpoint = "https://v2018.api2pdf.com/chrome/html";
+                apiKey = "16b0a04b-8c9b-48f6-ad41-4149368bff58"; //Replace this API key from portal.api2pdf.com
+
+                config = {
+                  headers: {
+                    Authorization: apiKey
+                  }
+                };
+                payload = {
+                  html: "<head><link href=\"https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap\" rel=\"stylesheet\"></head><body>".concat(this.$refs.exportToPdf.innerHTML, "</body>"),
+                  //Use your own HTML
+                  inlinePdf: true,
+                  fileName: this.currentWorkspace.name + '_' + this.currentFile.title
+                };
+                console.log('Printing pdf ...');
+                _context.next = 7;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(endpoint, payload, config).then(function (response) {
+                  // console.log(response.data.pdf); //this is your PDF! Do something with it
+                  window.open(response.data.pdf);
+                })["catch"](function (error) {
+                  console.log('error?');
+                  console.log(error);
                 });
 
-              case 3:
-                // .then(reponse => succes = response)
-                this.submittingTaskComplete = false;
+              case 7:
+                console.log('Succes!?');
 
-              case 4:
+              case 8:
               case "end":
                 return _context.stop();
             }
@@ -8277,14 +8364,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }, _callee, this);
       }));
 
-      function onCompleteTask(_x, _x2) {
-        return _onCompleteTask.apply(this, arguments);
+      function printToPdf(_x) {
+        return _printToPdf.apply(this, arguments);
       }
 
-      return onCompleteTask;
+      return printToPdf;
     }(),
-    onUndoCompleteTask: function () {
-      var _onUndoCompleteTask = _asyncToGenerator(
+    onCompleteTask: function () {
+      var _onCompleteTask = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(file_id, task_id) {
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
@@ -8293,7 +8380,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
               case 0:
                 this.submittingTaskComplete = true;
                 _context2.next = 3;
-                return this.undoCompleteTask({
+                return this.completeTask({
                   file_id: file_id,
                   task_id: task_id
                 });
@@ -8310,7 +8397,40 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }, _callee2, this);
       }));
 
-      function onUndoCompleteTask(_x3, _x4) {
+      function onCompleteTask(_x2, _x3) {
+        return _onCompleteTask.apply(this, arguments);
+      }
+
+      return onCompleteTask;
+    }(),
+    onUndoCompleteTask: function () {
+      var _onUndoCompleteTask = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(file_id, task_id) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                this.submittingTaskComplete = true;
+                _context3.next = 3;
+                return this.undoCompleteTask({
+                  file_id: file_id,
+                  task_id: task_id
+                });
+
+              case 3:
+                // .then(reponse => succes = response)
+                this.submittingTaskComplete = false;
+
+              case 4:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this);
+      }));
+
+      function onUndoCompleteTask(_x4, _x5) {
         return _onUndoCompleteTask.apply(this, arguments);
       }
 
@@ -14634,7 +14754,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\n.flex-wrapper[data-v-1b5a1752] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.items-left[data-v-1b5a1752], .items-right[data-v-1b5a1752] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.back-link[data-v-1b5a1752] {\n  padding-right: 28px;\n  border-right: solid 2px #dfdfdf;\n  margin-right: 28px;\n}\n.back-link .circle[data-v-1b5a1752] {\n  margin-right: 8px;\n}\n.breadcrumbs[data-v-1b5a1752] {\n  display: -webkit-box;\n  display: flex;\n}\n.breadcrumbs > *[data-v-1b5a1752] {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.breadcrumbs > *[data-v-1b5a1752]:not(:first-child)::before {\n  content: \"\\F054\";\n  pointer-events: none;\n  color: #535353;\n  margin-left: 8px;\n  margin-right: 10px;\n  margin-bottom: 2px;\n  font-size: 10px;\n  font-family: \"Font Awesome 5 Pro\";\n  font-weight: 900;\n  -moz-osx-font-smoothing: grayscale;\n  -webkit-font-smoothing: antialiased;\n  display: inline-block;\n  font-style: normal;\n  font-variant: normal;\n  text-rendering: auto;\n  line-height: 1;\n}\n.breadcrumbs > *[data-v-1b5a1752]:last-child::before {\n  content: \"\\F061\";\n}", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\n.example-pdf[data-v-1b5a1752] {\n  display: none;\n  position: fixed;\n  left: 50%;\n  -webkit-transform: translateX(-50%);\n          transform: translateX(-50%);\n  width: 100%;\n  max-width: 1000px;\n  height: 90vh;\n  top: 5vh;\n  background: white;\n  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);\n  z-index: 99;\n  overflow-x: hidden;\n  overflow-y: auto;\n}\n.flex-wrapper[data-v-1b5a1752] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.items-left[data-v-1b5a1752], .items-right[data-v-1b5a1752] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.back-link[data-v-1b5a1752] {\n  padding-right: 28px;\n  border-right: solid 2px #dfdfdf;\n  margin-right: 28px;\n}\n.back-link .circle[data-v-1b5a1752] {\n  margin-right: 8px;\n}\n.breadcrumbs[data-v-1b5a1752] {\n  display: -webkit-box;\n  display: flex;\n}\n.breadcrumbs > *[data-v-1b5a1752] {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.breadcrumbs > *[data-v-1b5a1752]:not(:first-child)::before {\n  content: \"\\F054\";\n  pointer-events: none;\n  color: #535353;\n  margin-left: 8px;\n  margin-right: 10px;\n  margin-bottom: 2px;\n  font-size: 10px;\n  font-family: \"Font Awesome 5 Pro\";\n  font-weight: 900;\n  -moz-osx-font-smoothing: grayscale;\n  -webkit-font-smoothing: antialiased;\n  display: inline-block;\n  font-style: normal;\n  font-variant: normal;\n  text-rendering: auto;\n  line-height: 1;\n}\n.breadcrumbs > *[data-v-1b5a1752]:last-child::before {\n  content: \"\\F061\";\n}", ""]);
 
 // exports
 
@@ -27455,7 +27575,9 @@ var render = function() {
     "nav",
     { staticClass: "navbar", staticStyle: { height: "70px" } },
     [
-      _vm.$route.name == "catalogue" ? [_c("NavbarFile")] : _vm._e(),
+      _vm.$route.name == "catalogue" && _vm.currentTask
+        ? [_c("NavbarFile")]
+        : _vm._e(),
       _vm._v(" "),
       _vm.$route.name == "teams" ? [_c("NavbarTeam")] : _vm._e()
     ],
@@ -27535,7 +27657,7 @@ var render = function() {
       "div",
       { staticClass: "items-right" },
       [
-        _vm.userPermissionLevel >= 2 && _vm.currentTask
+        _vm.userPermissionLevel >= 2
           ? [
               _vm.currentTask.isActive
                 ? [
@@ -27580,10 +27702,520 @@ var render = function() {
                   ]
                 : _vm._e()
             ]
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.currentTask.type == "decision"
+          ? _c(
+              "span",
+              {
+                staticClass: "button wide primary",
+                on: { click: _vm.printToPdf }
+              },
+              [_vm._v("Download PDF")]
+            )
           : _vm._e()
       ],
       2
-    )
+    ),
+    _vm._v(" "),
+    _vm.currentTask.type == "decision" &&
+    this.productsScopedByInheritance.length > 1
+      ? _c(
+          "div",
+          {
+            ref: "exportToPdf",
+            staticClass: "example-pdf",
+            staticStyle: { "font-family": "arial, helvetica, sans-serif" }
+          },
+          [
+            _c(
+              "div",
+              {
+                staticStyle: {
+                  "font-family": "'Roboto', sans-serif, helvetica, arial"
+                }
+              },
+              [
+                _c(
+                  "div",
+                  {
+                    staticStyle: {
+                      height: "1040px",
+                      width: "100%",
+                      display: "flex",
+                      "flex-direction": "column",
+                      "justify-content": "space-between",
+                      "align-items": "center",
+                      "text-align": "center"
+                    }
+                  },
+                  [
+                    _c(
+                      "span",
+                      {
+                        staticStyle: {
+                          "font-size": "28px",
+                          "font-weight": "700",
+                          "margin-top": "20px"
+                        }
+                      },
+                      [_vm._v(_vm._s(_vm.currentWorkspace.name))]
+                    ),
+                    _vm._v(" "),
+                    _c("div", [
+                      _c(
+                        "span",
+                        {
+                          staticStyle: {
+                            "font-size": "28px",
+                            "font-weight": "700"
+                          }
+                        },
+                        [_vm._v(_vm._s(_vm.currentFile.title))]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticStyle: {
+                            color: "#3B86FF",
+                            "font-size": "20px",
+                            "font-weight": "700"
+                          }
+                        },
+                        [
+                          _vm._v(
+                            _vm._s(_vm.productsScopedByInheritance.length) +
+                              " styles"
+                          )
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("img", {
+                      staticStyle: {
+                        display: "block",
+                        margin: "0 auto",
+                        width: "150px"
+                      },
+                      attrs: {
+                        src:
+                          "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/kollekt_logo_color.png"
+                      }
+                    })
+                  ]
+                ),
+                _vm._v(" "),
+                _vm._l(_vm.productsScopedByInheritance, function(
+                  product,
+                  index
+                ) {
+                  return _c(
+                    "div",
+                    {
+                      key: product.id,
+                      staticStyle: {
+                        height: "1040px",
+                        width: "100%",
+                        position: "relative",
+                        overflow: "hidden"
+                      }
+                    },
+                    [
+                      _c(
+                        "span",
+                        {
+                          staticStyle: {
+                            display: "block",
+                            color: "#3B86FF",
+                            "font-size": "20px",
+                            "font-weight": "700",
+                            "margin-top": "20px",
+                            "margin-bottom": "8px"
+                          }
+                        },
+                        [
+                          _vm._v(
+                            "#" +
+                              _vm._s(index + 1) +
+                              " of " +
+                              _vm._s(_vm.productsScopedByInheritance.length) +
+                              " styles"
+                          )
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticStyle: {
+                            display: "block",
+                            "font-size": "24px",
+                            "margin-bottom": "12px"
+                          }
+                        },
+                        [_vm._v(_vm._s(product.title))]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        {
+                          staticStyle: {
+                            display: "flex",
+                            "margin-bottom": "12px"
+                          }
+                        },
+                        [
+                          _c("img", {
+                            attrs: {
+                              height: "400px; width: auto;",
+                              src:
+                                "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/" +
+                                product.color_variants[0].blob_id +
+                                "_thumbnail.jpg"
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticStyle: { "margin-left": "16px" } },
+                            [
+                              _c(
+                                "span",
+                                {
+                                  staticStyle: {
+                                    display: "block",
+                                    "font-size": "14px",
+                                    "font-weight": "700"
+                                  }
+                                },
+                                [_vm._v("Style number")]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticStyle: {
+                                    display: "block",
+                                    "margin-bottom": "12px",
+                                    "font-size": "14px"
+                                  }
+                                },
+                                [_vm._v(_vm._s(product.datasource_id))]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticStyle: {
+                                    display: "block",
+                                    "font-size": "14px",
+                                    "font-weight": "700"
+                                  }
+                                },
+                                [_vm._v("Category")]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticStyle: {
+                                    display: "block",
+                                    "margin-bottom": "12px",
+                                    "font-size": "14px"
+                                  }
+                                },
+                                [_vm._v(_vm._s(product.category))]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticStyle: {
+                                    display: "block",
+                                    "font-size": "14px",
+                                    "font-weight": "700"
+                                  }
+                                },
+                                [_vm._v("Minimum production")]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticStyle: {
+                                    display: "block",
+                                    "margin-bottom": "12px",
+                                    "font-size": "14px"
+                                  }
+                                },
+                                [_vm._v(_vm._s(product.quantity) + " Units")]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticStyle: {
+                                    display: "block",
+                                    "font-size": "14px",
+                                    "font-weight": "700"
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    "WHS (" +
+                                      _vm._s(product.userPrices.currency) +
+                                      ")"
+                                  )
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticStyle: {
+                                    display: "block",
+                                    "margin-bottom": "12px",
+                                    "font-size": "14px"
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    _vm._s(product.userPrices.wholesale_price)
+                                  )
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticStyle: {
+                                    display: "block",
+                                    "font-size": "14px",
+                                    "font-weight": "700"
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    "RPP (" +
+                                      _vm._s(product.userPrices.currency) +
+                                      ")"
+                                  )
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticStyle: {
+                                    display: "block",
+                                    "margin-bottom": "12px",
+                                    "font-size": "14px"
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    _vm._s(
+                                      product.userPrices
+                                        .recommended_retail_price
+                                    )
+                                  )
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticStyle: {
+                                    display: "block",
+                                    "font-size": "14px",
+                                    "font-weight": "700"
+                                  }
+                                },
+                                [_vm._v("MU")]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticStyle: {
+                                    display: "block",
+                                    "font-size": "14px"
+                                  }
+                                },
+                                [_vm._v(_vm._s(product.userPrices.markup))]
+                              )
+                            ]
+                          )
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticStyle: {
+                            display: "block",
+                            "font-size": "14px",
+                            "font-weight": "700"
+                          }
+                        },
+                        [_vm._v("Composition")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticStyle: {
+                            display: "block",
+                            "margin-bottom": "12px",
+                            "font-size": "14px"
+                          }
+                        },
+                        [_vm._v(_vm._s(product.composition))]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticStyle: {
+                            display: "block",
+                            "font-size": "14px",
+                            "font-weight": "700"
+                          }
+                        },
+                        [_vm._v("Delivery date")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticStyle: { display: "block", "font-size": "14px" }
+                        },
+                        [
+                          _vm._v(
+                            _vm._s(
+                              new Date(
+                                product.delivery_date
+                              ).toLocaleDateString("en-GB", {
+                                month: "long",
+                                year: "numeric"
+                              })
+                            )
+                          )
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        {
+                          staticStyle: {
+                            display: "flex",
+                            height: "150px",
+                            overflow: "hidden",
+                            "margin-left": "-8px",
+                            "margin-right": "-8px"
+                          }
+                        },
+                        _vm._l(product.color_variants, function(
+                          variant,
+                          index
+                        ) {
+                          return _c(
+                            "div",
+                            {
+                              key: index,
+                              staticStyle: {
+                                flex: "1",
+                                overflow: "hidden",
+                                padding: "8px",
+                                "box-sizing": "border-box",
+                                "max-width": "100px"
+                              }
+                            },
+                            [
+                              _c(
+                                "div",
+                                {
+                                  staticStyle: { width: "100%", height: "100%" }
+                                },
+                                [
+                                  _c(
+                                    "div",
+                                    {
+                                      staticStyle: {
+                                        "padding-top": "110%",
+                                        width: "100%",
+                                        position: "relative",
+                                        overflow: "hidden"
+                                      }
+                                    },
+                                    [
+                                      _c("img", {
+                                        staticStyle: {
+                                          position: "absolute",
+                                          top: "0",
+                                          left: "0",
+                                          height: "100%",
+                                          width: "100%",
+                                          "object-fit": "cover"
+                                        },
+                                        attrs: {
+                                          src:
+                                            "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/" +
+                                            variant.blob_id +
+                                            "_thumbnail.jpg"
+                                        }
+                                      })
+                                    ]
+                                  )
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticStyle: {
+                                    "font-size": "10px",
+                                    "font-weight": "500"
+                                  }
+                                },
+                                [_vm._v(_vm._s(variant.color))]
+                              )
+                            ]
+                          )
+                        }),
+                        0
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticStyle: {
+                            "font-size": "10px",
+                            "font-weight": "700",
+                            position: "absolute",
+                            right: "0",
+                            bottom: "0"
+                          }
+                        },
+                        [
+                          _vm._v(
+                            "Page " +
+                              _vm._s(index + 1) +
+                              " of " +
+                              _vm._s(_vm.productsScopedByInheritance.length)
+                          )
+                        ]
+                      )
+                    ]
+                  )
+                })
+              ],
+              2
+            )
+          ]
+        )
+      : _vm._e()
   ])
 }
 var staticRenderFns = []

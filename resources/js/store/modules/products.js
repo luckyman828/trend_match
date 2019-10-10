@@ -244,6 +244,7 @@ export default {
 
                     data.push(product)
                 })
+
                 return data
             }
         },
