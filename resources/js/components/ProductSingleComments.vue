@@ -15,7 +15,7 @@
 
                 <template v-if="commentScope == 'comments'">
 
-                    <template v-if="currentTask.type == 'approval' || currentTask.approvalParent">
+                    <template v-if="currentTask.type == 'approval' || currentTask.parentTasks.find(x => x.type == 'approval')">
                         <div class="requests-wrapper" v-if="requests.length > 0">
                             <request :request="request" v-for="request in requests.filter(x => x.task_id == currentTask.inherit_from_id)" :key="request.id"/>
                         </div>
@@ -30,19 +30,18 @@
                     </template>
 
                     <template v-else-if="currentTask.type == 'decision'">
-                        <div class="requests-wrapper" v-if="requests.length > 0">
-                            <request :request="request" v-for="request in requests.filter(x => x.task_id == currentTask.inherit_from_id)" :key="request.id"/>
+                        <div class="requests-wrapper">
+                            <request :request="requests.find(x => x.user_id == authUser.id)"/>
                         </div>
-                        <div v-else class="sender-wrapper" v-for="(comment, index) in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
+                        <div class="requests-wrapper">
+                            <request :request="request" v-for="request in requests.filter(x => x.user_id != authUser.id)" :key="request.id"/>
+                        </div>
+                        <div class="sender-wrapper" v-for="(comment, index) in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
                             <comment :comment="comment"/>
                             <div class="sender" v-if="comments[index+1] ? comments[index+1].user_id != comment.user_id : true">{{comment.task.title}} {{(comment.user_id == authUser.id) ? '| You' : userPermissionLevel > 1 ? '| ' + comment.user.name : ''}}</div>
                         </div>
                     </template>
 
-                    <!-- <div v-else class="sender-wrapper" v-for="(sender, index) in commentsGroupedBySender" :key="index" :class="{own: sender.user.id == authUser.id}">
-                        <comment :comment="comment" v-for="comment in sender.comments" :key="comment.id"/>
-                        <div class="sender">{{sender.task.title}} {{(sender.user.id == authUser.id) ? '| You' : userPermissionLevel > 1 ? '| ' + sender.user.name : ''}}</div>
-                    </div> -->
                     <div v-else class="sender-wrapper" v-for="(comment, index) in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
                         <comment :comment="comment"/>
                         <div class="sender" v-if="comments[index+1] ? comments[index+1].user_id != comment.user_id : true">{{comment.task.title}} {{(comment.user_id == authUser.id) ? '| You' : userPermissionLevel > 1 ? '| ' + comment.user.name : ''}}</div>

@@ -8869,7 +8869,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 
 
@@ -28544,7 +28543,9 @@ var render = function() {
           _vm.commentScope == "comments"
             ? [
                 _vm.currentTask.type == "approval" ||
-                _vm.currentTask.approvalParent
+                _vm.currentTask.parentTasks.find(function(x) {
+                  return x.type == "approval"
+                })
                   ? [
                       _vm.requests.length > 0
                         ? _c(
@@ -28700,60 +28701,70 @@ var render = function() {
                     ]
                   : _vm.currentTask.type == "decision"
                   ? [
-                      _vm.requests.length > 0
-                        ? _c(
-                            "div",
-                            { staticClass: "requests-wrapper" },
-                            _vm._l(
-                              _vm.requests.filter(function(x) {
-                                return (
-                                  x.task_id == _vm.currentTask.inherit_from_id
-                                )
-                              }),
-                              function(request) {
-                                return _c("request", {
-                                  key: request.id,
-                                  attrs: { request: request }
-                                })
-                              }
-                            ),
-                            1
-                          )
-                        : _vm._l(_vm.comments, function(comment, index) {
-                            return _c(
-                              "div",
-                              {
-                                key: comment.id,
-                                staticClass: "sender-wrapper",
-                                class: {
-                                  own: comment.user.id == _vm.authUser.id
-                                }
-                              },
-                              [
-                                _c("comment", { attrs: { comment: comment } }),
-                                _vm._v(" "),
-                                (_vm.comments[index + 1]
-                                ? _vm.comments[index + 1].user_id !=
-                                  comment.user_id
-                                : true)
-                                  ? _c("div", { staticClass: "sender" }, [
-                                      _vm._v(
-                                        _vm._s(comment.task.title) +
-                                          " " +
-                                          _vm._s(
-                                            comment.user_id == _vm.authUser.id
-                                              ? "| You"
-                                              : _vm.userPermissionLevel > 1
-                                              ? "| " + comment.user.name
-                                              : ""
-                                          )
-                                      )
-                                    ])
-                                  : _vm._e()
-                              ],
-                              1
-                            )
+                      _c(
+                        "div",
+                        { staticClass: "requests-wrapper" },
+                        [
+                          _c("request", {
+                            attrs: {
+                              request: _vm.requests.find(function(x) {
+                                return x.user_id == _vm.authUser.id
+                              })
+                            }
                           })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        { staticClass: "requests-wrapper" },
+                        _vm._l(
+                          _vm.requests.filter(function(x) {
+                            return x.user_id != _vm.authUser.id
+                          }),
+                          function(request) {
+                            return _c("request", {
+                              key: request.id,
+                              attrs: { request: request }
+                            })
+                          }
+                        ),
+                        1
+                      ),
+                      _vm._v(" "),
+                      _vm._l(_vm.comments, function(comment, index) {
+                        return _c(
+                          "div",
+                          {
+                            key: comment.id,
+                            staticClass: "sender-wrapper",
+                            class: { own: comment.user.id == _vm.authUser.id }
+                          },
+                          [
+                            _c("comment", { attrs: { comment: comment } }),
+                            _vm._v(" "),
+                            (_vm.comments[index + 1]
+                            ? _vm.comments[index + 1].user_id != comment.user_id
+                            : true)
+                              ? _c("div", { staticClass: "sender" }, [
+                                  _vm._v(
+                                    _vm._s(comment.task.title) +
+                                      " " +
+                                      _vm._s(
+                                        comment.user_id == _vm.authUser.id
+                                          ? "| You"
+                                          : _vm.userPermissionLevel > 1
+                                          ? "| " + comment.user.name
+                                          : ""
+                                      )
+                                  )
+                                ])
+                              : _vm._e()
+                          ],
+                          1
+                        )
+                      })
                     ]
                   : _vm._l(_vm.comments, function(comment, index) {
                       return _c(
@@ -57139,6 +57150,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             }) && currentTask.approvalParent) {
               // CSM DECISION
               if (comment.task_id == currentTask.approvalParent.id || currentTask.parentTasks.find(function (x) {
+                return x.id == comment.task_id;
+              }) || currentTask.approvalParent.parentTasks.find(function (x) {
                 return x.id == comment.task_id;
               })) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
             } else {

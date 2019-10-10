@@ -106,7 +106,8 @@ export default {
                             // CSM DECISION
                             if (
                                 comment.task_id == currentTask.approvalParent.id ||
-                                currentTask.parentTasks.find(x => x.id == comment.task_id)
+                                currentTask.parentTasks.find(x => x.id == comment.task_id) ||
+                                currentTask.approvalParent.parentTasks.find(x => x.id == comment.task_id)
                             )
                                 comment.is_request
                                     ? product.requests.push(comment)
