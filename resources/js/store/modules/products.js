@@ -36,6 +36,7 @@ export default {
                 const data = []
                 products.forEach(product => {
                     product.color_variants = JSON.parse(product.color_variants)
+                    product.assortments = JSON.parse(product.assortments)
                     product.prices = JSON.parse(product.prices)
                     product.ins = []
                     product.outs = []

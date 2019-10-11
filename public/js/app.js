@@ -8754,6 +8754,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -28960,6 +28966,28 @@ var render = function() {
                       ])
                     ]),
                     _vm._v(" "),
+                    _vm.product.assortments
+                      ? _c(
+                          "div",
+                          { staticClass: "stat" },
+                          [
+                            _vm._m(4),
+                            _vm._v(" "),
+                            _vm._l(_vm.product.assortments, function(
+                              assortment,
+                              index
+                            ) {
+                              return _c("p", { key: index }, [
+                                _c("span", [
+                                  _vm._v(_vm._s(assortment.assortment_name))
+                                ])
+                              ])
+                            })
+                          ],
+                          2
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
                     _c(
                       "div",
                       {
@@ -29189,6 +29217,12 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("p", [_c("strong", [_vm._v("Delivery date")])])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", [_c("strong", [_vm._v("Assortments")])])
   }
 ]
 render._withStripped = true
@@ -54181,6 +54215,7 @@ function (_Model) {
         category_id: this.attr(''),
         sub_category_id: this.attr(''),
         color_variants: this.attr(''),
+        assortments: this.attr(''),
         comments: this.hasMany(_Comment__WEBPACK_IMPORTED_MODULE_1__["default"], 'product_id'),
         actions: this.hasMany(_Action__WEBPACK_IMPORTED_MODULE_2__["default"], 'product_id'),
         taskActions: this.hasMany(_TaskAction__WEBPACK_IMPORTED_MODULE_6__["default"], 'product_id')
@@ -57905,6 +57940,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         var data = [];
         products.forEach(function (product) {
           product.color_variants = JSON.parse(product.color_variants);
+          product.assortments = JSON.parse(product.assortments);
           product.prices = JSON.parse(product.prices);
           product.ins = [];
           product.outs = [];

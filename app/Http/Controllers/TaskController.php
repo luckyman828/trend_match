@@ -100,9 +100,9 @@ class TaskController extends Controller
                         }
                     }
                     if ($shouldPush) {
-                        array_push($dataToReturn, ['file_id' => $file_id, 'has_access' => true]);
+                        array_push($dataToReturn, ['task_id' => $user_task->id, 'file_id' => $file_id, 'has_access' => true]);
                     } else {
-                        array_push($dataToReturn, ['file_id' => $file_id, 'has_access' => false]);
+                        array_push($dataToReturn, ['task_id' => $user_task->id, 'file_id' => $file_id, 'has_access' => false]);
                     }
                 }
             }

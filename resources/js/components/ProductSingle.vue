@@ -118,6 +118,12 @@
                             <p><strong>Delivery date</strong></p>
                             <p>{{new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})}}</p>
                         </div>
+                        <div class="stat" v-if="product.assortments">
+                            <p><strong>Assortments</strong></p>
+                            <p v-for="(assortment, index) in product.assortments" :key="index">
+                                <span>{{assortment.assortment_name}}</span>
+                            </p>
+                        </div>
 
                         <div class="product-variants" v-dragscroll>
                             <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">

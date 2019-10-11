@@ -34,6 +34,7 @@ export default class Product extends Model {
             category_id: this.attr(''),
             sub_category_id: this.attr(''),
             color_variants: this.attr(''),
+            assortments: this.attr(''),
             comments: this.hasMany(Comment, 'product_id'),
             actions: this.hasMany(Action, 'product_id'),
             taskActions: this.hasMany(TaskAction, 'product_id'),
