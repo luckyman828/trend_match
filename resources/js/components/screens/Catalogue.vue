@@ -16,7 +16,7 @@
                                         {{selectedCategories.length}}
                                     </span>
                                 </div>
-                                <span v-if="selectedCategories.length > 0" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]">Clear filter</span>
+                                <!-- <span v-if="selectedCategories.length > 0" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]">Clear filter</span> -->
                             </template>
                             <template v-slot:header="slotProps">
                                 <span>Filter by category</span>
@@ -25,6 +25,25 @@
                                 <CheckboxButtons :options="dynamicCategories" ref="filterSelect" v-model="selectedCategories" @change="$refs.filterSelect.submit()"/>
                             </template>
                         </Dropdown>
+                        <Dropdown class="dropdown-parent left">
+                            <template v-slot:button="slotProps">
+                                <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
+                                    <span>Delivery</span>
+                                    <i class="far fa-chevron-down"></i>
+                                    <span v-if="selectedDeliveryDates.length > 0" class="bubble">
+                                        {{selectedDeliveryDates.length}}
+                                    </span>
+                                </div>
+                                <!-- <span v-if="selectedDeliveryDates.length > 0" class="clear button invisible primary" @click="$refs.filterDelivery.clear(); selectedDeliveryDates=[]">Clear filter</span> -->
+                            </template>
+                            <template v-slot:header="slotProps">
+                                <span>Filter by delivery date</span>
+                            </template>
+                            <template v-slot:body>
+                                <CheckboxButtons :options="dynamicDeliveryDates" :optionNameKey="'name'" :optionValueKey="'value'" ref="filterDelivery" v-model="selectedDeliveryDates" @change="$refs.filterDelivery.submit()"/>
+                            </template>
+                        </Dropdown>
+                        <span v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]; $refs.filterDelivery.clear(); selectedDeliveryDates=[]">Clear filter</span>
                     </div>
 
                     <div class="right">
@@ -129,6 +148,7 @@ export default{
         selectedProductIDs: [],
         selectedCategoryIDs: [],
         selectedCategories: [],
+        selectedDeliveryDates: [],
         sortBy: 'datasource_id',
         sortAsc: true,
         unsub: '',
@@ -206,6 +226,7 @@ export default{
         productsFilteredByCategory() {
             const products = this.products
             const categories = this.selectedCategories
+            const deliveryDates = this.selectedDeliveryDates
             let productsToReturn = products
 
             // First filter by category
@@ -215,6 +236,14 @@ export default{
                         return Array.from(categories).includes(product.category)
                 })
                 productsToReturn = filteredByCategory
+            }
+            // First filter by category
+            if (deliveryDates.length > 0) {
+                
+                const filteredByDeliveryDate = productsToReturn.filter(product => {
+                        return Array.from(deliveryDates).includes(product.delivery_date)
+                })
+                productsToReturn = filteredByDeliveryDate
             }
 
             return productsToReturn
@@ -371,6 +400,19 @@ export default{
                     uniqueCategories.push(product.category)
             })
             return uniqueCategories
+        },
+        dynamicDeliveryDates() {
+            const products = this.products
+            let uniqueDeliveryDates = []
+            products.forEach(product => {
+                const found = (uniqueDeliveryDates.find(x => x.value == product.delivery_date))
+                if (!found)
+                    uniqueDeliveryDates.push({
+                        name: new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'}), 
+                        value: product.delivery_date
+                        })
+            })
+            return uniqueDeliveryDates
         },
         finalActions() {
             return ProductFinalAction.query().all()
@@ -603,15 +645,18 @@ export default{
         > * {
             display: flex;
             &.left > * {
-                margin-right: 8px;
+                margin-right: 16px;
             }
             &.right > * {
-                margin-left: 8px;
+                margin-left: 16px;
             }
         }
     }
     .item-filter-button {
         min-width: 120px;
         background: $light2;
+    }
+    .button.clear {
+        margin-left: -16px;
     }
 </style>

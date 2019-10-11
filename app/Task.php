@@ -10,4 +10,12 @@ class Task extends Model
     {
         return $this->belongsTo(Phase::class, 'phase_id');
     }
+    public function taskTeams()
+    {
+        return $this->hasMany(TaskTeam::class, 'task_id');
+    }
+    public function fileTasks()
+    {
+        return $this->hasMany(FileTask::class, 'task_id');
+    }
 }

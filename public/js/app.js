@@ -11303,6 +11303,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -11348,6 +11367,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       selectedProductIDs: [],
       selectedCategoryIDs: [],
       selectedCategories: [],
+      selectedDeliveryDates: [],
       sortBy: 'datasource_id',
       sortAsc: true,
       unsub: '',
@@ -11434,6 +11454,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     productsFilteredByCategory: function productsFilteredByCategory() {
       var products = this.products;
       var categories = this.selectedCategories;
+      var deliveryDates = this.selectedDeliveryDates;
       var productsToReturn = products; // First filter by category
 
       if (categories.length > 0) {
@@ -11441,6 +11462,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           return Array.from(categories).includes(product.category);
         });
         productsToReturn = filteredByCategory;
+      } // First filter by category
+
+
+      if (deliveryDates.length > 0) {
+        var filteredByDeliveryDate = productsToReturn.filter(function (product) {
+          return Array.from(deliveryDates).includes(product.delivery_date);
+        });
+        productsToReturn = filteredByDeliveryDate;
       }
 
       return productsToReturn;
@@ -11582,6 +11611,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         if (!found) uniqueCategories.push(product.category);
       });
       return uniqueCategories;
+    },
+    dynamicDeliveryDates: function dynamicDeliveryDates() {
+      var products = this.products;
+      var uniqueDeliveryDates = [];
+      products.forEach(function (product) {
+        var found = uniqueDeliveryDates.find(function (x) {
+          return x.value == product.delivery_date;
+        });
+        if (!found) uniqueDeliveryDates.push({
+          name: new Date(product.delivery_date).toLocaleDateString('en-GB', {
+            month: 'long',
+            year: 'numeric'
+          }),
+          value: product.delivery_date
+        });
+      });
+      return uniqueDeliveryDates;
     },
     finalActions: function finalActions() {
       return _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_15__["default"].query().all();
@@ -15208,7 +15254,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".filters[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 12px;\n}\n.filters > *[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n}\n.filters > *.left > *[data-v-76e8b686] {\n  margin-right: 8px;\n}\n.filters > *.right > *[data-v-76e8b686] {\n  margin-left: 8px;\n}\n.item-filter-button[data-v-76e8b686] {\n  min-width: 120px;\n  background: #dfdfdf;\n}", ""]);
+exports.push([module.i, ".filters[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 12px;\n}\n.filters > *[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n}\n.filters > *.left > *[data-v-76e8b686] {\n  margin-right: 16px;\n}\n.filters > *.right > *[data-v-76e8b686] {\n  margin-left: 16px;\n}\n.item-filter-button[data-v-76e8b686] {\n  min-width: 120px;\n  background: #dfdfdf;\n}\n.button.clear[data-v-76e8b686] {\n  margin-left: -16px;\n}", ""]);
 
 // exports
 
@@ -33104,24 +33150,7 @@ var render = function() {
                                             )
                                           : _vm._e()
                                       ]
-                                    ),
-                                    _vm._v(" "),
-                                    _vm.selectedCategories.length > 0
-                                      ? _c(
-                                          "span",
-                                          {
-                                            staticClass:
-                                              "clear button invisible primary",
-                                            on: {
-                                              click: function($event) {
-                                                _vm.$refs.filterSelect.clear()
-                                                _vm.selectedCategories = []
-                                              }
-                                            }
-                                          },
-                                          [_vm._v("Clear filter")]
-                                        )
-                                      : _vm._e()
+                                    )
                                   ]
                                 }
                               },
@@ -33160,9 +33189,116 @@ var render = function() {
                             ],
                             null,
                             false,
-                            2314853379
+                            4080208784
                           )
-                        })
+                        }),
+                        _vm._v(" "),
+                        _c("Dropdown", {
+                          staticClass: "dropdown-parent left",
+                          scopedSlots: _vm._u(
+                            [
+                              {
+                                key: "button",
+                                fn: function(slotProps) {
+                                  return [
+                                    _c(
+                                      "div",
+                                      {
+                                        staticClass:
+                                          "dropdown-button dropdown-parent item-filter-button",
+                                        on: { click: slotProps.toggle }
+                                      },
+                                      [
+                                        _c("span", [_vm._v("Delivery")]),
+                                        _vm._v(" "),
+                                        _c("i", {
+                                          staticClass: "far fa-chevron-down"
+                                        }),
+                                        _vm._v(" "),
+                                        _vm.selectedDeliveryDates.length > 0
+                                          ? _c(
+                                              "span",
+                                              { staticClass: "bubble" },
+                                              [
+                                                _vm._v(
+                                                  "\n                                    " +
+                                                    _vm._s(
+                                                      _vm.selectedDeliveryDates
+                                                        .length
+                                                    ) +
+                                                    "\n                                "
+                                                )
+                                              ]
+                                            )
+                                          : _vm._e()
+                                      ]
+                                    )
+                                  ]
+                                }
+                              },
+                              {
+                                key: "header",
+                                fn: function(slotProps) {
+                                  return [
+                                    _c("span", [
+                                      _vm._v("Filter by delivery date")
+                                    ])
+                                  ]
+                                }
+                              },
+                              {
+                                key: "body",
+                                fn: function() {
+                                  return [
+                                    _c("CheckboxButtons", {
+                                      ref: "filterDelivery",
+                                      attrs: {
+                                        options: _vm.dynamicDeliveryDates,
+                                        optionNameKey: "name",
+                                        optionValueKey: "value"
+                                      },
+                                      on: {
+                                        change: function($event) {
+                                          return _vm.$refs.filterDelivery.submit()
+                                        }
+                                      },
+                                      model: {
+                                        value: _vm.selectedDeliveryDates,
+                                        callback: function($$v) {
+                                          _vm.selectedDeliveryDates = $$v
+                                        },
+                                        expression: "selectedDeliveryDates"
+                                      }
+                                    })
+                                  ]
+                                },
+                                proxy: true
+                              }
+                            ],
+                            null,
+                            false,
+                            372683620
+                          )
+                        }),
+                        _vm._v(" "),
+                        _vm.selectedCategories.length > 0 ||
+                        _vm.selectedDeliveryDates.length > 0
+                          ? _c(
+                              "span",
+                              {
+                                staticClass: "clear button invisible primary",
+                                on: {
+                                  click: function($event) {
+                                    _vm.$refs.filterSelect.clear()
+                                    _vm.selectedCategories = []
+                                    _vm.$refs.filterDelivery.clear()
+                                    _vm.selectedDeliveryDates = []
+                                  }
+                                }
+                              },
+                              [_vm._v("Clear filter")]
+                            )
+                          : _vm._e()
                       ],
                       1
                     ),

@@ -103,6 +103,7 @@ Route::middleware('auth:api')->group( function(){
     // xxx TASKS xxx
     Route::put('task/complete', 'TaskController@markComplete');
     Route::delete('task/complete', 'TaskController@undoMarkComplete');
+    Route::get('files/feedback-status', 'TaskController@feedbackStatus');
 
 
     // xxx USERS xxx
