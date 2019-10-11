@@ -20,7 +20,7 @@
                             <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
                         </template>
                         <template v-slot:body>
-                            <RadioButtons :options="teams" :optionNameKey="'title'" :optionValueKey="'id'" :currentOptionId="selectedTeamId" ref="teamRadio" v-model="selectedTeamId"/>
+                            <RadioButtons :options="teams" :optionNameKey="'title'" :optionValueKey="'id'" ref="teamRadio" v-model="selectedTeamId"/>
                         </template>
                         <template v-slot:footer="slotProps">
                             <div class="grid-2">
@@ -205,6 +205,9 @@ export default {
             this.newUsers.push({email: '', name: '', permission_level: 1})
         }
     },
+    mounted() {
+        if (this.team) this.selectedTeamId = this.team.id
+    }
 }
 </script>
 

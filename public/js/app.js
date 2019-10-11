@@ -7484,6 +7484,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     toggle: function toggle() {
+      // Set the height if the dropdown is being shown
+      if (this.collapsed) this.setHeight();
       this.collapsed = !this.collapsed;
     },
     getPosition: function getPosition(element) {
@@ -7503,7 +7505,8 @@ __webpack_require__.r(__webpack_exports__);
     },
     // Set the height of the component
     setHeight: function setHeight() {
-      var offset = 4;
+      console.log('setting height!');
+      var offset = 8;
       var el = this.$refs.dropdown;
       var wrapper = this.$refs.wrapper; // const parent = el.closest('.dropdown-parent') // Use set element as parent
       // First look for a parent inside the dropdown, then look for a parent outside
@@ -7515,21 +7518,39 @@ __webpack_require__.r(__webpack_exports__);
       var parentHeight = parent.getBoundingClientRect().height;
       var parentWidth = parent.getBoundingClientRect().width;
       var elHeight = el.getBoundingClientRect().height;
-      var elWidth = el.getBoundingClientRect().width; // Align the dropdown after the parent
+      var elWidth = el.getBoundingClientRect().width;
+      var elRect = el.getBoundingClientRect();
+      var parentRect = parent.getBoundingClientRect(); // // Align the dropdown after the parent
+      // if (parent != null) {
+      //     // Top + Right align
+      //     if (wrapper.classList.contains('right'))
+      //         el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft + parentWidth - elWidth + offset}px ;max-height: ${el.scrollHeight}px;`
+      //     // Top + Left align
+      //     else if (wrapper.classList.contains('left'))
+      //         el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft - offset}px ;max-height: ${el.scrollHeight}px;`
+      //     // Top + Center align (DEFAULT)
+      //     else
+      //         el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft + ( parentWidth / 2 ) - ( elWidth / 2 ) }px ;max-height: ${el.scrollHeight}px;`
+      // }
+      // else el.style.cssText = `max-height: ${el.scrollHeight}px;`
+      // Align the dropdown after the parent
 
       if (parent != null) {
         // Top + Right align
-        if (wrapper.classList.contains('right')) el.style.cssText = "top: ".concat(parentTop + parentHeight + offset, "px; left: ").concat(parentLeft + parentWidth - elWidth + offset, "px ;max-height: ").concat(el.scrollHeight, "px;"); // Top + Left align
-        else if (wrapper.classList.contains('left')) el.style.cssText = "top: ".concat(parentTop + parentHeight + offset, "px; left: ").concat(parentLeft - offset, "px ;max-height: ").concat(el.scrollHeight, "px;"); // Top + Center align (DEFAULT)
-          else el.style.cssText = "top: ".concat(parentTop + parentHeight + offset, "px; left: ").concat(parentLeft + parentWidth / 2 - elWidth / 2, "px ;max-height: ").concat(el.scrollHeight, "px;");
+        if (wrapper.classList.contains('right')) el.style.cssText = "top: ".concat(parentRect.bottom + offset, "px; left: ").concat(parentLeft + parentWidth - elWidth + offset, "px ;max-height: ").concat(el.scrollHeight, "px;"); // el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft + parentWidth - elWidth + offset}px ;max-height: ${el.scrollHeight}px;`
+        // Top + Left align
+        else if (wrapper.classList.contains('left')) el.style.cssText = "top: ".concat(parentRect.bottom + offset, "px; left: ").concat(parentLeft - offset, "px ;max-height: ").concat(el.scrollHeight, "px;"); // el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft - offset}px ;max-height: ${el.scrollHeight}px;`
+          // Top + Center align (DEFAULT)
+          else {
+              el.style.cssText = "top: ".concat(parentRect.bottom + offset, "px; left: ").concat(parentRect.left + parentWidth / 2 - elWidth / 2, "px ;max-height: ").concat(el.scrollHeight, "px;"); // el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft + ( parentWidth / 2 ) - ( elWidth / 2 ) }px ;max-height: ${el.scrollHeight}px;`
+            }
       } else el.style.cssText = "max-height: ".concat(el.scrollHeight, "px;");
     }
   },
   mounted: function mounted() {
     this.setHeight();
   },
-  updated: function updated() {
-    this.setHeight();
+  updated: function updated() {// this.setHeight()
   }
 });
 
@@ -8129,7 +8150,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         permission_level: 1
       });
     }
-  })
+  }),
+  mounted: function mounted() {
+    if (this.team) this.selectedTeamId = this.team.id;
+  }
 });
 
 /***/ }),
@@ -8214,6 +8238,18 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -27009,8 +27045,7 @@ var render = function() {
                                       attrs: {
                                         options: _vm.teams,
                                         optionNameKey: "title",
-                                        optionValueKey: "id",
-                                        currentOptionId: _vm.selectedTeamId
+                                        optionValueKey: "id"
                                       },
                                       model: {
                                         value: _vm.selectedTeamId,
@@ -28206,6 +28241,25 @@ var render = function() {
                               _vm._s(_vm.productsScopedByInheritance.length)
                           )
                         ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        { staticClass: "comments-wrapper" },
+                        [
+                          _vm._l(product.requests, function(request) {
+                            return _c("div", { key: request.id }, [
+                              _c("p", [_vm._v(_vm._s(request.comment))])
+                            ])
+                          }),
+                          _vm._v(" "),
+                          _vm._l(product.commentsScoped, function(comment) {
+                            return _c("div", { key: comment.id }, [
+                              _c("p", [_vm._v(_vm._s(comment.comment))])
+                            ])
+                          })
+                        ],
+                        2
                       )
                     ]
                   )

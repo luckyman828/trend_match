@@ -25,6 +25,7 @@
 
         </div>
 
+        <!-- PDF FOR EXPORT MARKUP -->
         <div class="example-pdf" ref="exportToPdf" v-if="currentTask.type == 'decision' && this.productsScopedByInheritance.length > 1" 
             style="font-family: arial, helvetica, sans-serif;">
             <div style="font-family: 'Roboto', sans-serif, helvetica, arial;">
@@ -78,9 +79,20 @@
                         </div>
                     </div>
                     <span style="font-size: 10px; font-weight: 700; position: absolute; right: 0; bottom: 0;">Page {{index+1}} of {{productsScopedByInheritance.length}}</span>
+
+                    <div class="comments-wrapper">
+                        <div v-for="request in product.requests" :key="request.id">
+                            <p>{{request.comment}}</p>
+                        </div>
+                        <div v-for="comment in product.commentsScoped" :key="comment.id">
+                            <p>{{comment.comment}}</p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
+        <!-- PDF ENDS  -->
 
     </div>
 </template>
