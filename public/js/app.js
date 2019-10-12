@@ -11383,6 +11383,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -11432,7 +11438,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       sortBy: 'datasource_id',
       sortAsc: true,
       unsub: '',
-      test: ''
+      test: '',
+      unreadOnly: false
     };
   },
   watch: {
@@ -11513,6 +11520,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return this.currentFile;
     },
     productsFilteredByCategory: function productsFilteredByCategory() {
+      var _this2 = this;
+
       var products = this.products;
       var categories = this.selectedCategories;
       var deliveryDates = this.selectedDeliveryDates;
@@ -11523,7 +11532,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           return Array.from(categories).includes(product.category);
         });
         productsToReturn = filteredByCategory;
-      } // First filter by category
+      } // Filter by delivery date
 
 
       if (deliveryDates.length > 0) {
@@ -11531,6 +11540,24 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           return Array.from(deliveryDates).includes(product.delivery_date);
         });
         productsToReturn = filteredByDeliveryDate;
+      } // Filer by unread
+
+
+      if (this.unreadOnly) {
+        var filteredByUnread = productsToReturn.filter(function (product) {
+          if (product.currentAction == null && product.buyerAction == null && product.decisionAction == null) {
+            if (_this2.currentTask.parentTasks.find(function (x) {
+              return x.type == 'approval';
+            })) {
+              return product.comments[product.comments.length - 1].task_id == _this2.currentTask.parentTasks.find(function (x) {
+                return x.type == 'approval';
+              }).id;
+            } else {
+              return product.comments[product.comments.length - 1].task_id != _this2.currentTask.id;
+            }
+          }
+        });
+        productsToReturn = filteredByUnread;
       }
 
       return productsToReturn;
@@ -11627,16 +11654,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return data;
     },
     teamUsers: function teamUsers() {
-      var _this2 = this;
+      var _this3 = this;
 
       var usersToReturn = [];
 
       if (this.teamFilterId > 0) {
         var thisTeam = this.teams.find(function (team) {
-          return team.id == _this2.teamFilterId;
+          return team.id == _this3.teamFilterId;
         });
         if (thisTeam) thisTeam.users.forEach(function (user) {
-          var fileUser = _this2.collection.users.find(function (x) {
+          var fileUser = _this3.collection.users.find(function (x) {
             return x.id == user.id;
           });
 
@@ -11741,7 +11768,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this3 = this;
+      var _this4 = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
@@ -11751,7 +11778,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
-        var thisProduct = _this3.products.find(function (x) {
+        var thisProduct = _this4.products.find(function (x) {
           return x.id == product;
         });
 
@@ -33527,8 +33554,66 @@ var render = function() {
                           )
                         }),
                         _vm._v(" "),
+                        _vm.currentTask.type == "approval" ||
+                        _vm.currentTask.parentTasks.find(function(x) {
+                          return x.type == "approval"
+                        })
+                          ? _c(
+                              "label",
+                              {
+                                staticClass:
+                                  "square checkbutton ghost light-2 checkbox clickable"
+                              },
+                              [
+                                _c("span", [_vm._v("Show UNREAD only")]),
+                                _vm._v(" "),
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.unreadOnly,
+                                      expression: "unreadOnly"
+                                    }
+                                  ],
+                                  attrs: { type: "checkbox" },
+                                  domProps: {
+                                    checked: Array.isArray(_vm.unreadOnly)
+                                      ? _vm._i(_vm.unreadOnly, null) > -1
+                                      : _vm.unreadOnly
+                                  },
+                                  on: {
+                                    change: function($event) {
+                                      var $$a = _vm.unreadOnly,
+                                        $$el = $event.target,
+                                        $$c = $$el.checked ? true : false
+                                      if (Array.isArray($$a)) {
+                                        var $$v = null,
+                                          $$i = _vm._i($$a, $$v)
+                                        if ($$el.checked) {
+                                          $$i < 0 &&
+                                            (_vm.unreadOnly = $$a.concat([$$v]))
+                                        } else {
+                                          $$i > -1 &&
+                                            (_vm.unreadOnly = $$a
+                                              .slice(0, $$i)
+                                              .concat($$a.slice($$i + 1)))
+                                        }
+                                      } else {
+                                        _vm.unreadOnly = $$c
+                                      }
+                                    }
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _c("span", { staticClass: "checkmark" })
+                              ]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
                         _vm.selectedCategories.length > 0 ||
-                        _vm.selectedDeliveryDates.length > 0
+                        _vm.selectedDeliveryDates.length > 0 ||
+                        _vm.unreadOnly
                           ? _c(
                               "span",
                               {
@@ -33539,6 +33624,7 @@ var render = function() {
                                     _vm.selectedCategories = []
                                     _vm.$refs.filterDelivery.clear()
                                     _vm.selectedDeliveryDates = []
+                                    _vm.unreadOnly = false
                                   }
                                 }
                               },

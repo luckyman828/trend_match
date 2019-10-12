@@ -290,7 +290,8 @@ textarea {
         color: $dark05;
         &.invisible,
         &.ghost {
-            color: $light2;
+            color: $dark05;
+            border-color: $light2;
             background: transparent;
         }
     }
@@ -497,6 +498,16 @@ textarea {
         > .overlay {
             display: block;
         }
+    }
+}
+.checkbutton.checkbox {
+    color: $dark;
+    border: solid 1px;
+    border-color: $light2;
+    font-weight: 700;
+    .checkmark {
+        margin-left: 12px;
+        margin-right: -4px;
     }
 }
 // DROPDOWN & TOOLTIP

@@ -43,7 +43,13 @@
                                 <CheckboxButtons :options="dynamicDeliveryDates" :optionNameKey="'name'" :optionValueKey="'value'" ref="filterDelivery" v-model="selectedDeliveryDates" @change="$refs.filterDelivery.submit()"/>
                             </template>
                         </Dropdown>
-                        <span v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]; $refs.filterDelivery.clear(); selectedDeliveryDates=[]">Clear filter</span>
+                        <label v-if="currentTask.type == 'approval' || currentTask.parentTasks.find(x => x.type == 'approval')" class="square checkbutton ghost light-2 checkbox clickable">
+                            <span>Show UNREAD only</span>
+                            <input type="checkbox" v-model="unreadOnly">
+                            <span class="checkmark"></span>
+                        </label>
+
+                        <span v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || unreadOnly" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]; $refs.filterDelivery.clear(); selectedDeliveryDates=[]; unreadOnly = false">Clear filter</span>
                     </div>
 
                     <div class="right">
@@ -153,6 +159,7 @@ export default{
         sortAsc: true,
         unsub: '',
         test: '',
+        unreadOnly: false,
     }},
     watch: {
         products: function(newValue, oldValue) {
@@ -237,13 +244,27 @@ export default{
                 })
                 productsToReturn = filteredByCategory
             }
-            // First filter by category
+            // Filter by delivery date
             if (deliveryDates.length > 0) {
                 
                 const filteredByDeliveryDate = productsToReturn.filter(product => {
                         return Array.from(deliveryDates).includes(product.delivery_date)
                 })
                 productsToReturn = filteredByDeliveryDate
+            }
+
+            // Filer by unread
+            if (this.unreadOnly) {
+                const filteredByUnread = productsToReturn.filter(product => {
+                    if (product.currentAction == null && product.buyerAction == null && product.decisionAction == null) {
+                        if (this.currentTask.parentTasks.find(x => x.type == 'approval')) {
+                            return product.comments[product.comments.length-1].task_id == this.currentTask.parentTasks.find(x => x.type == 'approval').id
+                        } else {
+                            return product.comments[product.comments.length-1].task_id != this.currentTask.id
+                        }
+                    }
+                })
+                productsToReturn = filteredByUnread
             }
 
             return productsToReturn

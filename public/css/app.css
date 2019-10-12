@@ -9245,7 +9245,8 @@ textarea {
 .circle.light-2-hover:hover.ghost,
 .circle.role-3.invisible,
 .circle.role-3.ghost {
-  color: #dfdfdf;
+  color: #3c3b54;
+  border-color: #dfdfdf;
   background: transparent;
 }
 
@@ -9507,6 +9508,18 @@ textarea {
 .modal-wrapper.active > .modal,
 .modal-wrapper.active > .overlay {
   display: block;
+}
+
+.checkbutton.checkbox {
+  color: #1b1c1d;
+  border: solid 1px;
+  border-color: #dfdfdf;
+  font-weight: 700;
+}
+
+.checkbutton.checkbox .checkmark {
+  margin-left: 12px;
+  margin-right: -4px;
 }
 
 .has-tooltip {
