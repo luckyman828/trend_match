@@ -127,12 +127,14 @@
                                     </span>
                                 </template>
                                 <template v-else>
+                                    <TooltipAlt2 :body="'Open product to accept request'">
                                     <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {'disabled': authUser.role_id == 3}]" @click="toggleInOut(product, 1)">
                                     In  <i class="far fa-heart"></i>
                                     </span>
                                     <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {'disabled': authUser.role_id == 3}]"  @click="toggleInOut(product, 0)">
                                     Out  <i class="far fa-times-circle"></i>
                                     </span>
+                                    </TooltipAlt2>
                                 </template>
                             </template>
                             <template v-else>

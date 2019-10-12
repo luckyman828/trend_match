@@ -9585,6 +9585,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 
@@ -31094,75 +31096,89 @@ var render = function() {
                                           ]
                                         : [
                                             _c(
-                                              "span",
+                                              "TooltipAlt2",
                                               {
-                                                staticClass:
-                                                  "button icon-right",
-                                                class: [
-                                                  product.currentAction
-                                                    ? product.currentAction
-                                                        .action != 0
-                                                      ? "active green"
-                                                      : "ghost green-hover"
-                                                    : "ghost green-hover",
-                                                  {
-                                                    disabled:
-                                                      _vm.authUser.role_id == 3
-                                                  }
-                                                ],
-                                                on: {
-                                                  click: function($event) {
-                                                    return _vm.toggleInOut(
-                                                      product,
-                                                      1
-                                                    )
-                                                  }
+                                                attrs: {
+                                                  body:
+                                                    "Open product to accept request"
                                                 }
                                               },
                                               [
-                                                _vm._v(
-                                                  "\n                                In  "
-                                                ),
-                                                _c("i", {
-                                                  staticClass: "far fa-heart"
-                                                })
-                                              ]
-                                            ),
-                                            _vm._v(" "),
-                                            _c(
-                                              "span",
-                                              {
-                                                staticClass:
-                                                  "button icon-right",
-                                                class: [
-                                                  product.currentAction
-                                                    ? product.currentAction
-                                                        .action == 0
-                                                      ? "active red"
-                                                      : "ghost red-hover"
-                                                    : "ghost red-hover",
+                                                _c(
+                                                  "span",
                                                   {
-                                                    disabled:
-                                                      _vm.authUser.role_id == 3
-                                                  }
-                                                ],
-                                                on: {
-                                                  click: function($event) {
-                                                    return _vm.toggleInOut(
-                                                      product,
-                                                      0
-                                                    )
-                                                  }
-                                                }
-                                              },
-                                              [
-                                                _vm._v(
-                                                  "\n                                Out  "
+                                                    staticClass:
+                                                      "button icon-right",
+                                                    class: [
+                                                      product.currentAction
+                                                        ? product.currentAction
+                                                            .action != 0
+                                                          ? "active green"
+                                                          : "ghost green-hover"
+                                                        : "ghost green-hover",
+                                                      {
+                                                        disabled:
+                                                          _vm.authUser
+                                                            .role_id == 3
+                                                      }
+                                                    ],
+                                                    on: {
+                                                      click: function($event) {
+                                                        return _vm.toggleInOut(
+                                                          product,
+                                                          1
+                                                        )
+                                                      }
+                                                    }
+                                                  },
+                                                  [
+                                                    _vm._v(
+                                                      "\n                                In  "
+                                                    ),
+                                                    _c("i", {
+                                                      staticClass:
+                                                        "far fa-heart"
+                                                    })
+                                                  ]
                                                 ),
-                                                _c("i", {
-                                                  staticClass:
-                                                    "far fa-times-circle"
-                                                })
+                                                _vm._v(" "),
+                                                _c(
+                                                  "span",
+                                                  {
+                                                    staticClass:
+                                                      "button icon-right",
+                                                    class: [
+                                                      product.currentAction
+                                                        ? product.currentAction
+                                                            .action == 0
+                                                          ? "active red"
+                                                          : "ghost red-hover"
+                                                        : "ghost red-hover",
+                                                      {
+                                                        disabled:
+                                                          _vm.authUser
+                                                            .role_id == 3
+                                                      }
+                                                    ],
+                                                    on: {
+                                                      click: function($event) {
+                                                        return _vm.toggleInOut(
+                                                          product,
+                                                          0
+                                                        )
+                                                      }
+                                                    }
+                                                  },
+                                                  [
+                                                    _vm._v(
+                                                      "\n                                Out  "
+                                                    ),
+                                                    _c("i", {
+                                                      staticClass:
+                                                        "far fa-times-circle"
+                                                    })
+                                                  ]
+                                                )
                                               ]
                                             )
                                           ]
