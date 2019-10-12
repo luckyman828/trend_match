@@ -668,7 +668,21 @@ textarea {
 }
 // Tooltip specific
 .tooltip {
+    padding-top: 10px;
+    &.above {
+        padding-top: 0;
+        padding-bottom: 16px;
+        .arrow {
+            top: auto;
+            bottom: 10px;
+        }
+    }
+    .arrow {
+        top: 12px;
+    }
     .inner {
+        position: relative;
+        z-index: 2;
         // margin-top: 0;
     }
     .body {

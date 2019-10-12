@@ -9698,6 +9698,29 @@ textarea {
   background: #56556e;
 }
 
+.tooltip {
+  padding-top: 10px;
+}
+
+.tooltip.above {
+  padding-top: 0;
+  padding-bottom: 16px;
+}
+
+.tooltip.above .arrow {
+  top: auto;
+  bottom: 10px;
+}
+
+.tooltip .arrow {
+  top: 12px;
+}
+
+.tooltip .inner {
+  position: relative;
+  z-index: 2;
+}
+
 .tooltip .body {
   max-height: none;
   overflow: visible;

@@ -8041,6 +8041,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 
@@ -11086,7 +11088,6 @@ __webpack_require__.r(__webpack_exports__);
     // },
     // Set the height of the component
     setHeight: function setHeight() {
-      var offsetTop = 4;
       var offsetLeft = 4;
       var el = this.$refs.tooltip; // const parent = el.closest('.has-tooltip') // Use a set parent as parent
       // const parent = this.$refs.parent // Use the slots wrapper as parent
@@ -11101,17 +11102,56 @@ __webpack_require__.r(__webpack_exports__);
       var parentTop = parent.getBoundingClientRect().top;
       var parentLeft = parent.getBoundingClientRect().left;
       var parentHeight = parent.getBoundingClientRect().height;
-      var parentWidth = parent.getBoundingClientRect().width; // console.log(parent.getBoundingClientRect().top)
+      var parentWidth = parent.getBoundingClientRect().width;
+      var parentRect = parent.getBoundingClientRect(); // console.log(parent.getBoundingClientRect().top)
       // }
 
       var elHeight = el.getBoundingClientRect().height;
-      var elWidth = el.getBoundingClientRect().width; // Align the dropdown after the parent
+      var elWidth = el.getBoundingClientRect().width; // Check if the dropdown should be shown above or below the hovered item
+      // console.log('Bottom dist: ' + parentTop + parentHeight + elHeight)
+      // console.log('Window height: ' + window.innerHeight)
+      // console.log('El height: ' + elHeight)
+
+      var windownHeight = window.innerHeight;
+      var distToBottom = parentTop + parentHeight + elHeight;
+      var bottomSpace = windownHeight - distToBottom;
+      var bottomOffset = 100;
+      var showAbove = bottomSpace < 50;
+      var topDist = parentTop + parentHeight;
+      var bottomDist = windownHeight - parentTop; // Align the dropdown after the parent
 
       if (parent != null) {
         // Top + Right align
-        if (wrapper.classList.contains('right')) el.style.cssText = "top: ".concat(parentTop + parentHeight + offsetTop, "px; left: ").concat(parentLeft + parentWidth - elWidth + offsetLeft, "px;"); // Top + Left align
-        else if (wrapper.classList.contains('left')) el.style.cssText = "top: ".concat(parentTop + parentHeight + offsetTop, "px; left: ").concat(parentLeft - offsetLeft, "px;"); // Top + Center align
-          else el.style.cssText = "top: ".concat(parentTop + parentHeight + offsetTop, "px; left: ").concat(parentLeft + parentWidth / 2 - elWidth / 2, "px;");
+        if (wrapper.classList.contains('right')) {
+          if (!showAbove) {
+            el.style.cssText = "bottom: auto; top: ".concat(topDist, "px; left: ").concat(parentLeft + parentWidth - elWidth + offsetLeft, "px;");
+          } else {
+            el.style.cssText = "top: auto; bottom: ".concat(bottomDist, "px; left: ").concat(parentLeft + parentWidth - elWidth + offsetLeft, "px;");
+          }
+        } // Top + Left align
+        else if (wrapper.classList.contains('left')) {
+            if (!showAbove) {
+              el.style.cssText = "bottom: auto; top: ".concat(topDist, "px; left: ").concat(parentLeft - offsetLeft, "px;");
+            } else {
+              el.style.cssText = "top: auto; bottom: ".concat(bottomDist, "px; left: ").concat(parentLeft - offsetLeft, "px;");
+            }
+          } // Top + Center align
+          else {
+              if (!showAbove) {
+                el.style.cssText = "bottom: auto; top: ".concat(topDist, "px; left: ").concat(parentLeft + parentWidth / 2 - elWidth / 2, "px;");
+              } else {
+                el.style.cssText = "top: auto; bottom: ".concat(bottomDist, "px; left: ").concat(parentLeft + parentWidth / 2 - elWidth / 2, "px;");
+              }
+            }
+      } // Set the max height of the tooltip
+
+
+      if (showAbove) {
+        el.classList.add('above');
+        this.$refs.body.style.maxHeight = parentTop - bottomOffset + 'px';
+      } else {
+        el.classList.remove('above');
+        this.$refs.body.style.maxHeight = window.innerHeight - (parentTop + parentHeight) - bottomOffset + 'px';
       }
     }
   },
@@ -15222,7 +15262,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".body-wrapper[data-v-3ccc3b31] {\n  padding: 8px;\n  display: block;\n  font-size: 13px;\n}\n.flex-wrapper[data-v-3ccc3b31] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}", ""]);
+exports.push([module.i, ".body-wrapper[data-v-3ccc3b31] {\n  padding: 8px;\n  display: block;\n  font-size: 13px;\n}\n.body[data-v-3ccc3b31] {\n  max-height: 200px;\n  overflow-x: hidden;\n  overflow-y: auto;\n}\n.flex-wrapper[data-v-3ccc3b31] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}", ""]);
 
 // exports
 
@@ -27589,31 +27629,43 @@ var render = function() {
                       0
                     ),
                     _vm._v(" "),
-                    _c("div", { staticClass: "add-more" }, [
-                      _c(
-                        "span",
-                        {
-                          staticClass: "button light icon-left dark-hover",
-                          on: { click: _vm.addUser }
-                        },
-                        [
-                          _c("i", { staticClass: "far fa-user-plus" }),
-                          _vm._v("Add another")
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticClass: "button light icon-left dark-hover",
-                          on: { click: _vm.addUser }
-                        },
-                        [
-                          _c("i", { staticClass: "far fa-users" }),
-                          _vm._v("Add many")
-                        ]
-                      )
-                    ]),
+                    _c(
+                      "div",
+                      { staticClass: "add-more" },
+                      [
+                        _c(
+                          "span",
+                          {
+                            staticClass: "button light icon-left dark-hover",
+                            on: { click: _vm.addUser }
+                          },
+                          [
+                            _c("i", { staticClass: "far fa-user-plus" }),
+                            _vm._v("Add another")
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "TooltipAlt2",
+                          { attrs: { body: "Add multiple users" } },
+                          [
+                            _c(
+                              "span",
+                              {
+                                staticClass:
+                                  "button light icon-left dark-hover",
+                                on: { click: _vm.addUser }
+                              },
+                              [
+                                _c("i", { staticClass: "far fa-users" }),
+                                _vm._v("Add many")
+                              ]
+                            )
+                          ]
+                        )
+                      ],
+                      1
+                    ),
                     _vm._v(" "),
                     _c("input", {
                       staticClass: "button dark xl",
@@ -32847,120 +32899,128 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { ref: "wrapper", staticClass: "tooltip-wrapper" }, [
-    _c(
-      "div",
-      {
-        ref: "parent",
-        staticClass: "tooltip-parent",
-        on: { mouseenter: _vm.show, mouseleave: _vm.hide }
-      },
-      [_vm._t("default", [_c("p", [_vm._v("Show tooltip")])])],
-      2
-    ),
-    _vm._v(" "),
-    !_vm.disabled
-      ? _c(
-          "div",
-          {
-            ref: "tooltip",
-            staticClass: "tooltip dark",
-            class: { hidden: _vm.hidden }
-          },
-          [
-            _c("div", { staticClass: "arrow" }),
-            _vm._v(" "),
-            _c("div", { staticClass: "inner" }, [
-              _vm.header != null
-                ? _c("div", {
-                    staticClass: "header",
-                    domProps: { innerHTML: _vm._s(_vm.header) }
-                  })
-                : _vm._e(),
+  return _c(
+    "div",
+    {
+      ref: "wrapper",
+      staticClass: "tooltip-wrapper",
+      on: { mouseleave: _vm.hide }
+    },
+    [
+      _c(
+        "div",
+        {
+          ref: "parent",
+          staticClass: "tooltip-parent",
+          on: { mouseenter: _vm.show }
+        },
+        [_vm._t("default", [_c("p", [_vm._v("Show tooltip")])])],
+        2
+      ),
+      _vm._v(" "),
+      !_vm.disabled
+        ? _c(
+            "div",
+            {
+              ref: "tooltip",
+              staticClass: "tooltip dark",
+              class: { hidden: _vm.hidden }
+            },
+            [
+              _c("div", { staticClass: "arrow" }),
               _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "body" },
-                [
-                  _vm.body != null
-                    ? _c("span", {
-                        staticClass: "body-wrapper",
-                        domProps: { innerHTML: _vm._s(_vm.body) }
-                      })
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _vm.array != null
-                    ? _vm._l(_vm.array, function(row, index) {
-                        return _c(
-                          "p",
-                          { key: index, staticClass: "row" },
-                          [
-                            _vm.arrayLabelKey != null
-                              ? [
-                                  _c("span", { staticClass: "label" }, [
-                                    _vm._v(
-                                      _vm._s(row[_vm.arrayLabelKey]) + ": "
-                                    )
-                                  ]),
-                                  _vm._v(" "),
-                                  _vm.arrayValueKey != null
-                                    ? _c(
-                                        "strong",
-                                        { staticClass: "value" },
-                                        [
-                                          _vm._v(
-                                            _vm._s(row[_vm.arrayValueKey])
-                                          ),
-                                          _vm.arrayValueUnit
-                                            ? [
-                                                _vm._v(
-                                                  _vm._s(_vm.arrayValueUnit)
-                                                )
-                                              ]
-                                            : _vm._e()
-                                        ],
-                                        2
+              _c("div", { staticClass: "inner" }, [
+                _vm.header != null
+                  ? _c("div", {
+                      staticClass: "header",
+                      domProps: { innerHTML: _vm._s(_vm.header) }
+                    })
+                  : _vm._e(),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { ref: "body", staticClass: "body" },
+                  [
+                    _vm.body != null
+                      ? _c("span", {
+                          staticClass: "body-wrapper",
+                          domProps: { innerHTML: _vm._s(_vm.body) }
+                        })
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.array != null
+                      ? _vm._l(_vm.array, function(row, index) {
+                          return _c(
+                            "p",
+                            { key: index, staticClass: "row" },
+                            [
+                              _vm.arrayLabelKey != null
+                                ? [
+                                    _c("span", { staticClass: "label" }, [
+                                      _vm._v(
+                                        _vm._s(row[_vm.arrayLabelKey]) + ": "
                                       )
-                                    : _c("strong", { staticClass: "value" }, [
-                                        _vm._v(_vm._s(row))
-                                      ])
-                                ]
-                              : [
-                                  _vm.arrayValueKey != null
-                                    ? _c(
-                                        "span",
-                                        { staticClass: "value" },
-                                        [
-                                          _vm._v(
-                                            _vm._s(row[_vm.arrayValueKey])
-                                          ),
-                                          _vm.arrayValueUnit
-                                            ? [
-                                                _vm._v(
-                                                  _vm._s(_vm.arrayValueUnit)
-                                                )
-                                              ]
-                                            : _vm._e()
-                                        ],
-                                        2
-                                      )
-                                    : _c("span", { staticClass: "value" }, [
-                                        _vm._v(_vm._s(row))
-                                      ])
-                                ]
-                          ],
-                          2
-                        )
-                      })
-                    : _vm._e()
-                ],
-                2
-              )
-            ])
-          ]
-        )
-      : _vm._e()
-  ])
+                                    ]),
+                                    _vm._v(" "),
+                                    _vm.arrayValueKey != null
+                                      ? _c(
+                                          "strong",
+                                          { staticClass: "value" },
+                                          [
+                                            _vm._v(
+                                              _vm._s(row[_vm.arrayValueKey])
+                                            ),
+                                            _vm.arrayValueUnit
+                                              ? [
+                                                  _vm._v(
+                                                    _vm._s(_vm.arrayValueUnit)
+                                                  )
+                                                ]
+                                              : _vm._e()
+                                          ],
+                                          2
+                                        )
+                                      : _c("strong", { staticClass: "value" }, [
+                                          _vm._v(_vm._s(row))
+                                        ])
+                                  ]
+                                : [
+                                    _vm.arrayValueKey != null
+                                      ? _c(
+                                          "span",
+                                          { staticClass: "value" },
+                                          [
+                                            _vm._v(
+                                              _vm._s(row[_vm.arrayValueKey])
+                                            ),
+                                            _vm.arrayValueUnit
+                                              ? [
+                                                  _vm._v(
+                                                    _vm._s(_vm.arrayValueUnit)
+                                                  )
+                                                ]
+                                              : _vm._e()
+                                          ],
+                                          2
+                                        )
+                                      : _c("span", { staticClass: "value" }, [
+                                          _vm._v(_vm._s(row))
+                                        ])
+                                  ]
+                            ],
+                            2
+                          )
+                        })
+                      : _vm._e()
+                  ],
+                  2
+                )
+              ])
+            ]
+          )
+        : _vm._e()
+    ]
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
