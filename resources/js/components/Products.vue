@@ -163,6 +163,9 @@
                     </template>
 
                 </div>
+                <div v-if="products.length <= 0">
+                    <p style="padding: 60px 0 100px; text-align: center;">No products to show. Try changing your filters.</p>
+                </div>
             </template>
         </div>
         <!-- <span class="load-more button primary wide" v-if="products.length > pageLimit" @click="loadMore">Loasd more</span> -->
