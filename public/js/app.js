@@ -7425,6 +7425,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -8907,6 +8911,12 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -14730,7 +14740,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".comment-wrapper[data-v-54ded044] {\n  margin-bottom: 4px;\n  max-width: calc(100% - 56px);\n}\n.comment[data-v-54ded044] {\n  position: relative;\n  padding: 12px;\n  background: #dfdfdf;\n  border-radius: 6px;\n  width: 100%;\n}\n.own .comment[data-v-54ded044] {\n  background: #3b86ff;\n  color: white;\n}\n.comment .body[data-v-54ded044] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n}", ""]);
+exports.push([module.i, ".comment-wrapper[data-v-54ded044] {\n  position: relative;\n  margin-bottom: 4px;\n  max-width: calc(100% - 56px);\n}\n.comment-wrapper.has-traits[data-v-54ded044] {\n  margin-top: 12px;\n}\n.pill i[data-v-54ded044] {\n  font-size: 8px;\n  margin-right: 4px;\n}\n.traits[data-v-54ded044] {\n  position: absolute;\n  top: -14px;\n  left: -10px;\n  z-index: 1;\n}\n.traits > *[data-v-54ded044] {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);\n}\n.traits > **[data-v-54ded044]:not(:last-child) {\n  margin-right: 8px;\n}\n.comment[data-v-54ded044] {\n  position: relative;\n  padding: 12px;\n  background: #dfdfdf;\n  border-radius: 6px;\n  width: 100%;\n}\n.own .comment[data-v-54ded044] {\n  background: #3b86ff;\n  color: white;\n}\n.comment .body[data-v-54ded044] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n}\n.comment.important[data-v-54ded044] {\n  background: #f3e959;\n  color: #1b1c1d;\n}", ""]);
 
 // exports
 
@@ -14958,7 +14968,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.hotkey-tip[data-v-6d61fa50] {\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.hotkey-tip .square[data-v-6d61fa50] {\n  border-width: 1px;\n  height: auto;\n  padding: 2px 4px;\n  min-width: 0;\n  font-weight: 400;\n  border-radius: 2px;\n  font-size: 9px;\n  margin-right: 2px;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.tab-headers .tab[data-v-6d61fa50] {\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.request-wrapper[data-v-6d61fa50] {\n  margin-bottom: 16px;\n}\n.sender-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  margin-bottom: 4px;\n}\n.sender-wrapper.own[data-v-6d61fa50] {\n  -webkit-box-align: end;\n          align-items: flex-end;\n}\n.sender[data-v-6d61fa50] {\n  margin-bottom: 20px;\n}\n.break-line[data-v-6d61fa50] {\n  color: #a8a8a8;\n  font-size: 12px;\n  font-weight: 500;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-top: 20px;\n  margin-bottom: 12px;\n}\n.break-line[data-v-6d61fa50]::after, .break-line[data-v-6d61fa50]::before {\n  content: \"\";\n  display: block;\n  height: 2px;\n  background: #a8a8a8;\n  -webkit-box-flex: 1;\n          flex: 1;\n}\n.break-line[data-v-6d61fa50]::after {\n  margin-left: 12px;\n}\n.break-line[data-v-6d61fa50]::before {\n  margin-right: 12px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #f3f3f3;\n  border-radius: 0 8px 0 0;\n  padding: 16px 4px 16px 0;\n  height: 100%;\n  width: 100%;\n}\n.comments-wrapper .inner[data-v-6d61fa50] {\n  padding: 0 12px;\n  height: 100%;\n  overflow-y: auto;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comments-wrapper .sender[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\nform[data-v-6d61fa50] {\n  margin-bottom: 42px;\n  padding: 8px 0 24px;\n  background: white;\n  box-shadow: 0 -3px 6px rgba(27, 28, 29, 0.1);\n}\n@media screen and (max-width: 1600px) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-webkit-min-device-pixel-ratio: 1.25), only screen and (min-resolution: 120dpi) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\nform .controls[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 8px;\n}\nform .controls .set-scope span[data-v-6d61fa50] {\n  font-size: 14px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\nform .controls .set-scope span[data-v-6d61fa50]:not(:last-child) {\n  margin-right: -8px;\n}\nform .controls .set-scope span.active[data-v-6d61fa50] {\n  color: #1b1c1d;\n  cursor: auto;\n}\nform .form-input[data-v-6d61fa50] {\n  padding: 0 12px;\n}\nform .form-input.hidden[data-v-6d61fa50] {\n  display: none;\n}\nform .form-input .id[data-v-6d61fa50] {\n  font-size: 12px;\n  color: #a8a8a8;\n  display: block;\n  margin-top: -2px;\n}\nform .form-input .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #dfdfdf;\n  background: #dfdfdf;\n  box-sizing: border-box;\n  font-size: 14px;\n  color: #a8a8a8;\n  max-height: 200px;\n  overflow: auto;\n  cursor: pointer;\n  position: relative;\n}\nform .form-input .input-wrapper .edit-request[data-v-6d61fa50] {\n  position: absolute;\n  right: 12px;\n  font-size: 10px;\n  color: #1b1c1d;\n  font-weight: 500;\n  top: 50%;\n  -webkit-transform: translateY(-50%);\n          transform: translateY(-50%);\n  pointer-events: none;\n}\nform .form-input .input-wrapper .edit-request .circle[data-v-6d61fa50] {\n  height: 24px;\n  width: 24px;\n  margin-left: 4px;\n}\nform .form-input textarea[data-v-6d61fa50] {\n  padding: 8px 12px;\n  border: none;\n  height: 30px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  color: #535353;\n  background: transparent;\n  cursor: pointer;\n}\nform .form-input textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform .form-input textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::placeholder {\n  color: #a8a8a8;\n}\nform .form-input.active .input-wrapper[data-v-6d61fa50] {\n  border: solid 2px #dfdfdf;\n  background: white;\n  cursor: auto;\n}\nform .form-input.active textarea[data-v-6d61fa50] {\n  cursor: auto;\n}\nform .form-input .flex-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: 8px;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #f3f3f3;\n  color: #a8a8a8;\n  position: absolute;\n  right: 16px;\n  top: 6px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3b86ff;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}\n.request-succes[data-v-6d61fa50] {\n  margin-right: 8px;\n  font-weight: 500;\n}", ""]);
+exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.hotkey-tip[data-v-6d61fa50] {\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.hotkey-tip .square[data-v-6d61fa50] {\n  border-width: 1px;\n  height: auto;\n  padding: 2px 4px;\n  min-width: 0;\n  font-weight: 400;\n  border-radius: 2px;\n  font-size: 9px;\n  margin-right: 2px;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.tab-headers .tab[data-v-6d61fa50] {\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.request-wrapper[data-v-6d61fa50] {\n  margin-bottom: 16px;\n}\n.sender-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  margin-bottom: 4px;\n}\n.sender-wrapper.own[data-v-6d61fa50] {\n  -webkit-box-align: end;\n          align-items: flex-end;\n}\n.sender[data-v-6d61fa50] {\n  margin-bottom: 20px;\n}\n.break-line[data-v-6d61fa50] {\n  color: #a8a8a8;\n  font-size: 12px;\n  font-weight: 500;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-top: 20px;\n  margin-bottom: 12px;\n}\n.break-line[data-v-6d61fa50]::after, .break-line[data-v-6d61fa50]::before {\n  content: \"\";\n  display: block;\n  height: 2px;\n  background: #a8a8a8;\n  -webkit-box-flex: 1;\n          flex: 1;\n}\n.break-line[data-v-6d61fa50]::after {\n  margin-left: 12px;\n}\n.break-line[data-v-6d61fa50]::before {\n  margin-right: 12px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #f3f3f3;\n  border-radius: 0 8px 0 0;\n  padding: 16px 4px 16px 0;\n  height: 100%;\n  width: 100%;\n}\n.comments-wrapper .inner[data-v-6d61fa50] {\n  padding: 0 12px;\n  height: 100%;\n  overflow-y: auto;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comments-wrapper .sender[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\nform[data-v-6d61fa50] {\n  margin-bottom: 42px;\n  padding: 8px 0 24px;\n  background: white;\n  box-shadow: 0 -3px 6px rgba(27, 28, 29, 0.1);\n}\n@media screen and (max-width: 1600px) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-webkit-min-device-pixel-ratio: 1.25), only screen and (min-resolution: 120dpi) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\nform .controls[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 8px;\n}\nform .controls .set-scope span[data-v-6d61fa50] {\n  font-size: 14px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\nform .controls .set-scope span[data-v-6d61fa50]:not(:last-child) {\n  margin-right: -8px;\n}\nform .controls .set-scope span.active[data-v-6d61fa50] {\n  color: #1b1c1d;\n  cursor: auto;\n}\nform .form-input[data-v-6d61fa50] {\n  position: relative;\n  padding: 0 12px;\n}\nform .form-input.hidden[data-v-6d61fa50] {\n  display: none;\n}\nform .form-input .id[data-v-6d61fa50] {\n  font-size: 12px;\n  color: #a8a8a8;\n  display: block;\n  margin-top: -2px;\n}\nform .form-input .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #dfdfdf;\n  background: #dfdfdf;\n  box-sizing: border-box;\n  font-size: 14px;\n  color: #a8a8a8;\n  max-height: 200px;\n  overflow: auto;\n  cursor: pointer;\n  position: relative;\n}\nform .form-input .input-wrapper .edit-request[data-v-6d61fa50] {\n  position: absolute;\n  right: 12px;\n  font-size: 10px;\n  color: #1b1c1d;\n  font-weight: 500;\n  top: 50%;\n  -webkit-transform: translateY(-50%);\n          transform: translateY(-50%);\n  pointer-events: none;\n}\nform .form-input .input-wrapper .edit-request .circle[data-v-6d61fa50] {\n  height: 24px;\n  width: 24px;\n  margin-left: 4px;\n}\nform .form-input textarea[data-v-6d61fa50] {\n  padding: 8px 12px;\n  border: none;\n  height: 30px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  color: #535353;\n  background: transparent;\n  cursor: pointer;\n}\nform .form-input textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform .form-input textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::placeholder {\n  color: #a8a8a8;\n}\nform .form-input.active .input-wrapper[data-v-6d61fa50] {\n  border: solid 2px #dfdfdf;\n  background: white;\n  cursor: auto;\n}\nform .form-input.active textarea[data-v-6d61fa50] {\n  cursor: auto;\n}\nform .form-input .flex-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: 8px;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #f3f3f3;\n  color: #a8a8a8;\n  position: absolute;\n  right: 16px;\n  top: 4px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3b86ff;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}\n.request-succes[data-v-6d61fa50] {\n  margin-right: 8px;\n  font-weight: 500;\n}", ""]);
 
 // exports
 
@@ -26365,11 +26375,41 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "comment-wrapper" }, [
-    _c("div", { staticClass: "comment" }, [
-      _c("span", { staticClass: "body" }, [_vm._v(_vm._s(_vm.comment.comment))])
-    ])
-  ])
+  return _c(
+    "div",
+    {
+      staticClass: "comment-wrapper",
+      class: {
+        "has-traits": _vm.comment.important || _vm.comment.votes.length > 0
+      }
+    },
+    [
+      _c("div", { staticClass: "traits" }, [
+        _vm.comment.important
+          ? _c("span", { staticClass: "circle small yellow" }, [
+              _c("i", { staticClass: "fas fa-exclamation" })
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.comment.votes.length > 0
+          ? _c("span", { staticClass: "pill small primary" }, [
+              _c("i", { staticClass: "fas fa-plus" }),
+              _vm._v(" " + _vm._s(_vm.comment.votes.length))
+            ])
+          : _vm._e()
+      ]),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "comment", class: { important: _vm.comment.important } },
+        [
+          _c("span", { staticClass: "body" }, [
+            _vm._v(_vm._s(_vm.comment.comment))
+          ])
+        ]
+      )
+    ]
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -29924,6 +29964,69 @@ var render = function() {
                   }
                 })
               ]),
+              _vm._v(" "),
+              _c(
+                "label",
+                { staticClass: "checkbox" },
+                [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.newComment.important,
+                        expression: "newComment.important"
+                      }
+                    ],
+                    attrs: { type: "checkbox", name: "comment-important" },
+                    domProps: {
+                      checked: Array.isArray(_vm.newComment.important)
+                        ? _vm._i(_vm.newComment.important, null) > -1
+                        : _vm.newComment.important
+                    },
+                    on: {
+                      change: function($event) {
+                        var $$a = _vm.newComment.important,
+                          $$el = $event.target,
+                          $$c = $$el.checked ? true : false
+                        if (Array.isArray($$a)) {
+                          var $$v = null,
+                            $$i = _vm._i($$a, $$v)
+                          if ($$el.checked) {
+                            $$i < 0 &&
+                              _vm.$set(
+                                _vm.newComment,
+                                "important",
+                                $$a.concat([$$v])
+                              )
+                          } else {
+                            $$i > -1 &&
+                              _vm.$set(
+                                _vm.newComment,
+                                "important",
+                                $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                              )
+                          }
+                        } else {
+                          _vm.$set(_vm.newComment, "important", $$c)
+                        }
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("TooltipAlt2", { attrs: { body: "Important comment" } }, [
+                    _c(
+                      "span",
+                      {
+                        staticClass: "checkmark",
+                        class: { active: _vm.newComment.important }
+                      },
+                      [_c("i", { staticClass: "fas fa-exclamation" })]
+                    )
+                  ])
+                ],
+                1
+              ),
               _vm._v(" "),
               _vm.writeActive
                 ? _c("div", { staticClass: "flex-wrapper" }, [

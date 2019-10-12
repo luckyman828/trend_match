@@ -9024,6 +9024,45 @@ textarea {
   background: transparent;
 }
 
+.button.yellow,
+.button.yellow-hover:hover,
+.square.yellow,
+.square.yellow-hover:hover,
+.pill.yellow,
+.pill.yellow-hover:hover,
+.bubble.yellow,
+.bubble.yellow-hover:hover,
+.circle.yellow,
+.circle.yellow-hover:hover {
+  border-color: #f3e959;
+  background: #f3e959;
+  color: #1b1c1d;
+}
+
+.button.yellow.invisible,
+.button.yellow.ghost,
+.button.yellow-hover:hover.invisible,
+.button.yellow-hover:hover.ghost,
+.square.yellow.invisible,
+.square.yellow.ghost,
+.square.yellow-hover:hover.invisible,
+.square.yellow-hover:hover.ghost,
+.pill.yellow.invisible,
+.pill.yellow.ghost,
+.pill.yellow-hover:hover.invisible,
+.pill.yellow-hover:hover.ghost,
+.bubble.yellow.invisible,
+.bubble.yellow.ghost,
+.bubble.yellow-hover:hover.invisible,
+.bubble.yellow-hover:hover.ghost,
+.circle.yellow.invisible,
+.circle.yellow.ghost,
+.circle.yellow-hover:hover.invisible,
+.circle.yellow-hover:hover.ghost {
+  color: #f3e959;
+  background: transparent;
+}
+
 .button.primary,
 .button.primary-hover:hover,
 .button.role-1,
@@ -9353,6 +9392,18 @@ textarea {
   border-radius: 50px;
   background: #f3f3f3;
   font-weight: 500;
+}
+
+.pill.small {
+  height: 20px;
+  font-size: 12px;
+  padding: 0 8px;
+}
+
+.pill.tiny {
+  height: 14px;
+  font-size: 10px;
+  padding: 0 4px;
 }
 
 .circle {

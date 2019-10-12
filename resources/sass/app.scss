@@ -237,6 +237,17 @@ textarea {
             background: transparent;
         }
     }
+    &.yellow,
+    &.yellow-hover:hover {
+        border-color: $yellow;
+        background: $yellow;
+        color: $dark;
+        &.invisible,
+        &.ghost {
+            color: $yellow;
+            background: transparent;
+        }
+    }
     &.primary,
     &.primary-hover:hover,
     &.role-1 {
@@ -381,6 +392,16 @@ textarea {
     border-radius: 50px;
     background: $light1;
     font-weight: 500;
+    &.small {
+        height: 20px;
+        font-size: 12px;
+        padding: 0 8px;
+    }
+    &.tiny {
+        height: 14px;
+        font-size: 10px;
+        padding: 0 4px;
+    }
 }
 .circle {
     border-radius: 50%;

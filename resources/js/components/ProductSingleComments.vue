@@ -106,6 +106,12 @@
                     <textarea @click="activateWrite" ref="commentField" @keydown.enter.exact.prevent name="comment" id="comment-input" placeholder="Write your comment here..." v-model="newComment.comment" 
                     @input="resizeTextarea($event)" @keyup.esc="deactivateWrite"></textarea>
                 </div>
+                <label class="checkbox">
+                    <input type="checkbox" v-model="newComment.important" name="comment-important">
+                    <TooltipAlt2 :body="'Important comment'">
+                        <span class="checkmark" :class="{active: newComment.important}"><i class="fas fa-exclamation"></i></span>
+                    </TooltipAlt2>
+                </label>
                 <div class="flex-wrapper" v-if="writeActive">
                     <div class="left">
                         <div class="hotkey-tip">
@@ -474,6 +480,7 @@ export default {
             }
         }
         .form-input {
+            position: relative;
             padding: 0 12px;
             &.hidden {
                 display: none;
@@ -556,7 +563,7 @@ export default {
             color: $dark2;
             position: absolute;
             right: 16px;
-            top: 6px;
+            top: 4px;
             cursor: pointer;
             &.active {
                 color: $primary;
