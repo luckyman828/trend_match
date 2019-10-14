@@ -103,9 +103,7 @@
 
                 <div class="add-more">
                     <span class="button light icon-left dark-hover" @click="addUser"><i class="far fa-user-plus"></i>Add another</span>
-                    <TooltipAlt2 :body="'Add multiple users'">
-                        <span class="button light icon-left dark-hover" @click="addUser"><i class="far fa-users"></i>Add many</span>
-                    </TooltipAlt2>
+                    <span class="button light icon-left dark-hover" @click="addUser"><i class="far fa-users"></i>Add many</span>
                 </div>
                 
                 <input type="submit" class="button dark xl" :value="(newUsers.length > 1) ? 'Send ' + newUsers.length + ' invites' : 'Send invite'" :disabled="submitDisabled">

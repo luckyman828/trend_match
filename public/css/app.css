@@ -8829,6 +8829,10 @@ textarea {
   box-shadow: none;
 }
 
+.navbar .items-right > *:not(:last-child) {
+  margin-right: 16px;
+}
+
 .dark {
   color: white;
 }

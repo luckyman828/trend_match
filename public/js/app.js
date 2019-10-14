@@ -8045,8 +8045,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
 
 
 
@@ -27757,43 +27755,31 @@ var render = function() {
                       0
                     ),
                     _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "add-more" },
-                      [
-                        _c(
-                          "span",
-                          {
-                            staticClass: "button light icon-left dark-hover",
-                            on: { click: _vm.addUser }
-                          },
-                          [
-                            _c("i", { staticClass: "far fa-user-plus" }),
-                            _vm._v("Add another")
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "TooltipAlt2",
-                          { attrs: { body: "Add multiple users" } },
-                          [
-                            _c(
-                              "span",
-                              {
-                                staticClass:
-                                  "button light icon-left dark-hover",
-                                on: { click: _vm.addUser }
-                              },
-                              [
-                                _c("i", { staticClass: "far fa-users" }),
-                                _vm._v("Add many")
-                              ]
-                            )
-                          ]
-                        )
-                      ],
-                      1
-                    ),
+                    _c("div", { staticClass: "add-more" }, [
+                      _c(
+                        "span",
+                        {
+                          staticClass: "button light icon-left dark-hover",
+                          on: { click: _vm.addUser }
+                        },
+                        [
+                          _c("i", { staticClass: "far fa-user-plus" }),
+                          _vm._v("Add another")
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticClass: "button light icon-left dark-hover",
+                          on: { click: _vm.addUser }
+                        },
+                        [
+                          _c("i", { staticClass: "far fa-users" }),
+                          _vm._v("Add many")
+                        ]
+                      )
+                    ]),
                     _vm._v(" "),
                     _c("input", {
                       staticClass: "button dark xl",
@@ -27929,16 +27915,18 @@ var render = function() {
         [
           _vm.userPermissionLevel >= 2
             ? [
-                _vm.currentTask.isActive
+                _vm.submittingTaskComplete
+                  ? _c(
+                      "span",
+                      { staticClass: "button wide light-2" },
+                      [_c("Loader")],
+                      1
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.currentTask.completed.length <= 0
                   ? [
-                      _vm.submittingTaskComplete
-                        ? _c(
-                            "span",
-                            { staticClass: "button wide light-2" },
-                            [_c("Loader")],
-                            1
-                          )
-                        : _vm.currentTask.completed.length <= 0
+                      _vm.currentTask.isActive
                         ? _c(
                             "span",
                             {
@@ -27954,23 +27942,23 @@ var render = function() {
                             },
                             [_vm._v("Complete task")]
                           )
-                        : _c(
-                            "span",
-                            {
-                              staticClass: "button wide red",
-                              on: {
-                                click: function($event) {
-                                  return _vm.onUndoCompleteTask(
-                                    _vm.currentFile.id,
-                                    _vm.currentTask.id
-                                  )
-                                }
-                              }
-                            },
-                            [_vm._v("Reopen task")]
-                          )
+                        : _vm._e()
                     ]
-                  : _vm._e()
+                  : _c(
+                      "span",
+                      {
+                        staticClass: "button wide red",
+                        on: {
+                          click: function($event) {
+                            return _vm.onUndoCompleteTask(
+                              _vm.currentFile.id,
+                              _vm.currentTask.id
+                            )
+                          }
+                        }
+                      },
+                      [_vm._v("Reopen task")]
+                    )
               ]
             : _vm._e(),
           _vm._v(" "),

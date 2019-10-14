@@ -14,11 +14,11 @@
         <div class="items-right">
 
             <template v-if="userPermissionLevel >= 2">
-                <template v-if="currentTask.isActive">
-                    <span class="button wide light-2" v-if="submittingTaskComplete"><Loader/></span>
-                    <span class="button wide primary" v-else-if="currentTask.completed.length <= 0" @click="onCompleteTask(currentFile.id, currentTask.id)">Complete task</span>
-                    <span class="button wide red" v-else @click="onUndoCompleteTask(currentFile.id, currentTask.id)">Reopen task</span>
+                <span class="button wide light-2" v-if="submittingTaskComplete"><Loader/></span>
+                <template v-if="currentTask.completed.length <= 0">
+                    <span class="button wide primary" v-if="currentTask.isActive" @click="onCompleteTask(currentFile.id, currentTask.id)">Complete task</span>
                 </template>
+                <span class="button wide red" v-else @click="onUndoCompleteTask(currentFile.id, currentTask.id)">Reopen task</span>
             </template>
             <!-- <span v-if="currentTask.type == 'decision'" class="button wide primary" @click="downloadPDF">Download PDF</span> -->
             <span v-if="currentTask.type == 'decision'" class="button wide primary" @click="$refs.exportModal.toggle()">Export to PDF</span>

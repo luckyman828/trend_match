@@ -177,6 +177,15 @@ textarea {
     }
 }
 
+// NAVBAR
+.navbar {
+    .items-right > * {
+        &:not(:last-child) {
+            margin-right: 16px;
+        }
+    }
+}
+
 // DARK
 .dark {
     color: white;
