@@ -137,11 +137,11 @@ Route::middleware('auth:api')->group( function(){
 });
 
 // For external API
-// Route::middleware('client')->group( function(){
-//     Route::post('files/feedback-status', 'TaskController@feedbackStatus');
-// });
+Route::middleware('client')->group( function(){
+    Route::post('files/feedback-status', 'TaskController@feedbackStatus');
+});
 
-Route::post('/files/feedback-status', 'TaskController@feedbackStatus')->middleware('client');
+// Route::post('/files/feedback-status', 'TaskController@feedbackStatus')->middleware('client');
 // Route::post('/files/feedback-status', 'TaskController@feedbackStatus');
 
 
