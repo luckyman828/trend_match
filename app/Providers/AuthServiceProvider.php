@@ -33,6 +33,9 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Passport::routes();
+
+        Passport::enableImplicitGrant();
+
         Passport::$ignoreCsrfToken = true;
 
         Auth::viaRequest('custom-auth', function (Request $request) {

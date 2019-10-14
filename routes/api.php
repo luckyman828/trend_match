@@ -103,7 +103,7 @@ Route::middleware('auth:api')->group( function(){
     // xxx TASKS xxx
     Route::put('task/complete', 'TaskController@markComplete');
     Route::delete('task/complete', 'TaskController@undoMarkComplete');
-    Route::post('files/feedback-status', 'TaskController@feedbackStatus');
+    // Route::post('files/feedback-status', 'TaskController@feedbackStatus');
 
 
     // xxx USERS xxx
@@ -136,6 +136,13 @@ Route::middleware('auth:api')->group( function(){
     
 });
 
+// For external API
+// Route::middleware('client')->group( function(){
+//     Route::post('files/feedback-status', 'TaskController@feedbackStatus');
+// });
+
+Route::post('/files/feedback-status', 'TaskController@feedbackStatus')->middleware('client');
+// Route::post('/files/feedback-status', 'TaskController@feedbackStatus');
 
 
 // Public requests
