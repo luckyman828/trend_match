@@ -62,5 +62,8 @@ export default {
         right: 8px;
         top: 8px;
     }
+    .modal-wrapper {
+        display: contents;
+    }
 
 </style>

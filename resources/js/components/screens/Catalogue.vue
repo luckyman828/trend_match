@@ -37,7 +37,7 @@
                                 <!-- <span v-if="selectedDeliveryDates.length > 0" class="clear button invisible primary" @click="$refs.filterDelivery.clear(); selectedDeliveryDates=[]">Clear filter</span> -->
                             </template>
                             <template v-slot:header="slotProps">
-                                <span>Filter by delivery date</span>
+                                <h3>Filter by delivery date</h3>
                             </template>
                             <template v-slot:body>
                                 <CheckboxButtons :options="dynamicDeliveryDates" :optionNameKey="'name'" :optionValueKey="'value'" ref="filterDelivery" v-model="selectedDeliveryDates" @change="$refs.filterDelivery.submit()"/>
@@ -46,7 +46,7 @@
                         <label v-if="currentTask.type == 'approval' || currentTask.parentTasks.find(x => x.type == 'approval')" class="square checkbutton ghost light-2 checkbox clickable">
                             <span>Show UNREAD only</span>
                             <input type="checkbox" v-model="unreadOnly">
-                            <span class="checkmark"></span>
+                            <span class="checkmark solid"><i class="fas fa-check"></i></span>
                         </label>
 
                         <span v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || unreadOnly" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]; $refs.filterDelivery.clear(); selectedDeliveryDates=[]; unreadOnly = false">Clear filter</span>
@@ -679,5 +679,15 @@ export default{
     }
     .button.clear {
         margin-left: -16px;
+    }
+    .checkbutton.checkbox {
+        color: $dark;
+        border: solid 1px;
+        border-color: $light2;
+        font-weight: 700;
+        .checkmark {
+            margin-left: 12px;
+            margin-right: -4px;
+        }
     }
 </style>

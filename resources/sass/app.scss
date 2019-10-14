@@ -500,16 +500,6 @@ textarea {
         }
     }
 }
-.checkbutton.checkbox {
-    color: $dark;
-    border: solid 1px;
-    border-color: $light2;
-    font-weight: 700;
-    .checkmark {
-        margin-left: 12px;
-        margin-right: -4px;
-    }
-}
 // DROPDOWN & TOOLTIP
 .has-tooltip {
     cursor: pointer;
@@ -746,12 +736,19 @@ textarea {
         display: inline-block;
         margin-right: 8px;
         position: relative;
+        background: white;
     }
     .checkmark {
         height: 24px;
         width: 24px;
-        border-radius: 4px;
+        border-radius: 2px;
         margin-left: -4px;
+        &.solid {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
     }
     input {
         display: none;
@@ -774,6 +771,15 @@ textarea {
             width: 16px;
             height: 16px;
             border-radius: 1px;
+        }
+        &:checked + .checkmark.solid {
+            border: none;
+            background: $primary;
+            height: 24px;
+            width: 24px;
+            &::after {
+                content: none;
+            }
         }
     }
     &.dark,
@@ -860,6 +866,12 @@ form,
         display: block;
         width: 100%;
         margin-bottom: 12px;
+        &.checkbutton {
+            height: 40px;
+            background: $light1;
+            display: inline-flex;
+            align-items: center;
+        }
         cursor: pointer;
         &.team {
             position: relative;

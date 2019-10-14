@@ -8234,6 +8234,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Loader */ "./resources/js/components/Loader.vue");
+/* harmony import */ var _Modal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Modal */ "./resources/js/components/Modal.vue");
+/* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Dropdown */ "./resources/js/components/Dropdown.vue");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -8343,17 +8345,71 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "navbarFile",
   components: {
-    Loader: _Loader__WEBPACK_IMPORTED_MODULE_3__["default"]
+    Loader: _Loader__WEBPACK_IMPORTED_MODULE_3__["default"],
+    Modal: _Modal__WEBPACK_IMPORTED_MODULE_4__["default"],
+    Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
   data: function data() {
     return {
-      submittingTaskComplete: false
+      submittingTaskComplete: false,
+      exportComments: true
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['productsScopedByInheritance']), {
@@ -14867,7 +14923,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".close[data-v-53ab54d2] {\n  position: absolute;\n  right: 8px;\n  top: 8px;\n}", ""]);
+exports.push([module.i, ".close[data-v-53ab54d2] {\n  position: absolute;\n  right: 8px;\n  top: 8px;\n}\n.modal-wrapper[data-v-53ab54d2] {\n  display: contents;\n}", ""]);
 
 // exports
 
@@ -15342,7 +15398,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".filters[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 12px;\n}\n.filters > *[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n}\n.filters > *.left > *[data-v-76e8b686] {\n  margin-right: 16px;\n}\n.filters > *.right > *[data-v-76e8b686] {\n  margin-left: 16px;\n}\n.item-filter-button[data-v-76e8b686] {\n  min-width: 120px;\n  background: #dfdfdf;\n}\n.button.clear[data-v-76e8b686] {\n  margin-left: -16px;\n}", ""]);
+exports.push([module.i, ".filters[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 12px;\n}\n.filters > *[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n}\n.filters > *.left > *[data-v-76e8b686] {\n  margin-right: 16px;\n}\n.filters > *.right > *[data-v-76e8b686] {\n  margin-left: 16px;\n}\n.item-filter-button[data-v-76e8b686] {\n  min-width: 120px;\n  background: #dfdfdf;\n}\n.button.clear[data-v-76e8b686] {\n  margin-left: -16px;\n}\n.checkbutton.checkbox[data-v-76e8b686] {\n  color: #1b1c1d;\n  border: solid 1px;\n  border-color: #dfdfdf;\n  font-weight: 700;\n}\n.checkbutton.checkbox .checkmark[data-v-76e8b686] {\n  margin-left: 12px;\n  margin-right: -4px;\n}", ""]);
 
 // exports
 
@@ -27817,219 +27873,154 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "navbar-file flex-wrapper" }, [
-    _c(
-      "div",
-      { staticClass: "items-left" },
-      [
-        _c(
-          "router-link",
-          { staticClass: "back-link", attrs: { to: { name: "collection" } } },
-          [
-            _c("span", { staticClass: "circle primary" }, [
-              _c("i", { staticClass: "far fa-arrow-left" })
-            ]),
-            _c("span", [_vm._v("Back to Collections")])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "breadcrumbs" },
-          [
-            _c(
-              "router-link",
-              {
-                staticClass: "text-link",
-                attrs: { to: { name: "collection" } }
-              },
-              [_vm._v("Collections")]
-            ),
-            _vm._v(" "),
-            _c("span", { staticClass: "current" }, [
-              _c("strong", [
-                _vm._v(
-                  _vm._s(
-                    _vm.currentFile != null
-                      ? _vm.currentFile.title
-                      : "Fetching.."
-                  )
-                )
-              ])
-            ])
-          ],
-          1
-        )
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "items-right" },
-      [
-        _vm.userPermissionLevel >= 2
-          ? [
-              _vm.currentTask.isActive
-                ? [
-                    _vm.submittingTaskComplete
-                      ? _c(
-                          "span",
-                          { staticClass: "button wide light-2" },
-                          [_c("Loader")],
-                          1
-                        )
-                      : _vm.currentTask.completed.length <= 0
-                      ? _c(
-                          "span",
-                          {
-                            staticClass: "button wide primary",
-                            on: {
-                              click: function($event) {
-                                return _vm.onCompleteTask(
-                                  _vm.currentFile.id,
-                                  _vm.currentTask.id
-                                )
-                              }
-                            }
-                          },
-                          [_vm._v("Complete task")]
-                        )
-                      : _c(
-                          "span",
-                          {
-                            staticClass: "button wide red",
-                            on: {
-                              click: function($event) {
-                                return _vm.onUndoCompleteTask(
-                                  _vm.currentFile.id,
-                                  _vm.currentTask.id
-                                )
-                              }
-                            }
-                          },
-                          [_vm._v("Reopen task")]
-                        )
-                  ]
-                : _vm._e()
+  return _c(
+    "div",
+    { staticClass: "navbar-file flex-wrapper" },
+    [
+      _c(
+        "div",
+        { staticClass: "items-left" },
+        [
+          _c(
+            "router-link",
+            { staticClass: "back-link", attrs: { to: { name: "collection" } } },
+            [
+              _c("span", { staticClass: "circle primary" }, [
+                _c("i", { staticClass: "far fa-arrow-left" })
+              ]),
+              _c("span", [_vm._v("Back to Collections")])
             ]
-          : _vm._e(),
-        _vm._v(" "),
-        _vm.currentTask.type == "decision"
-          ? _c(
-              "span",
-              {
-                staticClass: "button wide primary",
-                on: { click: _vm.printToPdf }
-              },
-              [_vm._v("Download PDF")]
-            )
-          : _vm._e()
-      ],
-      2
-    ),
-    _vm._v(" "),
-    _vm.currentTask.type == "decision" &&
-    this.productsScopedByInheritance.length > 1
-      ? _c(
-          "div",
-          {
-            ref: "exportToPdf",
-            staticClass: "example-pdf",
-            staticStyle: { "font-family": "arial, helvetica, sans-serif" }
-          },
-          [
-            _c(
-              "div",
-              {
-                staticStyle: {
-                  "font-family": "'Roboto', sans-serif, helvetica, arial"
-                }
-              },
-              [
-                _c(
-                  "div",
-                  {
-                    staticStyle: {
-                      height: "1040px",
-                      width: "100%",
-                      display: "flex",
-                      "flex-direction": "column",
-                      "justify-content": "space-between",
-                      "align-items": "center",
-                      "text-align": "center"
-                    }
-                  },
-                  [
-                    _c(
-                      "span",
-                      {
-                        staticStyle: {
-                          "font-size": "28px",
-                          "font-weight": "700",
-                          "margin-top": "20px"
-                        }
-                      },
-                      [_vm._v(_vm._s(_vm.currentWorkspace.name))]
-                    ),
-                    _vm._v(" "),
-                    _c("div", [
-                      _c(
-                        "span",
-                        {
-                          staticStyle: {
-                            "font-size": "28px",
-                            "font-weight": "700"
-                          }
-                        },
-                        [_vm._v(_vm._s(_vm.currentFile.title))]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticStyle: {
-                            color: "#3B86FF",
-                            "font-size": "20px",
-                            "font-weight": "700"
-                          }
-                        },
-                        [
-                          _vm._v(
-                            _vm._s(_vm.productsScopedByInheritance.length) +
-                              " styles"
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "breadcrumbs" },
+            [
+              _c(
+                "router-link",
+                {
+                  staticClass: "text-link",
+                  attrs: { to: { name: "collection" } }
+                },
+                [_vm._v("Collections")]
+              ),
+              _vm._v(" "),
+              _c("span", { staticClass: "current" }, [
+                _c("strong", [
+                  _vm._v(
+                    _vm._s(
+                      _vm.currentFile != null
+                        ? _vm.currentFile.title
+                        : "Fetching.."
+                    )
+                  )
+                ])
+              ])
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "items-right" },
+        [
+          _vm.userPermissionLevel >= 2
+            ? [
+                _vm.currentTask.isActive
+                  ? [
+                      _vm.submittingTaskComplete
+                        ? _c(
+                            "span",
+                            { staticClass: "button wide light-2" },
+                            [_c("Loader")],
+                            1
                           )
-                        ]
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c("img", {
-                      staticStyle: {
-                        display: "block",
-                        margin: "0 auto",
-                        width: "150px"
-                      },
-                      attrs: {
-                        src:
-                          "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/kollekt_logo_color.png"
-                      }
-                    })
-                  ]
-                ),
-                _vm._v(" "),
-                _vm._l(_vm.productsScopedByInheritance, function(
-                  product,
-                  index
-                ) {
-                  return _c(
+                        : _vm.currentTask.completed.length <= 0
+                        ? _c(
+                            "span",
+                            {
+                              staticClass: "button wide primary",
+                              on: {
+                                click: function($event) {
+                                  return _vm.onCompleteTask(
+                                    _vm.currentFile.id,
+                                    _vm.currentTask.id
+                                  )
+                                }
+                              }
+                            },
+                            [_vm._v("Complete task")]
+                          )
+                        : _c(
+                            "span",
+                            {
+                              staticClass: "button wide red",
+                              on: {
+                                click: function($event) {
+                                  return _vm.onUndoCompleteTask(
+                                    _vm.currentFile.id,
+                                    _vm.currentTask.id
+                                  )
+                                }
+                              }
+                            },
+                            [_vm._v("Reopen task")]
+                          )
+                    ]
+                  : _vm._e()
+              ]
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.currentTask.type == "decision"
+            ? _c(
+                "span",
+                {
+                  staticClass: "button wide primary",
+                  on: {
+                    click: function($event) {
+                      return _vm.$refs.exportModal.toggle()
+                    }
+                  }
+                },
+                [_vm._v("Export to PDF")]
+              )
+            : _vm._e()
+        ],
+        2
+      ),
+      _vm._v(" "),
+      _vm.currentTask.type == "decision" &&
+      this.productsScopedByInheritance.length > 1
+        ? _c(
+            "div",
+            {
+              ref: "exportToPdf",
+              staticClass: "example-pdf",
+              staticStyle: { "font-family": "arial, helvetica, sans-serif" }
+            },
+            [
+              _c(
+                "div",
+                {
+                  staticStyle: {
+                    "font-family": "'Roboto', sans-serif, helvetica, arial"
+                  }
+                },
+                [
+                  _c(
                     "div",
                     {
-                      key: product.id,
                       staticStyle: {
                         height: "1040px",
                         width: "100%",
-                        position: "relative",
-                        overflow: "hidden"
+                        display: "flex",
+                        "flex-direction": "column",
+                        "justify-content": "space-between",
+                        "align-items": "center",
+                        "text-align": "center"
                       }
                     },
                     [
@@ -28037,416 +28028,595 @@ var render = function() {
                         "span",
                         {
                           staticStyle: {
-                            display: "block",
-                            color: "#3B86FF",
-                            "font-size": "20px",
+                            "font-size": "28px",
                             "font-weight": "700",
-                            "margin-top": "20px",
-                            "margin-bottom": "8px"
+                            "margin-top": "20px"
                           }
                         },
-                        [
-                          _vm._v(
-                            "#" +
-                              _vm._s(index + 1) +
-                              " of " +
-                              _vm._s(_vm.productsScopedByInheritance.length) +
-                              " styles"
-                          )
-                        ]
+                        [_vm._v(_vm._s(_vm.currentWorkspace.name))]
                       ),
                       _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticStyle: {
-                            display: "block",
-                            "font-size": "24px",
-                            "margin-bottom": "12px"
-                          }
-                        },
-                        [_vm._v(_vm._s(product.title))]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          staticStyle: {
-                            display: "flex",
-                            "margin-bottom": "12px"
-                          }
-                        },
-                        [
-                          _c("img", {
-                            attrs: {
-                              height: "400px; width: auto;",
-                              src:
-                                "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/" +
-                                product.color_variants[0].blob_id +
-                                "_thumbnail.jpg"
+                      _c("div", [
+                        _c(
+                          "span",
+                          {
+                            staticStyle: {
+                              "font-size": "28px",
+                              "font-weight": "700"
                             }
-                          }),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticStyle: { "margin-left": "16px" } },
-                            [
-                              _c(
-                                "span",
-                                {
-                                  staticStyle: {
-                                    display: "block",
-                                    "font-size": "14px",
-                                    "font-weight": "700"
-                                  }
-                                },
-                                [_vm._v("Style number")]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "span",
-                                {
-                                  staticStyle: {
-                                    display: "block",
-                                    "margin-bottom": "12px",
-                                    "font-size": "14px"
-                                  }
-                                },
-                                [_vm._v(_vm._s(product.datasource_id))]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "span",
-                                {
-                                  staticStyle: {
-                                    display: "block",
-                                    "font-size": "14px",
-                                    "font-weight": "700"
-                                  }
-                                },
-                                [_vm._v("Category")]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "span",
-                                {
-                                  staticStyle: {
-                                    display: "block",
-                                    "margin-bottom": "12px",
-                                    "font-size": "14px"
-                                  }
-                                },
-                                [_vm._v(_vm._s(product.category))]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "span",
-                                {
-                                  staticStyle: {
-                                    display: "block",
-                                    "font-size": "14px",
-                                    "font-weight": "700"
-                                  }
-                                },
-                                [_vm._v("Minimum production")]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "span",
-                                {
-                                  staticStyle: {
-                                    display: "block",
-                                    "margin-bottom": "12px",
-                                    "font-size": "14px"
-                                  }
-                                },
-                                [_vm._v(_vm._s(product.quantity) + " Units")]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "span",
-                                {
-                                  staticStyle: {
-                                    display: "block",
-                                    "font-size": "14px",
-                                    "font-weight": "700"
-                                  }
-                                },
-                                [
-                                  _vm._v(
-                                    "WHS (" +
-                                      _vm._s(product.userPrices.currency) +
-                                      ")"
-                                  )
-                                ]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "span",
-                                {
-                                  staticStyle: {
-                                    display: "block",
-                                    "margin-bottom": "12px",
-                                    "font-size": "14px"
-                                  }
-                                },
-                                [
-                                  _vm._v(
-                                    _vm._s(product.userPrices.wholesale_price)
-                                  )
-                                ]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "span",
-                                {
-                                  staticStyle: {
-                                    display: "block",
-                                    "font-size": "14px",
-                                    "font-weight": "700"
-                                  }
-                                },
-                                [
-                                  _vm._v(
-                                    "RPP (" +
-                                      _vm._s(product.userPrices.currency) +
-                                      ")"
-                                  )
-                                ]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "span",
-                                {
-                                  staticStyle: {
-                                    display: "block",
-                                    "margin-bottom": "12px",
-                                    "font-size": "14px"
-                                  }
-                                },
-                                [
-                                  _vm._v(
-                                    _vm._s(
-                                      product.userPrices
-                                        .recommended_retail_price
-                                    )
-                                  )
-                                ]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "span",
-                                {
-                                  staticStyle: {
-                                    display: "block",
-                                    "font-size": "14px",
-                                    "font-weight": "700"
-                                  }
-                                },
-                                [_vm._v("MU")]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "span",
-                                {
-                                  staticStyle: {
-                                    display: "block",
-                                    "font-size": "14px"
-                                  }
-                                },
-                                [_vm._v(_vm._s(product.userPrices.markup))]
-                              )
-                            ]
-                          )
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticStyle: {
-                            display: "block",
-                            "font-size": "14px",
-                            "font-weight": "700"
-                          }
-                        },
-                        [_vm._v("Composition")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticStyle: {
-                            display: "block",
-                            "margin-bottom": "12px",
-                            "font-size": "14px"
-                          }
-                        },
-                        [_vm._v(_vm._s(product.composition))]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticStyle: {
-                            display: "block",
-                            "font-size": "14px",
-                            "font-weight": "700"
-                          }
-                        },
-                        [_vm._v("Delivery date")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticStyle: { display: "block", "font-size": "14px" }
-                        },
-                        [
-                          _vm._v(
-                            _vm._s(
-                              new Date(
-                                product.delivery_date
-                              ).toLocaleDateString("en-GB", {
-                                month: "long",
-                                year: "numeric"
-                              })
+                          },
+                          [_vm._v(_vm._s(_vm.currentFile.title))]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "span",
+                          {
+                            staticStyle: {
+                              color: "#3B86FF",
+                              "font-size": "20px",
+                              "font-weight": "700"
+                            }
+                          },
+                          [
+                            _vm._v(
+                              _vm._s(_vm.productsScopedByInheritance.length) +
+                                " styles"
                             )
-                          )
-                        ]
-                      ),
+                          ]
+                        )
+                      ]),
                       _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          staticStyle: {
-                            display: "flex",
-                            height: "150px",
-                            overflow: "hidden",
-                            "margin-left": "-8px",
-                            "margin-right": "-8px"
-                          }
+                      _c("img", {
+                        staticStyle: {
+                          display: "block",
+                          margin: "0 auto",
+                          width: "150px"
                         },
-                        _vm._l(product.color_variants, function(
-                          variant,
-                          index
-                        ) {
-                          return _c(
-                            "div",
-                            {
-                              key: index,
-                              staticStyle: {
-                                flex: "1",
-                                overflow: "hidden",
-                                padding: "8px",
-                                "box-sizing": "border-box",
-                                "max-width": "100px"
-                              }
-                            },
-                            [
-                              _c(
-                                "div",
-                                {
-                                  staticStyle: { width: "100%", height: "100%" }
-                                },
-                                [
-                                  _c(
-                                    "div",
-                                    {
-                                      staticStyle: {
-                                        "padding-top": "110%",
-                                        width: "100%",
-                                        position: "relative",
-                                        overflow: "hidden"
-                                      }
-                                    },
-                                    [
-                                      _c("img", {
-                                        staticStyle: {
-                                          position: "absolute",
-                                          top: "0",
-                                          left: "0",
-                                          height: "100%",
-                                          width: "100%",
-                                          "object-fit": "cover"
-                                        },
-                                        attrs: {
-                                          src:
-                                            "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/" +
-                                            variant.blob_id +
-                                            "_thumbnail.jpg"
-                                        }
-                                      })
-                                    ]
-                                  )
-                                ]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "span",
-                                {
-                                  staticStyle: {
-                                    "font-size": "10px",
-                                    "font-weight": "500"
-                                  }
-                                },
-                                [_vm._v(_vm._s(variant.color))]
-                              )
-                            ]
-                          )
-                        }),
-                        0
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticStyle: {
-                            "font-size": "10px",
-                            "font-weight": "700",
-                            position: "absolute",
-                            right: "0",
-                            bottom: "0"
-                          }
-                        },
-                        [
-                          _vm._v(
-                            "Page " +
-                              _vm._s(index + 1) +
-                              " of " +
-                              _vm._s(_vm.productsScopedByInheritance.length)
-                          )
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        { staticClass: "comments-wrapper" },
-                        [
-                          _vm._l(product.requests, function(request) {
-                            return _c("div", { key: request.id }, [
-                              _c("p", [_vm._v(_vm._s(request.comment))])
-                            ])
-                          }),
-                          _vm._v(" "),
-                          _vm._l(product.commentsScoped, function(comment) {
-                            return _c("div", { key: comment.id }, [
-                              _c("p", [_vm._v(_vm._s(comment.comment))])
-                            ])
-                          })
-                        ],
-                        2
-                      )
+                        attrs: {
+                          src:
+                            "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/kollekt_logo_color.png"
+                        }
+                      })
                     ]
-                  )
-                })
-              ],
-              2
-            )
-          ]
-        )
-      : _vm._e()
-  ])
+                  ),
+                  _vm._v(" "),
+                  _vm._l(_vm.productsScopedByInheritance, function(
+                    product,
+                    index
+                  ) {
+                    return _c(
+                      "div",
+                      {
+                        key: product.id,
+                        staticStyle: {
+                          height: "1040px",
+                          width: "100%",
+                          position: "relative",
+                          overflow: "hidden"
+                        }
+                      },
+                      [
+                        _c(
+                          "span",
+                          {
+                            staticStyle: {
+                              display: "block",
+                              color: "#3B86FF",
+                              "font-size": "20px",
+                              "font-weight": "700",
+                              "margin-top": "20px",
+                              "margin-bottom": "8px"
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "#" +
+                                _vm._s(index + 1) +
+                                " of " +
+                                _vm._s(_vm.productsScopedByInheritance.length) +
+                                " styles"
+                            )
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "span",
+                          {
+                            staticStyle: {
+                              display: "block",
+                              "font-size": "24px",
+                              "margin-bottom": "12px"
+                            }
+                          },
+                          [_vm._v(_vm._s(product.title))]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          {
+                            staticStyle: {
+                              display: "flex",
+                              "margin-bottom": "12px"
+                            }
+                          },
+                          [
+                            _c("img", {
+                              attrs: {
+                                height: "400px; width: auto;",
+                                src:
+                                  "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/" +
+                                  product.color_variants[0].blob_id +
+                                  "_thumbnail.jpg"
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              { staticStyle: { "margin-left": "16px" } },
+                              [
+                                _c(
+                                  "span",
+                                  {
+                                    staticStyle: {
+                                      display: "block",
+                                      "font-size": "14px",
+                                      "font-weight": "700"
+                                    }
+                                  },
+                                  [_vm._v("Style number")]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticStyle: {
+                                      display: "block",
+                                      "margin-bottom": "12px",
+                                      "font-size": "14px"
+                                    }
+                                  },
+                                  [_vm._v(_vm._s(product.datasource_id))]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticStyle: {
+                                      display: "block",
+                                      "font-size": "14px",
+                                      "font-weight": "700"
+                                    }
+                                  },
+                                  [_vm._v("Category")]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticStyle: {
+                                      display: "block",
+                                      "margin-bottom": "12px",
+                                      "font-size": "14px"
+                                    }
+                                  },
+                                  [_vm._v(_vm._s(product.category))]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticStyle: {
+                                      display: "block",
+                                      "font-size": "14px",
+                                      "font-weight": "700"
+                                    }
+                                  },
+                                  [_vm._v("Minimum production")]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticStyle: {
+                                      display: "block",
+                                      "margin-bottom": "12px",
+                                      "font-size": "14px"
+                                    }
+                                  },
+                                  [_vm._v(_vm._s(product.quantity) + " Units")]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticStyle: {
+                                      display: "block",
+                                      "font-size": "14px",
+                                      "font-weight": "700"
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "WHS (" +
+                                        _vm._s(product.userPrices.currency) +
+                                        ")"
+                                    )
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticStyle: {
+                                      display: "block",
+                                      "margin-bottom": "12px",
+                                      "font-size": "14px"
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      _vm._s(product.userPrices.wholesale_price)
+                                    )
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticStyle: {
+                                      display: "block",
+                                      "font-size": "14px",
+                                      "font-weight": "700"
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "RPP (" +
+                                        _vm._s(product.userPrices.currency) +
+                                        ")"
+                                    )
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticStyle: {
+                                      display: "block",
+                                      "margin-bottom": "12px",
+                                      "font-size": "14px"
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      _vm._s(
+                                        product.userPrices
+                                          .recommended_retail_price
+                                      )
+                                    )
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticStyle: {
+                                      display: "block",
+                                      "font-size": "14px",
+                                      "font-weight": "700"
+                                    }
+                                  },
+                                  [_vm._v("MU")]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticStyle: {
+                                      display: "block",
+                                      "font-size": "14px"
+                                    }
+                                  },
+                                  [_vm._v(_vm._s(product.userPrices.markup))]
+                                )
+                              ]
+                            )
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "span",
+                          {
+                            staticStyle: {
+                              display: "block",
+                              "font-size": "14px",
+                              "font-weight": "700"
+                            }
+                          },
+                          [_vm._v("Composition")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "span",
+                          {
+                            staticStyle: {
+                              display: "block",
+                              "margin-bottom": "12px",
+                              "font-size": "14px"
+                            }
+                          },
+                          [_vm._v(_vm._s(product.composition))]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "span",
+                          {
+                            staticStyle: {
+                              display: "block",
+                              "font-size": "14px",
+                              "font-weight": "700"
+                            }
+                          },
+                          [_vm._v("Delivery date")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "span",
+                          {
+                            staticStyle: {
+                              display: "block",
+                              "font-size": "14px"
+                            }
+                          },
+                          [
+                            _vm._v(
+                              _vm._s(
+                                new Date(
+                                  product.delivery_date
+                                ).toLocaleDateString("en-GB", {
+                                  month: "long",
+                                  year: "numeric"
+                                })
+                              )
+                            )
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          {
+                            staticStyle: {
+                              display: "flex",
+                              height: "150px",
+                              overflow: "hidden",
+                              "margin-left": "-8px",
+                              "margin-right": "-8px"
+                            }
+                          },
+                          _vm._l(product.color_variants, function(
+                            variant,
+                            index
+                          ) {
+                            return _c(
+                              "div",
+                              {
+                                key: index,
+                                staticStyle: {
+                                  flex: "1",
+                                  overflow: "hidden",
+                                  padding: "8px",
+                                  "box-sizing": "border-box",
+                                  "max-width": "100px"
+                                }
+                              },
+                              [
+                                _c(
+                                  "div",
+                                  {
+                                    staticStyle: {
+                                      width: "100%",
+                                      height: "100%"
+                                    }
+                                  },
+                                  [
+                                    _c(
+                                      "div",
+                                      {
+                                        staticStyle: {
+                                          "padding-top": "110%",
+                                          width: "100%",
+                                          position: "relative",
+                                          overflow: "hidden"
+                                        }
+                                      },
+                                      [
+                                        _c("img", {
+                                          staticStyle: {
+                                            position: "absolute",
+                                            top: "0",
+                                            left: "0",
+                                            height: "100%",
+                                            width: "100%",
+                                            "object-fit": "cover"
+                                          },
+                                          attrs: {
+                                            src:
+                                              "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/" +
+                                              variant.blob_id +
+                                              "_thumbnail.jpg"
+                                          }
+                                        })
+                                      ]
+                                    )
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  {
+                                    staticStyle: {
+                                      "font-size": "10px",
+                                      "font-weight": "500"
+                                    }
+                                  },
+                                  [_vm._v(_vm._s(variant.color))]
+                                )
+                              ]
+                            )
+                          }),
+                          0
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "span",
+                          {
+                            staticStyle: {
+                              "font-size": "10px",
+                              "font-weight": "700",
+                              position: "absolute",
+                              right: "0",
+                              bottom: "0"
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "Page " +
+                                _vm._s(index + 1) +
+                                " of " +
+                                _vm._s(_vm.productsScopedByInheritance.length)
+                            )
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "comments-wrapper" },
+                          [
+                            _vm._l(product.requests, function(request) {
+                              return _c("div", { key: request.id }, [
+                                _c("p", [_vm._v(_vm._s(request.comment))])
+                              ])
+                            }),
+                            _vm._v(" "),
+                            _vm._l(product.commentsScoped, function(comment) {
+                              return _c("div", { key: comment.id }, [
+                                _c("p", [_vm._v(_vm._s(comment.comment))])
+                              ])
+                            })
+                          ],
+                          2
+                        )
+                      ]
+                    )
+                  })
+                ],
+                2
+              )
+            ]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _c("Modal", {
+        ref: "exportModal",
+        scopedSlots: _vm._u([
+          {
+            key: "header",
+            fn: function() {
+              return [
+                _c("h2", [
+                  _vm._v("Export " + _vm._s(_vm.currentFile.title) + " to PDF")
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "desc" }, [
+                  _vm._v("Export the current products to a PDF.")
+                ])
+              ]
+            },
+            proxy: true
+          },
+          {
+            key: "body",
+            fn: function() {
+              return [
+                _c("form", [
+                  _c("label", { staticClass: "checkbutton" }, [
+                    _c("div", { staticClass: "checkbox" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.exportComments,
+                            expression: "exportComments"
+                          }
+                        ],
+                        attrs: { type: "checkbox" },
+                        domProps: {
+                          checked: Array.isArray(_vm.exportComments)
+                            ? _vm._i(_vm.exportComments, null) > -1
+                            : _vm.exportComments
+                        },
+                        on: {
+                          change: function($event) {
+                            var $$a = _vm.exportComments,
+                              $$el = $event.target,
+                              $$c = $$el.checked ? true : false
+                            if (Array.isArray($$a)) {
+                              var $$v = null,
+                                $$i = _vm._i($$a, $$v)
+                              if ($$el.checked) {
+                                $$i < 0 &&
+                                  (_vm.exportComments = $$a.concat([$$v]))
+                              } else {
+                                $$i > -1 &&
+                                  (_vm.exportComments = $$a
+                                    .slice(0, $$i)
+                                    .concat($$a.slice($$i + 1)))
+                              }
+                            } else {
+                              _vm.exportComments = $$c
+                            }
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("span", { staticClass: "checkmark solid" }, [
+                        _c("i", { staticClass: "fas fa-check" })
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("span", [_vm._v("Include Requests and comments")])
+                  ]),
+                  _vm._v(" "),
+                  _c("label", [
+                    _vm._v(
+                      "\n                    Export details\n                    "
+                    ),
+                    _c("textarea", { attrs: { disabled: "" } }, [
+                      _vm._v(
+                        "                        asdasdadsas\n                    "
+                      )
+                    ])
+                  ])
+                ]),
+                _vm._v(" "),
+                _c(
+                  "span",
+                  {
+                    staticClass: "button xl primary",
+                    on: { click: _vm.printToPdf }
+                  },
+                  [_vm._v("Download PDF")]
+                )
+              ]
+            },
+            proxy: true
+          }
+        ])
+      })
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -33513,7 +33683,7 @@ var render = function() {
                                 key: "header",
                                 fn: function(slotProps) {
                                   return [
-                                    _c("span", [
+                                    _c("h3", [
                                       _vm._v("Filter by delivery date")
                                     ])
                                   ]
@@ -33550,7 +33720,7 @@ var render = function() {
                             ],
                             null,
                             false,
-                            372683620
+                            1375065203
                           )
                         }),
                         _vm._v(" "),
@@ -33606,7 +33776,7 @@ var render = function() {
                                   }
                                 }),
                                 _vm._v(" "),
-                                _c("span", { staticClass: "checkmark" })
+                                _vm._m(0)
                               ]
                             )
                           : _vm._e(),
@@ -33759,7 +33929,16 @@ var render = function() {
     2
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("span", { staticClass: "checkmark solid" }, [
+      _c("i", { staticClass: "fas fa-check" })
+    ])
+  }
+]
 render._withStripped = true
 
 

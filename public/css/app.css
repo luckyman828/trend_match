@@ -9510,18 +9510,6 @@ textarea {
   display: block;
 }
 
-.checkbutton.checkbox {
-  color: #1b1c1d;
-  border: solid 1px;
-  border-color: #dfdfdf;
-  font-weight: 700;
-}
-
-.checkbutton.checkbox .checkmark {
-  margin-left: 12px;
-  margin-right: -4px;
-}
-
 .has-tooltip {
   cursor: pointer;
 }
@@ -9809,14 +9797,26 @@ textarea {
   display: inline-block;
   margin-right: 8px;
   position: relative;
+  background: white;
 }
 
 .checkbox .checkmark,
 .radiobox .checkmark {
   height: 24px;
   width: 24px;
-  border-radius: 4px;
+  border-radius: 2px;
   margin-left: -4px;
+}
+
+.checkbox .checkmark.solid,
+.radiobox .checkmark.solid {
+  display: -webkit-inline-box;
+  display: inline-flex;
+  -webkit-box-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+          align-items: center;
+  color: white;
 }
 
 .checkbox input,
@@ -9846,6 +9846,19 @@ textarea {
   width: 16px;
   height: 16px;
   border-radius: 1px;
+}
+
+.checkbox input:checked + .checkmark.solid,
+.radiobox input:checked + .checkmark.solid {
+  border: none;
+  background: #3b86ff;
+  height: 24px;
+  width: 24px;
+}
+
+.checkbox input:checked + .checkmark.solid::after,
+.radiobox input:checked + .checkmark.solid::after {
+  content: none;
 }
 
 .checkbox.dark .radiomark,
@@ -9952,6 +9965,16 @@ form > label,
   width: 100%;
   margin-bottom: 12px;
   cursor: pointer;
+}
+
+form > label.checkbutton,
+.form-group > label.checkbutton {
+  height: 40px;
+  background: #f3f3f3;
+  display: -webkit-inline-box;
+  display: inline-flex;
+  -webkit-box-align: center;
+          align-items: center;
 }
 
 form > label.team,

@@ -21,7 +21,7 @@
                 </template>
             </template>
             <!-- <span v-if="currentTask.type == 'decision'" class="button wide primary" @click="downloadPDF">Download PDF</span> -->
-            <span v-if="currentTask.type == 'decision'" class="button wide primary" @click="printToPdf">Download PDF</span>
+            <span v-if="currentTask.type == 'decision'" class="button wide primary" @click="$refs.exportModal.toggle()">Export to PDF</span>
 
         </div>
 
@@ -94,6 +94,55 @@
         </div>
         <!-- PDF ENDS  -->
 
+
+        <Modal ref="exportModal">
+            <template v-slot:header>
+                <h2>Export {{currentFile.title}} to PDF</h2>
+                <span class="desc">Export the current products to a PDF.</span>
+            </template>
+            <template v-slot:body>
+                <form>
+                    <!-- <label class="dropdown-parent">
+                        <input type="email" name="email" :id="'invite-email-' + index" placeholder="Choose Team or Full catalogue" v-model="newUsers[index].email">
+                        <Dropdown class="dark">
+                            <template v-slot:button="slotProps">
+                                <span @click="slotProps.toggle" class="open-dropdown dropdown-parent" :class="{active: !slotProps.collapsed}">
+                                    or Choose from Users
+                                    <i class="far fa-chevron-down"></i>
+                                </span>
+                            </template>
+                            <template v-slot:header="slotProps">
+                                <span>{{users.length}} users</span>
+                                <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
+                            </template>
+                            <template v-slot:body>
+                                <RadioButtons :options="users" :optionNameKey="'email'" :optionValueKey="'email'" ref="userSelect" v-model="newUsers[index].email"/>
+                            </template>
+                            <template v-slot:footer="slotProps">
+                                <div class="grid-2">
+                                    <span class="button green" @click="$refs.userSelect[index].submit(); slotProps.toggle()">Save</span>
+                                    <span class="button invisible" @click="slotProps.toggle">Cancel</span>
+                                </div>
+                            </template>
+                        </Dropdown>
+                    </label> -->
+                    <label class="checkbutton">
+                        <div class="checkbox">
+                            <input type="checkbox" v-model="exportComments">
+                            <span class="checkmark solid"><i class="fas fa-check"></i></span>
+                        </div>
+                        <span>Include Requests and comments</span>
+                    </label>
+                    <label>
+                        Export details
+                        <textarea disabled>
+                            asdasdadsas
+                        </textarea>
+                    </label>
+                </form>
+                <span class="button xl primary" @click="printToPdf">Download PDF</span>
+            </template>
+        </Modal>
     </div>
 </template>
 
@@ -101,14 +150,19 @@
 import axios from 'axios';
 import { mapActions, mapGetters } from 'vuex'
 import Loader from './Loader'
+import Modal from './Modal'
+import Dropdown from './Dropdown'
 
 export default {
     name: "navbarFile",
     components: {
-        Loader
+        Loader,
+        Modal,
+        Dropdown,
     },
     data: function () { return {
         submittingTaskComplete: false,
+        exportComments: true,
     }},
     computed: {
         ...mapGetters('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']),
