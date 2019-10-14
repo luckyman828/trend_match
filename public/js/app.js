@@ -9891,6 +9891,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     document.getElementById('main').addEventListener('scroll', this.handleScroll); // Setup event broadcast listening
 
+    Echo.channel('banan').listen('.action.updated', function (e) {
+      var action = e.action;
+      console.log('%cPusher: Action Updated', 'font-weight: 900');
+
+      _this2.setAction({
+        productToUpdate: action.product_id,
+        task_id: action.task_id,
+        user_id: action.user_id,
+        action_code: action.action,
+        is_task_action: action.is_task_action
+      });
+    });
     Echo["private"]("workspace.".concat(this.currentWorkspaceId)).listen('.action.updated', function (e) {
       var action = e.action;
       console.log('%cPusher: Action Updated', 'font-weight: 900');
