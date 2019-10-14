@@ -50339,8 +50339,8 @@ window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
 
     }
   }
-}); // console.log('Bearer ' + process.env.MIX_CLIENT_CREDENTIAL_BEARER_TOKEN)
-// console.log(`'Bearer ${process.env.MIX_CLIENT_CREDENTIAL_BEARER_TOKEN}'`)
+});
+console.log('Bearer ' + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjQxOTEzYmVmZjc5Yzg4YzBhM2NlZTgyNDY1ZTllOGZmNmQ3MzE4MjhhYjYzYjUyNTk1ZTkzMGUwOWY5YTdkOGIzZjI2YjhjMzBjOTZiODZjIn0.eyJhdWQiOiIyIiwianRpIjoiNDE5MTNiZWZmNzljODhjMGEzY2VlODI0NjVlOWU4ZmY2ZDczMTgyOGFiNjNiNTI1OTVlOTMwZTA5ZjlhN2Q4YjNmMjZiOGMzMGM5NmI4NmMiLCJpYXQiOjE1NzEwNTM0OTYsIm5iZiI6MTU3MTA1MzQ5NiwiZXhwIjoxNjAyNjc1ODk1LCJzdWIiOiJiMjEzMmFkYS1iN2Y5LTQxNjUtOGNmNC1iNTlhMTRjZDZhOTAiLCJzY29wZXMiOltdfQ.RQZ-6KuebIcJEY86RtIPoWCVE18LHNKQq8plLeSh-B23QpWMq9aCZKCCYRQPfvKPw0Vfk0yERu4EeJjxJg71a-MaEhaTYBQgzeak-hvHJn3lsVip3LmVyxsw-agS_GdkpWOF9oZJHkjSpy3scSo5-uxYzMzctulQleZLfaftS4hkyqvkw4Aza-X1M2mN-f9Trg0ZTaSTlene_nnT_in_WdPpu0WwwSX-7eOrojMUbSC2Wff3hZ9vI7ivDu2a_1U9JouTaE9FnzVPEJftpTq75mP7RCUe4dXnnMXt2ECSo_awwMPJo1gLUQCpGH6PeR_BSKSs9hH5-i73ZgyAjvUuT3CbvONnSf6m1XbR-IH7902PVP8d7I4CULxJbbcrUxLKnOrWiyQ5J-ql6XwA98lZu5lx2WHN_maCK7LNm-C4QpHVggSkkb7driCBkkxRhTcTjDIquwsTm2x8ypW0Euk4d0AxkIRC7z1fHZByS8eFKoZ0AozOJvjcYMI990ir3HTVQecmhdHgaWJR1O9Y1LoKsqpYuZKpNk2diWokXIHVDtv8tPoNkk7EJ5fTYCScawGtDrvdkk0c-GfDcOORlG1OElaWFjxtpTgLUV7ZHTBP84Zlp2-wnxJ2g1szeq7Q2vDHqlhKgnbwtCHnhx7iEq-cWsWI6eHr9G6z66pc93NMzyA"); // console.log(`'Bearer ${process.env.MIX_CLIENT_CREDENTIAL_BEARER_TOKEN}'`)
 // window.Echo.private(`secret`).listen('pusher:subscription_error', e => {
 //     console.log('Error in secret')
 //     console.log(e)

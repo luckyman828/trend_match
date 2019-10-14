@@ -95,7 +95,7 @@ window.Echo = new Echo({
     },
 })
 
-// console.log('Bearer ' + process.env.MIX_CLIENT_CREDENTIAL_BEARER_TOKEN)
+console.log('Bearer ' + process.env.MIX_CLIENT_CREDENTIAL_BEARER_TOKEN)
 // console.log(`'Bearer ${process.env.MIX_CLIENT_CREDENTIAL_BEARER_TOKEN}'`)
 
 // window.Echo.private(`secret`).listen('pusher:subscription_error', e => {
