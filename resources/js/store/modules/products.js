@@ -59,6 +59,12 @@ export default {
                     } else product.currentAction = product.actions.find(action => action.task_id == currentTask.id)
                     // END Find current action for product
 
+                    // START Find inherit from task
+                    if (currentTask.inherit_from_id) {
+                        product.inheritedAction = product.actions.find(x => x.task_id == currentTask.inherit_from_id)
+                    }
+                    // END
+
                     // START Find the correct price
                     // Check if the chosen currency exists on the product
                     if (product.prices != null) {

@@ -51,7 +51,6 @@ export default {
         },
         // Set the height of the component
         setHeight() {
-            console.log('setting height!')
             const offset = 8
             const el = this.$refs.dropdown
 

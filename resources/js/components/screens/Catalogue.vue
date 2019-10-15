@@ -206,11 +206,7 @@ export default{
         products() {
             let productsToReturn = []
             if (this.currentTask.inherit_from_id) {
-                if (this.currentTask.type == 'approval' || this.currentTask.parentTasks.find(x => x.type == 'approval')) {
-                    productsToReturn = this.productsScopedByInheritance.filter(x => x.requests.length > 0)
-                } else {
-                    productsToReturn = this.productsScopedByInheritance
-                }
+                productsToReturn = this.allProducts.filter(product => product.actions.find(action => action.task_id == inherit_from_id && action.action > 0))
             } else {
                 productsToReturn = this.allProducts
             }
@@ -258,9 +254,9 @@ export default{
                 const filteredByUnread = productsToReturn.filter(product => {
                     if (product.currentAction == null && product.buyerAction == null && product.decisionAction == null) {
                         if (this.currentTask.parentTasks.find(x => x.type == 'approval')) {
-                            return product.comments[product.comments.length-1].task_id == this.currentTask.parentTasks.find(x => x.type == 'approval').id
+                            return (product.comments.length > 0) ? product.comments[product.comments.length-1].task_id == this.currentTask.parentTasks.find(x => x.type == 'approval').id : false
                         } else {
-                            return product.comments[product.comments.length-1].task_id != this.currentTask.id
+                            return (product.comments.length > 0) ? product.comments[product.comments.length-1].task_id != this.currentTask.id : false
                         }
                     }
                 })

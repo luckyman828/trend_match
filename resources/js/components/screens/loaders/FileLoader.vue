@@ -84,19 +84,20 @@ export default {
                         // If the task is not completed
                         taskToSet = task
                 } else {
+                    // If the task has parents
                     let parentsCompleted = true
                     task.parents.forEach(parent => {
+                        // Loop through the tasks parents
                         if (!parent.completed.find(x => x.file_id == this.currentFileId))
+                            // If the task is not completed
                             parentsCompleted = false
                     })
                     if (parentsCompleted) taskToSet = task
-                    else {
-                        // If we have no active task
-                        if (!taskToSet) {
-                            // If we don't already have set a task
-                            taskToSet = task
-                        }
-                    }
+                }
+                // If we have no active task
+                if (!taskToSet) {
+                    // If we don't already have set a task
+                    taskToSet = task
                 }
 
                 // if (task.parents.length > 0) {

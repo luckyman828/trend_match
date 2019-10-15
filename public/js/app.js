@@ -7509,7 +7509,6 @@ __webpack_require__.r(__webpack_exports__);
     },
     // Set the height of the component
     setHeight: function setHeight() {
-      console.log('setting height!');
       var offset = 8;
       var el = this.$refs.dropdown;
       var wrapper = this.$refs.wrapper; // const parent = el.closest('.dropdown-parent') // Use set element as parent
@@ -8410,12 +8409,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       exportComments: true
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['productsScopedByInheritance']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['productsScopedByInheritance']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/tasks', ['userTasks']), {
     host: function host() {
       return window.location.origin;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/tasks', ['completeTask', 'undoCompleteTask']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/tasks', ['completeTask', 'undoCompleteTask']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTaskId']), {
     printToPdf: function () {
       var _printToPdf = _asyncToGenerator(
       /*#__PURE__*/
@@ -8470,6 +8469,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _onCompleteTask = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(file_id, task_id) {
+        var _this = this;
+
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -8483,9 +8484,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
               case 3:
                 // .then(reponse => succes = response)
-                this.submittingTaskComplete = false;
+                this.submittingTaskComplete = false; // Skip to next task
 
-              case 4:
+                if (this.userTasks[this.userTasks.findIndex(function (x) {
+                  return x.id == _this.currentTask.id;
+                }) + 1]) {
+                  this.setCurrentTaskId(this.userTasks[this.userTasks.findIndex(function (x) {
+                    return x.id == _this.currentTask.id;
+                  }) + 1].id);
+                }
+
+              case 5:
               case "end":
                 return _context2.stop();
             }
@@ -9461,6 +9470,18 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -11542,15 +11563,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToReturn = [];
 
       if (this.currentTask.inherit_from_id) {
-        if (this.currentTask.type == 'approval' || this.currentTask.parentTasks.find(function (x) {
-          return x.type == 'approval';
-        })) {
-          productsToReturn = this.productsScopedByInheritance.filter(function (x) {
-            return x.requests.length > 0;
+        productsToReturn = this.allProducts.filter(function (product) {
+          return product.actions.find(function (action) {
+            return action.task_id == inherit_from_id && action.action > 0;
           });
-        } else {
-          productsToReturn = this.productsScopedByInheritance;
-        }
+        });
       } else {
         productsToReturn = this.allProducts;
       }
@@ -11602,11 +11619,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             if (_this2.currentTask.parentTasks.find(function (x) {
               return x.type == 'approval';
             })) {
-              return product.comments[product.comments.length - 1].task_id == _this2.currentTask.parentTasks.find(function (x) {
+              return product.comments.length > 0 ? product.comments[product.comments.length - 1].task_id == _this2.currentTask.parentTasks.find(function (x) {
                 return x.type == 'approval';
-              }).id;
+              }).id : false;
             } else {
-              return product.comments[product.comments.length - 1].task_id != _this2.currentTask.id;
+              return product.comments.length > 0 ? product.comments[product.comments.length - 1].task_id != _this2.currentTask.id : false;
             }
           }
         });
@@ -12468,19 +12485,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                     })) // If the task is not completed
                       taskToSet = task;
                   } else {
+                    // If the task has parents
                     var parentsCompleted = true;
                     task.parents.forEach(function (parent) {
+                      // Loop through the tasks parents
                       if (!parent.completed.find(function (x) {
                         return x.file_id == _this.currentFileId;
-                      })) parentsCompleted = false;
+                      })) // If the task is not completed
+                        parentsCompleted = false;
                     });
-                    if (parentsCompleted) taskToSet = task;else {
-                      // If we have no active task
-                      if (!taskToSet) {
-                        // If we don't already have set a task
-                        taskToSet = task;
-                      }
-                    }
+                    if (parentsCompleted) taskToSet = task;
+                  } // If we have no active task
+
+
+                  if (!taskToSet) {
+                    // If we don't already have set a task
+                    taskToSet = task;
                   } // if (task.parents.length > 0) {
                   //     task.parents.forEach(parent => {
                   //         if (parent.completed.length > 0) taskToSet = task
@@ -30850,22 +30870,31 @@ var render = function() {
                       ]
                     },
                     [
-                      _vm.currentTask.parentTasks.find(function(x) {
-                        return x.type == "approval"
-                      }) &&
-                      product.currentAction == null &&
-                      product.buyerAction == null &&
-                      product.comments[product.comments.length - 1].task_id ==
-                        _vm.currentTask.parentTasks.find(function(x) {
-                          return x.type == "approval"
-                        }).id
-                        ? _c("span", { staticClass: "circle tiny primary" })
-                        : _vm.currentTask.type == "approval" &&
-                          product.currentAction == null &&
-                          product.decisionAction == null &&
-                          product.comments[product.comments.length - 1]
-                            .task_id != _vm.currentTask.id
-                        ? _c("span", { staticClass: "circle tiny primary" })
+                      product.comments.length > 0
+                        ? [
+                            _vm.currentTask.parentTasks.find(function(x) {
+                              return x.type == "approval"
+                            }) &&
+                            product.currentAction == null &&
+                            product.buyerAction == null &&
+                            product.comments[product.comments.length - 1]
+                              .task_id ==
+                              _vm.currentTask.parentTasks.find(function(x) {
+                                return x.type == "approval"
+                              }).id
+                              ? _c("span", {
+                                  staticClass: "circle tiny primary"
+                                })
+                              : _vm.currentTask.type == "approval" &&
+                                product.currentAction == null &&
+                                product.decisionAction == null &&
+                                product.comments[product.comments.length - 1]
+                                  .task_id != _vm.currentTask.id
+                              ? _c("span", {
+                                  staticClass: "circle tiny primary"
+                                })
+                              : _vm._e()
+                          ]
                         : _vm._e(),
                       _vm._v(" "),
                       _vm.currentTaskPermissions.select
@@ -58405,8 +58434,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           } else product.currentAction = product.actions.find(function (action) {
             return action.task_id == currentTask.id;
           }); // END Find current action for product
+          // START Find inherit from task
+
+          if (currentTask.inherit_from_id) {
+            product.inheritedAction = product.actions.find(function (x) {
+              return x.task_id == currentTask.inherit_from_id;
+            });
+          } // END
           // START Find the correct price
           // Check if the chosen currency exists on the product
+
 
           if (product.prices != null) {
             var workspacePrices = null;

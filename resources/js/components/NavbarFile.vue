@@ -167,12 +167,14 @@ export default {
     computed: {
         ...mapGetters('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']),
         ...mapGetters('entities/products', ['productsScopedByInheritance']),
+        ...mapGetters('entities/tasks', ['userTasks']),
         host() {
             return window.location.origin
         }
     },
     methods: {
         ...mapActions('entities/tasks', ['completeTask', 'undoCompleteTask']),
+        ...mapActions('persist', ['setCurrentTaskId']),
         printToPdf: async function(event) {
             var endpoint = "https://v2018.api2pdf.com/chrome/html"
             var apiKey = "16b0a04b-8c9b-48f6-ad41-4149368bff58" //Replace this API key from portal.api2pdf.com
@@ -203,6 +205,10 @@ export default {
             await this.completeTask({file_id: file_id, task_id: task_id})
             // .then(reponse => succes = response)
             this.submittingTaskComplete = false
+            // Skip to next task
+            if (this.userTasks[this.userTasks.findIndex(x => x.id == this.currentTask.id) + 1]) {
+                this.setCurrentTaskId(this.userTasks[this.userTasks.findIndex(x => x.id == this.currentTask.id) + 1].id)
+            }
         },
         async onUndoCompleteTask(file_id, task_id) {
             this.submittingTaskComplete = true
