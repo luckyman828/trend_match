@@ -8968,9 +8968,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
         if (this.currentTaskPermissions.actions) {
           if (key == 'KeyI') this.toggleInOut(this.product, 1);
-          if (key == 'KeyO') this.toggleInOut(this.product, 0);
+          if (key == 'KeyO' && this.userPermissionLevel != 3) this.toggleInOut(this.product, 0);
 
-          if (this.currentTaskPermissions.focus) {
+          if (this.currentTaskPermissions.focus && this.currentTask.type != 'approval') {
             if (key == 'KeyF') this.toggleInOut(this.product, 2);
           }
         }
