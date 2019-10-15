@@ -22,10 +22,12 @@ export default {
         ...mapGetters('persist', ['currentTask']),
     },
     watch: {
-        currentTask (newVal) {
-            if (this.currentTask.type == 'approval')
-                this.setProductFilter('nds')
-            else this.setProductFilter('overview')
+        currentTask (newTask, oldTask) {
+            if (newTask.id != oldTask.id) {
+                if (this.currentTask.type == 'approval')
+                    this.setProductFilter('nds')
+                else this.setProductFilter('overview')
+            }
         }
     },
     methods: {

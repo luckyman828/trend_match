@@ -9619,8 +9619,8 @@ textarea {
   border-radius: 0px;
 }
 
-.right .dropdown,
-.right .tooltip {
+.right > .dropdown,
+.right > .tooltip {
   left: auto;
   right: 0;
 }

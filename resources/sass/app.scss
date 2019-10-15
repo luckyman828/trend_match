@@ -598,7 +598,7 @@ textarea {
         transform: rotateZ(45deg);
         border-radius: 0px;
     }
-    .right & {
+    .right > & {
         left: auto;
         right: 0;
         &::before {

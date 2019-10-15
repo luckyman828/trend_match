@@ -8390,7 +8390,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 
 
@@ -8409,7 +8408,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       exportComments: true
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['productsScopedByInheritance']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/tasks', ['userTasks']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['products']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/tasks', ['userTasks']), {
     host: function host() {
       return window.location.origin;
     }
@@ -8829,6 +8828,46 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -8851,7 +8890,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       currentImgIndex: 0
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope', 'currentTaskPermissions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/products', ['currentProductId', 'currentProduct', 'nextProductId', 'prevProductId']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope', 'currentTaskPermissions', 'currentTask']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/products', ['currentProductId', 'currentProduct', 'nextProductId', 'prevProductId']), {
     product: function product() {
       return this.currentProduct;
     },
@@ -9413,8 +9452,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   props: ['productTotals', 'currentFilter'],
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTask'])),
   watch: {
-    currentTask: function currentTask(newVal) {
-      if (this.currentTask.type == 'approval') this.setProductFilter('nds');else this.setProductFilter('overview');
+    currentTask: function currentTask(newTask, oldTask) {
+      if (newTask.id != oldTask.id) {
+        if (this.currentTask.type == 'approval') this.setProductFilter('nds');else this.setProductFilter('overview');
+      }
     }
   },
   methods: {
@@ -9475,11 +9516,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-//
-//
-//
-//
-//
 //
 //
 //
@@ -11596,8 +11632,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return this.currentFile;
     },
     productsFilteredByCategory: function productsFilteredByCategory() {
-      var _this2 = this;
-
       var products = this.products;
       var categories = this.selectedCategories;
       var deliveryDates = this.selectedDeliveryDates;
@@ -11621,17 +11655,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       if (this.unreadOnly) {
         var filteredByUnread = productsToReturn.filter(function (product) {
-          if (product.currentAction == null && product.buyerAction == null && product.decisionAction == null) {
-            if (_this2.currentTask.parentTasks.find(function (x) {
-              return x.type == 'approval';
-            })) {
-              return product.comments.length > 0 ? product.comments[product.comments.length - 1].task_id == _this2.currentTask.parentTasks.find(function (x) {
-                return x.type == 'approval';
-              }).id : false;
-            } else {
-              return product.comments.length > 0 ? product.comments[product.comments.length - 1].task_id != _this2.currentTask.id : false;
-            }
-          }
+          return product.newComment;
         });
         productsToReturn = filteredByUnread;
       }
@@ -11639,6 +11663,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return productsToReturn;
     },
     productsFiltered: function productsFiltered() {
+      var _this2 = this;
+
       var method = this.currentProductFilter;
       var products = this.productsFilteredByCategory;
       var productsToReturn = products; // filter by in/out
@@ -11646,17 +11672,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (['ins', 'outs', 'nds'].includes(method)) {
         var filteredByAction = products.filter(function (product) {
           if (method == 'nds') {
-            return product.currentAction == null && product.decisionAction == null && product.buyerAction == null; // if (this.currentTask.type == 'approval') {
-            //     return (product.currentAction == null && product.decisionAction == null)
-            // }
-            // else if (this.currentTask.parentTasks.find(x => x.type =='approval')) {
-            //     return (product.currentAction == null && product.buyingAction == null)
-            // }
-            // else return product.currentAction == null
+            if (_this2.currentTask.type == 'approval') {
+              return product.currentAction == null && product.requests.length > 0;
+            } else return product.currentAction == null && !product.outInFilter;
           } else if (method == 'ins') {
-            if (product.currentAction) return product.currentAction.action >= 1;else if (product.buyerAction) return product.buyerAction.action >= 1;else if (product.decisionAction) return product.decisionAction.action >= 1;
+            if (product.currentAction) return product.currentAction.action >= 1 && !product.outInFilter;
+
+            if (_this2.currentTask.type == 'approval') {
+              if (product.inheritedAction && product.requests.length < 1) return product.inheritedAction.action >= 1;
+            }
           } else if (method == 'outs') {
-            if (product.currentAction) return product.currentAction.action < 1;else if (product.buyerAction) return product.buyerAction.action < 1;else if (product.decisionAction) return product.decisionAction.action < 1;
+            if (product.currentAction) return product.currentAction.action < 1;else if (product.outInFilter) return true;
           }
         });
         productsToReturn = filteredByAction;
@@ -11695,6 +11721,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return selectedProducts;
     },
     productTotals: function productTotals() {
+      var _this3 = this;
+
       var products = this.productsFilteredByCategory;
       var data = {
         products: products.length,
@@ -11703,43 +11731,39 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         nds: 0
       };
       products.forEach(function (product) {
-        if (product.currentAction == null && product.decisionAction == null && product.buyerAction == null) {
-          data.nds++;
+        if (product.outInFilter) {
+          data.outs++;
+        } else if (product.currentAction == null) {
+          if (_this3.currentTask.type == 'approval') {
+            if (product.requests.length > 0) {
+              data.nds++;
+            } else {
+              data.ins++;
+            }
+          } else {
+            data.nds++;
+          }
         } else {
-          if (product.currentAction) {
-            if (product.currentAction.action == 0) {
-              data.outs++;
-            } else {
-              data.ins++;
-            }
-          } else if (product.buyerAction) {
-            if (product.buyerAction.action == 0) {
-              data.outs++;
-            } else {
-              data.ins++;
-            }
-          } else if (product.decisionAction) {
-            if (product.decisionAction.action == 0) {
-              data.outs++;
-            } else {
-              data.ins++;
-            }
+          if (product.currentAction.action == 0) {
+            data.outs++;
+          } else {
+            data.ins++;
           }
         }
       });
       return data;
     },
     teamUsers: function teamUsers() {
-      var _this3 = this;
+      var _this4 = this;
 
       var usersToReturn = [];
 
       if (this.teamFilterId > 0) {
         var thisTeam = this.teams.find(function (team) {
-          return team.id == _this3.teamFilterId;
+          return team.id == _this4.teamFilterId;
         });
         if (thisTeam) thisTeam.users.forEach(function (user) {
-          var fileUser = _this3.collection.users.find(function (x) {
+          var fileUser = _this4.collection.users.find(function (x) {
             return x.id == user.id;
           });
 
@@ -11844,7 +11868,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this4 = this;
+      var _this5 = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
@@ -11854,12 +11878,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
-        var thisProduct = _this4.products.find(function (x) {
+        var thisProduct = _this5.products.find(function (x) {
           return x.id == product;
         });
 
         if (thisProduct.currentAction != null) {
-          console.log(_this4.product);
+          console.log(_this5.product);
           console.log('There is an action!'); // If product has a final action
 
           if (thisProduct.currentAction.action != actionType) {
@@ -27946,7 +27970,7 @@ var render = function() {
         "div",
         { staticClass: "items-right" },
         [
-          _vm.userPermissionLevel >= 2
+          _vm.userPermissionLevel >= 2 && _vm.userPermissionLevel != 3
             ? [
                 _vm.submittingTaskComplete
                   ? _c(
@@ -27995,7 +28019,11 @@ var render = function() {
               ]
             : _vm._e(),
           _vm._v(" "),
-          _vm.currentTask.type == "decision"
+          (_vm.currentTask.type == "decision" ||
+            _vm.currentTask.type == "approval") &&
+          _vm.currentTask.completed.find(function(x) {
+            return x.task_id == _vm.currentTask.id
+          })
             ? _c(
                 "span",
                 {
@@ -28013,8 +28041,7 @@ var render = function() {
         2
       ),
       _vm._v(" "),
-      _vm.currentTask.type == "decision" &&
-      this.productsScopedByInheritance.length > 1
+      _vm.currentTask.type == "decision" && this.products.length > 1
         ? _c(
             "div",
             {
@@ -28078,12 +28105,7 @@ var render = function() {
                               "font-weight": "700"
                             }
                           },
-                          [
-                            _vm._v(
-                              _vm._s(_vm.productsScopedByInheritance.length) +
-                                " styles"
-                            )
-                          ]
+                          [_vm._v(_vm._s(_vm.products.length) + " styles")]
                         )
                       ]),
                       _vm._v(" "),
@@ -28101,10 +28123,7 @@ var render = function() {
                     ]
                   ),
                   _vm._v(" "),
-                  _vm._l(_vm.productsScopedByInheritance, function(
-                    product,
-                    index
-                  ) {
+                  _vm._l(_vm.products, function(product, index) {
                     return _c(
                       "div",
                       {
@@ -28134,7 +28153,7 @@ var render = function() {
                               "#" +
                                 _vm._s(index + 1) +
                                 " of " +
-                                _vm._s(_vm.productsScopedByInheritance.length) +
+                                _vm._s(_vm.products.length) +
                                 " styles"
                             )
                           ]
@@ -28504,7 +28523,7 @@ var render = function() {
                               "Page " +
                                 _vm._s(index + 1) +
                                 " of " +
-                                _vm._s(_vm.productsScopedByInheritance.length)
+                                _vm._s(_vm.products.length)
                             )
                           ]
                         ),
@@ -28780,44 +28799,99 @@ var render = function() {
                   "div",
                   { staticClass: "right controls" },
                   [
-                    _vm.currentTaskPermissions.actions &&
-                    _vm.userPermissionLevel != 3
+                    _vm.currentTaskPermissions.focus &&
+                    _vm.currentTask.type != "approval" &&
+                    _vm.currentTask.type != "decision"
+                      ? _c(
+                          "span",
+                          {
+                            staticClass:
+                              "square light-2 true-square clickable focus-action",
+                            class: [
+                              _vm.product.currentAction
+                                ? _vm.product.currentAction.action == 2
+                                  ? "active light"
+                                  : "ghost primary-hover"
+                                : "ghost primary-hover"
+                            ],
+                            on: {
+                              click: function($event) {
+                                return _vm.toggleInOut(_vm.product, 2)
+                              }
+                            }
+                          },
+                          [_c("i", { staticClass: "far fa-star" })]
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.product.outInFilter
                       ? [
-                          _vm.currentTaskPermissions.focus
-                            ? _c(
+                          _c(
+                            "TooltipAlt2",
+                            {
+                              attrs: {
+                                body:
+                                  "Out by " +
+                                  _vm.product.outInFilter.user.name +
+                                  " in " +
+                                  _vm.product.outInFilter.task.title
+                              }
+                            },
+                            [
+                              _c(
                                 "span",
                                 {
                                   staticClass:
-                                    "square true-square clickable focus-action",
-                                  class: [
-                                    _vm.product.currentAction != null
-                                      ? _vm.product.currentAction.action == 2
-                                        ? "active light"
-                                        : "ghost primary-hover"
-                                      : "ghost primary-hover"
-                                  ],
-                                  on: {
-                                    click: function($event) {
-                                      return _vm.toggleInOut(_vm.product, 2)
-                                    }
-                                  }
+                                    "button icon-right ghost disabled"
                                 },
-                                [_c("i", { staticClass: "far fa-star" })]
+                                [
+                                  _vm._v(
+                                    "\n                                    In  "
+                                  ),
+                                  _c("i", { staticClass: "far fa-heart" })
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticClass:
+                                    "button icon-right active red disabled"
+                                },
+                                [
+                                  _vm._v(
+                                    "\n                                    Out  "
+                                  ),
+                                  _c("i", {
+                                    staticClass: "far fa-times-circle"
+                                  })
+                                ]
                               )
-                            : _vm._e(),
-                          _vm._v(" "),
-                          _vm.product.buyerAction
+                            ]
+                          )
+                        ]
+                      : _vm.currentTask.type == "approval" &&
+                        _vm.product.requests.length < 1
+                      ? [_vm._m(0), _vm._v(" "), _vm._m(1)]
+                      : [
+                          _vm.userPermissionLevel != 3
                             ? [
                                 _c(
                                   "span",
                                   {
-                                    staticClass: "button icon-right disabled",
+                                    staticClass: "button icon-right",
                                     class: [
-                                      _vm.product.buyerAction
-                                        ? _vm.product.buyerAction.action != 0
+                                      _vm.product.currentAction
+                                        ? _vm.product.currentAction.action != 0
                                           ? "active green"
                                           : "ghost green-hover"
-                                        : "ghost green-hover"
+                                        : "ghost green-hover",
+                                      {
+                                        disabled: _vm.product.currentAction
+                                          ? _vm.product.currentAction.user
+                                              .role_id == 3
+                                          : false
+                                      }
                                     ],
                                     on: {
                                       click: function($event) {
@@ -28827,7 +28901,7 @@ var render = function() {
                                   },
                                   [
                                     _vm._v(
-                                      "\n                            In  "
+                                      "\n                                In  "
                                     ),
                                     _c("i", { staticClass: "far fa-heart" })
                                   ]
@@ -28836,13 +28910,19 @@ var render = function() {
                                 _c(
                                   "span",
                                   {
-                                    staticClass: "button icon-right disabled",
+                                    staticClass: "button icon-right",
                                     class: [
-                                      _vm.product.buyerAction != null
-                                        ? _vm.product.buyerAction.action == 0
+                                      _vm.product.currentAction
+                                        ? _vm.product.currentAction.action == 0
                                           ? "active red"
                                           : "ghost red-hover"
-                                        : "ghost red-hover"
+                                        : "ghost red-hover",
+                                      {
+                                        disabled: _vm.product.currentAction
+                                          ? _vm.product.currentAction.user
+                                              .role_id == 3
+                                          : false
+                                      }
                                     ],
                                     on: {
                                       click: function($event) {
@@ -28852,7 +28932,7 @@ var render = function() {
                                   },
                                   [
                                     _vm._v(
-                                      "\n                            Out  "
+                                      "\n                                Out  "
                                     ),
                                     _c("i", {
                                       staticClass: "far fa-times-circle"
@@ -28866,11 +28946,17 @@ var render = function() {
                                   {
                                     staticClass: "button icon-right",
                                     class: [
-                                      _vm.product.currentAction != null
+                                      _vm.product.currentAction
                                         ? _vm.product.currentAction.action != 0
                                           ? "active green"
                                           : "ghost green-hover"
-                                        : "ghost green-hover"
+                                        : "ghost green-hover",
+                                      {
+                                        disabled: _vm.product.currentAction
+                                          ? _vm.product.currentAction.user
+                                              .role_id != 3
+                                          : false
+                                      }
                                     ],
                                     on: {
                                       click: function($event) {
@@ -28880,7 +28966,7 @@ var render = function() {
                                   },
                                   [
                                     _vm._v(
-                                      "\n                            In  "
+                                      "\n                                In  "
                                     ),
                                     _c("i", { staticClass: "far fa-heart" })
                                   ]
@@ -28889,23 +28975,24 @@ var render = function() {
                                 _c(
                                   "span",
                                   {
-                                    staticClass: "button icon-right",
+                                    staticClass: "button icon-right disabled",
                                     class: [
-                                      _vm.product.currentAction != null
+                                      _vm.product.currentAction
                                         ? _vm.product.currentAction.action == 0
                                           ? "active red"
                                           : "ghost red-hover"
-                                        : "ghost red-hover"
-                                    ],
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.toggleInOut(_vm.product, 0)
+                                        : "ghost red-hover",
+                                      {
+                                        disabled: _vm.product.currentAction
+                                          ? _vm.product.currentAction.user
+                                              .role_id != 3
+                                          : false
                                       }
-                                    }
+                                    ]
                                   },
                                   [
                                     _vm._v(
-                                      "\n                            Out  "
+                                      "\n                                Out  "
                                     ),
                                     _c("i", {
                                       staticClass: "far fa-times-circle"
@@ -28913,87 +29000,7 @@ var render = function() {
                                   ]
                                 )
                               ]
-                        ]
-                      : _vm.userPermissionLevel == 3
-                      ? [
-                          _vm.product.decisionAction
-                            ? [
-                                _c(
-                                  "span",
-                                  {
-                                    staticClass: "button icon-right disabled",
-                                    class: [
-                                      _vm.product.decisionAction
-                                        ? _vm.product.decisionAction.action != 0
-                                          ? "active green"
-                                          : "ghost green-hover"
-                                        : "ghost green-hover"
-                                    ],
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.toggleInOut(_vm.product, 1)
-                                      }
-                                    }
-                                  },
-                                  [
-                                    _vm._v(
-                                      "\n                            In  "
-                                    ),
-                                    _c("i", { staticClass: "far fa-heart" })
-                                  ]
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  {
-                                    staticClass: "button icon-right disabled",
-                                    class: [
-                                      _vm.product.decisionAction != null
-                                        ? _vm.product.decisionAction.action == 0
-                                          ? "active red"
-                                          : "ghost red-hover"
-                                        : "ghost red-hover"
-                                    ],
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.toggleInOut(_vm.product, 0)
-                                      }
-                                    }
-                                  },
-                                  [
-                                    _vm._v(
-                                      "\n                            Out  "
-                                    ),
-                                    _c("i", {
-                                      staticClass: "far fa-times-circle"
-                                    })
-                                  ]
-                                )
-                              ]
-                            : _c(
-                                "span",
-                                {
-                                  staticClass: "button icon-right",
-                                  class: [
-                                    _vm.product.currentAction != null
-                                      ? _vm.product.currentAction.action != 0
-                                        ? "active green"
-                                        : "ghost green-hover"
-                                      : "ghost green-hover"
-                                  ],
-                                  on: {
-                                    click: function($event) {
-                                      return _vm.toggleInOut(_vm.product, 1)
-                                    }
-                                  }
-                                },
-                                [
-                                  _vm._v("\n                            In  "),
-                                  _c("i", { staticClass: "far fa-heart" })
-                                ]
-                              )
-                        ]
-                      : _vm._e(),
+                        ],
                     _vm._v(" "),
                     _c(
                       "span",
@@ -29068,7 +29075,7 @@ var render = function() {
                         { staticClass: "description" },
                         [
                           _c("div", { staticClass: "stat" }, [
-                            _vm._m(0),
+                            _vm._m(2),
                             _vm._v(" "),
                             _c("p", [
                               _c("span", [
@@ -29078,7 +29085,7 @@ var render = function() {
                           ]),
                           _vm._v(" "),
                           _c("div", { staticClass: "stat" }, [
-                            _vm._m(1),
+                            _vm._m(3),
                             _vm._v(" "),
                             _c("span", [_vm._v(_vm._s(_vm.product.category))])
                           ]),
@@ -29259,13 +29266,13 @@ var render = function() {
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "stat" }, [
-                      _vm._m(2),
+                      _vm._m(4),
                       _vm._v(" "),
                       _c("p", [_vm._v(_vm._s(_vm.product.composition))])
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "stat" }, [
-                      _vm._m(3),
+                      _vm._m(5),
                       _vm._v(" "),
                       _c("p", [
                         _vm._v(
@@ -29286,7 +29293,7 @@ var render = function() {
                           "div",
                           { staticClass: "stat" },
                           [
-                            _vm._m(4),
+                            _vm._m(6),
                             _vm._v(" "),
                             _vm._l(_vm.product.assortments, function(
                               assortment,
@@ -29513,6 +29520,28 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
+    return _c(
+      "span",
+      { staticClass: "button icon-right active green disabled" },
+      [
+        _vm._v("\n                                In  "),
+        _c("i", { staticClass: "far fa-heart" })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("span", { staticClass: "button icon-right ghost disabled" }, [
+      _vm._v("\n                                Out  "),
+      _c("i", { staticClass: "far fa-times-circle" })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
     return _c("p", [_c("strong", [_vm._v("Style number")])])
   },
   function() {
@@ -29623,28 +29652,18 @@ var render = function() {
         [
           _vm.commentScope == "comments"
             ? [
-                _vm.currentTask.type == "approval" ||
-                _vm.currentTask.parentTasks.find(function(x) {
-                  return x.type == "approval"
-                })
+                _vm.currentTask.type == "approval"
                   ? [
                       _vm.requests.length > 0
                         ? _c(
                             "div",
                             { staticClass: "requests-wrapper" },
-                            _vm._l(
-                              _vm.requests.filter(function(x) {
-                                return (
-                                  x.task_id == _vm.currentTask.inherit_from_id
-                                )
-                              }),
-                              function(request) {
-                                return _c("request", {
-                                  key: request.id,
-                                  attrs: { request: request }
-                                })
-                              }
-                            ),
+                            _vm._l(_vm.requests, function(request) {
+                              return _c("request", {
+                                key: request.id,
+                                attrs: { request: request }
+                              })
+                            }),
                             1
                           )
                         : _vm._e(),
@@ -29706,113 +29725,72 @@ var render = function() {
                               ]
                             )
                           ])
-                        : _vm.product.buyerAction
+                        : _vm.product.requests.length < 1
                         ? _c("div", { staticClass: "break-line" }, [
-                            _c(
-                              "span",
-                              {
-                                staticClass: "pill",
-                                class:
-                                  _vm.product.buyerAction.action == 1
-                                    ? "green"
-                                    : "red"
-                              },
-                              [
-                                _vm._v(
-                                  "Marked as " +
-                                    _vm._s(
-                                      _vm.product.buyerAction.action == 1
-                                        ? "IN"
-                                        : "OUT"
-                                    ) +
-                                    " by " +
-                                    _vm._s(
-                                      _vm.product.buyerAction.user_id ==
-                                        _vm.authUser.id
-                                        ? "You"
-                                        : _vm.product.buyerAction.user.name
-                                    )
-                                )
-                              ]
-                            )
+                            _c("span", { staticClass: "pill green" }, [
+                              _vm._v(
+                                "Marked as IN by " +
+                                  _vm._s(
+                                    _vm.product.inheritedAction.user_id ==
+                                      _vm.authUser.id
+                                      ? "You"
+                                      : _vm.product.inheritedAction.user.name
+                                  ) +
+                                  " in " +
+                                  _vm._s(_vm.currentTask.inheritFromTask.title)
+                              )
+                            ])
                           ])
-                        : _vm.product.decisionAction
-                        ? _c("div", { staticClass: "break-line" }, [
-                            _c(
-                              "span",
-                              {
-                                staticClass: "pill",
-                                class:
-                                  _vm.product.decisionAction.action == 1
-                                    ? "green"
-                                    : "red"
-                              },
-                              [
-                                _vm._v(
-                                  "Marked as " +
-                                    _vm._s(
-                                      _vm.product.decisionAction.action == 1
-                                        ? "IN"
-                                        : "OUT"
-                                    ) +
-                                    " by " +
-                                    _vm._s(
-                                      _vm.product.decisionAction.user_id ==
-                                        _vm.authUser.id
-                                        ? "You"
-                                        : _vm.product.decisionAction.user.name
-                                    )
-                                )
-                              ]
-                            )
-                          ])
-                        : (_vm.currentTask.type == "decision"
-                          ? _vm.comments.length > 0
-                            ? _vm.comments[_vm.comments.length - 1].task_id !=
-                              _vm.currentTask.approvalParent.id
-                            : true
-                          : false)
+                        : !_vm.product.newComment
                         ? _c("div", { staticClass: "break-line" }, [
                             _vm._v(
-                              "Waiting for response from " +
-                                _vm._s(_vm.currentTask.approvalParent.title)
+                              "Awaiting response from " +
+                                _vm._s(
+                                  _vm.userPermissionLevel == 3
+                                    ? "Requester"
+                                    : "Approver"
+                                )
                             )
                           ])
                         : _vm._e()
                     ]
                   : _vm.currentTask.type == "decision"
                   ? [
-                      _c(
-                        "div",
-                        { staticClass: "requests-wrapper" },
-                        [
-                          _c("request", {
-                            attrs: {
-                              request: _vm.requests.find(function(x) {
-                                return x.user_id == _vm.authUser.id
+                      _vm.requests.length > 0
+                        ? _c(
+                            "div",
+                            { staticClass: "requests-wrapper" },
+                            [
+                              _c("request", {
+                                attrs: {
+                                  request: _vm.requests.find(function(x) {
+                                    return x.user_id == _vm.authUser.id
+                                  })
+                                }
                               })
-                            }
-                          })
-                        ],
-                        1
-                      ),
+                            ],
+                            1
+                          )
+                        : _vm._e(),
                       _vm._v(" "),
-                      _c(
-                        "div",
-                        { staticClass: "requests-wrapper" },
-                        _vm._l(
-                          _vm.requests.filter(function(x) {
-                            return x.user_id != _vm.authUser.id
-                          }),
-                          function(request) {
-                            return _c("request", {
-                              key: request.id,
-                              attrs: { request: request }
-                            })
-                          }
-                        ),
-                        1
-                      ),
+                      _vm.requests.length > 0
+                        ? _c(
+                            "div",
+                            { staticClass: "requests-wrapper" },
+                            _vm._l(
+                              _vm.requests.filter(function(x) {
+                                return x.user_id != _vm.authUser.id
+                              }),
+                              function(request) {
+                                return _c("request", {
+                                  key: request.id,
+                                  attrs: { request: request }
+                                })
+                              }
+                            ),
+                            1
+                          )
+                        : _vm._e(),
                       _vm._v(" "),
                       _vm._l(_vm.comments, function(comment, index) {
                         return _c(
@@ -29845,7 +29823,25 @@ var render = function() {
                           ],
                           1
                         )
-                      })
+                      }),
+                      _vm._v(" "),
+                      _vm.product.outInFilter
+                        ? _c("div", { staticClass: "break-line" }, [
+                            _c("span", { staticClass: "pill red" }, [
+                              _vm._v(
+                                "Marked as OUT by " +
+                                  _vm._s(
+                                    _vm.product.outInFilter.user_id ==
+                                      _vm.authUser.id
+                                      ? "You"
+                                      : _vm.product.outInFilter.user.name
+                                  ) +
+                                  " in " +
+                                  _vm._s(_vm.product.outInFilter.task.title)
+                              )
+                            ])
+                          ])
+                        : _vm._e()
                     ]
                   : _vm._l(_vm.comments, function(comment, index) {
                       return _c(
@@ -30876,31 +30872,8 @@ var render = function() {
                       ]
                     },
                     [
-                      product.comments.length > 0
-                        ? [
-                            _vm.currentTask.parentTasks.find(function(x) {
-                              return x.type == "approval"
-                            }) &&
-                            product.currentAction == null &&
-                            product.buyerAction == null &&
-                            product.comments[product.comments.length - 1]
-                              .task_id ==
-                              _vm.currentTask.parentTasks.find(function(x) {
-                                return x.type == "approval"
-                              }).id
-                              ? _c("span", {
-                                  staticClass: "circle tiny primary"
-                                })
-                              : _vm.currentTask.type == "approval" &&
-                                product.currentAction == null &&
-                                product.decisionAction == null &&
-                                product.comments[product.comments.length - 1]
-                                  .task_id != _vm.currentTask.id
-                              ? _c("span", {
-                                  staticClass: "circle tiny primary"
-                                })
-                              : _vm._e()
-                          ]
+                      product.newComment
+                        ? _c("span", { staticClass: "circle tiny primary" })
                         : _vm._e(),
                       _vm._v(" "),
                       _vm.currentTaskPermissions.select
@@ -31224,7 +31197,8 @@ var render = function() {
                               { staticClass: "action" },
                               [
                                 _vm.currentTaskPermissions.focus &&
-                                _vm.currentTask.type != "approval"
+                                _vm.currentTask.type != "approval" &&
+                                _vm.currentTask.type != "decision"
                                   ? _c(
                                       "span",
                                       {
@@ -31247,25 +31221,82 @@ var render = function() {
                                     )
                                   : _vm._e(),
                                 _vm._v(" "),
-                                _vm.currentTask.type == "approval"
+                                product.outInFilter
                                   ? [
-                                      product.decisionAction
+                                      _c(
+                                        "TooltipAlt2",
+                                        {
+                                          attrs: {
+                                            body:
+                                              "Out by " +
+                                              product.outInFilter.user.name +
+                                              " in " +
+                                              product.outInFilter.task.title
+                                          }
+                                        },
+                                        [
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass:
+                                                "button icon-right ghost disabled"
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                                    In  "
+                                              ),
+                                              _c("i", {
+                                                staticClass: "far fa-heart"
+                                              })
+                                            ]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass:
+                                                "button icon-right active red disabled"
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                                    Out  "
+                                              ),
+                                              _c("i", {
+                                                staticClass:
+                                                  "far fa-times-circle"
+                                              })
+                                            ]
+                                          )
+                                        ]
+                                      )
+                                    ]
+                                  : _vm.currentTask.type == "approval" &&
+                                    product.requests.length < 1
+                                  ? [
+                                      _vm._m(0, true),
+                                      _vm._v(" "),
+                                      _vm._m(1, true)
+                                    ]
+                                  : [
+                                      _vm.userPermissionLevel != 3
                                         ? [
                                             _c(
                                               "span",
                                               {
                                                 staticClass:
-                                                  "button icon-right disabled",
+                                                  "button icon-right",
                                                 class: [
-                                                  product.decisionAction
-                                                    ? product.decisionAction
+                                                  product.currentAction
+                                                    ? product.currentAction
                                                         .action != 0
                                                       ? "active green"
                                                       : "ghost green-hover"
                                                     : "ghost green-hover",
                                                   {
-                                                    disabled:
-                                                      _vm.authUser.role_id == 3
+                                                    disabled: product.currentAction
+                                                      ? product.currentAction
+                                                          .user.role_id == 3
+                                                      : false
                                                   }
                                                 ],
                                                 on: {
@@ -31291,17 +31322,19 @@ var render = function() {
                                               "span",
                                               {
                                                 staticClass:
-                                                  "button icon-right disabled",
+                                                  "button icon-right",
                                                 class: [
-                                                  product.decisionAction
-                                                    ? product.decisionAction
+                                                  product.currentAction
+                                                    ? product.currentAction
                                                         .action == 0
                                                       ? "active red"
                                                       : "ghost red-hover"
                                                     : "ghost red-hover",
                                                   {
-                                                    disabled:
-                                                      _vm.authUser.role_id == 3
+                                                    disabled: product.currentAction
+                                                      ? product.currentAction
+                                                          .user.role_id == 3
+                                                      : false
                                                   }
                                                 ],
                                                 on: {
@@ -31338,7 +31371,7 @@ var render = function() {
                                                   "span",
                                                   {
                                                     staticClass:
-                                                      "button icon-right",
+                                                      "button icon-right disabled",
                                                     class: [
                                                       product.currentAction
                                                         ? product.currentAction
@@ -31347,23 +31380,17 @@ var render = function() {
                                                           : "ghost green-hover"
                                                         : "ghost green-hover",
                                                       {
-                                                        disabled:
-                                                          _vm.authUser
-                                                            .role_id == 3
+                                                        disabled: product.currentAction
+                                                          ? product
+                                                              .currentAction
+                                                              .user.role_id != 3
+                                                          : false
                                                       }
-                                                    ],
-                                                    on: {
-                                                      click: function($event) {
-                                                        return _vm.toggleInOut(
-                                                          product,
-                                                          1
-                                                        )
-                                                      }
-                                                    }
+                                                    ]
                                                   },
                                                   [
                                                     _vm._v(
-                                                      "\n                                In  "
+                                                      "\n                                    In  "
                                                     ),
                                                     _c("i", {
                                                       staticClass:
@@ -31376,7 +31403,7 @@ var render = function() {
                                                   "span",
                                                   {
                                                     staticClass:
-                                                      "button icon-right",
+                                                      "button icon-right disabled",
                                                     class: [
                                                       product.currentAction
                                                         ? product.currentAction
@@ -31385,23 +31412,17 @@ var render = function() {
                                                           : "ghost red-hover"
                                                         : "ghost red-hover",
                                                       {
-                                                        disabled:
-                                                          _vm.authUser
-                                                            .role_id == 3
+                                                        disabled: product.currentAction
+                                                          ? product
+                                                              .currentAction
+                                                              .user.role_id != 3
+                                                          : false
                                                       }
-                                                    ],
-                                                    on: {
-                                                      click: function($event) {
-                                                        return _vm.toggleInOut(
-                                                          product,
-                                                          0
-                                                        )
-                                                      }
-                                                    }
+                                                    ]
                                                   },
                                                   [
                                                     _vm._v(
-                                                      "\n                                Out  "
+                                                      "\n                                    Out  "
                                                     ),
                                                     _c("i", {
                                                       staticClass:
@@ -31409,157 +31430,6 @@ var render = function() {
                                                     })
                                                   ]
                                                 )
-                                              ]
-                                            )
-                                          ]
-                                    ]
-                                  : [
-                                      product.buyerAction
-                                        ? [
-                                            _c(
-                                              "span",
-                                              {
-                                                staticClass:
-                                                  "button icon-right disabled",
-                                                class: [
-                                                  product.buyerAction
-                                                    ? product.buyerAction
-                                                        .action != 0
-                                                      ? "active green"
-                                                      : "ghost green-hover"
-                                                    : "ghost green-hover",
-                                                  {
-                                                    disabled:
-                                                      _vm.authUser.role_id == 3
-                                                  }
-                                                ],
-                                                on: {
-                                                  click: function($event) {
-                                                    return _vm.toggleInOut(
-                                                      product,
-                                                      1
-                                                    )
-                                                  }
-                                                }
-                                              },
-                                              [
-                                                _vm._v(
-                                                  "\n                                In  "
-                                                ),
-                                                _c("i", {
-                                                  staticClass: "far fa-heart"
-                                                })
-                                              ]
-                                            ),
-                                            _vm._v(" "),
-                                            _c(
-                                              "span",
-                                              {
-                                                staticClass:
-                                                  "button icon-right disabled",
-                                                class: [
-                                                  product.buyerAction
-                                                    ? product.buyerAction
-                                                        .action == 0
-                                                      ? "active red"
-                                                      : "ghost red-hover"
-                                                    : "ghost red-hover",
-                                                  {
-                                                    disabled:
-                                                      _vm.authUser.role_id == 3
-                                                  }
-                                                ],
-                                                on: {
-                                                  click: function($event) {
-                                                    return _vm.toggleInOut(
-                                                      product,
-                                                      0
-                                                    )
-                                                  }
-                                                }
-                                              },
-                                              [
-                                                _vm._v(
-                                                  "\n                                Out  "
-                                                ),
-                                                _c("i", {
-                                                  staticClass:
-                                                    "far fa-times-circle"
-                                                })
-                                              ]
-                                            )
-                                          ]
-                                        : [
-                                            _c(
-                                              "span",
-                                              {
-                                                staticClass:
-                                                  "button icon-right",
-                                                class: [
-                                                  product.currentAction
-                                                    ? product.currentAction
-                                                        .action != 0
-                                                      ? "active green"
-                                                      : "ghost green-hover"
-                                                    : "ghost green-hover",
-                                                  {
-                                                    disabled:
-                                                      _vm.authUser.role_id == 3
-                                                  }
-                                                ],
-                                                on: {
-                                                  click: function($event) {
-                                                    return _vm.toggleInOut(
-                                                      product,
-                                                      1
-                                                    )
-                                                  }
-                                                }
-                                              },
-                                              [
-                                                _vm._v(
-                                                  "\n                                In  "
-                                                ),
-                                                _c("i", {
-                                                  staticClass: "far fa-heart"
-                                                })
-                                              ]
-                                            ),
-                                            _vm._v(" "),
-                                            _c(
-                                              "span",
-                                              {
-                                                staticClass:
-                                                  "button icon-right",
-                                                class: [
-                                                  product.currentAction
-                                                    ? product.currentAction
-                                                        .action == 0
-                                                      ? "active red"
-                                                      : "ghost red-hover"
-                                                    : "ghost red-hover",
-                                                  {
-                                                    disabled:
-                                                      _vm.authUser.role_id == 3
-                                                  }
-                                                ],
-                                                on: {
-                                                  click: function($event) {
-                                                    return _vm.toggleInOut(
-                                                      product,
-                                                      0
-                                                    )
-                                                  }
-                                                }
-                                              },
-                                              [
-                                                _vm._v(
-                                                  "\n                                Out  "
-                                                ),
-                                                _c("i", {
-                                                  staticClass:
-                                                    "far fa-times-circle"
-                                                })
                                               ]
                                             )
                                           ]
@@ -31631,7 +31501,30 @@ var render = function() {
     2
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "span",
+      { staticClass: "button icon-right active green disabled" },
+      [
+        _vm._v("\n                                In  "),
+        _c("i", { staticClass: "far fa-heart" })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("span", { staticClass: "button icon-right ghost disabled" }, [
+      _vm._v("\n                                Out  "),
+      _c("i", { staticClass: "far fa-times-circle" })
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -33757,10 +33650,7 @@ var render = function() {
                           )
                         }),
                         _vm._v(" "),
-                        _vm.currentTask.type == "approval" ||
-                        _vm.currentTask.parentTasks.find(function(x) {
-                          return x.type == "approval"
-                        })
+                        _vm.currentTask.type == "approval"
                           ? _c(
                               "label",
                               {
@@ -54976,7 +54866,7 @@ function (_Model) {
         title: this.attr(''),
         type: this.attr(''),
         inherit_from_id: this.attr(''),
-        filter_products_by_id: this.attr(''),
+        filter_products_by_ids: this.attr(''),
         completed: this.hasMany(_FileTask__WEBPACK_IMPORTED_MODULE_1__["default"], 'task_id'),
         parents: this.hasMany(_TaskParent__WEBPACK_IMPORTED_MODULE_2__["default"], 'task_id'),
         children: this.hasMany(_TaskParent__WEBPACK_IMPORTED_MODULE_2__["default"], 'parent_id'),
@@ -57473,7 +57363,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           requests: getters.currentTask.type != 'feedback' ? true : false,
           // actions: getters.currentTask.type != 'approval' ? true : false,
           actions: true,
-          focus: getters.currentTask.type != 'decision' ? true : false
+          focus: true
         };
       }
     }
@@ -58419,28 +58309,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           product.ndsTotal;
           product.commentsScoped = []; // START Find current action for the product
 
-          if (currentTask.type == 'feedback') product.currentAction = product.actions.find(function (action) {
-            return action.user_id == userId && action.task_id == currentTask.id;
-          });else if (currentTask.type == 'approval') {
+          if (currentTask.type == 'feedback') {
+            product.currentAction = product.actions.find(function (action) {
+              return action.user_id == userId && action.task_id == currentTask.id;
+            });
+          } else {
             product.currentAction = product.actions.find(function (action) {
               return action.task_id == currentTask.id;
             });
-            product.decisionAction = product.actions.find(function (x) {
-              return x.task_id == currentTask.children[0].task_id;
-            });
-          } else if (currentTask.parentTasks.find(function (x) {
-            return x.type == 'approval';
-          })) {
-            product.currentAction = product.actions.find(function (action) {
-              return action.task_id == currentTask.id;
-            });
-            product.buyerAction = product.actions.find(function (x) {
-              return x.task_id == currentTask.parents[0].parent_id;
-            });
-          } else product.currentAction = product.actions.find(function (action) {
-            return action.task_id == currentTask.id;
-          }); // END Find current action for product
+          } // END Find current action for product
           // START Find inherit from task
+
 
           if (currentTask.inherit_from_id) {
             product.inheritedAction = product.actions.find(function (x) {
@@ -58475,7 +58354,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           product.requests = []; // START scope comments to task
 
           product.comments.forEach(function (comment) {
-            if (comment.task_id == currentTask.inherit_from_id || comment.task_id == currentTask.id) {
+            if (comment.task_id == currentTask.inherit_from_id || comment.task_id == currentTask.id || currentTask.filter_products_by_ids.includes(comment.task_id)) {
               comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
             } else if (currentTask.type == 'feedback') {
               if (comment.task_id == currentTask.id) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
@@ -58620,38 +58499,60 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             } // END Substract from NDs
 
           }); // END Group actions by action type
+          // START NEW Comment
+
+          if (product.comments.length > 1) {
+            if (currentTask.type == 'approval' && product.currentAction == null && product.requests.length > 0) {
+              if (userPermissionLevel == 3) {
+                product.newComment = product.comments[product.comments.length - 1].user.role_id != 3;
+              } else {
+                product.newComment = product.comments[product.comments.length - 1].user.role_id == 3;
+              }
+            }
+          } // END NEW Comment
+          // START Find OUT Products
+
+
+          if (product.actions.length > 1 && currentTask.filter_products_by_ids) {
+            product.outInFilter = product.actions.find(function (x) {
+              return currentTask.filter_products_by_ids.includes(x.task_id) && x.action == 0;
+            });
+          } // END Find OUT Products
+
 
           data.push(product);
         });
         return data;
       }
     },
-    productsScopedByInheritance: function productsScopedByInheritance(state, getters, rootState, rootGetters) {
-      var products = getters.products;
-      var currentTask = rootGetters['persist/currentTask'];
-
-      if (products) {
-        return products.filter(function (x) {
-          // If current task = decision -> Get products that where IN in the task before the approval and not OUT in approval
-          if (currentTask.type == 'decision') {
-            var taskBeforeApproval = currentTask.approvalParent.parentTasks[0];
-            if (x.actions.find(function (action) {
-              return action.task_id == currentTask.inherit_from_id && action.action != 0;
-            }) && x.actions.find(function (action) {
-              return action.task_id == taskBeforeApproval.id && action.action != 0;
-            }) && !x.actions.find(function (action) {
-              return action.task_id == currentTask.filter_products_by_id && action.action == 0;
-            })) return true;
-          } else {
-            return x.actions.find(function (action) {
-              return action.task_id == currentTask.inherit_from_id && action.action != 0;
-            });
-          }
-        });
-      } else {
-        return [];
-      }
-    },
+    // productsScopedByInheritance: (state, getters, rootState, rootGetters) => {
+    //     const products = getters.products
+    //     const currentTask = rootGetters['persist/currentTask']
+    //     if (products) {
+    //         return products.filter(x => {
+    //             // If current task = decision -> Get products that where IN in the task before the approval and not OUT in approval
+    //             if (currentTask.type == 'decision') {
+    //                 const taskBeforeApproval = currentTask.approvalParent.parentTasks[0]
+    //                 if (
+    //                     x.actions.find(
+    //                         action => action.task_id == currentTask.inherit_from_id && action.action != 0
+    //                     ) &&
+    //                     x.actions.find(action => action.task_id == taskBeforeApproval.id && action.action != 0) &&
+    //                     !x.actions.find(
+    //                         action => action.task_id == currentTask.filter_products_by_id && action.action == 0
+    //                     )
+    //                 )
+    //                     return true
+    //             } else {
+    //                 return x.actions.find(
+    //                     action => action.task_id == currentTask.inherit_from_id && action.action != 0
+    //                 )
+    //             }
+    //         })
+    //     } else {
+    //         return []
+    //     }
+    // },
     availableProductIds: function availableProductIds(state) {
       return state.availableProductIds;
     },
@@ -59707,6 +59608,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       tasks.forEach(function (task) {
         // Find task users
         task.users = [];
+        task.filter_products_by_ids = task.filter_products_by_ids ? task.filter_products_by_ids.split(',').map(function (x) {
+          return parseInt(x);
+        }) : [];
         task.taskTeams.forEach(function (taskTeam) {
           taskTeam.team.users.forEach(function (user) {
             if (user.role_id == taskTeam.role_id && !task.users.find(function (x) {

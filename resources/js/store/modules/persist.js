@@ -146,7 +146,7 @@ export default {
                     requests: getters.currentTask.type != 'feedback' ? true : false,
                     // actions: getters.currentTask.type != 'approval' ? true : false,
                     actions: true,
-                    focus: getters.currentTask.type != 'decision' ? true : false,
+                    focus: true,
                 }
             }
         },

@@ -25,6 +25,9 @@ export default {
             tasks.forEach(task => {
                 // Find task users
                 task.users = []
+                task.filter_products_by_ids = task.filter_products_by_ids
+                    ? task.filter_products_by_ids.split(',').map(x => parseInt(x))
+                    : []
                 task.taskTeams.forEach(taskTeam => {
                     taskTeam.team.users.forEach(user => {
                         if (user.role_id == taskTeam.role_id && !task.users.find(x => x.id == user.id))
@@ -131,6 +134,7 @@ export default {
                     succes = false
                     console.log(err)
                 })
+
             return succes
         },
         async undoCompleteTask({ commit }, { file_id, task_id }) {

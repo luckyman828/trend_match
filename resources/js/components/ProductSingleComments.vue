@@ -15,31 +15,31 @@
 
                 <template v-if="commentScope == 'comments'">
 
-                    <template v-if="currentTask.type == 'approval' || currentTask.parentTasks.find(x => x.type == 'approval')">
+                    <template v-if="currentTask.type == 'approval'">
                         <div class="requests-wrapper" v-if="requests.length > 0">
-                            <request :request="request" v-for="request in requests.filter(x => x.task_id == currentTask.inherit_from_id)" :key="request.id"/>
+                            <request :request="request" v-for="request in requests" :key="request.id"/>
                         </div>
                         <div class="sender-wrapper" v-for="comment in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
                             <comment :comment="comment"/>
                             <div class="sender">{{comment.task.title}} | {{(comment.user.id == authUser.id) ? 'You' : comment.user.name}}</div>
                         </div>
                         <div class="break-line" v-if="(product.currentAction)"><span class="pill" :class="product.currentAction.action == 1 ? 'green' : 'red'">Marked as {{product.currentAction.action == 1 ? 'IN' : 'OUT'}} by {{(product.currentAction.user_id == authUser.id) ? 'You' : product.currentAction.user.name}}</span></div>
-                        <div class="break-line" v-else-if="(product.buyerAction)"><span class="pill" :class="product.buyerAction.action == 1 ? 'green' : 'red'">Marked as {{product.buyerAction.action == 1 ? 'IN' : 'OUT'}} by {{(product.buyerAction.user_id == authUser.id) ? 'You' : product.buyerAction.user.name}}</span></div>
-                        <div class="break-line" v-else-if="(product.decisionAction)"><span class="pill" :class="product.decisionAction.action == 1 ? 'green' : 'red'">Marked as {{product.decisionAction.action == 1 ? 'IN' : 'OUT'}} by {{(product.decisionAction.user_id == authUser.id) ? 'You' : product.decisionAction.user.name}}</span></div>
-                        <div class="break-line" v-else-if="currentTask.type == 'decision' ? comments.length > 0 ? comments[comments.length-1].task_id != currentTask.approvalParent.id : true : false">Waiting for response from {{currentTask.approvalParent.title}}</div>
+                        <div class="break-line" v-else-if="(product.requests.length < 1)"><span class="pill green">Marked as IN by {{(product.inheritedAction.user_id == authUser.id) ? 'You' : product.inheritedAction.user.name}} in {{currentTask.inheritFromTask.title}}</span></div>
+                        <div class="break-line" v-else-if="!product.newComment">Awaiting response from {{userPermissionLevel == 3 ? 'Requester' : 'Approver'}}</div>
                     </template>
 
                     <template v-else-if="currentTask.type == 'decision'">
-                        <div class="requests-wrapper">
+                        <div class="requests-wrapper" v-if="requests.length > 0">
                             <request :request="requests.find(x => x.user_id == authUser.id)"/>
                         </div>
-                        <div class="requests-wrapper">
+                        <div class="requests-wrapper" v-if="requests.length > 0">
                             <request :request="request" v-for="request in requests.filter(x => x.user_id != authUser.id)" :key="request.id"/>
                         </div>
                         <div class="sender-wrapper" v-for="(comment, index) in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
                             <comment :comment="comment"/>
                             <div class="sender" v-if="comments[index+1] ? comments[index+1].user_id != comment.user_id : true">{{comment.task.title}} {{(comment.user_id == authUser.id) ? '| You' : userPermissionLevel > 1 ? '| ' + comment.user.name : ''}}</div>
                         </div>
+                        <div class="break-line" v-if="product.outInFilter"><span class="pill red">Marked as OUT by {{(product.outInFilter.user_id == authUser.id) ? 'You' : product.outInFilter.user.name}} in {{product.outInFilter.task.title}}</span></div>
                     </template>
 
                     <div v-else class="sender-wrapper" v-for="(comment, index) in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">

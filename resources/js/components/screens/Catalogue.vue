@@ -43,7 +43,7 @@
                                 <CheckboxButtons :options="dynamicDeliveryDates" :optionNameKey="'name'" :optionValueKey="'value'" ref="filterDelivery" v-model="selectedDeliveryDates" @change="$refs.filterDelivery.submit()"/>
                             </template>
                         </Dropdown>
-                        <label v-if="currentTask.type == 'approval' || currentTask.parentTasks.find(x => x.type == 'approval')" class="square checkbutton ghost light-2 checkbox clickable">
+                        <label v-if="currentTask.type == 'approval'" class="square checkbutton ghost light-2 checkbox clickable">
                             <span>Show UNREAD only</span>
                             <input type="checkbox" v-model="unreadOnly">
                             <span class="checkmark solid"><i class="fas fa-check"></i></span>
@@ -252,15 +252,7 @@ export default{
 
             // Filer by unread
             if (this.unreadOnly) {
-                const filteredByUnread = productsToReturn.filter(product => {
-                    if (product.currentAction == null && product.buyerAction == null && product.decisionAction == null) {
-                        if (this.currentTask.parentTasks.find(x => x.type == 'approval')) {
-                            return (product.comments.length > 0) ? product.comments[product.comments.length-1].task_id == this.currentTask.parentTasks.find(x => x.type == 'approval').id : false
-                        } else {
-                            return (product.comments.length > 0) ? product.comments[product.comments.length-1].task_id != this.currentTask.id : false
-                        }
-                    }
-                })
+                const filteredByUnread = productsToReturn.filter(product => product.newComment)
                 productsToReturn = filteredByUnread
             }
 
@@ -276,29 +268,23 @@ export default{
                 const filteredByAction = products.filter(product => {
                     
                     if (method == 'nds') {
-                        return (product.currentAction == null && product.decisionAction == null && product.buyerAction == null)
-                        // if (this.currentTask.type == 'approval') {
-                        //     return (product.currentAction == null && product.decisionAction == null)
-                        // }
-                        // else if (this.currentTask.parentTasks.find(x => x.type =='approval')) {
-                        //     return (product.currentAction == null && product.buyingAction == null)
-                        // }
-                        // else return product.currentAction == null
+                        if (this.currentTask.type == 'approval') {
+                            return (product.currentAction == null && product.requests.length > 0)
+                        }
+                        else
+                            return product.currentAction == null && !product.outInFilter
                     }
                     else if (method == 'ins') {
                         if (product.currentAction)
-                            return product.currentAction.action >= 1
-                        else if (product.buyerAction)
-                            return product.buyerAction.action >= 1
-                        else if (product.decisionAction)
-                            return product.decisionAction.action >= 1
+                            return product.currentAction.action >= 1 && !product.outInFilter
+                        if (this.currentTask.type == 'approval') {
+                            if (product.inheritedAction && product.requests.length < 1)
+                                return product.inheritedAction.action >= 1
+                        }
                     } else if (method == 'outs') {
                         if (product.currentAction)
                             return product.currentAction.action < 1
-                        else if (product.buyerAction)
-                            return product.buyerAction.action < 1
-                        else if (product.decisionAction)
-                            return product.decisionAction.action < 1
+                        else if (product.outInFilter) return true
                     }
                 })
                 productsToReturn = filteredByAction
@@ -348,29 +334,25 @@ export default{
                 nds: 0,
             }
             products.forEach(product => {
-                if (product.currentAction == null && product.decisionAction == null && product.buyerAction == null) {
-                    data.nds++
+                if (product.outInFilter) {
+                    data.outs++
+                }
+                else if (product.currentAction == null) {
+                    if (this.currentTask.type == 'approval') {
+                        if (product.requests.length > 0) {
+                            data.nds++
+                        } else {
+                            data.ins++
+                        }
+                        
+                    } else {
+                        data.nds++
+                    }
                 } else {
-                    if (product.currentAction) {
-                        if (product.currentAction.action == 0) {
-                            data.outs++
-                        } else {
-                            data.ins++
-                        }
-                    }
-                    else if (product.buyerAction) {
-                        if (product.buyerAction.action == 0) {
-                            data.outs++
-                        } else {
-                            data.ins++
-                        }
-                    }
-                    else if (product.decisionAction) {
-                        if (product.decisionAction.action == 0) {
-                            data.outs++
-                        } else {
-                            data.ins++
-                        }
+                    if (product.currentAction.action == 0) {
+                        data.outs++
+                    } else {
+                        data.ins++
                     }
                 }
 

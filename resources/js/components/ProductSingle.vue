@@ -8,40 +8,80 @@
                         <h3>{{product.title}}</h3>
                     </div>
                     <div class="right controls">
-                        <template v-if="currentTaskPermissions.actions && userPermissionLevel != 3">
-                            <span v-if="currentTaskPermissions.focus" class="square true-square clickable focus-action" :class="[(product.currentAction != null) ? (product.currentAction.action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover']" @click="toggleInOut(product, 2)">
+                        <!-- <template v-if="currentTaskPermissions.actions && userPermissionLevel != 3">
+                            <span v-if="currentTaskPermissions.focus && currentTask.type != 'approval'" class="square true-square clickable focus-action" :class="[(product.currentAction != null) ? (product.currentAction.action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover']" @click="toggleInOut(product, 2)">
                                 <i class="far fa-star"></i>
                             </span>
-                            <template v-if="product.buyerAction">
-                                <span class="button icon-right disabled" :class="[(product.buyerAction) ? (product.buyerAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
+                            <span class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
+                            In  <i class="far fa-heart"></i>
+                            </span>
+                            <span class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
+                            Out  <i class="far fa-times-circle"></i>
+                            </span>
+                        </template>
+                        <template v-else-if="userPermissionLevel == 3">
+                            <template v-if="product.currentAction">
+                                <span class="button icon-right disabled" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
                                 In  <i class="far fa-heart"></i>
                                 </span>
-                                <span class="button icon-right disabled" :class="[(product.buyerAction != null) ? (product.buyerAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
+                                <span class="button icon-right disabled" :class="[(product.currentAction != null) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
                                 Out  <i class="far fa-times-circle"></i>
                                 </span>
                             </template>
                             <template v-else>
-                                <span class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
-                                In  <i class="far fa-heart"></i>
-                                </span>
-                                <span class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
-                                Out  <i class="far fa-times-circle"></i>
-                                </span>
-                            </template>
-                        </template>
-                        <template v-else-if="userPermissionLevel == 3">
-                            <template v-if="product.decisionAction">
-                                <span class="button icon-right disabled" :class="[(product.decisionAction) ? (product.decisionAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
-                                In  <i class="far fa-heart"></i>
-                                </span>
-                                <span class="button icon-right disabled" :class="[(product.decisionAction != null) ? (product.decisionAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
-                                Out  <i class="far fa-times-circle"></i>
-                                </span>
-                            </template>
-                            <span v-else class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
+                            <span class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
                                 In  <i class="far fa-heart"></i>
                             </span>
-                        </template>
+                            <span class="button ghost icon-right disabled">
+                                Out  <i class="far fa-times-circle"></i>
+                            </span>
+                            </template>
+                        </template> -->
+
+                        <span v-if="currentTaskPermissions.focus && currentTask.type != 'approval' && currentTask.type != 'decision'" class="square light-2 true-square clickable focus-action" :class="[(product.currentAction) ? (product.currentAction.action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover']" @click="toggleInOut(product, 2)">
+                            <i class="far fa-star"></i>
+                            </span>
+
+
+                            <template v-if="product.outInFilter">
+                                <TooltipAlt2 :body="'Out by ' + product.outInFilter.user.name + ' in ' + product.outInFilter.task.title">
+                                    <span class="button icon-right ghost disabled">
+                                        In  <i class="far fa-heart"></i>
+                                    </span>
+                                    <span class="button icon-right active red disabled">
+                                        Out  <i class="far fa-times-circle"></i>
+                                    </span>
+                                </TooltipAlt2>
+                            </template>
+                            <template v-else-if="currentTask.type == 'approval' && product.requests.length < 1">
+                                <span class="button icon-right active green disabled">
+                                    In  <i class="far fa-heart"></i>
+                                </span>
+                                <span class="button icon-right ghost disabled">
+                                    Out  <i class="far fa-times-circle"></i>
+                                </span>
+                            </template>
+                            <template v-else>
+                                <template v-if="userPermissionLevel != 3">
+                                    
+                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id == 3 : false}]" @click="toggleInOut(product, 1)">
+                                    In  <i class="far fa-heart"></i>
+                                    </span>
+                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id == 3 : false}]"  @click="toggleInOut(product, 0)">
+                                    Out  <i class="far fa-times-circle"></i>
+                                    </span>
+
+                                </template>
+                                <template v-else>
+                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id != 3 : false}]" @click="toggleInOut(product, 1)">
+                                    In  <i class="far fa-heart"></i>
+                                    </span>
+                                    <span class="button icon-right disabled" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id != 3 : false}]">
+                                    Out  <i class="far fa-times-circle"></i>
+                                    </span>
+                                </template>
+
+                            </template>
                         
 
                         <span class="button primary active wide" @click="onPrevSingle()" :class="[{ disabled: prevProductId == null}]">Previous style</span>
@@ -194,7 +234,7 @@ export default {
             currentImgIndex: 0,
     }},
     computed: {
-        ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope', 'currentTaskPermissions']),
+        ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope', 'currentTaskPermissions', 'currentTask']),
         ...mapGetters('entities/products', ['currentProductId', 'currentProduct', 'nextProductId', 'prevProductId']),
         product () {
             return this.currentProduct

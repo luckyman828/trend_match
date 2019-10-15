@@ -13,27 +13,26 @@
 
         <div class="items-right">
 
-            <template v-if="userPermissionLevel >= 2">
+            <template v-if="userPermissionLevel >= 2 && userPermissionLevel != 3">
                 <span class="button wide light-2" v-if="submittingTaskComplete"><Loader/></span>
                 <template v-if="currentTask.completed.length <= 0">
                     <span class="button wide primary" v-if="currentTask.isActive" @click="onCompleteTask(currentFile.id, currentTask.id)">Complete task</span>
                 </template>
                 <span class="button wide red" v-else @click="onUndoCompleteTask(currentFile.id, currentTask.id)">Reopen task</span>
             </template>
-            <!-- <span v-if="currentTask.type == 'decision'" class="button wide primary" @click="downloadPDF">Download PDF</span> -->
-            <span v-if="currentTask.type == 'decision'" class="button wide primary" @click="$refs.exportModal.toggle()">Export to PDF</span>
+            <span v-if="(currentTask.type == 'decision' || currentTask.type == 'approval') && currentTask.completed.find(x => x.task_id == currentTask.id)" class="button wide primary" @click="$refs.exportModal.toggle()">Export to PDF</span>
 
         </div>
 
         <!-- PDF FOR EXPORT MARKUP -->
-        <div class="example-pdf" ref="exportToPdf" v-if="currentTask.type == 'decision' && this.productsScopedByInheritance.length > 1" 
+        <div class="example-pdf" ref="exportToPdf" v-if="currentTask.type == 'decision' && this.products.length > 1" 
             style="font-family: arial, helvetica, sans-serif;">
             <div style="font-family: 'Roboto', sans-serif, helvetica, arial;">
                 <div style="height: 1040px; width: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center;">
                     <span style="font-size: 28px; font-weight: 700; margin-top: 20px;">{{currentWorkspace.name}}</span>
                     <div>
                         <span style="font-size: 28px; font-weight: 700;">{{currentFile.title}}</span>
-                        <span style="color: #3B86FF; font-size: 20px; font-weight: 700;">{{productsScopedByInheritance.length}} styles</span>
+                        <span style="color: #3B86FF; font-size: 20px; font-weight: 700;">{{products.length}} styles</span>
                     </div>
                     <!-- <img style="display: block; margin: 0 auto;" :src="host + '/images/kollekt-logo_color@2x.png'" /> -->
                     <!-- <img style="display: block; margin: 0 auto;" src="http://trendmatchb2b.local/images/kollekt-logo_color@2x.png" /> -->
@@ -42,8 +41,8 @@
                     <img style="display: block; margin: 0 auto; width: 150px;" src="https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/kollekt_logo_color.png">
                     <!-- <img height="400px; width: auto;" :src="`https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${product.color_variants[0].blob_id}_thumbnail.jpg`"> -->
                 </div>
-                <div v-for="(product, index) in productsScopedByInheritance" :key="product.id" style="height: 1040px; width: 100%; position: relative; overflow: hidden;">
-                    <span style="display: block; color: #3B86FF; font-size: 20px; font-weight: 700; margin-top: 20px; margin-bottom: 8px;">#{{index+1}} of {{productsScopedByInheritance.length}} styles</span>
+                <div v-for="(product, index) in products" :key="product.id" style="height: 1040px; width: 100%; position: relative; overflow: hidden;">
+                    <span style="display: block; color: #3B86FF; font-size: 20px; font-weight: 700; margin-top: 20px; margin-bottom: 8px;">#{{index+1}} of {{products.length}} styles</span>
                     <span style="display: block; font-size: 24px; margin-bottom: 12px;">{{product.title}}</span>
                     <div style="display: flex; margin-bottom: 12px;">
                         <img height="400px; width: auto;" :src="`https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${product.color_variants[0].blob_id}_thumbnail.jpg`">
@@ -78,7 +77,7 @@
                             <span style="font-size: 10px; font-weight: 500;">{{variant.color}}</span>
                         </div>
                     </div>
-                    <span style="font-size: 10px; font-weight: 700; position: absolute; right: 0; bottom: 0;">Page {{index+1}} of {{productsScopedByInheritance.length}}</span>
+                    <span style="font-size: 10px; font-weight: 700; position: absolute; right: 0; bottom: 0;">Page {{index+1}} of {{products.length}}</span>
 
                     <div class="comments-wrapper">
                         <div v-for="request in product.requests" :key="request.id">
@@ -166,7 +165,7 @@ export default {
     }},
     computed: {
         ...mapGetters('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']),
-        ...mapGetters('entities/products', ['productsScopedByInheritance']),
+        ...mapGetters('entities/products', ['products']),
         ...mapGetters('entities/tasks', ['userTasks']),
         host() {
             return window.location.origin

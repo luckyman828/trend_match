@@ -46,17 +46,13 @@ export default {
                     product.commentsScoped = []
 
                     // START Find current action for the product
-                    if (currentTask.type == 'feedback')
+                    if (currentTask.type == 'feedback') {
                         product.currentAction = product.actions.find(
                             action => action.user_id == userId && action.task_id == currentTask.id
                         )
-                    else if (currentTask.type == 'approval') {
+                    } else {
                         product.currentAction = product.actions.find(action => action.task_id == currentTask.id)
-                        product.decisionAction = product.actions.find(x => x.task_id == currentTask.children[0].task_id)
-                    } else if (currentTask.parentTasks.find(x => x.type == 'approval')) {
-                        product.currentAction = product.actions.find(action => action.task_id == currentTask.id)
-                        product.buyerAction = product.actions.find(x => x.task_id == currentTask.parents[0].parent_id)
-                    } else product.currentAction = product.actions.find(action => action.task_id == currentTask.id)
+                    }
                     // END Find current action for product
 
                     // START Find inherit from task
@@ -94,7 +90,11 @@ export default {
 
                     // START scope comments to task
                     product.comments.forEach(comment => {
-                        if (comment.task_id == currentTask.inherit_from_id || comment.task_id == currentTask.id) {
+                        if (
+                            comment.task_id == currentTask.inherit_from_id ||
+                            comment.task_id == currentTask.id ||
+                            currentTask.filter_products_by_ids.includes(comment.task_id)
+                        ) {
                             comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment)
                         } else if (currentTask.type == 'feedback') {
                             if (comment.task_id == currentTask.id)
@@ -249,40 +249,65 @@ export default {
                     })
                     // END Group actions by action type
 
+                    // START NEW Comment
+                    if (product.comments.length > 1) {
+                        if (
+                            currentTask.type == 'approval' &&
+                            product.currentAction == null &&
+                            product.requests.length > 0
+                        ) {
+                            if (userPermissionLevel == 3) {
+                                product.newComment = product.comments[product.comments.length - 1].user.role_id != 3
+                            } else {
+                                product.newComment = product.comments[product.comments.length - 1].user.role_id == 3
+                            }
+                        }
+                    }
+                    // END NEW Comment
+
+                    // START Find OUT Products
+                    if (product.actions.length > 1 && currentTask.filter_products_by_ids) {
+                        product.outInFilter = product.actions.find(
+                            x => currentTask.filter_products_by_ids.includes(x.task_id) && x.action == 0
+                        )
+                    }
+
+                    // END Find OUT Products
+
                     data.push(product)
                 })
 
                 return data
             }
         },
-        productsScopedByInheritance: (state, getters, rootState, rootGetters) => {
-            const products = getters.products
-            const currentTask = rootGetters['persist/currentTask']
-            if (products) {
-                return products.filter(x => {
-                    // If current task = decision -> Get products that where IN in the task before the approval and not OUT in approval
-                    if (currentTask.type == 'decision') {
-                        const taskBeforeApproval = currentTask.approvalParent.parentTasks[0]
-                        if (
-                            x.actions.find(
-                                action => action.task_id == currentTask.inherit_from_id && action.action != 0
-                            ) &&
-                            x.actions.find(action => action.task_id == taskBeforeApproval.id && action.action != 0) &&
-                            !x.actions.find(
-                                action => action.task_id == currentTask.filter_products_by_id && action.action == 0
-                            )
-                        )
-                            return true
-                    } else {
-                        return x.actions.find(
-                            action => action.task_id == currentTask.inherit_from_id && action.action != 0
-                        )
-                    }
-                })
-            } else {
-                return []
-            }
-        },
+        // productsScopedByInheritance: (state, getters, rootState, rootGetters) => {
+        //     const products = getters.products
+        //     const currentTask = rootGetters['persist/currentTask']
+        //     if (products) {
+        //         return products.filter(x => {
+        //             // If current task = decision -> Get products that where IN in the task before the approval and not OUT in approval
+        //             if (currentTask.type == 'decision') {
+        //                 const taskBeforeApproval = currentTask.approvalParent.parentTasks[0]
+        //                 if (
+        //                     x.actions.find(
+        //                         action => action.task_id == currentTask.inherit_from_id && action.action != 0
+        //                     ) &&
+        //                     x.actions.find(action => action.task_id == taskBeforeApproval.id && action.action != 0) &&
+        //                     !x.actions.find(
+        //                         action => action.task_id == currentTask.filter_products_by_id && action.action == 0
+        //                     )
+        //                 )
+        //                     return true
+        //             } else {
+        //                 return x.actions.find(
+        //                     action => action.task_id == currentTask.inherit_from_id && action.action != 0
+        //                 )
+        //             }
+        //         })
+        //     } else {
+        //         return []
+        //     }
+        // },
         availableProductIds: state => {
             return state.availableProductIds
         },
