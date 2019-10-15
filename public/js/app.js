@@ -9412,6 +9412,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   name: 'productTabs',
   props: ['productTotals', 'currentFilter'],
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTask'])),
+  watch: {
+    currentTask: function currentTask(newVal) {
+      if (this.currentTask.type == 'approval') this.setProductFilter('nds');else this.setProductFilter('overview');
+    }
+  },
   methods: {
     setProductFilter: function setProductFilter(filter) {
       this.$emit('setProductFilter', filter);
@@ -11561,11 +11566,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this = this;
 
       var productsToReturn = [];
+      var inheritFromId = this.currentTask.inherit_from_id;
 
-      if (this.currentTask.inherit_from_id) {
+      if (inheritFromId) {
         productsToReturn = this.allProducts.filter(function (product) {
           return product.actions.find(function (action) {
-            return action.task_id == inherit_from_id && action.action > 0;
+            return action.task_id == inheritFromId && action.action > 0;
           });
         });
       } else {

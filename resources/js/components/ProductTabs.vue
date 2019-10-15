@@ -21,6 +21,13 @@ export default {
     computed: {
         ...mapGetters('persist', ['currentTask']),
     },
+    watch: {
+        currentTask (newVal) {
+            if (this.currentTask.type == 'approval')
+                this.setProductFilter('nds')
+            else this.setProductFilter('overview')
+        }
+    },
     methods: {
         setProductFilter(filter) {
             this.$emit('setProductFilter', filter)

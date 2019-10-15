@@ -205,8 +205,9 @@ export default{
         },
         products() {
             let productsToReturn = []
-            if (this.currentTask.inherit_from_id) {
-                productsToReturn = this.allProducts.filter(product => product.actions.find(action => action.task_id == inherit_from_id && action.action > 0))
+            const inheritFromId = this.currentTask.inherit_from_id
+            if (inheritFromId) {
+                productsToReturn = this.allProducts.filter(product => product.actions.find(action => action.task_id == inheritFromId && action.action > 0))
             } else {
                 productsToReturn = this.allProducts
             }
