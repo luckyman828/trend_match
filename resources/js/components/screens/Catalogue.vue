@@ -335,7 +335,7 @@ export default{
             return sortMethod
         },
         selectedProducts() {
-            const products = this.products
+            const products = this.productsFiltered
             const selectedProducts = []
             this.selectedProductIDs.forEach(index => {
                 selectedProducts.push(products[index].id)
@@ -500,6 +500,7 @@ export default{
                 const thisProduct = this.products.find(x => x.id == product)
 
                 if (thisProduct.currentAction != null) {
+                    console.log(this.product)
                     console.log('There is an action!')
                     // If product has a final action
                     if (thisProduct.currentAction.action != actionType) {

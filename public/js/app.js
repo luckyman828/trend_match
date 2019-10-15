@@ -11664,7 +11664,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return sortMethod;
     },
     selectedProducts: function selectedProducts() {
-      var products = this.products;
+      var products = this.productsFiltered;
       var selectedProducts = [];
       this.selectedProductIDs.forEach(function (index) {
         selectedProducts.push(products[index].id);
@@ -11836,6 +11836,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
 
         if (thisProduct.currentAction != null) {
+          console.log(_this4.product);
           console.log('There is an action!'); // If product has a final action
 
           if (thisProduct.currentAction.action != actionType) {
