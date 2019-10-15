@@ -1,7 +1,7 @@
 <template>
     <div class="products card" :class="[{sticky: sticky}]">
         <div class="overlay" v-if="currentTask.completed.length > 0">Task done</div>
-        <div class="overlay" v-else-if="!currentTask.isActive">Task not started yet</div>
+        <div class="overlay" v-else-if="!currentTask.isActive && !currentTask.parentTasks.find(x => x.type == 'approval')">Task not started yet</div>
         <div class="scroll-bg"></div>
         <FlyIn ref="singleFlyIn">
             <product-single :loading="loadingSingle" :authUser="authUser" @closeSingle="onCloseSingle" @onToggleInOut="toggleInOut"/>

@@ -30442,7 +30442,10 @@ var render = function() {
     [
       _vm.currentTask.completed.length > 0
         ? _c("div", { staticClass: "overlay" }, [_vm._v("Task done")])
-        : !_vm.currentTask.isActive
+        : !_vm.currentTask.isActive &&
+          !_vm.currentTask.parentTasks.find(function(x) {
+            return x.type == "approval"
+          })
         ? _c("div", { staticClass: "overlay" }, [
             _vm._v("Task not started yet")
           ])
