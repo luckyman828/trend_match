@@ -406,18 +406,6 @@ export default {
         document.getElementById('main').addEventListener('scroll', this.handleScroll);
 
         // Setup event broadcast listening
-        Echo.channel('banan')
-        .listen('.action.updated', (e) => {
-            const action = e.action
-            console.log('%cPusher: Action Updated', 'font-weight: 900')
-            this.setAction({ 
-                productToUpdate: action.product_id, 
-                task_id: action.task_id, 
-                user_id: action.user_id, 
-                action_code: action.action, 
-                is_task_action: action.is_task_action 
-            })
-        })
 
         Echo.private(`workspace.${this.currentWorkspaceId}`)
         .listen('.action.updated', (e) => {

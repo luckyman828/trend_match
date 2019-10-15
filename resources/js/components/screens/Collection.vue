@@ -109,9 +109,13 @@ export default {
             if (this.userPermissionLevel <= 2) {
                 this.authUser.teams.forEach(team => {
                     team.teamFiles.forEach(teamFile => {
-                        if (teamFile.role_level <= this.userPermissionLevel)
-                            if (!filesToReturn.find(x => x.id == teamFile.file_id))
-                                filesToReturn.push(files.find(x => x.id == teamFile.file_id))
+                        if (teamFile.role_level <= this.userPermissionLevel) {
+                            if (files.find(x => x.id == teamFile.file_id)) {
+                                if (!filesToReturn.find(x => x.id == teamFile.file_id))
+                                    filesToReturn.push(files.find(x => x.id == teamFile.file_id))
+                            }
+                        }
+                        
                     })
                 })
             }

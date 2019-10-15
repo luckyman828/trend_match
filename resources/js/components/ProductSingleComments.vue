@@ -331,7 +331,6 @@ export default {
         },
         hotkeyHandler(e) {
             const key = e.code
-            console.log(e)
             if (key == 'Enter') {
                 if (this.writeActive && !e.shiftKey) {
                     e.preventDefault()
