@@ -79,7 +79,9 @@ export default {
                 // If not -> Set the current task to any task the user has access to
 
                 if (task.parents.length <= 0) {
-                    if (task.completed.find(x => x.file_id == this.currentFileId))
+                    // If the task has no parents
+                    if (!task.completed.find(x => x.file_id == this.currentFileId))
+                        // If the task is not completed
                         taskToSet = task
                 } else {
                     let parentsCompleted = true
@@ -97,11 +99,11 @@ export default {
                     }
                 }
 
-                if (task.parents.length > 0) {
-                    task.parents.forEach(parent => {
-                        if (parent.completed.length > 0) taskToSet = task
-                    })
-                } else taskToSet = task
+                // if (task.parents.length > 0) {
+                //     task.parents.forEach(parent => {
+                //         if (parent.completed.length > 0) taskToSet = task
+                //     })
+                // } else taskToSet = task
 
             })
             if (taskToSet != null) {

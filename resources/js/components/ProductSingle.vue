@@ -343,6 +343,10 @@ export default {
                 }
             }
         }
+        .details {
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
     }
     h3 {
         font-size: 16px;
