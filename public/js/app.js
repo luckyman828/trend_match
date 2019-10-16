@@ -7805,9 +7805,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'Modal',
-  props: [],
+  props: ['header', 'subHeader'],
   data: function data() {
     return {};
   },
@@ -8213,7 +8217,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTask']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/products', ['products']), {
     loadingProducts: function loadingProducts() {
       if (this.products) {
-        if (this.products.length > 0) return true;
+        if (this.products.length > 0) return false;
       }
     }
   }),
@@ -8373,29 +8377,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -8411,24 +8392,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   data: function data() {
     return {
       submittingTaskComplete: false,
-      exportComments: true
+      exportingPDF: false,
+      exportComments: true,
+      generatedPDF: null
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['products']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/tasks', ['userTasks']), {
-    host: function host() {
-      return window.location.origin;
-    }
-  }),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', {
+    products: 'productsScoped'
+  }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/tasks', ['userTasks'])),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/tasks', ['completeTask', 'undoCompleteTask']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTaskId']), {
     printToPdf: function () {
       var _printToPdf = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(event) {
-        var endpoint, apiKey, config, payload;
+        var vm, endpoint, apiKey, config, payload;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
+                vm = this;
                 endpoint = "https://v2018.api2pdf.com/chrome/html";
                 apiKey = "16b0a04b-8c9b-48f6-ad41-4149368bff58"; //Replace this API key from portal.api2pdf.com
 
@@ -8438,25 +8420,36 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   }
                 };
                 payload = {
-                  html: "<head><link href=\"https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap\" rel=\"stylesheet\"></head><body>".concat(this.$refs.exportToPdf.innerHTML, "</body>"),
+                  html: "<head><title>Flemming</title><link href=\"https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap\" rel=\"stylesheet\"></head><body>".concat(this.$refs.exportToPdf.innerHTML, "</body>"),
                   //Use your own HTML
                   inlinePdf: true,
-                  fileName: this.currentWorkspace.name + '_' + this.currentFile.title
+                  fileName: (this.currentWorkspace.name + '_' + this.currentFile.title).replace(/ /g, '_'),
+                  options: {
+                    displayHeaderFooter: true,
+                    footerTemplate: '<div class="page-footer" style="width:100%; text-align:right; font-size: 8px; font-weight: 700; font-family: Roboto, sans-serif, helvetica, arial; box-sizing: border-box; padding-right: 32px; padding-bottom: 12px;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>'
+                  }
                 };
-                console.log('Printing pdf ...');
-                _context.next = 7;
+                this.exportingPDF = true;
+                this.$refs.exportToPdf.style.display = 'block'; // Show the pdf element for sizing purposes
+
+                _context.next = 9;
+                return this.setPageHeight();
+
+              case 9:
+                _context.next = 11;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(endpoint, payload, config).then(function (response) {
-                  // console.log(response.data.pdf); //this is your PDF! Do something with it
                   window.open(response.data.pdf);
+                  vm.generatedPDF = response.data.pdf;
                 })["catch"](function (error) {
-                  console.log('error?');
                   console.log(error);
                 });
 
-              case 7:
-                console.log('Succes!?');
+              case 11:
+                this.$refs.exportToPdf.style.display = 'none'; // Hide the pdf element again
 
-              case 8:
+                this.exportingPDF = false;
+
+              case 13:
               case "end":
                 return _context.stop();
             }
@@ -8545,7 +8538,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
 
       return onUndoCompleteTask;
-    }()
+    }(),
+    setPageHeight: function setPageHeight() {
+      var pages = this.$refs.productPage;
+      var nextPageIndex = 1;
+      pages.forEach(function (page) {
+        var pageHeight = 1040;
+        var heightDif = pageHeight - (page.clientHeight - pageHeight);
+
+        if (heightDif > 0 && nextPageIndex < pages.length) {
+          pages[nextPageIndex].style.marginTop = heightDif + 'px';
+        }
+
+        nextPageIndex++;
+      }); // this.estimatedPageCount = Math.ceil(this.$refs.pdfWrapper.clientHeight / 1380)
+      // console.log('Estimated page number: ' + Math.ceil(this.$refs.pdfWrapper.clientHeight / 1380))
+    }
   })
 });
 
@@ -9422,7 +9430,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   updated: function updated() {
     // Preset the height of the request field
-    if (this.writeScope == 'request' && this.newRequest.comment.length > 1) this.$refs.requestField.style.height = this.$refs.requestField.scrollHeight + "px";
+    if (this.writeScope == 'request' && this.newRequest.comment.length > 1 && this.$refs.requestField) this.$refs.requestField.style.height = this.$refs.requestField.scrollHeight + "px";
   },
   created: function created() {
     document.body.addEventListener('keyup', this.hotkeyHandler);
@@ -11601,7 +11609,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       console.log('User Tasks recalculated');
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'productsScopedByInheritance']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'productsScoped']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', {
     allProducts: 'products'
   }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files', 'currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/tasks', ['userTasks', 'tasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentTask', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']), {
     defaultTeam: function defaultTeam() {
@@ -11611,28 +11619,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       };else return null;
     },
     products: function products() {
-      var _this = this;
-
-      var productsToReturn = [];
-      var inheritFromId = this.currentTask.inherit_from_id;
-
-      if (inheritFromId) {
-        productsToReturn = this.allProducts.filter(function (product) {
-          return product.actions.find(function (action) {
-            return action.task_id == inheritFromId && action.action > 0;
-          });
-        });
-      } else {
-        productsToReturn = this.allProducts;
-      }
-
-      if (this.currentTeam.category_scope) {
-        return productsToReturn.filter(function (x) {
-          return _this.currentTeam.category_scope.split(',').includes(x.category.toLowerCase());
-        });
-      } else {
-        return productsToReturn;
-      }
+      return this.productsScoped; // let productsToReturn = []
+      // const inheritFromId = this.currentTask.inherit_from_id
+      // if (inheritFromId) {
+      //     productsToReturn = this.allProducts.filter(product => product.actions.find(action => action.task_id == inheritFromId && action.action > 0))
+      // } else {
+      //     productsToReturn = this.allProducts
+      // }
+      // if (this.currentTeam.category_scope) {
+      //     return productsToReturn.filter(x => this.currentTeam.category_scope.split(',').includes(x.category.toLowerCase()))
+      // } else {
+      //     return productsToReturn
+      // }
     },
     teamProducts: function teamProducts() {
       return _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_21__["default"]["with"]('products').all();
@@ -11675,7 +11673,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return productsToReturn;
     },
     productsFiltered: function productsFiltered() {
-      var _this2 = this;
+      var _this = this;
 
       var method = this.currentProductFilter;
       var products = this.productsFilteredByCategory;
@@ -11684,13 +11682,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (['ins', 'outs', 'nds'].includes(method)) {
         var filteredByAction = products.filter(function (product) {
           if (method == 'nds') {
-            if (_this2.currentTask.type == 'approval') {
+            if (_this.currentTask.type == 'approval') {
               return product.currentAction == null && product.requests.length > 0;
             } else return product.currentAction == null && !product.outInFilter;
           } else if (method == 'ins') {
             if (product.currentAction) return product.currentAction.action >= 1 && !product.outInFilter;
 
-            if (_this2.currentTask.type == 'approval') {
+            if (_this.currentTask.type == 'approval') {
               if (product.inheritedAction && product.requests.length < 1) return product.inheritedAction.action >= 1;
             }
           } else if (method == 'outs') {
@@ -11733,7 +11731,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return selectedProducts;
     },
     productTotals: function productTotals() {
-      var _this3 = this;
+      var _this2 = this;
 
       var products = this.productsFilteredByCategory;
       var data = {
@@ -11746,7 +11744,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         if (product.outInFilter) {
           data.outs++;
         } else if (product.currentAction == null) {
-          if (_this3.currentTask.type == 'approval') {
+          if (_this2.currentTask.type == 'approval') {
             if (product.requests.length > 0) {
               data.nds++;
             } else {
@@ -11766,16 +11764,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return data;
     },
     teamUsers: function teamUsers() {
-      var _this4 = this;
+      var _this3 = this;
 
       var usersToReturn = [];
 
       if (this.teamFilterId > 0) {
         var thisTeam = this.teams.find(function (team) {
-          return team.id == _this4.teamFilterId;
+          return team.id == _this3.teamFilterId;
         });
         if (thisTeam) thisTeam.users.forEach(function (user) {
-          var fileUser = _this4.collection.users.find(function (x) {
+          var fileUser = _this3.collection.users.find(function (x) {
             return x.id == user.id;
           });
 
@@ -11880,7 +11878,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this5 = this;
+      var _this4 = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
@@ -11890,12 +11888,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
-        var thisProduct = _this5.products.find(function (x) {
+        var thisProduct = _this4.products.find(function (x) {
           return x.id == product;
         });
 
         if (thisProduct.currentAction != null) {
-          console.log(_this5.product);
+          console.log(_this4.product);
           console.log('There is an action!'); // If product has a final action
 
           if (thisProduct.currentAction.action != actionType) {
@@ -27097,7 +27095,20 @@ var render = function() {
         _c(
           "div",
           { staticClass: "header" },
-          [_vm._t("header", null, { toggle: _vm.toggle })],
+          [
+            _vm.header
+              ? _c("h2", { domProps: { innerHTML: _vm._s(_vm.header) } })
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.subHeader
+              ? _c("span", {
+                  staticClass: "desc",
+                  domProps: { innerHTML: _vm._s(_vm.subHeader) }
+                })
+              : _vm._e(),
+            _vm._v(" "),
+            _vm._t("header", null, { toggle: _vm.toggle })
+          ],
           2
         ),
         _vm._v(" "),
@@ -28035,7 +28046,8 @@ var render = function() {
                   staticClass: "button wide primary",
                   on: {
                     click: function($event) {
-                      return _vm.$refs.exportModal.toggle()
+                      _vm.$refs.exportModal.toggle()
+                      _vm.setPageHeight()
                     }
                   }
                 },
@@ -28058,8 +28070,10 @@ var render = function() {
               _c(
                 "div",
                 {
+                  ref: "pdfWrapper",
                   staticStyle: {
-                    "font-family": "'Roboto', sans-serif, helvetica, arial"
+                    "font-family": "'Roboto', sans-serif, helvetica, arial",
+                    position: "relative"
                   }
                 },
                 [
@@ -28095,7 +28109,9 @@ var render = function() {
                           {
                             staticStyle: {
                               "font-size": "28px",
-                              "font-weight": "700"
+                              "font-weight": "700",
+                              display: "block",
+                              "margin-bottom": "20px"
                             }
                           },
                           [_vm._v(_vm._s(_vm.currentFile.title))]
@@ -28107,7 +28123,8 @@ var render = function() {
                             staticStyle: {
                               color: "#3B86FF",
                               "font-size": "20px",
-                              "font-weight": "700"
+                              "font-weight": "700",
+                              display: "block"
                             }
                           },
                           [_vm._v(_vm._s(_vm.products.length) + " styles")]
@@ -28133,12 +28150,9 @@ var render = function() {
                       "div",
                       {
                         key: product.id,
-                        staticStyle: {
-                          height: "1040px",
-                          width: "100%",
-                          position: "relative",
-                          overflow: "hidden"
-                        }
+                        ref: "productPage",
+                        refInFor: true,
+                        staticStyle: { "min-height": "1040px", width: "100%" }
                       },
                       [
                         _c(
@@ -28149,7 +28163,8 @@ var render = function() {
                               color: "#3B86FF",
                               "font-size": "20px",
                               "font-weight": "700",
-                              "margin-top": "20px",
+                              "padding-top": "20px",
+                              "box-sizing": "border-box",
                               "margin-bottom": "8px"
                             }
                           },
@@ -28512,45 +28527,119 @@ var render = function() {
                           0
                         ),
                         _vm._v(" "),
-                        _c(
-                          "span",
-                          {
-                            staticStyle: {
-                              "font-size": "10px",
-                              "font-weight": "700",
-                              position: "absolute",
-                              right: "0",
-                              bottom: "0"
-                            }
-                          },
-                          [
-                            _vm._v(
-                              "Page " +
-                                _vm._s(index + 1) +
-                                " of " +
-                                _vm._s(_vm.products.length)
+                        _vm.exportComments &&
+                        (product.requests.length > 0 ||
+                          product.commentsScoped.length > 0)
+                          ? _c(
+                              "div",
+                              { staticClass: "comments-wrapper" },
+                              [
+                                _c("h2", [_vm._v("Requests & Comments")]),
+                                _vm._v(" "),
+                                _vm._l(product.requests, function(request) {
+                                  return _c(
+                                    "div",
+                                    {
+                                      key: request.id,
+                                      staticStyle: {
+                                        "border-radius": "6px",
+                                        background: "#3B86FF",
+                                        color: "white",
+                                        padding: "8px 12px",
+                                        "margin-bottom": "16px",
+                                        "max-width": "calc(100% - 120px)"
+                                      }
+                                    },
+                                    [
+                                      _c(
+                                        "p",
+                                        {
+                                          staticStyle: {
+                                            "font-size": "12px",
+                                            "font-weight": "700",
+                                            margin: "0"
+                                          }
+                                        },
+                                        [_vm._v(_vm._s(request.user.name))]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "p",
+                                        {
+                                          staticStyle: {
+                                            "white-space": "pre-wrap",
+                                            "word-wrap": "break-word"
+                                          }
+                                        },
+                                        [_vm._v(_vm._s(request.comment))]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "p",
+                                        {
+                                          staticStyle: {
+                                            "font-size": "10px",
+                                            "font-weight": "500",
+                                            margin: "0"
+                                          }
+                                        },
+                                        [
+                                          _vm._v(
+                                            "Request ID: " + _vm._s(request.id)
+                                          )
+                                        ]
+                                      )
+                                    ]
+                                  )
+                                }),
+                                _vm._v(" "),
+                                _vm._l(product.commentsScoped, function(
+                                  comment
+                                ) {
+                                  return _c("div", { key: comment.id }, [
+                                    _c(
+                                      "p",
+                                      {
+                                        staticStyle: {
+                                          "border-radius": "6px",
+                                          background: "#DFDFDF",
+                                          color: "#1B1C1D",
+                                          padding: "8px 12px",
+                                          display: "inline-block",
+                                          "white-space": "pre-wrap",
+                                          "word-wrap": "break-word",
+                                          "margin-bottom": "0",
+                                          "max-width": "calc(100% - 120px)"
+                                        }
+                                      },
+                                      [_vm._v(_vm._s(comment.comment))]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "p",
+                                      {
+                                        staticStyle: {
+                                          "font-size": "12px",
+                                          "font-weight": "500",
+                                          color: "#A8A8A8",
+                                          "margin-bottom": "16px",
+                                          "margin-top": "0"
+                                        }
+                                      },
+                                      [
+                                        _vm._v(
+                                          _vm._s(comment.task.title) +
+                                            " | " +
+                                            _vm._s(comment.user.name)
+                                        )
+                                      ]
+                                    )
+                                  ])
+                                })
+                              ],
+                              2
                             )
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          { staticClass: "comments-wrapper" },
-                          [
-                            _vm._l(product.requests, function(request) {
-                              return _c("div", { key: request.id }, [
-                                _c("p", [_vm._v(_vm._s(request.comment))])
-                              ])
-                            }),
-                            _vm._v(" "),
-                            _vm._l(product.commentsScoped, function(comment) {
-                              return _c("div", { key: comment.id }, [
-                                _c("p", [_vm._v(_vm._s(comment.comment))])
-                              ])
-                            })
-                          ],
-                          2
-                        )
+                          : _vm._e()
                       ]
                     )
                   })
@@ -28563,96 +28652,135 @@ var render = function() {
       _vm._v(" "),
       _c("Modal", {
         ref: "exportModal",
+        attrs: {
+          header:
+            "Export <strong>" + _vm.currentFile.title + "</strong> to PDF",
+          subHeader: "Export the current products to a PDF."
+        },
         scopedSlots: _vm._u([
-          {
-            key: "header",
-            fn: function() {
-              return [
-                _c("h2", [
-                  _vm._v("Export " + _vm._s(_vm.currentFile.title) + " to PDF")
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "desc" }, [
-                  _vm._v("Export the current products to a PDF.")
-                ])
-              ]
-            },
-            proxy: true
-          },
           {
             key: "body",
             fn: function() {
               return [
                 _c("form", [
-                  _c("label", { staticClass: "checkbutton" }, [
-                    _c("div", { staticClass: "checkbox" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.exportComments,
-                            expression: "exportComments"
-                          }
-                        ],
-                        attrs: { type: "checkbox" },
-                        domProps: {
-                          checked: Array.isArray(_vm.exportComments)
-                            ? _vm._i(_vm.exportComments, null) > -1
-                            : _vm.exportComments
-                        },
-                        on: {
-                          change: function($event) {
-                            var $$a = _vm.exportComments,
-                              $$el = $event.target,
-                              $$c = $$el.checked ? true : false
-                            if (Array.isArray($$a)) {
-                              var $$v = null,
-                                $$i = _vm._i($$a, $$v)
-                              if ($$el.checked) {
-                                $$i < 0 &&
-                                  (_vm.exportComments = $$a.concat([$$v]))
+                  _c("label", { staticClass: "form-element" }, [
+                    _c("div", { staticClass: "input-wrapper check-button" }, [
+                      _c("div", { staticClass: "checkbox" }, [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.exportComments,
+                              expression: "exportComments"
+                            }
+                          ],
+                          attrs: { type: "checkbox" },
+                          domProps: {
+                            checked: Array.isArray(_vm.exportComments)
+                              ? _vm._i(_vm.exportComments, null) > -1
+                              : _vm.exportComments
+                          },
+                          on: {
+                            change: function($event) {
+                              var $$a = _vm.exportComments,
+                                $$el = $event.target,
+                                $$c = $$el.checked ? true : false
+                              if (Array.isArray($$a)) {
+                                var $$v = null,
+                                  $$i = _vm._i($$a, $$v)
+                                if ($$el.checked) {
+                                  $$i < 0 &&
+                                    (_vm.exportComments = $$a.concat([$$v]))
+                                } else {
+                                  $$i > -1 &&
+                                    (_vm.exportComments = $$a
+                                      .slice(0, $$i)
+                                      .concat($$a.slice($$i + 1)))
+                                }
                               } else {
-                                $$i > -1 &&
-                                  (_vm.exportComments = $$a
-                                    .slice(0, $$i)
-                                    .concat($$a.slice($$i + 1)))
+                                _vm.exportComments = $$c
                               }
-                            } else {
-                              _vm.exportComments = $$c
                             }
                           }
-                        }
-                      }),
+                        }),
+                        _vm._v(" "),
+                        _c("span", { staticClass: "checkmark solid" }, [
+                          _c("i", { staticClass: "fas fa-check" })
+                        ])
+                      ]),
                       _vm._v(" "),
-                      _c("span", { staticClass: "checkmark solid" }, [
-                        _c("i", { staticClass: "fas fa-check" })
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("span", [_vm._v("Include Requests and comments")])
+                      _c("span", [_vm._v("Include Requests and comments")])
+                    ])
                   ]),
                   _vm._v(" "),
-                  _c("label", [
-                    _vm._v(
-                      "\n                    Export details\n                    "
-                    ),
-                    _c("textarea", { attrs: { disabled: "" } }, [
-                      _vm._v(
-                        "                        asdasdadsas\n                    "
-                      )
+                  _c("label", { staticClass: "form-element" }, [
+                    _c("span", { staticClass: "label" }, [
+                      _vm._v("Export details")
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "input-wrapper disabled" }, [
+                      _c("p", [
+                        _vm._v(
+                          _vm._s(_vm.products.length) +
+                            " products, " +
+                            _vm._s(
+                              _vm.products.filter(function(x) {
+                                return x.requests.length > 0
+                              }).length
+                            ) +
+                            " with requests"
+                        )
+                      ])
                     ])
                   ])
                 ]),
                 _vm._v(" "),
-                _c(
-                  "span",
-                  {
-                    staticClass: "button xl primary",
-                    on: { click: _vm.printToPdf }
-                  },
-                  [_vm._v("Download PDF")]
-                )
+                _vm.exportingPDF
+                  ? _c(
+                      "span",
+                      { staticClass: "button xl dark disabled" },
+                      [_c("Loader")],
+                      1
+                    )
+                  : _vm.generatedPDF
+                  ? [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "button xl primary",
+                          attrs: {
+                            href: _vm.generatedPDF,
+                            target: "_blank",
+                            download:
+                              (
+                                _vm.currentWorkspace.name +
+                                "_" +
+                                _vm.currentFile.title
+                              ).replace(/ /g, "_") + ".pdf"
+                          }
+                        },
+                        [_vm._v("Download PDF")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        {
+                          staticClass: "button xl dark",
+                          staticStyle: { "margin-top": "32px" },
+                          on: { click: _vm.printToPdf }
+                        },
+                        [_vm._v("Generate new PDF")]
+                      )
+                    ]
+                  : _c(
+                      "span",
+                      {
+                        staticClass: "button xl dark",
+                        on: { click: _vm.printToPdf }
+                      },
+                      [_vm._v("Export as PDF")]
+                    )
               ]
             },
             proxy: true
@@ -58545,32 +58673,36 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         return data;
       }
     },
-    // productsScoped: (state, getters, rootState, rootGetters) => {
-    //     const products = getters.products
-    //     const currentTask = rootGetters['persist/currentTask']
-    //     const currentTeam = rootGetters['persist/currentTeam']
-    //     if (products) {
-    //         return products.filter(product => {
-    //             let keepProduct = false
-    //             // START Scope Products by Inheritance
-    //             if (currentTask.inherit_from_id) {
-    //                 if (
-    //                     product.actions.find(
-    //                         action => action.task_id == currentTask.inherit_from_id && action.action > 0
-    //                     )
-    //                 )
-    //                     keepProduct = true
-    //             }
-    //             // START Scope Products by Category
-    //             if (currentTeam.category_scope) {
-    //                 if (currentTeam.category_scope.split(',').includes(x.category.toLowerCase())) keepProduct = true
-    //             }
-    //             return keepProduct
-    //         })
-    //     } else {
-    //         return []
-    //     }
-    // },
+    productsScoped: function productsScoped(state, getters, rootState, rootGetters) {
+      var products = getters.products;
+      var currentTask = rootGetters['persist/currentTask'];
+      var currentTeam = rootGetters['persist/currentTeam'];
+
+      if (products) {
+        var productsToReturn = [];
+        var inheritFromId = currentTask.inherit_from_id;
+
+        if (inheritFromId) {
+          productsToReturn = products.filter(function (product) {
+            return product.actions.find(function (action) {
+              return action.task_id == inheritFromId && action.action > 0;
+            });
+          });
+        } else {
+          productsToReturn = products;
+        }
+
+        if (currentTeam.category_scope) {
+          return productsToReturn.filter(function (product) {
+            return currentTeam.category_scope.split(',').includes(product.category.toLowerCase());
+          });
+        } else {
+          return productsToReturn;
+        }
+      } else {
+        return [];
+      }
+    },
     availableProductIds: function availableProductIds(state) {
       return state.availableProductIds;
     },

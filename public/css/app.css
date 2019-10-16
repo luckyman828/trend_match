@@ -8687,6 +8687,26 @@ a.text-link {
   color: #3b86ff;
 }
 
+h2 {
+  font-size: 24px;
+  font-weight: 400;
+  margin: 12px 0 4px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #3c3b54;
+}
+
+p {
+  margin: 0;
+}
+
+p:not(:last-of-type) {
+  margin-bottom: 4px;
+}
+
 textarea {
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -9962,23 +9982,9 @@ textarea {
 
 form > label,
 .form-group > label {
-  font-size: 12px;
-  font-weight: 500;
-  color: #3c3b54;
   display: block;
   width: 100%;
   margin-bottom: 12px;
-  cursor: pointer;
-}
-
-form > label.checkbutton,
-.form-group > label.checkbutton {
-  height: 40px;
-  background: #f3f3f3;
-  display: -webkit-inline-box;
-  display: inline-flex;
-  -webkit-box-align: center;
-          align-items: center;
 }
 
 form > label.team,
@@ -10085,6 +10091,46 @@ label:not(.checkbox) form > label[type=submit],
 label:not(.radiobox) .form-group > label[type=submit],
 label:not(.checkbox) .form-group > label[type=submit] {
   margin-top: 24px;
+}
+
+form .form-element {
+  display: block;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+form .form-element .label {
+  cursor: pointer;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.input-wrapper {
+  display: block;
+  min-height: 40px;
+  border: solid 1px #f3f3f3;
+  color: #3c3b54;
+  border-radius: 4px;
+  padding: 8px 12px;
+  background: white;
+  cursor: pointer;
+}
+
+.input-wrapper.check-button {
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+          align-items: center;
+  background: #f3f3f3;
+}
+
+.input-wrapper.disabled {
+  color: #a8a8a8;
+  cursor: auto;
+}
+
+.input-wrapper.light {
+  background: #f3f3f3;
 }
 
 .fade-enter-active,

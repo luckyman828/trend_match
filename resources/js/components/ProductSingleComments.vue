@@ -351,7 +351,7 @@ export default {
     },
     updated() {
         // Preset the height of the request field
-        if (this.writeScope == 'request' && this.newRequest.comment.length > 1)
+        if (this.writeScope == 'request' && this.newRequest.comment.length > 1 && this.$refs.requestField)
                 this.$refs.requestField.style.height = this.$refs.requestField.scrollHeight + "px"
     },
     created() {

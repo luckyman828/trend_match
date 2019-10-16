@@ -36,7 +36,7 @@ export default {
         loadingProducts() {
             if (this.products) {
                 if (this.products.length > 0)
-                    return true
+                    return false
             }
         }
     },

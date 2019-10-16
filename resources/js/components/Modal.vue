@@ -6,7 +6,11 @@
         <div class="modal card" ref="modal">
             <span class="close circle" @click="close"><i class="fal fa-times"></i></span>
             <div class="inner">
-                <div class="header"><slot name="header" :toggle="toggle"></slot></div>
+                <div class="header">
+                    <h2 v-if="header" v-html="header"></h2>
+                    <span class="desc" v-if="subHeader" v-html="subHeader"></span>
+                    <slot name="header" :toggle="toggle"></slot>
+                </div>
                 <div class="body"><slot name="body" :toggle="toggle"></slot></div>
             </div>
         </div>
@@ -19,7 +23,8 @@
 export default {
     name: 'Modal',
     props: [
-        
+        'header',
+        'subHeader'
     ],
     data: function () { return {
         

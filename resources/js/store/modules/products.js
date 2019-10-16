@@ -301,33 +301,32 @@ export default {
                 return data
             }
         },
-        // productsScoped: (state, getters, rootState, rootGetters) => {
-        //     const products = getters.products
-        //     const currentTask = rootGetters['persist/currentTask']
-        //     const currentTeam = rootGetters['persist/currentTeam']
-        //     if (products) {
-        //         return products.filter(product => {
-        //             let keepProduct = false
-        //             // START Scope Products by Inheritance
-        //             if (currentTask.inherit_from_id) {
-        //                 if (
-        //                     product.actions.find(
-        //                         action => action.task_id == currentTask.inherit_from_id && action.action > 0
-        //                     )
-        //                 )
-        //                     keepProduct = true
-        //             }
+        productsScoped: (state, getters, rootState, rootGetters) => {
+            const products = getters.products
+            const currentTask = rootGetters['persist/currentTask']
+            const currentTeam = rootGetters['persist/currentTeam']
+            if (products) {
+                let productsToReturn = []
+                const inheritFromId = currentTask.inherit_from_id
+                if (inheritFromId) {
+                    productsToReturn = products.filter(product =>
+                        product.actions.find(action => action.task_id == inheritFromId && action.action > 0)
+                    )
+                } else {
+                    productsToReturn = products
+                }
 
-        //             // START Scope Products by Category
-        //             if (currentTeam.category_scope) {
-        //                 if (currentTeam.category_scope.split(',').includes(x.category.toLowerCase())) keepProduct = true
-        //             }
-        //             return keepProduct
-        //         })
-        //     } else {
-        //         return []
-        //     }
-        // },
+                if (currentTeam.category_scope) {
+                    return productsToReturn.filter(product =>
+                        currentTeam.category_scope.split(',').includes(product.category.toLowerCase())
+                    )
+                } else {
+                    return productsToReturn
+                }
+            } else {
+                return []
+            }
+        },
         availableProductIds: state => {
             return state.availableProductIds
         },

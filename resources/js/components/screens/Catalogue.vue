@@ -190,7 +190,7 @@ export default{
     },
     computed: {
         // ...mapGetters('entities/products', ['loadingProducts', {allProducts: 'products'}, 'productsScopedByInheritance']),
-        ...mapGetters('entities/products', ['loadingProducts', 'productsScopedByInheritance']),
+        ...mapGetters('entities/products', ['loadingProducts', 'productsScoped']),
         ...mapGetters('entities/products', {allProducts: 'products'}),
         ...mapGetters('entities/actions', ['loadingActions']),
         ...mapGetters('entities/comments', ['loadingComments']),
@@ -204,19 +204,20 @@ export default{
             else return null
         },
         products() {
-            let productsToReturn = []
-            const inheritFromId = this.currentTask.inherit_from_id
-            if (inheritFromId) {
-                productsToReturn = this.allProducts.filter(product => product.actions.find(action => action.task_id == inheritFromId && action.action > 0))
-            } else {
-                productsToReturn = this.allProducts
-            }
+            return this.productsScoped
+            // let productsToReturn = []
+            // const inheritFromId = this.currentTask.inherit_from_id
+            // if (inheritFromId) {
+            //     productsToReturn = this.allProducts.filter(product => product.actions.find(action => action.task_id == inheritFromId && action.action > 0))
+            // } else {
+            //     productsToReturn = this.allProducts
+            // }
 
-            if (this.currentTeam.category_scope) {
-                return productsToReturn.filter(x => this.currentTeam.category_scope.split(',').includes(x.category.toLowerCase()))
-            } else {
-                return productsToReturn
-            }
+            // if (this.currentTeam.category_scope) {
+            //     return productsToReturn.filter(x => this.currentTeam.category_scope.split(',').includes(x.category.toLowerCase()))
+            // } else {
+            //     return productsToReturn
+            // }
         },
         teamProducts() {
             return TeamProduct.with('products').all()

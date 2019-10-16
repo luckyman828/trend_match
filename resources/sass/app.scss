@@ -16,6 +16,7 @@
 @import '~@fortawesome/fontawesome-pro/scss/light';
 @import '~@fortawesome/fontawesome-pro/scss/brands';
 
+// FONTS
 body,
 html {
     margin: 0;
@@ -50,6 +51,22 @@ a {
     color: inherit;
     &.text-link {
         color: $primary;
+    }
+}
+h2 {
+    font-size: 24px;
+    font-weight: 400;
+    margin: 12px 0 4px;
+}
+.label {
+    font-size: 12px;
+    font-weight: 500;
+    color: $dark05;
+}
+p {
+    margin: 0;
+    &:not(:last-of-type) {
+        margin-bottom: 4px;
     }
 }
 textarea {
@@ -869,19 +886,10 @@ textarea {
 form,
 .form-group {
     > label {
-        font-size: 12px;
-        font-weight: 500;
-        color: $dark05;
         display: block;
         width: 100%;
         margin-bottom: 12px;
-        &.checkbutton {
-            height: 40px;
-            background: $light1;
-            display: inline-flex;
-            align-items: center;
-        }
-        cursor: pointer;
+        // cursor: pointer;
         &.team {
             position: relative;
             background: $light1;
@@ -928,6 +936,40 @@ form,
                 margin-top: 24px;
             }
         }
+    }
+}
+form {
+    .form-element {
+        display: block;
+        width: 100%;
+        margin-bottom: 24px;
+        .label {
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 8px;
+        }
+    }
+}
+.input-wrapper {
+    display: block;
+    min-height: 40px;
+    border: solid 1px $light1;
+    color: $dark05;
+    border-radius: 4px;
+    padding: 8px 12px;
+    background: white;
+    cursor: pointer;
+    &.check-button {
+        display: flex;
+        align-items: center;
+        background: $light1;
+    }
+    &.disabled {
+        color: $dark2;
+        cursor: auto;
+    }
+    &.light {
+        background: $light1;
     }
 }
 
