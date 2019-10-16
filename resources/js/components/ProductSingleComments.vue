@@ -1,253 +1,364 @@
 <template>
     <div class="comments">
-        <div class="header">
-            <h4>Comments</h4>
-
-            <toggle v-if="userPermissionLevel < 2" :options="['team comments']" v-model="commentFilter" ref="toggle"/>
-            <toggle v-else-if="userPermissionLevel == 2" :options="['team comments', 'remarks']" :defaultOption="1" v-model="commentFilter" ref="toggle"/>
-            <toggle v-else :options="['all comments', 'remarks']" :defaultOption="2" v-model="commentFilter" ref="toggle"/>
-
+        
+        <div class="tab-headers">
+            <span v-if="commentsAvailable" :class="{active: commentScope == 'comments'}" class="tab" @click="setCommentScope('comments')">
+                Comments <span class="circle small" :class="(commentScope == 'comments') ? 'white' : 'light'">{{comments.length}}</span>
+            </span>
+            <span v-if="requestsAvailable" :class="{active: commentScope == 'requests'}" class="tab" @click="setCommentScope('requests')">
+                Requests <span class="circle small" :class="(commentScope == 'requests') ? 'white' : 'light'">{{requests.length}}</span>
+            </span>
         </div>
 
+        <div class="comments-wrapper">
+            <div class="inner">
 
-        <div class="comments-wrapper" v-if="commentFilter == 'all comments'">
-            <div class="team" v-for="team in commentTeams" :key="team.id">
-                    <comment :comment="comment" v-for="comment in team.comments" :key="comment.id" 
-                    :class="[{'own-team': comment.team_id == currentTeamId}, {'own': comment.user_id == authUser.id}]"/>
+                <template v-if="commentScope == 'comments'">
+
+                    <template v-if="currentTask.type == 'approval'">
+                        <div class="requests-wrapper" v-if="requests.length > 0">
+                            <request :request="request" v-for="request in requests" :key="request.id"/>
+                        </div>
+                        <div class="sender-wrapper" v-for="comment in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
+                            <comment :comment="comment"/>
+                            <div class="sender">{{comment.task.title}} | {{(comment.user.id == authUser.id) ? 'You' : comment.user.name}}</div>
+                        </div>
+                        <div class="break-line" v-if="(product.currentAction)"><span class="pill" :class="product.currentAction.action == 1 ? 'green' : 'red'">Marked as {{product.currentAction.action == 1 ? 'IN' : 'OUT'}} by {{(product.currentAction.user_id == authUser.id) ? 'You' : product.currentAction.user.name}}</span></div>
+                        <div class="break-line" v-else-if="(product.requests.length < 1)"><span class="pill green">Marked as IN by {{(product.inheritedAction.user_id == authUser.id) ? 'You' : product.inheritedAction.user.name}} in {{currentTask.inheritFromTask.title}}</span></div>
+                        <div class="break-line" v-else-if="!product.newComment">Awaiting response from {{userPermissionLevel == 3 ? 'Requester' : 'Approver'}}</div>
+                    </template>
+
+                    <template v-else-if="currentTask.type == 'decision'">
+                        <div class="requests-wrapper" v-if="requests.length > 0">
+                            <request :request="requests.find(x => x.user_id == authUser.id)"/>
+                        </div>
+                        <div class="requests-wrapper" v-if="requests.length > 0">
+                            <request :request="request" v-for="request in requests.filter(x => x.user_id != authUser.id)" :key="request.id"/>
+                        </div>
+                        <div class="sender-wrapper" v-for="(comment, index) in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
+                            <comment :comment="comment"/>
+                            <div class="sender" v-if="comments[index+1] ? comments[index+1].user_id != comment.user_id : true">{{comment.task.title}} {{(comment.user_id == authUser.id) ? '| You' : userPermissionLevel > 1 ? '| ' + comment.user.name : ''}}</div>
+                        </div>
+                        <div class="break-line" v-if="product.outInFilter"><span class="pill red">Marked as OUT by {{(product.outInFilter.user_id == authUser.id) ? 'You' : product.outInFilter.user.name}} in {{product.outInFilter.task.title}}</span></div>
+                    </template>
+
+                    <div v-else class="sender-wrapper" v-for="(comment, index) in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
+                        <comment :comment="comment"/>
+                        <div class="sender" v-if="comments[index+1] ? comments[index+1].user_id != comment.user_id : true">{{comment.task.title}} {{(comment.user_id == authUser.id) ? '| You' : userPermissionLevel > 1 ? '| ' + comment.user.name : ''}}</div>
+                    </div>
+                </template>
+
+                <template v-if="commentScope == 'requests'">
+                    <div class="task-request" v-if="taskRequest">
+                        <request :request="taskRequest"/>
+                    </div>
+                    <div v-if="requests.find(x => x.task_id != currentTask.id)" class="break-line">Showing requests from prev. task(s)</div>
+                    <div class="requests-wrapper">
+                        <request :request="request" v-for="request in requests.filter(x => x.task_id != currentTask.id)" :key="request.id"/>
+                    </div>
+                </template>
+
             </div>
         </div>
 
-        <div class="comments-wrapper" v-else>
-            <comment :comment="comment" v-for="comment in commentsFiltered" :key="comment.id" 
-            :class="[{'own-team': comment.team_id == currentTeamId}, {'own': comment.user_id == authUser.id}]"/>
-        </div>
 
+        <form @submit="onSubmitComment" v-if="!commentsClosed">
+            <div class="controls">
+                <div class="left">
+                    <div class="set-scope">
+                        <span v-if="!['feedback','approval','decision'].includes(currentTask.type)" class="button invisible" :class="{active: writeScope == 'request'}" @click="setWriteScope('request')">Your Request</span>
+                        <span class="button invisible" :class="{active: writeScope == 'comment'}" @click="setWriteScope('comment')">Comment</span>
+                    </div>
+                </div>
+                <div class="right">
 
-        <form @submit="onSubmitComment">
-            <div class="input-wrapper">
-                <i class="far fa-comment"></i>
-                <textarea ref="commentField" @keydown.enter.exact.prevent @keyup.enter.exact="onSubmitComment" name="comment" id="comment-input" :placeholder="placeholderText" v-model="newComment.comment" 
-                @input="resizeTextarea"></textarea>
-                <label>
+                </div>
+            </div>
+
+            <div class="form-input" :class="[{active: writeActive}, {hidden: writeScope != 'request'}]">
+                <div class="input-wrapper request">
+                    <textarea @click="activateWrite" ref="requestField" @keydown.enter.exact.prevent name="request" id="request-input" placeholder="Write your request here..." v-model="newRequest.comment" 
+                    @input="resizeTextarea($event)" @keyup.esc="deactivateWrite"></textarea>
+                    <div class="edit-request" v-if="taskRequest && !writeActive">
+                        <span>Edit Request <span class="circle small light"><i class="fas fa-pencil"></i></span></span>
+                    </div>
+                </div>
+                <div class="flex-wrapper">
+                    <div class="left">
+                        <small class="id" v-if="taskRequest">Request ID: {{taskRequest.id}}</small>
+                        <div class="hotkey-tip" v-if="writeActive">
+                            <span class="square ghost">ENTER</span>
+                            <span>To save</span>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <TempAlert :duration="2000" ref="requestSucces" :hidden="writeActive"><small class="request-succes">Request saved <i class="fas fa-clipboard-check green"></i></small></TempAlert>
+                        <template v-if="writeActive">
+                            <span class="button invisible" @click="cancelRequest">Cancel</span>
+                            <span class="button green" :class="{disabled: submitDisabled}" @click="onSubmitComment">Save</span>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-input" :class="[{active: writeActive}, {hidden: writeScope != 'comment'}]">
+                <div class="input-wrapper comment">
+                    <textarea @click="activateWrite" ref="commentField" @keydown.enter.exact.prevent name="comment" id="comment-input" placeholder="Write your comment here..." v-model="newComment.comment" 
+                    @input="resizeTextarea($event)" @keyup.esc="deactivateWrite"></textarea>
+                </div>
+                <label class="checkbox">
                     <input type="checkbox" v-model="newComment.important" name="comment-important">
-                    <span class="checkmark" :class="{active: newComment.important}" @mouseover="showTooltip($event, 'Important comment')" @mouseleave="hideTooltip"><i class="fas fa-exclamation"></i></span>
+                    <TooltipAlt2 :body="'Important comment'">
+                        <span class="checkmark" :class="{active: newComment.important}"><i class="fas fa-exclamation"></i></span>
+                    </TooltipAlt2>
                 </label>
+                <div class="flex-wrapper" v-if="writeActive">
+                    <div class="left">
+                        <div class="hotkey-tip">
+                            <span class="square ghost">ENTER</span>
+                            <span>To submit</span>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <span class="button invisible" @click="writeActive = false">Cancel</span>
+                        <span class="button green" :class="{disabled: submitDisabled}" @click="onSubmitComment">Submit</span>
+                    </div>
+                </div>
             </div>
-            <input type="submit" class="button primary xl" :value="submitText" :class="{disabled: submitDisabled}">
+
         </form>
-        <Tooltip :tooltip="tooltip"/>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import Tooltip from './Tooltip'
 import TooltipAlt2 from './TooltipAlt2'
 import Comment from './Comment'
+import Request from './Request'
+import TempAlert from './TempAlert'
 
 export default {
     name: 'productSingleComments',
     props: [
         'comments',
+        'requests',
         'authUser',
         'product',
     ],
     components: {
-        Tooltip,
         TooltipAlt2,
         Comment,
+        Request,
+        TempAlert
     },
     data: function () { return {
         newComment: {
-            phase: 1,
             comment: '',
             important: false,
-            team_final: false,
-            phase_final: false,
+            id: null
+        },
+        newRequest: {
+            comment: '',
+            important: false,
+            id: null
         },
         user_id: this.authUser.id,
-        tooltip: {
-            active: false,
-            position: {},
-            type: 'text',
-            data: ''
-        },
-        finalOnly: true,
-        commentFilter: '',
+        commentScope: 'comments',
+        writeScope: 'comment',
+        writeActive: false,
+        submittingComment: false,
     }},
+    watch: {
+        product(newVal, oldVal) {
+            if (newVal.id != oldVal.id)
+                this.update()
+        },
+    },
     computed: {
-        ...mapGetters('entities/comments', ['submittingComment']),
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName']),
+        ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']),
         submitDisabled () {
-            if(this.newComment.comment.length < 1 || this.submittingComment || this.currentTeamId < 0)
+            if (this.writeScope == 'comment') {
+                if(this.newComment.comment.length < 1 || this.submittingComment)
                 return true
-            else return false
+                else return false
+            }
+            else {
+                if(this.newRequest.comment.length < 1 || this.submittingComment)
+                return true
+                else return false
+            }
+        },
+        taskRequest() {
+            const taskRequest = this.requests.find(x => x.task_id == this.currentTask.id)
+            if (taskRequest) {
+                return taskRequest
+            }
         },
         commentToPost () {
-            return {
-                user_id: this.authUser.id,
-                product_id: this.product.id,
-                team_id: this.currentTeamId,
-                phase: 1,
-                comment: this.newComment.comment,
-                important: this.newComment.important,
-                team_final: this.newComment.team_final,
-                phase_final: this.newComment.phase_final,
-            }
-        },
-        placeholderText () {
-            const filter = this.commentFilter
-            if (this.userPermissionLevel >= 2) return 'Write a new remark..'
-            else return 'Write a comment..'
-        },
-        submitText () {
-            const filter = this.commentFilter
-            // if (filter == 'remarks') return 'Submit remark'
-            if (this.userPermissionLevel >= 2) return 'Submit remark'
-            else return 'Submit comment'
-        },
-        commentsFiltered () {
-            const comments = this.comments
-            const filter = this.commentFilter
-            let commentsFiltered = []
-            // let commentTeams = []
-
-
-            if (filter == 'team comments') {
-                comments.forEach(comment => {
-                    if (comment.team_id == this.currentTeamId)
-                        commentsFiltered.push(comment)
-                })
-            } else if (filter == 'remarks') {
-                comments.forEach(comment => {
-                    if (comment.team_final || comment.phase_final || comment.team_id == 0)
-                        commentsFiltered.push(comment)
-                })
-            } else if (filter == 'all comments') {
-                commentsFiltered = comments
-            }
-
-
-            // Find the users actions and users teams actions
-            commentsFiltered.forEach(comment => {
-                // Check if the auth user made the comment
-                comment.userComment = false
-                if (comment.user_id == this.authUser.id && comment.team_id == this.currentTeamId)
-                    comment.userComment = true
-
-                // Check if the comment is the auth users final comment
-                comment.user_final = false
-                if (comment.team_final || comment.phase_final) {
-                    if (this.actionScope == 'phaseAction')
-                        if (comment.user_id == this.authUser.id)
-                            comment.user_final = true
-                    if (this.actionScope == 'teamAction')
-                        if (comment.team_id == this.currentTeamId)
-                            comment.user_final = true
+            if (this.writeScope == 'comment') {
+                return {
+                    id: this.newComment.id,
+                    user_id: this.authUser.id,
+                    product_id: this.product.id,
+                    task_id: this.currentTask.id,
+                    team_id: this.currentTeamId,
+                    comment: this.newComment.comment,
+                    important: this.newComment.important,
                 }
-            })
-            return commentsFiltered
+            } else {
+                return {
+                    id: this.newRequest.id,
+                    user_id: this.authUser.id,
+                    product_id: this.product.id,
+                    task_id: this.currentTask.id,
+                    team_id: this.currentTeamId,
+                    comment: this.newRequest.comment,
+                    important: this.newRequest.important,
+                    is_request: true,
+                }
+            }
         },
-        commentTeams () {
-            const comments = this.commentsFiltered
-            let commentTeams = []
-
-            // Group comments by team
-            comments.forEach(comment => {
-                if (!commentTeams.find(x => x.id == comment.team_id) )
-                    if (comment.team_id > 0) {
-                        comment.team.comments = []
-                        commentTeams.push(comment.team)
-                    }
-                    else commentTeams.push ({id: 0, title: 'Global', comments: []})
-
-                commentTeams.find(x => x.id == comment.team_id).comments.push(comment)
-            })
-            return commentTeams
+        commentsAvailable() {
+            return true
+        },
+        requestsAvailable() {
+            return !(['feedback','approval', 'decision'].includes(this.currentTask.type))
+        },
+        commentsClosed() {
+            let isClosed = false
+            if (this.currentTask.type == 'approval') {
+                if (this.product.decisionAction || this.product.currentAction)
+                    isClosed = true
+            }
+            else if (this.currentTask.type == 'decision') {
+                if (this.currentTask.approvalParent && (this.product.currentAction || this.product.buyerAction))
+                    isClosed = true
+            }
+            return isClosed
         }
     },
     methods: {
         ...mapActions('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']),
+        activateWrite() {
+            if (this.writeScope == 'request') {
+                this.newRequest.id = (this.taskRequest) ? this.taskRequest.id : null
+                this.$refs.requestField.focus()
+            } else {
+                this.$refs.commentField.focus()
+                // If scope is comment set the newComment id equal to the edited comment
+            }
+            this.writeActive = true
+        },
+        deactivateWrite() {
+            // Unset the focus
+            this.writeActive = false
+            document.activeElement.blur()
+        },
+        cancelRequest() {
+            this.deactivateWrite()
+            this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
+        },
         async onSubmitComment(e) {
             if (e) e.preventDefault()
 
             if (!this.submitDisabled) {
-                await this.createComment({comment: this.commentToPost})
-    
-                // Reset comment
-                this.newComment.comment = ''
-                this.newComment.important = false
-                this.newComment.team_final = false
-                this.newComment.phase_final = false
+                this.submittingComment = true
+                try {
+                    // Succes
+                    await this.createComment({comment: this.commentToPost})
+                    this.$refs.requestSucces.show()
+                    
+                    // Reset comment
+                    if (this.writeScope == 'comment') {
+                        this.newComment.comment = ''
+                        this.newComment.important = false
+                        // Reset textarea height
+                        this.$refs.commentField.style.height = ''
+                    } else {
+                        this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
+                        this.newRequest.important = false
+                        // Reset textarea height
+                        // this.$refs.requestField.style.height = ''
+                    }
+                } catch (err) {
+                    // Error
+                }
+                // In any case
+                this.submittingComment = false
+                this.writeActive = false
+                // Unset the focus
+                document.activeElement.blur()
 
-                // Reset textarea height
-                this.$refs.commentField.style.height = ''
             }
         },
-        onMarkAsFinal(comment) {
-            if (this.actionScope == 'phaseAction') {
-                comment.phase_final = !comment.phase_final
-                this.markAsPhaseFinal({comment: comment})
-            }
-            else if (this.actionScope == 'teamAction') {
-                comment.team_final = !comment.team_final
-                this.markAsTeamFinal({comment: comment})
-            }
+        async onCompleteTask(file_id, task_id) {
+            this.submittingTaskComplete = true
+            await this.completeTask({file_id: file_id, task_id: task_id})
+            // .then(reponse => succes = response)
+            this.submittingTaskComplete = false
         },
-        showTooltip(event, data) {
-            const rect = event.target.getBoundingClientRect()
-
-            // Set tooltip position
-            this.tooltip.position.top = rect.top - rect.height - 12
-            this.tooltip.position.center = rect.left
-
-            // Set tooltip data
-            this.tooltip.data = data
-
-            // Make tooltip active
-            this.tooltip.active = true;
-        },
-            
-        hideTooltip() {
-            this.tooltip.active = false;
-        },
-        resizeTextarea() {
-            const commentField = this.$refs.commentField
+        resizeTextarea(event) {
+            const commentField = event.target
             commentField.style.height = ''
             commentField.style.height = commentField.scrollHeight + "px"
+        },
+        setCommentScope(scope) {
+            this.commentScope = scope
+        },
+        setWriteScope(scope) {
+            this.writeActive = false
+            this.writeScope = scope
+        },
+        update() {
+            // Set the new request equal to the existing if one exists
+            this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
+            // Set the id of the new request if one exists
+            this.newRequest.id = (this.taskRequest) ? this.taskRequest.id : null
+            // Reset the new comment field
+            this.newComment.comment = ''
+            this.writeActive = false
+
+            // Set the default write / view scope
+            const type = this.currentTask.type
+            if (this.currentTask.parentTasks.find(x => x.type == 'feedback')){
+                this.commentScope = 'comments'
+                this.writeScope = 'request'
+            }
+            else if (['feedback','approval', 'decision'].includes(type)) {
+                this.commentScope = 'comments'
+                this.writeScope = 'comment'
+            } 
+            else {
+                this.commentScope = 'requests'
+                this.writeScope = 'request'
+            }
+        },
+        hotkeyHandler(e) {
+            const key = e.code
+            if (key == 'Enter') {
+                if (this.writeActive && !e.shiftKey) {
+                    e.preventDefault()
+                    this.onSubmitComment()
+                } else {
+                    this.activateWrite()
+                }
+            }
+                // SET FOCUS ON ACTIVE TEXTFIELD
         }
     },
     mounted() {
-        if (this.actionScope == 'phaseAction')
-            this.finalOnly = true
-        else
-            this.finalOnly = false
-
-        // Set the default comment filter by the value of the toggle
-        if (this.$refs.toggle._props.defaultOption) {
-            this.commentFilter = this.$refs.toggle._props.options[this.$refs.toggle._props.defaultOption - 1]
-        } else {
-            this.commentFilter = this.$refs.toggle._props.options[0]
-        }
+        this.update()
     },
     updated() {
-        // Set comment scope
-        if (this.actionScope == 'phaseAction') {
-            this.newComment.team_id = 0
-        } else {
-            this.newComment.team_id = this.currentTeamId
-        }
-        // Set comment final per default
-        if (this.userPermissionLevel >= 3) {
-            this.newComment.phase_final = true
-        } else if (this.userPermissionLevel >= 2) {
-            this.newComment.team_final = true
-        }
-
+        // Preset the height of the request field
+        if (this.writeScope == 'request' && this.newRequest.comment.length > 1 && this.$refs.requestField)
+                this.$refs.requestField.style.height = this.$refs.requestField.scrollHeight + "px"
     },
     created() {
+        document.body.addEventListener('keyup', this.hotkeyHandler)
     },
     destroyed() {
+        document.body.removeEventListener('keyup', this.hotkeyHandler)
     }
 }
 </script>
@@ -259,53 +370,93 @@ export default {
         font-weight: 400;
         margin: 0;
     }
+    .hotkey-tip {
+        .square {
+            border-width: 1px;
+            height: auto;
+            padding: 2px 4px;
+            min-width: 0;
+            font-weight: 400;
+            border-radius: 2px;
+            font-size: 9px;
+            margin-right: 2px;
+        }
+        font-size: 10px;
+        color: $dark2;
+    }
     .header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 8px;
     }
-    .toggle {
-        border: solid 1px $light2;
-        border-radius: 50px;
-        user-select: none;
-        cursor: pointer;
-        .option {
-            font-size: 12px;
-            padding: 6px 14px;
-            font-weight: 700;
-            color: $dark2;
-            text-transform: uppercase;
-            display: inline-block;
-            &.active {
-                color: $dark;
-                background: $light2;
-                border-radius: 50px;
-            }
+    .tab-headers {
+        .tab {
+            justify-content: space-between;
         }
+    }
+    .request-wrapper {
+        margin-bottom: 16px;
+    }
+    .sender-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 4px;
+        &.own {
+            align-items: flex-end
+        }
+    }
+    .sender {
+        margin-bottom: 20px;
+    }
+    .break-line {
+        &::after, &::before {
+            content: '';
+            display: block;
+            height: 2px;
+            background: $dark2;
+            flex: 1;
+        }
+        &::after {
+            margin-left: 12px;
+        }
+        &::before {
+            margin-right: 12px;
+        }
+        color: $dark2;
+        font-size: 12px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
+        margin-bottom: 12px;
     }
     .comments-wrapper {
         background: $light1;
-        border-radius: 8px;
-        padding: 36px 24px;
-        height: 57vh;
-        max-height: 57vh;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        box-sizing: border-box;
-    }
-    .comment-wrapper {
-        margin-bottom: 24px;
-        &:hover .circle {
-            opacity: 1;
+        border-radius: 0 8px 0 0;
+        padding: 16px 4px 16px 0;
+        height: 100%;
+        width: 100%;
+        .inner {
+            padding: 0 12px;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            box-sizing: border-box;
         }
-        &.own {
-            text-align: right;
+        .sender {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: $dark2;
         }
     }
     form {
-        margin-top: 12px;
         margin-bottom: 42px;
+        padding: 8px 0 24px;
+        background: white;
+        box-shadow: 0 -3px 6px rgba($dark, 10%);
         @media screen and (max-width: $screenSmall) {
             margin-bottom: 0px;
         }
@@ -315,45 +466,98 @@ export default {
         {
             margin-bottom: 0px;
         }
-        .input-wrapper {
-            border-radius: 6px;
-            border: solid 2px $light2;
-            box-sizing: border-box;
-            padding: 10px 52px 2px 44px;
-            font-size: 14px;
-            font-weight: 500;
-            position: relative;
-            color: $dark2;
-            max-height: 200px;
-            overflow: auto;
-            > i {
-                position: absolute;
-                left: 14px;
-                top: 12px;
-                font-size: 20px;
-            }
-            input[type=checkbox] {
-                display: none;
-            }
-            label {
-                position: absolute;
-                right: 0;
-                top: 0;
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            .set-scope {
+                span {
+                    font-size: 14px;
+                    font-weight: 500;
+                    color: $dark2;
+                    cursor: pointer;
+                    user-select: none;
+                    &:not(:last-child) {
+                        margin-right: -8px;
+                    }
+                    &.active {
+                        color: $dark;
+                        cursor: auto;
+                    }
+                }
             }
         }
-        textarea {
-            border: none;
-            height: 22px;
-            overflow: hidden;
-            width: 100%;
-            resize: none;
-            font-weight: 500;
-            color: $dark1;
-            &:focus {
-                outline: none;
+        .form-input {
+            position: relative;
+            padding: 0 12px;
+            &.hidden {
+                display: none;
             }
-            &::placeholder {
+            .id {
+                font-size: 12px;
                 color: $dark2;
+                display: block;
+                margin-top: -2px;
+            }
+            .input-wrapper {
+                border-radius: 6px;
+                border: solid 2px $light2;
+                background: $light2;
+                box-sizing: border-box;
+                font-size: 14px;
+                color: $dark2;
+                max-height: 200px;
+                overflow: auto;
+                cursor: pointer;
+                position: relative;
+                .edit-request {
+                    position: absolute;
+                    right: 12px;
+                    font-size: 10px;
+                    color: $dark;
+                    font-weight: 500;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    pointer-events: none;
+                    .circle {
+                        height: 24px;
+                        width: 24px;
+                        margin-left: 4px;
+                    }
+                }
+            }
+            textarea {
+                padding: 8px 108px 8px 12px;
+                border: none;
+                height: 30px;
+                overflow: hidden;
+                width: 100%;
+                resize: none;
+                color: $dark1;
+                background: transparent;
+                cursor: pointer;
+                &:focus {
+                    outline: none;
+                }
+                &::placeholder {
+                    color: $dark2;
+                }
+            }
+            &.active {
+                .input-wrapper {
+                    border: solid 2px $light2;
+                    background: white;
+                    cursor: auto;
+                }
+                textarea {
+                    cursor: auto;
+                }
+            }
+            .flex-wrapper {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 8px;
+                // align-items: center;
             }
         }
         .checkmark {
@@ -366,7 +570,7 @@ export default {
             color: $dark2;
             position: absolute;
             right: 16px;
-            top: 6px;
+            top: 4px;
             cursor: pointer;
             &.active {
                 color: $primary;
@@ -375,5 +579,9 @@ export default {
         input[type=submit] {
             margin-top: 12px;
         }
+    }
+    .request-succes {
+        margin-right: 8px;
+        font-weight: 500;
     }
 </style>

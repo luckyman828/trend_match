@@ -18,6 +18,8 @@ use App\PhaseProduct;
 use App\Http\Resources\PhaseProduct as PhaseProductResource;
 use App\TeamProduct;
 use App\Http\Resources\TeamProduct as TeamProductResource;
+use App\TaskAction;
+use App\Request as RequestModel;
 
 class FileController extends Controller
 {
@@ -89,6 +91,26 @@ class FileController extends Controller
 
         // Return collection of users as a resource
         return PhaseProductResource::collection($data);
+    }
+
+    // Return all task actions for the specified collection
+    public function taskActions($file_id)
+    {
+        $result = TaskAction::whereHas('product', function (Builder $query) use($file_id) {
+            $query->where('collection_id', $file_id);
+        })->get();
+
+        return $result;
+    }
+
+    // Return all requests for the specified file
+    public function requests($file_id)
+    {
+        $result = RequestModel::whereHas('product', function (Builder $query) use($file_id) {
+            $query->where('collection_id', $file_id);
+        })->get();
+
+        return $result;
     }
 
     

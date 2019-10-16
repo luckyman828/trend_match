@@ -1,11 +1,11 @@
 <template>
-    <div class="tooltip-wrapper" ref="wrapper">
+    <div class="tooltip-wrapper" ref="wrapper" @mouseleave="hide">
 
-        <div class="tooltip-parent" ref="parent" @mouseenter="show" @mouseleave="hide">
+        <div class="tooltip-parent" ref="parent" @mouseenter="show">
             <slot><p>Show tooltip</p></slot>
         </div>
 
-        <div class="tooltip dark" :class="{hidden: hidden}" ref="tooltip">
+        <div v-if="!disabled" class="tooltip dark" :class="{hidden: hidden}" ref="tooltip">
 
             <div class="arrow"></div>
 
@@ -13,7 +13,7 @@
 
                 <div class="header"  v-if="header != null" v-html="header"></div>
 
-                <div class="body">
+                <div class="body" ref="body">
 
                     <span class="body-wrapper" v-if="body != null" v-html="body"></span>
 
@@ -21,11 +21,11 @@
                         <p class="row" v-for="(row, index) in array" :key="index">
                             <template v-if="arrayLabelKey != null">
                                 <span class="label">{{row[arrayLabelKey]}}: </span>
-                                <strong class="value" v-if="arrayValueKey != null">{{row[arrayValueKey]}}</strong>
+                                <strong class="value" v-if="arrayValueKey != null">{{row[arrayValueKey]}}<template v-if="arrayValueUnit">{{arrayValueUnit}}</template></strong>
                                 <strong class="value" v-else>{{row}}</strong>
                             </template>
                             <template v-else>
-                                <span class="value" v-if="arrayValueKey != null">{{row[arrayValueKey]}}</span>
+                                <span class="value" v-if="arrayValueKey != null">{{row[arrayValueKey]}}<template v-if="arrayValueUnit">{{arrayValueUnit}}</template></span>
                                 <span class="value" v-else>{{row}}</span>
                             </template>
                         </p>
@@ -50,7 +50,9 @@ export default {
         'body',
         'array',
         'arrayLabelKey',
-        'arrayValueKey'
+        'arrayValueKey',
+        'arrayValueUnit',
+        'disabled'
     ],
     methods: {
         toggle() {
@@ -61,8 +63,10 @@ export default {
             clearTimeout(this.showDelay)
         },
         show() {
-            this.setHeight()
-            this.showDelay = setTimeout( () => {this.hidden = false}, this.showDelay)
+            if (!this.disabled) {
+                this.setHeight()
+                this.showDelay = setTimeout( () => {this.hidden = false}, this.showDelay)
+            }
         },
         // getPosition(element) {
         //     var xPosition = 0;
@@ -78,7 +82,6 @@ export default {
         // },
         // Set the height of the component
         setHeight() {
-            const offsetTop = 4
             const offsetLeft = 4
             const el = this.$refs.tooltip
             // const parent = el.closest('.has-tooltip') // Use a set parent as parent
@@ -94,34 +97,76 @@ export default {
             const parentLeft = parent.getBoundingClientRect().left
             const parentHeight = parent.getBoundingClientRect().height
             const parentWidth = parent.getBoundingClientRect().width
+            const parentRect = parent.getBoundingClientRect()
             // console.log(parent.getBoundingClientRect().top)
             // }
             const elHeight = el.getBoundingClientRect().height
             const elWidth = el.getBoundingClientRect().width
 
+            // Check if the dropdown should be shown above or below the hovered item
+            // console.log('Bottom dist: ' + parentTop + parentHeight + elHeight)
+            // console.log('Window height: ' + window.innerHeight)
+            // console.log('El height: ' + elHeight)
+            const windownHeight = window.innerHeight
+
+
+            const distToBottom = parentTop + parentHeight + elHeight
+            const bottomSpace = windownHeight - distToBottom
+            const bottomOffset = 100;
+            const showAbove = bottomSpace < 50
+
+            const topDist = parentTop + parentHeight
+            const bottomDist = windownHeight - parentTop
+
             // Align the dropdown after the parent
             if (parent != null) {
                 // Top + Right align
-                if (wrapper.classList.contains('right'))
-                    el.style.cssText = `top: ${parentTop + parentHeight + offsetTop}px; left: ${parentLeft + parentWidth - elWidth + offsetLeft}px;`
-
+                if (wrapper.classList.contains('right')) {
+                    if (!showAbove) {
+                        el.style.cssText = `bottom: auto; top: ${topDist}px; left: ${parentLeft + parentWidth - elWidth + offsetLeft}px;`
+                    } else {
+                        el.style.cssText = `top: auto; bottom: ${bottomDist}px; left: ${parentLeft + parentWidth - elWidth + offsetLeft}px;`
+                    }
+                }
                 // Top + Left align
-                else if (wrapper.classList.contains('left'))
-                    el.style.cssText = `top: ${parentTop + parentHeight + offsetTop}px; left: ${parentLeft - offsetLeft}px;`
-
+                else if (wrapper.classList.contains('left')) {
+                    if (!showAbove) {
+                        el.style.cssText = `bottom: auto; top: ${topDist}px; left: ${parentLeft - offsetLeft}px;`
+                    } else {
+                        el.style.cssText = `top: auto; bottom: ${bottomDist}px; left: ${parentLeft - offsetLeft}px;`
+                    }
+                    
+                }
                 // Top + Center align
-                else
-                    el.style.cssText = `top: ${parentTop + parentHeight + offsetTop}px; left: ${parentLeft + ( parentWidth / 2 ) - ( elWidth / 2 ) }px;`
+                else {
+                    if (!showAbove) {
+                        el.style.cssText = `bottom: auto; top: ${topDist}px; left: ${parentLeft + ( parentWidth / 2 ) - ( elWidth / 2 ) }px;`
+                    } else {
+                        el.style.cssText = `top: auto; bottom: ${bottomDist}px; left: ${parentLeft + ( parentWidth / 2 ) - ( elWidth / 2 ) }px;`
+                    }
+                }
 
             }
+
+            // Set the max height of the tooltip
+            if (showAbove) {
+                el.classList.add('above')
+                this.$refs.body.style.maxHeight = parentTop - bottomOffset  + 'px'
+            } else {
+                el.classList.remove('above')
+                this.$refs.body.style.maxHeight = window.innerHeight - (parentTop + parentHeight) - bottomOffset  + 'px'
+            }
+
         },
     },
     mounted() {
-        this.setHeight()
+        if (!this.disabled)
+            this.setHeight()
 
     },
     updated() {
-        this.setHeight()
+        if (!this.disabled)
+            this.setHeight()
     },
 }
 </script>
@@ -133,6 +178,11 @@ export default {
         padding: 8px;
         display: block;
         font-size: 13px;
+    }
+    .body {
+        max-height: 200px;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
     .flex-wrapper {
         display: flex;

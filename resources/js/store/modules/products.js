@@ -23,36 +23,45 @@ export default {
         },
         //   currentProduct: state => { return (state.currentProductId != null) ? Product.find(state.currentProductId) : null },
         products: (state, getters, rootState, rootGetters) => {
-            if (!rootGetters['persist/loadingInit'] && !state.loading) {
+            if (!rootGetters['persist/loadingInit'] && !state.loading && rootGetters['persist/currentTask'] != null) {
                 const products = Product.query()
-                    .with(['actions.user.teams'])
-                    .with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team'])
-                    .with('productFinalAction')
-                    .with('teamActions.team')
-                    .with('phaseActions')
+                    .with(['actions.task|user.teams'])
+                    .with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team|task'])
                     .all()
+                const currentTask = rootGetters['persist/currentTask']
                 const userId = rootGetters['persist/authUser'].id
-                const teamFilterId = rootGetters['persist/currentTeamId']
                 const currentTeam = rootGetters['persist/currentTeam']
-                const currentFile = rootGetters['entities/collections/currentFile']
-                const teamUsers = rootGetters['entities/collections/currentTeamUsers']
                 const workspace = rootGetters['persist/currentWorkspace']
                 const userPermissionLevel = rootGetters['persist/userPermissionLevel']
-                const viewAdminPermissionLevel = rootGetters['persist/viewAdminPermissionLevel']
                 const data = []
                 products.forEach(product => {
                     product.color_variants = JSON.parse(product.color_variants)
+                    product.assortments = JSON.parse(product.assortments)
                     product.prices = JSON.parse(product.prices)
                     product.ins = []
                     product.outs = []
                     product.focus = []
                     product.nds = []
-                    product.userAction = product.actions.find(x => x.user_id == userId)
+                    product.ndsTotal
                     product.commentsScoped = []
-                    product.teamAction = product.teamActions.find(x => x.team_id == teamFilterId)
-                    product.phaseAction = product.phaseActions.find(x => x.phase_id == 1)
 
-                    // Find the correct price
+                    // START Find current action for the product
+                    if (currentTask.type == 'feedback') {
+                        product.currentAction = product.actions.find(
+                            action => action.user_id == userId && action.task_id == currentTask.id
+                        )
+                    } else {
+                        product.currentAction = product.actions.find(action => action.task_id == currentTask.id)
+                    }
+                    // END Find current action for product
+
+                    // START Find inherit from task
+                    if (currentTask.inherit_from_id) {
+                        product.inheritedAction = product.actions.find(x => x.task_id == currentTask.inherit_from_id)
+                    }
+                    // END
+
+                    // START Find the correct price
                     // Check if the chosen currency exists on the product
                     if (product.prices != null) {
                         let workspacePrices = null
@@ -74,9 +83,62 @@ export default {
                             else product.userPrices = product.prices[0]
                         }
                     }
+                    // END Find the correct price
 
-                    const comments = product.comments
+                    //START COMMENTS
+                    product.requests = []
 
+                    // START scope comments to task
+                    product.comments.forEach(comment => {
+                        if (
+                            comment.task_id == currentTask.inherit_from_id ||
+                            comment.task_id == currentTask.id ||
+                            currentTask.filter_products_by_ids.includes(comment.task_id)
+                        ) {
+                            comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment)
+                        } else if (currentTask.type == 'feedback') {
+                            if (comment.task_id == currentTask.id)
+                                comment.is_request
+                                    ? product.requests.push(comment)
+                                    : product.commentsScoped.push(comment)
+                        } else if (currentTask.type == 'approval') {
+                            if (comment.task_id == currentTask.children[0].task_id || comment.task_id == currentTask.id)
+                                comment.is_request
+                                    ? product.requests.push(comment)
+                                    : product.commentsScoped.push(comment)
+                        } else if (
+                            !currentTask.parentTasks.find(x => x.type == 'approval') &&
+                            currentTask.approvalParent
+                        ) {
+                            // CSM DECISION
+                            if (
+                                comment.task_id == currentTask.approvalParent.id ||
+                                currentTask.parentTasks.find(x => x.id == comment.task_id) ||
+                                currentTask.approvalParent.parentTasks.find(x => x.id == comment.task_id)
+                            )
+                                comment.is_request
+                                    ? product.requests.push(comment)
+                                    : product.commentsScoped.push(comment)
+                        } else {
+                            // If type is alignment
+                            if (comment.task_id == currentTask.id)
+                                comment.is_request
+                                    ? product.requests.push(comment)
+                                    : product.commentsScoped.push(comment)
+                            currentTask.parentTasks.forEach(parentTask => {
+                                if (comment.task_id == parentTask.id)
+                                    comment.is_request
+                                        ? product.requests.push(comment)
+                                        : product.commentsScoped.push(comment)
+                            })
+                        }
+                    })
+
+                    // END scope comments to task
+
+                    // START Comment votes
+                    // Handle comment votes - group them by team
+                    const comments = product.commentsScoped
                     comments.forEach(comment => {
                         comment.teamVotes = []
                         let noTeamExists = false
@@ -105,89 +167,164 @@ export default {
                             }
                         })
                     })
-                    // Scope votes to current team filter
-                    comments.forEach(comment => {
-                        comment.votesScoped = []
-                        comment.votes.forEach(vote => {
-                            const found = teamUsers.find(x => x.id == vote.user.id)
-                            if (found) comment.votesScoped.push(vote)
+                    // END Comment votes
+
+                    // END COMMENTS
+
+                    // START Find Not decideds NDs
+                    if (currentTask.type == 'feedback') {
+                        // If type: Feedback -> Find all users with access to the task
+                        product.nds = JSON.parse(JSON.stringify(currentTask.users)).map(x => {
+                            x.task = currentTask
+                            return x
                         })
-                    })
-
-                    // Scope comments to current teamFilter
-
-                    // If the user is a buyer function, only return global comments
-                    if (userPermissionLevel == viewAdminPermissionLevel) {
-                        comments.forEach(comment => {
-                            if (comment.team_id == 0) product.commentsScoped.push(comment)
+                    } else {
+                        // If type = Alignment -> Find the parent tasks
+                        currentTask.parentTasks.forEach(parentTask => {
+                            // if parent type is feedback -> push users
+                            // else -> push task
+                            if (parentTask.type == 'feedback')
+                                product.nds = product.nds.concat(
+                                    JSON.parse(JSON.stringify(parentTask.users)).map(x => {
+                                        x.task = currentTask
+                                        return x
+                                    })
+                                )
+                            else product.nds.push(parentTask)
                         })
-                    } else if (teamFilterId > 0) {
-                        // Loop through the comments
-                        comments.forEach(comment => {
-                            // Loop through comments users teams
-                            let pushComment = false
-
-                            // Check if the comment belongs to one of auth users teams
-                            // if (comment.user != null)
-                            //     if (comment.user.teams != null)
-                            //         if ( comment.user.teams.find(x => x.id == teamFilterId) )
-                            //             pushComment = true
-                            if (comment.team_id == teamFilterId) pushComment = true
-
-                            // Check if the comment is final or global (not for sales)
-                            if (userPermissionLevel >= 2) {
-                                if (comment.team_final || comment.phase_final || comment.team_id == 0)
-                                    pushComment = true
-                            }
-
-                            if (pushComment) product.commentsScoped.push(comment)
-                        })
-                    } else if (teamFilterId == 0) {
-                        product.commentsScoped = comments
                     }
+                    product.ndsTotal = product.nds.length
+                    // END find Not decideds
 
-                    // Filter actions by the current team filter
-                    // Check if the action has a user
-                    if (teamFilterId > 0 && product.actions != null) {
-                        product.nds = JSON.parse(JSON.stringify(teamUsers)) // Copy our users into a new variable
-                        product.actions.forEach(action => {
-                            if (action.user != null) {
-                                // Check if the user has a team
-                                if (action.user.teams[0] != null) {
-                                    // Find the users team
-                                    if (action.user.teams.findIndex(x => x.id == teamFilterId) > -1) {
-                                        // if (action.user.teams[0].id == teamFilterId) {
-                                        if (action.action == 0) product.outs.push(action.user)
-                                        if (action.action == 1) product.ins.push(action.user)
-                                        if (action.action == 2) product.focus.push(action.user)
+                    // START Group actions by action type (DISTRIBUTION)
+                    product.actions.forEach(action => {
+                        // if (currentTask.inheritFromTask) {
+                        //     if (currentTask.inheritFromTask.type == 'alignment') {
+                        //         currentTask.inheritFromTask.parentTasks.forEach(parentTask => {
+                        //             if (action.task_id == parentTask.id) {
+                        //                 if (action.action == 2) {
+                        //                     product.focus.push(action)
+                        //                 } else if (action.action == 1) {
+                        //                     product.ins.push(action)
+                        //                 } else if (action.action == 0) {
+                        //                     product.outs.push(action)
+                        //                 }
+                        //             }
+                        //         })
+                        //     } else if (action.task_id == inherit_from_id) {
+                        //         if (action.action == 2) {
+                        //             product.focus.push(action)
+                        //         } else if (action.action == 1) {
+                        //             product.ins.push(action)
+                        //         } else if (action.action == 0) {
+                        //             product.outs.push(action)
+                        //         }
+                        //     }
+                        if (currentTask.type == 'feedback') {
+                            if (action.task_id == currentTask.id) {
+                                if (action.action == 2) {
+                                    product.focus.push(action)
+                                } else if (action.action == 1) {
+                                    product.ins.push(action)
+                                } else if (action.action == 0) {
+                                    product.outs.push(action)
+                                }
+                            }
+                        } else {
+                            currentTask.parentTasks.forEach(parentTask => {
+                                if (action.task_id == parentTask.id) {
+                                    if (action.action == 2) {
+                                        product.focus.push(action)
+                                    } else if (action.action == 1) {
+                                        product.ins.push(action)
+                                    } else if (action.action == 0) {
+                                        product.outs.push(action)
                                     }
                                 }
-                                // Find Not decided
-                                let index = product.nds.findIndex(nd => nd.id == action.user_id)
-                                if (index > -1) {
-                                    product.nds.splice(index, 1)
+                            })
+                        }
+                        // START Subtract from NDs
+                        if (currentTask.type == 'feedback') {
+                            if (action.task_id == currentTask.id) {
+                                let NDUserIndex = product.nds.findIndex(user => user.id == action.user_id)
+                                product.nds.splice(NDUserIndex, 1)
+                            }
+                        } else {
+                            // If type is alignment
+                            currentTask.parentTasks.forEach(parentTask => {
+                                if (parentTask.type == 'feedback') {
+                                    // If the parent is type feedback
+                                    if (action.task_id == parentTask.id) {
+                                        let NDUserIndex = product.nds.findIndex(user => user.id == action.user_id)
+                                        product.nds.splice(NDUserIndex, 1)
+                                    }
+                                } else {
+                                    // If the parent is type alignment
+                                    if (action.task_id == parentTask.id) {
+                                        let NDTaskIndex = product.nds.findIndex(task => task.id == action.task_id)
+                                        product.nds.splice(NDTaskIndex, 1)
+                                    }
                                 }
+                            })
+                        }
+                        // END Substract from NDs
+                    })
+                    // END Group actions by action type
+
+                    // START NEW Comment (Find products with unread / new comments)
+                    if (product.comments.length > 1) {
+                        if (
+                            currentTask.type == 'approval' &&
+                            product.currentAction == null &&
+                            product.requests.length > 0
+                        ) {
+                            if (userPermissionLevel == 3) {
+                                product.newComment = product.comments[product.comments.length - 1].user.role_id != 3
+                            } else {
+                                product.newComment = product.comments[product.comments.length - 1].user.role_id == 3
                             }
-                        })
-                        // Filter actions by teams if GLOBAL scope is set (= 0)
-                    } else if (teamFilterId == 0 && product.teamActions != null) {
-                        product.nds = JSON.parse(JSON.stringify(currentFile.teams)) // Copy our users into a new variable
-                        product.teamActions.forEach(action => {
-                            if (action.team != null) {
-                                if (action.action == 0) product.outs.push(action.team)
-                                if (action.action == 1) product.ins.push(action.team)
-                                if (action.action == 2) product.focus.push(action.team)
-                            }
-                            // Find Not decided
-                            let index = product.nds.findIndex(nd => nd.id == action.team_id)
-                            if (index > -1) {
-                                product.nds.splice(index, 1)
-                            }
-                        })
+                        }
                     }
+                    // END NEW Comment
+
+                    // START Find OUT Products (Out by filter)
+                    if (product.actions.length > 1 && currentTask.filter_products_by_ids) {
+                        product.outInFilter = product.actions.find(
+                            x => currentTask.filter_products_by_ids.includes(x.task_id) && x.action == 0
+                        )
+                    }
+                    // END Find OUT Products
+
                     data.push(product)
                 })
+
                 return data
+            }
+        },
+        productsScoped: (state, getters, rootState, rootGetters) => {
+            const products = getters.products
+            const currentTask = rootGetters['persist/currentTask']
+            const currentTeam = rootGetters['persist/currentTeam']
+            if (products) {
+                let productsToReturn = []
+                const inheritFromId = currentTask.inherit_from_id
+                if (inheritFromId) {
+                    productsToReturn = products.filter(product =>
+                        product.actions.find(action => action.task_id == inheritFromId && action.action > 0)
+                    )
+                } else {
+                    productsToReturn = products
+                }
+
+                if (currentTeam.category_scope) {
+                    return productsToReturn.filter(product =>
+                        currentTeam.category_scope.split(',').includes(product.category.toLowerCase())
+                    )
+                } else {
+                    return productsToReturn
+                }
+            } else {
+                return []
             }
         },
         availableProductIds: state => {

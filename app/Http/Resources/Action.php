@@ -14,12 +14,13 @@ class Action extends JsonResource
      */
     public function toArray($request)
     {
-        // return parent::toArray($request);
+        return parent::toArray($request);
 
-        return [
-            'user_id' => $this->user_id,
-            'product_id' => $this->product_id,
-            'action' => $this->action,
-        ];
+        // return [
+        //     'user_id' => $this->user_id,
+        //     'product_id' => $this->product_id,
+        //     'action' => $this->action,
+        //     'task_id' => $this->action,
+        // ];
     }
 }

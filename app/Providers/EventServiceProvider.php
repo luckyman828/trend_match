@@ -22,7 +22,16 @@ class EventServiceProvider extends ServiceProvider
         ],
         PasswordReset::class => [
             FlushUserPasswordRememberToken::class,
-        ]
+        ],
+        'App\Events\DynamicDataUpdated' => [
+            'App\Listeners\BroadcastEvent',
+        ],
+        'App\Events\CommentUpdated' => [],
+        'App\Events\CommentDeleted' => [],
+        'App\Events\ActionUpdated' => [],
+        'App\Events\ManyActionsCreated' => [],
+        'App\Events\ManyActionsUpdated' => [],
+        'App\Events\ActionDeleted' => [],
     ];
 
     /**

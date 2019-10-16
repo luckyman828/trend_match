@@ -1,5 +1,6 @@
 <?php
 
+// use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\URL;
 
 /*
@@ -23,4 +24,4 @@ Route::get('/', 'HomeController@index')->middleware('auth');
 
 // LEGAL
 Route::view('/privacy-policy', 'legal/privacyPolicy');
-Route::view('/terms-of-service', 'legal/termsOfService');
+Route::view('/terms-of-service', 'legal/termsOfService');;

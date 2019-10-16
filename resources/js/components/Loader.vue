@@ -21,7 +21,9 @@ export default {
     }
     
     svg {
-        height: 50px;
+        // height: 50px;
+        height: 100%;
+        max-height: 50px;
         width: 100%;
         margin: 12px 0;
     }

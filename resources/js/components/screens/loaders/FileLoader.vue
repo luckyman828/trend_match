@@ -10,6 +10,7 @@ import File from '../Catalogue'
 import ScreenLoader from './ScreenLoader'
 import Collection from '../../../store/models/Collection'
 import User from '../../../store/models/User'
+import Product from '../../../store/models/Product'
 
 export default {
     name: 'fileLoader',
@@ -19,25 +20,34 @@ export default {
     },
     data: function () { return {
         loadingFile: true,
+        loadingTasks: true,
     }},
     computed: {
         ...mapGetters('entities/products', ['products']),
-        ...mapGetters('persist', ['currentWorkspaceId', 'currentFileId']),
+        ...mapGetters('entities/tasks', ['userTasks']),
+        ...mapGetters('persist', ['currentWorkspaceId', 'currentFileId', 'authUser']),
         loading () {
-            return (this.products != null && !this.loadingFile) ? false : true
+            return (this.products != null && !this.loadingFile && !this.loadingTasks) ? false : true
         },
+    },
+    watch: {
+        userTasks(newVal, oldVal) {
+            if (newVal.length > oldVal) this.initRequiresTasks()
+        }
     },
     methods: {
         ...mapActions('entities/collections', ['fetchCollections']),
-        ...mapActions('entities/products', ['fetchProducts']),
+        ...mapActions('entities/products', ['fetchProducts', 'setCurrentProductId']),
         ...mapActions('entities/actions', ['fetchActions']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/comments', ['fetchComments']),
         ...mapActions('entities/actions', ['updateAction']),
         ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
-        ...mapActions('persist', ['setCurrentFileId']),
-        ...mapActions('entities/teamProducts', ['fetchTeamProducts']),
-        ...mapActions('entities/phaseProducts', ['fetchPhaseProducts']),
+        ...mapActions('persist', ['setCurrentFileId', 'setCurrentTaskId']),
+        // ...mapActions('entities/teamProducts', ['fetchTeamProducts']),
+        // ...mapActions('entities/phaseProducts', ['fetchPhaseProducts']),
+        // ...mapActions('entities/taskActions', ['fetchTaskActions']),
+        // ...mapActions('entities/requests', ['fetchRequests']),
         async initRequiresWorkspace() {
             if (Collection.all().length <= 0)
                 await this.fetchCollections(this.currentWorkspaceId)
@@ -49,11 +59,50 @@ export default {
                 this.fetchProducts(this.currentFileId),
                 this.fetchActions(this.currentFileId),
                 this.fetchComments(this.currentFileId),
-                this.fetchCommentVotes(this.currentFileId),
-                this.fetchTeamProducts(this.currentFileId),
-                this.fetchPhaseProducts(this.currentFileId)
+                this.fetchCommentVotes(this.currentFileId)
+                // this.fetchTeamProducts(this.currentFileId),
+                // this.fetchPhaseProducts(this.currentFileId)
+                // this.fetchTaskActions(this.currentFileId),
+                // this.fetchRequests(this.currentFileId)
             )
+            // this.setCurrentProductId(Product.query().first().id)
             this.loadingFile = false
+        },
+        async initRequiresTasks() {
+            console.log('FileLoader: Init Requires Tasks')
+            // START Set current task
+            let taskToSet = null
+            this.userTasks.forEach(task => {
+
+                if (task.parents.length <= 0) {
+                    // If the task has no parents
+                    if (!task.completed.find(x => x.file_id == this.currentFileId))
+                        // If the task is not completed
+                        taskToSet = task
+                } else {
+                    // If the task has parents
+                    let parentsCompleted = true
+                    task.parents.forEach(parent => {
+                        // Loop through the tasks parents
+                        if (!parent.completed.find(x => x.file_id == this.currentFileId)) {
+                            // If the task is not completed
+                            parentsCompleted = false
+                        }
+                    })
+                    if (parentsCompleted) taskToSet = task
+                }
+                // If we have no active task
+                if (!taskToSet) {
+                    // If we don't already have set a task
+                    taskToSet = task
+                }
+
+            })
+            if (taskToSet != null) {
+                await this.setCurrentTaskId(taskToSet.id)
+            }
+            this.loadingTasks = false
+            // END Set current task
         }
     },
     created() {
@@ -70,14 +119,24 @@ export default {
         if (this.currentWorkspaceId != null)
             this.initRequiresWorkspace()
         // Else, wait till a workspace id is set, and then fetch the data
-        this.unsub = this.$store.subscribe((mutation, state) => {
+        this.unsubWorkspace = this.$store.subscribe((mutation, state) => {
             if(mutation.type == 'persist/setCurrentWorkspace') {
                 this.initRequiresWorkspace()
             } 
         })
+
+        if (this.userTasks != null) this.initRequiresTasks()
+        else this.loadingTasks = false
+
+
+        // this.$store.subscribe((mutation, state) => {
+        //     console.log(mutation)
+        // })
+
     },
     destroyed() {
-        this.unsub()
+        this.unsubWorkspace()
+        this.unsubTasks()
     }
 }
 </script>

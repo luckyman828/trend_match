@@ -1,51 +1,95 @@
 <template>
     <div class="catalogue">
 
-        <template v-if="userHasAccess">
+        <template v-if="true">
 
             <template v-if="!loadingCollections">
-                <catalogueHeader :collection="collection" :teamUsers="teamUsers" :productTotals="productTotals"/>
+                <catalogueHeader :collection="collection"/>
                 <div class="filters">
-                    <Dropdown class="dropdown-parent left">
-                        <template v-slot:button="slotProps">
-                            <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
-                                <span>Category </span>
-                                <i class="far fa-chevron-down"></i>
-                                <span v-if="selectedCategories.length > 0" class="bubble">
-                                    {{selectedCategories.length}}
-                                </span>
-                            </div>
-                            <span v-if="selectedCategories.length > 0" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]">Clear filter</span>
-                        </template>
-                        <template v-slot:header="slotProps">
-                            <span>Filter by category</span>
-                            <!-- <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span> -->
-                        </template>
-                        <template v-slot:body>
-                            <CheckboxButtons :options="dynamicCategories" ref="filterSelect" v-model="selectedCategories" @change="$refs.filterSelect.submit()"/>
-                        </template>
-                    </Dropdown>
+                    <div class="left">
+                        <Dropdown class="dropdown-parent left">
+                            <template v-slot:button="slotProps">
+                                <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
+                                    <span>Category </span>
+                                    <i class="far fa-chevron-down"></i>
+                                    <span v-if="selectedCategories.length > 0" class="bubble">
+                                        {{selectedCategories.length}}
+                                    </span>
+                                </div>
+                                <!-- <span v-if="selectedCategories.length > 0" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]">Clear filter</span> -->
+                            </template>
+                            <template v-slot:header="slotProps">
+                                <span>Filter by category</span>
+                            </template>
+                            <template v-slot:body>
+                                <CheckboxButtons :options="dynamicCategories" ref="filterSelect" v-model="selectedCategories" @change="$refs.filterSelect.submit()"/>
+                            </template>
+                        </Dropdown>
+                        <Dropdown class="dropdown-parent left">
+                            <template v-slot:button="slotProps">
+                                <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
+                                    <span>Delivery</span>
+                                    <i class="far fa-chevron-down"></i>
+                                    <span v-if="selectedDeliveryDates.length > 0" class="bubble">
+                                        {{selectedDeliveryDates.length}}
+                                    </span>
+                                </div>
+                                <!-- <span v-if="selectedDeliveryDates.length > 0" class="clear button invisible primary" @click="$refs.filterDelivery.clear(); selectedDeliveryDates=[]">Clear filter</span> -->
+                            </template>
+                            <template v-slot:header="slotProps">
+                                <h3>Filter by delivery date</h3>
+                            </template>
+                            <template v-slot:body>
+                                <CheckboxButtons :options="dynamicDeliveryDates" :optionNameKey="'name'" :optionValueKey="'value'" ref="filterDelivery" v-model="selectedDeliveryDates" @change="$refs.filterDelivery.submit()"/>
+                            </template>
+                        </Dropdown>
+                        <label v-if="currentTask.type == 'approval'" class="square checkbutton ghost light-2 checkbox clickable">
+                            <span>Show UNREAD only</span>
+                            <input type="checkbox" v-model="unreadOnly">
+                            <span class="checkmark solid"><i class="fas fa-check"></i></span>
+                        </label>
 
-                    <Dropdown class="dropdown-parent right" ref="countryDropdown">
-                        <template v-slot:button="slotProps">
-                            <div class="dropdown-button" @click="slotProps.toggle">
-                                <img src="/assets/Path5699.svg">
-                                <span v-if="currentTeamId > 0">{{teams.find(x => x.id == currentTeamId).title}}</span>
-                                <span v-else-if="currentTeamId == 0">Global</span>
-                                <span v-else>No team available</span>
-                                <i class="far fa-chevron-down"></i>
-                            </div>
-                        </template>
-                        <template v-slot:header="slotProps">
-                            <span>Switch team</span>
-                        </template>
-                        <template v-slot:body>
-                            <RadioButtons :options="teamsForFilter" :currentOptionId="currentTeamId" :optionNameKey="'title'" :optionValueKey="'id'" ref="countryRadio" @change="setCurrentTeam($event); $refs.countryDropdown.toggle()"/>
-                        </template>
-                    </Dropdown>
+                        <span v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || unreadOnly" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]; $refs.filterDelivery.clear(); selectedDeliveryDates=[]; unreadOnly = false">Clear filter</span>
+                    </div>
+
+                    <div class="right">
+                        <Dropdown class="dropdown-parent right" ref="taskDropdown">
+                            <template v-slot:button="slotProps">
+                                <div class="dropdown-button" @click="slotProps.toggle">
+                                    <span v-if="currentTask">{{currentTask.title}}</span>
+                                    <span v-else>No task</span>
+                                    <i class="far fa-chevron-down"></i>
+                                </div>
+                            </template>
+                            <template v-slot:header="slotProps">
+                                <span>Switch task</span>
+                            </template>
+                            <template v-slot:body>
+                                <RadioButtons :options="userTasks" :currentOptionId="currentTask.id" :optionNameKey="'title'" :optionValueKey="'id'" @change="setCurrentTaskId($event); $refs.taskDropdown.toggle()"/>
+                            </template>
+                        </Dropdown>
+
+                        <!-- <Dropdown class="dropdown-parent right" ref="countryDropdown">
+                            <template v-slot:button="slotProps">
+                                <div class="dropdown-button" @click="slotProps.toggle">
+                                    <img src="/assets/Path5699.svg">
+                                    <span v-if="teamFilterId > 0">{{teams.find(x => x.id == teamFilterId).title}}</span>
+                                    <span v-else-if="teamFilterId == 0">Global</span>
+                                    <span v-else>No team available</span>
+                                    <i class="far fa-chevron-down"></i>
+                                </div>
+                            </template>
+                            <template v-slot:header="slotProps">
+                                <span>Switch team</span>
+                            </template>
+                            <template v-slot:body>
+                                <RadioButtons :options="teamsForFilter" :currentOptionId="teamFilterId" :optionNameKey="'title'" :optionValueKey="'id'" @change="setTeamFilter($event); $refs.countryDropdown.toggle()"/>
+                            </template>
+                        </Dropdown> -->
+                    </div>
                 </div>
                 <product-tabs :productTotals="productTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
-                <products ref="productsComponent" :teamFilterId="currentTeamId" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="collection.teams" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @onSelect="setSelectedProduct"/>
+                <products ref="productsComponent" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="collection.teams" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @onSelect="setSelectedProduct"/>
                 <SelectedController :totalCount="productsFiltered.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction" @onClearSelection="clearSelectedProducts"/>
             </template>
             <template v-if="loadingCollections">
@@ -83,10 +127,14 @@ import Collection from '../../store/models/Collection'
 import ProductFinalAction from '../../store/models/ProductFinalAction';
 import CommentVote from '../../store/models/CommentVote';
 import Category from '../../store/models/Category';
+import Task from '../../store/models/Task';
 import UserTeam from '../../store/models/UserTeam';
 import AuthUser from '../../store/models/AuthUser';
 import TeamProduct from '../../store/models/TeamProduct';
 import PhaseProduct from '../../store/models/PhaseProduct';
+import TaskTeam from '../../store/models/TaskTeam'
+import FileTask from '../../store/models/FileTask'
+import TaskParent from '../../store/models/TaskParent'
 
 export default{
     name: 'catalogue',
@@ -106,43 +154,70 @@ export default{
         selectedProductIDs: [],
         selectedCategoryIDs: [],
         selectedCategories: [],
+        selectedDeliveryDates: [],
         sortBy: 'datasource_id',
         sortAsc: true,
         unsub: '',
         test: '',
-        productsTest: [],
+        unreadOnly: false,
     }},
     watch: {
-        products: function() {
-            this.sortProducts()
+        products: function(newValue, oldValue) {
+            // CODE to make sure the products stay sorted in the same way
+            // Save the old order of the products
+            console.log('Products recalculated')
+            console.log(newValue)
+            if (newValue.length == oldValue.length) {
+                let index = 0
+                oldValue.forEach(product => {
+                    const newIndex = newValue.find(x => x.id == product.id)
+                    if (newIndex) {
+                        newIndex.sortIndex = index
+                    }
+                    product.sortIndex = index
+                    index++
+                })
+                // Sort the products in the same was as they were before
+                this.sortProducts('sortIndex')
+            }
+        },
+        tasks: function(newValue, oldValue) {
+            console.log('Tasks recalculated')
+        },
+        userTasks: function(newValue, oldValue) {
+            console.log('User Tasks recalculated')
         }
     },
     computed: {
-        ...mapGetters('entities/products', ['loadingProducts', 'products']),
+        // ...mapGetters('entities/products', ['loadingProducts', {allProducts: 'products'}, 'productsScopedByInheritance']),
+        ...mapGetters('entities/products', ['loadingProducts', 'productsScoped']),
+        ...mapGetters('entities/products', {allProducts: 'products'}),
         ...mapGetters('entities/actions', ['loadingActions']),
         ...mapGetters('entities/comments', ['loadingComments']),
-        ...mapGetters('entities/collections', ['loadingCollections', 'files']),
+        ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
         ...mapGetters('entities/teams', ['teams']),
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser']),
+        ...mapGetters('entities/tasks', ['userTasks', 'tasks']),
+        ...mapGetters('persist', ['currentTeamId', 'currentTask', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']),
         defaultTeam() {
             if (this.userPermissionLevel >= 3)
                 return {id: 0, title: 'Global'}
             else return null
         },
-        userHasAccess () {
-            let hasAccess = false
-            if (this.userPermissionLevel <= 2) {
-                this.authUser.teams.forEach(team => {
-                    team.teamFiles.forEach(file => {
-                        if (file.file_id == this.currentFileId && file.role_level <= this.userPermissionLevel)
-                            hasAccess = true
-                    })
-                    // if (team.teamFiles.find(x => x.file_id == this.currentFileId))
-                    //     hasAccess = true
-                })
-            } 
-            else hasAccess = true
-            return hasAccess
+        products() {
+            return this.productsScoped
+            // let productsToReturn = []
+            // const inheritFromId = this.currentTask.inherit_from_id
+            // if (inheritFromId) {
+            //     productsToReturn = this.allProducts.filter(product => product.actions.find(action => action.task_id == inheritFromId && action.action > 0))
+            // } else {
+            //     productsToReturn = this.allProducts
+            // }
+
+            // if (this.currentTeam.category_scope) {
+            //     return productsToReturn.filter(x => this.currentTeam.category_scope.split(',').includes(x.category.toLowerCase()))
+            // } else {
+            //     return productsToReturn
+            // }
         },
         teamProducts() {
             return TeamProduct.with('products').all()
@@ -151,175 +226,12 @@ export default{
             return PhaseProduct.with('products').all()
         },
         collection() {
-            // return Collection.query().with('teams').find(this.currentFileId)
-            return this.files.find(x => x.id == this.currentFileId)
+            return this.currentFile
         },
-        // products () {
-        //     const products = Product.query().with(['actions.user.teams']).with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team']).with('productFinalAction')
-        //     .with('teamActions.team').with('phaseActions').all()
-        //     // const totalUsers = this.teamUsers
-        //     // const userId = this.authUser.id
-        //     const teamFilterId = this.currentTeamId
-        //     const data = []
-        //     products.forEach(product => {
-        //         product.color_variants = JSON.parse(product.color_variants)
-        //         product.prices = JSON.parse(product.prices)
-        //         product.ins = []
-        //         product.outs = []
-        //         product.focus = []
-        //         product.nds = []
-        //         product.userAction = product.actions.find(x => x.user_id == this.authUser.id)
-        //         product.commentsScoped = []
-        //         product.teamAction = product.teamActions.find(x => x.team_id == this.currentTeamId)
-        //         product.phaseAction = product.phaseActions.find(x => x.phase_id == 1)
-
-        //         // Find the correct price
-        //         // Check if the chosen currency exists on the product
-        //         if (product.prices != null) {
-        //             let workspacePrices = null
-        //             let teamPrices = null
-        //             if (this.currentWorkspace.currency != null)
-        //                 workspacePrices = product.prices.find(x => x.currency == this.currentWorkspace.currency)
-        //             if (this.currentTeam)
-        //                 if (this.currentTeam.currency != null)
-        //                     teamPrices = product.prices.find(x => x.currency == this.currentTeam.currency)
-
-        //             if ( this.userPermissionLevel <= 4 ) {
-        //             // Use team currency for low level members
-        //                 if (teamPrices != null)
-        //                     product.userPrices = teamPrices
-        //                 else if (workspacePrices != null)
-        //                     product.userPrices = workspacePrices
-        //                 else product.userPrices = product.prices[0]
-        //             } else {
-        //             // Use workspace currency for high level members
-        //                 if (workspacePrices != null)
-        //                     product.userPrices = workspacePrices
-        //                 else product.userPrices = product.prices[0]
-        //             }
-        //         }
-
-        //         const comments = product.comments
-
-        //         comments.forEach(comment => {
-        //             comment.teamVotes = [{id: 0, title: 'No team', votes: 0}]
-        //             comment.votes.forEach(vote => {
-        //                 if (vote.user != null) {
-        //                     if (vote.user.teams.length > 0) {
-        //                         const found = (comment.teamVotes.find(x => x.title == vote.user.teams[0].title))
-        //                         if (!found) {
-        //                             let voteTeam = vote.user.teams[0]
-        //                             let teamToPush = {id: voteTeam.id, title: voteTeam.title, votes: 1}
-        //                             comment.teamVotes.push(teamToPush)
-        //                         } else {
-        //                             found.votes ++
-        //                         }
-        
-        //                     } else {
-        //                         comment.teamVotes[0].votes ++
-        //                     }
-        //                 }
-        //             })
-        //         })
-
-        //         // Scope comments to current teamFilter
-        //         let commentsScoped = []
-
-        //         // If the user is a buyer function, only return global comments
-        //         if (this.userPermissionLevel == this.viewAdminPermissionLevel) {
-        //             comments.forEach(comment => {
-        //                 if (comment.team_id == 0)
-        //                     product.commentsScoped.push(comment)
-        //             })
-        //         }
-        //         else if ( teamFilterId > 0 ) {
-        //             // Loop through the comments
-        //             comments.forEach(comment => {
-        //                 // Loop through comments users teams
-        //                 let pushComment = false
-
-        //                 // Check if the comment belongs to one of auth users teams
-        //                 // if (comment.user != null)
-        //                 //     if (comment.user.teams != null)
-        //                 //         if ( comment.user.teams.find(x => x.id == teamFilterId) )
-        //                 //             pushComment = true
-        //                 if (comment.team_id == teamFilterId)
-        //                     pushComment = true
-
-
-        //                 // Check if the comment is final or global (not for sales)
-        //                 if (this.userPermissionLevel >= 2) {
-        //                     if (comment.team_final || comment.phase_final || comment.team_id == 0)
-        //                         pushComment = true
-        //                 }
-
-        //                 if (pushComment)
-        //                     product.commentsScoped.push(comment)
-        //             })
-        //         }
-        //         else if ( teamFilterId == 0) {
-        //             product.commentsScoped = comments
-        //         }
-
-        //         // Filter actions by the current team filter
-        //         // Check if the action has a user
-        //         if ( teamFilterId > 0 && product.actions != null) {
-        //             product.scope = 'user scope'
-        //             product.nds = JSON.parse(JSON.stringify(this.teamUsers)) // Copy our users into a new variable
-        //             product.actions.forEach(action => {
-        //                 if (action.user != null) {
-        //                     // Check if the user has a team
-        //                     if (action.user.teams[0] != null) {
-        //                         // Find the users team
-        //                         if ( action.user.teams.findIndex(x => x.id == teamFilterId) > -1 ) {
-        //                         // if (action.user.teams[0].id == teamFilterId) {
-        //                             if (action.action == 0)
-        //                                 product.outs.push(action.user)
-        //                             if (action.action == 1)
-        //                                 product.ins.push(action.user)
-        //                             if (action.action == 2)
-        //                                 product.focus.push(action.user)
-        //                         }
-        //                     }
-        //                     // Find Not decided
-        //                     let index = product.nds.findIndex(nd => nd.id == action.user_id)
-        //                     if (index > -1) {
-        //                         product.nds.splice(index,1)
-        //                     }
-        //                 }
-
-
-        //             })
-        //         // Filter actions by teams if GLOBAL scope is set (= 0)
-        //         } else if ( teamFilterId == 0 && product.teamActions != null) {
-        //             product.scope = 'team scope'
-        //             product.nds = JSON.parse(JSON.stringify(this.collection.teams)) // Copy our users into a new variable
-        //             product.teamActions.forEach(action => {
-        //                 if (action.team != null) {
-
-        //                     if (action.action == 0)
-        //                         product.outs.push(action.team)
-        //                     if (action.action == 1)
-        //                         product.ins.push(action.team)
-        //                     if (action.action == 2)
-        //                         product.focus.push(action.team)
-        //                 }
-        //                 // Find Not decided
-        //                 let index = product.nds.findIndex(nd => nd.id == action.team_id)
-        //                 if (index > -1) {
-        //                     product.nds.splice(index,1)
-        //                 }
-        //             })
-        //         } else {
-        //             product.scope = 'no scope 360'
-        //         }
-        //         data.push(product)
-        //     })
-        //     return data
-        // },
         productsFilteredByCategory() {
             const products = this.products
             const categories = this.selectedCategories
+            const deliveryDates = this.selectedDeliveryDates
             let productsToReturn = products
 
             // First filter by category
@@ -329,6 +241,20 @@ export default{
                         return Array.from(categories).includes(product.category)
                 })
                 productsToReturn = filteredByCategory
+            }
+            // Filter by delivery date
+            if (deliveryDates.length > 0) {
+                
+                const filteredByDeliveryDate = productsToReturn.filter(product => {
+                        return Array.from(deliveryDates).includes(product.delivery_date)
+                })
+                productsToReturn = filteredByDeliveryDate
+            }
+
+            // Filer by unread
+            if (this.unreadOnly) {
+                const filteredByUnread = productsToReturn.filter(product => product.newComment)
+                productsToReturn = filteredByUnread
             }
 
             return productsToReturn
@@ -340,15 +266,26 @@ export default{
 
             // filter by in/out
             if ( ['ins', 'outs', 'nds'].includes(method) ) {
-                const filteredByAction = productsToReturn.filter(product => {
-                    if (method == 'ins') {
-                        if (product[this.actionScope] != null)
-                            return product[this.actionScope].action >= 1
+                const filteredByAction = products.filter(product => {
+                    
+                    if (method == 'nds') {
+                        if (this.currentTask.type == 'approval') {
+                            return (product.currentAction == null && product.requests.length > 0)
+                        }
+                        else
+                            return product.currentAction == null && !product.outInFilter
+                    }
+                    else if (method == 'ins') {
+                        if (product.currentAction)
+                            return product.currentAction.action >= 1 && !product.outInFilter
+                        if (this.currentTask.type == 'approval') {
+                            if (product.inheritedAction && product.requests.length < 1)
+                                return product.inheritedAction.action >= 1
+                        }
                     } else if (method == 'outs') {
-                        if (product[this.actionScope] != null)
-                            return product[this.actionScope].action == 0
-                    } else if (method == 'nds') {
-                        return product[this.actionScope] == null
+                        if (product.currentAction)
+                            return product.currentAction.action < 1
+                        else if (product.outInFilter) return true
                     }
                 })
                 productsToReturn = filteredByAction
@@ -382,7 +319,7 @@ export default{
             return sortMethod
         },
         selectedProducts() {
-            const products = this.products
+            const products = this.productsFiltered
             const selectedProducts = []
             this.selectedProductIDs.forEach(index => {
                 selectedProducts.push(products[index].id)
@@ -392,57 +329,48 @@ export default{
         productTotals() {
             const products = this.productsFilteredByCategory
             const data = {
-                get actions () {
-                    return this.ins + this.outs
-                },
-                get progress () {
-                    let progress = 100
-                    if (this.actions != null || this.nds != null)
-                        progress = parseInt( ( (this.actions / (this.actions + this.nds)) * 100 ).toFixed(0) )
-                    return progress
-                },
+                products: products.length,
                 ins: 0,
                 outs: 0,
                 nds: 0,
-                final: {
-                    get products () { return products.length },
-                    ins: 0,
-                    outs: 0,
-                    nds: 0,
-                }
             }
             products.forEach(product => {
-                    data.ins += product.ins.length
-                    data.outs += product.outs.length
-                    data.nds += product.nds.length
-
-                if (product[this.actionScope] != null) {
-                    if (product[this.actionScope].action >= 1)
-                        data.final.ins ++
-                    else if (product[this.actionScope].action == 0)
-                        data.final.outs ++
+                if (product.outInFilter) {
+                    data.outs++
                 }
-                else data.final.nds ++
+                else if (product.currentAction == null) {
+                    if (this.currentTask.type == 'approval') {
+                        if (product.requests.length > 0) {
+                            data.nds++
+                        } else {
+                            data.ins++
+                        }
+                        
+                    } else {
+                        data.nds++
+                    }
+                } else {
+                    if (product.currentAction.action == 0) {
+                        data.outs++
+                    } else {
+                        data.ins++
+                    }
+                }
+
             })
             return data
         },
         teamUsers () {
             let usersToReturn = []
-            if (this.currentTeamId > 0) {
-                const thisTeam = this.teams.find(team => team.id == this.currentTeamId)
+            if (this.teamFilterId > 0) {
+                const thisTeam = this.teams.find(team => team.id == this.teamFilterId)
                 if (thisTeam)
                     thisTeam.users.forEach(user => {
                         const fileUser = this.collection.users.find(x => x.id == user.id)
                         if (fileUser)
                             usersToReturn.push(fileUser)
                     })
-                    // usersToReturn = thisTeam.users
             } 
-            // else if (this.currentTeamId == 0) {
-            //     usersToReturn = this.users
-            // } else {
-            //     usersToReturn = []
-            // }
             return usersToReturn
         },
         actions() {
@@ -450,7 +378,7 @@ export default{
         },
         comments() {
             const comments = Comment.query().with(['votes', 'user.teams']).all()
-            const teamFilterId = this.currentTeamId
+            const teamFilterId = this.teamFilterId
             if (teamFilterId > 0) {
                 let commentsToReturn = []
                 comments.forEach(comment => {
@@ -473,6 +401,19 @@ export default{
                     uniqueCategories.push(product.category)
             })
             return uniqueCategories
+        },
+        dynamicDeliveryDates() {
+            const products = this.products
+            let uniqueDeliveryDates = []
+            products.forEach(product => {
+                const found = (uniqueDeliveryDates.find(x => x.value == product.delivery_date))
+                if (!found)
+                    uniqueDeliveryDates.push({
+                        name: new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'}), 
+                        value: product.delivery_date
+                        })
+            })
+            return uniqueDeliveryDates
         },
         finalActions() {
             return ProductFinalAction.query().all()
@@ -498,14 +439,12 @@ export default{
     methods: {
         ...mapActions('entities/collections', ['fetchCollections']),
         ...mapActions('entities/products', ['fetchProducts']),
-        ...mapActions('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']),
+        ...mapActions('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/comments', ['fetchComments']),
         ...mapActions('entities/actions', ['updateAction']),
         ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
-        ...mapActions('persist', ['setCurrentTeam', 'setCurrentFileId']),
-        ...mapActions('entities/teamProducts', ['fetchTeamProducts', 'updateManyTeamProducts', 'createManyTeamProducts']),
-        ...mapActions('entities/phaseProducts', ['fetchPhaseProducts', 'updateManyPhaseProducts', 'createManyPhaseProducts']),
+        ...mapActions('persist', ['setTeamFilter', 'setCurrentTaskId']),
         setProductFilter(filter) {
             this.currentProductFilter = filter
             this.clearSelectedProducts()
@@ -533,16 +472,18 @@ export default{
             const phase = this.collection.phase
             const user_id = this.authUser.id
             const actionScope = this.actionScope
-            const actionType = (method == 'in') ? 1 : 0
+            const actionType = method
             let productsToUpdate = []
             let productsToCreate = []
 
             this.selectedProducts.forEach(product => {
                 const thisProduct = this.products.find(x => x.id == product)
 
-                if (thisProduct[actionScope] != null) {
+                if (thisProduct.currentAction != null) {
+                    console.log(this.product)
+                    console.log('There is an action!')
                     // If product has a final action
-                    if (thisProduct[actionScope].action != actionType) {
+                    if (thisProduct.currentAction.action != actionType) {
                         // If the products final action isnt the same as the one we are trying to set
                         productsToUpdate.push(product)
                     }
@@ -554,20 +495,14 @@ export default{
 
             // Submit the selection
             if (productsToUpdate.length > 0) {
-                if (this.actionScope == 'userAction')
-                    this.updateManyActions({productIds: productsToUpdate, user_id: user_id, action_code: actionType})
-                if (this.actionScope == 'teamAction')
-                    this.updateManyTeamProducts({team_id: this.currentTeamId, product_ids: productsToUpdate, phase_id: 1, action: actionType})
-                if (this.actionScope == 'phaseAction')
-                    this.updateManyPhaseProducts({product_ids: productsToUpdate, phase_id: 1, action: actionType})
+                if (this.currentTask.type == 'feedback') {
+                    this.updateManyActions({productIds: productsToUpdate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: null})
+                } else this.updateManyTaskActions({productIds: productsToUpdate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: null})
             }
             if (productsToCreate.length > 0) {
-                if (this.actionScope == 'userAction')
-                    this.createManyActions({productIds: productsToCreate, user_id: user_id, action_code: actionType})
-                if (this.actionScope == 'teamAction')
-                    this.createManyTeamProducts({team_id: this.currentTeamId, product_ids: productsToCreate, phase_id: 1, action: actionType})
-                if (this.actionScope == 'phaseAction')
-                    this.createManyPhaseProducts({product_ids: productsToCreate, phase_id: 1, action: actionType})
+                if (this.currentTask.type == 'feedback') {
+                    this.createManyActions({productIds: productsToCreate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: false})
+                } else this.createManyActions({productIds: productsToCreate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: true})
             }
 
             // Reset the selection
@@ -582,12 +517,14 @@ export default{
             }
             this.sortProducts()
         },
-        sortProducts() {
+        sortProducts(keyOverwrite) {
+            console.log('sorting products')
 
             const products = this.productsFiltered
-            let key = this.sortBy
-            let sortAsc = this.sortAsc
-            const sortMethod = this.sortMethod
+            // let key = this.sortBy
+            let key = (keyOverwrite) ? keyOverwrite : this.sortBy
+            let sortAsc = (keyOverwrite) ? true : this.sortAsc
+            const sortMethod = (keyOverwrite) ? 'custom' : this.sortMethod
 
             // Always sort the products by datasource_id first before sorting with the chosen method, to make sure the products are always sorted in the same manner
             products.sort((a, b) => {
@@ -696,7 +633,6 @@ export default{
     },
     mounted() {
         this.sortProducts
-        this.productsTest = this.productsFiltered
     },
 }
 </script>
@@ -708,9 +644,31 @@ export default{
         display: flex;
         justify-content: space-between;
         margin-bottom: 12px;
+        > * {
+            display: flex;
+            &.left > * {
+                margin-right: 16px;
+            }
+            &.right > * {
+                margin-left: 16px;
+            }
+        }
     }
     .item-filter-button {
         min-width: 120px;
         background: $light2;
+    }
+    .button.clear {
+        margin-left: -16px;
+    }
+    .checkbutton.checkbox {
+        color: $dark;
+        border: solid 1px;
+        border-color: $light2;
+        font-weight: 700;
+        .checkmark {
+            margin-left: 12px;
+            margin-right: -4px;
+        }
     }
 </style>

@@ -58,7 +58,13 @@ export default{
         ...mapActions('entities/teamFiles', ['fetchTeamFiles']),
         ...mapActions('entities/roles', ['fetchRoles']),
         ...mapActions('entities/collections', ['fetchCollections']),
-        ...mapActions('persist', ['setCurrentTeam', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']),
+        ...mapActions('entities/taskTeams', ['fetchTaskTeams']),
+        ...mapActions('entities/phases', ['fetchPhases']),
+        ...mapActions('entities/tasks', ['fetchTasks']),
+        ...mapActions('entities/taskParents', ['fetchTaskParents']),
+        ...mapActions('entities/fileTasks', ['fetchFileTasks']),
+        ...mapActions('entities/actions', ['updateAction']),
+        ...mapActions('persist', ['setCurrentTeam', 'setTeamFilter', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']),
         async fetchInitialData() {
             // Get user
             console.log('App: Getting initial data')
@@ -68,8 +74,7 @@ export default{
                 this.fetchWorkspaces(),
             ])
             this.setUserPermissionLevel(this.authUser.role_id)
-            this.setCurrentWorkspace(this.authUser.workspaces[0].id)
-            // this.currentWorkspaceId = this.authUser.workspaces[0].id
+            this.setCurrentWorkspace({workspace_id: this.authUser.workspaces[0].id, user_id: this.authUser.id})
         },
     },
     watch : {
@@ -98,14 +103,23 @@ export default{
                     this.fetchTeams(this.currentWorkspaceId),
                     this.fetchUserTeams(this.currentWorkspaceId),
                     this.fetchTeamFiles(this.currentWorkspaceId),
+                    this.fetchTaskTeams(this.currentWorkspaceId),
                     this.fetchCollections(this.currentWorkspaceId),
+                    this.fetchPhases(this.currentWorkspaceId),
+                    this.fetchTasks(this.currentWorkspaceId),
+                    this.fetchTaskParents(this.currentWorkspaceId),
+                    this.fetchFileTasks(this.currentWorkspaceId),
                     this.fetchRoles()
                 )
                 
-                if (this.authUser.role_id >= 3)
+                if (this.authUser.role_id >= 5) {
                     this.setCurrentTeam(0)
-                else if (this.authUser.teams.length > 0)
+                    this.setTeamFilter(0)
+                }
+                else if (this.authUser.teams.length > 0) {
                     this.setCurrentTeam(this.authUser.teams[0].id)
+                    this.setTeamFilter(this.authUser.teams[0].id)
+                }
                 this.setLoadingInit(false)
                 
             } else {
@@ -176,20 +190,6 @@ export default{
         border: none;
         box-shadow: 0 2px 6px rgba(0,0,0,.1);
         background: white;
-    }
-    .pill {
-        background: $light1;
-        height: 20px;
-        font-size: 13px;
-        border-radius: 20px;
-        width: 85px;
-        height: 25px;
-        display: inline-block;
-        line-height: 25px;
-        text-align: center;
-        &.positive {
-            background: $secondaryLight;
-        }
     }
     .tabs {
         margin-left: -16px;

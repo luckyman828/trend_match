@@ -2,8 +2,8 @@
 
     <div class="radio-buttons">
         <label v-for="(option, index) in options" :key="index" class="radiobox">
-            <input v-if="optionValueKey" type="radio" name="radio-option" :id="'radio-option-' + option.id" :value="option[optionValueKey]" v-model="selection" @change="change()" @click="click">
-            <input v-else type="radio" name="radio-option" :id="'radio-option-' + option.id" :value="option[optionValueKey]" v-model="selection" @change="change()" @click="click">
+            <input v-if="optionValueKey" type="radio" name="radio-option" :ref="'radio-option-' + option.id" :id="'radio-option-' + option.id" :value="option[optionValueKey]" v-model="selection" @change="change()" @click="click">
+            <input v-else type="radio" name="radio-option" :ref="'radio-option-' + option.id" :id="'radio-option-' + option.id" :value="option" v-model="selection" @change="change()" @click="click">
             <span class="radiomark"></span>
             <template v-if="optionNameKey">
                 {{option[optionNameKey]}}
@@ -75,15 +75,21 @@ export default {
     },
     updated() {
         // Preset the selection
-        if ( !this.selection )
-            if (this.currentOptionId)
-                if (document.querySelector('#radio-option-' + this.currentOptionId))
-                    document.querySelector('#radio-option-' + this.currentOptionId).checked = true
+        if (this.currentOptionId)
+            if (this.optionValueKey)
+                this.selection = this.options.find(x => x.id == this.currentOptionId)[this.optionValueKey]
+            else {
+                this.selection = this.options.find(x => x.id == this.currentOptionId)
+            }
     },
     mounted() {
+        // Preset the selection
         if (this.currentOptionId)
-            if (document.querySelector('#radio-option-' + this.currentOptionId))
-                document.querySelector('#radio-option-' + this.currentOptionId).checked = true
+            if (this.optionValueKey)
+                this.selection = this.options.find(x => x.id == this.currentOptionId)[this.optionValueKey]
+            else {
+                this.selection = this.options.find(x => x.id == this.currentOptionId)
+            }
     }
 }
 </script>
