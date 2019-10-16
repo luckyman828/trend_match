@@ -196,8 +196,30 @@ export default {
                     product.ndsTotal = product.nds.length
                     // END find Not decideds
 
-                    // START Group actions by action type
+                    // START Group actions by action type (DISTRIBUTION)
                     product.actions.forEach(action => {
+                        // if (currentTask.inheritFromTask) {
+                        //     if (currentTask.inheritFromTask.type == 'alignment') {
+                        //         currentTask.inheritFromTask.parentTasks.forEach(parentTask => {
+                        //             if (action.task_id == parentTask.id) {
+                        //                 if (action.action == 2) {
+                        //                     product.focus.push(action)
+                        //                 } else if (action.action == 1) {
+                        //                     product.ins.push(action)
+                        //                 } else if (action.action == 0) {
+                        //                     product.outs.push(action)
+                        //                 }
+                        //             }
+                        //         })
+                        //     } else if (action.task_id == inherit_from_id) {
+                        //         if (action.action == 2) {
+                        //             product.focus.push(action)
+                        //         } else if (action.action == 1) {
+                        //             product.ins.push(action)
+                        //         } else if (action.action == 0) {
+                        //             product.outs.push(action)
+                        //         }
+                        //     }
                         if (currentTask.type == 'feedback') {
                             if (action.task_id == currentTask.id) {
                                 if (action.action == 2) {
@@ -249,7 +271,7 @@ export default {
                     })
                     // END Group actions by action type
 
-                    // START NEW Comment
+                    // START NEW Comment (Find products with unread / new comments)
                     if (product.comments.length > 1) {
                         if (
                             currentTask.type == 'approval' &&
@@ -265,13 +287,12 @@ export default {
                     }
                     // END NEW Comment
 
-                    // START Find OUT Products
+                    // START Find OUT Products (Out by filter)
                     if (product.actions.length > 1 && currentTask.filter_products_by_ids) {
                         product.outInFilter = product.actions.find(
                             x => currentTask.filter_products_by_ids.includes(x.task_id) && x.action == 0
                         )
                     }
-
                     // END Find OUT Products
 
                     data.push(product)
@@ -280,29 +301,28 @@ export default {
                 return data
             }
         },
-        // productsScopedByInheritance: (state, getters, rootState, rootGetters) => {
+        // productsScoped: (state, getters, rootState, rootGetters) => {
         //     const products = getters.products
         //     const currentTask = rootGetters['persist/currentTask']
+        //     const currentTeam = rootGetters['persist/currentTeam']
         //     if (products) {
-        //         return products.filter(x => {
-        //             // If current task = decision -> Get products that where IN in the task before the approval and not OUT in approval
-        //             if (currentTask.type == 'decision') {
-        //                 const taskBeforeApproval = currentTask.approvalParent.parentTasks[0]
+        //         return products.filter(product => {
+        //             let keepProduct = false
+        //             // START Scope Products by Inheritance
+        //             if (currentTask.inherit_from_id) {
         //                 if (
-        //                     x.actions.find(
-        //                         action => action.task_id == currentTask.inherit_from_id && action.action != 0
-        //                     ) &&
-        //                     x.actions.find(action => action.task_id == taskBeforeApproval.id && action.action != 0) &&
-        //                     !x.actions.find(
-        //                         action => action.task_id == currentTask.filter_products_by_id && action.action == 0
+        //                     product.actions.find(
+        //                         action => action.task_id == currentTask.inherit_from_id && action.action > 0
         //                     )
         //                 )
-        //                     return true
-        //             } else {
-        //                 return x.actions.find(
-        //                     action => action.task_id == currentTask.inherit_from_id && action.action != 0
-        //                 )
+        //                     keepProduct = true
         //             }
+
+        //             // START Scope Products by Category
+        //             if (currentTeam.category_scope) {
+        //                 if (currentTeam.category_scope.split(',').includes(x.category.toLowerCase())) keepProduct = true
+        //             }
+        //             return keepProduct
         //         })
         //     } else {
         //         return []

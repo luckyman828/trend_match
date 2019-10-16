@@ -73,10 +73,6 @@ export default {
             // START Set current task
             let taskToSet = null
             this.userTasks.forEach(task => {
-                // Set the task to the users first uncompleted task
-                // First check if the user has any task that is ready to start
-                // If true -> Set the current task to any ready task
-                // If not -> Set the current task to any task the user has access to
 
                 if (task.parents.length <= 0) {
                     // If the task has no parents
@@ -88,9 +84,10 @@ export default {
                     let parentsCompleted = true
                     task.parents.forEach(parent => {
                         // Loop through the tasks parents
-                        if (!parent.completed.find(x => x.file_id == this.currentFileId))
+                        if (!parent.completed.find(x => x.file_id == this.currentFileId)) {
                             // If the task is not completed
                             parentsCompleted = false
+                        }
                     })
                     if (parentsCompleted) taskToSet = task
                 }
@@ -99,12 +96,6 @@ export default {
                     // If we don't already have set a task
                     taskToSet = task
                 }
-
-                // if (task.parents.length > 0) {
-                //     task.parents.forEach(parent => {
-                //         if (parent.completed.length > 0) taskToSet = task
-                //     })
-                // } else taskToSet = task
 
             })
             if (taskToSet != null) {

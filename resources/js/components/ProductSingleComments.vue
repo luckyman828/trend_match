@@ -94,7 +94,7 @@
                     <div class="right">
                         <TempAlert :duration="2000" ref="requestSucces" :hidden="writeActive"><small class="request-succes">Request saved <i class="fas fa-clipboard-check green"></i></small></TempAlert>
                         <template v-if="writeActive">
-                            <span class="button invisible" @click="writeActive = false">Cancel</span>
+                            <span class="button invisible" @click="cancelRequest">Cancel</span>
                             <span class="button green" :class="{disabled: submitDisabled}" @click="onSubmitComment">Save</span>
                         </template>
                     </div>
@@ -172,7 +172,7 @@ export default {
         product(newVal, oldVal) {
             if (newVal.id != oldVal.id)
                 this.update()
-        }
+        },
     },
     computed: {
         ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']),
@@ -254,6 +254,10 @@ export default {
             this.writeActive = false
             document.activeElement.blur()
         },
+        cancelRequest() {
+            this.deactivateWrite()
+            this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
+        },
         async onSubmitComment(e) {
             if (e) e.preventDefault()
 
@@ -274,7 +278,7 @@ export default {
                         this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
                         this.newRequest.important = false
                         // Reset textarea height
-                        this.$refs.requestField.style.height = ''
+                        // this.$refs.requestField.style.height = ''
                     }
                 } catch (err) {
                     // Error
@@ -328,6 +332,13 @@ export default {
                 this.commentScope = 'requests'
                 this.writeScope = 'request'
             }
+
+            // console.log(this.newRequest.comment)
+            // console.log(this.$refs.requestField.innerHTML)
+            // console.log(this.$refs.requestField.scrollHeight + "px")
+            // Set the height of the request field
+            if (this.writeScope == 'request' && this.newRequest.comment > 1)
+                this.$refs.requestField.style.height = this.$refs.requestField.scrollHeight + "px"
         },
         hotkeyHandler(e) {
             const key = e.code
@@ -495,7 +506,6 @@ export default {
                 border: solid 2px $light2;
                 background: $light2;
                 box-sizing: border-box;
-                // padding: 8px 12px 0px 12px;
                 font-size: 14px;
                 color: $dark2;
                 max-height: 200px;
@@ -519,7 +529,7 @@ export default {
                 }
             }
             textarea {
-                padding: 8px 12px;
+                padding: 8px 108px 8px 12px;
                 border: none;
                 height: 30px;
                 overflow: hidden;

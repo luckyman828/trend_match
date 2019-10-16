@@ -16,7 +16,6 @@ export default {
     }},
     methods: {
         show () {
-            console.log('SHOW TEMP')
             this.visible = true
             const waitDuration = (this.duration) ? this.duration : 2000
             setTimeout(() => { this.visible = false }, waitDuration)
