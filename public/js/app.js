@@ -9401,13 +9401,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else {
         this.commentScope = 'requests';
         this.writeScope = 'request';
-      } // console.log(this.newRequest.comment)
-      // console.log(this.$refs.requestField.innerHTML)
-      // console.log(this.$refs.requestField.scrollHeight + "px")
-      // Set the height of the request field
-
-
-      if (this.writeScope == 'request' && this.newRequest.comment > 1) this.$refs.requestField.style.height = this.$refs.requestField.scrollHeight + "px";
+      }
     },
     hotkeyHandler: function hotkeyHandler(e) {
       var key = e.code;
@@ -9425,6 +9419,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   mounted: function mounted() {
     this.update();
+  },
+  updated: function updated() {
+    // Preset the height of the request field
+    if (this.writeScope == 'request' && this.newRequest.comment.length > 1) this.$refs.requestField.style.height = this.$refs.requestField.scrollHeight + "px";
   },
   created: function created() {
     document.body.addEventListener('keyup', this.hotkeyHandler);
