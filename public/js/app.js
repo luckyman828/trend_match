@@ -8377,9 +8377,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
 
 
 
@@ -28023,20 +28020,6 @@ var render = function() {
         "div",
         { staticClass: "items-right" },
         [
-          _c(
-            "span",
-            {
-              staticClass: "button wide primary",
-              on: {
-                click: function($event) {
-                  _vm.$refs.exportModal.toggle()
-                  _vm.setPageHeight()
-                }
-              }
-            },
-            [_vm._v("Export to PDF")]
-          ),
-          _vm._v(" "),
           _vm.userPermissionLevel >= 2 && _vm.userPermissionLevel != 3
             ? [
                 _vm.submittingTaskComplete

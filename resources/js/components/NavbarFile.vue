@@ -13,9 +13,6 @@
 
         <div class="items-right">
 
-            <!-- REMEMBER TO DELETE -->
-            <span class="button wide primary" @click="$refs.exportModal.toggle(); setPageHeight()">Export to PDF</span>
-            <!-- END REMEMBER TO DELETE -->
             <template v-if="userPermissionLevel >= 2 && userPermissionLevel != 3">
                 <span class="button wide light-2" v-if="submittingTaskComplete"><Loader/></span>
                 <template v-if="currentTask.completed.length <= 0">
