@@ -8047,7 +8047,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 
 
@@ -8094,6 +8093,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     multipleUsers: function multipleUsers() {
       if (this.selectedUserIds.length > 0) return true;else return false;
+    },
+    availableUsers: function availableUsers() {
+      var _this3 = this;
+
+      return this.users.filter(function (user) {
+        return user.teams.find(function (x) {
+          return x.id == _this3.selectedTeamId;
+        }) || _this3.newUsers.find(function (x) {
+          return x.email == user.email;
+        }) ? false : true;
+      });
     }
   }),
   watch: {
@@ -8123,15 +8133,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.close();
     },
     setNewUsers: function setNewUsers(users) {
-      var _this3 = this;
+      var _this4 = this;
 
       var count = 0;
       users.forEach(function (user) {
         // Edit the first new user to have the email of the first added user
         if (count == 0) {
-          _this3.newUsers[0].email = user;
+          _this4.newUsers[0].email = user;
         } else {
-          _this3.newUsers.push({
+          _this4.newUsers.push({
             email: user,
             name: '',
             permission_level: 1
@@ -10184,6 +10194,11 @@ __webpack_require__.r(__webpack_exports__);
         input.checked = false;
       });
       this.$emit('input', this.selected);
+    },
+    focusSearch: function focusSearch() {
+      if (this.search) {
+        this.$refs.searchField.focus();
+      }
     }
   },
   updated: function updated() {
@@ -27459,12 +27474,13 @@ var render = function() {
                             ]),
                             _vm._v(" "),
                             _c(
-                              "label",
-                              { staticClass: "dropdown-parent" },
+                              "div",
+                              { staticClass: "form-element dropdown-parent" },
                               [
-                                _vm._v(
-                                  "\n                        Email\n                        "
-                                ),
+                                _c("span", { staticClass: "label" }, [
+                                  _vm._v("Email")
+                                ]),
+                                _vm._v(" "),
                                 _c("input", {
                                   directives: [
                                     {
@@ -27474,6 +27490,7 @@ var render = function() {
                                       expression: "newUsers[index].email"
                                     }
                                   ],
+                                  staticClass: "input-wrapper",
                                   attrs: {
                                     type: "email",
                                     name: "email",
@@ -27513,7 +27530,14 @@ var render = function() {
                                                 class: {
                                                   active: !slotProps.collapsed
                                                 },
-                                                on: { click: slotProps.toggle }
+                                                on: {
+                                                  click: function($event) {
+                                                    slotProps.toggle()
+                                                    _vm.$refs.userSelect[
+                                                      index
+                                                    ].focusSearch()
+                                                  }
+                                                }
                                               },
                                               [
                                                 _vm._v(
@@ -27562,7 +27586,7 @@ var render = function() {
                                               ref: "userSelect",
                                               refInFor: true,
                                               attrs: {
-                                                options: _vm.users,
+                                                options: _vm.availableUsers,
                                                 optionNameKey: "email",
                                                 optionValueKey: "email",
                                                 search: true
@@ -31721,6 +31745,7 @@ var render = function() {
                   expression: "searchString"
                 }
               ],
+              ref: "searchField",
               staticClass: "input-wrapper small",
               attrs: { placeholder: "Search by e-mail..", type: "search" },
               domProps: { value: _vm.searchString },

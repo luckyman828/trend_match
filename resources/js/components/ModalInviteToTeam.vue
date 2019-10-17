@@ -41,13 +41,12 @@
                             <span class="button icon-left light dark-hover" @click="deleteUser(index)"><i class="far fa-trash"></i>Delete</span>
                         </div>
 
-                        <label class="dropdown-parent">
-                            Email
-                            <input type="email" name="email" :id="'invite-email-' + index" placeholder="example@mail.com" v-model="newUsers[index].email">
-                            
+                        <div class="form-element dropdown-parent">
+                            <span class="label">Email</span>
+                            <input class="input-wrapper" type="email" name="email" :id="'invite-email-' + index" placeholder="example@mail.com" v-model="newUsers[index].email">
                             <Dropdown class="dark">
                                 <template v-slot:button="slotProps">
-                                    <span @click="slotProps.toggle" class="open-dropdown dropdown-parent" :class="{active: !slotProps.collapsed}">
+                                    <span @click="slotProps.toggle(); $refs.userSelect[index].focusSearch()" class="open-dropdown dropdown-parent" :class="{active: !slotProps.collapsed}">
                                         or Choose from Users
                                         <i class="far fa-chevron-down"></i>
                                     </span>
@@ -57,7 +56,7 @@
                                     <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
                                 </template>
                                 <template v-slot:body>
-                                    <RadioButtons :options="users" :optionNameKey="'email'" :optionValueKey="'email'" :search="true" ref="userSelect" v-model="newUsers[index].email"/>
+                                    <RadioButtons :options="availableUsers" :optionNameKey="'email'" :optionValueKey="'email'" :search="true" ref="userSelect" v-model="newUsers[index].email"/>
                                 </template>
                                 <template v-slot:footer="slotProps">
                                     <div class="grid-2">
@@ -66,8 +65,8 @@
                                     </div>
                                 </template>
                             </Dropdown>
+                        </div>
 
-                        </label>
                         <label>
                             Name (optional)
                             <input type="text" name="name" id="invite-name" placeholder="Optional" v-model="newUsers[index].name">
@@ -158,6 +157,11 @@ export default {
             if (this.selectedUserIds.length > 0)
                 return true
             else return false
+        },
+        availableUsers() {
+            return this.users.filter(user => {
+                return user.teams.find(x => x.id == this.selectedTeamId) || this.newUsers.find(x => x.email == user.email) ? false : true
+            })
         }
     },
     watch: {
