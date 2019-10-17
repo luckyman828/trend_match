@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Collection;
 use App\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
@@ -90,7 +91,12 @@ class TaskController extends Controller
         foreach ($file_ids as $file_id) {
             if (count(Array($user_tasks)) > 0) {
                 foreach($user_tasks as $user_task) {
-                    $shouldPush = true;
+                    $file = Collection::find($file_id);
+                    if ($file->phase == $user_task->phase_id) {
+                        $shouldPush = true;
+                    } else {
+                        $shouldPush = false;
+                    }
                     if (count($user_task->fileTasks) > 0) {
 
                         foreach($user_task->fileTasks as $file_task) {

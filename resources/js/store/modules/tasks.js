@@ -17,73 +17,78 @@ export default {
             return state.loading
         },
         tasks: (state, getters, rootState, rootGetters) => {
-            const tasks = Task.query()
-                .with('taskTeams.team.users')
-                .with('completed|actions|children')
-                .with('parents.completed|parentTask')
-                .get()
-            tasks.forEach(task => {
-                // Find task users
-                task.users = []
-                task.filter_products_by_ids = task.filter_products_by_ids
-                    ? task.filter_products_by_ids.split(',').map(x => parseInt(x))
-                    : []
-                task.taskTeams.forEach(taskTeam => {
-                    taskTeam.team.users.forEach(user => {
-                        if (user.role_id == taskTeam.role_id && !task.users.find(x => x.id == user.id))
-                            task.users.push(user)
-                    })
+            const currentFile = rootGetters['persist/currentFile']
+            if (currentFile) {
+                const tasks = Task.query()
+                    .with('taskTeams.team.users')
+                    .with('completed|actions|children')
+                    .with('parents.completed|parentTask')
+                    .get()
+                tasks.forEach(task => {
+                    if (task.phase_id == currentFile.phase) {
+                        // Find task users
+                        task.users = []
+                        task.filter_products_by_ids = task.filter_products_by_ids
+                            ? task.filter_products_by_ids.split(',').map(x => parseInt(x))
+                            : []
+                        task.taskTeams.forEach(taskTeam => {
+                            taskTeam.team.users.forEach(user => {
+                                if (user.role_id == taskTeam.role_id && !task.users.find(x => x.id == user.id))
+                                    task.users.push(user)
+                            })
+                        })
+
+                        // Find task parent tasks
+                        task.parentTasks = []
+                        task.parents.forEach(parent => {
+                            const parentTask = tasks.find(x => x.id == parent.parent_id)
+                            if (parentTask) task.parentTasks.push(parentTask)
+                        })
+
+                        // Find tasks the parent inherits from
+                        task.inheritFromTask = tasks.find(x => x.id == task.inherit_from_id)
+
+                        if (task.type == 'decision') task.approvalParent = tasks.find(x => x.type == 'approval')
+
+                        // Determine if the task is active
+                        task.isActive = false
+                        if (task.parents.length <= 0) {
+                            // If the task has no parents
+                            if (task.completed.length <= 0)
+                                // And the task is not completed
+                                task.isActive = true
+                        } else {
+                            task.parents.forEach(parent => {
+                                // If the task has parents
+                                if (parent.completed.length > 0)
+                                    // And the parents are completed
+                                    task.isActive = true
+                            })
+                        }
+
+                        // Find task input (users/tasks that have to give input to the task)
+                        task.input = []
+
+                        if (task.type == 'feedback') {
+                            // If type: Feedback -> Find all users with access to the task
+                            task.input = task.input.concat(task.users)
+                        } else {
+                            // If type = Alignment -> Find the parent tasks
+                            task.parentTasks.forEach(parentTask => {
+                                // if parent type is feedback -> push users
+                                // else -> push task
+                                if (parentTask.type == 'feedback') task.input = task.input.concat(parentTask.users)
+                                else task.input = task.input.concat(parentTask)
+                            })
+                        }
+                    }
                 })
 
-                // Find task parent tasks
-                task.parentTasks = []
-                task.parents.forEach(parent => {
-                    const parentTask = tasks.find(x => x.id == parent.parent_id)
-                    if (parentTask) task.parentTasks.push(parentTask)
-                })
-
-                // Find tasks the parent inherits from
-                task.inheritFromTask = tasks.find(x => x.id == task.inherit_from_id)
-
-                if (task.type == 'decision') task.approvalParent = tasks.find(x => x.type == 'approval')
-
-                // Determine if the task is active
-                task.isActive = false
-                if (task.parents.length <= 0) {
-                    // If the task has no parents
-                    if (task.completed.length <= 0)
-                        // And the task is not completed
-                        task.isActive = true
-                } else {
-                    task.parents.forEach(parent => {
-                        // If the task has parents
-                        if (parent.completed.length > 0)
-                            // And the parents are completed
-                            task.isActive = true
-                    })
-                }
-
-                // Find task input (users/tasks that have to give input to the task)
-                task.input = []
-
-                if (task.type == 'feedback') {
-                    // If type: Feedback -> Find all users with access to the task
-                    task.input = task.input.concat(task.users)
-                } else {
-                    // If type = Alignment -> Find the parent tasks
-                    task.parentTasks.forEach(parentTask => {
-                        // if parent type is feedback -> push users
-                        // else -> push task
-                        if (parentTask.type == 'feedback') task.input = task.input.concat(parentTask.users)
-                        else task.input = task.input.concat(parentTask)
-                    })
-                }
-            })
-
-            return tasks
+                return tasks.filter(task => task.phase_id == currentFile.phase)
+            }
         },
         userTasks: (state, getters, rootState, rootGetters) => {
-            if (!rootGetters['persist/loadingInit']) {
+            if (!rootGetters['persist/loadingInit'] && getters.tasks) {
                 let userTasks = []
                 let userId = rootGetters['persist/authUser'].id
                 getters.tasks.forEach(task => {

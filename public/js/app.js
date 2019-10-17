@@ -59755,69 +59755,77 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return state.loading;
     },
     tasks: function tasks(state, getters, rootState, rootGetters) {
-      var tasks = _models_Task__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('taskTeams.team.users')["with"]('completed|actions|children')["with"]('parents.completed|parentTask').get();
-      tasks.forEach(function (task) {
-        // Find task users
-        task.users = [];
-        task.filter_products_by_ids = task.filter_products_by_ids ? task.filter_products_by_ids.split(',').map(function (x) {
-          return parseInt(x);
-        }) : [];
-        task.taskTeams.forEach(function (taskTeam) {
-          taskTeam.team.users.forEach(function (user) {
-            if (user.role_id == taskTeam.role_id && !task.users.find(function (x) {
-              return x.id == user.id;
-            })) task.users.push(user);
-          });
-        }); // Find task parent tasks
+      var currentFile = rootGetters['persist/currentFile'];
 
-        task.parentTasks = [];
-        task.parents.forEach(function (parent) {
-          var parentTask = tasks.find(function (x) {
-            return x.id == parent.parent_id;
-          });
-          if (parentTask) task.parentTasks.push(parentTask);
-        }); // Find tasks the parent inherits from
+      if (currentFile) {
+        var tasks = _models_Task__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('taskTeams.team.users')["with"]('completed|actions|children')["with"]('parents.completed|parentTask').get();
+        tasks.forEach(function (task) {
+          if (task.phase_id == currentFile.phase) {
+            // Find task users
+            task.users = [];
+            task.filter_products_by_ids = task.filter_products_by_ids ? task.filter_products_by_ids.split(',').map(function (x) {
+              return parseInt(x);
+            }) : [];
+            task.taskTeams.forEach(function (taskTeam) {
+              taskTeam.team.users.forEach(function (user) {
+                if (user.role_id == taskTeam.role_id && !task.users.find(function (x) {
+                  return x.id == user.id;
+                })) task.users.push(user);
+              });
+            }); // Find task parent tasks
 
-        task.inheritFromTask = tasks.find(function (x) {
-          return x.id == task.inherit_from_id;
+            task.parentTasks = [];
+            task.parents.forEach(function (parent) {
+              var parentTask = tasks.find(function (x) {
+                return x.id == parent.parent_id;
+              });
+              if (parentTask) task.parentTasks.push(parentTask);
+            }); // Find tasks the parent inherits from
+
+            task.inheritFromTask = tasks.find(function (x) {
+              return x.id == task.inherit_from_id;
+            });
+            if (task.type == 'decision') task.approvalParent = tasks.find(function (x) {
+              return x.type == 'approval';
+            }); // Determine if the task is active
+
+            task.isActive = false;
+
+            if (task.parents.length <= 0) {
+              // If the task has no parents
+              if (task.completed.length <= 0) // And the task is not completed
+                task.isActive = true;
+            } else {
+              task.parents.forEach(function (parent) {
+                // If the task has parents
+                if (parent.completed.length > 0) // And the parents are completed
+                  task.isActive = true;
+              });
+            } // Find task input (users/tasks that have to give input to the task)
+
+
+            task.input = [];
+
+            if (task.type == 'feedback') {
+              // If type: Feedback -> Find all users with access to the task
+              task.input = task.input.concat(task.users);
+            } else {
+              // If type = Alignment -> Find the parent tasks
+              task.parentTasks.forEach(function (parentTask) {
+                // if parent type is feedback -> push users
+                // else -> push task
+                if (parentTask.type == 'feedback') task.input = task.input.concat(parentTask.users);else task.input = task.input.concat(parentTask);
+              });
+            }
+          }
         });
-        if (task.type == 'decision') task.approvalParent = tasks.find(function (x) {
-          return x.type == 'approval';
-        }); // Determine if the task is active
-
-        task.isActive = false;
-
-        if (task.parents.length <= 0) {
-          // If the task has no parents
-          if (task.completed.length <= 0) // And the task is not completed
-            task.isActive = true;
-        } else {
-          task.parents.forEach(function (parent) {
-            // If the task has parents
-            if (parent.completed.length > 0) // And the parents are completed
-              task.isActive = true;
-          });
-        } // Find task input (users/tasks that have to give input to the task)
-
-
-        task.input = [];
-
-        if (task.type == 'feedback') {
-          // If type: Feedback -> Find all users with access to the task
-          task.input = task.input.concat(task.users);
-        } else {
-          // If type = Alignment -> Find the parent tasks
-          task.parentTasks.forEach(function (parentTask) {
-            // if parent type is feedback -> push users
-            // else -> push task
-            if (parentTask.type == 'feedback') task.input = task.input.concat(parentTask.users);else task.input = task.input.concat(parentTask);
-          });
-        }
-      });
-      return tasks;
+        return tasks.filter(function (task) {
+          return task.phase_id == currentFile.phase;
+        });
+      }
     },
     userTasks: function userTasks(state, getters, rootState, rootGetters) {
-      if (!rootGetters['persist/loadingInit']) {
+      if (!rootGetters['persist/loadingInit'] && getters.tasks) {
         var userTasks = [];
         var userId = rootGetters['persist/authUser'].id;
         getters.tasks.forEach(function (task) {
