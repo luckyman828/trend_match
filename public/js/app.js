@@ -8377,6 +8377,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 
 
@@ -10097,12 +10100,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'radioButtons',
-  props: ['options', 'optionNameKey', 'optionValueKey', 'currentOptionId'],
+  props: ['options', 'optionNameKey', 'optionValueKey', 'currentOptionId', 'search'],
   data: function data() {
     return {
-      selection: null
+      selection: null,
+      searchString: ''
     };
   },
   computed: {
@@ -10132,6 +10142,31 @@ __webpack_require__.r(__webpack_exports__);
           } else return 'select a';
         }
       } else return 'nothing';
+    },
+    optionsFiltered: function optionsFiltered() {
+      var _this2 = this;
+
+      var options = this.options;
+      var searchString = this.searchString.toLowerCase();
+      var optionsToReturn = [];
+
+      if (searchString) {
+        if (this.optionNameKey) {
+          optionsToReturn = options.filter(function (x) {
+            return x[_this2.optionNameKey].toLowerCase().startsWith(searchString);
+          });
+        } else if (this.optionValueKey) {
+          optionsToReturn = options.filter(function (x) {
+            return x[_this2.optionValueKey].toLowerCase().startsWith(searchString);
+          });
+        } else {
+          optionsToReturn = options.filter(function (x) {
+            return x.toLowerCase().startsWith(searchString);
+          });
+        }
+      } else optionsToReturn = options;
+
+      return optionsToReturn;
     }
   },
   methods: {
@@ -10155,18 +10190,6 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   updated: function updated() {
-    var _this2 = this;
-
-    // Preset the selection
-    if (this.currentOptionId) if (this.optionValueKey) this.selection = this.options.find(function (x) {
-      return x.id == _this2.currentOptionId;
-    })[this.optionValueKey];else {
-      this.selection = this.options.find(function (x) {
-        return x.id == _this2.currentOptionId;
-      });
-    }
-  },
-  mounted: function mounted() {
     var _this3 = this;
 
     // Preset the selection
@@ -10175,6 +10198,18 @@ __webpack_require__.r(__webpack_exports__);
     })[this.optionValueKey];else {
       this.selection = this.options.find(function (x) {
         return x.id == _this3.currentOptionId;
+      });
+    }
+  },
+  mounted: function mounted() {
+    var _this4 = this;
+
+    // Preset the selection
+    if (this.currentOptionId) if (this.optionValueKey) this.selection = this.options.find(function (x) {
+      return x.id == _this4.currentOptionId;
+    })[this.optionValueKey];else {
+      this.selection = this.options.find(function (x) {
+        return x.id == _this4.currentOptionId;
       });
     }
   }
@@ -15001,7 +15036,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "label.team[data-v-95e58d5a] {\n  position: relative;\n}\nlabel.team .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 8px;\n  top: 8px;\n  background: #3b86ff;\n  color: white;\n  height: 24px;\n  width: 24px;\n  text-align: center;\n}\nlabel.team .square i[data-v-95e58d5a] {\n  font-size: 10px;\n  line-height: 24px;\n}\n.open-dropdown[data-v-95e58d5a] {\n  position: absolute;\n  right: 8px;\n  bottom: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.open-dropdown.active[data-v-95e58d5a] {\n  color: #1b1c1d;\n}\n.open-dropdown[data-v-95e58d5a]:hover {\n  color: #535353;\n}\n.open-dropdown i[data-v-95e58d5a] {\n  margin-left: 8px;\n}\nh4[data-v-95e58d5a] {\n  font-size: 16px;\n  color: #a8a8a8;\n  margin: 0;\n  font-weight: 500;\n  margin-bottom: 16px;\n}\nlabel.team[data-v-95e58d5a] {\n  margin-bottom: calc(24px + 1em);\n}\n.user[data-v-95e58d5a] {\n  margin-bottom: calc(32px + 2em - 2px);\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.user[data-v-95e58d5a]:last-child {\n  margin-bottom: calc(20px + 2em - 2px);\n}\n.user .flex-wrapper[data-v-95e58d5a] {\n  opacity: 0;\n}\n.user.card[data-v-95e58d5a] {\n  margin-top: -14px;\n  margin-left: -1em;\n  margin-right: -1em;\n  width: calc(100% + 2em);\n  margin-bottom: 32px;\n}\n.user.card .flex-wrapper[data-v-95e58d5a] {\n  opacity: 1;\n}\n.user.card[data-v-95e58d5a]:last-child {\n  margin-bottom: 20px;\n}\nform[data-v-95e58d5a] {\n  margin-bottom: 60px;\n}\n.flex-wrapper[data-v-95e58d5a] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.add-more[data-v-95e58d5a] {\n  margin-bottom: 24px;\n}\nlabel.role input[data-v-95e58d5a] {\n  color: transparent;\n}\nlabel.role .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 12px;\n  bottom: 4px;\n}", ""]);
+exports.push([module.i, "label.team[data-v-95e58d5a] {\n  position: relative;\n}\nlabel.team .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 8px;\n  top: 8px;\n  background: #3b86ff;\n  color: white;\n  height: 24px;\n  width: 24px;\n  text-align: center;\n}\nlabel.team .square i[data-v-95e58d5a] {\n  font-size: 10px;\n  line-height: 24px;\n}\n.open-dropdown[data-v-95e58d5a] {\n  position: absolute;\n  right: 8px;\n  bottom: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n}\n.open-dropdown.active[data-v-95e58d5a] {\n  color: #1b1c1d;\n}\n.open-dropdown[data-v-95e58d5a]:hover {\n  color: #535353;\n}\n.open-dropdown i[data-v-95e58d5a] {\n  margin-left: 8px;\n}\nh4[data-v-95e58d5a] {\n  font-size: 16px;\n  color: #a8a8a8;\n  margin: 0;\n  font-weight: 500;\n  margin-bottom: 16px;\n}\nlabel.team[data-v-95e58d5a] {\n  margin-bottom: calc(24px + 1em);\n}\n.user[data-v-95e58d5a] {\n  margin-bottom: calc(32px + 2em - 2px);\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.user[data-v-95e58d5a]:last-child {\n  margin-bottom: calc(20px + 2em - 2px);\n}\n.user .flex-wrapper[data-v-95e58d5a] {\n  opacity: 0;\n}\n.user.card[data-v-95e58d5a] {\n  margin-top: -14px;\n  margin-left: -1em;\n  margin-right: -1em;\n  width: calc(100% + 2em);\n  margin-bottom: 32px;\n}\n.user.card .flex-wrapper[data-v-95e58d5a] {\n  opacity: 1;\n}\n.user.card[data-v-95e58d5a]:last-child {\n  margin-bottom: 20px;\n}\nform[data-v-95e58d5a] {\n  margin-bottom: 60px;\n}\n.flex-wrapper[data-v-95e58d5a] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.add-more[data-v-95e58d5a] {\n  margin-bottom: 24px;\n}\nlabel.role input[data-v-95e58d5a] {\n  color: transparent;\n}\nlabel.role .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 12px;\n  bottom: 4px;\n}", ""]);
 
 // exports
 
@@ -15191,7 +15226,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, ".search {\n  padding: 8px;\n  position: relative;\n}\n.search input.input-wrapper.small {\n  padding-right: 32px;\n  box-sizing: border-box;\n}\n.search .close {\n  position: absolute;\n  right: 8px;\n  top: 11px;\n  font-size: 12px;\n  color: #3c3b54;\n  cursor: pointer;\n  padding: 4px 12px;\n}\n.search .close:hover {\n  opacity: 0.8;\n}", ""]);
 
 // exports
 
@@ -27532,7 +27567,8 @@ var render = function() {
                                               attrs: {
                                                 options: _vm.users,
                                                 optionNameKey: "email",
-                                                optionValueKey: "email"
+                                                optionValueKey: "email",
+                                                search: true
                                               },
                                               model: {
                                                 value:
@@ -27987,6 +28023,20 @@ var render = function() {
         "div",
         { staticClass: "items-right" },
         [
+          _c(
+            "span",
+            {
+              staticClass: "button wide primary",
+              on: {
+                click: function($event) {
+                  _vm.$refs.exportModal.toggle()
+                  _vm.setPageHeight()
+                }
+              }
+            },
+            [_vm._v("Export to PDF")]
+          ),
+          _vm._v(" "),
           _vm.userPermissionLevel >= 2 && _vm.userPermissionLevel != 3
             ? [
                 _vm.submittingTaskComplete
@@ -31676,93 +31726,136 @@ var render = function() {
   return _c(
     "div",
     { staticClass: "radio-buttons" },
-    _vm._l(_vm.options, function(option, index) {
-      return _c(
-        "label",
-        { key: index, staticClass: "radiobox" },
-        [
-          _vm.optionValueKey
-            ? _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.selection,
-                    expression: "selection"
-                  }
-                ],
-                ref: "radio-option-" + option.id,
-                refInFor: true,
-                attrs: {
-                  type: "radio",
-                  name: "radio-option",
-                  id: "radio-option-" + option.id
-                },
-                domProps: {
-                  value: option[_vm.optionValueKey],
-                  checked: _vm._q(_vm.selection, option[_vm.optionValueKey])
-                },
-                on: {
-                  change: [
-                    function($event) {
-                      _vm.selection = option[_vm.optionValueKey]
-                    },
-                    function($event) {
-                      return _vm.change()
-                    }
-                  ],
-                  click: _vm.click
+    [
+      _vm.search
+        ? _c("div", { staticClass: "search" }, [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.searchString,
+                  expression: "searchString"
                 }
-              })
-            : _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.selection,
-                    expression: "selection"
+              ],
+              staticClass: "input-wrapper small",
+              attrs: { placeholder: "Search by e-mail..", type: "search" },
+              domProps: { value: _vm.searchString },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
                   }
-                ],
-                ref: "radio-option-" + option.id,
-                refInFor: true,
-                attrs: {
-                  type: "radio",
-                  name: "radio-option",
-                  id: "radio-option-" + option.id
-                },
-                domProps: {
-                  value: option,
-                  checked: _vm._q(_vm.selection, option)
-                },
-                on: {
-                  change: [
-                    function($event) {
-                      _vm.selection = option
-                    },
-                    function($event) {
-                      return _vm.change()
-                    }
-                  ],
-                  click: _vm.click
+                  _vm.searchString = $event.target.value
                 }
-              }),
-          _vm._v(" "),
-          _c("span", { staticClass: "radiomark" }),
-          _vm._v(" "),
-          _vm.optionNameKey
-            ? [
-                _vm._v(
-                  "\n            " +
-                    _vm._s(option[_vm.optionNameKey]) +
-                    "\n        "
+              }
+            }),
+            _vm._v(" "),
+            _vm.searchString.length > 0
+              ? _c(
+                  "span",
+                  {
+                    staticClass: "close",
+                    on: {
+                      click: function($event) {
+                        _vm.searchString = ""
+                      }
+                    }
+                  },
+                  [_c("i", { staticClass: "fas fa-times" })]
                 )
-              ]
-            : [_vm._v("\n            " + _vm._s(option) + "\n        ")]
-        ],
-        2
-      )
-    }),
-    0
+              : _vm._e()
+          ])
+        : _vm._e(),
+      _vm._v(" "),
+      _vm._l(_vm.optionsFiltered, function(option, index) {
+        return _c(
+          "label",
+          { key: index, staticClass: "radiobox" },
+          [
+            _vm.optionValueKey
+              ? _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.selection,
+                      expression: "selection"
+                    }
+                  ],
+                  ref: "radio-option-" + option.id,
+                  refInFor: true,
+                  attrs: {
+                    type: "radio",
+                    name: "radio-option",
+                    id: "radio-option-" + option.id
+                  },
+                  domProps: {
+                    value: option[_vm.optionValueKey],
+                    checked: _vm._q(_vm.selection, option[_vm.optionValueKey])
+                  },
+                  on: {
+                    change: [
+                      function($event) {
+                        _vm.selection = option[_vm.optionValueKey]
+                      },
+                      function($event) {
+                        return _vm.change()
+                      }
+                    ],
+                    click: _vm.click
+                  }
+                })
+              : _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.selection,
+                      expression: "selection"
+                    }
+                  ],
+                  ref: "radio-option-" + option.id,
+                  refInFor: true,
+                  attrs: {
+                    type: "radio",
+                    name: "radio-option",
+                    id: "radio-option-" + option.id
+                  },
+                  domProps: {
+                    value: option,
+                    checked: _vm._q(_vm.selection, option)
+                  },
+                  on: {
+                    change: [
+                      function($event) {
+                        _vm.selection = option
+                      },
+                      function($event) {
+                        return _vm.change()
+                      }
+                    ],
+                    click: _vm.click
+                  }
+                }),
+            _vm._v(" "),
+            _c("span", { staticClass: "radiomark" }),
+            _vm._v(" "),
+            _vm.optionNameKey
+              ? [
+                  _vm._v(
+                    "\n            " +
+                      _vm._s(option[_vm.optionNameKey]) +
+                      "\n        "
+                  )
+                ]
+              : [_vm._v("\n            " + _vm._s(option) + "\n        ")]
+          ],
+          2
+        )
+      })
+    ],
+    2
   )
 }
 var staticRenderFns = []

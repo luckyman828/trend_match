@@ -10113,7 +10113,13 @@ form .form-element .label {
   border-radius: 4px;
   padding: 8px 12px;
   background: white;
-  cursor: pointer;
+  width: 100%;
+}
+
+.input-wrapper.small {
+  min-height: 30px;
+  padding: 4px 12px;
+  font-size: 13px;
 }
 
 .input-wrapper.check-button {
@@ -10122,6 +10128,7 @@ form .form-element .label {
   -webkit-box-align: center;
           align-items: center;
   background: #f3f3f3;
+  cursor: pointer;
 }
 
 .input-wrapper.disabled {
@@ -10161,5 +10168,12 @@ form .form-element .label {
   .show-screen-sm {
     display: none !important;
   }
+}
+
+input[type=search]::-webkit-search-decoration,
+input[type=search]::-webkit-search-cancel-button,
+input[type=search]::-webkit-search-results-button,
+input[type=search]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
 }
 

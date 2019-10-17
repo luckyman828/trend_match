@@ -57,7 +57,7 @@
                                     <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
                                 </template>
                                 <template v-slot:body>
-                                    <RadioButtons :options="users" :optionNameKey="'email'" :optionValueKey="'email'" ref="userSelect" v-model="newUsers[index].email"/>
+                                    <RadioButtons :options="users" :optionNameKey="'email'" :optionValueKey="'email'" :search="true" ref="userSelect" v-model="newUsers[index].email"/>
                                 </template>
                                 <template v-slot:footer="slotProps">
                                     <div class="grid-2">
@@ -239,6 +239,7 @@ export default {
         bottom: 10px;
         font-weight: 500;
         color: $dark2;
+        cursor: pointer;
         &.active {
             color: $dark;
         }
