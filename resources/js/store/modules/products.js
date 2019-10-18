@@ -276,7 +276,7 @@ export default {
                     // END Group actions by action type
 
                     // START NEW Comment (Find products with unread / new comments)
-                    if (product.comments.length > 1) {
+                    if (product.comments.length > 0) {
                         if (
                             currentTask.type == 'approval' &&
                             product.currentAction == null &&

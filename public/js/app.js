@@ -58772,7 +58772,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           }); // END Group actions by action type
           // START NEW Comment (Find products with unread / new comments)
 
-          if (product.comments.length > 1) {
+          if (product.comments.length > 0) {
             if (currentTask.type == 'approval' && product.currentAction == null && product.requests.length > 0) {
               if (userPermissionLevel == 3) {
                 product.newComment = product.comments[product.comments.length - 1].user.role_id != 3 || product.comments.length < 1;
