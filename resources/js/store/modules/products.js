@@ -283,7 +283,9 @@ export default {
                             product.requests.length > 0
                         ) {
                             if (userPermissionLevel == 3) {
-                                product.newComment = product.comments[product.comments.length - 1].user.role_id != 3
+                                product.newComment =
+                                    product.comments[product.comments.length - 1].user.role_id != 3 ||
+                                    product.comments.length < 1
                             } else {
                                 product.newComment = product.comments[product.comments.length - 1].user.role_id == 3
                             }
