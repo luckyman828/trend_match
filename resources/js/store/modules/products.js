@@ -102,7 +102,11 @@ export default {
                                     ? product.requests.push(comment)
                                     : product.commentsScoped.push(comment)
                         } else if (currentTask.type == 'approval') {
-                            if (comment.task_id == currentTask.children[0].task_id || comment.task_id == currentTask.id)
+                            if (
+                                currentTask.children[0]
+                                    ? comment.task_id == currentTask.children[0].task_id
+                                    : false || comment.task_id == currentTask.id
+                            )
                                 comment.is_request
                                     ? product.requests.push(comment)
                                     : product.commentsScoped.push(comment)
