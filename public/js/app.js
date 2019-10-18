@@ -8938,7 +8938,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/comments', ['createComment', 'markAsFinal']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/products', ['showNextProduct', 'showPrevProduct']), {
     variantImg: function variantImg(variant) {
-      if (!variant.error) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
+      if (!variant.error && variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
     },
     imgError: function imgError(variant) {
       variant.error = true;
@@ -27590,6 +27590,27 @@ var render = function() {
                                                 optionNameKey: "email",
                                                 optionValueKey: "email",
                                                 search: true
+                                              },
+                                              on: {
+                                                keyup: function($event) {
+                                                  if (
+                                                    !$event.type.indexOf(
+                                                      "key"
+                                                    ) &&
+                                                    _vm._k(
+                                                      $event.keyCode,
+                                                      "esc",
+                                                      27,
+                                                      $event.key,
+                                                      ["Esc", "Escape"]
+                                                    )
+                                                  ) {
+                                                    return null
+                                                  }
+                                                  return _vm.$refs.userSelect[
+                                                    index
+                                                  ].toggle()
+                                                }
                                               },
                                               model: {
                                                 value:

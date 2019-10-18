@@ -262,7 +262,7 @@ export default {
         ...mapActions('entities/comments', ['createComment', 'markAsFinal']),
         ...mapActions('entities/products', ['showNextProduct', 'showPrevProduct']),
         variantImg (variant) {
-            if (!variant.error)
+            if (!variant.error && variant.blob_id != null)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
             else return variant.image
         },
