@@ -42,7 +42,7 @@
                         </div>
 
                         <div class="form-element dropdown-parent">
-                            <span class="label">Email</span>
+                            <label :for="'invite-email-' + index">Email</label>
                             <input class="input-wrapper" type="email" name="email" :id="'invite-email-' + index" placeholder="example@mail.com" v-model="newUsers[index].email">
                             <Dropdown class="dark">
                                 <template v-slot:button="slotProps">
@@ -67,35 +67,37 @@
                             </Dropdown>
                         </div>
 
-                        <label>
-                            Name (optional)
-                            <input type="text" name="name" id="invite-name" placeholder="Optional" v-model="newUsers[index].name">
-                        </label>
+                        <div class="form-element">
+                            <label :for="'invite-name-' + index">Name (optional)</label>
+                            <input class="input-wrapper" type="text" name="name" :id="'invite-name-' + index" placeholder="Optional" v-model="newUsers[index].name">
+                        </div>
 
-                        <label class="dropdown-parent role">
-                            Role
-                            <input type="text" name="role" id="invite-role">
-                            <span @click="$refs.roleDropdown[index].toggle()" class="role square" :class="'role-' + [newUsers[index].permission_level]">{{(roles[(Number([newUsers[index].permission_level])-1)].title).charAt(0).toUpperCase() + (roles[(Number([newUsers[index].permission_level])-1)].title).slice(1)}}</span>
+                        <div class="form-element dropdown-parent role">
+                            <label :for="'invite-role-' + index">Role</label>
+                            <div class="input-wrapper">
+                                <!-- <input type="text" name="role" :id="'invite-role-' + index"> -->
+                                <span @click="$refs.roleDropdown[index].toggle()" class="role square" :class="'role-' + [newUsers[index].permission_level]">{{(roles[(Number([newUsers[index].permission_level])-1)].title).charAt(0).toUpperCase() + (roles[(Number([newUsers[index].permission_level])-1)].title).slice(1)}}</span>
 
-                            <Dropdown class="dark" ref="roleDropdown">
-                                <template v-slot:button="slotProps">
-                                    <span @click="slotProps.toggle" class="open-dropdown dropdown-parent" :class="{active: !slotProps.collapsed}">Change role<i class="far fa-chevron-down"></i></span>
-                                </template>
-                                <template v-slot:header="slotProps">
-                                    <span>{{roles.length}} roles</span>
-                                    <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
-                                </template>
-                                <template v-slot:body>
-                                    <RadioButtons :options="roles" :optionNameKey="'title'" :optionValueKey="'id'" ref="roleRadio" v-model="newUsers[index].permission_level"/>
-                                </template>
-                                <template v-slot:footer="slotProps">
-                                    <div class="grid-2">
-                                        <span class="button green" @click="$refs.roleRadio[index].submit(); slotProps.toggle()">Save</span>
-                                        <span class="button invisible" @click="slotProps.toggle">Cancel</span>
-                                    </div>
-                                </template>
-                            </Dropdown>
-                        </label>
+                                <Dropdown class="dark" ref="roleDropdown">
+                                    <template v-slot:button="slotProps">
+                                        <span @click="slotProps.toggle" class="open-dropdown dropdown-parent" :class="{active: !slotProps.collapsed}">Change role<i class="far fa-chevron-down"></i></span>
+                                    </template>
+                                    <template v-slot:header="slotProps">
+                                        <span>{{roles.length}} roles</span>
+                                        <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
+                                    </template>
+                                    <template v-slot:body>
+                                        <RadioButtons :options="roles" :optionNameKey="'title'" :optionValueKey="'id'" ref="roleRadio" v-model="newUsers[index].permission_level"/>
+                                    </template>
+                                    <template v-slot:footer="slotProps">
+                                        <div class="grid-2">
+                                            <span class="button green" @click="$refs.roleRadio[index].submit(); slotProps.toggle()">Save</span>
+                                            <span class="button invisible" @click="slotProps.toggle">Cancel</span>
+                                        </div>
+                                    </template>
+                                </Dropdown>
+                            </div>
+                        </div>
                     </div>
 
                 </div>

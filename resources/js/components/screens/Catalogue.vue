@@ -205,19 +205,6 @@ export default{
         },
         products() {
             return this.productsScoped
-            // let productsToReturn = []
-            // const inheritFromId = this.currentTask.inherit_from_id
-            // if (inheritFromId) {
-            //     productsToReturn = this.allProducts.filter(product => product.actions.find(action => action.task_id == inheritFromId && action.action > 0))
-            // } else {
-            //     productsToReturn = this.allProducts
-            // }
-
-            // if (this.currentTeam.category_scope) {
-            //     return productsToReturn.filter(x => this.currentTeam.category_scope.split(',').includes(x.category.toLowerCase()))
-            // } else {
-            //     return productsToReturn
-            // }
         },
         teamProducts() {
             return TeamProduct.with('products').all()

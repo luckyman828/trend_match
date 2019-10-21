@@ -25,7 +25,7 @@
         </div>
 
         <!-- PDF FOR EXPORT MARKUP -->
-        <div class="example-pdf" ref="exportToPdf" v-if="currentTask.type == 'decision' && this.products.length > 1" 
+        <div class="example-pdf" ref="exportToPdf" v-if="(currentTask.type == 'decision' || currentTask.type == 'approval') && this.products.length > 1" 
             style="font-family: arial, helvetica, sans-serif;">
             <div ref="pdfWrapper" style="font-family: 'Roboto', sans-serif, helvetica, arial; position: relative;">
                 <div style="height: 1040px; width: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center;">
@@ -95,7 +95,7 @@
         <Modal ref="exportModal" :header="'Export <strong>' + currentFile.title + '</strong> to PDF'" :subHeader="'Export the current products to a PDF.'">
             <template v-slot:body>
                 <form>
-                    <label class="form-element">
+                    <div class="form-element">
                         <div class="input-wrapper check-button">
                             <div class="checkbox">
                                 <input type="checkbox" v-model="exportComments">
@@ -103,13 +103,13 @@
                             </div>
                             <span>Include Requests and comments</span>
                         </div>
-                    </label>
-                    <label class="form-element">
-                        <span class="label">Export details</span>
+                    </div>
+                    <div class="form-element">
+                        <label>Export details</label>
                         <div class="input-wrapper disabled">
                             <p>{{products.length}} products, {{products.filter(x => x.requests.length > 0).length}} with requests</p>
                         </div>
-                    </label>
+                    </div>
                 </form>
                 <span v-if="exportingPDF" class="button xl dark disabled"><Loader/></span>
                 <template v-else-if="generatedPDF">
@@ -125,16 +125,10 @@
 <script>
 import axios from 'axios';
 import { mapActions, mapGetters } from 'vuex'
-import Loader from './Loader'
-import Modal from './Modal'
-import Dropdown from './Dropdown'
 
 export default {
     name: "navbarFile",
     components: {
-        Loader,
-        Modal,
-        Dropdown,
     },
     data: function () { return {
         submittingTaskComplete: false,
@@ -202,6 +196,7 @@ export default {
         },
         setPageHeight() {
             const pages = this.$refs.productPage
+            console.log(pages)
             let nextPageIndex = 1
             pages.forEach(page => {
                 const pageHeight = 1040

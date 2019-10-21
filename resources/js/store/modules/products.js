@@ -333,6 +333,49 @@ export default {
                 return []
             }
         },
+        productsScopedTotals(state, getters, rootState, rootGetters) {
+            const products = getters.productsScoped
+            const currentTask = rootGetters['persist/currentTask']
+            const data = {
+                products: 0,
+                ins: 0,
+                outs: 0,
+                nds: 0,
+                totalDecisionsToMake: 0,
+            }
+            if (products) {
+                data.products = products.length
+                products.forEach(product => {
+                    if (product.outInFilter) {
+                        data.outs++
+                    } else if (product.currentAction == null) {
+                        if (currentTask.type == 'approval') {
+                            if (product.requests.length > 0) {
+                                data.nds++
+                            } else {
+                                data.ins++
+                            }
+                        } else {
+                            data.nds++
+                        }
+                    } else {
+                        if (product.currentAction.action == 0) {
+                            data.outs++
+                        } else {
+                            data.ins++
+                        }
+                    }
+
+                    // Calculate how many product decisions have to be made in the task
+                    if (currentTask.type == 'approval' && !product.outInFilter && product.requests.length > 0) {
+                        data.totalDecisionsToMake++
+                    } else if (currentTask.type == 'decision' && !product.outInFilter) {
+                        data.totalDecisionsToMake++
+                    }
+                })
+            }
+            return data
+        },
         availableProductIds: state => {
             return state.availableProductIds
         },

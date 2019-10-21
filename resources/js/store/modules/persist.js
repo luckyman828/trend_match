@@ -61,10 +61,19 @@ export default {
                     ? rootGetters['entities/tasks/tasks'].find(x => x.id == state.currentTaskId)
                     : null
 
+            return currentTask
+        },
+        currentTaskProgress: (state, getters, rootState, rootGetters) => {
+            const productTotals = rootGetters['entities/products/productsScopedTotals']
+            const currentTask = getters.currentTask
+            let progress = 0
             // Find task progress
             if (currentTask) {
-                if (getters.userPermissionLevel > 1) {
-                    currentTask.progress =
+                if ((currentTask.type == 'approval' || currentTask.type == 'decision') && productTotals) {
+                    progress =
+                        Math.round((currentTask.actions.length / productTotals.totalDecisionsToMake) * 100 * 1) / 1
+                } else if (getters.userPermissionLevel > 1) {
+                    progress =
                         currentTask.type == 'feedback'
                             ? Math.round(
                                   (currentTask.actions.length /
@@ -75,7 +84,7 @@ export default {
                             : Math.round((currentTask.actions.length / getters.currentFile.products.length) * 100 * 1) /
                               1
                 } else {
-                    currentTask.progress =
+                    progress =
                         Math.round(
                             (currentTask.actions.filter(x => x.user_id == getters.authUser.id).length /
                                 getters.currentFile.products.length) *
@@ -96,8 +105,7 @@ export default {
                     })
                 }
             }
-
-            return currentTask
+            return progress
         },
         userPermissionLevel: state => {
             return state.userPermissionLevel

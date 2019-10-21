@@ -6,10 +6,10 @@
         </template>
         <template v-slot:body="slotProps">
             <form @submit.prevent="createTeam({name: addTeamName, workspace_id: currentWorkspaceId}), close()">
-                <label>
-                    Team name
-                    <input type="text" placeholder="My new team" ref="addTeamInput" v-model="addTeamName">
-                </label>
+                <div class="form-element">
+                    <label for="new-team-name">Team name</label>
+                    <input class="input-wrapper" id="new-team-name" type="text" placeholder="My new team" ref="addTeamInput" v-model="addTeamName">
+                </div>
                 <input class="button dark xl" :class="{disabled: !addTeamValid}" type="submit" value="Create team">
             </form>
         </template>
@@ -51,9 +51,6 @@ export default {
         close() {
             this.$refs.modal.close()
         },
-        // createTeam() {
-        //     this.createTeam(this.addTeamName, this.currentWorkspaceId)
-        // }
     }
 }
 </script>

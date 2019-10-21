@@ -36,20 +36,20 @@
                 <div class="stat progress">
                     <span class="title">Progress</span>
                     <svg height="4">
-                        <rect class="background" v-if="currentTask.progress > 0" width="100%" height="4"/>
-                        <rect class="value" v-if="currentTask.progress > 0" :width="currentTask.progress + '%'" height="4"/>
+                        <rect class="background" v-if="currentTaskProgress > 0" width="100%" height="4"/>
+                        <rect class="value" v-if="currentTaskProgress > 0" :width="currentTaskProgress + '%'" height="4"/>
                     </svg>
-                    <span class="value">{{currentTask.progress}}%</span>
+                    <span class="value">{{currentTaskProgress}}%</span>
                 </div>
             </TooltipAlt2>
             <TooltipAlt2 v-else :header="'Progress'" :array="[currentTask]" :arrayLabelKey="'title'" :arrayValueKey="'progress'" :arrayValueUnit="'%'">
                 <div class="stat progress">
                     <span class="title">Progress</span>
                     <svg height="4">
-                        <rect class="background" v-if="currentTask.progress > 0" width="100%" height="4"/>
-                        <rect class="value" v-if="currentTask.progress > 0" :width="currentTask.progress + '%'" height="4"/>
+                        <rect class="background" v-if="currentTaskProgress > 0" width="100%" height="4"/>
+                        <rect class="value" v-if="currentTaskProgress > 0" :width="currentTaskProgress + '%'" height="4"/>
                     </svg>
-                    <span class="value">{{currentTask.progress}}%</span>
+                    <span class="value">{{currentTaskProgress}}%</span>
                 </div>
             </TooltipAlt2>
 
@@ -70,7 +70,7 @@ export default {
         'collection',
     ],
     computed: {
-        ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']),
+        ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask', 'currentTaskProgress']),
         ...mapGetters('entities/tasks', ['userTasks', 'tasks']),
     }
 }
