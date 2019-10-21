@@ -72,7 +72,7 @@ export default {
                             if (currentTeam.currency != null)
                                 teamPrices = product.prices.find(x => x.currency == currentTeam.currency)
 
-                        if (userPermissionLevel <= 4) {
+                        if (userPermissionLevel < 3) {
                             // Use team currency for low level members
                             if (teamPrices != null) product.userPrices = teamPrices
                             else if (workspacePrices != null) product.userPrices = workspacePrices

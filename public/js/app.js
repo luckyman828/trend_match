@@ -58920,7 +58920,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               return x.currency == currentTeam.currency;
             });
 
-            if (userPermissionLevel <= 4) {
+            if (userPermissionLevel < 3) {
               // Use team currency for low level members
               if (teamPrices != null) product.userPrices = teamPrices;else if (workspacePrices != null) product.userPrices = workspacePrices;else product.userPrices = product.prices[0];
             } else {
