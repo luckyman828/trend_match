@@ -848,6 +848,7 @@ textarea {
     .dark & {
         label {
             border-color: $darkAlt;
+            color: white;
             &:hover {
                 background: $darkAlt;
             }

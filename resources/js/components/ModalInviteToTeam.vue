@@ -65,6 +65,27 @@
                                     </div>
                                 </template>
                             </Dropdown>
+                            <!-- <DropdownV2 class="dark">
+                                <template v-slot:button="slotProps">
+                                    <span @click="slotProps.toggle(); $refs.userSelect[index].focusSearch()" :class="{active: !slotProps.collapsed}">
+                                        or Choose from Users
+                                        <i class="far fa-chevron-down"></i>
+                                    </span>
+                                </template>
+                                <template v-slot:header="slotProps">
+                                    <span>{{users.length}} users</span>
+                                    <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
+                                </template>
+                                <template v-slot:body>
+                                    <RadioButtons @keyup.esc="$refs.userSelect[index].toggle();" :options="availableUsers" :optionNameKey="'email'" :optionValueKey="'email'" :search="true" ref="userSelect" v-model="newUsers[index].email"/>
+                                </template>
+                                <template v-slot:footer="slotProps">
+                                    <div class="grid-2">
+                                        <span class="button green" @click="$refs.userSelect[index].submit(); slotProps.toggle()">Save</span>
+                                        <span class="button invisible" @click="slotProps.toggle">Cancel</span>
+                                    </div>
+                                </template>
+                            </DropdownV2> -->
                         </div>
 
                         <div class="form-element">
@@ -116,6 +137,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import Dropdown from './Dropdown'
+import DropdownV2 from './DropdownV2'
 import RadioButtons from './RadioButtons'
 import CheckboxButtons from './input/CheckboxButtons'
 import Modal from './Modal'
@@ -131,6 +153,7 @@ export default {
     ],
     components: {
         Dropdown,
+        DropdownV2,
         RadioButtons,
         Modal,
         CheckboxButtons,
@@ -242,9 +265,11 @@ export default {
     .open-dropdown {
         position: absolute;
         right: 8px;
-        bottom: 10px;
+        bottom: 2px;
         font-weight: 500;
         color: $dark2;
+        padding: 8px 0;
+        display: block;
         cursor: pointer;
         &.active {
             color: $dark;

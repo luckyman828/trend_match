@@ -1,7 +1,7 @@
 <template>
     <div class="dropdown-wrapper" ref="wrapper">
 
-        <slot name="button" :toggle="toggle" :collapsed="collapsed" rel="test">
+        <slot name="button" :toggle="toggle" :collapsed="collapsed">
             <span class="button" @click="toggle">Open dropdown</span>
         </slot>
 
@@ -33,7 +33,10 @@ export default {
     methods: {
         toggle() {
             // Set the height if the dropdown is being shown
-            if (this.collapsed) this.setHeight()
+            if (this.collapsed) {
+                this.setPos()
+                this.setHeight()
+            }
             
             this.collapsed = !this.collapsed
         },
@@ -51,6 +54,11 @@ export default {
         },
         // Set the height of the component
         setHeight() {
+            const el = this.$refs.dropdown
+            el.style.maxHeight = el.scrollHeight + 'px'
+
+        },
+        setPos() {
             const offset = 8
             const el = this.$refs.dropdown
 
@@ -70,50 +78,35 @@ export default {
             const elRect = el.getBoundingClientRect()
             const parentRect = parent.getBoundingClientRect()
 
-            // // Align the dropdown after the parent
-            // if (parent != null) {
-            //     // Top + Right align
-            //     if (wrapper.classList.contains('right'))
-            //         el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft + parentWidth - elWidth + offset}px ;max-height: ${el.scrollHeight}px;`
-
-            //     // Top + Left align
-            //     else if (wrapper.classList.contains('left'))
-            //         el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft - offset}px ;max-height: ${el.scrollHeight}px;`
-                
-            //     // Top + Center align (DEFAULT)
-            //     else
-            //         el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft + ( parentWidth / 2 ) - ( elWidth / 2 ) }px ;max-height: ${el.scrollHeight}px;`
-            // }
-            // else el.style.cssText = `max-height: ${el.scrollHeight}px;`
-
             // Align the dropdown after the parent
             if (parent != null) {
                 // Top + Right align
+                el.style.top = `${parentRect.bottom + offset}px`
                 if (wrapper.classList.contains('right'))
-                    el.style.cssText = `top: ${parentRect.bottom + offset}px; left: ${parentLeft + parentWidth - elWidth + offset}px ;max-height: ${el.scrollHeight}px;`
-                    // el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft + parentWidth - elWidth + offset}px ;max-height: ${el.scrollHeight}px;`
+                    el.style.left = `${parentLeft + parentWidth - elWidth + offset}px`
+                    // el.style.cssText = `top: ${parentRect.bottom + offset}px; left: ${parentLeft + parentWidth - elWidth + offset}px ;max-height: ${el.scrollHeight}px;`
 
                 // Top + Left align
                 else if (wrapper.classList.contains('left'))
-                    el.style.cssText = `top: ${parentRect.bottom + offset}px; left: ${parentLeft - offset}px ;max-height: ${el.scrollHeight}px;`
-                    // el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft - offset}px ;max-height: ${el.scrollHeight}px;`
+                    el.style.left = `${parentLeft - offset}px`
+                    // el.style.cssText = `top: ${parentRect.bottom + offset}px; left: ${parentLeft - offset}px ;max-height: ${el.scrollHeight}px;`
                 
                 // Top + Center align (DEFAULT)
-                else {
-                    el.style.cssText = `top: ${parentRect.bottom + offset}px; left: ${parentRect.left + ( parentWidth / 2 ) - ( elWidth / 2 ) }px ;max-height: ${el.scrollHeight}px;`
-                    // el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft + ( parentWidth / 2 ) - ( elWidth / 2 ) }px ;max-height: ${el.scrollHeight}px;`
-                }
+                else el.style.left = `${parentRect.left + ( parentWidth / 2 ) - ( elWidth / 2 ) }px`
             }
-            else el.style.cssText = `max-height: ${el.scrollHeight}px;`
-
+        },
+        handleScroll() {
+            if (!this.collapsed) {
+                this.setPos()
+            }
         }
     },
-    mounted() {
-        this.setHeight()
+    created () {
+        window.addEventListener('scroll', this.handleScroll);
     },
-    updated() {
-        // this.setHeight()
-    },
+    destroyed () {
+        window.removeEventListener('scroll', this.handleScroll);
+    }
 }
 </script>
 

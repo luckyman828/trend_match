@@ -7489,7 +7489,11 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     toggle: function toggle() {
       // Set the height if the dropdown is being shown
-      if (this.collapsed) this.setHeight();
+      if (this.collapsed) {
+        this.setPos();
+        this.setHeight();
+      }
+
       this.collapsed = !this.collapsed;
     },
     getPosition: function getPosition(element) {
@@ -7509,6 +7513,10 @@ __webpack_require__.r(__webpack_exports__);
     },
     // Set the height of the component
     setHeight: function setHeight() {
+      var el = this.$refs.dropdown;
+      el.style.maxHeight = el.scrollHeight + 'px';
+    },
+    setPos: function setPos() {
       var offset = 8;
       var el = this.$refs.dropdown;
       var wrapper = this.$refs.wrapper; // const parent = el.closest('.dropdown-parent') // Use set element as parent
@@ -7523,31 +7531,91 @@ __webpack_require__.r(__webpack_exports__);
       var elHeight = el.getBoundingClientRect().height;
       var elWidth = el.getBoundingClientRect().width;
       var elRect = el.getBoundingClientRect();
-      var parentRect = parent.getBoundingClientRect(); // // Align the dropdown after the parent
-      // if (parent != null) {
-      //     // Top + Right align
-      //     if (wrapper.classList.contains('right'))
-      //         el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft + parentWidth - elWidth + offset}px ;max-height: ${el.scrollHeight}px;`
-      //     // Top + Left align
-      //     else if (wrapper.classList.contains('left'))
-      //         el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft - offset}px ;max-height: ${el.scrollHeight}px;`
-      //     // Top + Center align (DEFAULT)
-      //     else
-      //         el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft + ( parentWidth / 2 ) - ( elWidth / 2 ) }px ;max-height: ${el.scrollHeight}px;`
-      // }
-      // else el.style.cssText = `max-height: ${el.scrollHeight}px;`
-      // Align the dropdown after the parent
+      var parentRect = parent.getBoundingClientRect(); // Align the dropdown after the parent
 
       if (parent != null) {
         // Top + Right align
-        if (wrapper.classList.contains('right')) el.style.cssText = "top: ".concat(parentRect.bottom + offset, "px; left: ").concat(parentLeft + parentWidth - elWidth + offset, "px ;max-height: ").concat(el.scrollHeight, "px;"); // el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft + parentWidth - elWidth + offset}px ;max-height: ${el.scrollHeight}px;`
+        el.style.top = "".concat(parentRect.bottom + offset, "px");
+        if (wrapper.classList.contains('right')) el.style.left = "".concat(parentLeft + parentWidth - elWidth + offset, "px"); // el.style.cssText = `top: ${parentRect.bottom + offset}px; left: ${parentLeft + parentWidth - elWidth + offset}px ;max-height: ${el.scrollHeight}px;`
         // Top + Left align
-        else if (wrapper.classList.contains('left')) el.style.cssText = "top: ".concat(parentRect.bottom + offset, "px; left: ").concat(parentLeft - offset, "px ;max-height: ").concat(el.scrollHeight, "px;"); // el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft - offset}px ;max-height: ${el.scrollHeight}px;`
+        else if (wrapper.classList.contains('left')) el.style.left = "".concat(parentLeft - offset, "px"); // el.style.cssText = `top: ${parentRect.bottom + offset}px; left: ${parentLeft - offset}px ;max-height: ${el.scrollHeight}px;`
           // Top + Center align (DEFAULT)
-          else {
-              el.style.cssText = "top: ".concat(parentRect.bottom + offset, "px; left: ").concat(parentRect.left + parentWidth / 2 - elWidth / 2, "px ;max-height: ").concat(el.scrollHeight, "px;"); // el.style.cssText = `top: ${parentTop + parentHeight + offset}px; left: ${parentLeft + ( parentWidth / 2 ) - ( elWidth / 2 ) }px ;max-height: ${el.scrollHeight}px;`
-            }
-      } else el.style.cssText = "max-height: ".concat(el.scrollHeight, "px;");
+          else el.style.left = "".concat(parentRect.left + parentWidth / 2 - elWidth / 2, "px");
+      }
+    },
+    handleScroll: function handleScroll() {
+      if (!this.collapsed) {
+        this.setPos();
+      }
+    }
+  },
+  created: function created() {
+    window.addEventListener('scroll', this.handleScroll);
+  },
+  destroyed: function destroyed() {
+    window.removeEventListener('scroll', this.handleScroll);
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownV2.vue?vue&type=script&lang=js&":
+/*!*********************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DropdownV2.vue?vue&type=script&lang=js& ***!
+  \*********************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'dropdownV2',
+  data: function data() {
+    return {
+      collapsed: true
+    };
+  },
+  methods: {
+    toggle: function toggle() {
+      // Set the height if the dropdown is being shown
+      if (this.collapsed) this.setHeight();
+      this.collapsed = !this.collapsed;
+    },
+    // Set the height of the component
+    setHeight: function setHeight() {
+      var el = this.$refs.dropdown;
+      var trigger = this.$refs.trigger;
+      var offset = 8;
+      console.log(trigger.scrollHeight);
+      el.style.cssText = "top: ".concat(trigger.scrollHeight + offset, "px; max-height: ").concat(el.scrollHeight, "px;");
     }
   },
   mounted: function mounted() {
@@ -7926,10 +7994,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Dropdown */ "./resources/js/components/Dropdown.vue");
-/* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./RadioButtons */ "./resources/js/components/RadioButtons.vue");
-/* harmony import */ var _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./input/CheckboxButtons */ "./resources/js/components/input/CheckboxButtons.vue");
-/* harmony import */ var _Modal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Modal */ "./resources/js/components/Modal.vue");
-/* harmony import */ var _store_models_Role__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../store/models/Role */ "./resources/js/store/models/Role.js");
+/* harmony import */ var _DropdownV2__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DropdownV2 */ "./resources/js/components/DropdownV2.vue");
+/* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./RadioButtons */ "./resources/js/components/RadioButtons.vue");
+/* harmony import */ var _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./input/CheckboxButtons */ "./resources/js/components/input/CheckboxButtons.vue");
+/* harmony import */ var _Modal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Modal */ "./resources/js/components/Modal.vue");
+/* harmony import */ var _store_models_Role__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../store/models/Role */ "./resources/js/store/models/Role.js");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -8049,6 +8118,28 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -8060,9 +8151,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   props: ['team', 'users', 'authUser', 'teams'],
   components: {
     Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_1__["default"],
-    RadioButtons: _RadioButtons__WEBPACK_IMPORTED_MODULE_2__["default"],
-    Modal: _Modal__WEBPACK_IMPORTED_MODULE_4__["default"],
-    CheckboxButtons: _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_3__["default"]
+    DropdownV2: _DropdownV2__WEBPACK_IMPORTED_MODULE_2__["default"],
+    RadioButtons: _RadioButtons__WEBPACK_IMPORTED_MODULE_3__["default"],
+    Modal: _Modal__WEBPACK_IMPORTED_MODULE_5__["default"],
+    CheckboxButtons: _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_4__["default"]
   },
   data: function data() {
     return {
@@ -8079,7 +8171,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     roles: function roles() {
       var _this = this;
 
-      return _store_models_Role__WEBPACK_IMPORTED_MODULE_5__["default"].all().filter(function (role) {
+      return _store_models_Role__WEBPACK_IMPORTED_MODULE_6__["default"].all().filter(function (role) {
         return role.id <= _this.userPermissionLevel;
       });
     },
@@ -14942,6 +15034,25 @@ exports.push([module.i, ".dropdown {\n  position: fixed;\n  width: -webkit-fit-c
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownV2.vue?vue&type=style&index=0&id=715d86d0&scoped=true&lang=scss&":
+/*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DropdownV2.vue?vue&type=style&index=0&id=715d86d0&scoped=true&lang=scss& ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".dropdown-wrapper[data-v-715d86d0] {\n  position: relative;\n}\n.dropdown-wrapper.right .dropdown[data-v-715d86d0] {\n  left: auto;\n  right: 0;\n  -webkit-transform: none;\n          transform: none;\n}\n.dropdown-wrapper.left .dropdown[data-v-715d86d0] {\n  left: 0;\n  right: auto;\n  -webkit-transform: none;\n          transform: none;\n}\n.dropdown[data-v-715d86d0] {\n  position: absolute;\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  left: 50%;\n  -webkit-transform: translateX(-50%);\n          transform: translateX(-50%);\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/FilesTable.vue?vue&type=style&index=0&id=18d38cc2&scoped=true&lang=scss&":
 /*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/FilesTable.vue?vue&type=style&index=0&id=18d38cc2&scoped=true&lang=scss& ***!
@@ -15030,7 +15141,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "label.team[data-v-95e58d5a] {\n  position: relative;\n}\nlabel.team .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 8px;\n  top: 8px;\n  background: #3b86ff;\n  color: white;\n  height: 24px;\n  width: 24px;\n  text-align: center;\n}\nlabel.team .square i[data-v-95e58d5a] {\n  font-size: 10px;\n  line-height: 24px;\n}\n.open-dropdown[data-v-95e58d5a] {\n  position: absolute;\n  right: 8px;\n  bottom: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n}\n.open-dropdown.active[data-v-95e58d5a] {\n  color: #1b1c1d;\n}\n.open-dropdown[data-v-95e58d5a]:hover {\n  color: #535353;\n}\n.open-dropdown i[data-v-95e58d5a] {\n  margin-left: 8px;\n}\nh4[data-v-95e58d5a] {\n  font-size: 16px;\n  color: #a8a8a8;\n  margin: 0;\n  font-weight: 500;\n  margin-bottom: 16px;\n}\nlabel.team[data-v-95e58d5a] {\n  margin-bottom: calc(24px + 1em);\n}\n.user[data-v-95e58d5a] {\n  margin-bottom: calc(32px + 2em - 2px);\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.user[data-v-95e58d5a]:last-child {\n  margin-bottom: calc(20px + 2em - 2px);\n}\n.user .flex-wrapper[data-v-95e58d5a] {\n  opacity: 0;\n}\n.user.card[data-v-95e58d5a] {\n  margin-top: -14px;\n  margin-left: -1em;\n  margin-right: -1em;\n  width: calc(100% + 2em);\n  margin-bottom: 32px;\n}\n.user.card .flex-wrapper[data-v-95e58d5a] {\n  opacity: 1;\n}\n.user.card[data-v-95e58d5a]:last-child {\n  margin-bottom: 20px;\n}\nform[data-v-95e58d5a] {\n  margin-bottom: 60px;\n}\n.flex-wrapper[data-v-95e58d5a] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.add-more[data-v-95e58d5a] {\n  margin-bottom: 24px;\n}\nlabel.role input[data-v-95e58d5a] {\n  color: transparent;\n}\nlabel.role .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 12px;\n  bottom: 4px;\n}", ""]);
+exports.push([module.i, "label.team[data-v-95e58d5a] {\n  position: relative;\n}\nlabel.team .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 8px;\n  top: 8px;\n  background: #3b86ff;\n  color: white;\n  height: 24px;\n  width: 24px;\n  text-align: center;\n}\nlabel.team .square i[data-v-95e58d5a] {\n  font-size: 10px;\n  line-height: 24px;\n}\n.open-dropdown[data-v-95e58d5a] {\n  position: absolute;\n  right: 8px;\n  bottom: 2px;\n  font-weight: 500;\n  color: #a8a8a8;\n  padding: 8px 0;\n  display: block;\n  cursor: pointer;\n}\n.open-dropdown.active[data-v-95e58d5a] {\n  color: #1b1c1d;\n}\n.open-dropdown[data-v-95e58d5a]:hover {\n  color: #535353;\n}\n.open-dropdown i[data-v-95e58d5a] {\n  margin-left: 8px;\n}\nh4[data-v-95e58d5a] {\n  font-size: 16px;\n  color: #a8a8a8;\n  margin: 0;\n  font-weight: 500;\n  margin-bottom: 16px;\n}\nlabel.team[data-v-95e58d5a] {\n  margin-bottom: calc(24px + 1em);\n}\n.user[data-v-95e58d5a] {\n  margin-bottom: calc(32px + 2em - 2px);\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.user[data-v-95e58d5a]:last-child {\n  margin-bottom: calc(20px + 2em - 2px);\n}\n.user .flex-wrapper[data-v-95e58d5a] {\n  opacity: 0;\n}\n.user.card[data-v-95e58d5a] {\n  margin-top: -14px;\n  margin-left: -1em;\n  margin-right: -1em;\n  width: calc(100% + 2em);\n  margin-bottom: 32px;\n}\n.user.card .flex-wrapper[data-v-95e58d5a] {\n  opacity: 1;\n}\n.user.card[data-v-95e58d5a]:last-child {\n  margin-bottom: 20px;\n}\nform[data-v-95e58d5a] {\n  margin-bottom: 60px;\n}\n.flex-wrapper[data-v-95e58d5a] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.add-more[data-v-95e58d5a] {\n  margin-bottom: 24px;\n}\nlabel.role input[data-v-95e58d5a] {\n  color: transparent;\n}\nlabel.role .square[data-v-95e58d5a] {\n  position: absolute;\n  left: 12px;\n  bottom: 4px;\n}", ""]);
 
 // exports
 
@@ -24779,6 +24890,36 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownV2.vue?vue&type=style&index=0&id=715d86d0&scoped=true&lang=scss&":
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DropdownV2.vue?vue&type=style&index=0&id=715d86d0&scoped=true&lang=scss& ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownV2.vue?vue&type=style&index=0&id=715d86d0&scoped=true&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownV2.vue?vue&type=style&index=0&id=715d86d0&scoped=true&lang=scss&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/FilesTable.vue?vue&type=style&index=0&id=18d38cc2&scoped=true&lang=scss&":
 /*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/lib/loader.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/FilesTable.vue?vue&type=style&index=0&id=18d38cc2&scoped=true&lang=scss& ***!
@@ -26620,7 +26761,7 @@ var render = function() {
             _vm._v("Open dropdown")
           ])
         ],
-        { toggle: _vm.toggle, collapsed: _vm.collapsed, rel: "test" }
+        { toggle: _vm.toggle, collapsed: _vm.collapsed }
       ),
       _vm._v(" "),
       _c("div", {
@@ -26664,6 +26805,86 @@ var render = function() {
     ],
     2
   )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownV2.vue?vue&type=template&id=715d86d0&scoped=true&":
+/*!*************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/DropdownV2.vue?vue&type=template&id=715d86d0&scoped=true& ***!
+  \*************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { ref: "wrapper", staticClass: "dropdown-wrapper" }, [
+    _c(
+      "div",
+      { ref: "trigger", staticClass: "dropdown-trigger" },
+      [
+        _vm._t(
+          "button",
+          [
+            _c("span", { staticClass: "button", on: { click: _vm.toggle } }, [
+              _vm._v("Open dropdown")
+            ])
+          ],
+          { toggle: _vm.toggle, collapsed: _vm.collapsed }
+        )
+      ],
+      2
+    ),
+    _vm._v(" "),
+    _c("div", {
+      staticClass: "overlay invisible",
+      class: { active: !_vm.collapsed },
+      on: { click: _vm.toggle }
+    }),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        ref: "dropdown",
+        staticClass: "dropdown",
+        class: { collapsed: _vm.collapsed }
+      },
+      [
+        _c("div", { staticClass: "inner" }, [
+          _c(
+            "div",
+            { staticClass: "header" },
+            [_vm._t("header", null, { toggle: _vm.toggle })],
+            2
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "body" },
+            [_vm._t("body", null, { toggle: _vm.toggle })],
+            2
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "footer" },
+            [_vm._t("footer", null, { toggle: _vm.toggle })],
+            2
+          )
+        ])
+      ]
+    )
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -50766,6 +50987,93 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Dropdown_vue_vue_type_template_id_ef782e08___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Dropdown_vue_vue_type_template_id_ef782e08___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/DropdownV2.vue":
+/*!************************************************!*\
+  !*** ./resources/js/components/DropdownV2.vue ***!
+  \************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _DropdownV2_vue_vue_type_template_id_715d86d0_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DropdownV2.vue?vue&type=template&id=715d86d0&scoped=true& */ "./resources/js/components/DropdownV2.vue?vue&type=template&id=715d86d0&scoped=true&");
+/* harmony import */ var _DropdownV2_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DropdownV2.vue?vue&type=script&lang=js& */ "./resources/js/components/DropdownV2.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _DropdownV2_vue_vue_type_style_index_0_id_715d86d0_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DropdownV2.vue?vue&type=style&index=0&id=715d86d0&scoped=true&lang=scss& */ "./resources/js/components/DropdownV2.vue?vue&type=style&index=0&id=715d86d0&scoped=true&lang=scss&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _DropdownV2_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _DropdownV2_vue_vue_type_template_id_715d86d0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _DropdownV2_vue_vue_type_template_id_715d86d0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "715d86d0",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/DropdownV2.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/DropdownV2.vue?vue&type=script&lang=js&":
+/*!*************************************************************************!*\
+  !*** ./resources/js/components/DropdownV2.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownV2_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownV2.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownV2.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownV2_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/DropdownV2.vue?vue&type=style&index=0&id=715d86d0&scoped=true&lang=scss&":
+/*!**********************************************************************************************************!*\
+  !*** ./resources/js/components/DropdownV2.vue?vue&type=style&index=0&id=715d86d0&scoped=true&lang=scss& ***!
+  \**********************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownV2_vue_vue_type_style_index_0_id_715d86d0_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--7-2!../../../node_modules/sass-loader/lib/loader.js??ref--7-3!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownV2.vue?vue&type=style&index=0&id=715d86d0&scoped=true&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/lib/loader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownV2.vue?vue&type=style&index=0&id=715d86d0&scoped=true&lang=scss&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownV2_vue_vue_type_style_index_0_id_715d86d0_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownV2_vue_vue_type_style_index_0_id_715d86d0_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownV2_vue_vue_type_style_index_0_id_715d86d0_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownV2_vue_vue_type_style_index_0_id_715d86d0_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_lib_loader_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownV2_vue_vue_type_style_index_0_id_715d86d0_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/DropdownV2.vue?vue&type=template&id=715d86d0&scoped=true&":
+/*!*******************************************************************************************!*\
+  !*** ./resources/js/components/DropdownV2.vue?vue&type=template&id=715d86d0&scoped=true& ***!
+  \*******************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownV2_vue_vue_type_template_id_715d86d0_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./DropdownV2.vue?vue&type=template&id=715d86d0&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/DropdownV2.vue?vue&type=template&id=715d86d0&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownV2_vue_vue_type_template_id_715d86d0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DropdownV2_vue_vue_type_template_id_715d86d0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

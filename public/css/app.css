@@ -9937,6 +9937,7 @@ textarea {
 .checkbox-buttons.dark label,
 .dark .checkbox-buttons label {
   border-color: #43425d;
+  color: white;
 }
 
 .radio-buttons.dark label:hover,
