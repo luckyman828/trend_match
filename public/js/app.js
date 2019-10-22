@@ -11742,7 +11742,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       console.log('User Tasks recalculated');
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productsScopedTotals']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])('entities/products', ['selectedCategories', 'selectedDeliveryDates']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productsFilteredTotals']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])('entities/products', ['selectedCategories', 'selectedDeliveryDates']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', {
     allProducts: 'products'
   }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files', 'currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/tasks', ['userTasks', 'tasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentTask', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']), {
     defaultTeam: function defaultTeam() {
@@ -34176,7 +34176,7 @@ var render = function() {
                   _vm._v(" "),
                   _c("product-tabs", {
                     attrs: {
-                      productTotals: _vm.productsScopedTotals,
+                      productTotals: _vm.productsFilteredTotals,
                       currentFilter: _vm.currentProductFilter
                     },
                     on: { setProductFilter: _vm.setProductFilter }
@@ -59083,8 +59083,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       return data;
     },
-    productsScopedTotals: function productsScopedTotals(state, getters, rootState, rootGetters) {
-      var products = getters.productsScoped;
+    productsFilteredTotals: function productsFilteredTotals(state, getters, rootState, rootGetters) {
+      var products = getters.productsScopedFiltered;
       var currentTask = rootGetters['persist/currentTask'];
       var data = {
         products: 0,

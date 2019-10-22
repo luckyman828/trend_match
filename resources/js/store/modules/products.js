@@ -366,8 +366,8 @@ export default {
             }
             return data
         },
-        productsScopedTotals(state, getters, rootState, rootGetters) {
-            const products = getters.productsScoped
+        productsFilteredTotals(state, getters, rootState, rootGetters) {
+            const products = getters.productsScopedFiltered
             const currentTask = rootGetters['persist/currentTask']
             const data = {
                 products: 0,
