@@ -9829,7 +9829,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'products',
-  props: ['products', 'loading', 'authUser', 'collection', 'selectedCount', 'totalProductCount', 'teams', 'sortAsc', 'sortBy', 'selectedIds', 'teamUsers'],
+  props: ['products', 'loading', 'authUser', 'collection', 'selectedCount', 'totalProductCount', 'teams', 'sortAsc', 'sortBy', 'selectedIds'],
   components: {
     Loader: _Loader__WEBPACK_IMPORTED_MODULE_0__["default"],
     ProductTotals: _ProductTotals__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -11698,7 +11698,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
-      currentProductFilter: 'overview',
+      // currentProductFilter: 'overview',
       selectedProductIDs: [],
       // selectedCategoryIDs: [],
       // selectedCategories: [],
@@ -11742,7 +11742,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       console.log('User Tasks recalculated');
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'productsScoped']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])('entities/products', ['selectedCategories', 'selectedDeliveryDates']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productTotals']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])('entities/products', ['selectedCategories', 'selectedDeliveryDates']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', {
     allProducts: 'products'
   }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files', 'currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/tasks', ['userTasks', 'tasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentTask', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']), {
     defaultTeam: function defaultTeam() {
@@ -11750,6 +11750,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         id: 0,
         title: 'Global'
       };else return null;
+    },
+    currentProductFilter: {
+      get: function get() {
+        return this.$store.state.entities.products.currentProductFilter;
+      },
+      set: function set(value) {
+        this.setCurrentProductFilter(value);
+      }
     },
     selectedCategories: {
       get: function get() {
@@ -11778,73 +11786,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     products: function products() {
       return this.productsScoped;
     },
-    teamProducts: function teamProducts() {
-      return _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_21__["default"]["with"]('products').all();
-    },
-    phaseProducts: function phaseProducts() {
-      return _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_22__["default"]["with"]('products').all();
-    },
     collection: function collection() {
       return this.currentFile;
-    },
-    productsFilteredByCategory: function productsFilteredByCategory() {
-      var products = this.products;
-      var categories = this.selectedCategories;
-      var deliveryDates = this.selectedDeliveryDates;
-      var productsToReturn = products; // First filter by category
-
-      if (categories.length > 0) {
-        var filteredByCategory = productsToReturn.filter(function (product) {
-          return Array.from(categories).includes(product.category);
-        });
-        productsToReturn = filteredByCategory;
-      } // Filter by delivery date
-
-
-      if (deliveryDates.length > 0) {
-        var filteredByDeliveryDate = productsToReturn.filter(function (product) {
-          return Array.from(deliveryDates).includes(product.delivery_date);
-        });
-        productsToReturn = filteredByDeliveryDate;
-      } // Filer by unread
-
-
-      if (this.unreadOnly) {
-        var filteredByUnread = productsToReturn.filter(function (product) {
-          return product.newComment;
-        });
-        productsToReturn = filteredByUnread;
-      }
-
-      return productsToReturn;
-    },
-    productsFiltered: function productsFiltered() {
-      var _this = this;
-
-      var method = this.currentProductFilter;
-      var products = this.productsFilteredByCategory;
-      var productsToReturn = products; // filter by in/out
-
-      if (['ins', 'outs', 'nds'].includes(method)) {
-        var filteredByAction = products.filter(function (product) {
-          if (method == 'nds') {
-            if (_this.currentTask.type == 'approval') {
-              return product.currentAction == null && product.requests.length > 0;
-            } else return product.currentAction == null && !product.outInFilter;
-          } else if (method == 'ins') {
-            if (product.currentAction) return product.currentAction.action >= 1 && !product.outInFilter;
-
-            if (_this.currentTask.type == 'approval') {
-              if (product.inheritedAction && product.requests.length < 1) return product.inheritedAction.action >= 1;
-            }
-          } else if (method == 'outs') {
-            if (product.currentAction) return product.currentAction.action < 1;else if (product.outInFilter) return true;
-          }
-        });
-        productsToReturn = filteredByAction;
-      }
-
-      return productsToReturn;
     },
     sortMethod: function sortMethod() {
       var key = this.sortBy;
@@ -11869,83 +11812,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return sortMethod;
     },
     selectedProducts: function selectedProducts() {
-      var products = this.productsFiltered;
+      var products = this.productsScopedFiltered;
       var selectedProducts = [];
       this.selectedProductIDs.forEach(function (index) {
         selectedProducts.push(products[index].id);
       });
       return selectedProducts;
-    },
-    productTotals: function productTotals() {
-      var _this2 = this;
-
-      var products = this.productsFilteredByCategory;
-      var data = {
-        products: products.length,
-        ins: 0,
-        outs: 0,
-        nds: 0
-      };
-      products.forEach(function (product) {
-        if (product.outInFilter) {
-          data.outs++;
-        } else if (product.currentAction == null) {
-          if (_this2.currentTask.type == 'approval') {
-            if (product.requests.length > 0) {
-              data.nds++;
-            } else {
-              data.ins++;
-            }
-          } else {
-            data.nds++;
-          }
-        } else {
-          if (product.currentAction.action == 0) {
-            data.outs++;
-          } else {
-            data.ins++;
-          }
-        }
-      });
-      return data;
-    },
-    teamUsers: function teamUsers() {
-      var _this3 = this;
-
-      var usersToReturn = [];
-
-      if (this.teamFilterId > 0) {
-        var thisTeam = this.teams.find(function (team) {
-          return team.id == _this3.teamFilterId;
-        });
-        if (thisTeam) thisTeam.users.forEach(function (user) {
-          var fileUser = _this3.collection.users.find(function (x) {
-            return x.id == user.id;
-          });
-
-          if (fileUser) usersToReturn.push(fileUser);
-        });
-      }
-
-      return usersToReturn;
-    },
-    actions: function actions() {
-      return this.$store.getters['entities/actions/all']();
-    },
-    comments: function comments() {
-      var comments = _store_models_Comment__WEBPACK_IMPORTED_MODULE_10__["default"].query()["with"](['votes', 'user.teams']).all();
-      var teamFilterId = this.teamFilterId;
-
-      if (teamFilterId > 0) {
-        var commentsToReturn = [];
-        comments.forEach(function (comment) {
-          if (comment.user.teams[0].id == teamFilterId) commentsToReturn.push(comment);
-        });
-        return commentsToReturn;
-      } else return comments;
-    },
-    categories: function categories() {
-      return _store_models_Category__WEBPACK_IMPORTED_MODULE_17__["default"].query()["with"]('products').all();
     },
     dynamicCategories: function dynamicCategories() {
       var products = this.products;
@@ -11973,18 +11845,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       return uniqueDeliveryDates;
     },
-    finalActions: function finalActions() {
-      return _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_15__["default"].query().all();
-    },
-    commentVotes: function commentVotes() {
-      return _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_16__["default"].query()["with"]('comment').all();
-    },
-    users: function users() {
-      return _store_models_User__WEBPACK_IMPORTED_MODULE_12__["default"].query()["with"]('teams').all();
-    },
-    teams: function teams() {
-      return this.$store.getters['entities/teams/teams'];
-    },
     teamsForFilter: function teamsForFilter() {
       if (this.userPermissionLevel >= 3) {
         var teamsToReturn = JSON.parse(JSON.stringify(this.teams));
@@ -11996,7 +11856,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else return this.teams;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapMutations"])('entities/products', ['updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setTeamFilter', 'setCurrentTaskId']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapMutations"])('entities/products', ['updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setTeamFilter', 'setCurrentTaskId']), {
     setProductFilter: function setProductFilter(filter) {
       this.currentProductFilter = filter;
       this.clearSelectedProducts();
@@ -12024,7 +11884,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.selectedCategoryIDs = [];
     },
     submitSelectedAction: function submitSelectedAction(method) {
-      var _this4 = this;
+      var _this = this;
 
       // Find out whether we should update or delete the products final actions
       var phase = this.collection.phase;
@@ -12034,12 +11894,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var productsToUpdate = [];
       var productsToCreate = [];
       this.selectedProducts.forEach(function (product) {
-        var thisProduct = _this4.products.find(function (x) {
+        var thisProduct = _this.products.find(function (x) {
           return x.id == product;
         });
 
         if (thisProduct.currentAction != null) {
-          console.log(_this4.product);
+          console.log(_this.product);
           console.log('There is an action!'); // If product has a final action
 
           if (thisProduct.currentAction.action != actionType) {
@@ -12101,7 +11961,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     sortProducts: function sortProducts(keyOverwrite) {
       console.log('sorting products');
-      var products = this.productsFiltered; // let key = this.sortBy
+      var products = this.productsScopedFiltered; // let key = this.sortBy
 
       var key = keyOverwrite ? keyOverwrite : this.sortBy;
       var sortAsc = keyOverwrite ? true : this.sortAsc;
@@ -34319,7 +34179,6 @@ var render = function() {
                   _c("products", {
                     ref: "productsComponent",
                     attrs: {
-                      teamUsers: _vm.teamUsers,
                       selectedIds: _vm.selectedProductIDs,
                       sortBy: _vm.sortBy,
                       sortAsc: _vm.sortAsc,
@@ -34327,7 +34186,7 @@ var render = function() {
                       totalProductCount: _vm.products.length,
                       selectedCount: _vm.selectedProducts.length,
                       collection: _vm.collection,
-                      products: _vm.productsFiltered,
+                      products: _vm.productsScopedFiltered,
                       loading: _vm.loadingProducts,
                       authUser: _vm.authUser
                     },
@@ -34339,7 +34198,7 @@ var render = function() {
                   _vm._v(" "),
                   _c("SelectedController", {
                     attrs: {
-                      totalCount: _vm.productsFiltered.length,
+                      totalCount: _vm.productsScopedFiltered.length,
                       selected: _vm.selectedProductIDs
                     },
                     on: {
@@ -53612,15 +53471,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!*******************************************************!*\
   !*** ./resources/js/components/screens/Catalogue.vue ***!
   \*******************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Catalogue_vue_vue_type_template_id_76e8b686_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Catalogue.vue?vue&type=template&id=76e8b686&scoped=true& */ "./resources/js/components/screens/Catalogue.vue?vue&type=template&id=76e8b686&scoped=true&");
 /* harmony import */ var _Catalogue_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Catalogue.vue?vue&type=script&lang=js& */ "./resources/js/components/screens/Catalogue.vue?vue&type=script&lang=js&");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Catalogue_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Catalogue_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _Catalogue_vue_vue_type_style_index_0_id_76e8b686_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Catalogue.vue?vue&type=style&index=0&id=76e8b686&scoped=true&lang=scss& */ "./resources/js/components/screens/Catalogue.vue?vue&type=style&index=0&id=76e8b686&scoped=true&lang=scss&");
+/* empty/unused harmony star reexport *//* harmony import */ var _Catalogue_vue_vue_type_style_index_0_id_76e8b686_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Catalogue.vue?vue&type=style&index=0&id=76e8b686&scoped=true&lang=scss& */ "./resources/js/components/screens/Catalogue.vue?vue&type=style&index=0&id=76e8b686&scoped=true&lang=scss&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -53652,7 +53510,7 @@ component.options.__file = "resources/js/components/screens/Catalogue.vue"
 /*!********************************************************************************!*\
   !*** ./resources/js/components/screens/Catalogue.vue?vue&type=script&lang=js& ***!
   \********************************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -58886,7 +58744,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     availableProductIds: [],
     selectedCategories: [],
     selectedDeliveryDates: [],
-    unreadOnly: false
+    unreadOnly: false,
+    currentProductFilter: null
   },
   getters: {
     loadingProducts: function loadingProducts(state) {
@@ -58903,6 +58762,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     unreadOnly: function unreadOnly(state) {
       return state.unreadOnly;
+    },
+    currentProductFilter: function currentProductFilter(state) {
+      return state.currentProductFilter;
     },
     products: function products(state, getters, rootState, rootGetters) {
       if (!rootGetters['persist/loadingInit'] && !state.loading && rootGetters['persist/currentTask'] != null) {
@@ -59170,6 +59032,51 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         return [];
       }
     },
+    productTotals: function productTotals(state, getters, rootState, rootGetters) {
+      var products = getters.products;
+      var currentTask = rootGetters['persist/currentTask'];
+      var data = {
+        products: 0,
+        ins: 0,
+        outs: 0,
+        nds: 0,
+        totalDecisionsToMake: 0
+      };
+
+      if (products) {
+        data.products = products.length;
+        products.forEach(function (product) {
+          if (product.outInFilter) {
+            data.outs++;
+          } else if (product.currentAction == null) {
+            if (currentTask.type == 'approval') {
+              if (product.requests.length > 0) {
+                data.nds++;
+              } else {
+                data.ins++;
+              }
+            } else {
+              data.nds++;
+            }
+          } else {
+            if (product.currentAction.action == 0) {
+              data.outs++;
+            } else {
+              data.ins++;
+            }
+          } // Calculate how many product decisions have to be made in the task
+
+
+          if (currentTask.type == 'approval' && !product.outInFilter && product.requests.length > 0) {
+            data.totalDecisionsToMake++;
+          } else if (currentTask.type == 'decision' && !product.outInFilter) {
+            data.totalDecisionsToMake++;
+          }
+        });
+      }
+
+      return data;
+    },
     productsScopedTotals: function productsScopedTotals(state, getters, rootState, rootGetters) {
       var products = getters.productsScoped;
       var currentTask = rootGetters['persist/currentTask'];
@@ -59215,32 +59122,132 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       return data;
     },
-    // productsFilteredByCategory (state, getters, rootState, rootGetters) {
-    //     const products = getters.products
-    //     const categories = getters.selectedCategories
-    //     const deliveryDates = getters.selectedDeliveryDates
-    //     let productsToReturn = products
-    //     // First filter by category
-    //     if (categories.length > 0) {
-    //         const filteredByCategory = productsToReturn.filter(product => {
-    //             return Array.from(categories).includes(product.category)
-    //         })
-    //         productsToReturn = filteredByCategory
-    //     }
-    //     // Filter by delivery date
-    //     if (deliveryDates.length > 0) {
-    //         const filteredByDeliveryDate = productsToReturn.filter(product => {
-    //             return Array.from(deliveryDates).includes(product.delivery_date)
-    //         })
-    //         productsToReturn = filteredByDeliveryDate
-    //     }
-    //     // Filer by unread
-    //     if (this.unreadOnly) {
-    //         const filteredByUnread = productsToReturn.filter(product => product.newComment)
-    //         productsToReturn = filteredByUnread
-    //     }
-    //     return productsToReturn
-    // },
+    productsFilteredByCategory: function productsFilteredByCategory(state, getters, rootState, rootGetters) {
+      var products = getters.products;
+      var categories = getters.selectedCategories;
+      var deliveryDates = getters.selectedDeliveryDates;
+      var unreadOnly = getters.unreadOnly;
+      var productsToReturn = [];
+
+      if (products) {
+        productsToReturn = products; // First filter by category
+
+        if (categories.length > 0) {
+          var filteredByCategory = productsToReturn.filter(function (product) {
+            return Array.from(categories).includes(product.category);
+          });
+          productsToReturn = filteredByCategory;
+        } // Filter by delivery date
+
+
+        if (deliveryDates.length > 0) {
+          var filteredByDeliveryDate = productsToReturn.filter(function (product) {
+            return Array.from(deliveryDates).includes(product.delivery_date);
+          });
+          productsToReturn = filteredByDeliveryDate;
+        } // Filer by unread
+
+
+        if (unreadOnly) {
+          var filteredByUnread = productsToReturn.filter(function (product) {
+            return product.newComment;
+          });
+          productsToReturn = filteredByUnread;
+        }
+      }
+
+      return productsToReturn;
+    },
+    productsScopedFilteredByCategory: function productsScopedFilteredByCategory(state, getters, rootState, rootGetters) {
+      var products = getters.productsScoped;
+      var categories = getters.selectedCategories;
+      var deliveryDates = getters.selectedDeliveryDates;
+      var unreadOnly = getters.unreadOnly;
+      var productsToReturn = [];
+
+      if (products) {
+        productsToReturn = products; // First filter by category
+
+        if (categories.length > 0) {
+          var filteredByCategory = productsToReturn.filter(function (product) {
+            return Array.from(categories).includes(product.category);
+          });
+          productsToReturn = filteredByCategory;
+        } // Filter by delivery date
+
+
+        if (deliveryDates.length > 0) {
+          var filteredByDeliveryDate = productsToReturn.filter(function (product) {
+            return Array.from(deliveryDates).includes(product.delivery_date);
+          });
+          productsToReturn = filteredByDeliveryDate;
+        } // Filer by unread
+
+
+        if (unreadOnly) {
+          var filteredByUnread = productsToReturn.filter(function (product) {
+            return product.newComment;
+          });
+          productsToReturn = filteredByUnread;
+        }
+      }
+
+      return productsToReturn;
+    },
+    productsFiltered: function productsFiltered(state, getters, rootState, rootGetters) {
+      var method = getters.currentProductFilter;
+      var products = getters.productsFilteredByCategory;
+      var currentTask = rootGetters['persist/currentTask'];
+      var productsToReturn = products; // filter by in/out
+
+      if (['ins', 'outs', 'nds'].includes(method)) {
+        var filteredByAction = products.filter(function (product) {
+          if (method == 'nds') {
+            if (currentTask.type == 'approval') {
+              return product.currentAction == null && product.requests.length > 0;
+            } else return product.currentAction == null && !product.outInFilter;
+          } else if (method == 'ins') {
+            if (product.currentAction) return product.currentAction.action >= 1 && !product.outInFilter;
+
+            if (currentTask.type == 'approval') {
+              if (product.inheritedAction && product.requests.length < 1) return product.inheritedAction.action >= 1;
+            }
+          } else if (method == 'outs') {
+            if (product.currentAction) return product.currentAction.action < 1;else if (product.outInFilter) return true;
+          }
+        });
+        productsToReturn = filteredByAction;
+      }
+
+      return productsToReturn;
+    },
+    productsScopedFiltered: function productsScopedFiltered(state, getters, rootState, rootGetters) {
+      var method = getters.currentProductFilter;
+      var products = getters.productsScopedFilteredByCategory;
+      var currentTask = rootGetters['persist/currentTask'];
+      var productsToReturn = products; // filter by in/out
+
+      if (['ins', 'outs', 'nds'].includes(method)) {
+        var filteredByAction = products.filter(function (product) {
+          if (method == 'nds') {
+            if (currentTask.type == 'approval') {
+              return product.currentAction == null && product.requests.length > 0;
+            } else return product.currentAction == null && !product.outInFilter;
+          } else if (method == 'ins') {
+            if (product.currentAction) return product.currentAction.action >= 1 && !product.outInFilter;
+
+            if (currentTask.type == 'approval') {
+              if (product.inheritedAction && product.requests.length < 1) return product.inheritedAction.action >= 1;
+            }
+          } else if (method == 'outs') {
+            if (product.currentAction) return product.currentAction.action < 1;else if (product.outInFilter) return true;
+          }
+        });
+        productsToReturn = filteredByAction;
+      }
+
+      return productsToReturn;
+    },
     availableProductIds: function availableProductIds(state) {
       return state.availableProductIds;
     },
@@ -59383,6 +59390,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     state.selectedDeliveryDates = payload;
   }), _defineProperty(_mutations, "setUnreadOnly", function setUnreadOnly(state, payload) {
     state.unreadOnly = payload;
+  }), _defineProperty(_mutations, "setCurrentProductFilter", function setCurrentProductFilter(state, payload) {
+    state.currentProductFilter = payload;
   }), _mutations)
 });
 
@@ -61263,12 +61272,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     teams: function teams(state, getters, rootState, rootGetters) {
       if (!rootGetters['persist/loadingInit']) {
-        // Manually find the teams and the users belonging to each team.
-        // This is only necessary because I cannot make the Vuex ORM realtionship work
-        // If you can make it work, please be my guest
         var adminPermissionLevel = rootGetters['persist/adminPermissionLevel'];
-        var teams = _models_Team__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('users.role')["with"]('invites')["with"]('teamFiles')["with"]('files')["with"]('phases').all();
-        var users = _models_User__WEBPACK_IMPORTED_MODULE_3__["default"].query()["with"]('teams')["with"]('role').all();
+        var teams = _models_Team__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('users.role')["with"]('invites')["with"]('teamFiles')["with"]('files')["with"]('phases').all(); // const users = User.query()
+        //     .with('teams')
+        //     .with('role')
+        //     .all()
+
         var authUser = _models_AuthUser__WEBPACK_IMPORTED_MODULE_4__["default"].query()["with"]('teams').first();
         if (authUser.role_id >= adminPermissionLevel) return teams;else {
           // Get the users teams
@@ -61281,57 +61290,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           return userTeams;
         }
       }
-    } // teams: (state, getters, rootState, rootGetters) => {
-    //     if (!rootGetters['persist/loadingInit']) {
-    //         // Manually find the teams and the users belonging to each team.
-    //         // This is only necessary because I cannot make the Vuex ORM realtionship work
-    //         // If you can make it work, please be my guest
-    //         const adminPermissionLevel = rootGetters['persist/adminPermissionLevel']
-    //         const teams = Team.query()
-    //             .with('users')
-    //             .with('invites')
-    //             .with('teamFiles')
-    //             .with('files')
-    //             .with('phases')
-    //             .all()
-    //         const users = User.query()
-    //             .with('teams')
-    //             .with('role')
-    //             .all()
-    //         const authUser = AuthUser.query()
-    //             .with('teams')
-    //             .first()
-    //         // Loop through the users and sort them between the teams
-    //         users.forEach(user => {
-    //             // First check that the user has a team and that the team has an id
-    //             if (user.teams[0] != null) {
-    //                 if ('id' in user.teams[0]) {
-    //                     // If we have a team with an id
-    //                     // Set the users role
-    //                     user.teams.forEach(userTeam => {
-    //                         // Loop through each of the users teams and add the user
-    //                         // Find the corresponding team
-    //                         const foundTeam = teams.find(team => team.id == userTeam.id)
-    //                         // Check that the user doesnt already exist in this team
-    //                         if (!foundTeam.users.includes(user))
-    //                             // Push the user to the team if the user is not already a member
-    //                             foundTeam.users.push(user)
-    //                     })
-    //                 }
-    //             }
-    //         })
-    //         if (authUser.role_id >= adminPermissionLevel) return teams
-    //         else {
-    //             // Get the users teams
-    //             let userTeams = []
-    //             teams.forEach(team => {
-    //                 if (authUser.teams.find(x => x.id == team.id)) userTeams.push(team)
-    //             })
-    //             return userTeams
-    //         }
-    //     }
-    // },
-
+    }
   },
   actions: {
     fetchTeams: function () {

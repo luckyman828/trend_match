@@ -89,8 +89,8 @@
                     </div>
                 </div>
                 <product-tabs :productTotals="productTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
-                <products ref="productsComponent" :teamUsers="teamUsers" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="collection.teams" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsFiltered" :loading="loadingProducts" :authUser="authUser" @onSelect="setSelectedProduct"/>
-                <SelectedController :totalCount="productsFiltered.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction" @onClearSelection="clearSelectedProducts"/>
+                <products ref="productsComponent" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="collection.teams" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsScopedFiltered" :loading="loadingProducts" :authUser="authUser" @onSelect="setSelectedProduct"/>
+                <SelectedController :totalCount="productsScopedFiltered.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction" @onClearSelection="clearSelectedProducts"/>
             </template>
             <template v-if="loadingCollections">
                 <Loader/>
@@ -150,7 +150,7 @@ export default{
         RadioButtons,
     },
     data: function () { return {
-        currentProductFilter: 'overview',
+        // currentProductFilter: 'overview',
         selectedProductIDs: [],
         // selectedCategoryIDs: [],
         // selectedCategories: [],
@@ -189,9 +189,7 @@ export default{
         }
     },
     computed: {
-        // ...mapGetters('entities/products', ['loadingProducts', {allProducts: 'products'}, 'productsScopedByInheritance']),
-        // ...mapGetters('entities/products', ['loadingProducts', 'productsScoped', 'selectedCategories', 'selectedDeliveryDates']),
-        ...mapGetters('entities/products', ['loadingProducts', 'productsScoped']),
+        ...mapGetters('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productTotals']),
         ...mapState('entities/products', ['selectedCategories', 'selectedDeliveryDates']),
         ...mapGetters('entities/products', {allProducts: 'products'}),
         ...mapGetters('entities/actions', ['loadingActions']),
@@ -204,6 +202,14 @@ export default{
             if (this.userPermissionLevel >= 3)
                 return {id: 0, title: 'Global'}
             else return null
+        },
+        currentProductFilter: {
+            get () {
+                return this.$store.state.entities.products.currentProductFilter
+            },
+            set (value) {
+                this.setCurrentProductFilter(value)
+            }
         },
         selectedCategories: {
             get () {
@@ -232,80 +238,8 @@ export default{
         products() {
             return this.productsScoped
         },
-        teamProducts() {
-            return TeamProduct.with('products').all()
-        },
-        phaseProducts() {
-            return PhaseProduct.with('products').all()
-        },
         collection() {
             return this.currentFile
-        },
-        productsFilteredByCategory() {
-            const products = this.products
-            const categories = this.selectedCategories
-            const deliveryDates = this.selectedDeliveryDates
-            let productsToReturn = products
-
-            // First filter by category
-            if (categories.length > 0) {
-                
-                const filteredByCategory = productsToReturn.filter(product => {
-                        return Array.from(categories).includes(product.category)
-                })
-                productsToReturn = filteredByCategory
-            }
-            // Filter by delivery date
-            if (deliveryDates.length > 0) {
-                
-                const filteredByDeliveryDate = productsToReturn.filter(product => {
-                        return Array.from(deliveryDates).includes(product.delivery_date)
-                })
-                productsToReturn = filteredByDeliveryDate
-            }
-
-            // Filer by unread
-            if (this.unreadOnly) {
-                const filteredByUnread = productsToReturn.filter(product => product.newComment)
-                productsToReturn = filteredByUnread
-            }
-
-            return productsToReturn
-        },
-        productsFiltered() {
-            const method = this.currentProductFilter
-            const products = this.productsFilteredByCategory
-            let productsToReturn = products
-
-            // filter by in/out
-            if ( ['ins', 'outs', 'nds'].includes(method) ) {
-                const filteredByAction = products.filter(product => {
-                    
-                    if (method == 'nds') {
-                        if (this.currentTask.type == 'approval') {
-                            return (product.currentAction == null && product.requests.length > 0)
-                        }
-                        else
-                            return product.currentAction == null && !product.outInFilter
-                    }
-                    else if (method == 'ins') {
-                        if (product.currentAction)
-                            return product.currentAction.action >= 1 && !product.outInFilter
-                        if (this.currentTask.type == 'approval') {
-                            if (product.inheritedAction && product.requests.length < 1)
-                                return product.inheritedAction.action >= 1
-                        }
-                    } else if (method == 'outs') {
-                        if (product.currentAction)
-                            return product.currentAction.action < 1
-                        else if (product.outInFilter) return true
-                    }
-                })
-                productsToReturn = filteredByAction
-            }
-
-            
-            return productsToReturn
         },
         sortMethod () {
             let key = this.sortBy
@@ -332,78 +266,12 @@ export default{
             return sortMethod
         },
         selectedProducts() {
-            const products = this.productsFiltered
+            const products = this.productsScopedFiltered
             const selectedProducts = []
             this.selectedProductIDs.forEach(index => {
                 selectedProducts.push(products[index].id)
             })
             return selectedProducts
-        },
-        productTotals() {
-            const products = this.productsFilteredByCategory
-            const data = {
-                products: products.length,
-                ins: 0,
-                outs: 0,
-                nds: 0,
-            }
-            products.forEach(product => {
-                if (product.outInFilter) {
-                    data.outs++
-                }
-                else if (product.currentAction == null) {
-                    if (this.currentTask.type == 'approval') {
-                        if (product.requests.length > 0) {
-                            data.nds++
-                        } else {
-                            data.ins++
-                        }
-                        
-                    } else {
-                        data.nds++
-                    }
-                } else {
-                    if (product.currentAction.action == 0) {
-                        data.outs++
-                    } else {
-                        data.ins++
-                    }
-                }
-
-            })
-            return data
-        },
-        teamUsers () {
-            let usersToReturn = []
-            if (this.teamFilterId > 0) {
-                const thisTeam = this.teams.find(team => team.id == this.teamFilterId)
-                if (thisTeam)
-                    thisTeam.users.forEach(user => {
-                        const fileUser = this.collection.users.find(x => x.id == user.id)
-                        if (fileUser)
-                            usersToReturn.push(fileUser)
-                    })
-            } 
-            return usersToReturn
-        },
-        actions() {
-            return this.$store.getters['entities/actions/all']()
-        },
-        comments() {
-            const comments = Comment.query().with(['votes', 'user.teams']).all()
-            const teamFilterId = this.teamFilterId
-            if (teamFilterId > 0) {
-                let commentsToReturn = []
-                comments.forEach(comment => {
-                    if (comment.user.teams[0].id == teamFilterId)
-                        commentsToReturn.push(comment)
-                })
-                return commentsToReturn
-            } 
-            else return comments
-        },
-        categories() {
-            return Category.query().with('products').all()
         },
         dynamicCategories() {
             const products = this.products
@@ -428,18 +296,6 @@ export default{
             })
             return uniqueDeliveryDates
         },
-        finalActions() {
-            return ProductFinalAction.query().all()
-        },
-        commentVotes() {
-            return CommentVote.query().with('comment').all()
-        },
-        users () {
-            return User.query().with('teams').all()
-        },
-        teams () {
-            return this.$store.getters['entities/teams/teams']
-        },
         teamsForFilter() {
             if (this.userPermissionLevel >= 3) {
                 const teamsToReturn = JSON.parse(JSON.stringify(this.teams))
@@ -452,7 +308,7 @@ export default{
     methods: {
         ...mapActions('entities/collections', ['fetchCollections']),
         ...mapActions('entities/products', ['fetchProducts']),
-        ...mapMutations('entities/products', ['updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly']),
+        ...mapMutations('entities/products', ['updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter']),
         ...mapActions('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/comments', ['fetchComments']),
@@ -534,7 +390,7 @@ export default{
         sortProducts(keyOverwrite) {
             console.log('sorting products')
 
-            const products = this.productsFiltered
+            const products = this.productsScopedFiltered
             // let key = this.sortBy
             let key = (keyOverwrite) ? keyOverwrite : this.sortBy
             let sortAsc = (keyOverwrite) ? true : this.sortAsc

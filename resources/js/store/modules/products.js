@@ -12,6 +12,7 @@ export default {
         selectedCategories: [],
         selectedDeliveryDates: [],
         unreadOnly: false,
+        currentProductFilter: null,
     },
 
     getters: {
@@ -29,6 +30,9 @@ export default {
         },
         unreadOnly: state => {
             return state.unreadOnly
+        },
+        currentProductFilter: state => {
+            return state.currentProductFilter
         },
         products: (state, getters, rootState, rootGetters) => {
             if (!rootGetters['persist/loadingInit'] && !state.loading && rootGetters['persist/currentTask'] != null) {
@@ -319,6 +323,49 @@ export default {
                 return []
             }
         },
+        productTotals(state, getters, rootState, rootGetters) {
+            const products = getters.products
+            const currentTask = rootGetters['persist/currentTask']
+            const data = {
+                products: 0,
+                ins: 0,
+                outs: 0,
+                nds: 0,
+                totalDecisionsToMake: 0,
+            }
+            if (products) {
+                data.products = products.length
+                products.forEach(product => {
+                    if (product.outInFilter) {
+                        data.outs++
+                    } else if (product.currentAction == null) {
+                        if (currentTask.type == 'approval') {
+                            if (product.requests.length > 0) {
+                                data.nds++
+                            } else {
+                                data.ins++
+                            }
+                        } else {
+                            data.nds++
+                        }
+                    } else {
+                        if (product.currentAction.action == 0) {
+                            data.outs++
+                        } else {
+                            data.ins++
+                        }
+                    }
+
+                    // Calculate how many product decisions have to be made in the task
+                    if (currentTask.type == 'approval' && !product.outInFilter && product.requests.length > 0) {
+                        data.totalDecisionsToMake++
+                    } else if (currentTask.type == 'decision' && !product.outInFilter) {
+                        data.totalDecisionsToMake++
+                    }
+                })
+            }
+            return data
+        },
         productsScopedTotals(state, getters, rootState, rootGetters) {
             const products = getters.productsScoped
             const currentTask = rootGetters['persist/currentTask']
@@ -362,35 +409,130 @@ export default {
             }
             return data
         },
-        // productsFilteredByCategory (state, getters, rootState, rootGetters) {
-        //     const products = getters.products
-        //     const categories = getters.selectedCategories
-        //     const deliveryDates = getters.selectedDeliveryDates
-        //     let productsToReturn = products
+        productsFilteredByCategory(state, getters, rootState, rootGetters) {
+            const products = getters.products
+            const categories = getters.selectedCategories
+            const deliveryDates = getters.selectedDeliveryDates
+            const unreadOnly = getters.unreadOnly
+            let productsToReturn = []
 
-        //     // First filter by category
-        //     if (categories.length > 0) {
-        //         const filteredByCategory = productsToReturn.filter(product => {
-        //             return Array.from(categories).includes(product.category)
-        //         })
-        //         productsToReturn = filteredByCategory
-        //     }
-        //     // Filter by delivery date
-        //     if (deliveryDates.length > 0) {
-        //         const filteredByDeliveryDate = productsToReturn.filter(product => {
-        //             return Array.from(deliveryDates).includes(product.delivery_date)
-        //         })
-        //         productsToReturn = filteredByDeliveryDate
-        //     }
+            if (products) {
+                productsToReturn = products
+                // First filter by category
+                if (categories.length > 0) {
+                    const filteredByCategory = productsToReturn.filter(product => {
+                        return Array.from(categories).includes(product.category)
+                    })
+                    productsToReturn = filteredByCategory
+                }
+                // Filter by delivery date
+                if (deliveryDates.length > 0) {
+                    const filteredByDeliveryDate = productsToReturn.filter(product => {
+                        return Array.from(deliveryDates).includes(product.delivery_date)
+                    })
+                    productsToReturn = filteredByDeliveryDate
+                }
 
-        //     // Filer by unread
-        //     if (this.unreadOnly) {
-        //         const filteredByUnread = productsToReturn.filter(product => product.newComment)
-        //         productsToReturn = filteredByUnread
-        //     }
+                // Filer by unread
+                if (unreadOnly) {
+                    const filteredByUnread = productsToReturn.filter(product => product.newComment)
+                    productsToReturn = filteredByUnread
+                }
+            }
 
-        //     return productsToReturn
-        // },
+            return productsToReturn
+        },
+        productsScopedFilteredByCategory(state, getters, rootState, rootGetters) {
+            const products = getters.productsScoped
+            const categories = getters.selectedCategories
+            const deliveryDates = getters.selectedDeliveryDates
+            const unreadOnly = getters.unreadOnly
+            let productsToReturn = []
+
+            if (products) {
+                productsToReturn = products
+                // First filter by category
+                if (categories.length > 0) {
+                    const filteredByCategory = productsToReturn.filter(product => {
+                        return Array.from(categories).includes(product.category)
+                    })
+                    productsToReturn = filteredByCategory
+                }
+                // Filter by delivery date
+                if (deliveryDates.length > 0) {
+                    const filteredByDeliveryDate = productsToReturn.filter(product => {
+                        return Array.from(deliveryDates).includes(product.delivery_date)
+                    })
+                    productsToReturn = filteredByDeliveryDate
+                }
+
+                // Filer by unread
+                if (unreadOnly) {
+                    const filteredByUnread = productsToReturn.filter(product => product.newComment)
+                    productsToReturn = filteredByUnread
+                }
+            }
+
+            return productsToReturn
+        },
+        productsFiltered(state, getters, rootState, rootGetters) {
+            const method = getters.currentProductFilter
+            const products = getters.productsFilteredByCategory
+            const currentTask = rootGetters['persist/currentTask']
+            let productsToReturn = products
+
+            // filter by in/out
+            if (['ins', 'outs', 'nds'].includes(method)) {
+                const filteredByAction = products.filter(product => {
+                    if (method == 'nds') {
+                        if (currentTask.type == 'approval') {
+                            return product.currentAction == null && product.requests.length > 0
+                        } else return product.currentAction == null && !product.outInFilter
+                    } else if (method == 'ins') {
+                        if (product.currentAction) return product.currentAction.action >= 1 && !product.outInFilter
+                        if (currentTask.type == 'approval') {
+                            if (product.inheritedAction && product.requests.length < 1)
+                                return product.inheritedAction.action >= 1
+                        }
+                    } else if (method == 'outs') {
+                        if (product.currentAction) return product.currentAction.action < 1
+                        else if (product.outInFilter) return true
+                    }
+                })
+                productsToReturn = filteredByAction
+            }
+
+            return productsToReturn
+        },
+        productsScopedFiltered(state, getters, rootState, rootGetters) {
+            const method = getters.currentProductFilter
+            const products = getters.productsScopedFilteredByCategory
+            const currentTask = rootGetters['persist/currentTask']
+            let productsToReturn = products
+
+            // filter by in/out
+            if (['ins', 'outs', 'nds'].includes(method)) {
+                const filteredByAction = products.filter(product => {
+                    if (method == 'nds') {
+                        if (currentTask.type == 'approval') {
+                            return product.currentAction == null && product.requests.length > 0
+                        } else return product.currentAction == null && !product.outInFilter
+                    } else if (method == 'ins') {
+                        if (product.currentAction) return product.currentAction.action >= 1 && !product.outInFilter
+                        if (currentTask.type == 'approval') {
+                            if (product.inheritedAction && product.requests.length < 1)
+                                return product.inheritedAction.action >= 1
+                        }
+                    } else if (method == 'outs') {
+                        if (product.currentAction) return product.currentAction.action < 1
+                        else if (product.outInFilter) return true
+                    }
+                })
+                productsToReturn = filteredByAction
+            }
+
+            return productsToReturn
+        },
         availableProductIds: state => {
             return state.availableProductIds
         },
@@ -478,6 +620,9 @@ export default {
         },
         setUnreadOnly(state, payload) {
             state.unreadOnly = payload
+        },
+        setCurrentProductFilter(state, payload) {
+            state.currentProductFilter = payload
         },
     },
 }

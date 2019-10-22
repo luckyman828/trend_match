@@ -209,7 +209,6 @@ export default {
         'sortAsc',
         'sortBy',
         'selectedIds',
-        'teamUsers',
     ],
     components: {
         Loader,
