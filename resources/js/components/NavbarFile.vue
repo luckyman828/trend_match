@@ -25,14 +25,14 @@
         </div>
 
         <!-- PDF FOR EXPORT MARKUP -->
-        <div class="example-pdf" ref="exportToPdf" v-if="(currentTask.type == 'decision' || currentTask.type == 'approval') && this.products.length > 1" 
+        <div class="example-pdf" ref="exportToPdf" v-if="(currentTask.type == 'decision' || currentTask.type == 'approval') && this.products.length > 0" 
             style="font-family: arial, helvetica, sans-serif;">
             <div ref="pdfWrapper" style="font-family: 'Roboto', sans-serif, helvetica, arial; position: relative;">
                 <div style="height: 1040px; width: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center;">
                     <span style="font-size: 28px; font-weight: 700; margin-top: 20px;">{{currentWorkspace.name}}</span>
                     <div>
                         <span style="font-size: 28px; font-weight: 700; display: block; margin-bottom: 20px;">{{currentFile.title}}</span>
-                        <span style="color: #3B86FF; font-size: 20px; font-weight: 700; display: block;">{{products.length}} styles</span>
+                        <span style="color: #3B86FF; font-size: 20px; font-weight: 700; display: block;">{{products.length}} style{{products.length > 1 ? 's' : ''}}</span>
                     </div>
                     <img style="display: block; margin: 0 auto; width: 150px;" src="https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/kollekt_logo_color.png">
                 </div>
@@ -92,17 +92,17 @@
         <!-- PDF ENDS  -->
 
 
-        <Modal ref="exportModal" :header="'Export <strong>' + currentFile.title + '</strong> to PDF'" :subHeader="'Export the current products to a PDF.'">
+        <Modal ref="exportModal" :header="'Export <strong>' + currentFile.title + '</strong> to PDF'" :subHeader="'The products in your current view will be exported'">
             <template v-slot:body>
                 <form>
                     <div class="form-element">
-                        <div class="input-wrapper check-button">
+                        <label class="input-wrapper check-button">
                             <div class="checkbox">
                                 <input type="checkbox" v-model="exportComments">
                                 <span class="checkmark solid"><i class="fas fa-check"></i></span>
                             </div>
                             <span>Include Requests and comments</span>
-                        </div>
+                        </label>
                     </div>
                     <div class="form-element">
                         <label>Export details</label>
@@ -138,8 +138,8 @@ export default {
     }},
     computed: {
         ...mapGetters('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']),
-        // ...mapGetters('entities/products', ['products']),
-        ...mapGetters('entities/products', {products: 'productsScoped'}),
+        // ...mapGetters('entities/products', ['productsScopedFiltered']),
+        ...mapGetters('entities/products', {products: 'productsScopedFiltered'}),
         ...mapGetters('entities/tasks', ['userTasks']),
     },
     methods: {

@@ -8492,7 +8492,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', {
-    products: 'productsScoped'
+    products: 'productsScopedFiltered'
   }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/tasks', ['userTasks'])),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/tasks', ['completeTask', 'undoCompleteTask']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTaskId']), {
     printToPdf: function () {
@@ -28255,7 +28255,7 @@ var render = function() {
       _vm._v(" "),
       (_vm.currentTask.type == "decision" ||
         _vm.currentTask.type == "approval") &&
-      this.products.length > 1
+      this.products.length > 0
         ? _c(
             "div",
             {
@@ -28324,7 +28324,13 @@ var render = function() {
                               display: "block"
                             }
                           },
-                          [_vm._v(_vm._s(_vm.products.length) + " styles")]
+                          [
+                            _vm._v(
+                              _vm._s(_vm.products.length) +
+                                " style" +
+                                _vm._s(_vm.products.length > 1 ? "s" : "")
+                            )
+                          ]
                         )
                       ]),
                       _vm._v(" "),
@@ -28852,7 +28858,7 @@ var render = function() {
         attrs: {
           header:
             "Export <strong>" + _vm.currentFile.title + "</strong> to PDF",
-          subHeader: "Export the current products to a PDF."
+          subHeader: "The products in your current view will be exported"
         },
         scopedSlots: _vm._u([
           {
@@ -28861,7 +28867,7 @@ var render = function() {
               return [
                 _c("form", [
                   _c("div", { staticClass: "form-element" }, [
-                    _c("div", { staticClass: "input-wrapper check-button" }, [
+                    _c("label", { staticClass: "input-wrapper check-button" }, [
                       _c("div", { staticClass: "checkbox" }, [
                         _c("input", {
                           directives: [

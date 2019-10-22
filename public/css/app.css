@@ -8693,7 +8693,7 @@ h2 {
   margin: 12px 0 4px;
 }
 
-label {
+label:not(.input-wrapper) {
   font-size: 12px;
   font-weight: 500;
   color: #3c3b54;
