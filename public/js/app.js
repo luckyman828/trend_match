@@ -11742,7 +11742,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       console.log('User Tasks recalculated');
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productTotals']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])('entities/products', ['selectedCategories', 'selectedDeliveryDates']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productsScopedTotals']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])('entities/products', ['selectedCategories', 'selectedDeliveryDates']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', {
     allProducts: 'products'
   }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files', 'currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/tasks', ['userTasks', 'tasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentTask', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']), {
     defaultTeam: function defaultTeam() {
@@ -34170,7 +34170,7 @@ var render = function() {
                   _vm._v(" "),
                   _c("product-tabs", {
                     attrs: {
-                      productTotals: _vm.productTotals,
+                      productTotals: _vm.productsScopedTotals,
                       currentFilter: _vm.currentProductFilter
                     },
                     on: { setProductFilter: _vm.setProductFilter }
