@@ -88,7 +88,7 @@
                         </Dropdown> -->
                     </div>
                 </div>
-                <product-tabs :productTotals="productsFilteredTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
+                <product-tabs :productTotals="productsScopedFilteredTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
                 <products ref="productsComponent" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="collection.teams" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsScopedFiltered" :loading="loadingProducts" :authUser="authUser" @onSelect="setSelectedProduct"/>
                 <SelectedController :totalCount="productsScopedFiltered.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction" @onClearSelection="clearSelectedProducts"/>
             </template>
@@ -196,7 +196,7 @@ export default{
         }
     },
     computed: {
-        ...mapGetters('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productsFilteredTotals']),
+        ...mapGetters('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productsScopedFilteredTotals']),
         ...mapState('entities/products', ['selectedCategories', 'selectedDeliveryDates']),
         ...mapGetters('entities/products', {allProducts: 'products'}),
         ...mapGetters('entities/actions', ['loadingActions']),

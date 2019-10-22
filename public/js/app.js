@@ -11745,7 +11745,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productsFilteredTotals']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])('entities/products', ['selectedCategories', 'selectedDeliveryDates']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productsScopedFilteredTotals']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])('entities/products', ['selectedCategories', 'selectedDeliveryDates']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', {
     allProducts: 'products'
   }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files', 'currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/tasks', ['userTasks', 'tasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentTask', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']), {
     defaultTeam: function defaultTeam() {
@@ -34196,7 +34196,7 @@ var render = function() {
                   _vm._v(" "),
                   _c("product-tabs", {
                     attrs: {
-                      productTotals: _vm.productsFilteredTotals,
+                      productTotals: _vm.productsScopedFilteredTotals,
                       currentFilter: _vm.currentProductFilter
                     },
                     on: { setProductFilter: _vm.setProductFilter }
@@ -59109,8 +59109,53 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       return data;
     },
-    productsFilteredTotals: function productsFilteredTotals(state, getters, rootState, rootGetters) {
-      var products = getters.productsScopedFiltered;
+    productsScopedFilteredTotals: function productsScopedFilteredTotals(state, getters, rootState, rootGetters) {
+      var products = getters.productsScopedFilteredByCategory;
+      var currentTask = rootGetters['persist/currentTask'];
+      var data = {
+        products: 0,
+        ins: 0,
+        outs: 0,
+        nds: 0,
+        totalDecisionsToMake: 0
+      };
+
+      if (products) {
+        data.products = products.length;
+        products.forEach(function (product) {
+          if (product.outInFilter) {
+            data.outs++;
+          } else if (product.currentAction == null) {
+            if (currentTask.type == 'approval') {
+              if (product.requests.length > 0) {
+                data.nds++;
+              } else {
+                data.ins++;
+              }
+            } else {
+              data.nds++;
+            }
+          } else {
+            if (product.currentAction.action == 0) {
+              data.outs++;
+            } else {
+              data.ins++;
+            }
+          } // Calculate how many product decisions have to be made in the task
+
+
+          if (currentTask.type == 'approval' && !product.outInFilter && product.requests.length > 0) {
+            data.totalDecisionsToMake++;
+          } else if (currentTask.type == 'decision' && !product.outInFilter) {
+            data.totalDecisionsToMake++;
+          }
+        });
+      }
+
+      return data;
+    },
+    productsScopedTotals: function productsScopedTotals(state, getters, rootState, rootGetters) {
+      var products = getters.productsScoped;
       var currentTask = rootGetters['persist/currentTask'];
       var data = {
         products: 0,
