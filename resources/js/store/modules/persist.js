@@ -1,6 +1,7 @@
 import Workspace from '../../store/models/Workspace'
 import Team from '../../store/models/Team'
 import File from '../../store/models/Collection'
+import Action from '../../store/models/Action'
 import AuthUser from '../../store/models/AuthUser'
 import { RootGetters } from '@vuex-orm/core'
 import axios from 'axios'
@@ -69,40 +70,46 @@ export default {
             let progress = 0
             // Find task progress
             if (currentTask) {
-                if ((currentTask.type == 'approval' || currentTask.type == 'decision') && productTotals) {
-                    progress =
-                        Math.round((currentTask.actions.length / productTotals.totalDecisionsToMake) * 100 * 1) / 1
-                } else if (getters.userPermissionLevel > 1) {
-                    progress =
-                        currentTask.type == 'feedback'
-                            ? Math.round(
-                                  (currentTask.actions.length /
-                                      (currentTask.input.length * getters.currentFile.products.length)) *
-                                      100 *
-                                      1
-                              ) / 1
-                            : Math.round((currentTask.actions.length / getters.currentFile.products.length) * 100 * 1) /
-                              1
-                } else {
-                    progress =
-                        Math.round(
-                            (currentTask.actions.filter(x => x.user_id == getters.authUser.id).length /
-                                getters.currentFile.products.length) *
-                                100 *
-                                1
-                        ) / 1
-                }
-
-                if (currentTask.type == 'feedback') {
-                    currentTask.input.forEach(user => {
-                        user.progress =
+                const currentTaskActions = Action.query()
+                    .where('task_id', currentTask.id)
+                    .get()
+                if (currentTaskActions) {
+                    if ((currentTask.type == 'approval' || currentTask.type == 'decision') && productTotals) {
+                        progress =
+                            Math.round((currentTaskActions.length / productTotals.totalDecisionsToMake) * 100 * 1) / 1
+                    } else if (getters.userPermissionLevel > 1) {
+                        progress =
+                            currentTask.type == 'feedback'
+                                ? Math.round(
+                                      (currentTaskActions.length /
+                                          (currentTask.input.length * getters.currentFile.products.length)) *
+                                          100 *
+                                          1
+                                  ) / 1
+                                : Math.round(
+                                      (currentTaskActions.length / getters.currentFile.products.length) * 100 * 1
+                                  ) / 1
+                    } else {
+                        progress =
                             Math.round(
-                                (currentTask.actions.filter(x => x.user_id == user.id).length /
+                                (currentTaskActions.filter(x => x.user_id == getters.authUser.id).length /
                                     getters.currentFile.products.length) *
                                     100 *
                                     1
                             ) / 1
-                    })
+                    }
+
+                    if (currentTask.type == 'feedback') {
+                        currentTask.input.forEach(user => {
+                            user.progress =
+                                Math.round(
+                                    (currentTaskActions.filter(x => x.user_id == user.id).length /
+                                        getters.currentFile.products.length) *
+                                        100 *
+                                        1
+                                ) / 1
+                        })
+                    }
                 }
             }
             return progress

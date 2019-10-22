@@ -21,7 +21,7 @@ export default {
             if (currentFile) {
                 const tasks = Task.query()
                     .with('taskTeams.team.users')
-                    .with('completed|actions|children')
+                    .with('completed|children')
                     .with('parents.completed|parentTask')
                     .get()
                 tasks.forEach(task => {

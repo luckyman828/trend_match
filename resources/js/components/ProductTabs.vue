@@ -21,24 +21,11 @@ export default {
     computed: {
         ...mapGetters('persist', ['currentTask']),
     },
-    watch: {
-        currentTask (newTask, oldTask) {
-            if (newTask.id != oldTask.id) {
-                if (this.currentTask.type == 'approval')
-                    this.setProductFilter('nds')
-                else this.setProductFilter('overview')
-            }
-        }
-    },
     methods: {
         setProductFilter(filter) {
             this.$emit('setProductFilter', filter)
         }
     },
-    mounted() {
-        if (this.currentTask.type == 'approval')
-            this.setProductFilter('nds')
-    }
 }
 </script>
 

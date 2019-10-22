@@ -9567,20 +9567,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   name: 'productTabs',
   props: ['productTotals', 'currentFilter'],
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTask'])),
-  watch: {
-    currentTask: function currentTask(newTask, oldTask) {
-      if (newTask.id != oldTask.id) {
-        if (this.currentTask.type == 'approval') this.setProductFilter('nds');else this.setProductFilter('overview');
-      }
-    }
-  },
   methods: {
     setProductFilter: function setProductFilter(filter) {
       this.$emit('setProductFilter', filter);
     }
-  },
-  mounted: function mounted() {
-    if (this.currentTask.type == 'approval') this.setProductFilter('nds');
   }
 });
 
@@ -11740,6 +11730,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     userTasks: function userTasks(newValue, oldValue) {
       console.log('User Tasks recalculated');
+    },
+    currentTask: function currentTask(newValue, oldValue) {
+      console.log('current task changed!');
+
+      if (newValue.id != oldValue.id) {
+        // If we have a new task set the default filter
+        this.setDefaultFilter();
+      }
     }
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productsFilteredTotals']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])('entities/products', ['selectedCategories', 'selectedDeliveryDates']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', {
@@ -11858,7 +11856,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapMutations"])('entities/products', ['updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setTeamFilter', 'setCurrentTaskId']), {
     setProductFilter: function setProductFilter(filter) {
-      this.currentProductFilter = filter;
+      this.setCurrentProductFilter(filter); // this.currentProductFilter = filter
+
       this.clearSelectedProducts();
     },
     setSelectedProduct: function setSelectedProduct(index) {
@@ -12031,10 +12030,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
       });
       return dataSorted;
+    },
+    setDefaultFilter: function setDefaultFilter() {
+      var _this2 = this;
+
+      // Set the starting product filter
+      if (this.currentTask.completed.find(function (x) {
+        return x.file_id == _this2.currentFile.id;
+      })) {
+        this.setProductFilter('ins');
+      } else if (this.currentTask.type == 'approval') {
+        this.setProductFilter('nds');
+      } else {
+        this.setProductFilter('overview');
+      }
     }
   }),
   mounted: function mounted() {
-    this.sortProducts;
+    // Initially sort the products
+    this.sortProducts();
+    this.setDefaultFilter();
   }
 });
 
@@ -57707,15 +57722,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_models_Workspace__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../store/models/Workspace */ "./resources/js/store/models/Workspace.js");
 /* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
 /* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
-/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _store_models_Action__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../store/models/Action */ "./resources/js/store/models/Action.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_7__);
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -57779,22 +57796,26 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var progress = 0; // Find task progress
 
       if (currentTask) {
-        if ((currentTask.type == 'approval' || currentTask.type == 'decision') && productTotals) {
-          progress = Math.round(currentTask.actions.length / productTotals.totalDecisionsToMake * 100 * 1) / 1;
-        } else if (getters.userPermissionLevel > 1) {
-          progress = currentTask.type == 'feedback' ? Math.round(currentTask.actions.length / (currentTask.input.length * getters.currentFile.products.length) * 100 * 1) / 1 : Math.round(currentTask.actions.length / getters.currentFile.products.length * 100 * 1) / 1;
-        } else {
-          progress = Math.round(currentTask.actions.filter(function (x) {
-            return x.user_id == getters.authUser.id;
-          }).length / getters.currentFile.products.length * 100 * 1) / 1;
-        }
+        var currentTaskActions = _store_models_Action__WEBPACK_IMPORTED_MODULE_4__["default"].query().where('task_id', currentTask.id).get();
 
-        if (currentTask.type == 'feedback') {
-          currentTask.input.forEach(function (user) {
-            user.progress = Math.round(currentTask.actions.filter(function (x) {
-              return x.user_id == user.id;
+        if (currentTaskActions) {
+          if ((currentTask.type == 'approval' || currentTask.type == 'decision') && productTotals) {
+            progress = Math.round(currentTaskActions.length / productTotals.totalDecisionsToMake * 100 * 1) / 1;
+          } else if (getters.userPermissionLevel > 1) {
+            progress = currentTask.type == 'feedback' ? Math.round(currentTaskActions.length / (currentTask.input.length * getters.currentFile.products.length) * 100 * 1) / 1 : Math.round(currentTaskActions.length / getters.currentFile.products.length * 100 * 1) / 1;
+          } else {
+            progress = Math.round(currentTaskActions.filter(function (x) {
+              return x.user_id == getters.authUser.id;
             }).length / getters.currentFile.products.length * 100 * 1) / 1;
-          });
+          }
+
+          if (currentTask.type == 'feedback') {
+            currentTask.input.forEach(function (user) {
+              user.progress = Math.round(currentTaskActions.filter(function (x) {
+                return x.user_id == user.id;
+              }).length / getters.currentFile.products.length * 100 * 1) / 1;
+            });
+          }
         }
       }
 
@@ -57821,7 +57842,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         return 'Phase action';else if (state.userPermissionLevel >= 2) return 'Team action';else return 'Your action';
     },
     authUser: function authUser() {
-      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_4__["default"].query()["with"]('teams.files|teamFiles|tasks.completed')["with"]('workspaces').first();
+      return _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_5__["default"].query()["with"]('teams.files|teamFiles|tasks.completed')["with"]('workspaces').first();
     },
     currentTaskPermissions: function currentTaskPermissions(state, getters, rootState, rootGetters) {
       if (getters.currentTask) {
@@ -57860,7 +57881,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit('setCurrentWorkspace', workspace_id); // Cache the curent workspace id
 
                 _context.next = 5;
-                return axios__WEBPACK_IMPORTED_MODULE_6___default.a.put("/api/cache/workspace", {
+                return axios__WEBPACK_IMPORTED_MODULE_7___default.a.put("/api/cache/workspace", {
                   workspace_id: workspace_id,
                   user_id: user_id
                 }).then(function (response) {
@@ -60316,7 +60337,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var currentFile = rootGetters['persist/currentFile'];
 
       if (currentFile) {
-        var tasks = _models_Task__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('taskTeams.team.users')["with"]('completed|actions|children')["with"]('parents.completed|parentTask').get();
+        var tasks = _models_Task__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('taskTeams.team.users')["with"]('completed|children')["with"]('parents.completed|parentTask').get();
         tasks.forEach(function (task) {
           if (task.phase_id == currentFile.phase) {
             // Find task users

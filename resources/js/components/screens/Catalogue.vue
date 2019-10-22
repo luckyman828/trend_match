@@ -186,6 +186,13 @@ export default{
         },
         userTasks: function(newValue, oldValue) {
             console.log('User Tasks recalculated')
+        },
+        currentTask: function(newValue, oldValue) {
+            console.log('current task changed!')
+            if (newValue.id != oldValue.id) {
+                // If we have a new task set the default filter
+                this.setDefaultFilter()
+            }
         }
     },
     computed: {
@@ -316,7 +323,8 @@ export default{
         ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
         ...mapActions('persist', ['setTeamFilter', 'setCurrentTaskId']),
         setProductFilter(filter) {
-            this.currentProductFilter = filter
+            this.setCurrentProductFilter(filter)
+            // this.currentProductFilter = filter
             this.clearSelectedProducts()
         },
         setSelectedProduct(index) {
@@ -500,9 +508,21 @@ export default{
             })
             return dataSorted
         },
+        setDefaultFilter() {
+            // Set the starting product filter
+            if (this.currentTask.completed.find(x => x.file_id == this.currentFile.id)) {
+                this.setProductFilter('ins')
+            } else if (this.currentTask.type == 'approval') {
+                this.setProductFilter('nds')
+            } else {
+                this.setProductFilter('overview')
+            }
+        }
     },
     mounted() {
-        this.sortProducts
+        // Initially sort the products
+        this.sortProducts()
+        this.setDefaultFilter()
     },
 }
 </script>
