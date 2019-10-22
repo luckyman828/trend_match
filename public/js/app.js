@@ -58751,7 +58751,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     selectedCategories: [],
     selectedDeliveryDates: [],
     unreadOnly: false,
-    currentProductFilter: null
+    currentProductFilter: 'overview'
   },
   getters: {
     loadingProducts: function loadingProducts(state) {

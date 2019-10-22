@@ -12,7 +12,7 @@ export default {
         selectedCategories: [],
         selectedDeliveryDates: [],
         unreadOnly: false,
-        currentProductFilter: null,
+        currentProductFilter: 'overview',
     },
 
     getters: {
