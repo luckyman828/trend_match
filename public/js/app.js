@@ -9284,12 +9284,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       commentScope: 'comments',
       writeScope: 'comment',
       writeActive: false,
-      submittingComment: false
+      submittingComment: false,
+      currentTaskId: null
     };
   },
   watch: {
     product: function product(newVal, oldVal) {
-      if (newVal.id != oldVal.id) this.update();
+      if (newVal.id != oldVal.id || this.currentTaskId != this.currentTask.id) this.update();
     }
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']), {
@@ -9483,7 +9484,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.writeScope = scope;
     },
     update: function update() {
-      // Set the new request equal to the existing if one exists
+      console.log('update comments!'); // Set the new request equal to the existing if one exists
+
       this.newRequest.comment = this.taskRequest ? this.taskRequest.comment : ''; // Set the id of the new request if one exists
 
       this.newRequest.id = this.taskRequest ? this.taskRequest.id : null; // Reset the new comment field
@@ -9504,7 +9506,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else {
         this.commentScope = 'requests';
         this.writeScope = 'request';
-      }
+      } // Save a reference to the current tasks id so we can tell if it has changed
+
+
+      this.currentTaskId = this.currentTask.id;
     },
     hotkeyHandler: function hotkeyHandler(e) {
       var key = e.code;

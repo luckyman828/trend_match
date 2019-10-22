@@ -167,10 +167,11 @@ export default {
         writeScope: 'comment',
         writeActive: false,
         submittingComment: false,
+        currentTaskId: null
     }},
     watch: {
         product(newVal, oldVal) {
-            if (newVal.id != oldVal.id)
+            if (newVal.id != oldVal.id || this.currentTaskId != this.currentTask.id)
                 this.update()
         },
     },
@@ -310,6 +311,7 @@ export default {
             this.writeScope = scope
         },
         update() {
+            console.log('update comments!')
             // Set the new request equal to the existing if one exists
             this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
             // Set the id of the new request if one exists
@@ -332,6 +334,9 @@ export default {
                 this.commentScope = 'requests'
                 this.writeScope = 'request'
             }
+
+            // Save a reference to the current tasks id so we can tell if it has changed
+            this.currentTaskId = this.currentTask.id
         },
         hotkeyHandler(e) {
             const key = e.code
