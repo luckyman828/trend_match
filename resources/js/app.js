@@ -9,11 +9,8 @@ Vue.use(VueRouter)
 import VueDragscroll from 'vue-dragscroll'
 Vue.use(VueDragscroll)
 
-// import VueEcho from 'vue-echo-laravel'
-// Vue.use(VueEcho, {
-//     broadcaster: 'pusher',
-//     host: window.location.hostname + ':6001',
-// })
+import VueCookies from 'vue-cookies'
+Vue.use(VueCookies)
 
 Vue.component('app', require('./App.vue').default)
 

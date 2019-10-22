@@ -9373,8 +9373,8 @@ textarea {
 
 .button.wide,
 .square.wide {
-  width: 155px;
-  padding: 0;
+  min-width: 155px;
+  padding: 0 12px;
 }
 
 .button.xl,

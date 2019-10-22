@@ -14,17 +14,7 @@
                     <span v-else>{{totalProductCount}} records</span>
                 </div>
 
-                <th class="select dropdown-parent" @click="toggleDropdown($event)" v-if="currentTaskPermissions.select">
-                    <Dropdown ref="multiSelectDropdown">
-                        <template v-slot:button="slotProps">
-                            <span @click="slotProps.toggle">Select <i class="fas fa-chevron-down"></i></span>
-                        </template>
-                        <template v-slot:body="slotProps">
-                            <RadioButtons class="no-marks" :options="[{title: 'No IN', id: 'No IN'}, {title: 'No COMMENT & no OUT', id: 'No COMMENT & no OUT'}]" :optionNameKey="'title'" :optionValueKey="'id'" ref="multiSelect" @change="selectByCondition($event); $refs.multiSelect.clear(); $refs.multiSelectDropdown.toggle()"/>
-                        </template>
-                    </Dropdown>
-                </th>
-                <th class="select" v-else-if="currentTaskPermissions.select">
+                <th class="select" v-if="currentTaskPermissions.select">
                     <span>Select</span>
                 </th>
                 <th class="clickable id" :class="{active: this.sortBy == 'datasource_id'}" @click="onSortBy('datasource_id', true)">
@@ -314,40 +304,6 @@ export default {
         },
         onSelect(index) {
             this.$emit('onSelect', index)
-        },
-        selectByCondition(condition) {
-            const selected = this.selectedIds
-            const products = this.products
-            let index = 0
-            products.forEach(product => {
-
-                if (condition == 'No IN') {
-                    if (product.ins.length <= 0 && product.focus.length <= 0) {
-                        // Get the index of the selected product
-                        const found = selected.findIndex(el => el == index)
-                        if (found < 0)
-                            // Select
-                            this.onSelect(index)
-                            // mark checkbox
-                            this.$refs['checkbox-for-' + index][0].checked = true
-                        // console.log(this.$refs['checkbox-for-' + index][0].checked)
-                    }
-                }
-                if (condition == 'No COMMENT & no OUT') {
-                    if (product.comments.length < 1 && product.outs.length < 1) {
-                        // Get the index of the selected product
-                        const found = selected.findIndex(el => el == index)
-                        if (found < 0)
-                            // Select
-                            this.onSelect(index)
-                            // mark checkbox
-                            this.$refs['checkbox-for-' + index][0].checked = true
-                        // console.log(this.$refs['checkbox-for-' + index][0].checked)
-                    }
-                }
-                index++
-
-            })
         },
         onSortBy(key, method) {
             this.$emit('onSortBy', key, method)

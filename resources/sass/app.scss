@@ -384,8 +384,8 @@ textarea {
         padding: 0;
     }
     &.wide {
-        width: 155px;
-        padding: 0;
+        min-width: 155px;
+        padding: 0 12px;
     }
     &.xl {
         height: 50px;

@@ -5,6 +5,12 @@
 
             <template v-if="!loadingCollections">
                 <catalogueHeader :collection="collection"/>
+                <div class="quick-actions" v-if="currentTask.type == 'alignment' && currentTask.isActive && !currentTask.completed.find(x => x.file_id == currentFile.id) && !(hideQuickIn && hideQuickOut) && (productsNoIn.length > 0 || productsNoOutNoComment.length > 0)">
+                    <p>Quick actions</p>
+                    <span v-if="productsNoIn.length > 0 && !hideQuickOut" class="button red wide" @click="OutNoInStyles()">'OUT' styles with no IN ({{productsNoIn.length}})</span>
+                    <span v-if="productsNoOutNoComment.length > 0 && !hideQuickIn" class="button green wide" @click="InNoOutNoCommentStyles()">'IN' styles with no OUT & no Comments ({{productsNoOutNoComment.length}})</span>
+                    <span class="button invisible icon-right red-hover" @click="setHideQuickIn(); setHideQuickOut()">Hide quick actions <i class="far fa-times-circle"></i></span>
+                </div>
                 <div class="filters">
                     <div class="left">
                         <Dropdown class="dropdown-parent left">
@@ -159,6 +165,8 @@ export default{
         sortAsc: true,
         unsub: '',
         test: '',
+        hideQuickOut: false,
+        hideQuickIn: false,
         // unreadOnly: false,
     }},
     watch: {
@@ -311,6 +319,26 @@ export default{
             }
             else return this.teams
         },
+        productsNoIn() {
+            const products = this.productsScopedFiltered
+            let productMatches = []
+            products.forEach(product => {
+                if (product.ins.length <= 0 && product.focus.length <= 0) {
+                    productMatches.push(product)
+                }
+            })
+            return productMatches
+        },
+        productsNoOutNoComment() {
+            const products = this.productsScopedFiltered
+            let productMatches = []
+            products.forEach(product => {
+                if (product.commentsScoped.length < 1 && product.outs.length < 1) {
+                    productMatches.push(product)
+                }
+            })
+            return productMatches
+        },
     },
     methods: {
         ...mapActions('entities/collections', ['fetchCollections']),
@@ -322,6 +350,23 @@ export default{
         ...mapActions('entities/actions', ['updateAction']),
         ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
         ...mapActions('persist', ['setTeamFilter', 'setCurrentTaskId']),
+        InNoOutNoCommentStyles() {
+            console.log('quick ins')
+            this.setHideQuickIn()
+            this.massSubmitAction(this.productsNoOutNoComment, 1)
+        },
+        OutNoInStyles() {
+            this.setHideQuickOut()
+            this.massSubmitAction(this.productsNoIn, 0)
+        },
+        setHideQuickOut() {
+            this.hideQuickOut = true
+            this.$cookies.set(`quick_out_${this.currentFile.id}_${this.currentTask.id}`, true, Infinity)
+        },
+        setHideQuickIn() {
+            this.hideQuickIn = true
+            this.$cookies.set(`quick_in_${this.currentFile.id}_${this.currentTask.id}`, true, Infinity)
+        },
         setProductFilter(filter) {
             this.setCurrentProductFilter(filter)
             // this.currentProductFilter = filter
@@ -347,9 +392,7 @@ export default{
         },
         submitSelectedAction(method) {
             // Find out whether we should update or delete the products final actions
-            const phase = this.collection.phase
             const user_id = this.authUser.id
-            const actionScope = this.actionScope
             const actionType = method
             let productsToUpdate = []
             let productsToCreate = []
@@ -358,8 +401,6 @@ export default{
                 const thisProduct = this.products.find(x => x.id == product)
 
                 if (thisProduct.currentAction != null) {
-                    console.log(this.product)
-                    console.log('There is an action!')
                     // If product has a final action
                     if (thisProduct.currentAction.action != actionType) {
                         // If the products final action isnt the same as the one we are trying to set
@@ -368,6 +409,42 @@ export default{
                 } 
                 // If product does not have a final action
                 else productsToCreate.push(product)
+
+            })
+
+            // Submit the selection
+            if (productsToUpdate.length > 0) {
+                if (this.currentTask.type == 'feedback') {
+                    this.updateManyActions({productIds: productsToUpdate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: null})
+                } else this.updateManyTaskActions({productIds: productsToUpdate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: null})
+            }
+            if (productsToCreate.length > 0) {
+                if (this.currentTask.type == 'feedback') {
+                    this.createManyActions({productIds: productsToCreate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: false})
+                } else this.createManyActions({productIds: productsToCreate, task_id: this.currentTask.id, user_id: user_id, action_code: actionType, is_task_action: true})
+            }
+
+            // Reset the selection
+            this.clearSelectedProducts()
+        },
+        massSubmitAction(products, method) {
+            // Find out whether we should update or delete the products final actions
+            const user_id = this.authUser.id
+            const actionType = method
+            let productsToUpdate = []
+            let productsToCreate = []
+
+            products.forEach(product => {
+
+                if (product.currentAction != null) {
+                    // If product has a final action
+                    if (product.currentAction.action != actionType) {
+                        // If the products final action isnt the same as the one we are trying to set
+                        productsToUpdate.push(product.id)
+                    }
+                } 
+                // If product does not have a final action
+                else productsToCreate.push(product.id)
 
             })
 
@@ -519,6 +596,10 @@ export default{
             }
         }
     },
+    created() {
+        this.hideQuickOut = this.$cookies.get(`quick_out_${this.currentFile.id}_${this.currentTask.id}`)
+        this.hideQuickIn = this.$cookies.get(`quick_in_${this.currentFile.id}_${this.currentTask.id}`)
+    },
     mounted() {
         // Initially sort the products
         this.sortProducts()
@@ -559,6 +640,21 @@ export default{
         .checkmark {
             margin-left: 12px;
             margin-right: -4px;
+        }
+    }
+    .quick-actions {
+        border-bottom: solid 2px $light2;
+        padding-bottom: 16px;
+        margin-bottom: 16px;
+        p {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .button {
+            &:not(:last-child) {
+                margin-right: 12px;
+            }
         }
     }
 </style>

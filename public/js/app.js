@@ -9803,16 +9803,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -9961,43 +9951,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     onSelect: function onSelect(index) {
       this.$emit('onSelect', index);
     },
-    selectByCondition: function selectByCondition(condition) {
-      var _this = this;
-
-      var selected = this.selectedIds;
-      var products = this.products;
-      var index = 0;
-      products.forEach(function (product) {
-        if (condition == 'No IN') {
-          if (product.ins.length <= 0 && product.focus.length <= 0) {
-            // Get the index of the selected product
-            var found = selected.findIndex(function (el) {
-              return el == index;
-            });
-            if (found < 0) // Select
-              _this.onSelect(index); // mark checkbox
-
-            _this.$refs['checkbox-for-' + index][0].checked = true; // console.log(this.$refs['checkbox-for-' + index][0].checked)
-          }
-        }
-
-        if (condition == 'No COMMENT & no OUT') {
-          if (product.comments.length < 1 && product.outs.length < 1) {
-            // Get the index of the selected product
-            var _found = selected.findIndex(function (el) {
-              return el == index;
-            });
-
-            if (_found < 0) // Select
-              _this.onSelect(index); // mark checkbox
-
-            _this.$refs['checkbox-for-' + index][0].checked = true; // console.log(this.$refs['checkbox-for-' + index][0].checked)
-          }
-        }
-
-        index++;
-      });
-    },
     onSortBy: function onSortBy(key, method) {
       this.$emit('onSortBy', key, method);
     },
@@ -10060,7 +10013,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   created: function created() {
-    var _this2 = this;
+    var _this = this;
 
     document.getElementById('main').addEventListener('scroll', this.handleScroll); // Setup event broadcast listening
 
@@ -10068,7 +10021,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var action = e.action;
       console.log('%cPusher: Action Updated', 'font-weight: 900');
 
-      _this2.setAction({
+      _this.setAction({
         productToUpdate: action.product_id,
         task_id: action.task_id,
         user_id: action.user_id,
@@ -10079,12 +10032,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var action = e.action; // console.log('%cPusher: Action Deleted', 'font-weight: 900')
 
       if (action.is_task_action) {
-        _this2.destroyTaskAction({
+        _this.destroyTaskAction({
           productToUpdate: action.product_id,
           task_id: action.task_id
         });
       } else {
-        _this2.destroyAction({
+        _this.destroyAction({
           productToUpdate: action.product_id,
           task_id: action.task_id,
           user_id: action.user_id
@@ -10095,7 +10048,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // console.log(e)
 
       if (request.is_task_action) {
-        _this2.setManyTaskActions({
+        _this.setManyTaskActions({
           productIds: request.product_ids,
           task_id: request.task_id,
           user_id: request.user_id,
@@ -10103,7 +10056,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           is_task_action: request.is_task_action
         });
       } else {
-        _this2.setManyActions({
+        _this.setManyActions({
           productIds: request.product_ids,
           task_id: request.task_id,
           user_id: request.user_id,
@@ -10117,7 +10070,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       console.log(e);
 
       if (actions[0].is_task_action) {
-        _this2.setManyTaskActions({
+        _this.setManyTaskActions({
           productIds: actions.map(function (x) {
             return x.product_id;
           }),
@@ -10127,7 +10080,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           is_task_action: actions[0].is_task_action
         });
       } else {
-        _this2.setManyActions({
+        _this.setManyActions({
           productIds: actions.map(function (x) {
             return x.product_id;
           }),
@@ -10142,7 +10095,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       console.log('%cPusher: Comment Updated', 'font-weight: 900');
       console.log(comment.comment);
 
-      _this2.setComment({
+      _this.setComment({
         comment: comment.comment
       });
     }); // .listen('.comment.deleted', (e) => {
@@ -11652,6 +11605,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -11701,7 +11660,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       sortBy: 'datasource_id',
       sortAsc: true,
       unsub: '',
-      test: '' // unreadOnly: false,
+      test: '',
+      hideQuickOut: false,
+      hideQuickIn: false // unreadOnly: false,
 
     };
   },
@@ -11857,9 +11818,46 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
         return teamsToReturn;
       } else return this.teams;
+    },
+    productsNoIn: function productsNoIn() {
+      var products = this.productsScopedFiltered;
+      var productMatches = [];
+      products.forEach(function (product) {
+        if (product.ins.length <= 0 && product.focus.length <= 0) {
+          productMatches.push(product);
+        }
+      });
+      return productMatches;
+    },
+    productsNoOutNoComment: function productsNoOutNoComment() {
+      var products = this.productsScopedFiltered;
+      var productMatches = [];
+      products.forEach(function (product) {
+        if (product.commentsScoped.length < 1 && product.outs.length < 1) {
+          productMatches.push(product);
+        }
+      });
+      return productMatches;
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapMutations"])('entities/products', ['updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setTeamFilter', 'setCurrentTaskId']), {
+    InNoOutNoCommentStyles: function InNoOutNoCommentStyles() {
+      console.log('quick ins');
+      this.setHideQuickIn();
+      this.massSubmitAction(this.productsNoOutNoComment, 1);
+    },
+    OutNoInStyles: function OutNoInStyles() {
+      this.setHideQuickOut();
+      this.massSubmitAction(this.productsNoIn, 0);
+    },
+    setHideQuickOut: function setHideQuickOut() {
+      this.hideQuickOut = true;
+      this.$cookies.set("quick_out_".concat(this.currentFile.id, "_").concat(this.currentTask.id), true, Infinity);
+    },
+    setHideQuickIn: function setHideQuickIn() {
+      this.hideQuickIn = true;
+      this.$cookies.set("quick_in_".concat(this.currentFile.id, "_").concat(this.currentTask.id), true, Infinity);
+    },
     setProductFilter: function setProductFilter(filter) {
       this.setCurrentProductFilter(filter); // this.currentProductFilter = filter
 
@@ -11891,9 +11889,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this = this;
 
       // Find out whether we should update or delete the products final actions
-      var phase = this.collection.phase;
       var user_id = this.authUser.id;
-      var actionScope = this.actionScope;
       var actionType = method;
       var productsToUpdate = [];
       var productsToCreate = [];
@@ -11903,15 +11899,69 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
 
         if (thisProduct.currentAction != null) {
-          console.log(_this.product);
-          console.log('There is an action!'); // If product has a final action
-
+          // If product has a final action
           if (thisProduct.currentAction.action != actionType) {
             // If the products final action isnt the same as the one we are trying to set
             productsToUpdate.push(product);
           }
         } // If product does not have a final action
         else productsToCreate.push(product);
+      }); // Submit the selection
+
+      if (productsToUpdate.length > 0) {
+        if (this.currentTask.type == 'feedback') {
+          this.updateManyActions({
+            productIds: productsToUpdate,
+            task_id: this.currentTask.id,
+            user_id: user_id,
+            action_code: actionType,
+            is_task_action: null
+          });
+        } else this.updateManyTaskActions({
+          productIds: productsToUpdate,
+          task_id: this.currentTask.id,
+          user_id: user_id,
+          action_code: actionType,
+          is_task_action: null
+        });
+      }
+
+      if (productsToCreate.length > 0) {
+        if (this.currentTask.type == 'feedback') {
+          this.createManyActions({
+            productIds: productsToCreate,
+            task_id: this.currentTask.id,
+            user_id: user_id,
+            action_code: actionType,
+            is_task_action: false
+          });
+        } else this.createManyActions({
+          productIds: productsToCreate,
+          task_id: this.currentTask.id,
+          user_id: user_id,
+          action_code: actionType,
+          is_task_action: true
+        });
+      } // Reset the selection
+
+
+      this.clearSelectedProducts();
+    },
+    massSubmitAction: function massSubmitAction(products, method) {
+      // Find out whether we should update or delete the products final actions
+      var user_id = this.authUser.id;
+      var actionType = method;
+      var productsToUpdate = [];
+      var productsToCreate = [];
+      products.forEach(function (product) {
+        if (product.currentAction != null) {
+          // If product has a final action
+          if (product.currentAction.action != actionType) {
+            // If the products final action isnt the same as the one we are trying to set
+            productsToUpdate.push(product.id);
+          }
+        } // If product does not have a final action
+        else productsToCreate.push(product.id);
       }); // Submit the selection
 
       if (productsToUpdate.length > 0) {
@@ -12051,6 +12101,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     }
   }),
+  created: function created() {
+    this.hideQuickOut = this.$cookies.get("quick_out_".concat(this.currentFile.id, "_").concat(this.currentTask.id));
+    this.hideQuickIn = this.$cookies.get("quick_in_".concat(this.currentFile.id, "_").concat(this.currentTask.id));
+  },
   mounted: function mounted() {
     // Initially sort the products
     this.sortProducts();
@@ -15501,7 +15555,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".filters[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 12px;\n}\n.filters > *[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n}\n.filters > *.left > *[data-v-76e8b686] {\n  margin-right: 16px;\n}\n.filters > *.right > *[data-v-76e8b686] {\n  margin-left: 16px;\n}\n.item-filter-button[data-v-76e8b686] {\n  min-width: 120px;\n  background: #dfdfdf;\n}\n.button.clear[data-v-76e8b686] {\n  margin-left: -16px;\n}\n.checkbutton.checkbox[data-v-76e8b686] {\n  color: #1b1c1d;\n  border: solid 1px;\n  border-color: #dfdfdf;\n  font-weight: 700;\n}\n.checkbutton.checkbox .checkmark[data-v-76e8b686] {\n  margin-left: 12px;\n  margin-right: -4px;\n}", ""]);
+exports.push([module.i, ".filters[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 12px;\n}\n.filters > *[data-v-76e8b686] {\n  display: -webkit-box;\n  display: flex;\n}\n.filters > *.left > *[data-v-76e8b686] {\n  margin-right: 16px;\n}\n.filters > *.right > *[data-v-76e8b686] {\n  margin-left: 16px;\n}\n.item-filter-button[data-v-76e8b686] {\n  min-width: 120px;\n  background: #dfdfdf;\n}\n.button.clear[data-v-76e8b686] {\n  margin-left: -16px;\n}\n.checkbutton.checkbox[data-v-76e8b686] {\n  color: #1b1c1d;\n  border: solid 1px;\n  border-color: #dfdfdf;\n  font-weight: 700;\n}\n.checkbutton.checkbox .checkmark[data-v-76e8b686] {\n  margin-left: 12px;\n  margin-right: -4px;\n}\n.quick-actions[data-v-76e8b686] {\n  border-bottom: solid 2px #dfdfdf;\n  padding-bottom: 16px;\n  margin-bottom: 16px;\n}\n.quick-actions p[data-v-76e8b686] {\n  font-size: 14px;\n  font-weight: 500;\n  margin-bottom: 8px;\n}\n.quick-actions .button[data-v-76e8b686]:not(:last-child) {\n  margin-right: 12px;\n}", ""]);
 
 // exports
 
@@ -26368,6 +26422,132 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
 /***/ }),
 
+/***/ "./node_modules/vue-cookies/vue-cookies.js":
+/*!*************************************************!*\
+  !*** ./node_modules/vue-cookies/vue-cookies.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+    /**
+ * Vue Cookies v1.5.13
+ * https://github.com/cmp-cc/vue-cookies
+ *
+ * Copyright 2016, cmp-cc
+ * Released under the MIT license
+ */
+
+(function() {
+
+    var defaultConfig = {
+        expires : '1d',
+        path : '; path=/'
+    }
+
+    var VueCookies = {
+        // install of Vue
+        install: function(Vue) {
+            Vue.prototype.$cookies = this
+            Vue.cookies = this
+        },
+        config : function(expireTimes,path) {
+            if(expireTimes) {
+                defaultConfig.expires = expireTimes;
+            }
+            if(path) {
+                defaultConfig.path = '; path=' + path;
+            }
+        },
+        get: function(key) {
+            var value = decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(key).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null
+
+            if(value && value.substring(0,1) === "{" && value.substring(value.length-1,value.length) === "}") {
+                try {
+                    value = JSON.parse(value)
+                }catch (e) {
+                    return value;
+                }
+            }
+            return value;
+        },
+        set: function(key, value, expireTimes, path, domain, secure) {
+            if (!key) {
+                throw new Error("cookie name is not find in first argument")
+            }else if(/^(?:expires|max\-age|path|domain|secure)$/i.test(key)){
+                throw new Error("cookie key name illegality ,Cannot be set to ['expires','max-age','path','domain','secure']\t","current key name: "+key);
+            }
+            // support json object
+            if(value && value.constructor === Object) {
+                value = JSON.stringify(value);
+            }
+            var _expires = "";
+            expireTimes = expireTimes === undefined ? defaultConfig.expires : expireTimes;
+            if (expireTimes && expireTimes != 0) {
+                switch (expireTimes.constructor) {
+                    case Number:
+                        if(expireTimes === Infinity || expireTimes === -1) _expires = "; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+                        else _expires = "; max-age=" + expireTimes;
+                        break;
+                    case String:
+                        if (/^(?:\d{1,}(y|m|d|h|min|s))$/i.test(expireTimes)) {
+                            // get capture number group
+                            var _expireTime = expireTimes.replace(/^(\d{1,})(?:y|m|d|h|min|s)$/i, "$1");
+                            // get capture type group , to lower case
+                            switch (expireTimes.replace(/^(?:\d{1,})(y|m|d|h|min|s)$/i, "$1").toLowerCase()) {
+                                // Frequency sorting
+                                case 'm':  _expires = "; max-age=" + +_expireTime * 2592000; break; // 60 * 60 * 24 * 30
+                                case 'd':  _expires = "; max-age=" + +_expireTime * 86400; break; // 60 * 60 * 24
+                                case 'h': _expires = "; max-age=" + +_expireTime * 3600; break; // 60 * 60
+                                case 'min':  _expires = "; max-age=" + +_expireTime * 60; break; // 60
+                                case 's': _expires = "; max-age=" + _expireTime; break;
+                                case 'y': _expires = "; max-age=" + +_expireTime * 31104000; break; // 60 * 60 * 24 * 30 * 12
+                                default: new Error("unknown exception of 'set operation'");
+                            }
+                        } else {
+                            _expires = "; expires=" + expireTimes;
+                        }
+                        break;
+                    case Date:
+                        _expires = "; expires=" + expireTimes.toUTCString();
+                        break;
+                }
+            }
+            document.cookie = encodeURIComponent(key) + "=" + encodeURIComponent(value) + _expires + (domain ? "; domain=" + domain : "") + (path ? "; path=" + path : defaultConfig.path) + (secure ? "; secure" : "");
+            return this;
+        },
+        remove: function(key, path, domain) {
+            if (!key || !this.isKey(key)) {
+                return false;
+            }
+            document.cookie = encodeURIComponent(key) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (domain ? "; domain=" + domain : "") + (path ? "; path=" + path : defaultConfig.path);
+            return this;
+        },
+        isKey: function(key) {
+            return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(key).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+        },
+        keys:  function() {
+            if(!document.cookie) return [];
+            var _keys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
+            for (var _index = 0; _index < _keys.length; _index++) {
+                _keys[_index] = decodeURIComponent(_keys[_index]);
+            }
+            return _keys;
+        }
+    }
+
+    if (true) {
+        module.exports = VueCookies;
+    } else {}
+    // vue-cookies can exist independently,no dependencies library
+    if(typeof window!=="undefined"){
+        window.$cookies = VueCookies;
+    }
+
+})()
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-dragscroll/dist/vue-dragscroll.min.js":
 /*!****************************************************************!*\
   !*** ./node_modules/vue-dragscroll/dist/vue-dragscroll.min.js ***!
@@ -30864,77 +31044,6 @@ var render = function() {
               ]),
               _vm._v(" "),
               _vm.currentTaskPermissions.select
-                ? _c(
-                    "th",
-                    {
-                      staticClass: "select dropdown-parent",
-                      on: {
-                        click: function($event) {
-                          return _vm.toggleDropdown($event)
-                        }
-                      }
-                    },
-                    [
-                      _c("Dropdown", {
-                        ref: "multiSelectDropdown",
-                        scopedSlots: _vm._u(
-                          [
-                            {
-                              key: "button",
-                              fn: function(slotProps) {
-                                return [
-                                  _c(
-                                    "span",
-                                    { on: { click: slotProps.toggle } },
-                                    [
-                                      _vm._v("Select "),
-                                      _c("i", {
-                                        staticClass: "fas fa-chevron-down"
-                                      })
-                                    ]
-                                  )
-                                ]
-                              }
-                            },
-                            {
-                              key: "body",
-                              fn: function(slotProps) {
-                                return [
-                                  _c("RadioButtons", {
-                                    ref: "multiSelect",
-                                    staticClass: "no-marks",
-                                    attrs: {
-                                      options: [
-                                        { title: "No IN", id: "No IN" },
-                                        {
-                                          title: "No COMMENT & no OUT",
-                                          id: "No COMMENT & no OUT"
-                                        }
-                                      ],
-                                      optionNameKey: "title",
-                                      optionValueKey: "id"
-                                    },
-                                    on: {
-                                      change: function($event) {
-                                        _vm.selectByCondition($event)
-                                        _vm.$refs.multiSelect.clear()
-                                        _vm.$refs.multiSelectDropdown.toggle()
-                                      }
-                                    }
-                                  })
-                                ]
-                              }
-                            }
-                          ],
-                          null,
-                          false,
-                          3536152542
-                        )
-                      })
-                    ],
-                    1
-                  )
-                : _vm.currentTaskPermissions.select
                 ? _c("th", { staticClass: "select" }, [
                     _c("span", [_vm._v("Select")])
                   ])
@@ -33865,6 +33974,80 @@ var render = function() {
                   _c("catalogueHeader", {
                     attrs: { collection: _vm.collection }
                   }),
+                  _vm._v(" "),
+                  _vm.currentTask.type == "alignment" &&
+                  _vm.currentTask.isActive &&
+                  !_vm.currentTask.completed.find(function(x) {
+                    return x.file_id == _vm.currentFile.id
+                  }) &&
+                  !(_vm.hideQuickIn && _vm.hideQuickOut) &&
+                  (_vm.productsNoIn.length > 0 ||
+                    _vm.productsNoOutNoComment.length > 0)
+                    ? _c("div", { staticClass: "quick-actions" }, [
+                        _c("p", [_vm._v("Quick actions")]),
+                        _vm._v(" "),
+                        _vm.productsNoIn.length > 0 && !_vm.hideQuickOut
+                          ? _c(
+                              "span",
+                              {
+                                staticClass: "button red wide",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.OutNoInStyles()
+                                  }
+                                }
+                              },
+                              [
+                                _vm._v(
+                                  "'OUT' styles with no IN (" +
+                                    _vm._s(_vm.productsNoIn.length) +
+                                    ")"
+                                )
+                              ]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.productsNoOutNoComment.length > 0 &&
+                        !_vm.hideQuickIn
+                          ? _c(
+                              "span",
+                              {
+                                staticClass: "button green wide",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.InNoOutNoCommentStyles()
+                                  }
+                                }
+                              },
+                              [
+                                _vm._v(
+                                  "'IN' styles with no OUT & no Comments (" +
+                                    _vm._s(_vm.productsNoOutNoComment.length) +
+                                    ")"
+                                )
+                              ]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c(
+                          "span",
+                          {
+                            staticClass:
+                              "button invisible icon-right red-hover",
+                            on: {
+                              click: function($event) {
+                                _vm.setHideQuickIn()
+                                _vm.setHideQuickOut()
+                              }
+                            }
+                          },
+                          [
+                            _vm._v("Hide quick actions "),
+                            _c("i", { staticClass: "far fa-times-circle" })
+                          ]
+                        )
+                      ])
+                    : _vm._e(),
                   _vm._v(" "),
                   _c("div", { staticClass: "filters" }, [
                     _c(
@@ -50483,9 +50666,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
 /* harmony import */ var vue_dragscroll__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-dragscroll */ "./node_modules/vue-dragscroll/dist/vue-dragscroll.min.js");
 /* harmony import */ var vue_dragscroll__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(vue_dragscroll__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _components_screens_loaders_TeamsLoader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/screens/loaders/TeamsLoader */ "./resources/js/components/screens/loaders/TeamsLoader.vue");
-/* harmony import */ var _components_screens_loaders_FileLoader__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/screens/loaders/FileLoader */ "./resources/js/components/screens/loaders/FileLoader.vue");
-/* harmony import */ var _components_screens_loaders_FolderLoader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/screens/loaders/FolderLoader */ "./resources/js/components/screens/loaders/FolderLoader.vue");
+/* harmony import */ var vue_cookies__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue-cookies */ "./node_modules/vue-cookies/vue-cookies.js");
+/* harmony import */ var vue_cookies__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(vue_cookies__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _components_screens_loaders_TeamsLoader__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/screens/loaders/TeamsLoader */ "./resources/js/components/screens/loaders/TeamsLoader.vue");
+/* harmony import */ var _components_screens_loaders_FileLoader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/screens/loaders/FileLoader */ "./resources/js/components/screens/loaders/FileLoader.vue");
+/* harmony import */ var _components_screens_loaders_FolderLoader__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/screens/loaders/FolderLoader */ "./resources/js/components/screens/loaders/FolderLoader.vue");
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
@@ -50493,12 +50678,9 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 
 Vue.use(vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]);
 
-Vue.use(vue_dragscroll__WEBPACK_IMPORTED_MODULE_2___default.a); // import VueEcho from 'vue-echo-laravel'
-// Vue.use(VueEcho, {
-//     broadcaster: 'pusher',
-//     host: window.location.hostname + ':6001',
-// })
+Vue.use(vue_dragscroll__WEBPACK_IMPORTED_MODULE_2___default.a);
 
+Vue.use(vue_cookies__WEBPACK_IMPORTED_MODULE_3___default.a);
 Vue.component('app', __webpack_require__(/*! ./App.vue */ "./resources/js/App.vue")["default"]); // Global components
 
 Vue.component('TooltipAlt2', __webpack_require__(/*! ./components/TooltipAlt2.vue */ "./resources/js/components/TooltipAlt2.vue")["default"]);
@@ -50539,15 +50721,15 @@ Vue.filter('truncate', function (value, limit) {
 var routes = [{
   path: '/catalogue/:catalogueId',
   name: 'catalogue',
-  component: _components_screens_loaders_FileLoader__WEBPACK_IMPORTED_MODULE_4__["default"]
+  component: _components_screens_loaders_FileLoader__WEBPACK_IMPORTED_MODULE_5__["default"]
 }, {
   path: '/collection',
   name: 'collection',
-  component: _components_screens_loaders_FolderLoader__WEBPACK_IMPORTED_MODULE_5__["default"]
+  component: _components_screens_loaders_FolderLoader__WEBPACK_IMPORTED_MODULE_6__["default"]
 }, {
   path: '/teams',
   name: 'teams',
-  component: _components_screens_loaders_TeamsLoader__WEBPACK_IMPORTED_MODULE_3__["default"]
+  component: _components_screens_loaders_TeamsLoader__WEBPACK_IMPORTED_MODULE_4__["default"]
 }, {
   path: '*',
   redirect: '/collection'
