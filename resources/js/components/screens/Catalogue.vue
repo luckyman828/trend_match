@@ -109,7 +109,7 @@
 
 <script>
 import store from '../../store'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 import Products from '../Products'
 import ProductTabs from '../ProductTabs'
 import CatalogueHeader from '../CatalogueHeader'
@@ -152,14 +152,14 @@ export default{
     data: function () { return {
         currentProductFilter: 'overview',
         selectedProductIDs: [],
-        selectedCategoryIDs: [],
-        selectedCategories: [],
-        selectedDeliveryDates: [],
+        // selectedCategoryIDs: [],
+        // selectedCategories: [],
+        // selectedDeliveryDates: [],
         sortBy: 'datasource_id',
         sortAsc: true,
         unsub: '',
         test: '',
-        unreadOnly: false,
+        // unreadOnly: false,
     }},
     watch: {
         products: function(newValue, oldValue) {
@@ -190,7 +190,9 @@ export default{
     },
     computed: {
         // ...mapGetters('entities/products', ['loadingProducts', {allProducts: 'products'}, 'productsScopedByInheritance']),
+        // ...mapGetters('entities/products', ['loadingProducts', 'productsScoped', 'selectedCategories', 'selectedDeliveryDates']),
         ...mapGetters('entities/products', ['loadingProducts', 'productsScoped']),
+        ...mapState('entities/products', ['selectedCategories', 'selectedDeliveryDates']),
         ...mapGetters('entities/products', {allProducts: 'products'}),
         ...mapGetters('entities/actions', ['loadingActions']),
         ...mapGetters('entities/comments', ['loadingComments']),
@@ -202,6 +204,30 @@ export default{
             if (this.userPermissionLevel >= 3)
                 return {id: 0, title: 'Global'}
             else return null
+        },
+        selectedCategories: {
+            get () {
+                return this.$store.state.entities.products.selectedCategories
+            },
+            set (value) {
+                this.updateSelectedCategories(value)
+            }
+        },
+        selectedDeliveryDates: {
+            get () {
+                return this.$store.state.entities.products.selectedDeliveryDates
+            },
+            set (value) {
+                this.updateSelectedDeliveryDates(value)
+            }
+        },
+        unreadOnly: {
+            get () {
+                return this.$store.state.entities.products.unreadOnly
+            },
+            set (value) {
+                this.setUnreadOnly(value)
+            }
         },
         products() {
             return this.productsScoped
@@ -426,6 +452,7 @@ export default{
     methods: {
         ...mapActions('entities/collections', ['fetchCollections']),
         ...mapActions('entities/products', ['fetchProducts']),
+        ...mapMutations('entities/products', ['updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly']),
         ...mapActions('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/comments', ['fetchComments']),

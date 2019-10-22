@@ -9,6 +9,9 @@ export default {
         currentSingleProductId: -1,
         currentProductId: null,
         availableProductIds: [],
+        selectedCategories: [],
+        selectedDeliveryDates: [],
+        unreadOnly: false,
     },
 
     getters: {
@@ -18,10 +21,15 @@ export default {
         currentSingleProductId: state => {
             return state.currentSingleProductId
         },
-        currentProductId: state => {
-            return state.currentProductId
+        selectedCategories: state => {
+            return state.selectedCategories
         },
-        //   currentProduct: state => { return (state.currentProductId != null) ? Product.find(state.currentProductId) : null },
+        selectedDeliveryDates: state => {
+            return state.selectedDeliveryDates
+        },
+        unreadOnly: state => {
+            return state.unreadOnly
+        },
         products: (state, getters, rootState, rootGetters) => {
             if (!rootGetters['persist/loadingInit'] && !state.loading && rootGetters['persist/currentTask'] != null) {
                 const products = Product.query()
@@ -202,28 +210,6 @@ export default {
 
                     // START Group actions by action type (DISTRIBUTION)
                     product.actions.forEach(action => {
-                        // if (currentTask.inheritFromTask) {
-                        //     if (currentTask.inheritFromTask.type == 'alignment') {
-                        //         currentTask.inheritFromTask.parentTasks.forEach(parentTask => {
-                        //             if (action.task_id == parentTask.id) {
-                        //                 if (action.action == 2) {
-                        //                     product.focus.push(action)
-                        //                 } else if (action.action == 1) {
-                        //                     product.ins.push(action)
-                        //                 } else if (action.action == 0) {
-                        //                     product.outs.push(action)
-                        //                 }
-                        //             }
-                        //         })
-                        //     } else if (action.task_id == inherit_from_id) {
-                        //         if (action.action == 2) {
-                        //             product.focus.push(action)
-                        //         } else if (action.action == 1) {
-                        //             product.ins.push(action)
-                        //         } else if (action.action == 0) {
-                        //             product.outs.push(action)
-                        //         }
-                        //     }
                         if (currentTask.type == 'feedback') {
                             if (action.task_id == currentTask.id) {
                                 if (action.action == 2) {
@@ -376,6 +362,35 @@ export default {
             }
             return data
         },
+        // productsFilteredByCategory (state, getters, rootState, rootGetters) {
+        //     const products = getters.products
+        //     const categories = getters.selectedCategories
+        //     const deliveryDates = getters.selectedDeliveryDates
+        //     let productsToReturn = products
+
+        //     // First filter by category
+        //     if (categories.length > 0) {
+        //         const filteredByCategory = productsToReturn.filter(product => {
+        //             return Array.from(categories).includes(product.category)
+        //         })
+        //         productsToReturn = filteredByCategory
+        //     }
+        //     // Filter by delivery date
+        //     if (deliveryDates.length > 0) {
+        //         const filteredByDeliveryDate = productsToReturn.filter(product => {
+        //             return Array.from(deliveryDates).includes(product.delivery_date)
+        //         })
+        //         productsToReturn = filteredByDeliveryDate
+        //     }
+
+        //     // Filer by unread
+        //     if (this.unreadOnly) {
+        //         const filteredByUnread = productsToReturn.filter(product => product.newComment)
+        //         productsToReturn = filteredByUnread
+        //     }
+
+        //     return productsToReturn
+        // },
         availableProductIds: state => {
             return state.availableProductIds
         },
@@ -454,6 +469,15 @@ export default {
         },
         setCurrentProductId(state, id) {
             state.currentProductId = id
+        },
+        updateSelectedCategories(state, payload) {
+            state.selectedCategories = payload
+        },
+        updateSelectedDeliveryDates(state, payload) {
+            state.selectedDeliveryDates = payload
+        },
+        setUnreadOnly(state, payload) {
+            state.unreadOnly = payload
         },
     },
 }
