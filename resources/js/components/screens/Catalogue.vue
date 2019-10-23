@@ -5,7 +5,7 @@
 
             <template v-if="!loadingCollections">
                 <catalogueHeader :collection="collection"/>
-                <div class="quick-actions" v-if="currentTask.type == 'alignment' && currentTask.isActive && !currentTask.completed.find(x => x.file_id == currentFile.id) && !(hideQuickIn && hideQuickOut) && (productsNoIn.length > 0 || productsNoOutNoComment.length > 0)">
+                <div class="quick-actions" v-if="currentTask.type == 'alignment' && currentTask.isActive && !currentTask.completed.find(x => x.file_id == currentFile.id) && !(hideQuickIn && hideQuickOut) && ( (productsNoIn.length > 0 && !hideQuickOut) || (productsNoOutNoComment.length > 0 && !hideQuickIn) )">
                     <p>Quick actions</p>
                     <span v-if="productsNoIn.length > 0 && !hideQuickOut" class="button red wide" @click="OutNoInStyles()">'OUT' styles with no IN ({{productsNoIn.length}})</span>
                     <span v-if="productsNoOutNoComment.length > 0 && !hideQuickIn" class="button green wide" @click="InNoOutNoCommentStyles()">'IN' styles with no OUT & no Comments ({{productsNoOutNoComment.length}})</span>
