@@ -260,7 +260,7 @@ export default{
             let key = this.sortBy
             let sortMethod
             if (!this.loadingProducts) {
-                if (['userAction', 'teamAction', 'phaseAction', 'productFinalAction', 'userAction'].includes(key) ) {
+                if (key == 'action') {
                     sortMethod = 'action'
                 }
                 else if (key == 'focus') {
@@ -494,26 +494,109 @@ export default{
             const dataSorted = products.sort((a, b) => {
 
                 if (sortMethod == 'action') {
-                    if (a[key] != null) {
-                        if (b[key] != null) {
-                            // If A and B has a key
+                    key = 'currentAction'
+                    if (this.currentTask.type == 'approval') {
+                        // First sort by has request
+                        if (a.requests.length > 0 && !a.currentAction) {
+                            if (b.requests.length > 0 && !b.currentAction) {
+                                return 0
+                            } else {
+                                // If only A has requests
+                                if (sortAsc)
+                                    return 1
+                                    else return -1
+                            }
+                        } else if (b.requests.length > 0 && !b.currentAction) {
+                            // If only B has an inherited action
                             if (sortAsc)
-                                return (a[key].action > b[key].action) ? 1 : -1
-                                else return (a[key].action < b[key].action) ? 1 : -1
-                        } else {
-                            // If ONLY A has a key
-                            if (sortAsc)
-                                return 1
-                                else return -1
+                                return -1
+                                else return 1
                         }
-                    } else if (b[key] != null) {
-                        // If ONLY B has a key
-                        if (sortAsc)
-                            return -1
-                            else return 1
-                    } else {
-                        // Neither A nor B has a key
-                        return 0
+                        // Then sort by current action
+                        else if (a[key] != null) {
+                            if (b[key] != null) {
+                                // If A and B has a key
+                                if (sortAsc)
+                                    return (a[key].action > b[key].action) ? 1 : -1
+                                    else return (a[key].action < b[key].action) ? 1 : -1
+                            } else {
+                                // If ONLY A has a key
+                                if (sortAsc)
+                                    return 1
+                                    else return -1
+                            }
+                        } else if (b[key] != null) {
+                            // If ONLY B has a key
+                            if (sortAsc)
+                                return -1
+                                else return 1
+                        }
+                        else return 0
+
+                    }
+                    else if (this.currentTask.type == 'decision') {
+                        // Sort by current action
+                        if (a[key] != null) {
+                            if (b[key] != null) {
+                                // If A and B has a key
+                                if (sortAsc)
+                                    return (a[key].action > b[key].action) ? 1 : -1
+                                    else return (a[key].action < b[key].action) ? 1 : -1
+                            } else {
+                                // If ONLY A has a key
+                                if (sortAsc)
+                                    return 1
+                                    else return -1
+                            }
+                        } else if (b[key] != null) {
+                            // If ONLY B has a key
+                            if (sortAsc)
+                                return -1
+                                else return 1
+                        }
+                        // Sort by out in filter
+                        else if (a.outInFilter) {
+                            if (b.outInFilter) {
+                                return 0
+                            } else {
+                                // If only A has requests
+                                if (sortAsc)
+                                    return 1
+                                    else return -1
+                            }
+                        } else if (b.outInFilter) {
+                            // If only B has an inherited action
+                            if (sortAsc)
+                                return -1
+                                else return 1
+                        }
+                        else return 0
+
+                    }
+                    else {
+
+                        if (a[key] != null) {
+                            if (b[key] != null) {
+                                // If A and B has a key
+                                if (sortAsc)
+                                    return (a[key].action > b[key].action) ? 1 : -1
+                                    else return (a[key].action < b[key].action) ? 1 : -1
+                            } else {
+                                // If ONLY A has a key
+                                if (sortAsc)
+                                    return 1
+                                    else return -1
+                            }
+                        } else if (b[key] != null) {
+                            // If ONLY B has a key
+                            if (sortAsc)
+                                return -1
+                                else return 1
+                        } else {
+                            // Neither A nor B has a key
+                            return 0
+                        }
+
                     }
                 }
 

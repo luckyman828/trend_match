@@ -7429,6 +7429,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -10287,6 +10288,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -11758,7 +11762,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var sortMethod;
 
       if (!this.loadingProducts) {
-        if (['userAction', 'teamAction', 'phaseAction', 'productFinalAction', 'userAction'].includes(key)) {
+        if (key == 'action') {
           sortMethod = 'action';
         } else if (key == 'focus') {
           sortMethod = 'focus';
@@ -12014,6 +12018,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.sortProducts();
     },
     sortProducts: function sortProducts(keyOverwrite) {
+      var _this2 = this;
+
       console.log('sorting products');
       var products = this.productsScopedFiltered; // let key = this.sortBy
 
@@ -12030,20 +12036,74 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       var dataSorted = products.sort(function (a, b) {
         if (sortMethod == 'action') {
-          if (a[key] != null) {
-            if (b[key] != null) {
-              // If A and B has a key
-              if (sortAsc) return a[key].action > b[key].action ? 1 : -1;else return a[key].action < b[key].action ? 1 : -1;
-            } else {
-              // If ONLY A has a key
-              if (sortAsc) return 1;else return -1;
-            }
-          } else if (b[key] != null) {
-            // If ONLY B has a key
-            if (sortAsc) return -1;else return 1;
+          key = 'currentAction';
+
+          if (_this2.currentTask.type == 'approval') {
+            // First sort by has request
+            if (a.requests.length > 0 && !a.currentAction) {
+              if (b.requests.length > 0 && !b.currentAction) {
+                return 0;
+              } else {
+                // If only A has requests
+                if (sortAsc) return 1;else return -1;
+              }
+            } else if (b.requests.length > 0 && !b.currentAction) {
+              // If only B has an inherited action
+              if (sortAsc) return -1;else return 1;
+            } // Then sort by current action
+            else if (a[key] != null) {
+                if (b[key] != null) {
+                  // If A and B has a key
+                  if (sortAsc) return a[key].action > b[key].action ? 1 : -1;else return a[key].action < b[key].action ? 1 : -1;
+                } else {
+                  // If ONLY A has a key
+                  if (sortAsc) return 1;else return -1;
+                }
+              } else if (b[key] != null) {
+                // If ONLY B has a key
+                if (sortAsc) return -1;else return 1;
+              } else return 0;
+          } else if (_this2.currentTask.type == 'decision') {
+            // Sort by current action
+            if (a[key] != null) {
+              if (b[key] != null) {
+                // If A and B has a key
+                if (sortAsc) return a[key].action > b[key].action ? 1 : -1;else return a[key].action < b[key].action ? 1 : -1;
+              } else {
+                // If ONLY A has a key
+                if (sortAsc) return 1;else return -1;
+              }
+            } else if (b[key] != null) {
+              // If ONLY B has a key
+              if (sortAsc) return -1;else return 1;
+            } // Sort by out in filter
+            else if (a.outInFilter) {
+                if (b.outInFilter) {
+                  return 0;
+                } else {
+                  // If only A has requests
+                  if (sortAsc) return 1;else return -1;
+                }
+              } else if (b.outInFilter) {
+                // If only B has an inherited action
+                if (sortAsc) return -1;else return 1;
+              } else return 0;
           } else {
-            // Neither A nor B has a key
-            return 0;
+            if (a[key] != null) {
+              if (b[key] != null) {
+                // If A and B has a key
+                if (sortAsc) return a[key].action > b[key].action ? 1 : -1;else return a[key].action < b[key].action ? 1 : -1;
+              } else {
+                // If ONLY A has a key
+                if (sortAsc) return 1;else return -1;
+              }
+            } else if (b[key] != null) {
+              // If ONLY B has a key
+              if (sortAsc) return -1;else return 1;
+            } else {
+              // Neither A nor B has a key
+              return 0;
+            }
           }
         } else if (sortMethod == 'focus') {
           // First sort by focus
@@ -12087,11 +12147,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return dataSorted;
     },
     setDefaultFilter: function setDefaultFilter() {
-      var _this2 = this;
+      var _this3 = this;
 
       // Set the starting product filter
       if (this.currentTask.completed.find(function (x) {
-        return x.file_id == _this2.currentFile.id;
+        return x.file_id == _this3.currentFile.id;
       })) {
         this.setProductFilter('ins');
       } else if (this.currentTask.type == 'approval') {
@@ -12675,7 +12735,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   destroyed: function destroyed() {
     this.unsubWorkspace();
-    this.unsubTasks();
   }
 });
 
@@ -14966,7 +15025,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".comment-wrapper[data-v-54ded044] {\n  position: relative;\n  margin-bottom: 4px;\n  max-width: calc(100% - 56px);\n}\n.comment-wrapper.has-traits[data-v-54ded044] {\n  margin-top: 12px;\n}\n.pill i[data-v-54ded044] {\n  font-size: 8px;\n  margin-right: 4px;\n}\n.traits[data-v-54ded044] {\n  position: absolute;\n  top: -14px;\n  left: -10px;\n  z-index: 1;\n}\n.traits > *[data-v-54ded044] {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);\n}\n.traits > **[data-v-54ded044]:not(:last-child) {\n  margin-right: 8px;\n}\n.comment[data-v-54ded044] {\n  position: relative;\n  padding: 12px;\n  background: #dfdfdf;\n  border-radius: 6px;\n  width: 100%;\n}\n.own .comment[data-v-54ded044] {\n  background: #3b86ff;\n  color: white;\n}\n.comment .body[data-v-54ded044] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n}\n.comment.important[data-v-54ded044] {\n  background: #f3e959;\n  color: #1b1c1d;\n}", ""]);
+exports.push([module.i, ".comment-wrapper[data-v-54ded044] {\n  position: relative;\n  margin-bottom: 4px;\n  max-width: calc(100% - 56px);\n}\n.comment-wrapper.has-traits[data-v-54ded044] {\n  margin-top: 16px;\n}\n.pill i[data-v-54ded044] {\n  font-size: 8px;\n  margin-right: 4px;\n}\n.traits[data-v-54ded044] {\n  position: absolute;\n  top: -16px;\n  left: -10px;\n  z-index: 1;\n  white-space: nowrap;\n}\n.traits > *[data-v-54ded044] {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);\n}\n.traits > *[data-v-54ded044]:not(:last-child) {\n  margin-right: 8px;\n}\n.comment[data-v-54ded044] {\n  position: relative;\n  padding: 12px;\n  background: #dfdfdf;\n  border-radius: 6px;\n  width: 100%;\n}\n.own .comment[data-v-54ded044] {\n  background: #3b86ff;\n  color: white;\n}\n.comment .body[data-v-54ded044] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n}\n.comment.important[data-v-54ded044] {\n  background: #f3e959;\n  color: #1b1c1d;\n}", ""]);
 
 // exports
 
@@ -15213,7 +15272,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.hotkey-tip[data-v-6d61fa50] {\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.hotkey-tip .square[data-v-6d61fa50] {\n  border-width: 1px;\n  height: auto;\n  padding: 2px 4px;\n  min-width: 0;\n  font-weight: 400;\n  border-radius: 2px;\n  font-size: 9px;\n  margin-right: 2px;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.tab-headers .tab[data-v-6d61fa50] {\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.request-wrapper[data-v-6d61fa50] {\n  margin-bottom: 16px;\n}\n.sender-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  margin-bottom: 4px;\n}\n.sender-wrapper.own[data-v-6d61fa50] {\n  -webkit-box-align: end;\n          align-items: flex-end;\n}\n.sender[data-v-6d61fa50] {\n  margin-bottom: 20px;\n}\n.break-line[data-v-6d61fa50] {\n  color: #a8a8a8;\n  font-size: 12px;\n  font-weight: 500;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-top: 20px;\n  margin-bottom: 12px;\n}\n.break-line[data-v-6d61fa50]::after, .break-line[data-v-6d61fa50]::before {\n  content: \"\";\n  display: block;\n  height: 2px;\n  background: #a8a8a8;\n  -webkit-box-flex: 1;\n          flex: 1;\n}\n.break-line[data-v-6d61fa50]::after {\n  margin-left: 12px;\n}\n.break-line[data-v-6d61fa50]::before {\n  margin-right: 12px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #f3f3f3;\n  border-radius: 0 8px 0 0;\n  padding: 16px 4px 16px 0;\n  height: 100%;\n  width: 100%;\n}\n.comments-wrapper .inner[data-v-6d61fa50] {\n  padding: 0 12px;\n  height: 100%;\n  overflow-y: auto;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comments-wrapper .sender[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\nform[data-v-6d61fa50] {\n  margin-bottom: 42px;\n  padding: 8px 0 24px;\n  background: white;\n  box-shadow: 0 -3px 6px rgba(27, 28, 29, 0.1);\n}\n@media screen and (max-width: 1600px) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-webkit-min-device-pixel-ratio: 1.25), only screen and (min-resolution: 120dpi) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\nform .controls[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 8px;\n}\nform .controls .set-scope span[data-v-6d61fa50] {\n  font-size: 14px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\nform .controls .set-scope span[data-v-6d61fa50]:not(:last-child) {\n  margin-right: -8px;\n}\nform .controls .set-scope span.active[data-v-6d61fa50] {\n  color: #1b1c1d;\n  cursor: auto;\n}\nform .form-input[data-v-6d61fa50] {\n  position: relative;\n  padding: 0 12px;\n}\nform .form-input.hidden[data-v-6d61fa50] {\n  display: none;\n}\nform .form-input .id[data-v-6d61fa50] {\n  font-size: 12px;\n  color: #a8a8a8;\n  display: block;\n  margin-top: -2px;\n}\nform .form-input .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #dfdfdf;\n  background: #dfdfdf;\n  box-sizing: border-box;\n  font-size: 14px;\n  color: #a8a8a8;\n  max-height: 200px;\n  overflow: auto;\n  cursor: pointer;\n  position: relative;\n}\nform .form-input .input-wrapper .edit-request[data-v-6d61fa50] {\n  position: absolute;\n  right: 12px;\n  font-size: 10px;\n  color: #1b1c1d;\n  font-weight: 500;\n  top: 50%;\n  -webkit-transform: translateY(-50%);\n          transform: translateY(-50%);\n  pointer-events: none;\n}\nform .form-input .input-wrapper .edit-request .circle[data-v-6d61fa50] {\n  height: 24px;\n  width: 24px;\n  margin-left: 4px;\n}\nform .form-input textarea[data-v-6d61fa50] {\n  padding: 8px 108px 8px 12px;\n  border: none;\n  height: 30px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  color: #535353;\n  background: transparent;\n  cursor: pointer;\n}\nform .form-input textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform .form-input textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::placeholder {\n  color: #a8a8a8;\n}\nform .form-input.active .input-wrapper[data-v-6d61fa50] {\n  border: solid 2px #dfdfdf;\n  background: white;\n  cursor: auto;\n}\nform .form-input.active textarea[data-v-6d61fa50] {\n  cursor: auto;\n}\nform .form-input .flex-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: 8px;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #f3f3f3;\n  color: #a8a8a8;\n  position: absolute;\n  right: 16px;\n  top: 4px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3b86ff;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}\n.request-succes[data-v-6d61fa50] {\n  margin-right: 8px;\n  font-weight: 500;\n}", ""]);
+exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.hotkey-tip[data-v-6d61fa50] {\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.hotkey-tip .square[data-v-6d61fa50] {\n  border-width: 1px;\n  height: auto;\n  padding: 2px 4px;\n  min-width: 0;\n  font-weight: 400;\n  border-radius: 2px;\n  font-size: 9px;\n  margin-right: 2px;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.tab-headers .tab[data-v-6d61fa50] {\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.request-wrapper[data-v-6d61fa50] {\n  margin-bottom: 16px;\n}\n.sender-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  margin-bottom: 4px;\n}\n.sender-wrapper.own[data-v-6d61fa50] {\n  -webkit-box-align: end;\n          align-items: flex-end;\n}\n.sender[data-v-6d61fa50] {\n  margin-bottom: 20px;\n}\n.break-line[data-v-6d61fa50] {\n  color: #a8a8a8;\n  font-size: 12px;\n  font-weight: 500;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-top: 20px;\n  margin-bottom: 12px;\n}\n.break-line[data-v-6d61fa50]::after, .break-line[data-v-6d61fa50]::before {\n  content: \"\";\n  display: block;\n  height: 2px;\n  background: #a8a8a8;\n  -webkit-box-flex: 1;\n          flex: 1;\n}\n.break-line[data-v-6d61fa50]::after {\n  margin-left: 12px;\n}\n.break-line[data-v-6d61fa50]::before {\n  margin-right: 12px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #f3f3f3;\n  border-radius: 0 8px 0 0;\n  padding: 16px 4px 16px 0;\n  height: 100%;\n  width: 100%;\n}\n.comments-wrapper .inner[data-v-6d61fa50] {\n  padding: 0 16px;\n  height: 100%;\n  overflow-y: auto;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comments-wrapper .sender[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\nform[data-v-6d61fa50] {\n  margin-bottom: 42px;\n  padding: 8px 0 24px;\n  background: white;\n  box-shadow: 0 -3px 6px rgba(27, 28, 29, 0.1);\n}\n@media screen and (max-width: 1600px) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\n@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-webkit-min-device-pixel-ratio: 1.25), only screen and (min-resolution: 120dpi) {\nform[data-v-6d61fa50] {\n    margin-bottom: 0px;\n}\n}\nform .controls[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 8px;\n}\nform .controls .set-scope span[data-v-6d61fa50] {\n  font-size: 14px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\nform .controls .set-scope span[data-v-6d61fa50]:not(:last-child) {\n  margin-right: -8px;\n}\nform .controls .set-scope span.active[data-v-6d61fa50] {\n  color: #1b1c1d;\n  cursor: auto;\n}\nform .form-input[data-v-6d61fa50] {\n  position: relative;\n  padding: 0 12px;\n}\nform .form-input.hidden[data-v-6d61fa50] {\n  display: none;\n}\nform .form-input .id[data-v-6d61fa50] {\n  font-size: 12px;\n  color: #a8a8a8;\n  display: block;\n  margin-top: -2px;\n}\nform .form-input .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #dfdfdf;\n  background: #dfdfdf;\n  box-sizing: border-box;\n  font-size: 14px;\n  color: #a8a8a8;\n  max-height: 200px;\n  overflow: auto;\n  cursor: pointer;\n  position: relative;\n}\nform .form-input .input-wrapper .edit-request[data-v-6d61fa50] {\n  position: absolute;\n  right: 12px;\n  font-size: 10px;\n  color: #1b1c1d;\n  font-weight: 500;\n  top: 50%;\n  -webkit-transform: translateY(-50%);\n          transform: translateY(-50%);\n  pointer-events: none;\n}\nform .form-input .input-wrapper .edit-request .circle[data-v-6d61fa50] {\n  height: 24px;\n  width: 24px;\n  margin-left: 4px;\n}\nform .form-input textarea[data-v-6d61fa50] {\n  padding: 8px 108px 8px 12px;\n  border: none;\n  height: 30px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  color: #535353;\n  background: transparent;\n  cursor: pointer;\n}\nform .form-input textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform .form-input textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::placeholder {\n  color: #a8a8a8;\n}\nform .form-input.active .input-wrapper[data-v-6d61fa50] {\n  border: solid 2px #dfdfdf;\n  background: white;\n  cursor: auto;\n}\nform .form-input.active textarea[data-v-6d61fa50] {\n  cursor: auto;\n}\nform .form-input .flex-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: 8px;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #f3f3f3;\n  color: #a8a8a8;\n  position: absolute;\n  right: 16px;\n  top: 4px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3b86ff;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}\n.request-succes[data-v-6d61fa50] {\n  margin-right: 8px;\n  font-weight: 500;\n}", ""]);
 
 // exports
 
@@ -15308,7 +15367,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".request-wrapper[data-v-1c0a3c74] {\n  margin-bottom: 4px;\n}\n.request[data-v-1c0a3c74] {\n  padding: 12px;\n  background: #dfdfdf;\n  border-radius: 6px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.request .sender[data-v-1c0a3c74] {\n  font-size: 12px;\n}\n.request .id[data-v-1c0a3c74] {\n  font-size: 10px;\n  font-weight: 500;\n}\n.own .request[data-v-1c0a3c74] {\n  background: #3b86ff;\n  color: white;\n}\n.request .body[data-v-1c0a3c74] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  margin: 16px 0;\n}", ""]);
+exports.push([module.i, ".request-wrapper[data-v-1c0a3c74] {\n  margin-bottom: 4px;\n  position: relative;\n}\n.request-wrapper.has-traits[data-v-1c0a3c74] {\n  margin-top: 16px;\n}\n.traits[data-v-1c0a3c74] {\n  position: absolute;\n  top: -16px;\n  left: -10px;\n  z-index: 1;\n  white-space: nowrap;\n}\n.traits > *[data-v-1c0a3c74] {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);\n}\n.traits > *[data-v-1c0a3c74]:not(:last-child) {\n  margin-right: 8px;\n}\n.pill i[data-v-1c0a3c74] {\n  font-size: 8px;\n  margin-right: 4px;\n}\n.request[data-v-1c0a3c74] {\n  padding: 12px;\n  background: #dfdfdf;\n  border-radius: 6px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.request .sender[data-v-1c0a3c74] {\n  font-size: 12px;\n}\n.request .id[data-v-1c0a3c74] {\n  font-size: 10px;\n  font-weight: 500;\n}\n.own .request[data-v-1c0a3c74] {\n  background: #3b86ff;\n  color: white;\n}\n.request .body[data-v-1c0a3c74] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  margin: 16px 0;\n}", ""]);
 
 // exports
 
@@ -26781,7 +26840,10 @@ var render = function() {
     {
       staticClass: "comment-wrapper",
       class: {
-        "has-traits": _vm.comment.important || _vm.comment.votes.length > 0
+        "has-traits":
+          _vm.comment.important ||
+          _vm.comment.votes.length > 0 ||
+          _vm.comment.focus
       }
     },
     [
@@ -26789,6 +26851,13 @@ var render = function() {
         _vm.comment.important
           ? _c("span", { staticClass: "circle small yellow" }, [
               _c("i", { staticClass: "fas fa-exclamation" })
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.comment.focus
+          ? _c("span", { staticClass: "pill small primary" }, [
+              _c("i", { staticClass: "fas fa-star" }),
+              _vm._v(" Focus")
             ])
           : _vm._e(),
         _vm._v(" "),
@@ -32164,9 +32233,21 @@ var render = function() {
     "div",
     {
       staticClass: "request-wrapper",
-      class: { own: _vm.request.user_id == _vm.authUser.id }
+      class: [
+        { own: _vm.request.user_id == _vm.authUser.id },
+        { "has-traits": _vm.request.focus }
+      ]
     },
     [
+      _c("div", { staticClass: "traits" }, [
+        _vm.request.focus
+          ? _c("span", { staticClass: "pill small primary" }, [
+              _c("i", { staticClass: "fas fa-star" }),
+              _vm._v(" Focus")
+            ])
+          : _vm._e()
+      ]),
+      _vm._v(" "),
       _c("div", { staticClass: "request" }, [
         _c("strong", { staticClass: "sender" }, [
           _vm._v(
@@ -50913,14 +50994,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!*********************************************!*\
   !*** ./resources/js/components/Comment.vue ***!
   \*********************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Comment_vue_vue_type_template_id_54ded044_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Comment.vue?vue&type=template&id=54ded044&scoped=true& */ "./resources/js/components/Comment.vue?vue&type=template&id=54ded044&scoped=true&");
 /* harmony import */ var _Comment_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Comment.vue?vue&type=script&lang=js& */ "./resources/js/components/Comment.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _Comment_vue_vue_type_style_index_0_id_54ded044_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Comment.vue?vue&type=style&index=0&id=54ded044&scoped=true&lang=scss& */ "./resources/js/components/Comment.vue?vue&type=style&index=0&id=54ded044&scoped=true&lang=scss&");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Comment_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Comment_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _Comment_vue_vue_type_style_index_0_id_54ded044_scoped_true_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Comment.vue?vue&type=style&index=0&id=54ded044&scoped=true&lang=scss& */ "./resources/js/components/Comment.vue?vue&type=style&index=0&id=54ded044&scoped=true&lang=scss&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -50952,7 +51034,7 @@ component.options.__file = "resources/js/components/Comment.vue"
 /*!**********************************************************************!*\
   !*** ./resources/js/components/Comment.vue?vue&type=script&lang=js& ***!
   \**********************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -59209,8 +59291,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               return currentTask.filter_products_by_ids.includes(x.task_id) && x.action == 0;
             });
           } // END Find OUT Products
+          // START Mark comments as FOCUS if the users action was IN for the product
 
 
+          product.comments.forEach(function (comment) {
+            if (currentTask.type == 'feedback') {
+              comment.focus = product.actions.find(function (x) {
+                return x.task_id == comment.task_id && x.user_id == comment.user_id && x.action == 2;
+              });
+            } else {
+              comment.focus = product.actions.find(function (x) {
+                return x.task_id == comment.task_id && x.action == 2;
+              });
+            }
+          });
           data.push(product);
         });
         return data;

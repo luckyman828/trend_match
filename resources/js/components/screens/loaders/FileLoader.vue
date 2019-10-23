@@ -136,7 +136,6 @@ export default {
     },
     destroyed() {
         this.unsubWorkspace()
-        this.unsubTasks()
     }
 }
 </script>

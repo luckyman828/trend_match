@@ -1,5 +1,8 @@
 <template>
-    <div class="request-wrapper" :class="{own: (request.user_id == authUser.id)}">
+    <div class="request-wrapper" :class="[{own: (request.user_id == authUser.id)}, {'has-traits': request.focus}]">
+        <div class="traits">
+            <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
+        </div>
         <div class="request">
             <strong class="sender">{{request.task.title}} | {{(request.user_id == authUser.id) ? 'You' : request.user.name}}</strong>
             <span class="body">{{request.comment}}</span>
@@ -30,6 +33,29 @@ export default {
 
     .request-wrapper {
         margin-bottom: 4px;
+        position: relative;
+        &.has-traits {
+            margin-top: 16px;
+        }
+    }
+    .traits {
+        position: absolute;
+        top: -16px;
+        left: -10px;
+        z-index: 1;
+        white-space: nowrap;
+        > * {
+            box-shadow: 0 3px 6px rgba(0,0,0,.2);
+            &:not(:last-child) {
+                margin-right: 8px;
+            }
+        }
+    }
+    .pill {
+        i {
+            font-size: 8px;
+            margin-right: 4px;
+        }
     }
     .request {
         padding: 12px;

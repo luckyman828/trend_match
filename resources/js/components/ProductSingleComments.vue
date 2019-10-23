@@ -444,7 +444,7 @@ export default {
         height: 100%;
         width: 100%;
         .inner {
-            padding: 0 12px;
+            padding: 0 16px;
             height: 100%;
             overflow-y: auto;
             overflow-x: hidden;

@@ -291,6 +291,17 @@ export default {
                     }
                     // END Find OUT Products
 
+                    // START Mark comments as FOCUS if the users action was IN for the product
+                    product.comments.forEach(comment => {
+                        if (currentTask.type == 'feedback') {
+                            comment.focus = product.actions.find(
+                                x => x.task_id == comment.task_id && x.user_id == comment.user_id && x.action == 2
+                            )
+                        } else {
+                            comment.focus = product.actions.find(x => x.task_id == comment.task_id && x.action == 2)
+                        }
+                    })
+
                     data.push(product)
                 })
 

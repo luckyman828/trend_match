@@ -1,7 +1,8 @@
 <template>
-    <div class="comment-wrapper" :class="{'has-traits': comment.important || comment.votes.length > 0}">
+    <div class="comment-wrapper" :class="{'has-traits': comment.important || comment.votes.length > 0 || comment.focus}">
         <div class="traits">
             <span v-if="comment.important" class="circle small yellow"><i class="fas fa-exclamation"></i></span>
+            <span v-if="comment.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
             <span v-if="comment.votes.length > 0" class="pill small primary"> <i class="fas fa-plus"></i> {{comment.votes.length}}</span>
         </div>
         <div class="comment" :class="{important: comment.important}">
@@ -38,7 +39,7 @@ export default {
         margin-bottom: 4px;
         max-width: calc(100% - 56px);
         &.has-traits {
-            margin-top: 12px;
+            margin-top: 16px;
         }
     }
     .pill {
@@ -49,12 +50,13 @@ export default {
     }
     .traits {
         position: absolute;
-        top: -14px;
+        top: -16px;
         left: -10px;
         z-index: 1;
+        white-space: nowrap;
         > * {
             box-shadow: 0 3px 6px rgba(0,0,0,.2);
-            &*:not(:last-child) {
+            &:not(:last-child) {
                 margin-right: 8px;
             }
         }

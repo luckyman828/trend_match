@@ -9443,6 +9443,10 @@ textarea {
   font-size: 12px;
 }
 
+.circle.small .star {
+  font-size: 9px;
+}
+
 .circle.tiny {
   width: 14px;
   height: 14px;
