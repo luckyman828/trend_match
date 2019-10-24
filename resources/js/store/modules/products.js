@@ -13,6 +13,7 @@ export default {
         selectedDeliveryDates: [],
         unreadOnly: false,
         currentProductFilter: 'overview',
+        singleVisible: false,
     },
 
     getters: {
@@ -33,6 +34,9 @@ export default {
         },
         currentProductFilter: state => {
             return state.currentProductFilter
+        },
+        singleVisible: state => {
+            return state.singleVisible
         },
         products: (state, getters, rootState, rootGetters) => {
             if (!rootGetters['persist/loadingInit'] && !state.loading && rootGetters['persist/currentTask'] != null) {
@@ -650,6 +654,10 @@ export default {
         showPrevProduct({ commit, getters }) {
             commit('setCurrentProductId', getters.prevProductId)
         },
+        showSingle({ commit }, id) {
+            commit('setCurrentProductId', id)
+            commit('setSingleVisisble', true)
+        },
     },
 
     mutations: {
@@ -660,8 +668,8 @@ export default {
         setCurrentProductId(state, id) {
             state.currentProductId = id
         },
-        setAvailableProductIds(state, products) {
-            state.availableProductIds = products.map(x => x.id)
+        setAvailableProductIds(state, ids) {
+            state.availableProductIds = ids
         },
         setCurrentProductId(state, id) {
             state.currentProductId = id
@@ -677,6 +685,9 @@ export default {
         },
         setCurrentProductFilter(state, payload) {
             state.currentProductFilter = payload
+        },
+        setSingleVisisble(state, payload) {
+            state.singleVisible = payload
         },
     },
 }

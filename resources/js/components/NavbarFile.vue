@@ -11,6 +11,14 @@
 
         </div>
 
+        <div class="items-center">
+            <!-- <input type="search" class="input-wrapper"> -->
+            <div class="input-wrapper small clickable" @click="openSearch">
+                <i class="fas fa-search"></i>
+                Search..
+            </div>
+        </div>
+
         <div class="items-right">
 
             <template v-if="userPermissionLevel >= 2 && userPermissionLevel != 3">
@@ -119,16 +127,20 @@
                 <span v-else class="button xl dark" @click="printToPdf">Export as PDF</span>
             </template>
         </Modal>
+
+        <SearchModal ref="searchModal"/>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
 import { mapActions, mapGetters } from 'vuex'
+import SearchModal from './SearchModal'
 
 export default {
     name: "navbarFile",
     components: {
+        SearchModal
     },
     data: function () { return {
         submittingTaskComplete: false,
@@ -206,9 +218,10 @@ export default {
                 }
                 nextPageIndex++
             })
-            // this.estimatedPageCount = Math.ceil(this.$refs.pdfWrapper.clientHeight / 1380)
-            // console.log('Estimated page number: ' + Math.ceil(this.$refs.pdfWrapper.clientHeight / 1380))
         },
+        openSearch() {
+            this.$refs.searchModal.toggle()
+        }
     },
 };
 </script>
@@ -232,16 +245,21 @@ export default {
         overflow-x: hidden;
         overflow-y: auto;
     }
-    .flex-wrapper {
+    .navbar-file {
         width: 100%;
         padding: 8px 60px;
         padding-right: 77px;
         display: flex;
         justify-content: space-between;
+        > * {
+            display: flex;
+            align-items: center;
+        }
+
     }
-    .items-left, .items-right {
-        display: flex;
-        align-items: center;
+    .items-center {
+        flex: 1;
+        padding: 0 40px;
     }
     .back-link {
         padding-right: 28px;

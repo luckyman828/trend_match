@@ -3,8 +3,8 @@
         <div class="overlay" v-if="currentTask.completed.length > 0">Task done</div>
         <div class="overlay" v-else-if="!currentTask.isActive">Task not started yet</div>
         <div class="scroll-bg"></div>
-        <FlyIn ref="singleFlyIn">
-            <product-single :loading="loadingSingle" :authUser="authUser" @closeSingle="onCloseSingle" @onToggleInOut="toggleInOut"/>
+        <FlyIn ref="singleFlyIn" :visibleOverwrite="singleVisible" @close="onCloseSingle">
+            <product-single :loading="loadingSingle" :authUser="authUser" @closeSingle="onCloseSingle" @onToggleInOut="toggleInOut" :visible="singleVisible"/>
         </FlyIn>
         <div class="flex-table">
             <div class="header-row flex-table-row">
@@ -224,6 +224,7 @@ export default {
     computed: {
         // ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
         ...mapGetters('entities/collections', ['currentFile', 'actionScope']),
+        ...mapGetters('entities/products', ['singleVisible']),
         ...mapGetters('persist', ['currentTask', 'currentTaskPermissions', 'userPermissionLevel', 'currentWorkspaceId']),
         loadingSingle() {
             let loading = false
@@ -240,6 +241,7 @@ export default {
     methods: {
         ...mapActions('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction']),
         ...mapActions('entities/products', ['setCurrentProductId', 'setAvailableProductIds']),
+        ...mapMutations('entities/products', ['setSingleVisisble']),
         ...mapMutations('entities/actions', ['setAction', 'setTaskAction', 'destroyAction', 'destroyTaskAction', 'setManyActions', 'setManyTaskActions']),
         ...mapMutations('entities/comments', ['setComment']),
         loadMore() {
@@ -299,8 +301,9 @@ export default {
         },
         onViewSingle(id) {
             this.setCurrentProductId(id)
-            this.setAvailableProductIds(this.products) // Save array of available products
-            this.$refs.singleFlyIn.toggle()
+            this.setAvailableProductIds(this.products.map(x => x.id)) // Save array of available products
+            this.setSingleVisisble(true)
+            // this.$refs.singleFlyIn.toggle()
         },
         onSelect(index) {
             this.$emit('onSelect', index)
@@ -309,7 +312,8 @@ export default {
             this.$emit('onSortBy', key, method)
         },
         onCloseSingle() {
-            this.$refs.singleFlyIn.close()
+            // this.$refs.singleFlyIn.close()
+            this.setSingleVisisble(false)
         },
         resetSelected() {
             document.querySelectorAll('.product-row input[type=checkbox]').forEach(input => {

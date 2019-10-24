@@ -235,7 +235,7 @@ export default {
     }},
     computed: {
         ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope', 'currentTaskPermissions', 'currentTask']),
-        ...mapGetters('entities/products', ['currentProductId', 'currentProduct', 'nextProductId', 'prevProductId']),
+        ...mapGetters('entities/products', ['currentProduct', 'nextProductId', 'prevProductId']),
         product () {
             return this.currentProduct
         },
@@ -309,7 +309,7 @@ export default {
         hotkeyHandler(event) {
             const key = event.code
             // Only do these if the current target is not the comment box
-            if (event.target.type != 'textarea') {
+            if (event.target.type != 'textarea' && this.visible) {
                 if (key == 'Escape')
                     this.onCloseSingle()
                 if (key == 'ArrowRight')

@@ -458,19 +458,9 @@ export default {
         }
     }
     form {
-        margin-bottom: 42px;
         padding: 8px 0 24px;
         background: white;
         box-shadow: 0 -3px 6px rgba($dark, 10%);
-        @media screen and (max-width: $screenSmall) {
-            margin-bottom: 0px;
-        }
-        @media	only screen and (-webkit-min-device-pixel-ratio: 1.3),
-        only screen and (-o-min-device-pixel-ratio: 13/10),
-        only screen and (min-resolution: 120dpi)
-        {
-            margin-bottom: 0px;
-        }
         .controls {
             display: flex;
             justify-content: space-between;

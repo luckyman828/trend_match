@@ -9499,6 +9499,15 @@ textarea {
   background: transparent;
 }
 
+.modal-wrapper {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: -1;
+}
+
 .modal-wrapper > .modal {
   display: none;
   position: absolute;
@@ -9533,9 +9542,25 @@ textarea {
   color: #a8a8a8;
 }
 
+.modal-wrapper.active {
+  z-index: 1;
+}
+
 .modal-wrapper.active > .modal,
 .modal-wrapper.active > .overlay {
   display: block;
+}
+
+.modal-wrapper.minimal .modal {
+  min-height: 0;
+}
+
+.modal-wrapper.minimal .modal .close {
+  display: none;
+}
+
+.modal-wrapper.minimal .modal .inner {
+  max-width: none;
 }
 
 .has-tooltip {

@@ -6,12 +6,13 @@
         <div class="modal card" ref="modal">
             <span class="close circle" @click="close"><i class="fal fa-times"></i></span>
             <div class="inner">
-                <div class="header">
+                <div class="header" v-if="$slots['header'] || $scopedSlots['header'] || header || subHeader">
                     <h2 v-if="header" v-html="header"></h2>
                     <span class="desc" v-if="subHeader" v-html="subHeader"></span>
                     <slot name="header" :toggle="toggle"></slot>
                 </div>
                 <div class="body"><slot name="body" :toggle="toggle"></slot></div>
+                <div v-if="$slots.default" class="body"><slot></slot></div>
             </div>
         </div>
 
@@ -48,7 +49,12 @@ export default {
             const elWidth = el.getBoundingClientRect().width
 
             el.style.cssText = `left: calc(50vw - ${elWidth / 2}px);`
-        }
+        },
+        hotkeyHandler(event) {
+            const key = event.code
+            if (key == 'Escape')
+                this.close()
+        },
     },
     mounted() {
         this.setPos()
@@ -56,6 +62,12 @@ export default {
     updated() {
         this.setPos()
     },
+    created() {
+        document.body.addEventListener('keydown', this.hotkeyHandler)
+    },
+    destroyed() {
+        document.body.removeEventListener('keydown', this.hotkeyHandler)
+    }
 }
 </script>
 
