@@ -10194,6 +10194,11 @@ __webpack_require__.r(__webpack_exports__);
       searchString: ''
     };
   },
+  watch: {
+    currentOptionId: function currentOptionId(newVal, oldVal) {
+      this.update();
+    }
+  },
   computed: {
     currentOption: function currentOption() {
       var _this = this;
@@ -10271,31 +10276,24 @@ __webpack_require__.r(__webpack_exports__);
       if (this.search) {
         this.$refs.searchField.focus();
       }
-    }
-  },
-  updated: function updated() {
-    var _this3 = this;
+    },
+    update: function update() {
+      var _this3 = this;
 
-    // Preset the selection
-    if (this.currentOptionId) if (this.optionValueKey) this.selection = this.options.find(function (x) {
-      return x.id == _this3.currentOptionId;
-    })[this.optionValueKey];else {
-      this.selection = this.options.find(function (x) {
-        return x.id == _this3.currentOptionId;
-      });
+      // Preset the selection
+      if (this.currentOptionId) if (this.optionValueKey) {
+        this.selection = this.options.find(function (x) {
+          return x.id == _this3.currentOptionId;
+        })[this.optionValueKey];
+      } else {
+        this.selection = this.options.find(function (x) {
+          return x.id == _this3.currentOptionId;
+        });
+      }
     }
   },
   mounted: function mounted() {
-    var _this4 = this;
-
-    // Preset the selection
-    if (this.currentOptionId) if (this.optionValueKey) this.selection = this.options.find(function (x) {
-      return x.id == _this4.currentOptionId;
-    })[this.optionValueKey];else {
-      this.selection = this.options.find(function (x) {
-        return x.id == _this4.currentOptionId;
-      });
-    }
+    this.update();
   }
 });
 

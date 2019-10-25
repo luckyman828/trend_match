@@ -36,6 +36,11 @@ export default {
         selection: null,
         searchString: '',
     }},
+    watch: {
+        currentOptionId(newVal, oldVal) {
+            this.update()
+        }
+    },
     computed: {
         currentOption () {
             if (this.selection != null) {
@@ -100,25 +105,20 @@ export default {
             if (this.search) {
                 this.$refs.searchField.focus()
             }
+        },
+        update() {
+            // Preset the selection
+            if (this.currentOptionId)
+                if (this.optionValueKey) {
+                    this.selection = this.options.find(x => x.id == this.currentOptionId)[this.optionValueKey]
+                }
+                else {
+                    this.selection = this.options.find(x => x.id == this.currentOptionId)
+                }
         }
     },
-    updated() {
-        // Preset the selection
-        if (this.currentOptionId)
-            if (this.optionValueKey)
-                this.selection = this.options.find(x => x.id == this.currentOptionId)[this.optionValueKey]
-            else {
-                this.selection = this.options.find(x => x.id == this.currentOptionId)
-            }
-    },
     mounted() {
-        // Preset the selection
-        if (this.currentOptionId)
-            if (this.optionValueKey)
-                this.selection = this.options.find(x => x.id == this.currentOptionId)[this.optionValueKey]
-            else {
-                this.selection = this.options.find(x => x.id == this.currentOptionId)
-            }
+        this.update()
     }
 }
 </script>
