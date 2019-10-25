@@ -162,6 +162,7 @@ export default{
         // selectedCategories: [],
         // selectedDeliveryDates: [],
         sortBy: 'datasource_id',
+        // sortBy: 'ins',
         sortAsc: true,
         unsub: '',
         test: '',
@@ -188,6 +189,9 @@ export default{
                 // Sort the products in the same was as they were before
                 this.sortProducts('sortIndex')
             }
+        },
+        productsScopedFiltered: (newVal, oldVal) => {
+            console.log('filtered?')
         },
         tasks: function(newValue, oldValue) {
             console.log('Tasks recalculated')
@@ -682,10 +686,10 @@ export default{
     created() {
         this.hideQuickOut = this.$cookies.get(`quick_out_${this.currentFile.id}_${this.currentTask.id}`)
         this.hideQuickIn = this.$cookies.get(`quick_in_${this.currentFile.id}_${this.currentTask.id}`)
-    },
-    mounted() {
         // Initially sort the products
         this.sortProducts()
+    },
+    async mounted() {
         this.setDefaultFilter()
     },
 }

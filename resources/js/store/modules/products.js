@@ -120,8 +120,10 @@ export default {
                         } else if (currentTask.type == 'approval') {
                             if (
                                 currentTask.children[0]
-                                    ? comment.task_id == currentTask.children[0].task_id
-                                    : false || comment.task_id == currentTask.id
+                                    ? currentTask.children.find(x => x.task_id == comment.task_id)
+                                    : false ||
+                                      comment.task_id == currentTask.id ||
+                                      currentTask.siblings.find(x => x.task_id == comment.task_id)
                             )
                                 comment.is_request
                                     ? product.requests.push(comment)

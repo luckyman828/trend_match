@@ -11636,32 +11636,40 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../store */ "./resources/js/store/index.js");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _Products__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Products */ "./resources/js/components/Products.vue");
-/* harmony import */ var _ProductTabs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../ProductTabs */ "./resources/js/components/ProductTabs.vue");
-/* harmony import */ var _CatalogueHeader__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../CatalogueHeader */ "./resources/js/components/CatalogueHeader.vue");
-/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../Loader */ "./resources/js/components/Loader.vue");
-/* harmony import */ var _SelectedController__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../SelectedController */ "./resources/js/components/SelectedController.vue");
-/* harmony import */ var _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../input/CheckboxButtons */ "./resources/js/components/input/CheckboxButtons.vue");
-/* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../RadioButtons */ "./resources/js/components/RadioButtons.vue");
-/* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../Dropdown */ "./resources/js/components/Dropdown.vue");
-/* harmony import */ var _store_models_Comment__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../store/models/Comment */ "./resources/js/store/models/Comment.js");
-/* harmony import */ var _store_models_Product__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../store/models/Product */ "./resources/js/store/models/Product.js");
-/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
-/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
-/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
-/* harmony import */ var _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../store/models/ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
-/* harmony import */ var _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../store/models/CommentVote */ "./resources/js/store/models/CommentVote.js");
-/* harmony import */ var _store_models_Category__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../store/models/Category */ "./resources/js/store/models/Category.js");
-/* harmony import */ var _store_models_Task__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../store/models/Task */ "./resources/js/store/models/Task.js");
-/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
-/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
-/* harmony import */ var _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../../store/models/TeamProduct */ "./resources/js/store/models/TeamProduct.js");
-/* harmony import */ var _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ../../store/models/PhaseProduct */ "./resources/js/store/models/PhaseProduct.js");
-/* harmony import */ var _store_models_TaskTeam__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ../../store/models/TaskTeam */ "./resources/js/store/models/TaskTeam.js");
-/* harmony import */ var _store_models_FileTask__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ../../store/models/FileTask */ "./resources/js/store/models/FileTask.js");
-/* harmony import */ var _store_models_TaskParent__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ../../store/models/TaskParent */ "./resources/js/store/models/TaskParent.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../store */ "./resources/js/store/index.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Products__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Products */ "./resources/js/components/Products.vue");
+/* harmony import */ var _ProductTabs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../ProductTabs */ "./resources/js/components/ProductTabs.vue");
+/* harmony import */ var _CatalogueHeader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../CatalogueHeader */ "./resources/js/components/CatalogueHeader.vue");
+/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../Loader */ "./resources/js/components/Loader.vue");
+/* harmony import */ var _SelectedController__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../SelectedController */ "./resources/js/components/SelectedController.vue");
+/* harmony import */ var _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../input/CheckboxButtons */ "./resources/js/components/input/CheckboxButtons.vue");
+/* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../RadioButtons */ "./resources/js/components/RadioButtons.vue");
+/* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../Dropdown */ "./resources/js/components/Dropdown.vue");
+/* harmony import */ var _store_models_Comment__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../store/models/Comment */ "./resources/js/store/models/Comment.js");
+/* harmony import */ var _store_models_Product__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../store/models/Product */ "./resources/js/store/models/Product.js");
+/* harmony import */ var _store_models_User__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../store/models/User */ "./resources/js/store/models/User.js");
+/* harmony import */ var _store_models_Team__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../store/models/Team */ "./resources/js/store/models/Team.js");
+/* harmony import */ var _store_models_Collection__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../store/models/Collection */ "./resources/js/store/models/Collection.js");
+/* harmony import */ var _store_models_ProductFinalAction__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../store/models/ProductFinalAction */ "./resources/js/store/models/ProductFinalAction.js");
+/* harmony import */ var _store_models_CommentVote__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../store/models/CommentVote */ "./resources/js/store/models/CommentVote.js");
+/* harmony import */ var _store_models_Category__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../store/models/Category */ "./resources/js/store/models/Category.js");
+/* harmony import */ var _store_models_Task__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../../store/models/Task */ "./resources/js/store/models/Task.js");
+/* harmony import */ var _store_models_UserTeam__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../../store/models/UserTeam */ "./resources/js/store/models/UserTeam.js");
+/* harmony import */ var _store_models_AuthUser__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../../store/models/AuthUser */ "./resources/js/store/models/AuthUser.js");
+/* harmony import */ var _store_models_TeamProduct__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ../../store/models/TeamProduct */ "./resources/js/store/models/TeamProduct.js");
+/* harmony import */ var _store_models_PhaseProduct__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ../../store/models/PhaseProduct */ "./resources/js/store/models/PhaseProduct.js");
+/* harmony import */ var _store_models_TaskTeam__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ../../store/models/TaskTeam */ "./resources/js/store/models/TaskTeam.js");
+/* harmony import */ var _store_models_FileTask__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ../../store/models/FileTask */ "./resources/js/store/models/FileTask.js");
+/* harmony import */ var _store_models_TaskParent__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ../../store/models/TaskParent */ "./resources/js/store/models/TaskParent.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
@@ -11811,16 +11819,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'catalogue',
-  store: _store__WEBPACK_IMPORTED_MODULE_0__["default"],
+  store: _store__WEBPACK_IMPORTED_MODULE_1__["default"],
   components: {
-    Products: _Products__WEBPACK_IMPORTED_MODULE_2__["default"],
-    ProductTabs: _ProductTabs__WEBPACK_IMPORTED_MODULE_3__["default"],
-    SelectedController: _SelectedController__WEBPACK_IMPORTED_MODULE_6__["default"],
-    Loader: _Loader__WEBPACK_IMPORTED_MODULE_5__["default"],
-    CatalogueHeader: _CatalogueHeader__WEBPACK_IMPORTED_MODULE_4__["default"],
-    CheckboxButtons: _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_7__["default"],
-    Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_9__["default"],
-    RadioButtons: _RadioButtons__WEBPACK_IMPORTED_MODULE_8__["default"]
+    Products: _Products__WEBPACK_IMPORTED_MODULE_3__["default"],
+    ProductTabs: _ProductTabs__WEBPACK_IMPORTED_MODULE_4__["default"],
+    SelectedController: _SelectedController__WEBPACK_IMPORTED_MODULE_7__["default"],
+    Loader: _Loader__WEBPACK_IMPORTED_MODULE_6__["default"],
+    CatalogueHeader: _CatalogueHeader__WEBPACK_IMPORTED_MODULE_5__["default"],
+    CheckboxButtons: _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_8__["default"],
+    Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_10__["default"],
+    RadioButtons: _RadioButtons__WEBPACK_IMPORTED_MODULE_9__["default"]
   },
   data: function data() {
     return {
@@ -11830,6 +11838,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // selectedCategories: [],
       // selectedDeliveryDates: [],
       sortBy: 'datasource_id',
+      // sortBy: 'ins',
       sortAsc: true,
       unsub: '',
       test: '',
@@ -11863,6 +11872,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.sortProducts('sortIndex');
       }
     },
+    productsScopedFiltered: function productsScopedFiltered(newVal, oldVal) {
+      console.log('filtered?');
+    },
     tasks: function tasks(newValue, oldValue) {
       console.log('Tasks recalculated');
     },
@@ -11878,9 +11890,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productsScopedFilteredTotals']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])('entities/products', ['selectedCategories', 'selectedDeliveryDates']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productsScopedFilteredTotals']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapState"])('entities/products', ['selectedCategories', 'selectedDeliveryDates']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', {
     allProducts: 'products'
-  }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files', 'currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/tasks', ['userTasks', 'tasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentTask', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']), {
+  }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/collections', ['loadingCollections', 'files', 'currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/tasks', ['userTasks', 'tasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['currentTeamId', 'currentTask', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']), {
     defaultTeam: function defaultTeam() {
       if (this.userPermissionLevel >= 3) return {
         id: 0,
@@ -12012,7 +12024,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return productMatches;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapMutations"])('entities/products', ['updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setTeamFilter', 'setCurrentTaskId']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapMutations"])('entities/products', ['updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setTeamFilter', 'setCurrentTaskId']), {
     InNoOutNoCommentStyles: function InNoOutNoCommentStyles() {
       console.log('quick ins');
       this.setHideQuickIn();
@@ -12331,13 +12343,34 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   created: function created() {
     this.hideQuickOut = this.$cookies.get("quick_out_".concat(this.currentFile.id, "_").concat(this.currentTask.id));
-    this.hideQuickIn = this.$cookies.get("quick_in_".concat(this.currentFile.id, "_").concat(this.currentTask.id));
-  },
-  mounted: function mounted() {
-    // Initially sort the products
+    this.hideQuickIn = this.$cookies.get("quick_in_".concat(this.currentFile.id, "_").concat(this.currentTask.id)); // Initially sort the products
+
     this.sortProducts();
-    this.setDefaultFilter();
-  }
+  },
+  mounted: function () {
+    var _mounted = _asyncToGenerator(
+    /*#__PURE__*/
+    _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              this.setDefaultFilter();
+
+            case 1:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee, this);
+    }));
+
+    function mounted() {
+      return _mounted.apply(this, arguments);
+    }
+
+    return mounted;
+  }()
 });
 
 /***/ }),
@@ -59676,7 +59709,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             } else if (currentTask.type == 'feedback') {
               if (comment.task_id == currentTask.id) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
             } else if (currentTask.type == 'approval') {
-              if (currentTask.children[0] ? comment.task_id == currentTask.children[0].task_id :  false || comment.task_id == currentTask.id) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
+              if (currentTask.children[0] ? currentTask.children.find(function (x) {
+                return x.task_id == comment.task_id;
+              }) :  false || comment.task_id == currentTask.id || currentTask.siblings.find(function (x) {
+                return x.task_id == comment.task_id;
+              })) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
             } else if (!currentTask.parentTasks.find(function (x) {
               return x.type == 'approval';
             }) && currentTask.approvalParent) {
@@ -61234,7 +61271,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return x.id == parent.parent_id;
               });
               if (parentTask) task.parentTasks.push(parentTask);
-            }); // Find tasks the parent inherits from
+            }); // Find child tasks
+            // task.childTasks = []
+            // task.children.forEach(child => {
+            //     const childTask = tasks.find(x => x.id == child.task_id)
+            //     if (childTask) task.childTasks.push(childTask)
+            // })
+            // Find sibling tasks
+            // task.siblings = []
+            // task.childTasks.forEach(childTask => {
+            //     task.siblings = task.siblings.concat(childTask.parents)
+            // })
+            // Find tasks the parent inherits from
 
             task.inheritFromTask = tasks.find(function (x) {
               return x.id == task.inherit_from_id;
