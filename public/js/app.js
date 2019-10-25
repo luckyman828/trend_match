@@ -12206,33 +12206,50 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       var key = keyOverwrite ? keyOverwrite : this.sortBy;
       var sortAsc = keyOverwrite ? true : this.sortAsc;
-      var sortMethod = keyOverwrite ? 'custom' : this.sortMethod; // Always sort the products by datasource_id first before sorting with the chosen method, to make sure the products are always sorted in the same manner
+      var sortMethod = keyOverwrite ? 'custom' : this.sortMethod;
+      var dataSorted = [];
 
-      products.sort(function (a, b) {
-        if (a.datasource_id == b.datasource_id) {
-          return 0;
-        } else if (sortAsc) {
-          return a.datasource_id > b.datasource_id ? 1 : -1;
-        } else return a.datasource_id < b.datasource_id ? 1 : -1;
-      });
-      var dataSorted = products.sort(function (a, b) {
-        if (sortMethod == 'action') {
-          key = 'currentAction';
+      if (products.length > 0) {
+        // Always sort the products by datasource_id first before sorting with the chosen method, to make sure the products are always sorted in the same manner
+        products.sort(function (a, b) {
+          if (a.datasource_id == b.datasource_id) {
+            return 0;
+          } else if (sortAsc) {
+            return a.datasource_id > b.datasource_id ? 1 : -1;
+          } else return a.datasource_id < b.datasource_id ? 1 : -1;
+        });
+        dataSorted = products.sort(function (a, b) {
+          if (sortMethod == 'action') {
+            key = 'currentAction';
 
-          if (_this2.currentTask.type == 'approval') {
-            // First sort by has request
-            if (a.requests.length > 0 && !a.currentAction) {
-              if (b.requests.length > 0 && !b.currentAction) {
-                return 0;
-              } else {
-                // If only A has requests
-                if (sortAsc) return 1;else return -1;
-              }
-            } else if (b.requests.length > 0 && !b.currentAction) {
-              // If only B has an inherited action
-              if (sortAsc) return -1;else return 1;
-            } // Then sort by current action
-            else if (a[key] != null) {
+            if (_this2.currentTask.type == 'approval') {
+              // First sort by has request
+              if (a.requests.length > 0 && !a.currentAction) {
+                if (b.requests.length > 0 && !b.currentAction) {
+                  return 0;
+                } else {
+                  // If only A has requests
+                  if (sortAsc) return 1;else return -1;
+                }
+              } else if (b.requests.length > 0 && !b.currentAction) {
+                // If only B has an inherited action
+                if (sortAsc) return -1;else return 1;
+              } // Then sort by current action
+              else if (a[key] != null) {
+                  if (b[key] != null) {
+                    // If A and B has a key
+                    if (sortAsc) return a[key].action > b[key].action ? 1 : -1;else return a[key].action < b[key].action ? 1 : -1;
+                  } else {
+                    // If ONLY A has a key
+                    if (sortAsc) return 1;else return -1;
+                  }
+                } else if (b[key] != null) {
+                  // If ONLY B has a key
+                  if (sortAsc) return -1;else return 1;
+                } else return 0;
+            } else if (_this2.currentTask.type == 'decision') {
+              // Sort by current action
+              if (a[key] != null) {
                 if (b[key] != null) {
                   // If A and B has a key
                   if (sortAsc) return a[key].action > b[key].action ? 1 : -1;else return a[key].action < b[key].action ? 1 : -1;
@@ -12243,88 +12260,76 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
               } else if (b[key] != null) {
                 // If ONLY B has a key
                 if (sortAsc) return -1;else return 1;
-              } else return 0;
-          } else if (_this2.currentTask.type == 'decision') {
-            // Sort by current action
-            if (a[key] != null) {
-              if (b[key] != null) {
-                // If A and B has a key
-                if (sortAsc) return a[key].action > b[key].action ? 1 : -1;else return a[key].action < b[key].action ? 1 : -1;
-              } else {
-                // If ONLY A has a key
-                if (sortAsc) return 1;else return -1;
-              }
-            } else if (b[key] != null) {
-              // If ONLY B has a key
-              if (sortAsc) return -1;else return 1;
-            } // Sort by out in filter
-            else if (a.outInFilter) {
-                if (b.outInFilter) {
-                  return 0;
+              } // Sort by out in filter
+              else if (a.outInFilter) {
+                  if (b.outInFilter) {
+                    return 0;
+                  } else {
+                    // If only A has requests
+                    if (sortAsc) return 1;else return -1;
+                  }
+                } else if (b.outInFilter) {
+                  // If only B has an inherited action
+                  if (sortAsc) return -1;else return 1;
+                } else return 0;
+            } else {
+              if (a[key] != null) {
+                if (b[key] != null) {
+                  // If A and B has a key
+                  if (sortAsc) return a[key].action > b[key].action ? 1 : -1;else return a[key].action < b[key].action ? 1 : -1;
                 } else {
-                  // If only A has requests
+                  // If ONLY A has a key
                   if (sortAsc) return 1;else return -1;
                 }
-              } else if (b.outInFilter) {
-                // If only B has an inherited action
+              } else if (b[key] != null) {
+                // If ONLY B has a key
                 if (sortAsc) return -1;else return 1;
-              } else return 0;
-          } else {
-            if (a[key] != null) {
-              if (b[key] != null) {
-                // If A and B has a key
-                if (sortAsc) return a[key].action > b[key].action ? 1 : -1;else return a[key].action < b[key].action ? 1 : -1;
               } else {
-                // If ONLY A has a key
-                if (sortAsc) return 1;else return -1;
+                // Neither A nor B has a key
+                return 0;
               }
-            } else if (b[key] != null) {
-              // If ONLY B has a key
-              if (sortAsc) return -1;else return 1;
-            } else {
-              // Neither A nor B has a key
-              return 0;
             }
-          }
-        } else if (sortMethod == 'focus') {
-          // First sort by focus
-          if (a[key].length != b[key].length) {
-            if (sortAsc) return a[key].length > b[key].length ? 1 : -1;else return a[key].length < b[key].length ? 1 : -1; // Then sort by ins
-          } else if (a.ins.length == b.ins.length) {
-            return 0;
-          } else {
-            if (sortAsc) return a.ins.length > b.ins.length ? 1 : -1;else return a.ins.length < b.ins.length ? 1 : -1;
-          }
-        } else if (sortMethod == 'in') {
-          // First sort by focus
-          var aInLength = a[key].length + a.focus.length;
-          var bInLength = b[key].length + b.focus.length;
-
-          if (aInLength != bInLength) {
-            if (sortAsc) return aInLength > bInLength ? 1 : -1;else return aInLength < bInLength ? 1 : -1; // Then sort by focus
-          } else if (a.focus.length == b.focus.length) {
-            return 0;
-          } else {
-            if (sortAsc) return a.focus.length > b.focus.length ? 1 : -1;else return a.focus.length < b.focus.length ? 1 : -1;
-          }
-        } else {
-          if (sortMethod == 'object') {
-            // Sort by key length
-            if (a[key].length == b[key].length) {
+          } else if (sortMethod == 'focus') {
+            // First sort by focus
+            if (a[key].length != b[key].length) {
+              if (sortAsc) return a[key].length > b[key].length ? 1 : -1;else return a[key].length < b[key].length ? 1 : -1; // Then sort by ins
+            } else if (a.ins.length == b.ins.length) {
               return 0;
-            } else if (sortAsc) {
-              return a[key].length > b[key].length ? 1 : -1;
-            } else return a[key].length < b[key].length ? 1 : -1;
-          } // If the keys aren't objects, finalActions or strings - sort by the key
-          else {
-              if (a[key] == b[key]) {
+            } else {
+              if (sortAsc) return a.ins.length > b.ins.length ? 1 : -1;else return a.ins.length < b.ins.length ? 1 : -1;
+            }
+          } else if (sortMethod == 'in') {
+            // First sort by focus
+            var aInLength = a[key].length + a.focus.length;
+            var bInLength = b[key].length + b.focus.length;
+
+            if (aInLength != bInLength) {
+              if (sortAsc) return aInLength > bInLength ? 1 : -1;else return aInLength < bInLength ? 1 : -1; // Then sort by focus
+            } else if (a.focus.length == b.focus.length) {
+              return 0;
+            } else {
+              if (sortAsc) return a.focus.length > b.focus.length ? 1 : -1;else return a.focus.length < b.focus.length ? 1 : -1;
+            }
+          } else {
+            if (sortMethod == 'object') {
+              // Sort by key length
+              if (a[key].length == b[key].length) {
                 return 0;
               } else if (sortAsc) {
-                return a[key] > b[key] ? 1 : -1;
-              } else return a[key] < b[key] ? 1 : -1;
-            }
-        }
-      });
+                return a[key].length > b[key].length ? 1 : -1;
+              } else return a[key].length < b[key].length ? 1 : -1;
+            } // If the keys aren't objects, finalActions or strings - sort by the key
+            else {
+                if (a[key] == b[key]) {
+                  return 0;
+                } else if (sortAsc) {
+                  return a[key] > b[key] ? 1 : -1;
+                } else return a[key] < b[key] ? 1 : -1;
+              }
+          }
+        });
+      }
+
       return dataSorted;
     },
     setDefaultFilter: function setDefaultFilter() {
