@@ -7387,8 +7387,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -27053,46 +27051,32 @@ var render = function() {
                 ])
               ]
             )
-          : _c(
-              "TooltipAlt2",
-              {
-                attrs: {
-                  header: "Progress",
-                  array: [_vm.currentTask],
-                  arrayLabelKey: "title",
-                  arrayValueKey: "progress",
-                  arrayValueUnit: "%"
-                }
-              },
-              [
-                _c("div", { staticClass: "stat progress" }, [
-                  _c("span", { staticClass: "title" }, [_vm._v("Progress")]),
-                  _vm._v(" "),
-                  _c("svg", { attrs: { height: "4" } }, [
-                    _vm.currentTaskProgress > 0
-                      ? _c("rect", {
-                          staticClass: "background",
-                          attrs: { width: "100%", height: "4" }
-                        })
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _vm.currentTaskProgress > 0
-                      ? _c("rect", {
-                          staticClass: "value",
-                          attrs: {
-                            width: _vm.currentTaskProgress + "%",
-                            height: "4"
-                          }
-                        })
-                      : _vm._e()
-                  ]),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "value" }, [
-                    _vm._v(_vm._s(_vm.currentTaskProgress) + "%")
-                  ])
-                ])
-              ]
-            )
+          : _c("div", { staticClass: "stat progress" }, [
+              _c("span", { staticClass: "title" }, [_vm._v("Progress")]),
+              _vm._v(" "),
+              _c("svg", { attrs: { height: "4" } }, [
+                _vm.currentTaskProgress > 0
+                  ? _c("rect", {
+                      staticClass: "background",
+                      attrs: { width: "100%", height: "4" }
+                    })
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.currentTaskProgress > 0
+                  ? _c("rect", {
+                      staticClass: "value",
+                      attrs: {
+                        width: _vm.currentTaskProgress + "%",
+                        height: "4"
+                      }
+                    })
+                  : _vm._e()
+              ]),
+              _vm._v(" "),
+              _c("span", { staticClass: "value" }, [
+                _vm._v(_vm._s(_vm.currentTaskProgress) + "%")
+              ])
+            ])
       ],
       1
     )
