@@ -74,9 +74,11 @@ export default {
                     .where('task_id', currentTask.id)
                     .get()
                 if (currentTaskActions) {
-                    if ((currentTask.type == 'approval' || currentTask.type == 'decision') && productTotals) {
+                    if (currentTask.type == 'approval' && productTotals) {
                         progress =
                             Math.round((currentTaskActions.length / productTotals.totalDecisionsToMake) * 100 * 1) / 1
+                    } else if (currentTask.type == 'decision') {
+                        progress = 100
                     } else if (getters.userPermissionLevel > 1) {
                         progress =
                             currentTask.type == 'feedback'

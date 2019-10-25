@@ -128,7 +128,17 @@
                                 </span>
                             </template>
                             <template v-else>
-                                <template v-if="userPermissionLevel != 3">
+                                <template v-if="currentTask.type == 'decision'">
+
+                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'ghost green-hover' : 'active green' : 'active green']" @click="toggleInOut(product, 1)">
+                                    In  <i class="far fa-heart"></i>
+                                    </span>
+                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
+                                    Out  <i class="far fa-times-circle"></i>
+                                    </span>
+
+                                </template>
+                                <template v-else-if="userPermissionLevel != 3">
                                     
                                     <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id == 3 : false}]" @click="toggleInOut(product, 1)">
                                     In  <i class="far fa-heart"></i>

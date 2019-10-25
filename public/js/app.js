@@ -9831,6 +9831,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -32121,7 +32131,74 @@ var render = function() {
                                       _vm._m(1, true)
                                     ]
                                   : [
-                                      _vm.userPermissionLevel != 3
+                                      _vm.currentTask.type == "decision"
+                                        ? [
+                                            _c(
+                                              "span",
+                                              {
+                                                staticClass:
+                                                  "button icon-right",
+                                                class: [
+                                                  product.currentAction
+                                                    ? product.currentAction
+                                                        .action == 0
+                                                      ? "ghost green-hover"
+                                                      : "active green"
+                                                    : "active green"
+                                                ],
+                                                on: {
+                                                  click: function($event) {
+                                                    return _vm.toggleInOut(
+                                                      product,
+                                                      1
+                                                    )
+                                                  }
+                                                }
+                                              },
+                                              [
+                                                _vm._v(
+                                                  "\n                                In  "
+                                                ),
+                                                _c("i", {
+                                                  staticClass: "far fa-heart"
+                                                })
+                                              ]
+                                            ),
+                                            _vm._v(" "),
+                                            _c(
+                                              "span",
+                                              {
+                                                staticClass:
+                                                  "button icon-right",
+                                                class: [
+                                                  product.currentAction
+                                                    ? product.currentAction
+                                                        .action == 0
+                                                      ? "active red"
+                                                      : "ghost red-hover"
+                                                    : "ghost red-hover"
+                                                ],
+                                                on: {
+                                                  click: function($event) {
+                                                    return _vm.toggleInOut(
+                                                      product,
+                                                      0
+                                                    )
+                                                  }
+                                                }
+                                              },
+                                              [
+                                                _vm._v(
+                                                  "\n                                Out  "
+                                                ),
+                                                _c("i", {
+                                                  staticClass:
+                                                    "far fa-times-circle"
+                                                })
+                                              ]
+                                            )
+                                          ]
+                                        : _vm.userPermissionLevel != 3
                                         ? [
                                             _c(
                                               "span",
@@ -58657,8 +58734,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         var currentTaskActions = _store_models_Action__WEBPACK_IMPORTED_MODULE_4__["default"].query().where('task_id', currentTask.id).get();
 
         if (currentTaskActions) {
-          if ((currentTask.type == 'approval' || currentTask.type == 'decision') && productTotals) {
+          if (currentTask.type == 'approval' && productTotals) {
             progress = Math.round(currentTaskActions.length / productTotals.totalDecisionsToMake * 100 * 1) / 1;
+          } else if (currentTask.type == 'decision') {
+            progress = 100;
           } else if (getters.userPermissionLevel > 1) {
             progress = currentTask.type == 'feedback' ? Math.round(currentTaskActions.length / (currentTask.input.length * getters.currentFile.products.length) * 100 * 1) / 1 : Math.round(currentTaskActions.length / getters.currentFile.products.length * 100 * 1) / 1;
           } else {
