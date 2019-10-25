@@ -11886,7 +11886,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       if (newValue.id != oldValue.id) {
         // If we have a new task set the default filter
-        this.setDefaultFilter();
+        this.setDefaultFilter(); // Reset sort to default
+
+        this.sortBy = 'datasource_id';
+        this.sortAsc = true;
+        this.sortProducts();
       }
     }
   },
@@ -15397,7 +15401,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\n.example-pdf[data-v-1b5a1752] {\n  display: none;\n  position: fixed;\n  left: 50%;\n  -webkit-transform: translateX(-50%);\n          transform: translateX(-50%);\n  width: 100%;\n  max-width: 1000px;\n  height: 90vh;\n  top: 5vh;\n  background: white;\n  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);\n  z-index: 99;\n  overflow-x: hidden;\n  overflow-y: auto;\n}\n.navbar-file[data-v-1b5a1752] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.navbar-file > *[data-v-1b5a1752] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.items-center[data-v-1b5a1752] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  padding: 0 40px;\n}\n.back-link[data-v-1b5a1752] {\n  padding-right: 28px;\n  border-right: solid 2px #dfdfdf;\n  margin-right: 28px;\n}\n.back-link .circle[data-v-1b5a1752] {\n  margin-right: 8px;\n}\n.breadcrumbs[data-v-1b5a1752] {\n  display: -webkit-box;\n  display: flex;\n}\n.breadcrumbs > *[data-v-1b5a1752] {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.breadcrumbs > *[data-v-1b5a1752]:not(:first-child)::before {\n  content: \"\\F054\";\n  pointer-events: none;\n  color: #535353;\n  margin-left: 8px;\n  margin-right: 10px;\n  margin-bottom: 2px;\n  font-size: 10px;\n  font-family: \"Font Awesome 5 Pro\";\n  font-weight: 900;\n  -moz-osx-font-smoothing: grayscale;\n  -webkit-font-smoothing: antialiased;\n  display: inline-block;\n  font-style: normal;\n  font-variant: normal;\n  text-rendering: auto;\n  line-height: 1;\n}\n.breadcrumbs > *[data-v-1b5a1752]:last-child::before {\n  content: \"\\F061\";\n}", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\n.navbar-file[data-v-1b5a1752] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.navbar-file > *[data-v-1b5a1752] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.navbar-file .example-pdf[data-v-1b5a1752] {\n  display: none;\n  position: fixed;\n  left: 50%;\n  -webkit-transform: translateX(-50%);\n          transform: translateX(-50%);\n  width: 100%;\n  max-width: 1000px;\n  height: 90vh;\n  top: 5vh;\n  background: white;\n  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);\n  z-index: -99;\n  overflow-x: hidden;\n  overflow-y: auto;\n}\n.items-center[data-v-1b5a1752] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  padding: 0 40px;\n}\n.back-link[data-v-1b5a1752] {\n  padding-right: 28px;\n  border-right: solid 2px #dfdfdf;\n  margin-right: 28px;\n}\n.back-link .circle[data-v-1b5a1752] {\n  margin-right: 8px;\n}\n.breadcrumbs[data-v-1b5a1752] {\n  display: -webkit-box;\n  display: flex;\n}\n.breadcrumbs > *[data-v-1b5a1752] {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.breadcrumbs > *[data-v-1b5a1752]:not(:first-child)::before {\n  content: \"\\F054\";\n  pointer-events: none;\n  color: #535353;\n  margin-left: 8px;\n  margin-right: 10px;\n  margin-bottom: 2px;\n  font-size: 10px;\n  font-family: \"Font Awesome 5 Pro\";\n  font-weight: 900;\n  -moz-osx-font-smoothing: grayscale;\n  -webkit-font-smoothing: antialiased;\n  display: inline-block;\n  font-style: normal;\n  font-variant: normal;\n  text-rendering: auto;\n  line-height: 1;\n}\n.breadcrumbs > *[data-v-1b5a1752]:last-child::before {\n  content: \"\\F061\";\n}", ""]);
 
 // exports
 

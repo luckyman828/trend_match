@@ -9543,7 +9543,7 @@ textarea {
 }
 
 .modal-wrapper.active {
-  z-index: 1;
+  z-index: 2;
 }
 
 .modal-wrapper.active > .modal,

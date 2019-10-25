@@ -230,21 +230,6 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 
-    .example-pdf {
-        display: none;
-        position: fixed;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100%;
-        max-width: 1000px;
-        height: 90vh;
-        top: 5vh;
-        background: white;
-        box-shadow: 0 0 20px rgba(black,50%);
-        z-index: 99;
-        overflow-x: hidden;
-        overflow-y: auto;
-    }
     .navbar-file {
         width: 100%;
         padding: 8px 60px;
@@ -255,7 +240,21 @@ export default {
             display: flex;
             align-items: center;
         }
-
+        .example-pdf {
+            display: none;
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 1000px;
+            height: 90vh;
+            top: 5vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(black,50%);
+            z-index: -99;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
     }
     .items-center {
         flex: 1;

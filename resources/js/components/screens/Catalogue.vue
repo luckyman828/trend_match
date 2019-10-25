@@ -204,6 +204,11 @@ export default{
             if (newValue.id != oldValue.id) {
                 // If we have a new task set the default filter
                 this.setDefaultFilter()
+
+                // Reset sort to default
+                this.sortBy = 'datasource_id'
+                this.sortAsc = true
+                this.sortProducts()
             }
         }
     },
