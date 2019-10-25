@@ -190,9 +190,6 @@ export default{
                 this.sortProducts('sortIndex')
             }
         },
-        productsScopedFiltered: (newVal, oldVal) => {
-            console.log('filtered?')
-        },
         tasks: function(newValue, oldValue) {
             console.log('Tasks recalculated')
         },

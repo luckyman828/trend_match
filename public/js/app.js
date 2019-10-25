@@ -9097,6 +9097,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var key = event.code; // Only do these if the current target is not the comment box
 
       if (event.target.type != 'textarea' && this.visible) {
+        var inAvailable = this.$refs.inButton ? !this.$refs.inButton.classList.contains('disabled') : false;
+        var outAvailable = this.$refs.outButton ? !this.$refs.outButton.classList.contains('disabled') : false;
+        var focusAvailable = this.$refs.focusButton ? !this.$refs.focusButton.classList.contains('disabled') : false;
         if (key == 'Escape') this.onCloseSingle();
         if (key == 'ArrowRight') this.onNextSingle();
         if (key == 'ArrowLeft') this.onPrevSingle();
@@ -9104,12 +9107,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         if (key == 'ArrowDown') event.preventDefault(), this.cycleImageReverse();
 
         if (this.currentTaskPermissions.actions) {
-          if (key == 'KeyI') this.toggleInOut(this.product, 1);
-          if (key == 'KeyO' && this.userPermissionLevel != 3) this.toggleInOut(this.product, 0);
-
-          if (this.currentTaskPermissions.focus && this.currentTask.type != 'approval') {
-            if (key == 'KeyF') this.toggleInOut(this.product, 2);
-          }
+          if (key == 'KeyI' && inAvailable) this.toggleInOut(this.product, 1);
+          if (key == 'KeyO' && outAvailable) this.toggleInOut(this.product, 0);
+          if (key == 'KeyF' && focusAvailable) this.toggleInOut(this.product, 2);
         }
       }
     }
@@ -11871,9 +11871,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
         this.sortProducts('sortIndex');
       }
-    },
-    productsScopedFiltered: function productsScopedFiltered(newVal, oldVal) {
-      console.log('filtered?');
     },
     tasks: function tasks(newValue, oldValue) {
       console.log('Tasks recalculated');
@@ -29706,6 +29703,7 @@ var render = function() {
                       ? _c(
                           "span",
                           {
+                            ref: "focusButton",
                             staticClass:
                               "square light-2 true-square clickable focus-action",
                             class: [
@@ -29742,6 +29740,7 @@ var render = function() {
                               _c(
                                 "span",
                                 {
+                                  ref: "inButton",
                                   staticClass:
                                     "button icon-right ghost disabled"
                                 },
@@ -29756,6 +29755,7 @@ var render = function() {
                               _c(
                                 "span",
                                 {
+                                  ref: "outButton",
                                   staticClass:
                                     "button icon-right active red disabled"
                                 },
@@ -29773,13 +29773,39 @@ var render = function() {
                         ]
                       : _vm.currentTask.type == "approval" &&
                         _vm.product.requests.length < 1
-                      ? [_vm._m(0), _vm._v(" "), _vm._m(1)]
+                      ? [
+                          _c(
+                            "span",
+                            {
+                              ref: "inButton",
+                              staticClass:
+                                "button icon-right active green disabled"
+                            },
+                            [
+                              _vm._v("\n                                In  "),
+                              _c("i", { staticClass: "far fa-heart" })
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "span",
+                            {
+                              ref: "outButton",
+                              staticClass: "button icon-right ghost disabled"
+                            },
+                            [
+                              _vm._v("\n                                Out  "),
+                              _c("i", { staticClass: "far fa-times-circle" })
+                            ]
+                          )
+                        ]
                       : [
                           _vm.userPermissionLevel != 3
                             ? [
                                 _c(
                                   "span",
                                   {
+                                    ref: "inButton",
                                     staticClass: "button icon-right",
                                     class: [
                                       _vm.product.currentAction
@@ -29811,6 +29837,7 @@ var render = function() {
                                 _c(
                                   "span",
                                   {
+                                    ref: "outButton",
                                     staticClass: "button icon-right",
                                     class: [
                                       _vm.product.currentAction
@@ -29845,6 +29872,7 @@ var render = function() {
                                 _c(
                                   "span",
                                   {
+                                    ref: "inButton",
                                     staticClass: "button icon-right",
                                     class: [
                                       _vm.product.currentAction
@@ -29876,6 +29904,7 @@ var render = function() {
                                 _c(
                                   "span",
                                   {
+                                    ref: "outButton",
                                     staticClass: "button icon-right disabled",
                                     class: [
                                       _vm.product.currentAction
@@ -29976,7 +30005,7 @@ var render = function() {
                         { staticClass: "description" },
                         [
                           _c("div", { staticClass: "stat" }, [
-                            _vm._m(2),
+                            _vm._m(0),
                             _vm._v(" "),
                             _c("p", [
                               _c("span", [
@@ -29986,7 +30015,7 @@ var render = function() {
                           ]),
                           _vm._v(" "),
                           _c("div", { staticClass: "stat" }, [
-                            _vm._m(3),
+                            _vm._m(1),
                             _vm._v(" "),
                             _c("span", [_vm._v(_vm._s(_vm.product.category))])
                           ]),
@@ -30167,13 +30196,13 @@ var render = function() {
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "stat" }, [
-                      _vm._m(4),
+                      _vm._m(2),
                       _vm._v(" "),
                       _c("p", [_vm._v(_vm._s(_vm.product.composition))])
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "stat" }, [
-                      _vm._m(5),
+                      _vm._m(3),
                       _vm._v(" "),
                       _c("p", [
                         _vm._v(
@@ -30194,7 +30223,7 @@ var render = function() {
                           "div",
                           { staticClass: "stat" },
                           [
-                            _vm._m(6),
+                            _vm._m(4),
                             _vm._v(" "),
                             _vm._l(_vm.product.assortments, function(
                               assortment,
@@ -30417,28 +30446,6 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "span",
-      { staticClass: "button icon-right active green disabled" },
-      [
-        _vm._v("\n                                In  "),
-        _c("i", { staticClass: "far fa-heart" })
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("span", { staticClass: "button icon-right ghost disabled" }, [
-      _vm._v("\n                                Out  "),
-      _c("i", { staticClass: "far fa-times-circle" })
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement

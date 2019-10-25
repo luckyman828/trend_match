@@ -38,45 +38,45 @@
                             </template>
                         </template> -->
 
-                        <span v-if="currentTaskPermissions.focus && currentTask.type != 'approval' && currentTask.type != 'decision'" class="square light-2 true-square clickable focus-action" :class="[(product.currentAction) ? (product.currentAction.action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover']" @click="toggleInOut(product, 2)">
+                        <span v-if="currentTaskPermissions.focus && currentTask.type != 'approval' && currentTask.type != 'decision'" class="square light-2 true-square clickable focus-action" :class="[(product.currentAction) ? (product.currentAction.action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover']" @click="toggleInOut(product, 2)"  ref="focusButton">
                             <i class="far fa-star"></i>
                             </span>
 
 
                             <template v-if="product.outInFilter">
                                 <TooltipAlt2 :body="'Out by ' + product.outInFilter.user.name + ' in ' + product.outInFilter.task.title">
-                                    <span class="button icon-right ghost disabled">
+                                    <span class="button icon-right ghost disabled" ref="inButton">
                                         In  <i class="far fa-heart"></i>
                                     </span>
-                                    <span class="button icon-right active red disabled">
+                                    <span class="button icon-right active red disabled" ref="outButton">
                                         Out  <i class="far fa-times-circle"></i>
                                     </span>
                                 </TooltipAlt2>
                             </template>
                             <template v-else-if="currentTask.type == 'approval' && product.requests.length < 1">
-                                <span class="button icon-right active green disabled">
+                                <span class="button icon-right active green disabled" ref="inButton">
                                     In  <i class="far fa-heart"></i>
                                 </span>
-                                <span class="button icon-right ghost disabled">
+                                <span class="button icon-right ghost disabled" ref="outButton">
                                     Out  <i class="far fa-times-circle"></i>
                                 </span>
                             </template>
                             <template v-else>
                                 <template v-if="userPermissionLevel != 3">
                                     
-                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id == 3 : false}]" @click="toggleInOut(product, 1)">
+                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id == 3 : false}]" @click="toggleInOut(product, 1)" ref="inButton">
                                     In  <i class="far fa-heart"></i>
                                     </span>
-                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id == 3 : false}]"  @click="toggleInOut(product, 0)">
+                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id == 3 : false}]"  @click="toggleInOut(product, 0)" ref="outButton">
                                     Out  <i class="far fa-times-circle"></i>
                                     </span>
 
                                 </template>
                                 <template v-else>
-                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id != 3 : false}]" @click="toggleInOut(product, 1)">
+                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id != 3 : false}]" @click="toggleInOut(product, 1)" ref="inButton">
                                     In  <i class="far fa-heart"></i>
                                     </span>
-                                    <span class="button icon-right disabled" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id != 3 : false}]">
+                                    <span class="button icon-right disabled" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id != 3 : false}]" ref="outButton">
                                     Out  <i class="far fa-times-circle"></i>
                                     </span>
                                 </template>
@@ -310,6 +310,10 @@ export default {
             const key = event.code
             // Only do these if the current target is not the comment box
             if (event.target.type != 'textarea' && this.visible) {
+                const inAvailable = this.$refs.inButton ? !this.$refs.inButton.classList.contains('disabled') : false
+                const outAvailable = this.$refs.outButton ? !this.$refs.outButton.classList.contains('disabled') : false
+                const focusAvailable = this.$refs.focusButton ? !this.$refs.focusButton.classList.contains('disabled') : false
+
                 if (key == 'Escape')
                     this.onCloseSingle()
                 if (key == 'ArrowRight')
@@ -323,14 +327,12 @@ export default {
                     event.preventDefault(),
                     this.cycleImageReverse()
                 if ( this.currentTaskPermissions.actions ) {
-                    if (key == 'KeyI')
+                    if (key == 'KeyI' && inAvailable)
                         this.toggleInOut(this.product, 1)
-                    if (key == 'KeyO' && this.userPermissionLevel != 3)
+                    if (key == 'KeyO' && outAvailable)
                         this.toggleInOut(this.product, 0)
-                    if (this.currentTaskPermissions.focus && this.currentTask.type != 'approval') {
-                        if (key == 'KeyF')
-                            this.toggleInOut(this.product, 2)
-                    }
+                    if (key == 'KeyF' && focusAvailable)
+                        this.toggleInOut(this.product, 2)
                 }
             }
         }
