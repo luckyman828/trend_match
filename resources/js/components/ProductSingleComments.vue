@@ -52,7 +52,7 @@
                     <div class="task-request" v-if="taskRequest">
                         <request :request="taskRequest"/>
                     </div>
-                    <div v-if="requests.find(x => x.task_id != currentTask.id)" class="break-line">Showing requests from prev. task(s)</div>
+                    <div v-if="requests.find(x => x.task_id != currentTask.id)" class="break-line">Showing requests from other task(s)</div>
                     <div class="requests-wrapper">
                         <request :request="request" v-for="request in requests.filter(x => x.task_id != currentTask.id)" :key="request.id"/>
                     </div>

@@ -30794,7 +30794,7 @@ var render = function() {
                   return x.task_id != _vm.currentTask.id
                 })
                   ? _c("div", { staticClass: "break-line" }, [
-                      _vm._v("Showing requests from prev. task(s)")
+                      _vm._v("Showing requests from other task(s)")
                     ])
                   : _vm._e(),
                 _vm._v(" "),
@@ -59715,9 +59715,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             } else if (currentTask.type == 'approval') {
               if (currentTask.children[0] ? currentTask.children.find(function (x) {
                 return x.task_id == comment.task_id;
-              }) :  false || comment.task_id == currentTask.id || currentTask.siblings.find(function (x) {
-                return x.task_id == comment.task_id;
-              })) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
+              }) :  false || comment.task_id == currentTask.id) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
             } else if (!currentTask.parentTasks.find(function (x) {
               return x.type == 'approval';
             }) && currentTask.approvalParent) {
@@ -59729,10 +59727,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               })) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
             } else {
               // If type is alignment
-              if (comment.task_id == currentTask.id) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
-              currentTask.parentTasks.forEach(function (parentTask) {
-                if (comment.task_id == parentTask.id) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
-              });
+              if (comment.task_id == currentTask.id || currentTask.siblings.find(function (x) {
+                return x.parent_id == comment.task_id || currentTask.parentTasks.find(function (x) {
+                  return x.id == comment.task_id;
+                });
+              })) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment); // currentTask.parentTasks.forEach(parentTask => {
+              //     if (comment.task_id == parentTask.id)
+              //         comment.is_request
+              //             ? product.requests.push(comment)
+              //             : product.commentsScoped.push(comment)
+              // })
             }
           }); // END scope comments to task
           // START Comment votes
@@ -61276,17 +61280,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               });
               if (parentTask) task.parentTasks.push(parentTask);
             }); // Find child tasks
-            // task.childTasks = []
-            // task.children.forEach(child => {
-            //     const childTask = tasks.find(x => x.id == child.task_id)
-            //     if (childTask) task.childTasks.push(childTask)
-            // })
-            // Find sibling tasks
-            // task.siblings = []
-            // task.childTasks.forEach(childTask => {
-            //     task.siblings = task.siblings.concat(childTask.parents)
-            // })
-            // Find tasks the parent inherits from
+
+            task.childTasks = [];
+            task.children.forEach(function (child) {
+              var childTask = tasks.find(function (x) {
+                return x.id == child.task_id;
+              });
+              if (childTask) task.childTasks.push(childTask);
+            }); // Find sibling tasks
+
+            task.siblings = [];
+            task.childTasks.forEach(function (childTask) {
+              task.siblings = task.siblings.concat(childTask.parents);
+            }); // Find tasks the parent inherits from
 
             task.inheritFromTask = tasks.find(function (x) {
               return x.id == task.inherit_from_id;

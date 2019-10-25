@@ -46,17 +46,17 @@ export default {
                         })
 
                         // Find child tasks
-                        // task.childTasks = []
-                        // task.children.forEach(child => {
-                        //     const childTask = tasks.find(x => x.id == child.task_id)
-                        //     if (childTask) task.childTasks.push(childTask)
-                        // })
+                        task.childTasks = []
+                        task.children.forEach(child => {
+                            const childTask = tasks.find(x => x.id == child.task_id)
+                            if (childTask) task.childTasks.push(childTask)
+                        })
 
                         // Find sibling tasks
-                        // task.siblings = []
-                        // task.childTasks.forEach(childTask => {
-                        //     task.siblings = task.siblings.concat(childTask.parents)
-                        // })
+                        task.siblings = []
+                        task.childTasks.forEach(childTask => {
+                            task.siblings = task.siblings.concat(childTask.parents)
+                        })
 
                         // Find tasks the parent inherits from
                         task.inheritFromTask = tasks.find(x => x.id == task.inherit_from_id)
