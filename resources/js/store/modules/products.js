@@ -334,7 +334,7 @@ export default {
                     productsToReturn = products
                 }
 
-                if (currentTeam.category_scope) {
+                if (currentTeam.category_scope && currentTask.taskTeams.find(x => x.team_id == currentTeam.id)) {
                     return productsToReturn.filter(product =>
                         currentTeam.category_scope.split(',').includes(product.category.toLowerCase())
                     )

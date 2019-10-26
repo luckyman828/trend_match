@@ -59990,7 +59990,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           productsToReturn = products;
         }
 
-        if (currentTeam.category_scope) {
+        if (currentTeam.category_scope && currentTask.taskTeams.find(function (x) {
+          return x.team_id == currentTeam.id;
+        })) {
           return productsToReturn.filter(function (product) {
             return currentTeam.category_scope.split(',').includes(product.category.toLowerCase());
           });
