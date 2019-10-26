@@ -12024,7 +12024,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var products = this.productsScopedFiltered;
       var productMatches = [];
       products.forEach(function (product) {
-        if (product.commentsScoped.length < 1 && product.outs.length < 1 && products.requests.length < 1) {
+        if (product.commentsScoped.length < 1 && product.outs.length < 1 && product.requests.length < 1) {
           productMatches.push(product);
         }
       });

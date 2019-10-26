@@ -339,7 +339,7 @@ export default{
             const products = this.productsScopedFiltered
             let productMatches = []
             products.forEach(product => {
-                if (product.commentsScoped.length < 1 && product.outs.length < 1 && products.requests.length < 1) {
+                if (product.commentsScoped.length < 1 && product.outs.length < 1 && product.requests.length < 1) {
                     productMatches.push(product)
                 }
             })
