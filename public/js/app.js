@@ -12024,7 +12024,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var products = this.productsScopedFiltered;
       var productMatches = [];
       products.forEach(function (product) {
-        if (product.commentsScoped.length < 1 && product.outs.length < 1) {
+        if (product.commentsScoped.length < 1 && product.outs.length < 1 && products.requests.length < 1) {
           productMatches.push(product);
         }
       });
@@ -12033,7 +12033,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapMutations"])('entities/products', ['updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setTeamFilter', 'setCurrentTaskId']), {
     InNoOutNoCommentStyles: function InNoOutNoCommentStyles() {
-      console.log('quick ins');
       this.setHideQuickIn();
       this.massSubmitAction(this.productsNoOutNoComment, 1);
     },
