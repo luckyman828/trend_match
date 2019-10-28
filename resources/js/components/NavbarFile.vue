@@ -115,7 +115,7 @@
                     <div class="form-element">
                         <label>Export details</label>
                         <div class="input-wrapper disabled">
-                            <p>{{products.length}} products, {{products.filter(x => x.requests.length > 0).length}} with requests</p>
+                            <p>{{products.length}} products <template v-if="exportComments">, {{products.filter(x => x.requests.length > 0).length}} with requests</template></p>
                         </div>
                     </div>
                 </form>

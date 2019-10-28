@@ -29481,18 +29481,26 @@ var render = function() {
                     _c("label", [_vm._v("Export details")]),
                     _vm._v(" "),
                     _c("div", { staticClass: "input-wrapper disabled" }, [
-                      _c("p", [
-                        _vm._v(
-                          _vm._s(_vm.products.length) +
-                            " products, " +
-                            _vm._s(
-                              _vm.products.filter(function(x) {
-                                return x.requests.length > 0
-                              }).length
-                            ) +
-                            " with requests"
-                        )
-                      ])
+                      _c(
+                        "p",
+                        [
+                          _vm._v(_vm._s(_vm.products.length) + " products "),
+                          _vm.exportComments
+                            ? [
+                                _vm._v(
+                                  ", " +
+                                    _vm._s(
+                                      _vm.products.filter(function(x) {
+                                        return x.requests.length > 0
+                                      }).length
+                                    ) +
+                                    " with requests"
+                                )
+                              ]
+                            : _vm._e()
+                        ],
+                        2
+                      )
                     ])
                   ])
                 ]),
