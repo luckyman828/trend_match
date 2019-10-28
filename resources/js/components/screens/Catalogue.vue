@@ -94,7 +94,7 @@
                         </Dropdown> -->
                     </div>
                 </div>
-                <product-tabs :productTotals="productsScopedFilteredTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
+                <productTabs :productTotals="productsScopedFilteredTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
                 <products ref="productsComponent" :selectedIds="selectedProductIDs" :sortBy="sortBy" :sortAsc="sortAsc" @onSortBy="onSortBy" :teams="collection.teams" :totalProductCount="products.length" :selectedCount="selectedProducts.length" :collection="collection" :products="productsScopedFiltered" :loading="loadingProducts" :authUser="authUser" @onSelect="setSelectedProduct"/>
                 <SelectedController :totalCount="productsScopedFiltered.length" :selected="selectedProductIDs" @onSelectedAction="submitSelectedAction" @onClearSelection="clearSelectedProducts"/>
             </template>

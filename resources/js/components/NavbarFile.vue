@@ -33,19 +33,19 @@
         </div>
 
         <!-- PDF FOR EXPORT MARKUP -->
-        <div class="example-pdf" ref="exportToPdf" v-if="(currentTask.type == 'decision' || currentTask.type == 'approval') && this.products.length > 0" 
+        <div class="example-pdf" ref="exportToPdf" v-if="(currentTask.type == 'decision' || currentTask.type == 'approval') && this.productsToExport.length > 0" 
             style="font-family: arial, helvetica, sans-serif;">
             <div ref="pdfWrapper" style="font-family: 'Roboto', sans-serif, helvetica, arial; position: relative;">
                 <div style="height: 1040px; width: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center;">
                     <span style="font-size: 28px; font-weight: 700; margin-top: 20px;">{{currentWorkspace.name}}</span>
                     <div>
                         <span style="font-size: 28px; font-weight: 700; display: block; margin-bottom: 20px;">{{currentFile.title}}</span>
-                        <span style="color: #3B86FF; font-size: 20px; font-weight: 700; display: block;">{{products.length}} style{{products.length > 1 ? 's' : ''}}</span>
+                        <span style="color: #3B86FF; font-size: 20px; font-weight: 700; display: block;">{{productsToExport.length}} style{{productsToExport.length > 1 ? 's' : ''}}</span>
                     </div>
                     <img style="display: block; margin: 0 auto; width: 150px;" src="https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/kollekt_logo_color.png">
                 </div>
-                <div v-for="(product, index) in products" :key="product.id" style="min-height: 1040px; width: 100%;" ref="productPage">
-                    <span style="display: block; color: #3B86FF; font-size: 20px; font-weight: 700; padding-top: 20px; box-sizing: border-box; margin-bottom: 8px;">#{{index+1}} of {{products.length}} styles</span>
+                <div v-for="(product, index) in productsToExport" :key="product.id" style="min-height: 1040px; width: 100%;" ref="productPage">
+                    <span style="display: block; color: #3B86FF; font-size: 20px; font-weight: 700; padding-top: 20px; box-sizing: border-box; margin-bottom: 8px;">#{{index+1}} of {{productsToExport.length}} styles</span>
                     <span style="display: block; font-size: 24px; margin-bottom: 12px;">{{product.title}}</span>
                     <div style="display: flex; margin-bottom: 12px;">
                         <img height="400px; width: auto;" :src="`https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${product.color_variants[0].blob_id}_thumbnail.jpg`">
@@ -113,9 +113,18 @@
                         </label>
                     </div>
                     <div class="form-element">
+                        <label class="input-wrapper check-button">
+                            <div class="checkbox">
+                                <input type="checkbox" v-model="onlyWithRequests">
+                                <span class="checkmark solid"><i class="fas fa-check"></i></span>
+                            </div>
+                            <span>Only include Products with Requests</span>
+                        </label>
+                    </div>
+                    <div class="form-element">
                         <label>Export details</label>
                         <div class="input-wrapper disabled">
-                            <p>{{products.length}} products <template v-if="exportComments">, {{products.filter(x => x.requests.length > 0).length}} with requests</template></p>
+                            <p>{{productsToExport.length}} products <template v-if="exportComments">, {{productsToExport.filter(x => x.requests.length > 0).length}} with requests</template></p>
                         </div>
                     </div>
                 </form>
@@ -146,13 +155,20 @@ export default {
         submittingTaskComplete: false,
         exportingPDF: false,
         exportComments: true,
-        generatedPDF: null
+        generatedPDF: null,
+        onlyWithRequests: false,
     }},
     computed: {
         ...mapGetters('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']),
         // ...mapGetters('entities/products', ['productsScopedFiltered']),
         ...mapGetters('entities/products', {products: 'productsScopedFiltered'}),
         ...mapGetters('entities/tasks', ['userTasks']),
+        productsToExport() {
+            const products = this.products
+            if (this.onlyWithRequests) {
+                return products.filter(product => product.requests.length > 0)
+            } else return products
+        }
     },
     methods: {
         ...mapActions('entities/tasks', ['completeTask', 'undoCompleteTask']),

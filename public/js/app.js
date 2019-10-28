@@ -8499,6 +8499,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -8512,12 +8521,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       submittingTaskComplete: false,
       exportingPDF: false,
       exportComments: true,
-      generatedPDF: null
+      generatedPDF: null,
+      onlyWithRequests: false
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', {
     products: 'productsScopedFiltered'
-  }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/tasks', ['userTasks'])),
+  }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/tasks', ['userTasks']), {
+    productsToExport: function productsToExport() {
+      var products = this.products;
+
+      if (this.onlyWithRequests) {
+        return products.filter(function (product) {
+          return product.requests.length > 0;
+        });
+      } else return products;
+    }
+  }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/tasks', ['completeTask', 'undoCompleteTask']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTaskId']), {
     printToPdf: function () {
       var _printToPdf = _asyncToGenerator(
@@ -28815,7 +28835,7 @@ var render = function() {
       _vm._v(" "),
       (_vm.currentTask.type == "decision" ||
         _vm.currentTask.type == "approval") &&
-      this.products.length > 0
+      this.productsToExport.length > 0
         ? _c(
             "div",
             {
@@ -28886,9 +28906,11 @@ var render = function() {
                           },
                           [
                             _vm._v(
-                              _vm._s(_vm.products.length) +
+                              _vm._s(_vm.productsToExport.length) +
                                 " style" +
-                                _vm._s(_vm.products.length > 1 ? "s" : "")
+                                _vm._s(
+                                  _vm.productsToExport.length > 1 ? "s" : ""
+                                )
                             )
                           ]
                         )
@@ -28908,7 +28930,7 @@ var render = function() {
                     ]
                   ),
                   _vm._v(" "),
-                  _vm._l(_vm.products, function(product, index) {
+                  _vm._l(_vm.productsToExport, function(product, index) {
                     return _c(
                       "div",
                       {
@@ -28936,7 +28958,7 @@ var render = function() {
                               "#" +
                                 _vm._s(index + 1) +
                                 " of " +
-                                _vm._s(_vm.products.length) +
+                                _vm._s(_vm.productsToExport.length) +
                                 " styles"
                             )
                           ]
@@ -29478,19 +29500,74 @@ var render = function() {
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "form-element" }, [
+                    _c("label", { staticClass: "input-wrapper check-button" }, [
+                      _c("div", { staticClass: "checkbox" }, [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.onlyWithRequests,
+                              expression: "onlyWithRequests"
+                            }
+                          ],
+                          attrs: { type: "checkbox" },
+                          domProps: {
+                            checked: Array.isArray(_vm.onlyWithRequests)
+                              ? _vm._i(_vm.onlyWithRequests, null) > -1
+                              : _vm.onlyWithRequests
+                          },
+                          on: {
+                            change: function($event) {
+                              var $$a = _vm.onlyWithRequests,
+                                $$el = $event.target,
+                                $$c = $$el.checked ? true : false
+                              if (Array.isArray($$a)) {
+                                var $$v = null,
+                                  $$i = _vm._i($$a, $$v)
+                                if ($$el.checked) {
+                                  $$i < 0 &&
+                                    (_vm.onlyWithRequests = $$a.concat([$$v]))
+                                } else {
+                                  $$i > -1 &&
+                                    (_vm.onlyWithRequests = $$a
+                                      .slice(0, $$i)
+                                      .concat($$a.slice($$i + 1)))
+                                }
+                              } else {
+                                _vm.onlyWithRequests = $$c
+                              }
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("span", { staticClass: "checkmark solid" }, [
+                          _c("i", { staticClass: "fas fa-check" })
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("span", [
+                        _vm._v("Only include Products with Requests")
+                      ])
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-element" }, [
                     _c("label", [_vm._v("Export details")]),
                     _vm._v(" "),
                     _c("div", { staticClass: "input-wrapper disabled" }, [
                       _c(
                         "p",
                         [
-                          _vm._v(_vm._s(_vm.products.length) + " products "),
+                          _vm._v(
+                            _vm._s(_vm.productsToExport.length) + " products "
+                          ),
                           _vm.exportComments
                             ? [
                                 _vm._v(
                                   ", " +
                                     _vm._s(
-                                      _vm.products.filter(function(x) {
+                                      _vm.productsToExport.filter(function(x) {
                                         return x.requests.length > 0
                                       }).length
                                     ) +
@@ -35047,7 +35124,7 @@ var render = function() {
                     )
                   ]),
                   _vm._v(" "),
-                  _c("product-tabs", {
+                  _c("productTabs", {
                     attrs: {
                       productTotals: _vm.productsScopedFilteredTotals,
                       currentFilter: _vm.currentProductFilter
@@ -60093,6 +60170,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         products.forEach(function (product) {
           if (product.outInFilter) {
             data.outs++;
+          } else if (currentTask.type == 'decision') {
+            if (product.currentAction) {
+              if (product.currentAction.action == 0) {
+                data.outs++;
+              } else {
+                data.ins++;
+              }
+            } else if (product.inheritedAction) {
+              if (product.inheritedAction.action == 0) {
+                data.outs++;
+              } else {
+                data.ins++;
+              }
+            }
           } else if (product.currentAction == null) {
             if (currentTask.type == 'approval') {
               if (product.requests.length > 0) {
@@ -60114,8 +60205,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
           if (currentTask.type == 'approval' && !product.outInFilter && product.requests.length > 0) {
             data.totalDecisionsToMake++;
-          } else if (currentTask.type == 'decision' && !product.outInFilter) {
-            data.totalDecisionsToMake++;
+          } else if (currentTask.type == 'decision' && !product.outInFilter) {// data.totalDecisionsToMake++
           }
         });
       }
@@ -60277,15 +60367,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           if (method == 'nds') {
             if (currentTask.type == 'approval') {
               return product.currentAction == null && product.requests.length > 0;
+            } else if (currentTask.type == 'decision') {
+              return false;
             } else return product.currentAction == null && !product.outInFilter;
           } else if (method == 'ins') {
-            if (product.currentAction) return product.currentAction.action >= 1 && !product.outInFilter;
+            if (product.currentAction) return product.currentAction.action >= 1 && !product.outInFilter;else if (currentTask.type == 'decision' && !product.outInFilter) {
+              if (product.inheritedAction) return product.inheritedAction.action >= 1;
+            }
 
             if (currentTask.type == 'approval') {
               if (product.inheritedAction && product.requests.length < 1) return product.inheritedAction.action >= 1;
             }
           } else if (method == 'outs') {
-            if (product.currentAction) return product.currentAction.action < 1;else if (product.outInFilter) return true;
+            if (product.outInFilter) return true;else if (product.currentAction) return product.currentAction.action < 1;else if (currentTask.type == 'decision') {
+              if (product.inheritedAction) return product.inheritedAction.action == 0;
+            }
           }
         });
         productsToReturn = filteredByAction;
