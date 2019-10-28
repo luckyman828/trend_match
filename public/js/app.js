@@ -32618,7 +32618,9 @@ var render = function() {
           master:
             !_vm.currentTask.siblings.find(function(x) {
               return x.parent_id == _vm.request.task_id
-            }) && _vm.request.user_id != _vm.authUser.id
+            }) &&
+            _vm.request.user_id != _vm.authUser.id &&
+            _vm.request.task_id != _vm.currentTask.inherit_from_id
         }
       ]
     },
