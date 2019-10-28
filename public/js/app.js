@@ -34911,7 +34911,7 @@ var render = function() {
                                 key: "header",
                                 fn: function(slotProps) {
                                   return [
-                                    _c("h3", [
+                                    _c("span", [
                                       _vm._v("Filter by delivery date")
                                     ])
                                   ]
@@ -34948,7 +34948,7 @@ var render = function() {
                             ],
                             null,
                             false,
-                            1375065203
+                            372683620
                           )
                         }),
                         _vm._v(" "),

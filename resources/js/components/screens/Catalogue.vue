@@ -43,7 +43,7 @@
                                 <!-- <span v-if="selectedDeliveryDates.length > 0" class="clear button invisible primary" @click="$refs.filterDelivery.clear(); selectedDeliveryDates=[]">Clear filter</span> -->
                             </template>
                             <template v-slot:header="slotProps">
-                                <h3>Filter by delivery date</h3>
+                                <span>Filter by delivery date</span>
                             </template>
                             <template v-slot:body>
                                 <CheckboxButtons :options="dynamicDeliveryDates" :optionNameKey="'name'" :optionValueKey="'value'" ref="filterDelivery" v-model="selectedDeliveryDates" @change="$refs.filterDelivery.submit()"/>
