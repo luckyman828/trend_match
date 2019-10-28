@@ -9858,7 +9858,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 
 
@@ -31780,16 +31779,7 @@ var render = function() {
                     "div",
                     {
                       key: product.id,
-                      staticClass: "product-row flex-table-row",
-                      class: [
-                        _vm.currentTaskPermissions.actions
-                          ? product.currentAction != null
-                            ? product.currentAction.action == 0
-                              ? "out"
-                              : "in"
-                            : ""
-                          : ""
-                      ]
+                      staticClass: "product-row flex-table-row"
                     },
                     [
                       product.newComment

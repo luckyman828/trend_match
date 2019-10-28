@@ -63,8 +63,7 @@
             </div>
             <template v-if="!loading">
                 <div class="product-row flex-table-row"
-                v-for="(product, index) in productsToShow" :key="product.id"
-                :class="[(currentTaskPermissions.actions) ? (product.currentAction != null) ? (product.currentAction.action == 0) ? 'out' : 'in' : '' : '']">
+                v-for="(product, index) in productsToShow" :key="product.id">
                 
                     <!-- New comment Bullet  -->
                     <span v-if="product.newComment" class="circle tiny primary"></span>
