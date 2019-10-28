@@ -32127,6 +32127,11 @@ var render = function() {
                                                         .action == 0
                                                       ? "ghost green-hover"
                                                       : "active green"
+                                                    : product.inheritedAction
+                                                    ? product.inheritedAction
+                                                        .action == 0
+                                                      ? "ghost green-hover"
+                                                      : "active green"
                                                     : "active green"
                                                 ],
                                                 on: {
@@ -32156,6 +32161,11 @@ var render = function() {
                                                 class: [
                                                   product.currentAction
                                                     ? product.currentAction
+                                                        .action == 0
+                                                      ? "active red"
+                                                      : "ghost red-hover"
+                                                    : product.inheritedAction
+                                                    ? product.inheritedAction
                                                         .action == 0
                                                       ? "active red"
                                                       : "ghost red-hover"
@@ -59962,6 +59972,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               return currentTask.filter_products_by_ids.includes(x.task_id) && x.action == 0;
             });
           } // END Find OUT Products
+          // START Find Inherited Action
           // START Mark comments as FOCUS if the users action was IN for the product
 
 
@@ -59990,7 +60001,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         var productsToReturn = [];
         var inheritFromId = currentTask.inherit_from_id;
 
-        if (inheritFromId) {
+        if (inheritFromId && currentTask.type == 'approval') {
           productsToReturn = products.filter(function (product) {
             return product.actions.find(function (action) {
               return action.task_id == inheritFromId && action.action > 0;

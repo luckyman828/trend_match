@@ -302,6 +302,8 @@ export default {
                     }
                     // END Find OUT Products
 
+                    // START Find Inherited Action
+
                     // START Mark comments as FOCUS if the users action was IN for the product
                     product.comments.forEach(comment => {
                         if (currentTask.type == 'feedback') {
@@ -326,7 +328,7 @@ export default {
             if (products) {
                 let productsToReturn = []
                 const inheritFromId = currentTask.inherit_from_id
-                if (inheritFromId) {
+                if (inheritFromId && currentTask.type == 'approval') {
                     productsToReturn = products.filter(product =>
                         product.actions.find(action => action.task_id == inheritFromId && action.action > 0)
                     )

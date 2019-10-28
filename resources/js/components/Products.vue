@@ -130,10 +130,10 @@
                             <template v-else>
                                 <template v-if="currentTask.type == 'decision'">
 
-                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'ghost green-hover' : 'active green' : 'active green']" @click="toggleInOut(product, 1)">
+                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'ghost green-hover' : 'active green' : (product.inheritedAction) ? (product.inheritedAction.action == 0) ? 'ghost green-hover' : 'active green' : 'active green']" @click="toggleInOut(product, 1)">
                                     In  <i class="far fa-heart"></i>
                                     </span>
-                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
+                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : (product.inheritedAction) ? (product.inheritedAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
                                     Out  <i class="far fa-times-circle"></i>
                                     </span>
 
