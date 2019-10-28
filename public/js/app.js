@@ -10348,7 +10348,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -32708,15 +32707,7 @@ var render = function() {
       staticClass: "request-wrapper",
       class: [
         { own: _vm.request.user_id == _vm.authUser.id },
-        { "has-traits": _vm.request.focus },
-        {
-          master:
-            !_vm.currentTask.siblings.find(function(x) {
-              return x.parent_id == _vm.request.task_id
-            }) &&
-            _vm.request.user_id != _vm.authUser.id &&
-            _vm.request.task_id != _vm.currentTask.inherit_from_id
-        }
+        { "has-traits": _vm.request.focus }
       ]
     },
     [

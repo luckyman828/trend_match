@@ -1,7 +1,6 @@
 <template>
     <div class="request-wrapper" :class="[{own: (request.user_id == authUser.id)}, 
-    {'has-traits': request.focus}, 
-    {'master': !currentTask.siblings.find(x => x.parent_id == request.task_id) && request.user_id != authUser.id && request.task_id != currentTask.inherit_from_id}]">
+    {'has-traits': request.focus}]">
         <div class="traits">
             <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
         </div>
