@@ -10468,7 +10468,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$refs.modal.close();
     },
     search: function search() {
-      this.results = this.$fuse.search(this.searchStr);
+      var options = {
+        shouldSort: true,
+        includeScore: true,
+        includeMatches: true,
+        threshold: 0.6,
+        location: 0,
+        distance: 100,
+        maxPatternLength: 32,
+        minMatchCharLength: 2,
+        keys: ["title", "datasource_id"]
+      };
+      var fuse = new fuse_js__WEBPACK_IMPORTED_MODULE_1___default.a(this.productsScoped, options);
+      this.results = fuse.search(this.searchStr);
     },
     productImg: function productImg(variant) {
       if (!variant.error && variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
@@ -10476,22 +10488,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     imgError: function imgError(variant) {
       variant.error = true;
     }
-  }),
-  created: function created() {
-    // Setup Fuse
-    var options = {
-      shouldSort: true,
-      includeScore: true,
-      includeMatches: true,
-      threshold: 0.6,
-      location: 0,
-      distance: 100,
-      maxPatternLength: 32,
-      minMatchCharLength: 2,
-      keys: ["title", "datasource_id"]
-    };
-    this.$fuse = new fuse_js__WEBPACK_IMPORTED_MODULE_1___default.a(this.productsScoped, options);
-  }
+  })
 });
 
 /***/ }),

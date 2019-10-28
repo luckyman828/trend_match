@@ -95,7 +95,19 @@ export default {
             this.$refs.modal.close()
         },
         search() {
-            this.results = this.$fuse.search(this.searchStr)
+            const options = {
+                shouldSort: true,
+                includeScore: true,
+                includeMatches: true,
+                threshold: 0.6,
+                location: 0,
+                distance: 100,
+                maxPatternLength: 32,
+                minMatchCharLength: 2,
+                keys: ["title", "datasource_id"]
+            }
+            const fuse = new Fuse(this.productsScoped, options)
+            this.results = fuse.search(this.searchStr)
         },
         productImg(variant) {
             if (!variant.error && variant.blob_id != null)
@@ -106,21 +118,6 @@ export default {
              variant.error = true
         },
     },
-    created () {
-        // Setup Fuse
-        const options = {
-            shouldSort: true,
-            includeScore: true,
-            includeMatches: true,
-            threshold: 0.6,
-            location: 0,
-            distance: 100,
-            maxPatternLength: 32,
-            minMatchCharLength: 2,
-            keys: ["title", "datasource_id"]
-        }
-        this.$fuse = new Fuse(this.productsScoped, options)
-    }
 }
 </script>
 
