@@ -1,5 +1,7 @@
 <template>
-    <div class="request-wrapper" :class="[{own: (request.user_id == authUser.id)}, {'has-traits': request.focus}]">
+    <div class="request-wrapper" :class="[{own: (request.user_id == authUser.id)}, 
+    {'has-traits': request.focus}, 
+    {'master': !currentTask.siblings.find(x => x.parent_id == request.task_id) && request.user_id != authUser.id}]">
         <div class="traits">
             <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
         </div>
@@ -21,7 +23,7 @@ export default {
         'request'
     ],
     computed: {
-        ...mapGetters('persist', ['authUser', 'userPermissionLevel']),
+        ...mapGetters('persist', ['authUser', 'userPermissionLevel', 'currentTask']),
     },
     methods: {
     }
@@ -35,7 +37,7 @@ export default {
         margin-bottom: 4px;
         position: relative;
         &.has-traits {
-            margin-top: 16px;
+            margin-top: 24px;
         }
     }
     .traits {
@@ -72,6 +74,10 @@ export default {
         }
         .own & {
             background: $primary;
+            color: white;
+        }
+        .master & {
+            background: $dark;
             color: white;
         }
         .body {

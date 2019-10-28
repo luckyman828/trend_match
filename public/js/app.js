@@ -10327,12 +10327,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'request',
   props: ['request'],
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['authUser', 'userPermissionLevel'])),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['authUser', 'userPermissionLevel', 'currentTask'])),
   methods: {}
 });
 
@@ -15579,7 +15581,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".request-wrapper[data-v-1c0a3c74] {\n  margin-bottom: 4px;\n  position: relative;\n}\n.request-wrapper.has-traits[data-v-1c0a3c74] {\n  margin-top: 16px;\n}\n.traits[data-v-1c0a3c74] {\n  position: absolute;\n  top: -16px;\n  left: -10px;\n  z-index: 1;\n  white-space: nowrap;\n}\n.traits > *[data-v-1c0a3c74] {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);\n}\n.traits > *[data-v-1c0a3c74]:not(:last-child) {\n  margin-right: 8px;\n}\n.pill i[data-v-1c0a3c74] {\n  font-size: 8px;\n  margin-right: 4px;\n}\n.request[data-v-1c0a3c74] {\n  padding: 12px;\n  background: #dfdfdf;\n  border-radius: 6px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.request .sender[data-v-1c0a3c74] {\n  font-size: 12px;\n}\n.request .id[data-v-1c0a3c74] {\n  font-size: 10px;\n  font-weight: 500;\n}\n.own .request[data-v-1c0a3c74] {\n  background: #3b86ff;\n  color: white;\n}\n.request .body[data-v-1c0a3c74] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  margin: 16px 0;\n}", ""]);
+exports.push([module.i, ".request-wrapper[data-v-1c0a3c74] {\n  margin-bottom: 4px;\n  position: relative;\n}\n.request-wrapper.has-traits[data-v-1c0a3c74] {\n  margin-top: 24px;\n}\n.traits[data-v-1c0a3c74] {\n  position: absolute;\n  top: -16px;\n  left: -10px;\n  z-index: 1;\n  white-space: nowrap;\n}\n.traits > *[data-v-1c0a3c74] {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);\n}\n.traits > *[data-v-1c0a3c74]:not(:last-child) {\n  margin-right: 8px;\n}\n.pill i[data-v-1c0a3c74] {\n  font-size: 8px;\n  margin-right: 4px;\n}\n.request[data-v-1c0a3c74] {\n  padding: 12px;\n  background: #dfdfdf;\n  border-radius: 6px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.request .sender[data-v-1c0a3c74] {\n  font-size: 12px;\n}\n.request .id[data-v-1c0a3c74] {\n  font-size: 10px;\n  font-weight: 500;\n}\n.own .request[data-v-1c0a3c74] {\n  background: #3b86ff;\n  color: white;\n}\n.master .request[data-v-1c0a3c74] {\n  background: #1b1c1d;\n  color: white;\n}\n.request .body[data-v-1c0a3c74] {\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  margin: 16px 0;\n}", ""]);
 
 // exports
 
@@ -32611,7 +32613,13 @@ var render = function() {
       staticClass: "request-wrapper",
       class: [
         { own: _vm.request.user_id == _vm.authUser.id },
-        { "has-traits": _vm.request.focus }
+        { "has-traits": _vm.request.focus },
+        {
+          master:
+            !_vm.currentTask.siblings.find(function(x) {
+              return x.parent_id == _vm.request.task_id
+            }) && _vm.request.user_id != _vm.authUser.id
+        }
       ]
     },
     [
