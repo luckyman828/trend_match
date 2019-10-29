@@ -651,7 +651,10 @@ export default{
 
                         if ( sortMethod == 'object' ) {
 
-                            // Sort by key length
+                            if (this.currentTask.type == 'decision' && key == 'commentsScoped')
+                                key = 'commentsInherited'
+
+                            // Sort by key length (arrays)
                             if ( a[key].length == b[key].length ) {
                                 return 0
                             } else if (sortAsc) {

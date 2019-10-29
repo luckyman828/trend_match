@@ -40,6 +40,14 @@
                             <div class="sender" v-if="comments[index+1] ? comments[index+1].user_id != comment.user_id : true">{{comment.task.title}} {{(comment.user_id == authUser.id) ? '| You' : userPermissionLevel > 1 ? '| ' + comment.user.name : ''}}</div>
                         </div>
                         <div class="break-line" v-if="product.outInFilter"><span class="pill red">Marked as OUT by {{(product.outInFilter.user_id == authUser.id) ? 'You' : product.outInFilter.user.name}} in {{product.outInFilter.task.title}}</span></div>
+                        <template v-if="product.commentsInherited.length > 0">
+                            <div class="break-line">Comments from prev. task(s)</div>
+                            <div class="sender-wrapper" v-for="(comment, index) in product.commentsInherited" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
+                                <comment :comment="comment"/>
+                                <div class="sender" v-if="comments[index+1] ? comments[index+1].user_id != comment.user_id : true">{{comment.task.title}} {{(comment.user_id == authUser.id) ? '| You' : userPermissionLevel > 1 ? '| ' + comment.user.name : ''}}</div>
+                            </div>
+                        </template>
+
                     </template>
 
                     <div v-else class="sender-wrapper" v-for="(comment, index) in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">

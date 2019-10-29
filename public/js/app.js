@@ -9300,6 +9300,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -9676,6 +9684,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
 //
 //
 //
@@ -12337,7 +12346,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             }
           } else {
             if (sortMethod == 'object') {
-              // Sort by key length
+              if (_this2.currentTask.type == 'decision' && key == 'commentsScoped') key = 'commentsInherited'; // Sort by key length (arrays)
+
               if (a[key].length == b[key].length) {
                 return 0;
               } else if (sortAsc) {
@@ -30828,6 +30838,55 @@ var render = function() {
                               )
                             ])
                           ])
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _vm.product.commentsInherited.length > 0
+                        ? [
+                            _c("div", { staticClass: "break-line" }, [
+                              _vm._v("Comments from prev. task(s)")
+                            ]),
+                            _vm._v(" "),
+                            _vm._l(_vm.product.commentsInherited, function(
+                              comment,
+                              index
+                            ) {
+                              return _c(
+                                "div",
+                                {
+                                  key: comment.id,
+                                  staticClass: "sender-wrapper",
+                                  class: {
+                                    own: comment.user.id == _vm.authUser.id
+                                  }
+                                },
+                                [
+                                  _c("comment", {
+                                    attrs: { comment: comment }
+                                  }),
+                                  _vm._v(" "),
+                                  (_vm.comments[index + 1]
+                                  ? _vm.comments[index + 1].user_id !=
+                                    comment.user_id
+                                  : true)
+                                    ? _c("div", { staticClass: "sender" }, [
+                                        _vm._v(
+                                          _vm._s(comment.task.title) +
+                                            " " +
+                                            _vm._s(
+                                              comment.user_id == _vm.authUser.id
+                                                ? "| You"
+                                                : _vm.userPermissionLevel > 1
+                                                ? "| " + comment.user.name
+                                                : ""
+                                            )
+                                        )
+                                      ])
+                                    : _vm._e()
+                                ],
+                                1
+                              )
+                            })
+                          ]
                         : _vm._e()
                     ]
                   : _vm._l(_vm.comments, function(comment, index) {
@@ -32058,10 +32117,29 @@ var render = function() {
                           ]
                         : _vm._e(),
                       _vm._v(" "),
-                      _vm.currentTaskPermissions.comments &&
-                      !_vm.currentTask.parentTasks.find(function(x) {
-                        return x.type == "alignment"
-                      })
+                      _vm.currentTask.type == "decision"
+                        ? _c("td", { staticClass: "square-wrapper comments" }, [
+                            _c(
+                              "span",
+                              {
+                                staticClass:
+                                  "square light icon-left clickable bind-view-single",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.onViewSingle(product.id)
+                                  }
+                                }
+                              },
+                              [
+                                _c("i", { staticClass: "far fa-comment" }),
+                                _vm._v(_vm._s(product.commentsInherited.length))
+                              ]
+                            )
+                          ])
+                        : _vm.currentTaskPermissions.comments &&
+                          !_vm.currentTask.parentTasks.find(function(x) {
+                            return x.type == "alignment"
+                          })
                         ? _c("td", { staticClass: "square-wrapper comments" }, [
                             _c(
                               "span",
@@ -59735,8 +59813,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         var currentTeam = rootGetters['persist/currentTeam'];
         var workspace = rootGetters['persist/currentWorkspace'];
         var userPermissionLevel = rootGetters['persist/userPermissionLevel'];
-        var data = [];
-        var inheritFromId = currentTask.inherit_from_id;
+        var data = []; // const inheritFromId = currentTask.inherit_from_id
+
         var inheritFromTask = currentTask.inheritFromTask;
         products.forEach(function (product) {
           product.color_variants = JSON.parse(product.color_variants);
@@ -59747,7 +59825,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           product.focus = [];
           product.nds = [];
           product.ndsTotal;
-          product.commentsScoped = []; // START Find current action for the product
+          product.commentsScoped = [];
+          product.commentsInherited = []; // START Find current action for the product
 
           if (currentTask.type == 'feedback') {
             product.currentAction = product.actions.find(function (action) {
@@ -59823,7 +59902,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               //             ? product.requests.push(comment)
               //             : product.commentsScoped.push(comment)
               // })
-            }
+            } // START Find inherited comments
+
+
+            if (currentTask.type == 'decision' && inheritFromTask.type == 'alignment') {
+              if ((inheritFromTask.parentTasks.find(function (x) {
+                return x.id == comment.task_id;
+              }) || comment.task_id == inheritFromTask.id) && !comment.is_request) {
+                product.commentsInherited.push(comment);
+              }
+            } // END Find inherited comments
+
           }); // END scope comments to task
           // START Comment votes
           // Handle comment votes - group them by team

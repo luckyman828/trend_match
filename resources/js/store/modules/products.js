@@ -50,7 +50,7 @@ export default {
                 const workspace = rootGetters['persist/currentWorkspace']
                 const userPermissionLevel = rootGetters['persist/userPermissionLevel']
                 const data = []
-                const inheritFromId = currentTask.inherit_from_id
+                // const inheritFromId = currentTask.inherit_from_id
                 const inheritFromTask = currentTask.inheritFromTask
                 products.forEach(product => {
                     product.color_variants = JSON.parse(product.color_variants)
@@ -62,6 +62,7 @@ export default {
                     product.nds = []
                     product.ndsTotal
                     product.commentsScoped = []
+                    product.commentsInherited = []
 
                     // START Find current action for the product
                     if (currentTask.type == 'feedback') {
@@ -161,6 +162,20 @@ export default {
                             //             : product.commentsScoped.push(comment)
                             // })
                         }
+
+                        // START Find inherited comments
+
+                        if (currentTask.type == 'decision' && inheritFromTask.type == 'alignment') {
+                            if (
+                                (inheritFromTask.parentTasks.find(x => x.id == comment.task_id) ||
+                                    comment.task_id == inheritFromTask.id) &&
+                                !comment.is_request
+                            ) {
+                                product.commentsInherited.push(comment)
+                            }
+                        }
+
+                        // END Find inherited comments
                     })
 
                     // END scope comments to task

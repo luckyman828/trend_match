@@ -99,7 +99,8 @@
                         </tooltipAlt2>
                     </template>
 
-                    <td v-if="currentTaskPermissions.comments && !currentTask.parentTasks.find(x => x.type == 'alignment')" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.commentsScoped.length}}</span></td>
+                    <td v-if="currentTask.type == 'decision'" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.commentsInherited.length}}</span></td>
+                    <td v-else-if="currentTaskPermissions.comments && !currentTask.parentTasks.find(x => x.type == 'alignment')" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.commentsScoped.length}}</span></td>
                     <td v-if="currentTaskPermissions.requests" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-clipboard-check"></i>{{product.requests.length}}</span></td>
 
                     <template v-if="currentTaskPermissions.actions">
