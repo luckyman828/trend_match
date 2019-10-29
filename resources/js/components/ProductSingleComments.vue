@@ -171,6 +171,8 @@ export default {
     }},
     watch: {
         product(newVal, oldVal) {
+            if (this.currentTaskId != this.currentTask.id)
+                this.setDefaultScope()
             if (newVal.id != oldVal.id || this.currentTaskId != this.currentTask.id)
                 this.update()
         },
@@ -311,7 +313,6 @@ export default {
             this.writeScope = scope
         },
         update() {
-            console.log('update comments!')
             // Set the new request equal to the existing if one exists
             this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
             // Set the id of the new request if one exists
@@ -320,7 +321,12 @@ export default {
             this.newComment.comment = ''
             this.writeActive = false
 
+            // Save a reference to the current tasks id so we can tell if it has changed
+            this.currentTaskId = this.currentTask.id
+        },
+        setDefaultScope() {
             // Set the default write / view scope
+            console.log('setting default scope')
             const type = this.currentTask.type
             if (this.currentTask.parentTasks.find(x => x.type == 'feedback')){
                 this.commentScope = 'comments'
@@ -334,9 +340,6 @@ export default {
                 this.commentScope = 'requests'
                 this.writeScope = 'request'
             }
-
-            // Save a reference to the current tasks id so we can tell if it has changed
-            this.currentTaskId = this.currentTask.id
         },
         hotkeyHandler(e) {
             const key = e.code
@@ -353,6 +356,7 @@ export default {
     },
     mounted() {
         this.update()
+        this.setDefaultScope()
     },
     updated() {
         // Preset the height of the request field

@@ -9336,6 +9336,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   watch: {
     product: function product(newVal, oldVal) {
+      if (this.currentTaskId != this.currentTask.id) this.setDefaultScope();
       if (newVal.id != oldVal.id || this.currentTaskId != this.currentTask.id) this.update();
     }
   },
@@ -9530,15 +9531,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.writeScope = scope;
     },
     update: function update() {
-      console.log('update comments!'); // Set the new request equal to the existing if one exists
-
+      // Set the new request equal to the existing if one exists
       this.newRequest.comment = this.taskRequest ? this.taskRequest.comment : ''; // Set the id of the new request if one exists
 
       this.newRequest.id = this.taskRequest ? this.taskRequest.id : null; // Reset the new comment field
 
       this.newComment.comment = '';
-      this.writeActive = false; // Set the default write / view scope
+      this.writeActive = false; // Save a reference to the current tasks id so we can tell if it has changed
 
+      this.currentTaskId = this.currentTask.id;
+    },
+    setDefaultScope: function setDefaultScope() {
+      // Set the default write / view scope
+      console.log('setting default scope');
       var type = this.currentTask.type;
 
       if (this.currentTask.parentTasks.find(function (x) {
@@ -9552,10 +9557,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else {
         this.commentScope = 'requests';
         this.writeScope = 'request';
-      } // Save a reference to the current tasks id so we can tell if it has changed
-
-
-      this.currentTaskId = this.currentTask.id;
+      }
     },
     hotkeyHandler: function hotkeyHandler(e) {
       var key = e.code;
@@ -9573,6 +9575,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   mounted: function mounted() {
     this.update();
+    this.setDefaultScope();
   },
   updated: function updated() {
     // Preset the height of the request field
