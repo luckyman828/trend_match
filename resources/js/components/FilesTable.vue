@@ -12,7 +12,7 @@
                         ID <i class="fas" :class="[(this.sortBy == 'id' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                     </th>
                     <th :class="{active: this.sortBy == 'title'}" class="clickable title" @click="onSortBy('title', true)">
-                    Catalogue <i class="fas" :class="[(this.sortBy == 'title' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                    File name <i class="fas" :class="[(this.sortBy == 'title' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                     </th>
                 </div>
                 <div class="flex-group">
@@ -140,8 +140,8 @@ export default {
             }
 
         },
-        viewSingle(catalogueId, catalogueTitle) {
-            this.$router.push({name: 'catalogue', params: {catalogueId: catalogueId, catalogueTitle: catalogueTitle}})
+        viewSingle(fileId, fileTitle) {
+            this.$router.push({name: 'file', params: {fileId: fileId, fileTitle: fileTitle}})
         }
     }
 }

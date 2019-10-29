@@ -7763,12 +7763,12 @@ __webpack_require__.r(__webpack_exports__);
         this.sortAsc = !this.sortAsc;
       }
     },
-    viewSingle: function viewSingle(catalogueId, catalogueTitle) {
+    viewSingle: function viewSingle(fileId, fileTitle) {
       this.$router.push({
-        name: 'catalogue',
+        name: 'file',
         params: {
-          catalogueId: catalogueId,
-          catalogueTitle: catalogueTitle
+          fileId: fileId,
+          fileTitle: fileTitle
         }
       });
     }
@@ -12490,7 +12490,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 
 
@@ -12944,7 +12943,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     var _this2 = this;
 
     // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
-    var routeFileId = this.$route.params.catalogueId;
+    var routeFileId = this.$route.params.fileId;
 
     if (this.currentFileId != routeFileId) {
       this.setCurrentFileId(routeFileId);
@@ -27403,7 +27402,7 @@ var render = function() {
                 }
               },
               [
-                _vm._v("\n                Catalogue "),
+                _vm._v("\n                File name "),
                 _c("i", {
                   staticClass: "fas",
                   class: [
@@ -28660,7 +28659,7 @@ var render = function() {
     "nav",
     { staticClass: "navbar", staticStyle: { height: "70px" } },
     [
-      _vm.$route.name == "catalogue" && _vm.currentTask && !_vm.loadingProducts
+      _vm.$route.name == "file" && _vm.currentTask && !_vm.loadingProducts
         ? [_c("NavbarFile")]
         : _vm._e(),
       _vm._v(" "),
@@ -28706,7 +28705,7 @@ var render = function() {
               _c("span", { staticClass: "circle primary" }, [
                 _c("i", { staticClass: "far fa-arrow-left" })
               ]),
-              _c("span", [_vm._v("Back to Collections")])
+              _c("span", [_vm._v("Back to Files")])
             ]
           ),
           _vm._v(" "),
@@ -28720,7 +28719,7 @@ var render = function() {
                   staticClass: "text-link",
                   attrs: { to: { name: "collection" } }
                 },
-                [_vm._v("Collections")]
+                [_vm._v("Files")]
               ),
               _vm._v(" "),
               _c("span", { staticClass: "current" }, [
@@ -33103,14 +33102,10 @@ var render = function() {
         "div",
         { staticClass: "top-items" },
         [
-          _c(
-            "router-link",
-            { staticClass: "link", attrs: { to: "/collection" } },
-            [
-              _c("i", { staticClass: "fas fa-signal-alt-3" }),
-              _vm._v(" Collection")
-            ]
-          ),
+          _c("router-link", { staticClass: "link", attrs: { to: "/files" } }, [
+            _c("i", { staticClass: "fas fa-signal-alt-3" }),
+            _vm._v(" Files")
+          ]),
           _vm._v(" "),
           _vm.authUser != null
             ? [
@@ -35188,99 +35183,11 @@ var render = function() {
     "div",
     { staticClass: "collection" },
     [
-      _c("h1", [_vm._v("Collection")]),
+      _c("h1", [_vm._v("Files")]),
       _vm._v(" "),
       _c("div", { staticClass: "underline" }),
       _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "filters" },
-        [
-          _c("Dropdown", {
-            staticClass: "dropdown-parent left",
-            scopedSlots: _vm._u([
-              {
-                key: "button",
-                fn: function(slotProps) {
-                  return [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "dropdown-button dropdown-parent item-filter-button",
-                        on: { click: slotProps.toggle }
-                      },
-                      [
-                        _c("span", [_vm._v("Collection")]),
-                        _vm._v(" "),
-                        _c("i", { staticClass: "far fa-chevron-down" }),
-                        _vm._v(" "),
-                        _vm.itemFilterIds.length > 0
-                          ? _c("span", { staticClass: "bubble" }, [
-                              _vm._v(
-                                "\n                        " +
-                                  _vm._s(_vm.itemFilterIds.length) +
-                                  "\n                    "
-                              )
-                            ])
-                          : _vm._e()
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _vm.itemFilterIds.length > 0
-                      ? _c(
-                          "span",
-                          {
-                            staticClass: "clear button invisible primary",
-                            on: {
-                              click: function($event) {
-                                return _vm.$refs.filterSelect.clear()
-                              }
-                            }
-                          },
-                          [_vm._v("Clear filter")]
-                        )
-                      : _vm._e()
-                  ]
-                }
-              },
-              {
-                key: "header",
-                fn: function(slotProps) {
-                  return [_c("span", [_vm._v("Filter by collection")])]
-                }
-              },
-              {
-                key: "body",
-                fn: function() {
-                  return [
-                    _c("CheckboxButtons", {
-                      ref: "filterSelect",
-                      attrs: { options: _vm.uniqueCollections },
-                      on: {
-                        change: function($event) {
-                          return _vm.$refs.filterSelect.submit()
-                        }
-                      },
-                      model: {
-                        value: _vm.itemFilterIds,
-                        callback: function($$v) {
-                          _vm.itemFilterIds = $$v
-                        },
-                        expression: "itemFilterIds"
-                      }
-                    })
-                  ]
-                },
-                proxy: true
-              }
-            ])
-          }),
-          _vm._v(" "),
-          _c("div", { staticClass: "right" })
-        ],
-        1
-      ),
+      _vm._m(0),
       _vm._v(" "),
       _c("FilesTable", {
         attrs: {
@@ -35294,7 +35201,16 @@ var render = function() {
     1
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "filters" }, [
+      _c("div", { staticClass: "right" })
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -51447,12 +51363,12 @@ Vue.filter('truncate', function (value, limit) {
 
 
 var routes = [{
-  path: '/catalogue/:catalogueId',
-  name: 'catalogue',
+  path: '/file/:fileId',
+  name: 'file',
   component: _components_screens_loaders_FileLoader__WEBPACK_IMPORTED_MODULE_5__["default"]
 }, {
-  path: '/collection',
-  name: 'collection',
+  path: '/files',
+  name: 'files',
   component: _components_screens_loaders_FolderLoader__WEBPACK_IMPORTED_MODULE_6__["default"]
 }, {
   path: '/teams',
@@ -51460,7 +51376,7 @@ var routes = [{
   component: _components_screens_loaders_TeamsLoader__WEBPACK_IMPORTED_MODULE_4__["default"]
 }, {
   path: '*',
-  redirect: '/collection'
+  redirect: '/files'
 }];
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
   routes: routes // short for `routes: routes`
@@ -56936,7 +56852,7 @@ function (_Model) {
       var data = {
         id: this.attr(null),
         email: this.attr(''),
-        name: this.attr(''),
+        name: this.attr('no name set'),
         country_id: this.attr(''),
         role_id: this.attr(''),
         comments: this.hasMany(_Comment__WEBPACK_IMPORTED_MODULE_1__["default"], 'user_id'),

@@ -55,10 +55,10 @@ import FileLoader from './components/screens/loaders/FileLoader'
 import FolderLoader from './components/screens/loaders/FolderLoader'
 
 const routes = [
-    { path: '/catalogue/:catalogueId', name: 'catalogue', component: FileLoader },
-    { path: '/collection', name: 'collection', component: FolderLoader },
+    { path: '/file/:fileId', name: 'file', component: FileLoader },
+    { path: '/files', name: 'files', component: FolderLoader },
     { path: '/teams', name: 'teams', component: TeamsLoader },
-    { path: '*', redirect: '/collection' },
+    { path: '*', redirect: '/files' },
 ]
 
 const router = new VueRouter({

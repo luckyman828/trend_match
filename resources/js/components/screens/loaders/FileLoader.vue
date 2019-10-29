@@ -107,7 +107,7 @@ export default {
     },
     created() {
         // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
-        const routeFileId = this.$route.params.catalogueId
+        const routeFileId = this.$route.params.fileId
         if (this.currentFileId != routeFileId) {
             this.setCurrentFileId(routeFileId)
             this.initRequiresFileId()

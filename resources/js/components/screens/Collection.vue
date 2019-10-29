@@ -1,9 +1,9 @@
 <template>
     <div class="collection">
-        <h1>Collection</h1>
+        <h1>Files</h1>
         <div class="underline"></div>
         <div class="filters">
-            <Dropdown class="dropdown-parent left">
+            <!-- <Dropdown class="dropdown-parent left">
                 <template v-slot:button="slotProps">
                     <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
                         <span>Collection</span>
@@ -16,12 +16,11 @@
                 </template>
                 <template v-slot:header="slotProps">
                     <span>Filter by collection</span>
-                    <!-- <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span> -->
                 </template>
                 <template v-slot:body>
                     <CheckboxButtons :options="uniqueCollections" ref="filterSelect" v-model="itemFilterIds" @change="$refs.filterSelect.submit()"/>
                 </template>
-            </Dropdown>
+            </Dropdown> -->
 
             <div class="right">
                 <!-- <Dropdown class="dropdown-parent right" ref="taskDropdown">

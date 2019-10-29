@@ -5,7 +5,7 @@
                 <img src="/images/kollekt-logo-color-1.svg" />
             </router-link>
         </div> -->
-        <template v-if="$route.name == 'catalogue' && currentTask && !loadingProducts">
+        <template v-if="$route.name == 'file' && currentTask && !loadingProducts">
             <NavbarFile/>
         </template>
         <template v-if="$route.name == 'teams'">
