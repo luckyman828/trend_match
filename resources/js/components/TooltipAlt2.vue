@@ -20,7 +20,7 @@
                     <template v-if="array != null">
                         <p class="row" v-for="(row, index) in array" :key="index">
                             <template v-if="arrayLabelKey != null">
-                                <span class="label">{{row[arrayLabelKey]}}: </span>
+                                <span class="label">{{(row[arrayLabelKey]) ? row[arrayLabelKey] : 'No label'}}: </span>
                                 <strong class="value" v-if="arrayValueKey != null">{{row[arrayValueKey]}}<template v-if="arrayValueUnit">{{arrayValueUnit}}</template></strong>
                                 <strong class="value" v-else>{{row}}</strong>
                             </template>

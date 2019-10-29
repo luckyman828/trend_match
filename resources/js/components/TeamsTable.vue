@@ -16,8 +16,8 @@
                 <th :class="{active: this.sortBy == 'users'}" class="clickable members" @click="onSortBy('users', false)">
                     Members <i class="fas" :class="[(this.sortBy == 'users' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'collections'}" class="clickable collections" @click="onSortBy('collections', false)">
-                    Collections <i class="fas" :class="[(this.sortBy == 'collections' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                <th :class="{active: this.sortBy == 'files'}" class="clickable files" @click="onSortBy('files', false)">
+                    files <i class="fas" :class="[(this.sortBy == 'files' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
                 <th :class="{active: this.sortBy == 'status'}" class="clickable status" @click="onSortBy('status', false)">
                     Status <i class="fas" :class="[(this.sortBy == 'status' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
@@ -43,8 +43,8 @@
                         <td class="title clickable" @click="expandUsers(team)"><span :class="(expandedIds.includes(team.id)) ? 'light-2' : 'invisible'" class="button icon-left"><i class="far fa-chevron-right"></i>{{team.title}}</span></td>
                         <td class="assigned">{{team.expanded}}</td>
                         <td class="members clickable" @click="expandUsers(team)"><span>{{team.users.length}}<template v-if="team.invites.length > 0"> ({{team.invites.length}})</template></span></td>
-                        <td class="collections">
-                            <TooltipAlt2 v-if="team.files.length > 0" :header="'Team collections'" :array="team.files" :arrayValueKey="'title'">
+                        <td class="files">
+                            <TooltipAlt2 v-if="team.files.length > 0" :header="'Team files'" :array="team.files" :arrayValueKey="'title'">
                                 <span>{{team.files.length}} <i class="far fa-info-circle"/></span>
                             </TooltipAlt2>
                             <span v-else>{{team.files.length}}</span>
@@ -62,7 +62,7 @@
                             <td class="index">{{index + 1}}</td>
                             <td class="name">{{ (user.name != null) ? user.name : 'No name set' }}</td>
                             <td class="email">{{user.email}}</td>
-                            <td class="collections">-</td>
+                            <td class="files">-</td>
                             <td class="role dropdown-parent">
                                 <template v-if="userPermissionLevel < user.role_id">
                                     <span class="square" :class="'role-' + user.role_id">{{user.role.title}}</span>
@@ -100,7 +100,7 @@
                             <td class="index">{{team.users.length + index + 1}}</td>
                             <td class="name">No name yet</td>
                             <td class="email">{{invited.email}}</td>
-                            <td class="collections"><span class="square invisible dark icon-left"><i class="far fa-exclamation-triangle"></i> invited</span></td>
+                            <td class="files"><span class="square invisible dark icon-left"><i class="far fa-exclamation-triangle"></i> invited</span></td>
                             <td class="role"></td>
                             <td></td>
                             <td class="action">

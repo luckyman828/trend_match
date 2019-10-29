@@ -33355,20 +33355,20 @@ var render = function() {
             _c(
               "th",
               {
-                staticClass: "clickable collections",
-                class: { active: this.sortBy == "collections" },
+                staticClass: "clickable files",
+                class: { active: this.sortBy == "files" },
                 on: {
                   click: function($event) {
-                    return _vm.onSortBy("collections", false)
+                    return _vm.onSortBy("files", false)
                   }
                 }
               },
               [
-                _vm._v("\n                Collections "),
+                _vm._v("\n                files "),
                 _c("i", {
                   staticClass: "fas",
                   class: [
-                    this.sortBy == "collections" && !_vm.sortAsc
+                    this.sortBy == "files" && !_vm.sortAsc
                       ? "fa-long-arrow-alt-up"
                       : "fa-long-arrow-alt-down"
                   ]
@@ -33524,14 +33524,14 @@ var render = function() {
                           _vm._v(" "),
                           _c(
                             "td",
-                            { staticClass: "collections" },
+                            { staticClass: "files" },
                             [
                               team.files.length > 0
                                 ? _c(
                                     "TooltipAlt2",
                                     {
                                       attrs: {
-                                        header: "Team collections",
+                                        header: "Team files",
                                         array: team.files,
                                         arrayValueKey: "title"
                                       }
@@ -33634,7 +33634,7 @@ var render = function() {
                                   _vm._v(_vm._s(user.email))
                                 ]),
                                 _vm._v(" "),
-                                _c("td", { staticClass: "collections" }, [
+                                _c("td", { staticClass: "files" }, [
                                   _vm._v("-")
                                 ]),
                                 _vm._v(" "),
@@ -33966,7 +33966,7 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("td", { staticClass: "collections" }, [
+    return _c("td", { staticClass: "files" }, [
       _c("span", { staticClass: "square invisible dark icon-left" }, [
         _c("i", { staticClass: "far fa-exclamation-triangle" }),
         _vm._v(" invited")
@@ -34456,7 +34456,11 @@ var render = function() {
                                 ? [
                                     _c("span", { staticClass: "label" }, [
                                       _vm._v(
-                                        _vm._s(row[_vm.arrayLabelKey]) + ": "
+                                        _vm._s(
+                                          row[_vm.arrayLabelKey]
+                                            ? row[_vm.arrayLabelKey]
+                                            : "No label"
+                                        ) + ": "
                                       )
                                     ]),
                                     _vm._v(" "),
