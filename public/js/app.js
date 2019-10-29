@@ -31867,7 +31867,13 @@ var render = function() {
                                     _vm.userPermissionLevel <= 1,
                                   header: "focus",
                                   array: product.focus.map(function(x) {
-                                    return x.user.name != null
+                                    return x.task
+                                      ? x.task.type != "feedback"
+                                        ? x.task.title
+                                        : x.user.name != null
+                                        ? x.user.name
+                                        : x.title
+                                      : x.user.name != null
                                       ? x.user.name
                                       : x.title
                                   })
@@ -31905,13 +31911,25 @@ var render = function() {
                                   header: "in",
                                   array: product.ins
                                     .map(function(x) {
-                                      return x.user.name != null
+                                      return x.task
+                                        ? x.task.type != "feedback"
+                                          ? x.task.title
+                                          : x.user.name != null
+                                          ? x.user.name
+                                          : x.title
+                                        : x.user.name != null
                                         ? x.user.name
                                         : x.title
                                     })
                                     .concat(
                                       product.focus.map(function(x) {
-                                        return x.user.name != null
+                                        return x.task
+                                          ? x.task.type != "feedback"
+                                            ? x.task.title
+                                            : x.user.name != null
+                                            ? x.user.name
+                                            : x.title
+                                          : x.user.name != null
                                           ? x.user.name
                                           : x.title
                                       })
@@ -31950,7 +31968,13 @@ var render = function() {
                                     _vm.userPermissionLevel <= 1,
                                   header: "out",
                                   array: product.outs.map(function(x) {
-                                    return x.user.name != null
+                                    return x.task
+                                      ? x.task.type != "feedback"
+                                        ? x.task.title
+                                        : x.user.name != null
+                                        ? x.user.name
+                                        : x.title
+                                      : x.user.name != null
                                       ? x.user.name
                                       : x.title
                                   })
@@ -32024,7 +32048,13 @@ var render = function() {
                                     _vm.userPermissionLevel <= 1,
                                   header: "focus",
                                   array: product.focus.map(function(x) {
-                                    return x.user.name != null
+                                    return x.task
+                                      ? x.task.type != "feedback"
+                                        ? x.task.title
+                                        : x.user.name != null
+                                        ? x.user.name
+                                        : x.title
+                                      : x.user.name != null
                                       ? x.user.name
                                       : x.title
                                   })
