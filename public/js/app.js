@@ -9045,6 +9045,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       currentImgIndex: 0
     };
   },
+  watch: {
+    product: function product(newVal, oldVal) {
+      if (newVal.id != oldVal.id) {
+        // New product
+        this.currentImgIndex = 0;
+      }
+    }
+  },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope', 'currentTaskPermissions', 'currentTask']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/products', ['currentProduct', 'nextProductId', 'prevProductId']), {
     product: function product() {
       return this.currentProduct;
@@ -9081,13 +9089,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     onNextSingle: function onNextSingle() {
       if (this.nextProductId != null) {
-        this.currentImgIndex = 0;
         this.showNextProduct();
       }
     },
     onPrevSingle: function onPrevSingle() {
       if (this.prevProductId != null) {
-        this.currentImgIndex = 0;
         this.showPrevProduct();
       }
     },
