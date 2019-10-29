@@ -529,7 +529,7 @@ textarea {
         }
     }
     &.active {
-        z-index: 2;
+        z-index: 99;
         > .modal,
         > .overlay {
             display: block;
