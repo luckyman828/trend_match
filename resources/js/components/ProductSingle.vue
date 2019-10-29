@@ -182,7 +182,7 @@
                             <div class="tab-headers">
                                 <span :class="{active: currentTab == 'ins'}" class="tab" @click="setCurrentTab('ins')"><span class="count">{{product.ins.length + product.focus.length}}</span>In</span>
                                 <span :class="{active: currentTab == 'outs'}" class="tab" @click="setCurrentTab('outs')"><span class="count">{{product.outs.length}}</span>Out</span>
-                                <span :class="{active: currentTab == 'nds'}" class="tab" @click="setCurrentTab('nds')"><span class="count">{{product.nds.length}}</span>Not decided</span>
+                                <span v-if="currentTask.type != 'decision'" :class="{active: currentTab == 'nds'}" class="tab" @click="setCurrentTab('nds')"><span class="count">{{product.nds.length}}</span>Not decided</span>
                             </div>
                             <div class="tab-body">
                                 <strong class="tab-title">{{currentTab.substr(0, currentTab.length - 1)}}</strong>
@@ -470,7 +470,7 @@ export default {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        width: calc(100% / 3);
+        flex: 1;
         background: white;
         height: 40px;
         text-align: center;

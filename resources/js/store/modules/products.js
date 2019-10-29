@@ -50,6 +50,8 @@ export default {
                 const workspace = rootGetters['persist/currentWorkspace']
                 const userPermissionLevel = rootGetters['persist/userPermissionLevel']
                 const data = []
+                const inheritFromId = currentTask.inherit_from_id
+                const inheritFromTask = currentTask.inheritFromTask
                 products.forEach(product => {
                     product.color_variants = JSON.parse(product.color_variants)
                     product.assortments = JSON.parse(product.assortments)
@@ -225,7 +227,17 @@ export default {
 
                     // START Group actions by action type (DISTRIBUTION)
                     product.actions.forEach(action => {
-                        if (currentTask.type == 'feedback') {
+                        if (currentTask.type == 'decision' && inheritFromTask.type == 'alignment') {
+                            if (inheritFromTask.parentTasks.find(x => x.id == action.task_id)) {
+                                if (action.action == 2) {
+                                    product.focus.push(action)
+                                } else if (action.action == 1) {
+                                    product.ins.push(action)
+                                } else if (action.action == 0) {
+                                    product.outs.push(action)
+                                }
+                            }
+                        } else if (currentTask.type == 'feedback') {
                             if (action.task_id == currentTask.id) {
                                 if (action.action == 2) {
                                     product.focus.push(action)

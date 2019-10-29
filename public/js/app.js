@@ -15484,7 +15484,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".product-single[data-v-019a7388] {\n  height: 100%;\n}\n.product-single > .inner[data-v-019a7388] {\n  height: 100%;\n  width: 100%;\n  background: #f9f9f9;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single > .inner .body[data-v-019a7388] {\n  padding: 1em;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.product-single > .inner .body .comments[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  overflow: hidden;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #dfdfdf;\n  width: 100%;\n}\n.product-single .description .stat[data-v-019a7388] > :first-child {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\n.product-single .details[data-v-019a7388] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\nh3[data-v-019a7388] {\n  font-size: 16px;\n  font-weight: 400;\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #a8a8a8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #dfdfdf;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.header[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header > *[data-v-019a7388] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header .close[data-v-019a7388] {\n  margin-right: 24px;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  width: calc(100% / 3);\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  border-bottom: solid 2px #dfdfdf;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #f9f9f9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1b1c1d;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #f3f3f3;\n  color: #1b1c1d;\n  border-color: #3b86ff;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tab-body[data-v-019a7388] {\n  background: #f3f3f3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #dfdfdf;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3b86ff;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #f3f3f3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3c3b54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}\n.details[data-v-019a7388] {\n  padding-right: 1px;\n}", ""]);
+exports.push([module.i, ".product-single[data-v-019a7388] {\n  height: 100%;\n}\n.product-single > .inner[data-v-019a7388] {\n  height: 100%;\n  width: 100%;\n  background: #f9f9f9;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single > .inner .body[data-v-019a7388] {\n  padding: 1em;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.product-single > .inner .body .comments[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  overflow: hidden;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #dfdfdf;\n  width: 100%;\n}\n.product-single .description .stat[data-v-019a7388] > :first-child {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\n.product-single .details[data-v-019a7388] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\nh3[data-v-019a7388] {\n  font-size: 16px;\n  font-weight: 400;\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #a8a8a8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #dfdfdf;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.header[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header > *[data-v-019a7388] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header .close[data-v-019a7388] {\n  margin-right: 24px;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-flex: 1;\n          flex: 1;\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  border-bottom: solid 2px #dfdfdf;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #f9f9f9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1b1c1d;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #f3f3f3;\n  color: #1b1c1d;\n  border-color: #3b86ff;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tab-body[data-v-019a7388] {\n  background: #f3f3f3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #dfdfdf;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3b86ff;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #f3f3f3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3c3b54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}\n.details[data-v-019a7388] {\n  padding-right: 1px;\n}", ""]);
 
 // exports
 
@@ -28700,7 +28700,7 @@ var render = function() {
         [
           _c(
             "router-link",
-            { staticClass: "back-link", attrs: { to: { name: "collection" } } },
+            { staticClass: "back-link", attrs: { to: { name: "files" } } },
             [
               _c("span", { staticClass: "circle primary" }, [
                 _c("i", { staticClass: "far fa-arrow-left" })
@@ -28715,10 +28715,7 @@ var render = function() {
             [
               _c(
                 "router-link",
-                {
-                  staticClass: "text-link",
-                  attrs: { to: { name: "collection" } }
-                },
+                { staticClass: "text-link", attrs: { to: { name: "files" } } },
                 [_vm._v("Files")]
               ),
               _vm._v(" "),
@@ -30423,24 +30420,26 @@ var render = function() {
                           ]
                         ),
                         _vm._v(" "),
-                        _c(
-                          "span",
-                          {
-                            staticClass: "tab",
-                            class: { active: _vm.currentTab == "nds" },
-                            on: {
-                              click: function($event) {
-                                return _vm.setCurrentTab("nds")
-                              }
-                            }
-                          },
-                          [
-                            _c("span", { staticClass: "count" }, [
-                              _vm._v(_vm._s(_vm.product.nds.length))
-                            ]),
-                            _vm._v("Not decided")
-                          ]
-                        )
+                        _vm.currentTask.type != "decision"
+                          ? _c(
+                              "span",
+                              {
+                                staticClass: "tab",
+                                class: { active: _vm.currentTab == "nds" },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.setCurrentTab("nds")
+                                  }
+                                }
+                              },
+                              [
+                                _c("span", { staticClass: "count" }, [
+                                  _vm._v(_vm._s(_vm.product.nds.length))
+                                ]),
+                                _vm._v("Not decided")
+                              ]
+                            )
+                          : _vm._e()
                       ]),
                       _vm._v(" "),
                       _c(
@@ -31635,29 +31634,31 @@ var render = function() {
                       ]
                     ),
                     _vm._v(" "),
-                    _c(
-                      "th",
-                      {
-                        staticClass: "clickable square-wrapper nds",
-                        class: { active: this.sortBy == "nds" },
-                        on: {
-                          click: function($event) {
-                            return _vm.onSortBy("nds", false)
-                          }
-                        }
-                      },
-                      [
-                        _vm._v("\n                    ND "),
-                        _c("i", {
-                          staticClass: "fas",
-                          class: [
-                            this.sortBy == "nds" && !_vm.sortAsc
-                              ? "fa-long-arrow-alt-up"
-                              : "fa-long-arrow-alt-down"
+                    _vm.currentTask.type != "decision"
+                      ? _c(
+                          "th",
+                          {
+                            staticClass: "clickable square-wrapper nds",
+                            class: { active: this.sortBy == "nds" },
+                            on: {
+                              click: function($event) {
+                                return _vm.onSortBy("nds", false)
+                              }
+                            }
+                          },
+                          [
+                            _vm._v("\n                    ND "),
+                            _c("i", {
+                              staticClass: "fas",
+                              class: [
+                                this.sortBy == "nds" && !_vm.sortAsc
+                                  ? "fa-long-arrow-alt-up"
+                                  : "fa-long-arrow-alt-down"
+                              ]
+                            })
                           ]
-                        })
-                      ]
-                    )
+                        )
+                      : _vm._e()
                   ]
                 : _vm.currentTaskPermissions.focus
                 ? _c(
@@ -31972,44 +31973,49 @@ var render = function() {
                               ]
                             ),
                             _vm._v(" "),
-                            _c(
-                              "tooltipAlt2",
-                              {
-                                staticClass: "square-wrapper",
-                                attrs: {
-                                  disabled:
-                                    product.nds.length <= 0 ||
-                                    _vm.userPermissionLevel <= 1,
-                                  header: "not decided",
-                                  array: product.nds.map(function(x) {
-                                    return x.name != null ? x.name : x.title
-                                  })
-                                }
-                              },
-                              [
-                                _c(
-                                  "td",
-                                  { staticClass: "square-wrapper nds" },
+                            _vm.currentTask.type != "decision"
+                              ? _c(
+                                  "tooltipAlt2",
+                                  {
+                                    staticClass: "square-wrapper",
+                                    attrs: {
+                                      disabled:
+                                        product.nds.length <= 0 ||
+                                        _vm.userPermissionLevel <= 1,
+                                      header: "not decided",
+                                      array: product.nds.map(function(x) {
+                                        return x.name != null ? x.name : x.title
+                                      })
+                                    }
+                                  },
                                   [
                                     _c(
-                                      "span",
-                                      { staticClass: "square light icon-left" },
+                                      "td",
+                                      { staticClass: "square-wrapper nds" },
                                       [
-                                        _c("i", {
-                                          staticClass:
-                                            "far fa-question-circle hide-screen-sm"
-                                        }),
-                                        _vm._v(
-                                          _vm._s(product.nds.length) +
-                                            " /" +
-                                            _vm._s(product.ndsTotal)
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass:
+                                              "square light icon-left"
+                                          },
+                                          [
+                                            _c("i", {
+                                              staticClass:
+                                                "far fa-question-circle hide-screen-sm"
+                                            }),
+                                            _vm._v(
+                                              _vm._s(product.nds.length) +
+                                                " /" +
+                                                _vm._s(product.ndsTotal)
+                                            )
+                                          ]
                                         )
                                       ]
                                     )
                                   ]
                                 )
-                              ]
-                            )
+                              : _vm._e()
                           ]
                         : _vm.currentTaskPermissions.focus
                         ? [
@@ -59730,6 +59736,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         var workspace = rootGetters['persist/currentWorkspace'];
         var userPermissionLevel = rootGetters['persist/userPermissionLevel'];
         var data = [];
+        var inheritFromId = currentTask.inherit_from_id;
+        var inheritFromTask = currentTask.inheritFromTask;
         products.forEach(function (product) {
           product.color_variants = JSON.parse(product.color_variants);
           product.assortments = JSON.parse(product.assortments);
@@ -59882,7 +59890,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           // START Group actions by action type (DISTRIBUTION)
 
           product.actions.forEach(function (action) {
-            if (currentTask.type == 'feedback') {
+            if (currentTask.type == 'decision' && inheritFromTask.type == 'alignment') {
+              if (inheritFromTask.parentTasks.find(function (x) {
+                return x.id == action.task_id;
+              })) {
+                if (action.action == 2) {
+                  product.focus.push(action);
+                } else if (action.action == 1) {
+                  product.ins.push(action);
+                } else if (action.action == 0) {
+                  product.outs.push(action);
+                }
+              }
+            } else if (currentTask.type == 'feedback') {
               if (action.task_id == currentTask.id) {
                 if (action.action == 2) {
                   product.focus.push(action);

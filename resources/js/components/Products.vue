@@ -35,7 +35,7 @@
                     <th :class="{active: this.sortBy == 'outs'}" class="clickable square-wrapper" @click="onSortBy('outs', false)">
                         Out <i class="fas" :class="[(this.sortBy == 'outs' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                     </th>
-                    <th :class="{active: this.sortBy == 'nds'}" class="clickable square-wrapper nds" @click="onSortBy('nds', false)">
+                    <th v-if="currentTask.type != 'decision'" :class="{active: this.sortBy == 'nds'}" class="clickable square-wrapper nds" @click="onSortBy('nds', false)">
                         ND <i class="fas" :class="[(this.sortBy == 'nds' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                     </th>
                 </template>
@@ -89,7 +89,7 @@
                         <tooltipAlt2 class="square-wrapper" :disabled="product.outs.length <= 0 || userPermissionLevel <= 1" :header="'out'" :array="product.outs.map(x => (x.user.name != null) ? x.user.name : x.title)">
                             <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
                         </tooltipAlt2>
-                        <tooltipAlt2 class="square-wrapper" :disabled="product.nds.length <= 0 || userPermissionLevel <= 1" :header="'not decided'" :array="product.nds.map(x => (x.name != null) ? x.name : x.title)">
+                        <tooltipAlt2 v-if="currentTask.type != 'decision'" class="square-wrapper" :disabled="product.nds.length <= 0 || userPermissionLevel <= 1" :header="'not decided'" :array="product.nds.map(x => (x.name != null) ? x.name : x.title)">
                             <td class="square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{product.ndsTotal}}</span></td>
                         </tooltipAlt2>
                     </template>

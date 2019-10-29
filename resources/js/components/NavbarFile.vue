@@ -3,9 +3,9 @@
 
         <div class="items-left">
 
-            <router-link :to="{name: 'collection'}" class="back-link"><span class="circle primary"><i class="far fa-arrow-left"></i></span><span>Back to Files</span></router-link>
+            <router-link :to="{name: 'files'}" class="back-link"><span class="circle primary"><i class="far fa-arrow-left"></i></span><span>Back to Files</span></router-link>
             <div class="breadcrumbs">
-                <router-link class="text-link" :to="{name: 'collection'}">Files</router-link>
+                <router-link class="text-link" :to="{name: 'files'}">Files</router-link>
                 <span class="current"><strong>{{(currentFile != null) ? currentFile.title : 'Fetching..'}}</strong></span>
             </div>
 
