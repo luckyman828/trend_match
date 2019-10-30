@@ -59921,16 +59921,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               })) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
             } else {
               // If type is alignment
+              comment.type = 'alignment';
               if (comment.task_id == currentTask.id || currentTask.siblings.find(function (x) {
-                return x.parent_id == comment.task_id || currentTask.parentTasks.find(function (x) {
-                  return x.id == comment.task_id;
-                });
-              })) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment); // currentTask.parentTasks.forEach(parentTask => {
-              //     if (comment.task_id == parentTask.id)
-              //         comment.is_request
-              //             ? product.requests.push(comment)
-              //             : product.commentsScoped.push(comment)
-              // })
+                return x.parent_id == comment.task_id;
+              }) || currentTask.parentTasks.find(function (x) {
+                return x.id == comment.task_id;
+              })) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
             }
           }); // END scope comments to task
           // START Comment votes
