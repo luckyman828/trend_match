@@ -303,7 +303,11 @@ export default {
                                 x => x.task_id == comment.task_id && x.user_id == comment.user_id && x.action == 2
                             )
                         } else {
-                            comment.focus = product.actions.find(x => x.task_id == comment.task_id && x.action == 2)
+                            comment.focus = product.actions.find(x =>
+                                x.task.type == 'feedback'
+                                    ? x.task_id == comment.task_id && x.action == 2 && x.user_id == comment.user_id
+                                    : x.task_id == comment.task_id && x.action == 2
+                            )
                         }
                     })
 

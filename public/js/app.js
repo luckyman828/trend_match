@@ -60081,7 +60081,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               });
             } else {
               comment.focus = product.actions.find(function (x) {
-                return x.task_id == comment.task_id && x.action == 2;
+                return x.task.type == 'feedback' ? x.task_id == comment.task_id && x.action == 2 && x.user_id == comment.user_id : x.task_id == comment.task_id && x.action == 2;
               });
             }
           });
