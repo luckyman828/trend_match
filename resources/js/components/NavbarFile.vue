@@ -28,12 +28,12 @@
                 </template>
                 <span class="button wide red" v-else @click="onUndoCompleteTask(currentFile.id, currentTask.id)">Reopen task</span>
             </template>
-            <span v-if="(currentTask.type == 'decision' || currentTask.type == 'approval') && currentTask.completed.find(x => x.task_id == currentTask.id)" class="button wide primary" @click="$refs.exportModal.toggle(); setPageHeight()">Export to PDF</span>
+            <span v-if="userPermissionLevel >= 2" class="button wide primary" @click="$refs.exportModal.toggle(); setPageHeight()">Export to PDF</span>
 
         </div>
 
         <!-- PDF FOR EXPORT MARKUP -->
-        <div class="example-pdf" ref="exportToPdf" v-if="(currentTask.type == 'decision' || currentTask.type == 'approval') && this.productsToExport.length > 0" 
+        <div class="example-pdf" ref="exportToPdf" v-if="userPermissionLevel >= 2 && this.productsToExport.length > 0" 
             style="font-family: arial, helvetica, sans-serif;">
             <div ref="pdfWrapper" style="font-family: 'Roboto', sans-serif, helvetica, arial; position: relative;">
                 <div style="height: 1040px; width: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center;">

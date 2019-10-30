@@ -28814,11 +28814,7 @@ var render = function() {
               ]
             : _vm._e(),
           _vm._v(" "),
-          (_vm.currentTask.type == "decision" ||
-            _vm.currentTask.type == "approval") &&
-          _vm.currentTask.completed.find(function(x) {
-            return x.task_id == _vm.currentTask.id
-          })
+          _vm.userPermissionLevel >= 2
             ? _c(
                 "span",
                 {
@@ -28837,9 +28833,7 @@ var render = function() {
         2
       ),
       _vm._v(" "),
-      (_vm.currentTask.type == "decision" ||
-        _vm.currentTask.type == "approval") &&
-      this.productsToExport.length > 0
+      _vm.userPermissionLevel >= 2 && this.productsToExport.length > 0
         ? _c(
             "div",
             {
