@@ -233,6 +233,14 @@ export default {
             currentTab: 'ins',
             currentImgIndex: 0,
     }},
+    watch: {
+        product(newVal, oldVal) {
+            if (newVal.id != oldVal.id) {
+                // New product
+                this.currentImgIndex = 0
+            }
+        },
+    },
     computed: {
         ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope', 'currentTaskPermissions', 'currentTask']),
         ...mapGetters('entities/products', ['currentProduct', 'nextProductId', 'prevProductId']),

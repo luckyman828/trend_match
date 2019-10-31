@@ -144,23 +144,15 @@ export default {
                                     : product.commentsScoped.push(comment)
                         } else {
                             // If type is alignment
+                            comment.type = 'alignment'
                             if (
                                 comment.task_id == currentTask.id ||
-                                currentTask.siblings.find(
-                                    x =>
-                                        x.parent_id == comment.task_id ||
-                                        currentTask.parentTasks.find(x => x.id == comment.task_id)
-                                )
+                                currentTask.siblings.find(x => x.parent_id == comment.task_id) ||
+                                currentTask.parentTasks.find(x => x.id == comment.task_id)
                             )
                                 comment.is_request
                                     ? product.requests.push(comment)
                                     : product.commentsScoped.push(comment)
-                            // currentTask.parentTasks.forEach(parentTask => {
-                            //     if (comment.task_id == parentTask.id)
-                            //         comment.is_request
-                            //             ? product.requests.push(comment)
-                            //             : product.commentsScoped.push(comment)
-                            // })
                         }
 
                         // START Find inherited comments
@@ -338,7 +330,11 @@ export default {
                                 x => x.task_id == comment.task_id && x.user_id == comment.user_id && x.action == 2
                             )
                         } else {
-                            comment.focus = product.actions.find(x => x.task_id == comment.task_id && x.action == 2)
+                            comment.focus = product.actions.find(x =>
+                                x.task.type == 'feedback'
+                                    ? x.task_id == comment.task_id && x.action == 2 && x.user_id == comment.user_id
+                                    : x.task_id == comment.task_id && x.action == 2
+                            )
                         }
                     })
 

@@ -9314,6 +9314,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       currentImgIndex: 0
     };
   },
+  watch: {
+    product: function product(newVal, oldVal) {
+      if (newVal.id != oldVal.id) {
+        // New product
+        this.currentImgIndex = 0;
+      }
+    }
+  },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope', 'currentTaskPermissions', 'currentTask']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/products', ['currentProduct', 'nextProductId', 'prevProductId']), {
     product: function product() {
       return this.currentProduct;
@@ -29553,11 +29561,7 @@ var render = function() {
               ]
             : _vm._e(),
           _vm._v(" "),
-          (_vm.currentTask.type == "decision" ||
-            _vm.currentTask.type == "approval") &&
-          _vm.currentTask.completed.find(function(x) {
-            return x.task_id == _vm.currentTask.id
-          })
+          _vm.userPermissionLevel >= 2
             ? _c(
                 "span",
                 {
@@ -29576,9 +29580,7 @@ var render = function() {
         2
       ),
       _vm._v(" "),
-      (_vm.currentTask.type == "decision" ||
-        _vm.currentTask.type == "approval") &&
-      this.productsToExport.length > 0
+      _vm.userPermissionLevel >= 2 && this.productsToExport.length > 0
         ? _c(
             "div",
             {
@@ -32850,7 +32852,13 @@ var render = function() {
                                     _vm.userPermissionLevel <= 1,
                                   header: "focus",
                                   array: product.focus.map(function(x) {
-                                    return x.user.name != null
+                                    return x.task
+                                      ? x.task.type != "feedback"
+                                        ? x.task.title
+                                        : x.user.name != null
+                                        ? x.user.name
+                                        : x.title
+                                      : x.user.name != null
                                       ? x.user.name
                                       : x.title
                                   })
@@ -32888,13 +32896,25 @@ var render = function() {
                                   header: "in",
                                   array: product.ins
                                     .map(function(x) {
-                                      return x.user.name != null
+                                      return x.task
+                                        ? x.task.type != "feedback"
+                                          ? x.task.title
+                                          : x.user.name != null
+                                          ? x.user.name
+                                          : x.title
+                                        : x.user.name != null
                                         ? x.user.name
                                         : x.title
                                     })
                                     .concat(
                                       product.focus.map(function(x) {
-                                        return x.user.name != null
+                                        return x.task
+                                          ? x.task.type != "feedback"
+                                            ? x.task.title
+                                            : x.user.name != null
+                                            ? x.user.name
+                                            : x.title
+                                          : x.user.name != null
                                           ? x.user.name
                                           : x.title
                                       })
@@ -32933,7 +32953,13 @@ var render = function() {
                                     _vm.userPermissionLevel <= 1,
                                   header: "out",
                                   array: product.outs.map(function(x) {
-                                    return x.user.name != null
+                                    return x.task
+                                      ? x.task.type != "feedback"
+                                        ? x.task.title
+                                        : x.user.name != null
+                                        ? x.user.name
+                                        : x.title
+                                      : x.user.name != null
                                       ? x.user.name
                                       : x.title
                                   })
@@ -33012,7 +33038,13 @@ var render = function() {
                                     _vm.userPermissionLevel <= 1,
                                   header: "focus",
                                   array: product.focus.map(function(x) {
-                                    return x.user.name != null
+                                    return x.task
+                                      ? x.task.type != "feedback"
+                                        ? x.task.title
+                                        : x.user.name != null
+                                        ? x.user.name
+                                        : x.title
+                                      : x.user.name != null
                                       ? x.user.name
                                       : x.title
                                   })
@@ -61074,16 +61106,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               })) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
             } else {
               // If type is alignment
+              comment.type = 'alignment';
               if (comment.task_id == currentTask.id || currentTask.siblings.find(function (x) {
-                return x.parent_id == comment.task_id || currentTask.parentTasks.find(function (x) {
-                  return x.id == comment.task_id;
-                });
-              })) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment); // currentTask.parentTasks.forEach(parentTask => {
-              //     if (comment.task_id == parentTask.id)
-              //         comment.is_request
-              //             ? product.requests.push(comment)
-              //             : product.commentsScoped.push(comment)
-              // })
+                return x.parent_id == comment.task_id;
+              }) || currentTask.parentTasks.find(function (x) {
+                return x.id == comment.task_id;
+              })) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
             } // START Find inherited comments
 
 
@@ -61260,7 +61288,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               });
             } else {
               comment.focus = product.actions.find(function (x) {
-                return x.task_id == comment.task_id && x.action == 2;
+                return x.task.type == 'feedback' ? x.task_id == comment.task_id && x.action == 2 && x.user_id == comment.user_id : x.task_id == comment.task_id && x.action == 2;
               });
             }
           });
