@@ -1,7 +1,7 @@
 <template>
     <div class="fly-in-wrapper" :class="[{visible: isVisible}]">
         <div class="overlay" @click="close"></div>
-        <div class="fly-in">
+        <div class="fly-in" ref="flyIn">
             <slot :toggle="toggle"/>
         </div>
     </div>
@@ -34,6 +34,9 @@ export default {
         toggle () {
             this.visible = !this.visible
             this.$emit('toggle')
+        },
+        reset() {
+            // this.$refs.flyIn.webkitAnimationPlayState = 'running'
         }
     }
 }
@@ -74,5 +77,14 @@ export default {
         transition-timing-function: ease-out;
         transition: .3s;
         border-radius: 6px;
+        &.animate {
+            animation-name: fly-in;
+            animation-duration: .3s;
+            animation-iteration-count: 1;
+        }
+    }
+    @keyframes fly-in {
+        from {right: -100%;}
+        to {right: 0;}
     }
 </style>

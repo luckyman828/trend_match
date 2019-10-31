@@ -18,6 +18,8 @@ use App\PhaseProduct;
 use App\Http\Resources\PhaseProduct as PhaseProductResource;
 use App\TeamProduct;
 use App\Http\Resources\TeamProduct as TeamProductResource;
+use App\Collection;
+use App\Http\Resources\Collection as CollectionResource;
 use App\TaskAction;
 use App\Request as RequestModel;
 
@@ -112,6 +114,35 @@ class FileController extends Controller
 
         return $result;
     }
+    
 
+    public function insertOrUpdate(Request $request)
+    {
+        $existingFile = Collection::find($request->id);
+
+        $file = ($existingFile) ? $existingFile : new Collection;
+
+        $file->id = $request->id;
+        $file->workspace_id = $request->workspace_id;
+        $file->title = $request->title;
+        $file->phase = $request->phase;
+        $file->folder_id = $request->catalog_id;
+        $file->catalog_id = $request->catalog_id;
+        $file->start_date = $request->start_date;
+        $file->end_date = $request->end_date;
+
+        // return $action;
+
+        if($file->save()) {
+
+            // Fire event
+            $dataToReturn = new CollectionResource($file);
+            // broadcast(new ActionUpdated($actionToReturn))->toOthers();
+            // broadcast(new ActionUpdated($actionToReturn))->toOthers();
+
+            // return $dataToReturn;
+            return json_decode( json_encode($dataToReturn), true);
+        }
+    }
     
 }

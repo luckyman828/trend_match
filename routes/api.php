@@ -60,6 +60,9 @@ Route::middleware('auth:api')->group( function(){
     Route::get('file/{file_id}/task-actions', 'FileController@taskActions');
     Route::get('file/{file_id}/requests', 'FileController@requests');
     
+    Route::put('file', 'FileController@insertOrUpdate');
+    
+    
 
     // xxx CATALOGS xxx
     // List catelogues available to logged in user
@@ -133,6 +136,7 @@ Route::middleware('auth:api')->group( function(){
 
     // xxxx Cache xxx
     Route::put('cache/workspace', 'WorkspaceController@cacheCurrentWorkspace');
+
     
 });
 

@@ -32,8 +32,8 @@ export default {
         ...mapActions('entities/collections', ['fetchCollections']),
         ...mapActions('entities/users', ['fetchUsers']),
         async initRequiresWorkspace() {
-            if (Collection.all().length <= 0)
-                await this.fetchCollections(this.currentWorkspaceId)
+            // if (Collection.all().length <= 0)
+                // await this.fetchCollections(this.currentWorkspaceId)
             if (User.all().length <= 0)
                 await this.fetchUsers(this.currentWorkspaceId)
             this.loadingInit = false

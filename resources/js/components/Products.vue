@@ -4,7 +4,7 @@
         <div class="overlay" v-else-if="!currentTask.isActive">Task not started yet</div>
         <div class="scroll-bg"></div>
         <FlyIn ref="singleFlyIn" :visibleOverwrite="singleVisible" @close="onCloseSingle">
-            <product-single :loading="loadingSingle" :authUser="authUser" @closeSingle="onCloseSingle" @onToggleInOut="toggleInOut" :visible="singleVisible"/>
+            <product-single :loading="loadingSingle" :authUser="authUser" :visible="singleVisible" @closeSingle="onCloseSingle" @onToggleInOut="toggleInOut" @nextProduct="nextSingle"/>
         </FlyIn>
         <div class="flex-table">
             <div class="header-row flex-table-row">
@@ -378,6 +378,10 @@ export default {
                 dropdown.classList.toggle('show')
             }
         },
+        nextSingle() {
+            // console.log('next product')
+            // this.$refs.singleFlyIn.reset()
+        }
     },
     created () {
         document.getElementById('main').addEventListener('scroll', this.handleScroll);

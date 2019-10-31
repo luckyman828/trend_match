@@ -9506,6 +9506,7 @@ textarea {
   left: 0;
   top: 0;
   z-index: -1;
+  overflow: auto;
 }
 
 .modal-wrapper > .modal {
@@ -9520,6 +9521,7 @@ textarea {
   margin: 0;
   background: #f9f9f9;
   margin-bottom: 5vh;
+  padding-bottom: 60px;
 }
 
 .modal-wrapper > .modal > .inner {

@@ -12,6 +12,9 @@ Vue.use(VueDragscroll)
 import VueCookies from 'vue-cookies'
 Vue.use(VueCookies)
 
+import UUID from 'vue-uuid'
+Vue.use(UUID)
+
 Vue.component('app', require('./App.vue').default)
 
 // Global components

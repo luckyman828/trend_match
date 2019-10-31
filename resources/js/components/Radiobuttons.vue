@@ -2,7 +2,7 @@
 
     <div class="radio-buttons">
         <div class="search" v-if="search">
-            <input class="input-wrapper small" placeholder="Search by e-mail.." type="search" v-model="searchString" ref="searchField">
+            <input class="input-wrapper small" placeholder="Search.." type="search" v-model="searchString" ref="searchField">
             <span v-if="searchString.length > 0" class="close" @click="searchString = ''">
                 <i class="fas fa-times"></i>
             </span>

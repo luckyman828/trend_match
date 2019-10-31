@@ -160,12 +160,14 @@ export default {
     actions: {
         async fetchCollections({ commit }, workspace_id) {
             // Set the state to loading
+            console.log('fethcing collections')
             commit('setLoading', true)
 
             const apiUrl = `/api/workspace/${workspace_id}/files`
 
             let tryCount = 3
             let succes = false
+            const response = await axios
             while (tryCount-- > 0 && !succes) {
                 try {
                     const response = await axios.get(`${apiUrl}`)
@@ -179,6 +181,61 @@ export default {
                     if (tryCount <= 0) throw err
                 }
             }
+        },
+        async uploadFile({ commit, dispatch }, newFile) {
+            // Generate uuid for new file
+            newFile.id = this._vm.$uuid.v4()
+
+            // Upload products to DB
+            const uploadApiUrl = `https://api-beta.kollekt.dk/hooks/import-csv?collection_id=${newFile.id}`
+            let uploadSucces = false
+            const axiosConfig = {
+                headers: {
+                    'X-Kollekt-App-Key': 'mnkAEefWBEL7cY1gEetlW4dM_YYL9Vu4K6dmavW2',
+                },
+            }
+            await axios
+                .post(
+                    `${uploadApiUrl}`,
+                    {
+                        files: newFile.files,
+                    },
+                    axiosConfig
+                )
+                .then(response => {
+                    console.log('succes')
+                    console.log(response.data)
+                    uploadSucces = true
+                })
+                .catch(err => {
+                    console.log('error')
+                    console.log(err)
+                    uploadSucces = false
+                })
+
+            // If success create a file (collection) for the products
+            if (uploadSucces) {
+                dispatch('updateFile', newFile)
+            }
+
+            // Collection.create({ data: response.data })
+        },
+        async updateFile({ commit }, fileToUpdate) {
+            await axios
+                .put(`/api/file`, {
+                    id: fileToUpdate.id,
+                    title: fileToUpdate.title,
+                    phase: fileToUpdate.phase,
+                    catalog_id: fileToUpdate.folderId,
+                    workspace_id: fileToUpdate.workspace_id,
+                })
+                .then(response => {
+                    console.log(response.data)
+                    Collection.insert({ data: response.data })
+                })
+                .catch(err => {
+                    console.log(err)
+                })
         },
     },
 

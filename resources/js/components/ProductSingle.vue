@@ -277,12 +277,14 @@ export default {
         onNextSingle() {
             if (this.nextProductId != null) {
                 this.currentImgIndex = 0
+                this.$emit('nextProduct')
                 this.showNextProduct()
             }
         },
         onPrevSingle() {
             if (this.prevProductId != null) {
                 this.currentImgIndex = 0
+                this.$emit('prevProduct')
                 this.showPrevProduct()
             }
         },

@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\http\resources\Product as ProductResource;
 
 class Collection extends JsonResource
 {
@@ -16,12 +15,5 @@ class Collection extends JsonResource
     public function toArray($request)
     {
         return parent::toArray($request);
-    }
-
-    public function with($request)
-    {
-        return [
-            'posts' => ProductResource::collection($this->products),
-        ];
     }
 }

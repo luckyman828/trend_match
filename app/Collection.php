@@ -8,6 +8,7 @@ class Collection extends Model
 {
     public $incrementing = false;
     protected $keyType = 'string';
+    public $timestamps = false;
 
     public function products()
     {
