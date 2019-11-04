@@ -274,31 +274,31 @@ export default {
 
             if (!this.submitDisabled) {
                 this.submittingComment = true
-                try {
                     // Succes
                     await this.createComment({comment: this.commentToPost})
-                    this.$refs.requestSucces.show()
-                    
-                    // Reset comment
-                    if (this.writeScope == 'comment') {
-                        this.newComment.comment = ''
-                        this.newComment.important = false
-                        // Reset textarea height
-                        this.$refs.commentField.style.height = ''
-                    } else {
-                        this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
-                        this.newRequest.important = false
-                        // Reset textarea height
-                        // this.$refs.requestField.style.height = ''
-                    }
-                } catch (err) {
-                    // Error
-                }
+                    .then(success => {
+                        if (success) {
+                            this.$refs.requestSucces.show()
+                            this.writeActive = false
+                            // Unset the focus
+                            document.activeElement.blur()
+                            
+                            // Reset comment
+                            if (this.writeScope == 'comment') {
+                                this.newComment.comment = ''
+                                this.newComment.important = false
+                                // Reset textarea height
+                                this.$refs.commentField.style.height = ''
+                            } else {
+                                this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
+                                this.newRequest.important = false
+                                // Reset textarea height
+                                // this.$refs.requestField.style.height = ''
+                            }
+                        }
+                    })
                 // In any case
                 this.submittingComment = false
-                this.writeActive = false
-                // Unset the focus
-                document.activeElement.blur()
 
             }
         },

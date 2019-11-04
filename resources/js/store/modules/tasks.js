@@ -136,8 +136,6 @@ export default {
             }
         },
         async completeTask({ commit }, { file_id, task_id }) {
-            commit('setTaskComplete', { file_id, task_id })
-
             let succes
             await axios
                 .put(`/api/task/complete`, {
@@ -147,17 +145,17 @@ export default {
                 .then(response => {
                     succes = true
                     console.log(response.data)
+                    commit('setTaskComplete', { file_id, task_id })
                 })
                 .catch(err => {
                     succes = false
                     console.log(err)
+                    commit('alertError')
                 })
 
             return succes
         },
         async undoCompleteTask({ commit }, { file_id, task_id }) {
-            commit('setTaskIncomplete', { file_id, task_id })
-
             let succes
             await axios
                 .delete(`/api/task/complete`, {
@@ -169,6 +167,7 @@ export default {
                 .then(response => {
                     succes = true
                     console.log(response.data)
+                    commit('setTaskIncomplete', { file_id, task_id })
                 })
                 .catch(err => {
                     succes = false
@@ -195,6 +194,9 @@ export default {
             FileTask.delete(record => {
                 return record.file_id == file_id && record.task_id == task_id
             })
+        },
+        alertError: state => {
+            window.alert('Network error. Please check your connection')
         },
     },
 }

@@ -23,7 +23,7 @@
 
             <template v-if="userPermissionLevel >= 2 && userPermissionLevel != 3">
                 <span class="button wide light-2" v-if="submittingTaskComplete"><Loader/></span>
-                <template v-if="currentTask.completed.length <= 0">
+                <template v-else-if="currentTask.completed.length <= 0">
                     <span class="button wide primary" v-if="currentTask.isActive" @click="onCompleteTask(currentFile.id, currentTask.id)">Complete task</span>
                 </template>
                 <span class="button wide red" v-else @click="onUndoCompleteTask(currentFile.id, currentTask.id)">Reopen task</span>
@@ -209,17 +209,17 @@ export default {
         async onCompleteTask(file_id, task_id) {
             this.submittingTaskComplete = true
             await this.completeTask({file_id: file_id, task_id: task_id})
-            // .then(reponse => succes = response)
+            .then(success => {
+                // Skip to next task
+                if (this.userTasks[this.userTasks.findIndex(x => x.id == this.currentTask.id) + 1] && success) {
+                    this.setCurrentTaskId(this.userTasks[this.userTasks.findIndex(x => x.id == this.currentTask.id) + 1].id)
+                }
+            })
             this.submittingTaskComplete = false
-            // Skip to next task
-            if (this.userTasks[this.userTasks.findIndex(x => x.id == this.currentTask.id) + 1]) {
-                this.setCurrentTaskId(this.userTasks[this.userTasks.findIndex(x => x.id == this.currentTask.id) + 1].id)
-            }
         },
         async onUndoCompleteTask(file_id, task_id) {
             this.submittingTaskComplete = true
             await this.undoCompleteTask({file_id: file_id, task_id: task_id})
-            // .then(reponse => succes = response)
             this.submittingTaskComplete = false
         },
         setPageHeight() {

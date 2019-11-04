@@ -47,24 +47,32 @@ export default {
             let team_id = '0'
             if (comment.team_id) team_id = comment.team_id
 
-            const response = await axios.post(`/api/comment`, {
-                id: comment.id,
-                user_id: comment.user_id,
-                product_id: comment.product_id,
-                task_id: comment.task_id,
-                team_id: team_id,
-                phase_id: comment.phase,
-                comment_body: comment.comment,
-                important: comment.important,
-                is_request: comment.is_request,
-            })
+            let success
+            const response = await axios
+                .post(`/api/comment`, {
+                    id: comment.id,
+                    user_id: comment.user_id,
+                    product_id: comment.product_id,
+                    task_id: comment.task_id,
+                    team_id: team_id,
+                    phase_id: comment.phase,
+                    comment_body: comment.comment,
+                    important: comment.important,
+                    is_request: comment.is_request,
+                })
+                .then(response => {
+                    success = true
+                    // Get and set the comment id equal to the id given by the database
+                    comment.id = response.data.id
+                    commit('setComment', { comment: comment })
+                })
+                .catch(err => {
+                    success = false
+                    commit('alertError')
+                })
 
-            // Get and set the comment id equal to the id given by the database
-            comment.id = response.data.id
-            commit('setComment', { comment: comment })
-
-            console.log(response.data)
             commit('setSubmitting', false)
+            return success
         },
     },
 
@@ -81,6 +89,9 @@ export default {
             Comment.insert({
                 data: comment,
             })
+        },
+        alertError: state => {
+            window.alert('Network error. Please check your connection')
         },
     },
 }
