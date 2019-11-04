@@ -7,44 +7,51 @@
             <span class="button wide primary" @click="$refs.addFileModal.toggle()">Add file</span>
         </div>
 
-        <Modal ref="addFileModal" :header="'Create new file'" :subHeader="'Something descriptive'">
-            <div class="overview">
+        <Modal ref="addFileModal" :header="'Create new file'" :subHeader="'A file is a collection of products that users will be able to view in the dashboard and/or app<br>Select CSV files to upload to get started.'">
+            <!-- <div class="overview">
                 <span>1) Upload</span>
                 <span>2) Proces</span>
                 <span>3) Access</span>
-            </div>
+            </div> -->
             
-            <template v-if="currentPage == 1">
+            <!-- <template v-if="currentPage == 1"> -->
                 <form enctype="multipart/form-data">
-                    <div class="form-element">
-                        <label>File name</label>
-                        <input type="text" class="input-wrapper" placeholder="example title" v-model="newFile.title">
-                    </div>
-                    <div class="form-element">
-                        <div class="drop-area input-wrapper">
-                            <input type="file" multiple accept=".csv, text/csv" @change="filesChange($event)">
-                            <!-- <input type="file" multiple accept=".csv" @change="filesChange($event)"> -->
-                            <p>Drop your file(s) here or click to upload</p>
-                            <span class="button dark">Upload files</span>
-                        </div>
-                    </div>
-                    <div class="form-element file-list" v-if="newFile.files.length > 0">
-                        <label>Selected files ({{newFile.files.length}})</label>
-                        <p v-for="(file, index) in newFile.files" :key="index">
-                            {{file.name}} 
-                            <i class="close far fa-times-circle" @click="removeFile(index)"></i>
-                        </p>
-                    </div>
-                    <!-- <span class="button xl dark" @click="currentPage = 2; uploadFiles()" :class="{disabled: newFile.files.length <= 0}">Continue</span> -->
-                    <!-- <input type="submit" class="button xl dark" value="Upload files" :disabled="newFile.files.length <= 0" @click="uploadFiles"> -->
-                    <span class="button xl dark" :disabled="newFile.files.length <= 0" @click="uploadFiles">Upload files</span>
-                </form>
-            </template>
+                    <template v-if="!uploadingFile">
 
-            <template v-else-if="currentPage == 2">
+                        <div class="form-element">
+                            <label>File name* (required)</label>
+                            <input type="text" class="input-wrapper" placeholder="example title" v-model="newFile.title">
+                        </div>
+                        <div class="form-element">
+                            <div class="drop-area input-wrapper">
+                                <input type="file" multiple accept=".csv, text/csv" @change="filesChange($event)">
+                                <!-- <input type="file" multiple accept=".csv" @change="filesChange($event)"> -->
+                                <p>Drop your file(s) here or click to upload</p>
+                                <span class="button dark">Upload files</span>
+                            </div>
+                        </div>
+                        <div class="form-element file-list" v-if="newFile.files.length > 0">
+                            <label>Selected files ({{newFile.files.length}})</label>
+                            <p v-for="(file, index) in newFile.files" :key="index">
+                                {{file.name}} 
+                                <i class="remove far fa-times-circle" @click="removeFile(index)"></i>
+                            </p>
+                        </div>
+                        <!-- <span class="button xl dark" @click="currentPage = 2; uploadFiles()" :class="{disabled: newFile.files.length <= 0}">Continue</span> -->
+                        <!-- <input type="submit" class="button xl dark" value="Upload files" :disabled="newFile.files.length <= 0" @click="uploadFiles"> -->
+                        <span class="button xl dark" :disabled="newFile.files.length <= 0 || newFile.title.length <= 0" @click="uploadFiles">Upload files</span>
+
+                    </template>
+                    <template v-else>
+                        <Loader :message="'Uploading file'"/>
+                    </template>
+                </form>
+            <!-- </template> -->
+
+            <!-- <template v-else-if="currentPage == 2">
                 <h2>Review your file</h2>
                 <strong>Match your headers</strong>
-                <div v-dragscroll class="table-wrapper" v-if="currentFileLines.length > 0">
+                <div v-dragscroll class="table-wrapper" v-if="currentFileLines.length > 0"> -->
                     <!-- <table>
                         <tr v-for="(line, index) in currentFileLines" :key="index">
                             <td v-for="(cell, index) in line" :key="index">{{cell}}</td>
@@ -87,8 +94,8 @@
                             </template>
                         </Dropdown>
                     </div> -->
-                </div>
-            </template>
+                <!-- </div>
+            </template> -->
             
         </Modal>
     </div>
@@ -111,31 +118,34 @@ export default {
         newFile: {
             title: '',
             files: [],
-            phase: null
+            phase: null,
+            // csvFiles: []
         },
-        currentPage: 1,
-        currentFileLines: [],
-        headers: [
-            {oldValue: 'id', newValue: ''},
-            {oldValue: 'title', newValue: ''},
-            {oldValue: 'description', newValue: ''},
-            {oldValue: 'brand', newValue: ''},
-            {oldValue: 'category', newValue: ''},
-            {oldValue: 'currency', newValue: ''},
-            {oldValue: 'wholesale_price', newValue: ''},
-            {oldValue: 'recommended_retailPrice', newValue: ''},
-            {oldValue: 'markup', newValue: ''},
-            {oldValue: 'minimum_quantity', newValue: ''},
-            {oldValue: 'composition', newValue: ''},
-            {oldValue: 'delivery_date', newValue: ''},
-            {oldValue: 'editors_choise', newValue: ''},
-            {oldValue: 'box_ean', newValue: ''},
-            {oldValue: 'box_size', newValue: ''},
-            {oldValue: 'assortment_name', newValue: ''},
-            {oldValue: 'variant_name', newValue: ''},
-            {oldValue: 'variant_image_url', newValue: ''},
-            {oldValue: 'variant_sizes', newValue: ''},
-        ]
+        uploadingFile: false,
+        // filesToProces: 0,
+        // currentPage: 1,
+        // currentFileLines: [],
+        // headers: [
+        //     {oldValue: 'id', newValue: ''},
+        //     {oldValue: 'title', newValue: ''},
+        //     {oldValue: 'description', newValue: ''},
+        //     {oldValue: 'brand', newValue: ''},
+        //     {oldValue: 'category', newValue: ''},
+        //     {oldValue: 'currency', newValue: ''},
+        //     {oldValue: 'wholesale_price', newValue: ''},
+        //     {oldValue: 'recommended_retailPrice', newValue: ''},
+        //     {oldValue: 'markup', newValue: ''},
+        //     {oldValue: 'minimum_quantity', newValue: ''},
+        //     {oldValue: 'composition', newValue: ''},
+        //     {oldValue: 'delivery_date', newValue: ''},
+        //     {oldValue: 'editors_choise', newValue: ''},
+        //     {oldValue: 'box_ean', newValue: ''},
+        //     {oldValue: 'box_size', newValue: ''},
+        //     {oldValue: 'assortment_name', newValue: ''},
+        //     {oldValue: 'variant_name', newValue: ''},
+        //     {oldValue: 'variant_image_url', newValue: ''},
+        //     {oldValue: 'variant_sizes', newValue: ''},
+        // ]
     }},
     computed: {
         ...mapGetters('persist', ['currentWorkspaceId']),
@@ -163,40 +173,60 @@ export default {
             this.newFile.files.splice(index, 1)
         },
         uploadFiles() {
-            // Upload to API
-            // Create collection from name
+            // Set new file data
             const newFile = this.newFile
             newFile.phase = Phase.query().first().id
             newFile.folderId = File.query().first().catalog_id
             newFile.workspace_id = this.currentWorkspaceId
+
+
+            // Create collection from name
+            this.uploadingFile = true
             this.uploadFile(newFile)
+            .then(success => {
+                this.uploadingFile = false
+                
+                // Close modal on succes
+                if (success) 
+                    this.$refs.addFileModal.toggle()
+                else window.alert('Something went wrong. Please try again')
+            })
 
 
             // Do some validation with fileReader
-            // const file = this.newFile.files[0]
-            // const fileReader = new FileReader()
-            // fileReader.readAsText(file)
-            // fileReader.onload = this.loadHandler
+
+            // newFile.files.forEach(file => {
+            //     this.filesToProces++
+            //     const fileReader = new FileReader()
+            //     fileReader.readAsText(file)
+            //     fileReader.onload = this.loadHandler
+            // })
         },
-        loadHandler(event) {
-            const csv = event.target.result
-            this.procesFile(csv)
-        },
-        procesFile(file) {
-            // Split the csv into lines by line breaks
-            const allTextLines = file.split(/\r\n|\n/)
-            // Split the lines into cells by delimiter
-            const limit = 100
-            let i = 0
-            allTextLines.forEach(line => {
-                if (i++ < limit)
-                    this.currentFileLines.push(line.split(';'))
-            })
-            // this.currentFileLines = allTextLines
-        },
-        setHeader(e, index) {
-            this.headers[index].newValue = e
-        }
+        // loadHandler(event) {
+        //     const csv = event.target.result
+        //     this.newFile.csvFiles.push(csv)
+
+        //     // Check if all the files are processesd
+        //     if (this.newFile.csvFiles.length >= this.filesToProces) {
+        //         this.uploadFile(this.newFile)
+        //     }
+        //     // this.procesFile(csv)
+        // },
+        // procesFile(file) {
+        //     // Split the csv into lines by line breaks
+        //     const allTextLines = file.split(/\r\n|\n/)
+        //     // Split the lines into cells by delimiter
+        //     const limit = 100
+        //     let i = 0
+        //     allTextLines.forEach(line => {
+        //         if (i++ < limit)
+        //             this.currentFileLines.push(line.split(';'))
+        //     })
+        //     // this.currentFileLines = allTextLines
+        // },
+        // setHeader(e, index) {
+        //     this.headers[index].newValue = e
+        // }
     }
 }
 </script>
@@ -240,7 +270,7 @@ export default {
         p:hover .close {
             opacity: 1;
         }
-        .close {
+        .remove {
             opacity: 0;
             transition: .3s;
             margin-left: 4px;

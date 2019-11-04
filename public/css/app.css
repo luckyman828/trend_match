@@ -9294,14 +9294,19 @@ textarea {
 
 .button.disabled,
 .button:disabled,
+.button[disabled=disabled],
 .square.disabled,
 .square:disabled,
+.square[disabled=disabled],
 .pill.disabled,
 .pill:disabled,
+.pill[disabled=disabled],
 .bubble.disabled,
 .bubble:disabled,
+.bubble[disabled=disabled],
 .circle.disabled,
-.circle:disabled {
+.circle:disabled,
+.circle[disabled=disabled] {
   pointer-events: none;
   opacity: 0.5;
 }

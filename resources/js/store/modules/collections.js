@@ -1,6 +1,7 @@
 import axios from 'axios'
 import Collection from '../models/Collection'
 import User from '../models/User'
+import Product from '../models/Product'
 
 export default {
     namespaced: true,
@@ -185,23 +186,29 @@ export default {
         async uploadFile({ commit, dispatch }, newFile) {
             // Generate uuid for new file
             newFile.id = this._vm.$uuid.v4()
+            console.log(newFile)
 
             // Upload products to DB
-            const uploadApiUrl = `https://api-beta.kollekt.dk/hooks/import-csv?collection_id=${newFile.id}`
             let uploadSucces = false
+
+            const proxyUrl = 'https://cors-anywhere.herokuapp.com/'
+            const uploadApiUrl = `https://api-beta.kollekt.dk/hooks/import-csv?collection_id=${newFile.id}`
             const axiosConfig = {
                 headers: {
                     'X-Kollekt-App-Key': 'mnkAEefWBEL7cY1gEetlW4dM_YYL9Vu4K6dmavW2',
                 },
             }
+            let data = new FormData()
+            // Append the files
+            newFile.files.forEach(file => {
+                data.append('files', file)
+            })
+
+            // console.log(data)
+
             await axios
-                .post(
-                    `${uploadApiUrl}`,
-                    {
-                        files: newFile.files,
-                    },
-                    axiosConfig
-                )
+                .post(uploadApiUrl, data, axiosConfig)
+                // .post(proxyUrl + uploadApiUrl, data, axiosConfig)
                 .then(response => {
                     console.log('succes')
                     console.log(response.data)
@@ -217,6 +224,7 @@ export default {
             if (uploadSucces) {
                 dispatch('updateFile', newFile)
             }
+            return uploadSucces
 
             // Collection.create({ data: response.data })
         },
@@ -237,12 +245,31 @@ export default {
                     console.log(err)
                 })
         },
+        async deleteFile({ commit }, fileId) {
+            commit('deleteFile', fileId)
+
+            await axios
+                .delete(`/api/file`, {
+                    data: {
+                        file_id: fileId,
+                    },
+                })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err.response)
+                })
+        },
     },
 
     mutations: {
         //Set the loading status of the app
         setLoading(state, bool) {
             state.loading = bool
+        },
+        deleteFile(state, fileId) {
+            Collection.delete(fileId)
         },
     },
 }

@@ -63,9 +63,7 @@
                 </div>
                 <div class="flex-group">
                     <td class="action">
-                        <!-- <span class="button">Action</span>
-                        <span class="button">Action</span> -->
-                        <span class="placeholder"></span>
+                        <span class="button red" @click="onDeleteFile(catalogue.id)">Delete</span>
                         <span class="clickable view-single button invisible" @click="viewSingle(catalogue.id, catalogue.title)">View</span>
                     </td>
                 </div>
@@ -122,6 +120,7 @@ export default {
         },
     },
     methods: {
+        ...mapActions('entities/collections', ['deleteFile']),
         onSelect(index) {
             this.$emit('onSelect', index)
         },
@@ -142,6 +141,11 @@ export default {
         },
         viewSingle(fileId, fileTitle) {
             this.$router.push({name: 'file', params: {fileId: fileId, fileTitle: fileTitle}})
+        },
+        onDeleteFile($fileId) {
+            (window.confirm(
+                'Are you sure you want to delete this file?\nAll comments, requests and actions will be permanently deleted.'))
+            ? this.deleteFile($fileId) : false
         }
     }
 }
@@ -232,82 +236,82 @@ export default {
         text-align: center;
         display: inline-block;
     }
-    .checkbox {
-      display: block;
-      position: relative;
-      cursor: pointer;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      margin-bottom: 0;
-      padding-top: 5px;
-      padding-bottom: 5px;
-      &:hover {
-          background: $light;
-      }
-    }
+    // .checkbox {
+    //   display: block;
+    //   position: relative;
+    //   cursor: pointer;
+    //   -webkit-user-select: none;
+    //   -moz-user-select: none;
+    //   -ms-user-select: none;
+    //   user-select: none;
+    //   margin-bottom: 0;
+    //   padding-top: 5px;
+    //   padding-bottom: 5px;
+    //   &:hover {
+    //       background: $light;
+    //   }
+    // }
 
-    .checkbox input {
-      position: absolute;
-      opacity: 0;
-      cursor: pointer;
-      height: 0;
-      width: 0;
-    }
+    // .checkbox input {
+    //   position: absolute;
+    //   opacity: 0;
+    //   cursor: pointer;
+    //   height: 0;
+    //   width: 0;
+    // }
 
-    .checkmark {
-      content: "";
-      display: inline-block;
-      vertical-align: text-top;
-      width: 24px;
-      height: 24px;
-      background: white;
-      border: 1px solid #dfdfdf;
-    }
+    // .checkmark {
+    //   content: "";
+    //   display: inline-block;
+    //   vertical-align: text-top;
+    //   width: 24px;
+    //   height: 24px;
+    //   background: white;
+    //   border: 1px solid #dfdfdf;
+    // }
 
-    .checkbox input:checked ~ .checkmark {
-      background: linear-gradient(#3b86ff, #3b86ff) no-repeat;
-      background-position: center;
-      background-size: 16px 16px;
-    }
+    // .checkbox input:checked ~ .checkmark {
+    //   background: linear-gradient(#3b86ff, #3b86ff) no-repeat;
+    //   background-position: center;
+    //   background-size: 16px 16px;
+    // }
 
-    .checkmark::after {
-      content: "";
-      position: absolute;
-      display: none;
-    }
+    // .checkmark::after {
+    //   content: "";
+    //   position: absolute;
+    //   display: none;
+    // }
 
-    .checkbox input:checked ~ .checkmark:after {
-      display: block;
-    }
-    .button {
-        display: inline-block;
-        width: 86px;
-        height: 32px;
-        line-height: 32px;
-        font-size: 12px;
-        border-radius: 4px;
-        padding: 0;
-        line-height: 28px;
-        position: relative;
-        font-weight: 700;
-        color: $dark2;
-        border-color: $light2;
-        margin: 0;
-        i {
-            font-size: 16px;
-            position: absolute;
-            right: 10px;
-            top: 5px;
-            margin: 0;
-        }
-        &.active {
-            i {
-                font-weight: 900;
-            }
-        }
-    }
+    // .checkbox input:checked ~ .checkmark:after {
+    //   display: block;
+    // }
+    // .button {
+    //     display: inline-block;
+    //     width: 86px;
+    //     height: 32px;
+    //     line-height: 32px;
+    //     font-size: 12px;
+    //     border-radius: 4px;
+    //     padding: 0;
+    //     line-height: 28px;
+    //     position: relative;
+    //     font-weight: 700;
+    //     color: $dark2;
+    //     border-color: $light2;
+    //     margin: 0;
+    //     i {
+    //         font-size: 16px;
+    //         position: absolute;
+    //         right: 10px;
+    //         top: 5px;
+    //         margin: 0;
+    //     }
+    //     &.active {
+    //         i {
+    //             font-weight: 900;
+    //         }
+    //     }
+    // }
     .view-single {
         font-size: 12px;
         font-weight: 700;

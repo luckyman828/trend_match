@@ -60,7 +60,9 @@ Route::middleware('auth:api')->group( function(){
     Route::get('file/{file_id}/task-actions', 'FileController@taskActions');
     Route::get('file/{file_id}/requests', 'FileController@requests');
     
+    Route::post('file', 'FileController@upload');
     Route::put('file', 'FileController@insertOrUpdate');
+    Route::delete('file', 'FileController@destroy');
     
     
 

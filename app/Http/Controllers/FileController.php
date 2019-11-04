@@ -19,9 +19,13 @@ use App\Http\Resources\PhaseProduct as PhaseProductResource;
 use App\TeamProduct;
 use App\Http\Resources\TeamProduct as TeamProductResource;
 use App\Collection;
+use App\FileTask;
 use App\Http\Resources\Collection as CollectionResource;
 use App\TaskAction;
 use App\Request as RequestModel;
+use App\TeamFile as TeamFile;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class FileController extends Controller
 {
@@ -116,6 +120,75 @@ class FileController extends Controller
     }
     
 
+    public function upload(Request $request)
+    {
+
+        // $files = $request->files;
+
+        // $file = $request->hasFile('csv');
+        // if ($file) {
+        //     return 'has file';
+        // }   
+        // else {
+        //     return 'no file';
+        // }
+        // return $request->file('uploadFile');
+    
+        $output = [];
+        foreach ( $request->files as $file ) {
+            // $output [] = $file->getClientOriginalName();
+            // continue;
+            // $name = $file->getClientOriginalName();
+            // $destination = $_SERVER['DOCUMENT_ROOT'].'/uploads/'.$file->getClientOriginalName();
+            // move_uploaded_file($file, $destination);
+            // return $destination;
+            $output[] = [
+                'name'     => 'files',
+                // 'path_name'     => $file->getPathName(),
+                // 'path'     => $file->getPath(),
+                'contents'     => file_get_contents($file->getPathName()),
+                // 'contents'     => file($file->getPathName()),
+                // 'contents'     => fopen($file->getPathName(), 'r'),
+                // 'contents'     => fopen($destination, 'r'),
+                // 'contents'     => file_get_contents($destination),
+                // 'contents' => stream_get_contents($file->getPathName()),
+                // 'contents' => fopen( $file->getClientOriginalName(), 'r' ),
+                'filename' => $file->getClientOriginalName()
+                // 'filename' => $name
+                // 'filename' => 'filename'
+            ];
+            continue;
+         }
+
+        //  return $output;
+
+        $endpoint = 'https://api-beta.kollekt.dk/hooks/import-csv?collection_id=' . $request->id;
+        $client = new \GuzzleHttp\Client([
+            'headers' => [
+                'X-Kollekt-App-Key' => 'mnkAEefWBEL7cY1gEetlW4dM_YYL9Vu4K6dmavW2'
+                ]
+        ]);
+
+
+        $response = $client->request('POST', $endpoint, [
+            'multipart' => $output
+        ]);
+
+        return $response->getStatusCode();
+
+        // if($response) {
+
+
+            // Fire event
+            // $dataToReturn = new CollectionResource($file);
+            // broadcast(new ActionUpdated($actionToReturn))->toOthers();
+            // broadcast(new ActionUpdated($actionToReturn))->toOthers();
+
+            // return $dataToReturn;
+            // return json_decode( json_encode($dataToReturn), true);
+        // }
+    }
+
     public function insertOrUpdate(Request $request)
     {
         $existingFile = Collection::find($request->id);
@@ -143,6 +216,37 @@ class FileController extends Controller
             // return $dataToReturn;
             return json_decode( json_encode($dataToReturn), true);
         }
+    }
+
+    public function destroy(Request $request)
+    {
+        // Find all file specific records
+
+        $file_id = $request->file_id;
+        
+        $file = Collection::find($file_id);
+        $products = Product::where('collection_id', $file_id);
+        $completed_files = FileTask::where('file_id', $file_id);
+        $team_files = TeamFile::where('file_id', $file_id);
+        $comments = Comment::whereHas('product', function (Builder $query) use($file_id) {
+            $query->where('collection_id', $file_id);
+        });
+        $actions = Action::whereHas('product', function (Builder $query) use($file_id) {
+            $query->where('collection_id', $file_id);
+        });
+        
+        // Use a transaction to make sure all file related records are deleted or none
+        DB::transaction(function() use($file, $products, $completed_files, $team_files, $comments, $actions) {
+            $file->delete();
+            $products->delete();
+            $completed_files->delete();
+            $team_files->delete();
+            $comments->delete();
+            $actions->delete();
+        });
+
+        return 'Deleted file with id: ' . $file_id;
+
     }
     
 }

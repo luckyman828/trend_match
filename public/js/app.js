@@ -7638,8 +7638,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _ProductTotals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ProductTotals */ "./resources/js/components/ProductTotals.vue");
 /* harmony import */ var _ProductSingle__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ProductSingle */ "./resources/js/components/ProductSingle.vue");
-//
-//
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -7746,7 +7748,7 @@ __webpack_require__.r(__webpack_exports__);
       return dataSorted;
     }
   },
-  methods: {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/collections', ['deleteFile']), {
     onSelect: function onSelect(index) {
       this.$emit('onSelect', index);
     },
@@ -7771,8 +7773,11 @@ __webpack_require__.r(__webpack_exports__);
           fileTitle: fileTitle
         }
       });
+    },
+    onDeleteFile: function onDeleteFile($fileId) {
+      window.confirm('Are you sure you want to delete this file?\nAll comments, requests and actions will be permanently deleted.') ? this.deleteFile($fileId) : false;
     }
-  }
+  })
 });
 
 /***/ }),
@@ -7843,8 +7848,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'loader'
+  name: 'loader',
+  props: ['message']
 });
 
 /***/ }),
@@ -8822,6 +8829,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -8838,68 +8852,34 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       newFile: {
         title: '',
         files: [],
-        phase: null
+        phase: null // csvFiles: []
+
       },
-      currentPage: 1,
-      currentFileLines: [],
-      headers: [{
-        oldValue: 'id',
-        newValue: ''
-      }, {
-        oldValue: 'title',
-        newValue: ''
-      }, {
-        oldValue: 'description',
-        newValue: ''
-      }, {
-        oldValue: 'brand',
-        newValue: ''
-      }, {
-        oldValue: 'category',
-        newValue: ''
-      }, {
-        oldValue: 'currency',
-        newValue: ''
-      }, {
-        oldValue: 'wholesale_price',
-        newValue: ''
-      }, {
-        oldValue: 'recommended_retailPrice',
-        newValue: ''
-      }, {
-        oldValue: 'markup',
-        newValue: ''
-      }, {
-        oldValue: 'minimum_quantity',
-        newValue: ''
-      }, {
-        oldValue: 'composition',
-        newValue: ''
-      }, {
-        oldValue: 'delivery_date',
-        newValue: ''
-      }, {
-        oldValue: 'editors_choise',
-        newValue: ''
-      }, {
-        oldValue: 'box_ean',
-        newValue: ''
-      }, {
-        oldValue: 'box_size',
-        newValue: ''
-      }, {
-        oldValue: 'assortment_name',
-        newValue: ''
-      }, {
-        oldValue: 'variant_name',
-        newValue: ''
-      }, {
-        oldValue: 'variant_image_url',
-        newValue: ''
-      }, {
-        oldValue: 'variant_sizes',
-        newValue: ''
-      }]
+      uploadingFile: false // filesToProces: 0,
+      // currentPage: 1,
+      // currentFileLines: [],
+      // headers: [
+      //     {oldValue: 'id', newValue: ''},
+      //     {oldValue: 'title', newValue: ''},
+      //     {oldValue: 'description', newValue: ''},
+      //     {oldValue: 'brand', newValue: ''},
+      //     {oldValue: 'category', newValue: ''},
+      //     {oldValue: 'currency', newValue: ''},
+      //     {oldValue: 'wholesale_price', newValue: ''},
+      //     {oldValue: 'recommended_retailPrice', newValue: ''},
+      //     {oldValue: 'markup', newValue: ''},
+      //     {oldValue: 'minimum_quantity', newValue: ''},
+      //     {oldValue: 'composition', newValue: ''},
+      //     {oldValue: 'delivery_date', newValue: ''},
+      //     {oldValue: 'editors_choise', newValue: ''},
+      //     {oldValue: 'box_ean', newValue: ''},
+      //     {oldValue: 'box_size', newValue: ''},
+      //     {oldValue: 'assortment_name', newValue: ''},
+      //     {oldValue: 'variant_name', newValue: ''},
+      //     {oldValue: 'variant_image_url', newValue: ''},
+      //     {oldValue: 'variant_sizes', newValue: ''},
+      // ]
+
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentWorkspaceId'])),
@@ -8933,36 +8913,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.newFile.files.splice(index, 1);
     },
     uploadFiles: function uploadFiles() {
-      // Upload to API
-      // Create collection from name
+      var _this2 = this;
+
+      // Set new file data
       var newFile = this.newFile;
       newFile.phase = _store_models_Phase__WEBPACK_IMPORTED_MODULE_3__["default"].query().first().id;
       newFile.folderId = _store_models_Collection__WEBPACK_IMPORTED_MODULE_4__["default"].query().first().catalog_id;
-      newFile.workspace_id = this.currentWorkspaceId;
-      this.uploadFile(newFile); // Do some validation with fileReader
-      // const file = this.newFile.files[0]
-      // const fileReader = new FileReader()
-      // fileReader.readAsText(file)
-      // fileReader.onload = this.loadHandler
-    },
-    loadHandler: function loadHandler(event) {
-      var csv = event.target.result;
-      this.procesFile(csv);
-    },
-    procesFile: function procesFile(file) {
-      var _this2 = this;
+      newFile.workspace_id = this.currentWorkspaceId; // Create collection from name
 
-      // Split the csv into lines by line breaks
-      var allTextLines = file.split(/\r\n|\n/); // Split the lines into cells by delimiter
+      this.uploadingFile = true;
+      this.uploadFile(newFile).then(function (success) {
+        _this2.uploadingFile = false; // Close modal on succes
 
-      var limit = 100;
-      var i = 0;
-      allTextLines.forEach(function (line) {
-        if (i++ < limit) _this2.currentFileLines.push(line.split(';'));
-      }); // this.currentFileLines = allTextLines
-    },
-    setHeader: function setHeader(e, index) {
-      this.headers[index].newValue = e;
+        if (success) _this2.$refs.addFileModal.toggle();else window.alert('Something went wrong. Please try again');
+      }); // Do some validation with fileReader
+      // newFile.files.forEach(file => {
+      //     this.filesToProces++
+      //     const fileReader = new FileReader()
+      //     fileReader.readAsText(file)
+      //     fileReader.onload = this.loadHandler
+      // })
     }
   })
 });
@@ -15596,7 +15566,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".catalogues-table[data-v-18d38cc2] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.clickable[data-v-18d38cc2] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-18d38cc2] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n}\n.flex-table .flex-group:nth-child(2) > *[data-v-18d38cc2] {\n  -webkit-box-flex: 0;\n          flex: none;\n  flex-basis: 100px;\n}\n.flex-table .flex-group:nth-child(2) > *.stage[data-v-18d38cc2] {\n  flex-basis: 132px;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-18d38cc2] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-18d38cc2] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-18d38cc2] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-18d38cc2] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.flex-table .flex-group > td.action[data-v-18d38cc2] {\n  text-align: right;\n}\n.flex-table .flex-table-row[data-v-18d38cc2] {\n  height: 82px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2]:last-child {\n  margin-right: 16px;\n}\n.flex-table .flex-table-row th.action[data-v-18d38cc2] {\n  text-align: right;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.show-more[data-v-18d38cc2] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.checkbox[data-v-18d38cc2] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox[data-v-18d38cc2]:hover {\n  background: #f9f9f9;\n}\n.checkbox input[data-v-18d38cc2] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-18d38cc2] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-18d38cc2] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-18d38cc2]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-18d38cc2]:after {\n  display: block;\n}\n.button[data-v-18d38cc2] {\n  display: inline-block;\n  width: 86px;\n  height: 32px;\n  line-height: 32px;\n  font-size: 12px;\n  border-radius: 4px;\n  padding: 0;\n  line-height: 28px;\n  position: relative;\n  font-weight: 700;\n  color: #a8a8a8;\n  border-color: #dfdfdf;\n  margin: 0;\n}\n.button i[data-v-18d38cc2] {\n  font-size: 16px;\n  position: absolute;\n  right: 10px;\n  top: 5px;\n  margin: 0;\n}\n.button.active i[data-v-18d38cc2] {\n  font-weight: 900;\n}\n.view-single[data-v-18d38cc2] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-18d38cc2] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-18d38cc2] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
+exports.push([module.i, ".catalogues-table[data-v-18d38cc2] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.clickable[data-v-18d38cc2] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-18d38cc2] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n}\n.flex-table .flex-group:nth-child(2) > *[data-v-18d38cc2] {\n  -webkit-box-flex: 0;\n          flex: none;\n  flex-basis: 100px;\n}\n.flex-table .flex-group:nth-child(2) > *.stage[data-v-18d38cc2] {\n  flex-basis: 132px;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-18d38cc2] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-18d38cc2] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-18d38cc2] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-18d38cc2] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.flex-table .flex-group > td.action[data-v-18d38cc2] {\n  text-align: right;\n}\n.flex-table .flex-table-row[data-v-18d38cc2] {\n  height: 82px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2]:last-child {\n  margin-right: 16px;\n}\n.flex-table .flex-table-row th.action[data-v-18d38cc2] {\n  text-align: right;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.show-more[data-v-18d38cc2] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.view-single[data-v-18d38cc2] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-18d38cc2] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-18d38cc2] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
 
 // exports
 
@@ -15634,7 +15604,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".loader[data-v-e79ec684] {\n  height: 100%;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n}\nsvg[data-v-e79ec684] {\n  height: 100%;\n  max-height: 50px;\n  width: 100%;\n  margin: 12px 0;\n}", ""]);
+exports.push([module.i, ".loader[data-v-e79ec684] {\n  height: 100%;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\nsvg[data-v-e79ec684] {\n  height: 100%;\n  max-height: 50px;\n  width: 100%;\n  margin: 12px 0;\n}\n.message[data-v-e79ec684] {\n  font-size: 12px;\n  font-weight: 700;\n  color: #a8a8a8;\n}", ""]);
 
 // exports
 
@@ -15729,7 +15699,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".flex-wrapper[data-v-5bb737ac] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.flex-wrapper > *[data-v-5bb737ac] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.drop-area[data-v-5bb737ac] {\n  outline: 2px dashed #dfdfdf;\n  outline-offset: -10px;\n  background: white;\n  padding: 12px 12px;\n  height: 200px;\n  position: relative;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  cursor: pointer;\n}\n.drop-area input[type=file][data-v-5bb737ac] {\n  opacity: 0;\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  cursor: pointer;\n  z-index: 1;\n}\n.file-list p:hover .close[data-v-5bb737ac] {\n  opacity: 1;\n}\n.file-list .close[data-v-5bb737ac] {\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  margin-left: 4px;\n  cursor: pointer;\n}\n.file-list .close[data-v-5bb737ac]:hover {\n  color: #ff6565;\n}\n.button.xl[data-v-5bb737ac] {\n  margin-bottom: 48px;\n}\n.table-wrapper[data-v-5bb737ac] {\n  width: 600px;\n  margin-left: -100px;\n  overflow: auto;\n}\n.table-wrapper table[data-v-5bb737ac], .table-wrapper th[data-v-5bb737ac], .table-wrapper td[data-v-5bb737ac] {\n  border-collapse: collapse;\n  border: solid 1px #1b1c1d;\n}", ""]);
+exports.push([module.i, ".flex-wrapper[data-v-5bb737ac] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.flex-wrapper > *[data-v-5bb737ac] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.drop-area[data-v-5bb737ac] {\n  outline: 2px dashed #dfdfdf;\n  outline-offset: -10px;\n  background: white;\n  padding: 12px 12px;\n  height: 200px;\n  position: relative;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  cursor: pointer;\n}\n.drop-area input[type=file][data-v-5bb737ac] {\n  opacity: 0;\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  cursor: pointer;\n  z-index: 1;\n}\n.file-list p:hover .close[data-v-5bb737ac] {\n  opacity: 1;\n}\n.file-list .remove[data-v-5bb737ac] {\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  margin-left: 4px;\n  cursor: pointer;\n}\n.file-list .remove[data-v-5bb737ac]:hover {\n  color: #ff6565;\n}\n.button.xl[data-v-5bb737ac] {\n  margin-bottom: 48px;\n}\n.table-wrapper[data-v-5bb737ac] {\n  width: 600px;\n  margin-left: -100px;\n  overflow: auto;\n}\n.table-wrapper table[data-v-5bb737ac], .table-wrapper th[data-v-5bb737ac], .table-wrapper td[data-v-5bb737ac] {\n  border-collapse: collapse;\n  border: solid 1px #1b1c1d;\n}", ""]);
 
 // exports
 
@@ -28364,7 +28334,18 @@ var render = function() {
               _vm._v(" "),
               _c("div", { staticClass: "flex-group" }, [
                 _c("td", { staticClass: "action" }, [
-                  _c("span", { staticClass: "placeholder" }),
+                  _c(
+                    "span",
+                    {
+                      staticClass: "button red",
+                      on: {
+                        click: function($event) {
+                          return _vm.onDeleteFile(catalogue.id)
+                        }
+                      }
+                    },
+                    [_vm._v("Delete")]
+                  ),
                   _vm._v(" "),
                   _c(
                     "span",
@@ -28457,6 +28438,13 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "loader" }, [
+    _vm.message
+      ? _c("span", {
+          staticClass: "message",
+          domProps: { innerHTML: _vm._s(_vm.message) }
+        })
+      : _vm._e(),
+    _vm._v(" "),
     _c(
       "svg",
       {
@@ -30433,136 +30421,122 @@ var render = function() {
           ref: "addFileModal",
           attrs: {
             header: "Create new file",
-            subHeader: "Something descriptive"
+            subHeader:
+              "A file is a collection of products that users will be able to view in the dashboard and/or app<br>Select CSV files to upload to get started."
           }
         },
         [
-          _c("div", { staticClass: "overview" }, [
-            _c("span", [_vm._v("1) Upload")]),
-            _vm._v(" "),
-            _c("span", [_vm._v("2) Proces")]),
-            _vm._v(" "),
-            _c("span", [_vm._v("3) Access")])
-          ]),
-          _vm._v(" "),
-          _vm.currentPage == 1
-            ? [
-                _c("form", { attrs: { enctype: "multipart/form-data" } }, [
-                  _c("div", { staticClass: "form-element" }, [
-                    _c("label", [_vm._v("File name")]),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.newFile.title,
-                          expression: "newFile.title"
-                        }
-                      ],
-                      staticClass: "input-wrapper",
-                      attrs: { type: "text", placeholder: "example title" },
-                      domProps: { value: _vm.newFile.title },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(_vm.newFile, "title", $event.target.value)
-                        }
-                      }
-                    })
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-element" }, [
-                    _c("div", { staticClass: "drop-area input-wrapper" }, [
+          _c(
+            "form",
+            { attrs: { enctype: "multipart/form-data" } },
+            [
+              !_vm.uploadingFile
+                ? [
+                    _c("div", { staticClass: "form-element" }, [
+                      _c("label", [_vm._v("File name* (required)")]),
+                      _vm._v(" "),
                       _c("input", {
-                        attrs: {
-                          type: "file",
-                          multiple: "",
-                          accept: ".csv, text/csv"
-                        },
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.newFile.title,
+                            expression: "newFile.title"
+                          }
+                        ],
+                        staticClass: "input-wrapper",
+                        attrs: { type: "text", placeholder: "example title" },
+                        domProps: { value: _vm.newFile.title },
                         on: {
-                          change: function($event) {
-                            return _vm.filesChange($event)
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.newFile, "title", $event.target.value)
                           }
                         }
-                      }),
-                      _vm._v(" "),
-                      _c("p", [
-                        _vm._v("Drop your file(s) here or click to upload")
-                      ]),
-                      _vm._v(" "),
-                      _c("span", { staticClass: "button dark" }, [
-                        _vm._v("Upload files")
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-element" }, [
+                      _c("div", { staticClass: "drop-area input-wrapper" }, [
+                        _c("input", {
+                          attrs: {
+                            type: "file",
+                            multiple: "",
+                            accept: ".csv, text/csv"
+                          },
+                          on: {
+                            change: function($event) {
+                              return _vm.filesChange($event)
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("p", [
+                          _vm._v("Drop your file(s) here or click to upload")
+                        ]),
+                        _vm._v(" "),
+                        _c("span", { staticClass: "button dark" }, [
+                          _vm._v("Upload files")
+                        ])
                       ])
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _vm.newFile.files.length > 0
-                    ? _c(
-                        "div",
-                        { staticClass: "form-element file-list" },
-                        [
-                          _c("label", [
-                            _vm._v(
-                              "Selected files (" +
-                                _vm._s(_vm.newFile.files.length) +
-                                ")"
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _vm._l(_vm.newFile.files, function(file, index) {
-                            return _c("p", { key: index }, [
+                    ]),
+                    _vm._v(" "),
+                    _vm.newFile.files.length > 0
+                      ? _c(
+                          "div",
+                          { staticClass: "form-element file-list" },
+                          [
+                            _c("label", [
                               _vm._v(
-                                "\n                        " +
-                                  _vm._s(file.name) +
-                                  " \n                        "
-                              ),
-                              _c("i", {
-                                staticClass: "close far fa-times-circle",
-                                on: {
-                                  click: function($event) {
-                                    return _vm.removeFile(index)
+                                "Selected files (" +
+                                  _vm._s(_vm.newFile.files.length) +
+                                  ")"
+                              )
+                            ]),
+                            _vm._v(" "),
+                            _vm._l(_vm.newFile.files, function(file, index) {
+                              return _c("p", { key: index }, [
+                                _vm._v(
+                                  "\n                            " +
+                                    _vm._s(file.name) +
+                                    " \n                            "
+                                ),
+                                _c("i", {
+                                  staticClass: "remove far fa-times-circle",
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.removeFile(index)
+                                    }
                                   }
-                                }
-                              })
-                            ])
-                          })
-                        ],
-                        2
-                      )
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c(
-                    "span",
-                    {
-                      staticClass: "button xl dark",
-                      attrs: { disabled: _vm.newFile.files.length <= 0 },
-                      on: { click: _vm.uploadFiles }
-                    },
-                    [_vm._v("Upload files")]
-                  )
-                ])
-              ]
-            : _vm.currentPage == 2
-            ? [
-                _c("h2", [_vm._v("Review your file")]),
-                _vm._v(" "),
-                _c("strong", [_vm._v("Match your headers")]),
-                _vm._v(" "),
-                _vm.currentFileLines.length > 0
-                  ? _c("div", {
-                      directives: [
-                        { name: "dragscroll", rawName: "v-dragscroll" }
-                      ],
-                      staticClass: "table-wrapper"
-                    })
-                  : _vm._e()
-              ]
-            : _vm._e()
-        ],
-        2
+                                })
+                              ])
+                            })
+                          ],
+                          2
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c(
+                      "span",
+                      {
+                        staticClass: "button xl dark",
+                        attrs: {
+                          disabled:
+                            _vm.newFile.files.length <= 0 ||
+                            _vm.newFile.title.length <= 0
+                        },
+                        on: { click: _vm.uploadFiles }
+                      },
+                      [_vm._v("Upload files")]
+                    )
+                  ]
+                : [_c("Loader", { attrs: { message: "Uploading file" } })]
+            ],
+            2
+          )
+        ]
       )
     ],
     1
@@ -59074,11 +59048,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _models_Collection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/Collection */ "./resources/js/store/models/Collection.js");
 /* harmony import */ var _models_User__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../models/User */ "./resources/js/store/models/User.js");
+/* harmony import */ var _models_Product__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../models/Product */ "./resources/js/store/models/Product.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -59315,26 +59291,33 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _uploadFile = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, newFile) {
-        var commit, dispatch, uploadApiUrl, uploadSucces, axiosConfig;
+        var commit, dispatch, uploadSucces, proxyUrl, uploadApiUrl, axiosConfig, data;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 commit = _ref2.commit, dispatch = _ref2.dispatch;
                 // Generate uuid for new file
-                newFile.id = this._vm.$uuid.v4(); // Upload products to DB
+                newFile.id = this._vm.$uuid.v4();
+                console.log(newFile); // Upload products to DB
 
-                uploadApiUrl = "https://api-beta.kollekt.dk/hooks/import-csv?collection_id=".concat(newFile.id);
                 uploadSucces = false;
+                proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+                uploadApiUrl = "https://api-beta.kollekt.dk/hooks/import-csv?collection_id=".concat(newFile.id);
                 axiosConfig = {
                   headers: {
                     'X-Kollekt-App-Key': 'mnkAEefWBEL7cY1gEetlW4dM_YYL9Vu4K6dmavW2'
                   }
                 };
-                _context2.next = 7;
-                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("".concat(uploadApiUrl), {
-                  files: newFile.files
-                }, axiosConfig).then(function (response) {
+                data = new FormData(); // Append the files
+
+                newFile.files.forEach(function (file) {
+                  data.append('files', file);
+                }); // console.log(data)
+
+                _context2.next = 11;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(uploadApiUrl, data, axiosConfig) // .post(proxyUrl + uploadApiUrl, data, axiosConfig)
+                .then(function (response) {
                   console.log('succes');
                   console.log(response.data);
                   uploadSucces = true;
@@ -59344,14 +59327,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   uploadSucces = false;
                 });
 
-              case 7:
+              case 11:
                 // If success create a file (collection) for the products
                 if (uploadSucces) {
                   dispatch('updateFile', newFile);
-                } // Collection.create({ data: response.data })
+                }
 
+                return _context2.abrupt("return", uploadSucces);
 
-              case 8:
+              case 13:
               case "end":
                 return _context2.stop();
             }
@@ -59404,12 +59388,51 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return updateFile;
+    }(),
+    deleteFile: function () {
+      var _deleteFile = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref4, fileId) {
+        var commit;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                commit = _ref4.commit;
+                commit('deleteFile', fileId);
+                _context4.next = 4;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/file", {
+                  data: {
+                    file_id: fileId
+                  }
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err.response);
+                });
+
+              case 4:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }));
+
+      function deleteFile(_x7, _x8) {
+        return _deleteFile.apply(this, arguments);
+      }
+
+      return deleteFile;
     }()
   },
   mutations: {
     //Set the loading status of the app
     setLoading: function setLoading(state, bool) {
       state.loading = bool;
+    },
+    deleteFile: function deleteFile(state, fileId) {
+      _models_Collection__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](fileId);
     }
   }
 });
