@@ -45,8 +45,19 @@
                     </td>
                     <td class="id clickable" @click="viewSingle(catalogue.id, catalogue.title)">
                         <span :title="catalogue.id">{{ catalogue.id | truncate(10) }}</span>
+                        
                     </td>
-                    <td class="title clickable" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.title}}</td>
+                    <td class="title clickable">
+                        
+                        <span v-if="fileToEdit.id != catalogue.id" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.title}}</span>
+                        <div :class="{hidden: fileToEdit.id != catalogue.id}" class="edit-title input-parent controls-right">
+                            <input type="text" ref="editTitleField" class="input-wrapper" v-model="fileToEdit.title" @keyup.enter="updateFile(fileToEdit); resetFileToEdit()" @keyup.esc="resetFileToEdit()">
+                            <div class="controls">
+                                <span class="button green true-square" @click="updateFile(fileToEdit); resetFileToEdit()"><i class="fas fa-check"></i></span>
+                                <span class="button red true-square" @click="resetFileToEdit()"><i class="fas fa-times"></i></span>
+                            </div>
+                        </div>
+                    </td>
                 </div>
                 <div class="flex-group">
                     <td class="created"><span class="square light">{{
@@ -63,8 +74,18 @@
                 </div>
                 <div class="flex-group">
                     <td class="action">
-                        <span class="button red" @click="onDeleteFile(catalogue.id)">Delete</span>
-                        <span class="clickable view-single button invisible" @click="viewSingle(catalogue.id, catalogue.title)">View</span>
+                        <span class="button invisible ghost light-1-hover " @click="viewSingle(catalogue.id, catalogue.title)">View</span>
+                        <Dropdown ref="moreOptions">
+                            <template v-slot:button>
+                                <span class="button invisible ghost light-1-hover true-square" @click="$refs.moreOptions[index].toggle()"><i class="fas fa-ellipsis-v"></i></span>
+                            </template>
+                            <template v-slot:body>
+                                <div class="option-buttons">
+                                    <span class="option icon-left" @click="onRenameFile(catalogue, index); $refs.moreOptions[index].toggle()"><i class="fas fa-pencil primary"></i> Rename</span>
+                                    <span class="option icon-left" @click="onDeleteFile(catalogue.id); $refs.moreOptions[index].toggle()"><i class="fas fa-trash-alt red"></i> Delete</span>
+                                </div>
+                            </template>
+                        </Dropdown>
                     </td>
                 </div>
             </div>
@@ -88,7 +109,15 @@ export default {
     },
     data: function() { return {
         sortBy: 'id',
-        sortAsc: true
+        sortAsc: true,
+        fileToEdit: {
+            id: '',
+            title: ''
+        },
+        defaultFileToEdit: {
+            id: '',
+            title: ''
+        }
     }},
     computed: {
         selectedCount() {
@@ -120,7 +149,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('entities/collections', ['deleteFile']),
+        ...mapActions('entities/collections', ['deleteFile', 'updateFile']),
         onSelect(index) {
             this.$emit('onSelect', index)
         },
@@ -142,10 +171,18 @@ export default {
         viewSingle(fileId, fileTitle) {
             this.$router.push({name: 'file', params: {fileId: fileId, fileTitle: fileTitle}})
         },
-        onDeleteFile($fileId) {
+        onDeleteFile(fileId) {
             (window.confirm(
                 'Are you sure you want to delete this file?\nAll comments, requests and actions will be permanently deleted.'))
-            ? this.deleteFile($fileId) : false
+            ? this.deleteFile(fileId) : false
+        },
+        onRenameFile(file, index) {
+            this.fileToEdit = JSON.parse(JSON.stringify(file))
+            this.$nextTick(() => this.$refs.editTitleField[index].focus())
+            this.$nextTick(() => this.$refs.editTitleField[index].select())
+        },
+        resetFileToEdit() {
+            this.fileToEdit = this.defaultFileToEdit
         }
     }
 }
@@ -201,7 +238,12 @@ export default {
                 }
                 &.action {
                     display: flex;
-                    justify-content: space-between;
+                    justify-content: flex-end;
+                    > * {
+                        &:not(:last-child) {
+                            margin-right: 8px;
+                        }
+                    }
                 }
             }
             > td {
@@ -327,6 +369,11 @@ export default {
             font-weight: 500;
             font-size: 14px;
             margin-right: 20px;
+        }
+    }
+    .edit-title {
+        &.hidden {
+            display: none;
         }
     }
 </style>

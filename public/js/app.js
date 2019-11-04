@@ -7521,7 +7521,7 @@ __webpack_require__.r(__webpack_exports__);
       var wrapper = this.$refs.wrapper; // const parent = el.closest('.dropdown-parent') // Use set element as parent
       // First look for a parent inside the dropdown, then look for a parent outside
 
-      var parent = wrapper.querySelector('.dropdown-parent') ? wrapper.querySelector('.dropdown-parent') : el.closest('.dropdown-parent');
+      var parent = wrapper.querySelector('.dropdown-parent') ? wrapper.querySelector('.dropdown-parent') : el.closest('.dropdown-parent') ? el.closest('.dropdown-parent') : wrapper;
       var parentPos = this.getPosition(parent);
       var parentTop = parentPos.y;
       var parentLeft = parentPos.x;
@@ -7716,6 +7716,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -7726,7 +7747,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   data: function data() {
     return {
       sortBy: 'id',
-      sortAsc: true
+      sortAsc: true,
+      fileToEdit: {
+        id: '',
+        title: ''
+      },
+      defaultFileToEdit: {
+        id: '',
+        title: ''
+      }
     };
   },
   computed: {
@@ -7748,7 +7777,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return dataSorted;
     }
   },
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/collections', ['deleteFile']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/collections', ['deleteFile', 'updateFile']), {
     onSelect: function onSelect(index) {
       this.$emit('onSelect', index);
     },
@@ -7774,8 +7803,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
       });
     },
-    onDeleteFile: function onDeleteFile($fileId) {
-      window.confirm('Are you sure you want to delete this file?\nAll comments, requests and actions will be permanently deleted.') ? this.deleteFile($fileId) : false;
+    onDeleteFile: function onDeleteFile(fileId) {
+      window.confirm('Are you sure you want to delete this file?\nAll comments, requests and actions will be permanently deleted.') ? this.deleteFile(fileId) : false;
+    },
+    onRenameFile: function onRenameFile(file, index) {
+      var _this = this;
+
+      this.fileToEdit = JSON.parse(JSON.stringify(file));
+      this.$nextTick(function () {
+        return _this.$refs.editTitleField[index].focus();
+      });
+      this.$nextTick(function () {
+        return _this.$refs.editTitleField[index].select();
+      });
+    },
+    resetFileToEdit: function resetFileToEdit() {
+      this.fileToEdit = this.defaultFileToEdit;
     }
   })
 });
@@ -15562,7 +15605,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".catalogues-table[data-v-18d38cc2] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.clickable[data-v-18d38cc2] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-18d38cc2] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n}\n.flex-table .flex-group:nth-child(2) > *[data-v-18d38cc2] {\n  -webkit-box-flex: 0;\n          flex: none;\n  flex-basis: 100px;\n}\n.flex-table .flex-group:nth-child(2) > *.stage[data-v-18d38cc2] {\n  flex-basis: 132px;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-18d38cc2] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-18d38cc2] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-18d38cc2] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-18d38cc2] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.flex-table .flex-group > td.action[data-v-18d38cc2] {\n  text-align: right;\n}\n.flex-table .flex-table-row[data-v-18d38cc2] {\n  height: 82px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2]:last-child {\n  margin-right: 16px;\n}\n.flex-table .flex-table-row th.action[data-v-18d38cc2] {\n  text-align: right;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.show-more[data-v-18d38cc2] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.view-single[data-v-18d38cc2] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-18d38cc2] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-18d38cc2] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}", ""]);
+exports.push([module.i, ".catalogues-table[data-v-18d38cc2] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.clickable[data-v-18d38cc2] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-18d38cc2] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n}\n.flex-table .flex-group:nth-child(2) > *[data-v-18d38cc2] {\n  -webkit-box-flex: 0;\n          flex: none;\n  flex-basis: 100px;\n}\n.flex-table .flex-group:nth-child(2) > *.stage[data-v-18d38cc2] {\n  flex-basis: 132px;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-18d38cc2] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-18d38cc2] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-18d38cc2] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-18d38cc2] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table .flex-group > *.action > *[data-v-18d38cc2]:not(:last-child) {\n  margin-right: 8px;\n}\n.flex-table .flex-group > td.action[data-v-18d38cc2] {\n  text-align: right;\n}\n.flex-table .flex-table-row[data-v-18d38cc2] {\n  height: 82px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2]:last-child {\n  margin-right: 16px;\n}\n.flex-table .flex-table-row th.action[data-v-18d38cc2] {\n  text-align: right;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.show-more[data-v-18d38cc2] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.view-single[data-v-18d38cc2] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-18d38cc2] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-18d38cc2] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.edit-title.hidden[data-v-18d38cc2] {\n  display: none;\n}", ""]);
 
 // exports
 
@@ -28268,18 +28311,120 @@ var render = function() {
                   ]
                 ),
                 _vm._v(" "),
-                _c(
-                  "td",
-                  {
-                    staticClass: "title clickable",
-                    on: {
-                      click: function($event) {
-                        return _vm.viewSingle(catalogue.id, catalogue.title)
-                      }
-                    }
-                  },
-                  [_vm._v(_vm._s(catalogue.title))]
-                )
+                _c("td", { staticClass: "title clickable" }, [
+                  _vm.fileToEdit.id != catalogue.id
+                    ? _c(
+                        "span",
+                        {
+                          on: {
+                            click: function($event) {
+                              return _vm.viewSingle(
+                                catalogue.id,
+                                catalogue.title
+                              )
+                            }
+                          }
+                        },
+                        [_vm._v(_vm._s(catalogue.title))]
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass: "edit-title input-parent controls-right",
+                      class: { hidden: _vm.fileToEdit.id != catalogue.id }
+                    },
+                    [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.fileToEdit.title,
+                            expression: "fileToEdit.title"
+                          }
+                        ],
+                        ref: "editTitleField",
+                        refInFor: true,
+                        staticClass: "input-wrapper",
+                        attrs: { type: "text" },
+                        domProps: { value: _vm.fileToEdit.title },
+                        on: {
+                          keyup: [
+                            function($event) {
+                              if (
+                                !$event.type.indexOf("key") &&
+                                _vm._k(
+                                  $event.keyCode,
+                                  "enter",
+                                  13,
+                                  $event.key,
+                                  "Enter"
+                                )
+                              ) {
+                                return null
+                              }
+                              _vm.updateFile(_vm.fileToEdit)
+                              _vm.resetFileToEdit()
+                            },
+                            function($event) {
+                              if (
+                                !$event.type.indexOf("key") &&
+                                _vm._k($event.keyCode, "esc", 27, $event.key, [
+                                  "Esc",
+                                  "Escape"
+                                ])
+                              ) {
+                                return null
+                              }
+                              return _vm.resetFileToEdit()
+                            }
+                          ],
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.fileToEdit,
+                              "title",
+                              $event.target.value
+                            )
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "controls" }, [
+                        _c(
+                          "span",
+                          {
+                            staticClass: "button green true-square",
+                            on: {
+                              click: function($event) {
+                                _vm.updateFile(_vm.fileToEdit)
+                                _vm.resetFileToEdit()
+                              }
+                            }
+                          },
+                          [_c("i", { staticClass: "fas fa-check" })]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "span",
+                          {
+                            staticClass: "button red true-square",
+                            on: {
+                              click: function($event) {
+                                return _vm.resetFileToEdit()
+                              }
+                            }
+                          },
+                          [_c("i", { staticClass: "fas fa-times" })]
+                        )
+                      ])
+                    ]
+                  )
+                ])
               ]),
               _vm._v(" "),
               _c("div", { staticClass: "flex-group" }, [
@@ -28329,33 +28474,110 @@ var render = function() {
               ]),
               _vm._v(" "),
               _c("div", { staticClass: "flex-group" }, [
-                _c("td", { staticClass: "action" }, [
-                  _c(
-                    "span",
-                    {
-                      staticClass: "button red",
-                      on: {
-                        click: function($event) {
-                          return _vm.onDeleteFile(catalogue.id)
+                _c(
+                  "td",
+                  { staticClass: "action" },
+                  [
+                    _c(
+                      "span",
+                      {
+                        staticClass: "button invisible ghost light-1-hover ",
+                        on: {
+                          click: function($event) {
+                            return _vm.viewSingle(catalogue.id, catalogue.title)
+                          }
                         }
-                      }
-                    },
-                    [_vm._v("Delete")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "span",
-                    {
-                      staticClass: "clickable view-single button invisible",
-                      on: {
-                        click: function($event) {
-                          return _vm.viewSingle(catalogue.id, catalogue.title)
-                        }
-                      }
-                    },
-                    [_vm._v("View")]
-                  )
-                ])
+                      },
+                      [_vm._v("View")]
+                    ),
+                    _vm._v(" "),
+                    _c("Dropdown", {
+                      ref: "moreOptions",
+                      refInFor: true,
+                      scopedSlots: _vm._u(
+                        [
+                          {
+                            key: "button",
+                            fn: function() {
+                              return [
+                                _c(
+                                  "span",
+                                  {
+                                    staticClass:
+                                      "button invisible ghost light-1-hover true-square",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.$refs.moreOptions[
+                                          index
+                                        ].toggle()
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "fas fa-ellipsis-v"
+                                    })
+                                  ]
+                                )
+                              ]
+                            },
+                            proxy: true
+                          },
+                          {
+                            key: "body",
+                            fn: function() {
+                              return [
+                                _c("div", { staticClass: "option-buttons" }, [
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass: "option icon-left",
+                                      on: {
+                                        click: function($event) {
+                                          _vm.onRenameFile(catalogue, index)
+                                          _vm.$refs.moreOptions[index].toggle()
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _c("i", {
+                                        staticClass: "fas fa-pencil primary"
+                                      }),
+                                      _vm._v(" Rename")
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass: "option icon-left",
+                                      on: {
+                                        click: function($event) {
+                                          _vm.onDeleteFile(catalogue.id)
+                                          _vm.$refs.moreOptions[index].toggle()
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _c("i", {
+                                        staticClass: "fas fa-trash-alt red"
+                                      }),
+                                      _vm._v(" Delete")
+                                    ]
+                                  )
+                                ])
+                              ]
+                            },
+                            proxy: true
+                          }
+                        ],
+                        null,
+                        true
+                      )
+                    })
+                  ],
+                  1
+                )
               ])
             ]
           )
@@ -56606,7 +56828,7 @@ function (_Model) {
     value: function fields() {
       var data = {
         id: this.attr(null),
-        room_code: this.attr(''),
+        workspace_id: this.attr(''),
         title: this.attr(''),
         phase: this.attr(''),
         catalog_id: this.attr(''),
@@ -59427,29 +59649,37 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _updateFile = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref3, fileToUpdate) {
-        var commit;
+        var commit, startDate, endDate, catalog_id;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 commit = _ref3.commit;
-                _context3.next = 3;
+                startDate = fileToUpdate.start_date ? fileToUpdate.start_date : null;
+                endDate = fileToUpdate.end_date ? fileToUpdate.end_date : null;
+                catalog_id = fileToUpdate.folderId ? fileToUpdate.folderId : fileToUpdate.catalog_id ? fileToUpdate.catalog_id : null;
+                console.log(fileToUpdate);
+                _context3.next = 7;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/file", {
                   id: fileToUpdate.id,
                   title: fileToUpdate.title,
                   phase: fileToUpdate.phase,
-                  catalog_id: fileToUpdate.folderId,
-                  workspace_id: fileToUpdate.workspace_id
+                  catalog_id: catalog_id,
+                  folder_id: catalog_id,
+                  workspace_id: fileToUpdate.workspace_id,
+                  start_date: startDate,
+                  end_date: endDate
                 }).then(function (response) {
-                  console.log(response.data);
+                  console.log(response.data); // Commit to store
+
                   _models_Collection__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
                     data: response.data
                   });
                 })["catch"](function (err) {
-                  console.log(err);
+                  console.log(err.response);
                 });
 
-              case 3:
+              case 7:
               case "end":
                 return _context3.stop();
             }

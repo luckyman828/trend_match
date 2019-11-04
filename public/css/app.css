@@ -9652,6 +9652,7 @@ textarea {
   border: solid 1px #dfdfdf;
   margin-top: 7px;
   overflow: hidden;
+  min-width: 100px;
 }
 
 .dropdown::before,
@@ -9983,6 +9984,42 @@ textarea {
   background: #43425d;
 }
 
+.option-buttons .option {
+  padding: 8px;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+          align-items: center;
+  font-weight: 400;
+  white-space: nowrap;
+  border: solid 1px #f9f9f9;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.option-buttons .option:hover {
+  background: #f9f9f9;
+}
+
+.option-buttons .option.icon-left i {
+  margin-right: 8px;
+}
+
+.option-buttons .option.icon-right i {
+  margin-left: 8px;
+}
+
+.option-buttons.dark .option,
+.dark .option-buttons .option {
+  border-color: #43425d;
+  color: white;
+}
+
+.option-buttons.dark .option:hover,
+.dark .option-buttons .option:hover {
+  background: #43425d;
+}
+
 .tab-headers {
   display: -webkit-box;
   display: flex;
@@ -10176,6 +10213,30 @@ form .form-element .label {
 
 .input-wrapper.light {
   background: #f3f3f3;
+}
+
+.input-parent {
+  position: relative;
+}
+
+.input-parent.controls-right .input-wrapper {
+  padding-right: 40px;
+}
+
+.input-parent.controls-right .controls {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+
+.input-parent.controls-left .input-wrapper {
+  padding-left: 40px;
+}
+
+.input-parent.controls-left .controls {
+  position: absolute;
+  top: 4px;
+  left: 4px;
 }
 
 .fade-enter-active,

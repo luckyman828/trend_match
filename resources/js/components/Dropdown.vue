@@ -66,7 +66,7 @@ export default {
             // const parent = el.closest('.dropdown-parent') // Use set element as parent
 
             // First look for a parent inside the dropdown, then look for a parent outside
-            const parent = ( wrapper.querySelector('.dropdown-parent') ) ? wrapper.querySelector('.dropdown-parent') : el.closest('.dropdown-parent')
+            const parent = ( wrapper.querySelector('.dropdown-parent') ) ? wrapper.querySelector('.dropdown-parent') : el.closest('.dropdown-parent') ? el.closest('.dropdown-parent') : wrapper
 
             const parentPos = this.getPosition(parent)
             const parentTop = parentPos.y

@@ -229,20 +229,34 @@ export default {
             // Collection.create({ data: response.data })
         },
         async updateFile({ commit }, fileToUpdate) {
+            const startDate = fileToUpdate.start_date ? fileToUpdate.start_date : null
+            const endDate = fileToUpdate.end_date ? fileToUpdate.end_date : null
+            const catalog_id = fileToUpdate.folderId
+                ? fileToUpdate.folderId
+                : fileToUpdate.catalog_id
+                ? fileToUpdate.catalog_id
+                : null
+
+            console.log(fileToUpdate)
+
             await axios
                 .put(`/api/file`, {
                     id: fileToUpdate.id,
                     title: fileToUpdate.title,
                     phase: fileToUpdate.phase,
-                    catalog_id: fileToUpdate.folderId,
+                    catalog_id: catalog_id,
+                    folder_id: catalog_id,
                     workspace_id: fileToUpdate.workspace_id,
+                    start_date: startDate,
+                    end_date: endDate,
                 })
                 .then(response => {
                     console.log(response.data)
+                    // Commit to store
                     Collection.insert({ data: response.data })
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.log(err.response)
                 })
         },
         async deleteFile({ commit }, fileId) {

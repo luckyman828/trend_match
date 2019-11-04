@@ -13,7 +13,7 @@ export default class Collection extends Model {
     static fields() {
         const data = {
             id: this.attr(null),
-            room_code: this.attr(''),
+            workspace_id: this.attr(''),
             title: this.attr(''),
             phase: this.attr(''),
             catalog_id: this.attr(''),
