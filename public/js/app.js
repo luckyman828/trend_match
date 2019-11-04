@@ -8616,21 +8616,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 return this.completeTask({
                   file_id: file_id,
                   task_id: task_id
+                }).then(function (success) {
+                  // Skip to next task
+                  if (_this.userTasks[_this.userTasks.findIndex(function (x) {
+                    return x.id == _this.currentTask.id;
+                  }) + 1] && success) {
+                    _this.setCurrentTaskId(_this.userTasks[_this.userTasks.findIndex(function (x) {
+                      return x.id == _this.currentTask.id;
+                    }) + 1].id);
+                  }
                 });
 
               case 3:
-                // .then(reponse => succes = response)
-                this.submittingTaskComplete = false; // Skip to next task
+                this.submittingTaskComplete = false;
 
-                if (this.userTasks[this.userTasks.findIndex(function (x) {
-                  return x.id == _this.currentTask.id;
-                }) + 1]) {
-                  this.setCurrentTaskId(this.userTasks[this.userTasks.findIndex(function (x) {
-                    return x.id == _this.currentTask.id;
-                  }) + 1].id);
-                }
-
-              case 5:
+              case 4:
               case "end":
                 return _context2.stop();
             }
@@ -8660,7 +8660,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 });
 
               case 3:
-                // .then(reponse => succes = response)
                 this.submittingTaskComplete = false;
 
               case 4:
@@ -9431,6 +9430,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _onSubmitComment = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(e) {
+        var _this2 = this;
+
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -9438,51 +9439,46 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 if (e) e.preventDefault();
 
                 if (this.submitDisabled) {
-                  _context.next = 15;
+                  _context.next = 6;
                   break;
                 }
 
-                this.submittingComment = true;
-                _context.prev = 3;
-                _context.next = 6;
+                this.submittingComment = true; // Succes
+
+                _context.next = 5;
                 return this.createComment({
                   comment: this.commentToPost
+                }).then(function (success) {
+                  if (success) {
+                    _this2.$refs.requestSucces.show();
+
+                    _this2.writeActive = false; // Unset the focus
+
+                    document.activeElement.blur(); // Reset comment
+
+                    if (_this2.writeScope == 'comment') {
+                      _this2.newComment.comment = '';
+                      _this2.newComment.important = false; // Reset textarea height
+
+                      _this2.$refs.commentField.style.height = '';
+                    } else {
+                      _this2.newRequest.comment = _this2.taskRequest ? _this2.taskRequest.comment : '';
+                      _this2.newRequest.important = false; // Reset textarea height
+                      // this.$refs.requestField.style.height = ''
+                    }
+                  }
                 });
 
-              case 6:
-                this.$refs.requestSucces.show(); // Reset comment
-
-                if (this.writeScope == 'comment') {
-                  this.newComment.comment = '';
-                  this.newComment.important = false; // Reset textarea height
-
-                  this.$refs.commentField.style.height = '';
-                } else {
-                  this.newRequest.comment = this.taskRequest ? this.taskRequest.comment : '';
-                  this.newRequest.important = false; // Reset textarea height
-                  // this.$refs.requestField.style.height = ''
-                }
-
-                _context.next = 12;
-                break;
-
-              case 10:
-                _context.prev = 10;
-                _context.t0 = _context["catch"](3);
-
-              case 12:
+              case 5:
                 // In any case
                 this.submittingComment = false;
-                this.writeActive = false; // Unset the focus
 
-                document.activeElement.blur();
-
-              case 15:
+              case 6:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this, [[3, 10]]);
+        }, _callee, this);
       }));
 
       function onSubmitComment(_x) {
@@ -27715,8 +27711,8 @@ var render = function() {
         staticClass: "lds-rolling",
         staticStyle: { background: "none" },
         attrs: {
-          width: "200px",
-          height: "200px",
+          width: "50px",
+          height: "50px",
           xmlns: "http://www.w3.org/2000/svg",
           viewBox: "0 0 100 100",
           preserveAspectRatio: "xMidYMid"
@@ -28774,9 +28770,7 @@ var render = function() {
                       [_c("Loader")],
                       1
                     )
-                  : _vm._e(),
-                _vm._v(" "),
-                _vm.currentTask.completed.length <= 0
+                  : _vm.currentTask.completed.length <= 0
                   ? [
                       _vm.currentTask.isActive
                         ? _c(
@@ -57314,13 +57308,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _updateAction = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, _ref3) {
-        var commit, user_id, task_id, productToUpdate, action_code, is_task_action;
+        var commit, user_id, task_id, productToUpdate, action_code, is_task_action, existingAction;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 commit = _ref2.commit;
                 user_id = _ref3.user_id, task_id = _ref3.task_id, productToUpdate = _ref3.productToUpdate, action_code = _ref3.action_code, is_task_action = _ref3.is_task_action;
+                // Save a reference to the existing action so we can revert to it in case of an error
+                existingAction = _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].query().where('user_id', user_id).where('task_id', task_id).where('product_id', productToUpdate).first();
                 commit('setAction', {
                   user_id: user_id,
                   task_id: task_id,
@@ -57328,7 +57324,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   action_code: action_code,
                   is_task_action: is_task_action
                 });
-                _context2.next = 5;
+                _context2.next = 6;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/action", {
                   user_id: user_id,
                   task_id: task_id,
@@ -57338,10 +57334,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 }).then(function (response) {
                   console.log(response.data);
                 })["catch"](function (err) {
-                  console.log(err);
+                  console.log(err.response); // On error restore the action and alert the user
+
+                  if (existingAction) {
+                    commit('setAction', {
+                      user_id: user_id,
+                      task_id: task_id,
+                      productToUpdate: productToUpdate,
+                      action_code: existingAction.action,
+                      is_task_action: is_task_action
+                    });
+                  } else {
+                    commit('destroyAction', {
+                      productToUpdate: productToUpdate,
+                      task_id: task_id,
+                      user_id: user_id
+                    });
+                  }
+
+                  commit('alertError');
                 });
 
-              case 5:
+              case 6:
               case "end":
                 return _context2.stop();
             }
@@ -57360,13 +57374,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _createTaskAction = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref4, _ref5) {
-        var commit, user_id, task_id, productToUpdate, action_code, is_task_action;
+        var commit, user_id, task_id, productToUpdate, action_code, is_task_action, existingAction;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 commit = _ref4.commit;
                 user_id = _ref5.user_id, task_id = _ref5.task_id, productToUpdate = _ref5.productToUpdate, action_code = _ref5.action_code, is_task_action = _ref5.is_task_action;
+                // Save a reference to the existing action so we can revert to it in case of an error
+                existingAction = _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].query().where('task_id', task_id).where('product_id', productToUpdate).first();
                 commit('setAction', {
                   user_id: user_id,
                   task_id: task_id,
@@ -57374,7 +57390,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   action_code: action_code,
                   is_task_action: is_task_action
                 });
-                console.log(' Updating action: ' + user_id + ', ' + productToUpdate + ', ' + action_code);
                 _context3.next = 6;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/task-action", {
                   user_id: user_id,
@@ -57385,7 +57400,24 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 }).then(function (response) {
                   console.log(response.data);
                 })["catch"](function (err) {
-                  console.log(err);
+                  console.log(err.response); // On error restore the action and alert the user
+
+                  if (existingAction) {
+                    commit('setAction', {
+                      user_id: user_id,
+                      task_id: task_id,
+                      productToUpdate: productToUpdate,
+                      action_code: existingAction.action,
+                      is_task_action: is_task_action
+                    });
+                  } else {
+                    commit('destroyTaskAction', {
+                      productToUpdate: productToUpdate,
+                      task_id: task_id
+                    });
+                  }
+
+                  commit('alertError');
                 });
 
               case 6:
@@ -57406,13 +57438,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _updateTaskAction = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref6, _ref7) {
-        var commit, task_id, user_id, productToUpdate, action_code, is_task_action;
+        var commit, task_id, user_id, productToUpdate, action_code, is_task_action, existingAction;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
                 commit = _ref6.commit;
                 task_id = _ref7.task_id, user_id = _ref7.user_id, productToUpdate = _ref7.productToUpdate, action_code = _ref7.action_code, is_task_action = _ref7.is_task_action;
+                existingAction = _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].query().where('task_id', task_id).where('product_id', productToUpdate).first();
                 commit('setTaskAction', {
                   user_id: user_id,
                   task_id: task_id,
@@ -57420,7 +57453,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   action_code: action_code,
                   is_task_action: is_task_action
                 });
-                console.log(' Updating action: ' + user_id + ', ' + productToUpdate + ', ' + action_code);
                 _context4.next = 6;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/task-action", {
                   user_id: user_id,
@@ -57431,7 +57463,24 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 }).then(function (response) {
                   console.log(response.data);
                 })["catch"](function (err) {
-                  console.log(err);
+                  console.log(err); // On error restore the action and alert the user
+
+                  if (existingAction) {
+                    commit('setAction', {
+                      user_id: user_id,
+                      task_id: task_id,
+                      productToUpdate: productToUpdate,
+                      action_code: existingAction.action,
+                      is_task_action: is_task_action
+                    });
+                  } else {
+                    commit('destroyTaskAction', {
+                      productToUpdate: productToUpdate,
+                      task_id: task_id
+                    });
+                  }
+
+                  commit('alertError');
                 });
 
               case 6:
@@ -57459,15 +57508,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 commit = _ref8.commit;
                 productIds = _ref9.productIds, task_id = _ref9.task_id, user_id = _ref9.user_id, action_code = _ref9.action_code, is_task_action = _ref9.is_task_action;
-                commit('setManyActions', {
-                  productIds: productIds,
-                  task_id: task_id,
-                  user_id: user_id,
-                  action_code: action_code,
-                  is_task_action: is_task_action
-                });
                 console.log('updating actions');
-                _context5.next = 6;
+                _context5.next = 5;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/many-actions", {
                   product_ids: productIds,
                   task_id: task_id,
@@ -57476,11 +57518,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   is_task_action: is_task_action
                 }).then(function (response) {
                   console.log(response.data);
+                  commit('setManyActions', {
+                    productIds: productIds,
+                    task_id: task_id,
+                    user_id: user_id,
+                    action_code: action_code,
+                    is_task_action: is_task_action
+                  });
                 })["catch"](function (err) {
                   console.log(err);
+                  commit('alertError');
                 });
 
-              case 6:
+              case 5:
               case "end":
                 return _context5.stop();
             }
@@ -57505,15 +57555,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 commit = _ref10.commit;
                 productIds = _ref11.productIds, task_id = _ref11.task_id, user_id = _ref11.user_id, action_code = _ref11.action_code, is_task_action = _ref11.is_task_action;
-                commit('setManyActions', {
-                  productIds: productIds,
-                  task_id: task_id,
-                  user_id: user_id,
-                  action_code: action_code,
-                  is_task_action: is_task_action
-                });
                 console.log('updating actions');
-                _context6.next = 6;
+                _context6.next = 5;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/many-task-actions", {
                   product_ids: productIds,
                   task_id: task_id,
@@ -57522,11 +57565,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   is_task_action: is_task_action
                 }).then(function (response) {
                   console.log(response.data);
+                  commit('setManyActions', {
+                    productIds: productIds,
+                    task_id: task_id,
+                    user_id: user_id,
+                    action_code: action_code,
+                    is_task_action: is_task_action
+                  });
                 })["catch"](function (err) {
                   console.log(err);
+                  commit('alertError');
                 });
 
-              case 6:
+              case 5:
               case "end":
                 return _context6.stop();
             }
@@ -57551,15 +57602,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 commit = _ref12.commit;
                 productIds = _ref13.productIds, task_id = _ref13.task_id, user_id = _ref13.user_id, action_code = _ref13.action_code, is_task_action = _ref13.is_task_action;
-                commit('setManyTaskActions', {
-                  productIds: productIds,
-                  task_id: task_id,
-                  user_id: user_id,
-                  action_code: action_code,
-                  is_task_action: is_task_action
-                });
                 console.log('creating actions');
-                _context7.next = 6;
+                _context7.next = 5;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/many-actions", {
                   product_ids: productIds,
                   task_id: task_id,
@@ -57568,11 +57612,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   is_task_action: is_task_action
                 }).then(function (response) {
                   console.log(response.data);
+                  commit('setManyTaskActions', {
+                    productIds: productIds,
+                    task_id: task_id,
+                    user_id: user_id,
+                    action_code: action_code,
+                    is_task_action: is_task_action
+                  });
                 })["catch"](function (err) {
                   console.log(err);
+                  commit('alertError');
                 });
 
-              case 6:
+              case 5:
               case "end":
                 return _context7.stop();
             }
@@ -57590,19 +57642,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _deleteAction = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee8(_ref14, _ref15) {
-        var commit, productToUpdate, task_id, user_id;
+        var commit, productToUpdate, task_id, user_id, existingAction;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
               case 0:
                 commit = _ref14.commit;
                 productToUpdate = _ref15.productToUpdate, task_id = _ref15.task_id, user_id = _ref15.user_id;
+                existingAction = _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].query().where('user_id', user_id).where('task_id', task_id).where('product_id', productToUpdate).first();
                 commit('destroyAction', {
                   productToUpdate: productToUpdate,
                   task_id: task_id,
                   user_id: user_id
                 });
-                _context8.next = 5;
+                _context8.next = 6;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/action", {
                   data: {
                     user_id: user_id,
@@ -57612,10 +57665,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 }).then(function (response) {
                   console.log(response.data);
                 })["catch"](function (err) {
-                  console.log(err);
+                  console.log(err); // On error restore the action and alert the user
+
+                  commit('setAction', {
+                    user_id: user_id,
+                    task_id: task_id,
+                    productToUpdate: productToUpdate,
+                    action_code: existingAction.action,
+                    is_task_action: existingAction.is_task_action
+                  });
+                  commit('alertError');
                 });
 
-              case 5:
+              case 6:
               case "end":
                 return _context8.stop();
             }
@@ -57633,18 +57695,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _deleteTaskAction = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee9(_ref16, _ref17) {
-        var commit, productToUpdate, task_id;
+        var commit, productToUpdate, task_id, existingAction;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee9$(_context9) {
           while (1) {
             switch (_context9.prev = _context9.next) {
               case 0:
                 commit = _ref16.commit;
                 productToUpdate = _ref17.productToUpdate, task_id = _ref17.task_id;
+                existingAction = _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].query().where('task_id', task_id).where('product_id', productToUpdate).first();
                 commit('destroyTaskAction', {
                   productToUpdate: productToUpdate,
                   task_id: task_id
                 });
-                _context9.next = 5;
+                _context9.next = 6;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/task-action", {
                   data: {
                     task_id: task_id,
@@ -57654,9 +57717,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   console.log(response.data);
                 })["catch"](function (err) {
                   console.log(err);
+                  commit('setAction', {
+                    user_id: existingAction.user_id,
+                    task_id: task_id,
+                    productToUpdate: productToUpdate,
+                    action_code: existingAction.action,
+                    is_task_action: existingAction.is_task_action
+                  });
+                  commit('alertError');
                 });
 
-              case 5:
+              case 6:
               case "end":
                 return _context9.stop();
             }
@@ -57682,7 +57753,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           user_id = _ref18.user_id,
           action_code = _ref18.action_code,
           is_task_action = _ref18.is_task_action;
-      console.log('setting action!');
+      console.log('setting action! Action code: ' + action_code);
       _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: {
           action: action_code,
@@ -57772,6 +57843,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       _models_Action__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: data
       });
+    },
+    alertError: function alertError(state) {
+      window.alert('Network error. Please check your connection');
     }
   }
 });
@@ -58449,7 +58523,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _createComment = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, _ref3) {
-        var commit, comment, team_id, response;
+        var commit, comment, team_id, success, response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -58470,19 +58544,24 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   comment_body: comment.comment,
                   important: comment.important,
                   is_request: comment.is_request
+                }).then(function (response) {
+                  success = true; // Get and set the comment id equal to the id given by the database
+
+                  comment.id = response.data.id;
+                  commit('setComment', {
+                    comment: comment
+                  });
+                })["catch"](function (err) {
+                  success = false;
+                  commit('alertError');
                 });
 
               case 7:
                 response = _context2.sent;
-                // Get and set the comment id equal to the id given by the database
-                comment.id = response.data.id;
-                commit('setComment', {
-                  comment: comment
-                });
-                console.log(response.data);
                 commit('setSubmitting', false);
+                return _context2.abrupt("return", success);
 
-              case 12:
+              case 10:
               case "end":
                 return _context2.stop();
             }
@@ -58511,6 +58590,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       _models_Comment__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
         data: comment
       });
+    },
+    alertError: function alertError(state) {
+      window.alert('Network error. Please check your connection');
     }
   }
 });
@@ -61635,26 +61717,27 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 commit = _ref2.commit;
                 file_id = _ref3.file_id, task_id = _ref3.task_id;
-                commit('setTaskComplete', {
-                  file_id: file_id,
-                  task_id: task_id
-                });
-                _context2.next = 5;
+                _context2.next = 4;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/task/complete", {
                   file_id: file_id,
                   task_id: task_id
                 }).then(function (response) {
                   succes = true;
                   console.log(response.data);
+                  commit('setTaskComplete', {
+                    file_id: file_id,
+                    task_id: task_id
+                  });
                 })["catch"](function (err) {
                   succes = false;
                   console.log(err);
+                  commit('alertError');
                 });
 
-              case 5:
+              case 4:
                 return _context2.abrupt("return", succes);
 
-              case 6:
+              case 5:
               case "end":
                 return _context2.stop();
             }
@@ -61679,11 +61762,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 commit = _ref4.commit;
                 file_id = _ref5.file_id, task_id = _ref5.task_id;
-                commit('setTaskIncomplete', {
-                  file_id: file_id,
-                  task_id: task_id
-                });
-                _context3.next = 5;
+                _context3.next = 4;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/task/complete", {
                   data: {
                     file_id: file_id,
@@ -61692,15 +61771,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 }).then(function (response) {
                   succes = true;
                   console.log(response.data);
+                  commit('setTaskIncomplete', {
+                    file_id: file_id,
+                    task_id: task_id
+                  });
                 })["catch"](function (err) {
                   succes = false;
                   console.log(err);
                 });
 
-              case 5:
+              case 4:
                 return _context3.abrupt("return", succes);
 
-              case 6:
+              case 5:
               case "end":
                 return _context3.stop();
             }
@@ -61736,6 +61819,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       _models_FileTask__WEBPACK_IMPORTED_MODULE_6__["default"]["delete"](function (record) {
         return record.file_id == file_id && record.task_id == task_id;
       });
+    },
+    alertError: function alertError(state) {
+      window.alert('Network error. Please check your connection');
     }
   }
 });
