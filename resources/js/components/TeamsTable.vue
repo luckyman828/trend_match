@@ -517,19 +517,13 @@ export default {
         }
         &.expanded {
             td.title {
-                .button {
-                    // background: $light2;
-                    // font-weight: 500;
+                > .button {
                     i {
-                        // color: $dark;
                         transform: rotateZ(90deg);
                     }
                 }
             }
         }
-    }
-    .dropdown {
-        // position: fixed;
     }
     .edit-title {
         &.hidden {
