@@ -10219,14 +10219,12 @@ form .form-element .label {
   position: relative;
 }
 
-.input-parent.controls-right .input-wrapper {
-  padding-right: 40px;
-}
-
 .input-parent.controls-right .controls {
   position: absolute;
   top: 4px;
-  right: 4px;
+  right: -4px;
+  -webkit-transform: translateX(100%);
+          transform: translateX(100%);
 }
 
 .input-parent.controls-left .input-wrapper {

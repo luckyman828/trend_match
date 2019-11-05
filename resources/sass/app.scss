@@ -1050,12 +1050,13 @@ form {
     position: relative;
     &.controls-right {
         .input-wrapper {
-            padding-right: 40px;
+            // padding-right: 40px;
         }
         .controls {
             position: absolute;
             top: 4px;
-            right: 4px;
+            right: -4px;
+            transform: translateX(100%);
         }
     }
     &.controls-left {
