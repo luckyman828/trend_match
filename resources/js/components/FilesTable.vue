@@ -1,5 +1,6 @@
 <template>
     <div class="catalogues-table card">
+
         <div class="catalogue-totals">
             <span>{{selectedCount}} selected</span>
             <span>{{files.length}} records</span>
@@ -49,8 +50,8 @@
                     </td>
                     <td class="title clickable">
                         
-                        <span v-if="fileToEdit.id != catalogue.id" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.title}}</span>
-                        <div :class="{hidden: fileToEdit.id != catalogue.id}" class="edit-title input-parent controls-right">
+                        <span v-if="fileToEdit.id != catalogue.id || editingFile == false" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.title}}</span>
+                        <div :class="{hidden: fileToEdit.id != catalogue.id || editingFile == false}" class="edit-title input-parent controls-right">
                             <input type="text" :ref="'editTitleField-'+catalogue.id" class="input-wrapper" v-model="fileToEdit.title" @keyup.enter="updateFile(fileToEdit); resetFileToEdit()" @keyup.esc="resetFileToEdit()">
                             <div class="controls">
                                 <span class="button green true-square" @click="updateFile(fileToEdit); resetFileToEdit()"><i class="fas fa-check"></i></span>
@@ -83,6 +84,7 @@
                             <template v-slot:body>
                                 <div class="option-buttons">
                                     <span class="option icon-left" @click="onRenameFile(catalogue, index); $refs['moreOptions-'+catalogue.id][0].toggle()"><i class="fas fa-pencil primary"></i> Rename</span>
+                                    <span class="option icon-left" @click="onAddToFile(catalogue); $refs['moreOptions-'+catalogue.id][0].toggle()"><i class="fas fa-plus green"></i> Add to file</span>
                                     <span class="option icon-left" @click="onDeleteFile(catalogue.id); $refs['moreOptions-'+catalogue.id][0].toggle()"><i class="fas fa-trash-alt red"></i> Delete</span>
                                 </div>
                             </template>
@@ -91,6 +93,35 @@
                 </div>
             </div>
         </div>
+
+        <Modal ref="editFileModal" :header="'Add data to <br><strong>'+fileToEdit.title+'<strong>'" :subHeader="'Upload more csvs to add data to the file'">
+            <template v-slot:body>
+                <form>
+                    <template v-if="!uploadingToFile">
+                        <div class="form-element">
+                            <div class="drop-area input-wrapper">
+                                <input type="file" multiple accept=".csv, text/csv" @change="filesChange($event)">
+                                <!-- <input type="file" multiple accept=".csv" @change="filesChange($event)"> -->
+                                <p>Drop your file(s) here or click to upload</p>
+                                <span class="button dark">Upload files</span>
+                            </div>
+                        </div>
+                        <div class="form-element file-list" v-if="filesToAdd.length > 0">
+                            <label>Selected files ({{filesToAdd.length}})</label>
+                            <p v-for="(file, index) in filesToAdd" :key="index">
+                                {{file.name}} 
+                                <i class="remove far fa-times-circle" @click="removeFile(index)"></i>
+                            </p>
+                        </div>
+                        <span :class="{disabled: filesToAdd.length <= 0}" class="button xl dark" @click="addToFile">Apply changes</span>
+                    </template>
+                    <template v-else>
+                        <Loader :message="'Uploading'"/>
+                    </template>
+                </form>
+            </template>
+        </Modal>
+
     </div>
 </template>
 
@@ -118,7 +149,10 @@ export default {
         defaultFileToEdit: {
             id: '',
             title: ''
-        }
+        },
+        editingFile: false,
+        filesToAdd: [],
+        uploadingToFile: false,
     }},
     computed: {
         selectedCount() {
@@ -150,7 +184,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('entities/collections', ['deleteFile', 'updateFile']),
+        ...mapActions('entities/collections', ['deleteFile', 'updateFile', 'uploadToExistingFile']),
         onSelect(index) {
             this.$emit('onSelect', index)
         },
@@ -178,13 +212,49 @@ export default {
             ? this.deleteFile(fileId) : false
         },
         onRenameFile(file, index) {
+            this.editingFile = true
             this.fileToEdit = JSON.parse(JSON.stringify(file))
             const el = this.$refs['editTitleField-'+file.id][0]
             this.$nextTick(() => el.focus())
             this.$nextTick(() => el.select())
         },
+        onAddToFile(file) {
+            this.fileToEdit = file
+            this.$refs.editFileModal.toggle()
+        },
+        addToFile() {
+            this.fileToEdit.files = this.filesToAdd
+            this.uploadingToFile = true
+            this.uploadToExistingFile(this.fileToEdit).then(success => {
+                this.uploadingToFile = false
+                this.$refs.editFileModal.toggle()
+            })
+
+        },
         resetFileToEdit() {
+            this.editingFile = false
             this.fileToEdit = this.defaultFileToEdit
+        },
+        filesChange(e) {
+            const files = e.target.files
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i]
+                const extension = file.name.split('.').pop();
+
+                // Check that the file is a csv
+                if (extension == 'csv') {
+                    if (!this.filesToAdd.find(x => x.name == file.name)) {
+                        this.filesToAdd.push(file)
+                    }
+                } else {
+                    // Throw error
+                    console.log('invalid file extension')
+                }
+            }
+        },
+        removeFile(index) {
+            this.filesToAdd.splice(index, 1)
         },
     }
 }
@@ -280,82 +350,6 @@ export default {
         text-align: center;
         display: inline-block;
     }
-    // .checkbox {
-    //   display: block;
-    //   position: relative;
-    //   cursor: pointer;
-    //   -webkit-user-select: none;
-    //   -moz-user-select: none;
-    //   -ms-user-select: none;
-    //   user-select: none;
-    //   margin-bottom: 0;
-    //   padding-top: 5px;
-    //   padding-bottom: 5px;
-    //   &:hover {
-    //       background: $light;
-    //   }
-    // }
-
-    // .checkbox input {
-    //   position: absolute;
-    //   opacity: 0;
-    //   cursor: pointer;
-    //   height: 0;
-    //   width: 0;
-    // }
-
-    // .checkmark {
-    //   content: "";
-    //   display: inline-block;
-    //   vertical-align: text-top;
-    //   width: 24px;
-    //   height: 24px;
-    //   background: white;
-    //   border: 1px solid #dfdfdf;
-    // }
-
-    // .checkbox input:checked ~ .checkmark {
-    //   background: linear-gradient(#3b86ff, #3b86ff) no-repeat;
-    //   background-position: center;
-    //   background-size: 16px 16px;
-    // }
-
-    // .checkmark::after {
-    //   content: "";
-    //   position: absolute;
-    //   display: none;
-    // }
-
-    // .checkbox input:checked ~ .checkmark:after {
-    //   display: block;
-    // }
-    // .button {
-    //     display: inline-block;
-    //     width: 86px;
-    //     height: 32px;
-    //     line-height: 32px;
-    //     font-size: 12px;
-    //     border-radius: 4px;
-    //     padding: 0;
-    //     line-height: 28px;
-    //     position: relative;
-    //     font-weight: 700;
-    //     color: $dark2;
-    //     border-color: $light2;
-    //     margin: 0;
-    //     i {
-    //         font-size: 16px;
-    //         position: absolute;
-    //         right: 10px;
-    //         top: 5px;
-    //         margin: 0;
-    //     }
-    //     &.active {
-    //         i {
-    //             font-weight: 900;
-    //         }
-    //     }
-    // }
     .view-single {
         font-size: 12px;
         font-weight: 700;
@@ -376,6 +370,23 @@ export default {
     .edit-title {
         &.hidden {
             display: none;
+        }
+    }
+    .file-list {
+        p {
+            position: relative;
+        }
+        p:hover .remove {
+            opacity: 1;
+        }
+        .remove {
+            opacity: 0;
+            transition: .3s;
+            margin-left: 4px;
+            cursor: pointer;
+            &:hover {
+                color: $red;
+            }
         }
     }
 </style>

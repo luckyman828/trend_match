@@ -7738,6 +7738,37 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -7756,7 +7787,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       defaultFileToEdit: {
         id: '',
         title: ''
-      }
+      },
+      editingFile: false,
+      filesToAdd: [],
+      uploadingToFile: false
     };
   },
   computed: {
@@ -7778,7 +7812,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return dataSorted;
     }
   },
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/collections', ['deleteFile', 'updateFile']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/collections', ['deleteFile', 'updateFile', 'uploadToExistingFile']), {
     onSelect: function onSelect(index) {
       this.$emit('onSelect', index);
     },
@@ -7808,6 +7842,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       window.confirm('Are you sure you want to delete this file?\nAll comments, requests and actions will be permanently deleted.') ? this.deleteFile(fileId) : false;
     },
     onRenameFile: function onRenameFile(file, index) {
+      this.editingFile = true;
       this.fileToEdit = JSON.parse(JSON.stringify(file));
       var el = this.$refs['editTitleField-' + file.id][0];
       this.$nextTick(function () {
@@ -7817,8 +7852,52 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return el.select();
       });
     },
+    onAddToFile: function onAddToFile(file) {
+      this.fileToEdit = file;
+      this.$refs.editFileModal.toggle();
+    },
+    addToFile: function addToFile() {
+      var _this = this;
+
+      this.fileToEdit.files = this.filesToAdd;
+      this.uploadingToFile = true;
+      this.uploadToExistingFile(this.fileToEdit).then(function (success) {
+        _this.uploadingToFile = false;
+
+        _this.$refs.editFileModal.toggle();
+      });
+    },
     resetFileToEdit: function resetFileToEdit() {
+      this.editingFile = false;
       this.fileToEdit = this.defaultFileToEdit;
+    },
+    filesChange: function filesChange(e) {
+      var _this2 = this;
+
+      var files = e.target.files;
+
+      var _loop = function _loop(i) {
+        var file = files[i];
+        var extension = file.name.split('.').pop(); // Check that the file is a csv
+
+        if (extension == 'csv') {
+          if (!_this2.filesToAdd.find(function (x) {
+            return x.name == file.name;
+          })) {
+            _this2.filesToAdd.push(file);
+          }
+        } else {
+          // Throw error
+          console.log('invalid file extension');
+        }
+      };
+
+      for (var i = 0; i < files.length; i++) {
+        _loop(i);
+      }
+    },
+    removeFile: function removeFile(index) {
+      this.filesToAdd.splice(index, 1);
     }
   })
 });
@@ -15656,7 +15735,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".catalogues-table[data-v-18d38cc2] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.clickable[data-v-18d38cc2] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-18d38cc2] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n}\n.flex-table .flex-group:nth-child(2) > *[data-v-18d38cc2] {\n  -webkit-box-flex: 0;\n          flex: none;\n  flex-basis: 100px;\n}\n.flex-table .flex-group:nth-child(2) > *.stage[data-v-18d38cc2] {\n  flex-basis: 132px;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-18d38cc2] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-18d38cc2] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-18d38cc2] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-18d38cc2] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table .flex-group > *.action > *[data-v-18d38cc2]:not(:last-child) {\n  margin-right: 8px;\n}\n.flex-table .flex-group > td.action[data-v-18d38cc2] {\n  text-align: right;\n}\n.flex-table .flex-table-row[data-v-18d38cc2] {\n  height: 82px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2]:last-child {\n  margin-right: 16px;\n}\n.flex-table .flex-table-row th.action[data-v-18d38cc2] {\n  text-align: right;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.show-more[data-v-18d38cc2] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.view-single[data-v-18d38cc2] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-18d38cc2] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-18d38cc2] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.edit-title.hidden[data-v-18d38cc2] {\n  display: none;\n}", ""]);
+exports.push([module.i, ".catalogues-table[data-v-18d38cc2] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.clickable[data-v-18d38cc2] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-18d38cc2] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n}\n.flex-table .flex-group:nth-child(2) > *[data-v-18d38cc2] {\n  -webkit-box-flex: 0;\n          flex: none;\n  flex-basis: 100px;\n}\n.flex-table .flex-group:nth-child(2) > *.stage[data-v-18d38cc2] {\n  flex-basis: 132px;\n}\n.flex-table .flex-group[data-v-18d38cc2]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-18d38cc2] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-18d38cc2] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-18d38cc2] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-18d38cc2] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table .flex-group > *.action > *[data-v-18d38cc2]:not(:last-child) {\n  margin-right: 8px;\n}\n.flex-table .flex-group > td.action[data-v-18d38cc2] {\n  text-align: right;\n}\n.flex-table .flex-table-row[data-v-18d38cc2] {\n  height: 82px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-18d38cc2]:last-child {\n  margin-right: 16px;\n}\n.flex-table .flex-table-row th.action[data-v-18d38cc2] {\n  text-align: right;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.show-more[data-v-18d38cc2] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.view-single[data-v-18d38cc2] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-18d38cc2] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-18d38cc2] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.edit-title.hidden[data-v-18d38cc2] {\n  display: none;\n}\n.file-list p[data-v-18d38cc2] {\n  position: relative;\n}\n.file-list p:hover .remove[data-v-18d38cc2] {\n  opacity: 1;\n}\n.file-list .remove[data-v-18d38cc2] {\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  margin-left: 4px;\n  cursor: pointer;\n}\n.file-list .remove[data-v-18d38cc2]:hover {\n  color: #ff6565;\n}", ""]);
 
 // exports
 
@@ -15789,7 +15868,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".flex-wrapper[data-v-5bb737ac] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.flex-wrapper > *[data-v-5bb737ac] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.drop-area[data-v-5bb737ac] {\n  outline: 2px dashed #dfdfdf;\n  outline-offset: -10px;\n  background: white;\n  padding: 12px 12px;\n  height: 200px;\n  position: relative;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  cursor: pointer;\n}\n.drop-area input[type=file][data-v-5bb737ac] {\n  opacity: 0;\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  cursor: pointer;\n  z-index: 1;\n}\n.file-list p:hover .close[data-v-5bb737ac] {\n  opacity: 1;\n}\n.file-list .remove[data-v-5bb737ac] {\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  margin-left: 4px;\n  cursor: pointer;\n}\n.file-list .remove[data-v-5bb737ac]:hover {\n  color: #ff6565;\n}\n.button.xl[data-v-5bb737ac] {\n  margin-bottom: 48px;\n}\n.table-wrapper[data-v-5bb737ac] {\n  width: 600px;\n  margin-left: -100px;\n  overflow: auto;\n}\n.table-wrapper table[data-v-5bb737ac], .table-wrapper th[data-v-5bb737ac], .table-wrapper td[data-v-5bb737ac] {\n  border-collapse: collapse;\n  border: solid 1px #1b1c1d;\n}", ""]);
+exports.push([module.i, ".flex-wrapper[data-v-5bb737ac] {\n  width: 100%;\n  padding: 8px 60px;\n  padding-right: 77px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.flex-wrapper > *[data-v-5bb737ac] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.drop-area[data-v-5bb737ac] {\n  outline: 2px dashed #dfdfdf;\n  outline-offset: -10px;\n  background: white;\n  padding: 12px 12px;\n  height: 200px;\n  position: relative;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  cursor: pointer;\n}\n.drop-area input[type=file][data-v-5bb737ac] {\n  opacity: 0;\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  cursor: pointer;\n  z-index: 1;\n}\n.file-list p[data-v-5bb737ac] {\n  position: relative;\n}\n.file-list p:hover .remove[data-v-5bb737ac] {\n  opacity: 1;\n}\n.file-list .remove[data-v-5bb737ac] {\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  margin-left: 4px;\n  cursor: pointer;\n}\n.file-list .remove[data-v-5bb737ac]:hover {\n  color: #ff6565;\n}\n.button.xl[data-v-5bb737ac] {\n  margin-bottom: 48px;\n}\n.table-wrapper[data-v-5bb737ac] {\n  width: 600px;\n  margin-left: -100px;\n  overflow: auto;\n}\n.table-wrapper table[data-v-5bb737ac], .table-wrapper th[data-v-5bb737ac], .table-wrapper td[data-v-5bb737ac] {\n  border-collapse: collapse;\n  border: solid 1px #1b1c1d;\n}", ""]);
 
 // exports
 
@@ -28161,212 +28240,389 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "catalogues-table card" }, [
-    _c("div", { staticClass: "catalogue-totals" }, [
-      _c("span", [_vm._v(_vm._s(_vm.selectedCount) + " selected")]),
+  return _c(
+    "div",
+    { staticClass: "catalogues-table card" },
+    [
+      _c("div", { staticClass: "catalogue-totals" }, [
+        _c("span", [_vm._v(_vm._s(_vm.selectedCount) + " selected")]),
+        _vm._v(" "),
+        _c("span", [_vm._v(_vm._s(_vm.files.length) + " records")])
+      ]),
       _vm._v(" "),
-      _c("span", [_vm._v(_vm._s(_vm.files.length) + " records")])
-    ]),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "flex-table" },
-      [
-        _c("div", { staticClass: "header-row flex-table-row" }, [
-          _c("div", { staticClass: "flex-group" }, [
-            _vm.authUser.role_id >= 3
-              ? _c("th", { staticClass: "select" }, [
-                  _vm._v("Select "),
-                  _c("i", { staticClass: "fas fa-chevron-down" })
-                ])
-              : _vm._e(),
-            _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable id",
-                class: { active: this.sortBy == "id" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("id", true)
+      _c(
+        "div",
+        { staticClass: "flex-table" },
+        [
+          _c("div", { staticClass: "header-row flex-table-row" }, [
+            _c("div", { staticClass: "flex-group" }, [
+              _vm.authUser.role_id >= 3
+                ? _c("th", { staticClass: "select" }, [
+                    _vm._v("Select "),
+                    _c("i", { staticClass: "fas fa-chevron-down" })
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _c(
+                "th",
+                {
+                  staticClass: "clickable id",
+                  class: { active: this.sortBy == "id" },
+                  on: {
+                    click: function($event) {
+                      return _vm.onSortBy("id", true)
+                    }
                   }
-                }
-              },
-              [
-                _vm._v("\n                    ID "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "id" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable title",
-                class: { active: this.sortBy == "title" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("title", true)
+                },
+                [
+                  _vm._v("\n                    ID "),
+                  _c("i", {
+                    staticClass: "fas",
+                    class: [
+                      this.sortBy == "id" && !_vm.sortAsc
+                        ? "fa-long-arrow-alt-up"
+                        : "fa-long-arrow-alt-down"
+                    ]
+                  })
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "th",
+                {
+                  staticClass: "clickable title",
+                  class: { active: this.sortBy == "title" },
+                  on: {
+                    click: function($event) {
+                      return _vm.onSortBy("title", true)
+                    }
                   }
-                }
-              },
-              [
-                _vm._v("\n                File name "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "title" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            )
+                },
+                [
+                  _vm._v("\n                File name "),
+                  _c("i", {
+                    staticClass: "fas",
+                    class: [
+                      this.sortBy == "title" && !_vm.sortAsc
+                        ? "fa-long-arrow-alt-up"
+                        : "fa-long-arrow-alt-down"
+                    ]
+                  })
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "flex-group" }, [
+              _c(
+                "th",
+                {
+                  staticClass: "clickable",
+                  class: { active: this.sortBy == "start_time" },
+                  on: {
+                    click: function($event) {
+                      return _vm.onSortBy("start_time", false)
+                    }
+                  }
+                },
+                [
+                  _vm._v("\n                    Created "),
+                  _c("i", {
+                    staticClass: "fas",
+                    class: [
+                      this.sortBy == "start_time" && !_vm.sortAsc
+                        ? "fa-long-arrow-alt-up"
+                        : "fa-long-arrow-alt-down"
+                    ]
+                  })
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "th",
+                {
+                  staticClass: "clickable",
+                  class: { active: this.sortBy == "end_time" },
+                  on: {
+                    click: function($event) {
+                      return _vm.onSortBy("end_time", false)
+                    }
+                  }
+                },
+                [
+                  _vm._v("\n                    Deadline "),
+                  _c("i", {
+                    staticClass: "fas",
+                    class: [
+                      this.sortBy == "end_time" && !_vm.sortAsc
+                        ? "fa-long-arrow-alt-up"
+                        : "fa-long-arrow-alt-down"
+                    ]
+                  })
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "th",
+                {
+                  staticClass: "clickable",
+                  class: { active: this.sortBy == "phase" },
+                  on: {
+                    click: function($event) {
+                      return _vm.onSortBy("phase", false)
+                    }
+                  }
+                },
+                [
+                  _vm._v("\n                    Status "),
+                  _c("i", {
+                    staticClass: "fas",
+                    class: [
+                      this.sortBy == "phase" && !_vm.sortAsc
+                        ? "fa-long-arrow-alt-up"
+                        : "fa-long-arrow-alt-down"
+                    ]
+                  })
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _vm._m(0)
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "flex-group" }, [
-            _c(
-              "th",
-              {
-                staticClass: "clickable",
-                class: { active: this.sortBy == "start_time" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("start_time", false)
-                  }
-                }
-              },
-              [
-                _vm._v("\n                    Created "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "start_time" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable",
-                class: { active: this.sortBy == "end_time" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("end_time", false)
-                  }
-                }
-              },
-              [
-                _vm._v("\n                    Deadline "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "end_time" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "th",
-              {
-                staticClass: "clickable",
-                class: { active: this.sortBy == "phase" },
-                on: {
-                  click: function($event) {
-                    return _vm.onSortBy("phase", false)
-                  }
-                }
-              },
-              [
-                _vm._v("\n                    Status "),
-                _c("i", {
-                  staticClass: "fas",
-                  class: [
-                    this.sortBy == "phase" && !_vm.sortAsc
-                      ? "fa-long-arrow-alt-up"
-                      : "fa-long-arrow-alt-down"
-                  ]
-                })
-              ]
-            )
-          ]),
+          _vm.cataloguesSorted.length <= 0
+            ? _c(
+                "div",
+                { staticClass: "catalogue-row flex-table-row item-row" },
+                [
+                  _c("span", { staticStyle: { "text-align": "center" } }, [
+                    _vm._v("You don't have access to any catalogues")
+                  ])
+                ]
+              )
+            : _vm._e(),
           _vm._v(" "),
-          _vm._m(0)
-        ]),
-        _vm._v(" "),
-        _vm.cataloguesSorted.length <= 0
-          ? _c(
+          _vm._l(_vm.cataloguesSorted, function(catalogue, index) {
+            return _c(
               "div",
-              { staticClass: "catalogue-row flex-table-row item-row" },
+              {
+                key: catalogue.id,
+                staticClass: "catalogue-row flex-table-row item-row"
+              },
               [
-                _c("span", { staticStyle: { "text-align": "center" } }, [
-                  _vm._v("You don't have access to any catalogues")
-                ])
-              ]
-            )
-          : _vm._e(),
-        _vm._v(" "),
-        _vm._l(_vm.cataloguesSorted, function(catalogue, index) {
-          return _c(
-            "div",
-            {
-              key: catalogue.id,
-              staticClass: "catalogue-row flex-table-row item-row"
-            },
-            [
-              _c("div", { staticClass: "flex-group" }, [
-                _vm.authUser.role_id >= 3
-                  ? _c("td", { staticClass: "select" }, [
-                      _c("label", { staticClass: "checkbox" }, [
+                _c("div", { staticClass: "flex-group" }, [
+                  _vm.authUser.role_id >= 3
+                    ? _c("td", { staticClass: "select" }, [
+                        _c("label", { staticClass: "checkbox" }, [
+                          _c("input", {
+                            attrs: { type: "checkbox" },
+                            on: {
+                              change: function($event) {
+                                return _vm.onSelect(index)
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("span", { staticClass: "checkmark" })
+                        ])
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c(
+                    "td",
+                    {
+                      staticClass: "id clickable",
+                      on: {
+                        click: function($event) {
+                          return _vm.viewSingle(catalogue.id, catalogue.title)
+                        }
+                      }
+                    },
+                    [
+                      _c("span", { attrs: { title: catalogue.id } }, [
+                        _vm._v(_vm._s(_vm._f("truncate")(catalogue.id, 10)))
+                      ])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("td", { staticClass: "title clickable" }, [
+                    _vm.fileToEdit.id != catalogue.id ||
+                    _vm.editingFile == false
+                      ? _c(
+                          "span",
+                          {
+                            on: {
+                              click: function($event) {
+                                return _vm.viewSingle(
+                                  catalogue.id,
+                                  catalogue.title
+                                )
+                              }
+                            }
+                          },
+                          [_vm._v(_vm._s(catalogue.title))]
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      {
+                        staticClass: "edit-title input-parent controls-right",
+                        class: {
+                          hidden:
+                            _vm.fileToEdit.id != catalogue.id ||
+                            _vm.editingFile == false
+                        }
+                      },
+                      [
                         _c("input", {
-                          attrs: { type: "checkbox" },
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.fileToEdit.title,
+                              expression: "fileToEdit.title"
+                            }
+                          ],
+                          ref: "editTitleField-" + catalogue.id,
+                          refInFor: true,
+                          staticClass: "input-wrapper",
+                          attrs: { type: "text" },
+                          domProps: { value: _vm.fileToEdit.title },
                           on: {
-                            change: function($event) {
-                              return _vm.onSelect(index)
+                            keyup: [
+                              function($event) {
+                                if (
+                                  !$event.type.indexOf("key") &&
+                                  _vm._k(
+                                    $event.keyCode,
+                                    "enter",
+                                    13,
+                                    $event.key,
+                                    "Enter"
+                                  )
+                                ) {
+                                  return null
+                                }
+                                _vm.updateFile(_vm.fileToEdit)
+                                _vm.resetFileToEdit()
+                              },
+                              function($event) {
+                                if (
+                                  !$event.type.indexOf("key") &&
+                                  _vm._k(
+                                    $event.keyCode,
+                                    "esc",
+                                    27,
+                                    $event.key,
+                                    ["Esc", "Escape"]
+                                  )
+                                ) {
+                                  return null
+                                }
+                                return _vm.resetFileToEdit()
+                              }
+                            ],
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.fileToEdit,
+                                "title",
+                                $event.target.value
+                              )
                             }
                           }
                         }),
                         _vm._v(" "),
-                        _c("span", { staticClass: "checkmark" })
-                      ])
-                    ])
-                  : _vm._e(),
+                        _c("div", { staticClass: "controls" }, [
+                          _c(
+                            "span",
+                            {
+                              staticClass: "button green true-square",
+                              on: {
+                                click: function($event) {
+                                  _vm.updateFile(_vm.fileToEdit)
+                                  _vm.resetFileToEdit()
+                                }
+                              }
+                            },
+                            [_c("i", { staticClass: "fas fa-check" })]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "span",
+                            {
+                              staticClass: "button red true-square",
+                              on: {
+                                click: function($event) {
+                                  return _vm.resetFileToEdit()
+                                }
+                              }
+                            },
+                            [_c("i", { staticClass: "fas fa-times" })]
+                          )
+                        ])
+                      ]
+                    )
+                  ])
+                ]),
                 _vm._v(" "),
-                _c(
-                  "td",
-                  {
-                    staticClass: "id clickable",
-                    on: {
-                      click: function($event) {
-                        return _vm.viewSingle(catalogue.id, catalogue.title)
-                      }
-                    }
-                  },
-                  [
-                    _c("span", { attrs: { title: catalogue.id } }, [
-                      _vm._v(_vm._s(_vm._f("truncate")(catalogue.id, 10)))
+                _c("div", { staticClass: "flex-group" }, [
+                  _c("td", { staticClass: "created" }, [
+                    _c("span", { staticClass: "square light" }, [
+                      _vm._v(
+                        _vm._s(
+                          catalogue.start_date != null
+                            ? new Date(catalogue.start_date).toLocaleDateString(
+                                "en-GB",
+                                {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric"
+                                }
+                              )
+                            : "Unset"
+                        )
+                      )
                     ])
-                  ]
-                ),
+                  ]),
+                  _vm._v(" "),
+                  _c("td", { staticClass: "deadline" }, [
+                    _c("span", { staticClass: "square light" }, [
+                      _vm._v(
+                        _vm._s(
+                          catalogue.end_date != null
+                            ? new Date(catalogue.end_date).toLocaleDateString(
+                                "en-GB",
+                                {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric"
+                                }
+                              )
+                            : "Unset"
+                        )
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("td", { staticClass: "stage" }, [
+                    _c("span", { staticClass: "square light stage" }, [
+                      _vm._v("STAGE " + _vm._s(catalogue.phase))
+                    ])
+                  ])
+                ]),
                 _vm._v(" "),
-                _c("td", { staticClass: "title clickable" }, [
-                  _vm.fileToEdit.id != catalogue.id
-                    ? _c(
+                _c("div", { staticClass: "flex-group" }, [
+                  _c(
+                    "td",
+                    { staticClass: "action" },
+                    [
+                      _c(
                         "span",
                         {
+                          staticClass: "button invisible ghost light-1-hover ",
                           on: {
                             click: function($event) {
                               return _vm.viewSingle(
@@ -28376,216 +28632,25 @@ var render = function() {
                             }
                           }
                         },
-                        [_vm._v(_vm._s(catalogue.title))]
-                      )
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    {
-                      staticClass: "edit-title input-parent controls-right",
-                      class: { hidden: _vm.fileToEdit.id != catalogue.id }
-                    },
-                    [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.fileToEdit.title,
-                            expression: "fileToEdit.title"
-                          }
-                        ],
-                        ref: "editTitleField-" + catalogue.id,
-                        refInFor: true,
-                        staticClass: "input-wrapper",
-                        attrs: { type: "text" },
-                        domProps: { value: _vm.fileToEdit.title },
-                        on: {
-                          keyup: [
-                            function($event) {
-                              if (
-                                !$event.type.indexOf("key") &&
-                                _vm._k(
-                                  $event.keyCode,
-                                  "enter",
-                                  13,
-                                  $event.key,
-                                  "Enter"
-                                )
-                              ) {
-                                return null
-                              }
-                              _vm.updateFile(_vm.fileToEdit)
-                              _vm.resetFileToEdit()
-                            },
-                            function($event) {
-                              if (
-                                !$event.type.indexOf("key") &&
-                                _vm._k($event.keyCode, "esc", 27, $event.key, [
-                                  "Esc",
-                                  "Escape"
-                                ])
-                              ) {
-                                return null
-                              }
-                              return _vm.resetFileToEdit()
-                            }
-                          ],
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(
-                              _vm.fileToEdit,
-                              "title",
-                              $event.target.value
-                            )
-                          }
-                        }
-                      }),
+                        [_vm._v("View")]
+                      ),
                       _vm._v(" "),
-                      _c("div", { staticClass: "controls" }, [
-                        _c(
-                          "span",
-                          {
-                            staticClass: "button green true-square",
-                            on: {
-                              click: function($event) {
-                                _vm.updateFile(_vm.fileToEdit)
-                                _vm.resetFileToEdit()
-                              }
-                            }
-                          },
-                          [_c("i", { staticClass: "fas fa-check" })]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "span",
-                          {
-                            staticClass: "button red true-square",
-                            on: {
-                              click: function($event) {
-                                return _vm.resetFileToEdit()
-                              }
-                            }
-                          },
-                          [_c("i", { staticClass: "fas fa-times" })]
-                        )
-                      ])
-                    ]
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "flex-group" }, [
-                _c("td", { staticClass: "created" }, [
-                  _c("span", { staticClass: "square light" }, [
-                    _vm._v(
-                      _vm._s(
-                        catalogue.start_date != null
-                          ? new Date(catalogue.start_date).toLocaleDateString(
-                              "en-GB",
-                              {
-                                day: "2-digit",
-                                month: "2-digit",
-                                year: "numeric"
-                              }
-                            )
-                          : "Unset"
-                      )
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("td", { staticClass: "deadline" }, [
-                  _c("span", { staticClass: "square light" }, [
-                    _vm._v(
-                      _vm._s(
-                        catalogue.end_date != null
-                          ? new Date(catalogue.end_date).toLocaleDateString(
-                              "en-GB",
-                              {
-                                day: "2-digit",
-                                month: "2-digit",
-                                year: "numeric"
-                              }
-                            )
-                          : "Unset"
-                      )
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("td", { staticClass: "stage" }, [
-                  _c("span", { staticClass: "square light stage" }, [
-                    _vm._v("STAGE " + _vm._s(catalogue.phase))
-                  ])
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "flex-group" }, [
-                _c(
-                  "td",
-                  { staticClass: "action" },
-                  [
-                    _c(
-                      "span",
-                      {
-                        staticClass: "button invisible ghost light-1-hover ",
-                        on: {
-                          click: function($event) {
-                            return _vm.viewSingle(catalogue.id, catalogue.title)
-                          }
-                        }
-                      },
-                      [_vm._v("View")]
-                    ),
-                    _vm._v(" "),
-                    _c("Dropdown", {
-                      ref: "moreOptions-" + catalogue.id,
-                      refInFor: true,
-                      scopedSlots: _vm._u(
-                        [
-                          {
-                            key: "button",
-                            fn: function() {
-                              return [
-                                _c(
-                                  "span",
-                                  {
-                                    staticClass:
-                                      "button invisible ghost light-1-hover true-square",
-                                    on: {
-                                      click: function($event) {
-                                        _vm.$refs[
-                                          "moreOptions-" + catalogue.id
-                                        ][0].toggle()
-                                      }
-                                    }
-                                  },
-                                  [
-                                    _c("i", {
-                                      staticClass: "fas fa-ellipsis-v"
-                                    })
-                                  ]
-                                )
-                              ]
-                            },
-                            proxy: true
-                          },
-                          {
-                            key: "body",
-                            fn: function() {
-                              return [
-                                _c("div", { staticClass: "option-buttons" }, [
+                      _c("Dropdown", {
+                        ref: "moreOptions-" + catalogue.id,
+                        refInFor: true,
+                        scopedSlots: _vm._u(
+                          [
+                            {
+                              key: "button",
+                              fn: function() {
+                                return [
                                   _c(
                                     "span",
                                     {
-                                      staticClass: "option icon-left",
+                                      staticClass:
+                                        "button invisible ghost light-1-hover true-square",
                                       on: {
                                         click: function($event) {
-                                          _vm.onRenameFile(catalogue, index)
                                           _vm.$refs[
                                             "moreOptions-" + catalogue.id
                                           ][0].toggle()
@@ -28594,53 +28659,209 @@ var render = function() {
                                     },
                                     [
                                       _c("i", {
-                                        staticClass: "fas fa-pencil primary"
-                                      }),
-                                      _vm._v(" Rename")
-                                    ]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "span",
-                                    {
-                                      staticClass: "option icon-left",
-                                      on: {
-                                        click: function($event) {
-                                          _vm.onDeleteFile(catalogue.id)
-                                          _vm.$refs[
-                                            "moreOptions-" + catalogue.id
-                                          ][0].toggle()
-                                        }
-                                      }
-                                    },
-                                    [
-                                      _c("i", {
-                                        staticClass: "fas fa-trash-alt red"
-                                      }),
-                                      _vm._v(" Delete")
+                                        staticClass: "fas fa-ellipsis-v"
+                                      })
                                     ]
                                   )
+                                ]
+                              },
+                              proxy: true
+                            },
+                            {
+                              key: "body",
+                              fn: function() {
+                                return [
+                                  _c("div", { staticClass: "option-buttons" }, [
+                                    _c(
+                                      "span",
+                                      {
+                                        staticClass: "option icon-left",
+                                        on: {
+                                          click: function($event) {
+                                            _vm.onRenameFile(catalogue, index)
+                                            _vm.$refs[
+                                              "moreOptions-" + catalogue.id
+                                            ][0].toggle()
+                                          }
+                                        }
+                                      },
+                                      [
+                                        _c("i", {
+                                          staticClass: "fas fa-pencil primary"
+                                        }),
+                                        _vm._v(" Rename")
+                                      ]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "span",
+                                      {
+                                        staticClass: "option icon-left",
+                                        on: {
+                                          click: function($event) {
+                                            _vm.onAddToFile(catalogue)
+                                            _vm.$refs[
+                                              "moreOptions-" + catalogue.id
+                                            ][0].toggle()
+                                          }
+                                        }
+                                      },
+                                      [
+                                        _c("i", {
+                                          staticClass: "fas fa-plus green"
+                                        }),
+                                        _vm._v(" Add to file")
+                                      ]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "span",
+                                      {
+                                        staticClass: "option icon-left",
+                                        on: {
+                                          click: function($event) {
+                                            _vm.onDeleteFile(catalogue.id)
+                                            _vm.$refs[
+                                              "moreOptions-" + catalogue.id
+                                            ][0].toggle()
+                                          }
+                                        }
+                                      },
+                                      [
+                                        _c("i", {
+                                          staticClass: "fas fa-trash-alt red"
+                                        }),
+                                        _vm._v(" Delete")
+                                      ]
+                                    )
+                                  ])
+                                ]
+                              },
+                              proxy: true
+                            }
+                          ],
+                          null,
+                          true
+                        )
+                      })
+                    ],
+                    1
+                  )
+                ])
+              ]
+            )
+          })
+        ],
+        2
+      ),
+      _vm._v(" "),
+      _c("Modal", {
+        ref: "editFileModal",
+        attrs: {
+          header:
+            "Add data to <br><strong>" + _vm.fileToEdit.title + "<strong>",
+          subHeader: "Upload more csvs to add data to the file"
+        },
+        scopedSlots: _vm._u([
+          {
+            key: "body",
+            fn: function() {
+              return [
+                _c(
+                  "form",
+                  [
+                    !_vm.uploadingToFile
+                      ? [
+                          _c("div", { staticClass: "form-element" }, [
+                            _c(
+                              "div",
+                              { staticClass: "drop-area input-wrapper" },
+                              [
+                                _c("input", {
+                                  attrs: {
+                                    type: "file",
+                                    multiple: "",
+                                    accept: ".csv, text/csv"
+                                  },
+                                  on: {
+                                    change: function($event) {
+                                      return _vm.filesChange($event)
+                                    }
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _c("p", [
+                                  _vm._v(
+                                    "Drop your file(s) here or click to upload"
+                                  )
+                                ]),
+                                _vm._v(" "),
+                                _c("span", { staticClass: "button dark" }, [
+                                  _vm._v("Upload files")
                                 ])
                               ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _vm.filesToAdd.length > 0
+                            ? _c(
+                                "div",
+                                { staticClass: "form-element file-list" },
+                                [
+                                  _c("label", [
+                                    _vm._v(
+                                      "Selected files (" +
+                                        _vm._s(_vm.filesToAdd.length) +
+                                        ")"
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _vm._l(_vm.filesToAdd, function(file, index) {
+                                    return _c("p", { key: index }, [
+                                      _vm._v(
+                                        "\n                            " +
+                                          _vm._s(file.name) +
+                                          " \n                            "
+                                      ),
+                                      _c("i", {
+                                        staticClass:
+                                          "remove far fa-times-circle",
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.removeFile(index)
+                                          }
+                                        }
+                                      })
+                                    ])
+                                  })
+                                ],
+                                2
+                              )
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _c(
+                            "span",
+                            {
+                              staticClass: "button xl dark",
+                              class: { disabled: _vm.filesToAdd.length <= 0 },
+                              on: { click: _vm.addToFile }
                             },
-                            proxy: true
-                          }
-                        ],
-                        null,
-                        true
-                      )
-                    })
+                            [_vm._v("Apply changes")]
+                          )
+                        ]
+                      : [_c("Loader", { attrs: { message: "Uploading" } })]
                   ],
-                  1
+                  2
                 )
-              ])
-            ]
-          )
-        })
-      ],
-      2
-    )
-  ])
+              ]
+            },
+            proxy: true
+          }
+        ])
+      })
+    ],
+    1
+  )
 }
 var staticRenderFns = [
   function() {
@@ -59851,8 +60072,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 commit = _ref2.commit, dispatch = _ref2.dispatch;
                 // Generate uuid for new file
-                newFile.id = this._vm.$uuid.v4();
-                console.log(newFile); // Upload products to DB
+                newFile.id = this._vm.$uuid.v4(); // Upload products to DB
 
                 uploadSucces = false;
                 proxyUrl = 'https://cors-anywhere.herokuapp.com/';
@@ -59868,7 +60088,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data.append('files', file);
                 }); // console.log(data)
 
-                _context2.next = 11;
+                _context2.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(uploadApiUrl, data, axiosConfig) // .post(proxyUrl + uploadApiUrl, data, axiosConfig)
                 .then(function (response) {
                   console.log('succes');
@@ -59880,7 +60100,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   uploadSucces = false;
                 });
 
-              case 11:
+              case 10:
                 // If success create a file (collection) for the products
                 if (uploadSucces) {
                   dispatch('updateFile', newFile);
@@ -59888,7 +60108,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                 return _context2.abrupt("return", uploadSucces);
 
-              case 13:
+              case 12:
               case "end":
                 return _context2.stop();
             }
@@ -59915,8 +60135,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 startDate = fileToUpdate.start_date ? fileToUpdate.start_date : null;
                 endDate = fileToUpdate.end_date ? fileToUpdate.end_date : null;
                 catalog_id = fileToUpdate.folderId ? fileToUpdate.folderId : fileToUpdate.catalog_id ? fileToUpdate.catalog_id : null;
-                console.log(fileToUpdate);
-                _context3.next = 7;
+                _context3.next = 6;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/file", {
                   id: fileToUpdate.id,
                   title: fileToUpdate.title,
@@ -59936,7 +60155,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   console.log(err.response);
                 });
 
-              case 7:
+              case 6:
               case "end":
                 return _context3.stop();
             }
@@ -59950,18 +60169,71 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       return updateFile;
     }(),
-    deleteFile: function () {
-      var _deleteFile = _asyncToGenerator(
+    uploadToExistingFile: function () {
+      var _uploadToExistingFile = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref4, fileId) {
-        var commit;
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref4, file) {
+        var commit, dispatch, uploadSucces, uploadApiUrl, axiosConfig, data;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                commit = _ref4.commit;
+                commit = _ref4.commit, dispatch = _ref4.dispatch;
+                // Upload products to DB
+                uploadSucces = false;
+                uploadApiUrl = "https://api-beta.kollekt.dk/hooks/import-csv?collection_id=".concat(file.id);
+                axiosConfig = {
+                  headers: {
+                    'X-Kollekt-App-Key': 'mnkAEefWBEL7cY1gEetlW4dM_YYL9Vu4K6dmavW2'
+                  }
+                };
+                data = new FormData(); // Append the files
+
+                file.files.forEach(function (file) {
+                  data.append('files', file);
+                }); // console.log(data)
+
+                _context4.next = 8;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(uploadApiUrl, data, axiosConfig) // .post(proxyUrl + uploadApiUrl, data, axiosConfig)
+                .then(function (response) {
+                  console.log('succes');
+                  console.log(response.data);
+                  uploadSucces = true;
+                })["catch"](function (err) {
+                  console.log('error');
+                  console.log(err);
+                  uploadSucces = false;
+                });
+
+              case 8:
+                return _context4.abrupt("return", uploadSucces);
+
+              case 9:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }));
+
+      function uploadToExistingFile(_x7, _x8) {
+        return _uploadToExistingFile.apply(this, arguments);
+      }
+
+      return uploadToExistingFile;
+    }(),
+    deleteFile: function () {
+      var _deleteFile = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5(_ref5, fileId) {
+        var commit;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                commit = _ref5.commit;
                 commit('deleteFile', fileId);
-                _context4.next = 4;
+                _context5.next = 4;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/file", {
                   data: {
                     file_id: fileId
@@ -59974,13 +60246,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 4:
               case "end":
-                return _context4.stop();
+                return _context5.stop();
             }
           }
-        }, _callee4);
+        }, _callee5);
       }));
 
-      function deleteFile(_x7, _x8) {
+      function deleteFile(_x9, _x10) {
         return _deleteFile.apply(this, arguments);
       }
 

@@ -267,7 +267,10 @@ export default {
         }
     }
     .file-list {
-        p:hover .close {
+        p {
+            position: relative;
+        }
+        p:hover .remove {
             opacity: 1;
         }
         .remove {

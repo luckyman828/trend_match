@@ -186,7 +186,6 @@ export default {
         async uploadFile({ commit, dispatch }, newFile) {
             // Generate uuid for new file
             newFile.id = this._vm.$uuid.v4()
-            console.log(newFile)
 
             // Upload products to DB
             let uploadSucces = false
@@ -237,8 +236,6 @@ export default {
                 ? fileToUpdate.catalog_id
                 : null
 
-            console.log(fileToUpdate)
-
             await axios
                 .put(`/api/file`, {
                     id: fileToUpdate.id,
@@ -258,6 +255,39 @@ export default {
                 .catch(err => {
                     console.log(err.response)
                 })
+        },
+        async uploadToExistingFile({ commit, dispatch }, file) {
+            // Upload products to DB
+            let uploadSucces = false
+
+            const uploadApiUrl = `https://api-beta.kollekt.dk/hooks/import-csv?collection_id=${file.id}`
+            const axiosConfig = {
+                headers: {
+                    'X-Kollekt-App-Key': 'mnkAEefWBEL7cY1gEetlW4dM_YYL9Vu4K6dmavW2',
+                },
+            }
+            let data = new FormData()
+            // Append the files
+            file.files.forEach(file => {
+                data.append('files', file)
+            })
+
+            // console.log(data)
+
+            await axios
+                .post(uploadApiUrl, data, axiosConfig)
+                // .post(proxyUrl + uploadApiUrl, data, axiosConfig)
+                .then(response => {
+                    console.log('succes')
+                    console.log(response.data)
+                    uploadSucces = true
+                })
+                .catch(err => {
+                    console.log('error')
+                    console.log(err)
+                    uploadSucces = false
+                })
+            return uploadSucces
         },
         async deleteFile({ commit }, fileId) {
             commit('deleteFile', fileId)
