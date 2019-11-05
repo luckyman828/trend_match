@@ -11026,10 +11026,10 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Loader */ "./resources/js/components/Loader.vue");
-/* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Dropdown */ "./resources/js/components/Dropdown.vue");
-/* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./RadioButtons */ "./resources/js/components/RadioButtons.vue");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Loader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Loader */ "./resources/js/components/Loader.vue");
+/* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Dropdown */ "./resources/js/components/Dropdown.vue");
+/* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./RadioButtons */ "./resources/js/components/RadioButtons.vue");
 /* harmony import */ var _store_models_Role__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../store/models/Role */ "./resources/js/store/models/Role.js");
 
 
@@ -11166,6 +11166,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -11175,9 +11195,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   name: 'teamsTable',
   props: ['teams', 'loading', 'authUser', 'collection', 'selectedCount', 'users', 'authUser'],
   components: {
-    Loader: _Loader__WEBPACK_IMPORTED_MODULE_1__["default"],
-    Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_2__["default"],
-    RadioButtons: _RadioButtons__WEBPACK_IMPORTED_MODULE_3__["default"]
+    Loader: _Loader__WEBPACK_IMPORTED_MODULE_2__["default"],
+    Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_3__["default"],
+    RadioButtons: _RadioButtons__WEBPACK_IMPORTED_MODULE_4__["default"]
   },
   data: function data() {
     return {
@@ -11186,10 +11206,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       expandedIds: [],
       editUser: {
         permission_level: ''
+      },
+      teamToEdit: {
+        id: '',
+        title: ''
+      },
+      defaultTeamToEdit: {
+        id: '',
+        title: ''
       }
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_4__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']), {
     roles: function roles() {
       var _this = this;
 
@@ -11215,7 +11243,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return dataSorted;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_4__["mapActions"])('entities/teamInvites', ['deleteInvite', 'resend']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_4__["mapActions"])('entities/userTeams', ['removeUserFromTeam']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_4__["mapActions"])('entities/users', ['changeRole']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teamInvites', ['deleteInvite', 'resend']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/userTeams', ['removeUserFromTeam']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['changeRole']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/teams', ['updateTeam', 'deleteTeam']), {
     onSelect: function onSelect(index) {
       this.$emit('onSelect', index);
     },
@@ -11304,6 +11332,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         user_id: user_id,
         team_id: team_id
       });
+    },
+    onDeleteTeam: function onDeleteTeam(team) {
+      window.confirm('Are you sure you want to delete this team?\nIt will be permanently deleted.') ? this.deleteTeam(team.id) : false;
+    },
+    onRenameTeam: function onRenameTeam(team, index) {
+      var _this2 = this;
+
+      this.teamToEdit = JSON.parse(JSON.stringify(team));
+      this.$nextTick(function () {
+        return _this2.$refs.editTitleField[index].focus();
+      });
+      this.$nextTick(function () {
+        return _this2.$refs.editTitleField[index].select();
+      });
+    },
+    resetTeamToEdit: function resetTeamToEdit() {
+      this.teamToEdit = this.defaultTeamToEdit;
+    },
+    onUpdateTeam: function onUpdateTeam(team) {
+      this.updateTeam(team);
+      console.log('updating team'); // this.updateTeam({name: team.title, workspace_id: team.workspace_id, team_id: team.id})
     }
   }),
   updated: function updated() {
@@ -16023,7 +16072,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".teams-table[data-v-0b6bf463] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.teams-table .team-row .view-single[data-v-0b6bf463] {\n  border-color: transparent;\n}\n.teams-table .team-row.expanded[data-v-0b6bf463] {\n  background: #f3f3f3;\n}\n.teams-table .team-row.expanded .view-single[data-v-0b6bf463] {\n  color: #1b1c1d;\n  background: white;\n}\n.flex-table-row[data-v-0b6bf463] {\n  padding: 12px 0;\n}\n.flex-table-row > *.select[data-v-0b6bf463], .flex-table-row > *[data-v-0b6bf463]:nth-child(1) {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(2) {\n  padding-left: 32px;\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(3) {\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(4) {\n  min-width: 112px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(5) {\n  min-width: 132px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(6) {\n  min-width: 80px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(7) {\n  margin-left: auto;\n  min-width: 80px;\n  padding-left: 16px;\n  padding-right: 32px;\n}\n.flex-table-row > *.action[data-v-0b6bf463] > :first-child {\n  margin-right: 20px;\n}\n.flex-table-row td.title[data-v-0b6bf463] {\n  font-size: 13px;\n  color: #1b1c1d;\n}\n.flex-table-row td.title .square[data-v-0b6bf463] {\n  margin-left: -32px;\n  color: #1b1c1d;\n  background: none;\n}\n.flex-table-row td.title .square i[data-v-0b6bf463] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  font-size: 12px;\n}\n.flex-table-row.invited-row .name[data-v-0b6bf463], .flex-table-row.invited-row .email[data-v-0b6bf463], .flex-table-row.invited-row .role[data-v-0b6bf463] {\n  opacity: 0.5;\n}\n.flex-table-row.invited-row.add-member[data-v-0b6bf463] {\n  -webkit-box-pack: center;\n          justify-content: center;\n  cursor: pointer;\n}\n.flex-table-row.invited-row.add-member:hover td[data-v-0b6bf463] {\n  border-bottom: solid 1px #1b1c1d;\n}\n.flex-table-row.invited-row.add-member td[data-v-0b6bf463] {\n  color: #3c3b54;\n  font-weight: 500;\n  font-size: 12px;\n  padding: 0;\n  border-bottom: solid 1px transparent;\n}\n.flex-table-row.invited-row.add-member td i[data-v-0b6bf463] {\n  font-size: 13px;\n}\ni[data-v-0b6bf463] {\n  font-size: 11px;\n}\n.show-more[data-v-0b6bf463] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-0b6bf463] {\n  -webkit-animation: loading-data-v-0b6bf463 2s;\n          animation: loading-data-v-0b6bf463 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-0b6bf463] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox input[data-v-0b6bf463] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-0b6bf463] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-0b6bf463]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463]:after {\n  display: block;\n}\n.view-single[data-v-0b6bf463] {\n  font-size: 12px;\n  font-weight: 700;\n  color: #a8a8a8;\n  cursor: pointer;\n}\n.team-totals[data-v-0b6bf463] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.team-totals span[data-v-0b6bf463] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.user-row[data-v-0b6bf463] {\n  background: #f9f9f9;\n}\n.user-row[data-v-0b6bf463]:not(:last-child) {\n  border-bottom: solid 2px white;\n}\n.user-row td[data-v-0b6bf463] {\n  font-size: 14px;\n}\n.user-row td.index[data-v-0b6bf463] {\n  text-align: right;\n  padding-right: 20px;\n}\n.team-users[data-v-0b6bf463] {\n  overflow: hidden;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n}\n.team-users.collapsed[data-v-0b6bf463] {\n  max-height: 0 !important;\n}\n.team-users.expanded + .team-row-wrapper[data-v-0b6bf463] {\n  box-shadow: 0 1px 0 #dfdfdf inset;\n}\n.team-row td.title .button[data-v-0b6bf463] {\n  min-width: 0;\n}\n.team-row.expanded td.title .button i[data-v-0b6bf463] {\n  -webkit-transform: rotateZ(90deg);\n          transform: rotateZ(90deg);\n}", ""]);
+exports.push([module.i, ".teams-table[data-v-0b6bf463] {\n  margin-top: 52px;\n  padding-top: 0;\n}\n.teams-table .team-row .view-single[data-v-0b6bf463] {\n  border-color: transparent;\n}\n.teams-table .team-row.expanded[data-v-0b6bf463] {\n  background: #f3f3f3;\n}\n.teams-table .team-row.expanded .view-single[data-v-0b6bf463] {\n  color: #1b1c1d;\n  background: white;\n}\n.flex-table-row[data-v-0b6bf463] {\n  padding: 12px 0;\n}\n.flex-table-row > *.select[data-v-0b6bf463], .flex-table-row > *[data-v-0b6bf463]:nth-child(1) {\n  padding-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(2) {\n  padding-left: 32px;\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(3) {\n  min-width: 220px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(4) {\n  min-width: 112px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(5) {\n  min-width: 132px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(6) {\n  min-width: 80px;\n  padding-left: 16px;\n}\n.flex-table-row > *[data-v-0b6bf463]:nth-child(7) {\n  margin-left: auto;\n  min-width: 80px;\n  padding-left: 16px;\n  padding-right: 32px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table-row > *.action > *[data-v-0b6bf463]:not(:last-child) {\n  margin-right: 8px;\n}\n.flex-table-row td.title[data-v-0b6bf463] {\n  font-size: 13px;\n  color: #1b1c1d;\n}\n.flex-table-row td.title .square[data-v-0b6bf463] {\n  margin-left: -32px;\n  color: #1b1c1d;\n  background: none;\n}\n.flex-table-row td.title .square i[data-v-0b6bf463] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  font-size: 12px;\n}\n.flex-table-row.invited-row .name[data-v-0b6bf463], .flex-table-row.invited-row .email[data-v-0b6bf463], .flex-table-row.invited-row .role[data-v-0b6bf463] {\n  opacity: 0.5;\n}\n.flex-table-row.invited-row.add-member[data-v-0b6bf463] {\n  -webkit-box-pack: center;\n          justify-content: center;\n  cursor: pointer;\n}\n.flex-table-row.invited-row.add-member:hover td[data-v-0b6bf463] {\n  border-bottom: solid 1px #1b1c1d;\n}\n.flex-table-row.invited-row.add-member td[data-v-0b6bf463] {\n  color: #3c3b54;\n  font-weight: 500;\n  font-size: 12px;\n  padding: 0;\n  border-bottom: solid 1px transparent;\n}\n.flex-table-row.invited-row.add-member td i[data-v-0b6bf463] {\n  font-size: 13px;\n}\ni[data-v-0b6bf463] {\n  font-size: 11px;\n}\n.show-more[data-v-0b6bf463] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-0b6bf463] {\n  -webkit-animation: loading-data-v-0b6bf463 2s;\n          animation: loading-data-v-0b6bf463 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-0b6bf463 {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-0b6bf463] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n}\n.checkbox input[data-v-0b6bf463] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.checkmark[data-v-0b6bf463] {\n  content: \"\";\n  display: inline-block;\n  vertical-align: text-top;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #dfdfdf;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463] {\n  background: -webkit-gradient(linear, left top, left bottom, from(#3b86ff), to(#3b86ff)) no-repeat;\n  background: linear-gradient(#3b86ff, #3b86ff) no-repeat;\n  background-position: center;\n  background-size: 16px 16px;\n}\n.checkmark[data-v-0b6bf463]::after {\n  content: \"\";\n  position: absolute;\n  display: none;\n}\n.checkbox input:checked ~ .checkmark[data-v-0b6bf463]:after {\n  display: block;\n}\n.view-single[data-v-0b6bf463] {\n  font-size: 12px;\n  font-weight: 700;\n  color: #a8a8a8;\n  cursor: pointer;\n}\n.team-totals[data-v-0b6bf463] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.team-totals span[data-v-0b6bf463] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.user-row[data-v-0b6bf463] {\n  background: #f9f9f9;\n}\n.user-row[data-v-0b6bf463]:not(:last-child) {\n  border-bottom: solid 2px white;\n}\n.user-row td[data-v-0b6bf463] {\n  font-size: 14px;\n}\n.user-row td.index[data-v-0b6bf463] {\n  text-align: right;\n  padding-right: 20px;\n}\n.team-users[data-v-0b6bf463] {\n  overflow: hidden;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n}\n.team-users.collapsed[data-v-0b6bf463] {\n  max-height: 0 !important;\n}\n.team-users.expanded + .team-row-wrapper[data-v-0b6bf463] {\n  box-shadow: 0 1px 0 #dfdfdf inset;\n}\n.team-row td.title .button[data-v-0b6bf463] {\n  min-width: 0;\n}\n.team-row.expanded td.title .button i[data-v-0b6bf463] {\n  -webkit-transform: rotateZ(90deg);\n          transform: rotateZ(90deg);\n}\n.edit-title.hidden[data-v-0b6bf463] {\n  display: none;\n}", ""]);
 
 // exports
 
@@ -34689,34 +34738,130 @@ var render = function() {
                             ])
                           ]),
                           _vm._v(" "),
-                          _c(
-                            "td",
-                            {
-                              staticClass: "title clickable",
-                              on: {
-                                click: function($event) {
-                                  return _vm.expandUsers(team)
-                                }
-                              }
-                            },
-                            [
-                              _c(
-                                "span",
-                                {
-                                  staticClass: "button icon-left",
-                                  class: _vm.expandedIds.includes(team.id)
-                                    ? "light-2"
-                                    : "invisible"
-                                },
-                                [
-                                  _c("i", {
-                                    staticClass: "far fa-chevron-right"
-                                  }),
-                                  _vm._v(_vm._s(team.title))
-                                ]
-                              )
-                            ]
-                          ),
+                          _c("td", { staticClass: "title clickable" }, [
+                            _vm.teamToEdit.id != team.id
+                              ? _c(
+                                  "span",
+                                  {
+                                    staticClass: "button icon-left",
+                                    class: _vm.expandedIds.includes(team.id)
+                                      ? "light-2"
+                                      : "invisible",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.expandUsers(team)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "far fa-chevron-right"
+                                    }),
+                                    _vm._v(_vm._s(team.title))
+                                  ]
+                                )
+                              : _vm._e(),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              {
+                                staticClass:
+                                  "edit-title input-parent controls-right",
+                                class: { hidden: _vm.teamToEdit.id != team.id }
+                              },
+                              [
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.teamToEdit.title,
+                                      expression: "teamToEdit.title"
+                                    }
+                                  ],
+                                  ref: "editTitleField",
+                                  refInFor: true,
+                                  staticClass: "input-wrapper",
+                                  attrs: { type: "text" },
+                                  domProps: { value: _vm.teamToEdit.title },
+                                  on: {
+                                    keyup: [
+                                      function($event) {
+                                        if (
+                                          !$event.type.indexOf("key") &&
+                                          _vm._k(
+                                            $event.keyCode,
+                                            "enter",
+                                            13,
+                                            $event.key,
+                                            "Enter"
+                                          )
+                                        ) {
+                                          return null
+                                        }
+                                        _vm.onUpdateTeam(_vm.teamToEdit)
+                                        _vm.resetTeamToEdit()
+                                      },
+                                      function($event) {
+                                        if (
+                                          !$event.type.indexOf("key") &&
+                                          _vm._k(
+                                            $event.keyCode,
+                                            "esc",
+                                            27,
+                                            $event.key,
+                                            ["Esc", "Escape"]
+                                          )
+                                        ) {
+                                          return null
+                                        }
+                                        return _vm.resetTeamToEdit()
+                                      }
+                                    ],
+                                    input: function($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.$set(
+                                        _vm.teamToEdit,
+                                        "title",
+                                        $event.target.value
+                                      )
+                                    }
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _c("div", { staticClass: "controls" }, [
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass: "button green true-square",
+                                      on: {
+                                        click: function($event) {
+                                          _vm.onUpdateTeam(_vm.teamToEdit)
+                                          _vm.resetTeamToEdit()
+                                        }
+                                      }
+                                    },
+                                    [_c("i", { staticClass: "fas fa-check" })]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass: "button red true-square",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.resetTeamToEdit()
+                                        }
+                                      }
+                                    },
+                                    [_c("i", { staticClass: "fas fa-times" })]
+                                  )
+                                ])
+                              ]
+                            )
+                          ]),
                           _vm._v(" "),
                           _c("td", { staticClass: "assigned" }, [
                             _vm._v(_vm._s(team.expanded))
@@ -34784,46 +34929,152 @@ var render = function() {
                           _vm._v(" "),
                           _vm._m(1, true),
                           _vm._v(" "),
-                          _c("td", { staticClass: "action" }, [
-                            _vm.expandedIds.includes(team.id)
-                              ? _c(
-                                  "span",
-                                  {
-                                    staticClass: "button green active",
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.openInviteToTeam(team)
+                          _c(
+                            "td",
+                            { staticClass: "action" },
+                            [
+                              _vm.expandedIds.includes(team.id)
+                                ? _c(
+                                    "span",
+                                    {
+                                      staticClass: "button green active",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.openInviteToTeam(team)
+                                        }
                                       }
-                                    }
-                                  },
-                                  [_vm._v("Add to team")]
-                                )
-                              : _c(
-                                  "span",
-                                  {
-                                    staticClass: "button ghost",
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.expandUsers(team)
+                                    },
+                                    [_vm._v("Add to team")]
+                                  )
+                                : _c(
+                                    "span",
+                                    {
+                                      staticClass: "button ghost",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.expandUsers(team)
+                                        }
                                       }
+                                    },
+                                    [_vm._v("Edit team")]
+                                  ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticClass:
+                                    "button invisible ghost light-1-hover",
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.expandUsers(team)
                                     }
-                                  },
-                                  [_vm._v("Edit team")]
-                                ),
-                            _vm._v(" "),
-                            _c(
-                              "span",
-                              {
-                                staticClass: "view-single button invisible",
-                                on: {
-                                  click: function($event) {
-                                    return _vm.expandUsers(team)
                                   }
-                                }
-                              },
-                              [_vm._v("View")]
-                            )
-                          ])
+                                },
+                                [_vm._v("View")]
+                              ),
+                              _vm._v(" "),
+                              _c("Dropdown", {
+                                ref: "moreOptions",
+                                refInFor: true,
+                                scopedSlots: _vm._u(
+                                  [
+                                    {
+                                      key: "button",
+                                      fn: function() {
+                                        return [
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass:
+                                                "button invisible ghost light-1-hover true-square",
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.$refs.moreOptions[
+                                                    index
+                                                  ].toggle()
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _c("i", {
+                                                staticClass: "fas fa-ellipsis-v"
+                                              })
+                                            ]
+                                          )
+                                        ]
+                                      },
+                                      proxy: true
+                                    },
+                                    {
+                                      key: "body",
+                                      fn: function() {
+                                        return [
+                                          _c(
+                                            "div",
+                                            { staticClass: "option-buttons" },
+                                            [
+                                              _c(
+                                                "span",
+                                                {
+                                                  staticClass:
+                                                    "option icon-left",
+                                                  on: {
+                                                    click: function($event) {
+                                                      _vm.onRenameTeam(
+                                                        team,
+                                                        index
+                                                      )
+                                                      _vm.$refs.moreOptions[
+                                                        index
+                                                      ].toggle()
+                                                    }
+                                                  }
+                                                },
+                                                [
+                                                  _c("i", {
+                                                    staticClass:
+                                                      "fas fa-pencil primary"
+                                                  }),
+                                                  _vm._v(" Rename")
+                                                ]
+                                              ),
+                                              _vm._v(" "),
+                                              _c(
+                                                "span",
+                                                {
+                                                  staticClass:
+                                                    "option icon-left",
+                                                  on: {
+                                                    click: function($event) {
+                                                      _vm.onDeleteTeam(team)
+                                                      _vm.$refs.moreOptions[
+                                                        index
+                                                      ].toggle()
+                                                    }
+                                                  }
+                                                },
+                                                [
+                                                  _c("i", {
+                                                    staticClass:
+                                                      "fas fa-trash-alt red"
+                                                  }),
+                                                  _vm._v(" Delete")
+                                                ]
+                                              )
+                                            ]
+                                          )
+                                        ]
+                                      },
+                                      proxy: true
+                                    }
+                                  ],
+                                  null,
+                                  true
+                                )
+                              })
+                            ],
+                            1
+                          )
                         ]
                       ),
                       _vm._v(" "),
@@ -35047,7 +35298,7 @@ var render = function() {
                                     "span",
                                     {
                                       staticClass:
-                                        "remove button text-link icon-left red invisible",
+                                        "remove button ghost icon-left red invisible",
                                       on: {
                                         click: function($event) {
                                           return _vm.removeUser(
@@ -35101,7 +35352,7 @@ var render = function() {
                                     "span",
                                     {
                                       staticClass:
-                                        "resend button text-link icon-left dark invisible",
+                                        "resend button ghost icon-left dark invisible",
                                       on: {
                                         click: function($event) {
                                           return _vm.resendInvite(
@@ -35124,7 +35375,7 @@ var render = function() {
                                     "span",
                                     {
                                       staticClass:
-                                        "remove button text-link icon-left red invisible",
+                                        "remove button ghost icon-left red invisible",
                                       on: {
                                         click: function($event) {
                                           return _vm.removeInvite(
@@ -63991,11 +64242,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     teams: function teams(state, getters, rootState, rootGetters) {
       if (!rootGetters['persist/loadingInit']) {
         var adminPermissionLevel = rootGetters['persist/adminPermissionLevel'];
-        var teams = _models_Team__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('users.role')["with"]('invites')["with"]('teamFiles')["with"]('files')["with"]('phases').all(); // const users = User.query()
-        //     .with('teams')
-        //     .with('role')
-        //     .all()
-
+        var teams = _models_Team__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('users.role')["with"]('invites')["with"]('teamFiles')["with"]('files')["with"]('phases').all();
         var authUser = _models_AuthUser__WEBPACK_IMPORTED_MODULE_4__["default"].query()["with"]('teams').first();
         if (authUser.role_id >= adminPermissionLevel) return teams;else {
           // Get the users teams
@@ -64088,38 +64335,34 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _createTeam = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, _ref3) {
-        var commit, name, workspace_id, data, apiUrl, succes, team_id;
+        var commit, name, workspace_id, team, apiUrl, succes;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 commit = _ref2.commit;
                 name = _ref3.name, workspace_id = _ref3.workspace_id;
-                data = {
-                  title: name
+                team = {
+                  title: name,
+                  workspace_id: workspace_id,
+                  id: null
                 };
                 apiUrl = "/api/workspace/".concat(workspace_id, "/team");
-                team_id = null; // Handle the invite in the DB via API
-
-                _context2.next = 7;
-                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(apiUrl, data).then(function (response) {
+                _context2.next = 6;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(apiUrl, team).then(function (response) {
                   console.log(response.data);
-                  team_id = response.data.id;
+                  team.id = response.data.id;
                   succes = true;
                 })["catch"](function (err) {
                   console.log(err);
                   succes = false;
                 });
 
-              case 7:
-                commit('createTeam', {
-                  name: name,
-                  workspace_id: workspace_id,
-                  team_id: team_id
-                });
+              case 6:
+                commit('updateTeam', team);
                 return _context2.abrupt("return", succes);
 
-              case 9:
+              case 8:
               case "end":
                 return _context2.stop();
             }
@@ -64132,6 +64375,86 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return createTeam;
+    }(),
+    updateTeam: function () {
+      var _updateTeam = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref4, team) {
+        var commit, apiUrl, succes;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                commit = _ref4.commit;
+                apiUrl = "/api/team";
+                commit('updateTeam', team);
+                _context3.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put(apiUrl, team).then(function (response) {
+                  console.log(response.data);
+                  succes = true;
+                })["catch"](function (err) {
+                  console.log(err.response);
+                  succes = false;
+                });
+
+              case 5:
+                return _context3.abrupt("return", succes);
+
+              case 6:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+
+      function updateTeam(_x5, _x6) {
+        return _updateTeam.apply(this, arguments);
+      }
+
+      return updateTeam;
+    }(),
+    deleteTeam: function () {
+      var _deleteTeam = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref5, team_id) {
+        var commit, apiUrl, succes;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                commit = _ref5.commit;
+                commit('deleteTeam', team_id);
+                apiUrl = "/api/team";
+                _context4.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"](apiUrl, {
+                  data: {
+                    team_id: team_id
+                  }
+                }).then(function (response) {
+                  console.log(response.data);
+                  succes = true;
+                })["catch"](function (err) {
+                  console.log(err.response);
+                  succes = false;
+                });
+
+              case 5:
+                return _context4.abrupt("return", succes);
+
+              case 6:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }));
+
+      function deleteTeam(_x7, _x8) {
+        return _deleteTeam.apply(this, arguments);
+      }
+
+      return deleteTeam;
     }()
   },
   mutations: {
@@ -64139,18 +64462,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     setLoading: function setLoading(state, bool) {
       state.loading = bool;
     },
-    createTeam: function createTeam(state, _ref4) {
-      var name = _ref4.name,
-          workspace_id = _ref4.workspace_id,
-          team_id = _ref4.team_id;
+    updateTeam: function updateTeam(state, team) {
       _models_Team__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
-        data: {
-          id: team_id,
-          title: name,
-          workspace_id: workspace_id
-        }
+        data: team
       });
-      console.log(name + workspace_id + team_id);
+    },
+    deleteTeam: function deleteTeam(state, team_id) {
+      _models_Team__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](team_id);
     }
   }
 });

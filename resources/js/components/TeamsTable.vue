@@ -40,7 +40,16 @@
                                 <span class="checkmark"></span>
                             </label>
                         </td>
-                        <td class="title clickable" @click="expandUsers(team)"><span :class="(expandedIds.includes(team.id)) ? 'light-2' : 'invisible'" class="button icon-left"><i class="far fa-chevron-right"></i>{{team.title}}</span></td>
+                        <td class="title clickable">
+                            <span v-if="teamToEdit.id != team.id" :class="(expandedIds.includes(team.id)) ? 'light-2' : 'invisible'" class="button icon-left" @click="expandUsers(team)"><i class="far fa-chevron-right"></i>{{team.title}}</span>
+                            <div :class="{hidden: teamToEdit.id != team.id}" class="edit-title input-parent controls-right">
+                                <input type="text" ref="editTitleField" class="input-wrapper" v-model="teamToEdit.title" @keyup.enter="onUpdateTeam(teamToEdit); resetTeamToEdit()" @keyup.esc="resetTeamToEdit()">
+                                <div class="controls">
+                                    <span class="button green true-square" @click="onUpdateTeam(teamToEdit); resetTeamToEdit()"><i class="fas fa-check"></i></span>
+                                    <span class="button red true-square" @click="resetTeamToEdit()"><i class="fas fa-times"></i></span>
+                                </div>
+                            </div>
+                        </td>
                         <td class="assigned">{{team.expanded}}</td>
                         <td class="members clickable" @click="expandUsers(team)"><span>{{team.users.length}}<template v-if="team.invites.length > 0"> ({{team.invites.length}})</template></span></td>
                         <td class="files">
@@ -53,7 +62,18 @@
                         <td class="action">
                             <span v-if="expandedIds.includes(team.id)" class="button green active"  @click="openInviteToTeam(team)">Add to team</span>
                             <span v-else class="button ghost"  @click="expandUsers(team)">Edit team</span>
-                            <span class="view-single button invisible" @click="expandUsers(team)">View</span>
+                            <span class="button invisible ghost light-1-hover" @click="expandUsers(team)">View</span>
+                            <Dropdown ref="moreOptions">
+                                <template v-slot:button>
+                                    <span class="button invisible ghost light-1-hover true-square" @click="$refs.moreOptions[index].toggle()"><i class="fas fa-ellipsis-v"></i></span>
+                                </template>
+                                <template v-slot:body>
+                                    <div class="option-buttons">
+                                        <span class="option icon-left" @click="onRenameTeam(team, index); $refs.moreOptions[index].toggle()"><i class="fas fa-pencil primary"></i> Rename</span>
+                                        <span class="option icon-left" @click="onDeleteTeam(team); $refs.moreOptions[index].toggle()"><i class="fas fa-trash-alt red"></i> Delete</span>
+                                    </div>
+                                </template>
+                            </Dropdown>
                         </td>
                     </div>
 
@@ -92,7 +112,7 @@
                             <td></td>
                             <td class="action">
                                 <span class="resend"></span>
-                                <span class="remove button text-link icon-left red invisible" @click="removeUser(user.id, team.id)"><i class="far fa-user-minus"></i> Remove</span>
+                                <span class="remove button ghost icon-left red invisible" @click="removeUser(user.id, team.id)"><i class="far fa-user-minus"></i> Remove</span>
                             </td>
                         </div>
 
@@ -104,8 +124,8 @@
                             <td class="role"></td>
                             <td></td>
                             <td class="action">
-                                <span class="resend button text-link icon-left dark invisible" @click="resendInvite($event, invited.email, team)"><i class="far fa-paper-plane"></i> Resend invite</span>
-                                <span class="remove button text-link icon-left red invisible" @click="removeInvite(invited.email, team.id)"><i class="far fa-user-minus"></i> Remove</span>
+                                <span class="resend button ghost icon-left dark invisible" @click="resendInvite($event, invited.email, team)"><i class="far fa-paper-plane"></i> Resend invite</span>
+                                <span class="remove button ghost icon-left red invisible" @click="removeInvite(invited.email, team.id)"><i class="far fa-user-minus"></i> Remove</span>
                             </td>
                         </div>
 
@@ -124,10 +144,10 @@
 </template>
 
 <script>
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Loader from './Loader'
 import Dropdown from './Dropdown'
 import RadioButtons from './RadioButtons'
-import { mapActions, mapGetters } from 'vuex'
 import Role from '../store/models/Role'
 
 export default {
@@ -152,6 +172,14 @@ export default {
         expandedIds: [],
         editUser: {
             permission_level: '',
+        },
+        teamToEdit: {
+            id: '',
+            title: ''
+        },
+        defaultTeamToEdit: {
+            id: '',
+            title: ''
         }
     }},
     computed: {
@@ -191,6 +219,7 @@ export default {
         ...mapActions('entities/teamInvites', ['deleteInvite', 'resend']),
         ...mapActions('entities/userTeams', ['removeUserFromTeam']),
         ...mapActions('entities/users', ['changeRole']),
+        ...mapActions('entities/teams', ['updateTeam', 'deleteTeam']),
         onSelect(index) {
             this.$emit('onSelect', index)
         },
@@ -245,6 +274,24 @@ export default {
         removeUser(user_id, team_id) {
             if ( confirm("Are you sure you want to remove this user from this team?") )
                 this.removeUserFromTeam({user_id: user_id, team_id: team_id})
+        },
+        onDeleteTeam(team) {
+            (window.confirm(
+                'Are you sure you want to delete this team?\nIt will be permanently deleted.'))
+            ? this.deleteTeam(team.id) : false
+        },
+        onRenameTeam(team, index) {
+            this.teamToEdit = JSON.parse(JSON.stringify(team))
+            this.$nextTick(() => this.$refs.editTitleField[index].focus())
+            this.$nextTick(() => this.$refs.editTitleField[index].select())
+        },
+        resetTeamToEdit() {
+            this.teamToEdit = this.defaultTeamToEdit
+        },
+        onUpdateTeam(team) {
+            this.updateTeam(team)
+            console.log('updating team')
+            // this.updateTeam({name: team.title, workspace_id: team.workspace_id, team_id: team.id})
         }
     },
     updated() {
@@ -303,10 +350,12 @@ export default {
                 min-width: 80px;
                 padding-left: 16px;
                 padding-right: 32px;
+                display: flex;
+                justify-content: flex-end;
             }
             &.action {
-                > :first-child {
-                    margin-right: 20px;
+                > *:not(:last-child) {
+                    margin-right: 8px;
                 }
             }
         }
@@ -481,5 +530,10 @@ export default {
     }
     .dropdown {
         // position: fixed;
+    }
+    .edit-title {
+        &.hidden {
+            display: none;
+        }
     }
 </style>

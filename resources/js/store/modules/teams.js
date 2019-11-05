@@ -24,10 +24,6 @@ export default {
                     .with('files')
                     .with('phases')
                     .all()
-                // const users = User.query()
-                //     .with('teams')
-                //     .with('role')
-                //     .all()
                 const authUser = AuthUser.query()
                     .with('teams')
                     .first()
@@ -71,19 +67,18 @@ export default {
             }
         },
         async createTeam({ commit }, { name, workspace_id }) {
-            const data = {
+            const team = {
                 title: name,
+                workspace_id: workspace_id,
+                id: null,
             }
             const apiUrl = `/api/workspace/${workspace_id}/team`
-
             let succes
-            let team_id = null
-            // Handle the invite in the DB via API
             await axios
-                .post(apiUrl, data)
+                .post(apiUrl, team)
                 .then(response => {
                     console.log(response.data)
-                    team_id = response.data.id
+                    team.id = response.data.id
                     succes = true
                 })
                 .catch(err => {
@@ -91,8 +86,44 @@ export default {
                     succes = false
                 })
 
-            commit('createTeam', { name: name, workspace_id: workspace_id, team_id: team_id })
+            commit('updateTeam', team)
 
+            return succes
+        },
+        async updateTeam({ commit }, team) {
+            const apiUrl = `/api/team`
+            let succes
+            commit('updateTeam', team)
+            await axios
+                .put(apiUrl, team)
+                .then(response => {
+                    console.log(response.data)
+                    succes = true
+                })
+                .catch(err => {
+                    console.log(err.response)
+                    succes = false
+                })
+            return succes
+        },
+        async deleteTeam({ commit }, team_id) {
+            commit('deleteTeam', team_id)
+            const apiUrl = `/api/team`
+            let succes
+            await axios
+                .delete(apiUrl, {
+                    data: {
+                        team_id: team_id,
+                    },
+                })
+                .then(response => {
+                    console.log(response.data)
+                    succes = true
+                })
+                .catch(err => {
+                    console.log(err.response)
+                    succes = false
+                })
             return succes
         },
     },
@@ -102,15 +133,13 @@ export default {
         setLoading(state, bool) {
             state.loading = bool
         },
-        createTeam(state, { name, workspace_id, team_id }) {
+        updateTeam(state, team) {
             Team.insert({
-                data: {
-                    id: team_id,
-                    title: name,
-                    workspace_id: workspace_id,
-                },
+                data: team,
             })
-            console.log(name + workspace_id + team_id)
+        },
+        deleteTeam(state, team_id) {
+            Team.delete(team_id)
         },
     },
 }

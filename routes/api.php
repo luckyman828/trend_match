@@ -48,6 +48,10 @@ Route::middleware('auth:api')->group( function(){
     Route::get('workspace/{workspace_id}/team-invites', 'TeamController@invites');
     // Create team
     Route::post('workspace/{workspace_id}/team', 'TeamController@store');
+    // Update team
+    Route::put('team', 'TeamController@update');
+    // Delete team
+    Route::delete('team', 'TeamController@destroyTeam');
 
     // xxx FILES xxx
     Route::get('file/{file_id}/products', 'FileController@products');
