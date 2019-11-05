@@ -43,7 +43,7 @@
                         <td class="title clickable">
                             <span v-if="teamToEdit.id != team.id" :class="(expandedIds.includes(team.id)) ? 'light-2' : 'invisible'" class="button icon-left" @click="expandUsers(team)"><i class="far fa-chevron-right"></i>{{team.title}}</span>
                             <div :class="{hidden: teamToEdit.id != team.id}" class="edit-title input-parent controls-right">
-                                <input type="text" ref="editTitleField" class="input-wrapper" v-model="teamToEdit.title" @keyup.enter="onUpdateTeam(teamToEdit); resetTeamToEdit()" @keyup.esc="resetTeamToEdit()">
+                                <input type="text" :ref="'editTitleField-'+team.id" class="input-wrapper" v-model="teamToEdit.title" @keyup.enter="onUpdateTeam(teamToEdit); resetTeamToEdit()" @keyup.esc="resetTeamToEdit()">
                                 <div class="controls">
                                     <span class="button green true-square" @click="onUpdateTeam(teamToEdit); resetTeamToEdit()"><i class="fas fa-check"></i></span>
                                     <span class="button red true-square" @click="resetTeamToEdit()"><i class="fas fa-times"></i></span>
@@ -63,14 +63,14 @@
                             <span v-if="expandedIds.includes(team.id)" class="button green active"  @click="openInviteToTeam(team)">Add to team</span>
                             <span v-else class="button ghost"  @click="expandUsers(team)">Edit team</span>
                             <span class="button invisible ghost light-1-hover" @click="expandUsers(team)">View</span>
-                            <Dropdown ref="moreOptions">
+                            <Dropdown :ref="'moreOptions-'+team.id">
                                 <template v-slot:button>
-                                    <span class="button invisible ghost light-1-hover true-square" @click="$refs.moreOptions[index].toggle()"><i class="fas fa-ellipsis-v"></i></span>
+                                    <span class="button invisible ghost light-1-hover true-square" @click="$refs['moreOptions-'+team.id][0].toggle()"><i class="fas fa-ellipsis-v"></i></span>
                                 </template>
                                 <template v-slot:body>
                                     <div class="option-buttons">
-                                        <span class="option icon-left" @click="onRenameTeam(team, index); $refs.moreOptions[index].toggle()"><i class="fas fa-pencil primary"></i> Rename</span>
-                                        <span class="option icon-left" @click="onDeleteTeam(team); $refs.moreOptions[index].toggle()"><i class="fas fa-trash-alt red"></i> Delete</span>
+                                        <span class="option icon-left" @click="onRenameTeam(team, index); $refs['moreOptions-'+team.id][0].toggle()"><i class="fas fa-pencil primary"></i> Rename</span>
+                                        <span class="option icon-left" @click="onDeleteTeam(team); $refs['moreOptions-'+team.id][0].toggle()"><i class="fas fa-trash-alt red"></i> Delete</span>
                                     </div>
                                 </template>
                             </Dropdown>
@@ -282,8 +282,12 @@ export default {
         },
         onRenameTeam(team, index) {
             this.teamToEdit = JSON.parse(JSON.stringify(team))
-            this.$nextTick(() => this.$refs.editTitleField[index].focus())
-            this.$nextTick(() => this.$refs.editTitleField[index].select())
+            // this.$nextTick(() => this.$refs.editTitleField[index].focus())
+            // this.$nextTick(() => this.$refs.editTitleField[index].select())
+            // this.fileToEdit = JSON.parse(JSON.stringify(file))
+            const el = this.$refs['editTitleField-'+team.id][0]
+            this.$nextTick(() => el.focus())
+            this.$nextTick(() => el.select())
         },
         resetTeamToEdit() {
             this.teamToEdit = this.defaultTeamToEdit

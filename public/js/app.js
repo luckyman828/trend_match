@@ -7737,6 +7737,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 
@@ -7807,14 +7808,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       window.confirm('Are you sure you want to delete this file?\nAll comments, requests and actions will be permanently deleted.') ? this.deleteFile(fileId) : false;
     },
     onRenameFile: function onRenameFile(file, index) {
-      var _this = this;
-
       this.fileToEdit = JSON.parse(JSON.stringify(file));
+      var el = this.$refs['editTitleField-' + file.id][0];
       this.$nextTick(function () {
-        return _this.$refs.editTitleField[index].focus();
+        return el.focus();
       });
       this.$nextTick(function () {
-        return _this.$refs.editTitleField[index].select();
+        return el.select();
       });
     },
     resetFileToEdit: function resetFileToEdit() {
@@ -11337,14 +11337,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       window.confirm('Are you sure you want to delete this team?\nIt will be permanently deleted.') ? this.deleteTeam(team.id) : false;
     },
     onRenameTeam: function onRenameTeam(team, index) {
-      var _this2 = this;
+      this.teamToEdit = JSON.parse(JSON.stringify(team)); // this.$nextTick(() => this.$refs.editTitleField[index].focus())
+      // this.$nextTick(() => this.$refs.editTitleField[index].select())
+      // this.fileToEdit = JSON.parse(JSON.stringify(file))
 
-      this.teamToEdit = JSON.parse(JSON.stringify(team));
+      var el = this.$refs['editTitleField-' + team.id][0];
       this.$nextTick(function () {
-        return _this2.$refs.editTitleField[index].focus();
+        return el.focus();
       });
       this.$nextTick(function () {
-        return _this2.$refs.editTitleField[index].select();
+        return el.select();
       });
     },
     resetTeamToEdit: function resetTeamToEdit() {
@@ -28394,7 +28396,7 @@ var render = function() {
                             expression: "fileToEdit.title"
                           }
                         ],
-                        ref: "editTitleField",
+                        ref: "editTitleField-" + catalogue.id,
                         refInFor: true,
                         staticClass: "input-wrapper",
                         attrs: { type: "text" },
@@ -28541,7 +28543,7 @@ var render = function() {
                     ),
                     _vm._v(" "),
                     _c("Dropdown", {
-                      ref: "moreOptions",
+                      ref: "moreOptions-" + catalogue.id,
                       refInFor: true,
                       scopedSlots: _vm._u(
                         [
@@ -28556,9 +28558,9 @@ var render = function() {
                                       "button invisible ghost light-1-hover true-square",
                                     on: {
                                       click: function($event) {
-                                        return _vm.$refs.moreOptions[
-                                          index
-                                        ].toggle()
+                                        _vm.$refs[
+                                          "moreOptions-" + catalogue.id
+                                        ][0].toggle()
                                       }
                                     }
                                   },
@@ -28584,7 +28586,9 @@ var render = function() {
                                       on: {
                                         click: function($event) {
                                           _vm.onRenameFile(catalogue, index)
-                                          _vm.$refs.moreOptions[index].toggle()
+                                          _vm.$refs[
+                                            "moreOptions-" + catalogue.id
+                                          ][0].toggle()
                                         }
                                       }
                                     },
@@ -28603,7 +28607,9 @@ var render = function() {
                                       on: {
                                         click: function($event) {
                                           _vm.onDeleteFile(catalogue.id)
-                                          _vm.$refs.moreOptions[index].toggle()
+                                          _vm.$refs[
+                                            "moreOptions-" + catalogue.id
+                                          ][0].toggle()
                                         }
                                       }
                                     },
@@ -34779,7 +34785,7 @@ var render = function() {
                                       expression: "teamToEdit.title"
                                     }
                                   ],
-                                  ref: "editTitleField",
+                                  ref: "editTitleField-" + team.id,
                                   refInFor: true,
                                   staticClass: "input-wrapper",
                                   attrs: { type: "text" },
@@ -34974,7 +34980,7 @@ var render = function() {
                               ),
                               _vm._v(" "),
                               _c("Dropdown", {
-                                ref: "moreOptions",
+                                ref: "moreOptions-" + team.id,
                                 refInFor: true,
                                 scopedSlots: _vm._u(
                                   [
@@ -34989,9 +34995,9 @@ var render = function() {
                                                 "button invisible ghost light-1-hover true-square",
                                               on: {
                                                 click: function($event) {
-                                                  return _vm.$refs.moreOptions[
-                                                    index
-                                                  ].toggle()
+                                                  _vm.$refs[
+                                                    "moreOptions-" + team.id
+                                                  ][0].toggle()
                                                 }
                                               }
                                             },
@@ -35024,9 +35030,9 @@ var render = function() {
                                                         team,
                                                         index
                                                       )
-                                                      _vm.$refs.moreOptions[
-                                                        index
-                                                      ].toggle()
+                                                      _vm.$refs[
+                                                        "moreOptions-" + team.id
+                                                      ][0].toggle()
                                                     }
                                                   }
                                                 },
@@ -35047,9 +35053,9 @@ var render = function() {
                                                   on: {
                                                     click: function($event) {
                                                       _vm.onDeleteTeam(team)
-                                                      _vm.$refs.moreOptions[
-                                                        index
-                                                      ].toggle()
+                                                      _vm.$refs[
+                                                        "moreOptions-" + team.id
+                                                      ][0].toggle()
                                                     }
                                                   }
                                                 },

@@ -51,7 +51,7 @@
                         
                         <span v-if="fileToEdit.id != catalogue.id" @click="viewSingle(catalogue.id, catalogue.title)">{{catalogue.title}}</span>
                         <div :class="{hidden: fileToEdit.id != catalogue.id}" class="edit-title input-parent controls-right">
-                            <input type="text" ref="editTitleField" class="input-wrapper" v-model="fileToEdit.title" @keyup.enter="updateFile(fileToEdit); resetFileToEdit()" @keyup.esc="resetFileToEdit()">
+                            <input type="text" :ref="'editTitleField-'+catalogue.id" class="input-wrapper" v-model="fileToEdit.title" @keyup.enter="updateFile(fileToEdit); resetFileToEdit()" @keyup.esc="resetFileToEdit()">
                             <div class="controls">
                                 <span class="button green true-square" @click="updateFile(fileToEdit); resetFileToEdit()"><i class="fas fa-check"></i></span>
                                 <span class="button red true-square" @click="resetFileToEdit()"><i class="fas fa-times"></i></span>
@@ -75,14 +75,15 @@
                 <div class="flex-group">
                     <td class="action">
                         <span class="button invisible ghost light-1-hover " @click="viewSingle(catalogue.id, catalogue.title)">View</span>
-                        <Dropdown ref="moreOptions">
+                        <Dropdown :ref="'moreOptions-'+catalogue.id">
                             <template v-slot:button>
-                                <span class="button invisible ghost light-1-hover true-square" @click="$refs.moreOptions[index].toggle()"><i class="fas fa-ellipsis-v"></i></span>
+                                <!-- <span class="button invisible ghost light-1-hover true-square" @click="testCon(catalogue.id)">{{key}}</span> -->
+                                <span class="button invisible ghost light-1-hover true-square" @click="$refs['moreOptions-'+catalogue.id][0].toggle()"><i class="fas fa-ellipsis-v"></i></span>
                             </template>
                             <template v-slot:body>
                                 <div class="option-buttons">
-                                    <span class="option icon-left" @click="onRenameFile(catalogue, index); $refs.moreOptions[index].toggle()"><i class="fas fa-pencil primary"></i> Rename</span>
-                                    <span class="option icon-left" @click="onDeleteFile(catalogue.id); $refs.moreOptions[index].toggle()"><i class="fas fa-trash-alt red"></i> Delete</span>
+                                    <span class="option icon-left" @click="onRenameFile(catalogue, index); $refs['moreOptions-'+catalogue.id][0].toggle()"><i class="fas fa-pencil primary"></i> Rename</span>
+                                    <span class="option icon-left" @click="onDeleteFile(catalogue.id); $refs['moreOptions-'+catalogue.id][0].toggle()"><i class="fas fa-trash-alt red"></i> Delete</span>
                                 </div>
                             </template>
                         </Dropdown>
@@ -178,12 +179,13 @@ export default {
         },
         onRenameFile(file, index) {
             this.fileToEdit = JSON.parse(JSON.stringify(file))
-            this.$nextTick(() => this.$refs.editTitleField[index].focus())
-            this.$nextTick(() => this.$refs.editTitleField[index].select())
+            const el = this.$refs['editTitleField-'+file.id][0]
+            this.$nextTick(() => el.focus())
+            this.$nextTick(() => el.select())
         },
         resetFileToEdit() {
             this.fileToEdit = this.defaultFileToEdit
-        }
+        },
     }
 }
 </script>
