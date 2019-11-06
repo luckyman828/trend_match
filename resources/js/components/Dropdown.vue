@@ -7,7 +7,7 @@
 
         <div class="overlay invisible" :class="{active: !collapsed}" @click="toggle"></div>
 
-        <div class="dropdown" :class="{collapsed: collapsed}" ref="dropdown">
+        <div class="dropdown" :class="[{collapsed: collapsed}, {above: showAbove}]" ref="dropdown">
             <div class="inner">
                 <div class="header">
                     <slot name="header" :toggle="toggle"></slot>
@@ -29,6 +29,7 @@ export default {
     name: 'dropdown',
     data: function () { return {
         collapsed: true,
+        showAbove: false,
     }},
     methods: {
         toggle() {
@@ -73,15 +74,36 @@ export default {
             const parentLeft = parentPos.x
             const parentHeight = parent.getBoundingClientRect().height
             const parentWidth = parent.getBoundingClientRect().width
-            const elHeight = el.getBoundingClientRect().height
+            const elHeight = el.scrollHeight
             const elWidth = el.getBoundingClientRect().width
             const elRect = el.getBoundingClientRect()
             const parentRect = parent.getBoundingClientRect()
 
+            // Show above or below depending on space available
+             const windownHeight = window.innerHeight
+            const distToBottom = parentTop + parentHeight + elHeight
+            const bottomSpace = windownHeight - distToBottom
+            const bottomOffset = 100;
+            const showAbove = bottomSpace < 50
+            this.showAbove = showAbove
+
+            // const bottomDist = windownHeight - parentTop
+            const bottomDist = windownHeight - parentRect.top
+
             // Align the dropdown after the parent
             if (parent != null) {
+
+                // Set top distance
+                if (showAbove) {
+                    el.style.bottom = `${bottomDist}px`
+                    el.style.top = 'auto'
+                } else {
+                    el.style.top = `${parentRect.bottom + offset}px`
+                    el.style.bottom = 'auto'
+                }
+
+
                 // Top + Right align
-                el.style.top = `${parentRect.bottom + offset}px`
                 if (wrapper.classList.contains('right'))
                     el.style.left = `${parentLeft + parentWidth - elWidth + offset}px`
                     // el.style.cssText = `top: ${parentRect.bottom + offset}px; left: ${parentLeft + parentWidth - elWidth + offset}px ;max-height: ${el.scrollHeight}px;`
@@ -93,6 +115,22 @@ export default {
                 
                 // Top + Center align (DEFAULT)
                 else el.style.left = `${parentRect.left + ( parentWidth / 2 ) - ( elWidth / 2 ) }px`
+
+                // Set the max height of the tooltip
+                // if (showAbove) {
+                //     console.log('show above!')
+                //     console.log(el)
+                //     console.log(el.classList)
+                //     el.classList.add('above')
+                //     this.$nextTick(() => {
+                //         console.log(el.classList)
+                //         el.classList.add('above')
+                //         console.log(el.classList)
+                //     })
+                // } else {
+                //     console.log('remove above?')
+                //     el.classList.remove('above')
+                // }
             }
         },
         handleScroll() {

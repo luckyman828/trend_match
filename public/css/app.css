@@ -9847,6 +9847,21 @@ textarea {
   font-weight: 900;
 }
 
+.dropdown.above::before,
+.dropdown.above .arrow {
+  border-bottom: solid 1px #dfdfdf;
+  border-right: solid 1px #dfdfdf;
+  border-left: 0;
+  border-top: 0;
+  top: auto;
+  bottom: 2px;
+}
+
+.dropdown.above .inner {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
 .checkbox .radiomark,
 .checkbox .checkmark,
 .radiobox .radiomark,

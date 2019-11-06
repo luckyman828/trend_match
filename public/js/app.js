@@ -7482,7 +7482,8 @@ __webpack_require__.r(__webpack_exports__);
   name: 'dropdown',
   data: function data() {
     return {
-      collapsed: true
+      collapsed: true,
+      showAbove: false
     };
   },
   methods: {
@@ -7527,19 +7528,50 @@ __webpack_require__.r(__webpack_exports__);
       var parentLeft = parentPos.x;
       var parentHeight = parent.getBoundingClientRect().height;
       var parentWidth = parent.getBoundingClientRect().width;
-      var elHeight = el.getBoundingClientRect().height;
+      var elHeight = el.scrollHeight;
       var elWidth = el.getBoundingClientRect().width;
       var elRect = el.getBoundingClientRect();
-      var parentRect = parent.getBoundingClientRect(); // Align the dropdown after the parent
+      var parentRect = parent.getBoundingClientRect(); // Show above or below depending on space available
+
+      var windownHeight = window.innerHeight;
+      var distToBottom = parentTop + parentHeight + elHeight;
+      var bottomSpace = windownHeight - distToBottom;
+      var bottomOffset = 100;
+      var showAbove = bottomSpace < 50;
+      this.showAbove = showAbove; // const bottomDist = windownHeight - parentTop
+
+      var bottomDist = windownHeight - parentRect.top; // Align the dropdown after the parent
 
       if (parent != null) {
-        // Top + Right align
-        el.style.top = "".concat(parentRect.bottom + offset, "px");
+        // Set top distance
+        if (showAbove) {
+          el.style.bottom = "".concat(bottomDist, "px");
+          el.style.top = 'auto';
+        } else {
+          el.style.top = "".concat(parentRect.bottom + offset, "px");
+          el.style.bottom = 'auto';
+        } // Top + Right align
+
+
         if (wrapper.classList.contains('right')) el.style.left = "".concat(parentLeft + parentWidth - elWidth + offset, "px"); // el.style.cssText = `top: ${parentRect.bottom + offset}px; left: ${parentLeft + parentWidth - elWidth + offset}px ;max-height: ${el.scrollHeight}px;`
         // Top + Left align
         else if (wrapper.classList.contains('left')) el.style.left = "".concat(parentLeft - offset, "px"); // el.style.cssText = `top: ${parentRect.bottom + offset}px; left: ${parentLeft - offset}px ;max-height: ${el.scrollHeight}px;`
           // Top + Center align (DEFAULT)
-          else el.style.left = "".concat(parentRect.left + parentWidth / 2 - elWidth / 2, "px");
+          else el.style.left = "".concat(parentRect.left + parentWidth / 2 - elWidth / 2, "px"); // Set the max height of the tooltip
+        // if (showAbove) {
+        //     console.log('show above!')
+        //     console.log(el)
+        //     console.log(el.classList)
+        //     el.classList.add('above')
+        //     this.$nextTick(() => {
+        //         console.log(el.classList)
+        //         el.classList.add('above')
+        //         console.log(el.classList)
+        //     })
+        // } else {
+        //     console.log('remove above?')
+        //     el.classList.remove('above')
+        // }
       }
     },
     handleScroll: function handleScroll() {
@@ -28095,7 +28127,7 @@ var render = function() {
         {
           ref: "dropdown",
           staticClass: "dropdown",
-          class: { collapsed: _vm.collapsed }
+          class: [{ collapsed: _vm.collapsed }, { above: _vm.showAbove }]
         },
         [
           _c("div", { staticClass: "inner" }, [

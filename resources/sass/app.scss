@@ -774,6 +774,24 @@ textarea {
         }
     }
 }
+.dropdown {
+    &.above {
+        &::before,
+        .arrow {
+            // Arrow
+            border-bottom: solid 1px $light2;
+            border-right: solid 1px $light2;
+            border-left: 0;
+            border-top: 0;
+            top: auto;
+            bottom: 2px;
+        }
+        .inner {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+    }
+}
 
 // CUSTOM RADIO AND CHECKBOX BUTTONS
 .checkbox,
