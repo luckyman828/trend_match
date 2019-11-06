@@ -7537,7 +7537,7 @@ __webpack_require__.r(__webpack_exports__);
       var distToBottom = parentTop + parentHeight + elHeight;
       var bottomSpace = windownHeight - distToBottom;
       var bottomOffset = 100;
-      var showAbove = bottomSpace < 50;
+      var showAbove = bottomSpace < 10;
       this.showAbove = showAbove; // const bottomDist = windownHeight - parentTop
 
       var bottomDist = windownHeight - parentRect.top; // Align the dropdown after the parent
@@ -7545,7 +7545,7 @@ __webpack_require__.r(__webpack_exports__);
       if (parent != null) {
         // Set top distance
         if (showAbove) {
-          el.style.bottom = "".concat(bottomDist, "px");
+          el.style.bottom = "".concat(bottomDist + offset, "px");
           el.style.top = 'auto';
         } else {
           el.style.top = "".concat(parentRect.bottom + offset, "px");
@@ -10617,7 +10617,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'radioButtons',
-  props: ['options', 'optionNameKey', 'optionValueKey', 'currentOptionId', 'search'],
+  props: ['options', 'optionNameKey', 'optionValueKey', 'currentOptionId', 'search', 'submitOnChange'],
   data: function data() {
     return {
       selection: null,
@@ -10690,6 +10690,11 @@ __webpack_require__.r(__webpack_exports__);
     },
     change: function change() {
       this.$emit('change', this.selection);
+
+      if (this.submitOnChange) {
+        this.$emit('input', this.selection);
+        this.$emit('submit', this.selection);
+      }
     },
     click: function click() {
       this.$emit('onClick', this.selection);
@@ -11294,6 +11299,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -11322,10 +11346,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       defaultTeamToEdit: {
         id: '',
         title: ''
-      }
+      },
+      editTitle: false,
+      editCurrency: false
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel', 'availableCurrencies']), {
     roles: function roles() {
       var _this = this;
 
@@ -11445,19 +11471,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       window.confirm('Are you sure you want to delete this team?\nIt will be permanently deleted.') ? this.deleteTeam(team.id) : false;
     },
     onRenameTeam: function onRenameTeam(team, index) {
-      this.teamToEdit = JSON.parse(JSON.stringify(team)); // this.$nextTick(() => this.$refs.editTitleField[index].focus())
-      // this.$nextTick(() => this.$refs.editTitleField[index].select())
-      // this.fileToEdit = JSON.parse(JSON.stringify(file))
+      var _this2 = this;
 
-      var el = this.$refs['editTitleField-' + team.id][0];
+      this.editTitle = true;
+      this.teamToEdit = JSON.parse(JSON.stringify(team));
       this.$nextTick(function () {
-        return el.focus();
-      });
-      this.$nextTick(function () {
-        return el.select();
+        var el = _this2.$refs['editTitleField-' + team.id][0];
+        el.focus();
+        el.select();
       });
     },
+    onChangeTeamCurrency: function onChangeTeamCurrency(team) {
+      this.editCurrency = true;
+      this.teamToEdit = JSON.parse(JSON.stringify(team));
+    },
     resetTeamToEdit: function resetTeamToEdit() {
+      this.editTitle = false;
+      this.editCurrency = false;
       this.teamToEdit = this.defaultTeamToEdit;
     },
     onUpdateTeam: function onUpdateTeam(team) {
@@ -11977,29 +12007,17 @@ __webpack_require__.r(__webpack_exports__);
     // Set the height of the component
     setHeight: function setHeight() {
       var offsetLeft = 4;
-      var el = this.$refs.tooltip; // const parent = el.closest('.has-tooltip') // Use a set parent as parent
-      // const parent = this.$refs.parent // Use the slots wrapper as parent
-
+      var el = this.$refs.tooltip;
       var parent = this.$slots["default"][0].elm; // Use the slot as parent
 
-      var wrapper = this.$refs.wrapper; // if (parent != null) {
-      // const parentPos = this.getPosition(parent)
-      // const parentTop = parentPos.y
-      // const parentLeft = parentPos.x
-
+      var wrapper = this.$refs.wrapper;
       var parentTop = parent.getBoundingClientRect().top;
       var parentLeft = parent.getBoundingClientRect().left;
       var parentHeight = parent.getBoundingClientRect().height;
       var parentWidth = parent.getBoundingClientRect().width;
-      var parentRect = parent.getBoundingClientRect(); // console.log(parent.getBoundingClientRect().top)
-      // }
-
+      var parentRect = parent.getBoundingClientRect();
       var elHeight = el.getBoundingClientRect().height;
-      var elWidth = el.getBoundingClientRect().width; // Check if the dropdown should be shown above or below the hovered item
-      // console.log('Bottom dist: ' + parentTop + parentHeight + elHeight)
-      // console.log('Window height: ' + window.innerHeight)
-      // console.log('El height: ' + elHeight)
-
+      var elWidth = el.getBoundingClientRect().width;
       var windownHeight = window.innerHeight;
       var distToBottom = parentTop + parentHeight + elHeight;
       var bottomSpace = windownHeight - distToBottom;
@@ -34905,20 +34923,20 @@ var render = function() {
             _c(
               "th",
               {
-                staticClass: "clickable status",
-                class: { active: this.sortBy == "status" },
+                staticClass: "clickable currency",
+                class: { active: this.sortBy == "currency" },
                 on: {
                   click: function($event) {
-                    return _vm.onSortBy("status", false)
+                    return _vm.onSortBy("currency", false)
                   }
                 }
               },
               [
-                _vm._v("\n                Status "),
+                _vm._v("\n                Currency "),
                 _c("i", {
                   staticClass: "fas",
                   class: [
-                    this.sortBy == "status" && !_vm.sortAsc
+                    this.sortBy == "currency" && !_vm.sortAsc
                       ? "fa-long-arrow-alt-up"
                       : "fa-long-arrow-alt-down"
                   ]
@@ -34986,8 +35004,115 @@ var render = function() {
                           ]),
                           _vm._v(" "),
                           _c("td", { staticClass: "title clickable" }, [
-                            _vm.teamToEdit.id != team.id
+                            _vm.editTitle && _vm.teamToEdit.id == team.id
                               ? _c(
+                                  "div",
+                                  {
+                                    staticClass:
+                                      "edit-title input-parent controls-right"
+                                  },
+                                  [
+                                    _c("input", {
+                                      directives: [
+                                        {
+                                          name: "model",
+                                          rawName: "v-model",
+                                          value: _vm.teamToEdit.title,
+                                          expression: "teamToEdit.title"
+                                        }
+                                      ],
+                                      ref: "editTitleField-" + team.id,
+                                      refInFor: true,
+                                      staticClass: "input-wrapper",
+                                      attrs: { type: "text" },
+                                      domProps: { value: _vm.teamToEdit.title },
+                                      on: {
+                                        keyup: [
+                                          function($event) {
+                                            if (
+                                              !$event.type.indexOf("key") &&
+                                              _vm._k(
+                                                $event.keyCode,
+                                                "enter",
+                                                13,
+                                                $event.key,
+                                                "Enter"
+                                              )
+                                            ) {
+                                              return null
+                                            }
+                                            _vm.onUpdateTeam(_vm.teamToEdit)
+                                            _vm.resetTeamToEdit()
+                                          },
+                                          function($event) {
+                                            if (
+                                              !$event.type.indexOf("key") &&
+                                              _vm._k(
+                                                $event.keyCode,
+                                                "esc",
+                                                27,
+                                                $event.key,
+                                                ["Esc", "Escape"]
+                                              )
+                                            ) {
+                                              return null
+                                            }
+                                            return _vm.resetTeamToEdit()
+                                          }
+                                        ],
+                                        input: function($event) {
+                                          if ($event.target.composing) {
+                                            return
+                                          }
+                                          _vm.$set(
+                                            _vm.teamToEdit,
+                                            "title",
+                                            $event.target.value
+                                          )
+                                        }
+                                      }
+                                    }),
+                                    _vm._v(" "),
+                                    _c("div", { staticClass: "controls" }, [
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "button green true-square",
+                                          on: {
+                                            click: function($event) {
+                                              _vm.onUpdateTeam(_vm.teamToEdit)
+                                              _vm.resetTeamToEdit()
+                                            }
+                                          }
+                                        },
+                                        [
+                                          _c("i", {
+                                            staticClass: "fas fa-check"
+                                          })
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass: "button red true-square",
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.resetTeamToEdit()
+                                            }
+                                          }
+                                        },
+                                        [
+                                          _c("i", {
+                                            staticClass: "fas fa-times"
+                                          })
+                                        ]
+                                      )
+                                    ])
+                                  ]
+                                )
+                              : _c(
                                   "span",
                                   {
                                     staticClass: "button icon-left",
@@ -35007,107 +35132,6 @@ var render = function() {
                                     _vm._v(_vm._s(team.title))
                                   ]
                                 )
-                              : _vm._e(),
-                            _vm._v(" "),
-                            _c(
-                              "div",
-                              {
-                                staticClass:
-                                  "edit-title input-parent controls-right",
-                                class: { hidden: _vm.teamToEdit.id != team.id }
-                              },
-                              [
-                                _c("input", {
-                                  directives: [
-                                    {
-                                      name: "model",
-                                      rawName: "v-model",
-                                      value: _vm.teamToEdit.title,
-                                      expression: "teamToEdit.title"
-                                    }
-                                  ],
-                                  ref: "editTitleField-" + team.id,
-                                  refInFor: true,
-                                  staticClass: "input-wrapper",
-                                  attrs: { type: "text" },
-                                  domProps: { value: _vm.teamToEdit.title },
-                                  on: {
-                                    keyup: [
-                                      function($event) {
-                                        if (
-                                          !$event.type.indexOf("key") &&
-                                          _vm._k(
-                                            $event.keyCode,
-                                            "enter",
-                                            13,
-                                            $event.key,
-                                            "Enter"
-                                          )
-                                        ) {
-                                          return null
-                                        }
-                                        _vm.onUpdateTeam(_vm.teamToEdit)
-                                        _vm.resetTeamToEdit()
-                                      },
-                                      function($event) {
-                                        if (
-                                          !$event.type.indexOf("key") &&
-                                          _vm._k(
-                                            $event.keyCode,
-                                            "esc",
-                                            27,
-                                            $event.key,
-                                            ["Esc", "Escape"]
-                                          )
-                                        ) {
-                                          return null
-                                        }
-                                        return _vm.resetTeamToEdit()
-                                      }
-                                    ],
-                                    input: function($event) {
-                                      if ($event.target.composing) {
-                                        return
-                                      }
-                                      _vm.$set(
-                                        _vm.teamToEdit,
-                                        "title",
-                                        $event.target.value
-                                      )
-                                    }
-                                  }
-                                }),
-                                _vm._v(" "),
-                                _c("div", { staticClass: "controls" }, [
-                                  _c(
-                                    "span",
-                                    {
-                                      staticClass: "button green true-square",
-                                      on: {
-                                        click: function($event) {
-                                          _vm.onUpdateTeam(_vm.teamToEdit)
-                                          _vm.resetTeamToEdit()
-                                        }
-                                      }
-                                    },
-                                    [_c("i", { staticClass: "fas fa-check" })]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "span",
-                                    {
-                                      staticClass: "button red true-square",
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.resetTeamToEdit()
-                                        }
-                                      }
-                                    },
-                                    [_c("i", { staticClass: "fas fa-times" })]
-                                  )
-                                ])
-                              ]
-                            )
                           ]),
                           _vm._v(" "),
                           _c("td", { staticClass: "assigned" }, [
@@ -35174,7 +35198,142 @@ var render = function() {
                             1
                           ),
                           _vm._v(" "),
-                          _vm._m(1, true),
+                          _c("td", { staticClass: "currency" }, [
+                            _vm.editCurrency && _vm.teamToEdit.id == team.id
+                              ? _c(
+                                  "div",
+                                  {
+                                    staticClass:
+                                      "edit-title input-parent controls-right"
+                                  },
+                                  [
+                                    _c("Dropdown", {
+                                      ref: "editCurrencyDropdown",
+                                      refInFor: true,
+                                      staticClass: "dark",
+                                      scopedSlots: _vm._u(
+                                        [
+                                          {
+                                            key: "button",
+                                            fn: function(slotProps) {
+                                              return [
+                                                _c(
+                                                  "span",
+                                                  {
+                                                    staticClass:
+                                                      "open-dropdown dropdown-parent input-wrapper",
+                                                    class: {
+                                                      active: !slotProps.collapsed
+                                                    },
+                                                    on: {
+                                                      click: function($event) {
+                                                        slotProps.toggle()
+                                                        _vm.$refs.currencySelect[0].focusSearch()
+                                                      }
+                                                    }
+                                                  },
+                                                  [
+                                                    _vm._v(
+                                                      "\n                                        " +
+                                                        _vm._s(
+                                                          _vm.teamToEdit
+                                                            .currency
+                                                        ) +
+                                                        " "
+                                                    ),
+                                                    _c("i", {
+                                                      staticClass:
+                                                        "fas fa-chevron-down"
+                                                    })
+                                                  ]
+                                                )
+                                              ]
+                                            }
+                                          },
+                                          {
+                                            key: "body",
+                                            fn: function() {
+                                              return [
+                                                _c("RadioButtons", {
+                                                  ref: "currencySelect",
+                                                  refInFor: true,
+                                                  attrs: {
+                                                    options:
+                                                      _vm.availableCurrencies,
+                                                    search: true,
+                                                    submitOnChange: true
+                                                  },
+                                                  on: {
+                                                    change: function($event) {
+                                                      return _vm.$refs.editCurrencyDropdown[0].toggle()
+                                                    }
+                                                  },
+                                                  model: {
+                                                    value:
+                                                      _vm.teamToEdit.currency,
+                                                    callback: function($$v) {
+                                                      _vm.$set(
+                                                        _vm.teamToEdit,
+                                                        "currency",
+                                                        $$v
+                                                      )
+                                                    },
+                                                    expression:
+                                                      "teamToEdit.currency"
+                                                  }
+                                                })
+                                              ]
+                                            },
+                                            proxy: true
+                                          }
+                                        ],
+                                        null,
+                                        true
+                                      )
+                                    }),
+                                    _vm._v(" "),
+                                    _c("div", { staticClass: "controls" }, [
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "button green true-square",
+                                          on: {
+                                            click: function($event) {
+                                              _vm.onUpdateTeam(_vm.teamToEdit)
+                                              _vm.resetTeamToEdit()
+                                            }
+                                          }
+                                        },
+                                        [
+                                          _c("i", {
+                                            staticClass: "fas fa-check"
+                                          })
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass: "button red true-square",
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.resetTeamToEdit()
+                                            }
+                                          }
+                                        },
+                                        [
+                                          _c("i", {
+                                            staticClass: "fas fa-times"
+                                          })
+                                        ]
+                                      )
+                                    ])
+                                  ],
+                                  1
+                                )
+                              : _c("span", [_vm._v(_vm._s(team.currency))])
+                          ]),
                           _vm._v(" "),
                           _c(
                             "td",
@@ -35283,6 +35442,31 @@ var render = function() {
                                                       "fas fa-pencil primary"
                                                   }),
                                                   _vm._v(" Rename")
+                                                ]
+                                              ),
+                                              _vm._v(" "),
+                                              _c(
+                                                "span",
+                                                {
+                                                  staticClass:
+                                                    "option icon-left",
+                                                  on: {
+                                                    click: function($event) {
+                                                      _vm.onChangeTeamCurrency(
+                                                        team
+                                                      )
+                                                      _vm.$refs[
+                                                        "moreOptions-" + team.id
+                                                      ][0].toggle()
+                                                    }
+                                                  }
+                                                },
+                                                [
+                                                  _c("i", {
+                                                    staticClass:
+                                                      "fas fa-pencil primary"
+                                                  }),
+                                                  _vm._v(" Change currency")
                                                 ]
                                               ),
                                               _vm._v(" "),
@@ -35588,7 +35772,7 @@ var render = function() {
                                   _vm._v(_vm._s(invited.email))
                                 ]),
                                 _vm._v(" "),
-                                _vm._m(2, true),
+                                _vm._m(1, true),
                                 _vm._v(" "),
                                 _c("td", { staticClass: "role" }),
                                 _vm._v(" "),
@@ -35655,7 +35839,7 @@ var render = function() {
                                 }
                               }
                             },
-                            [_vm._m(3, true)]
+                            [_vm._m(2, true)]
                           )
                         ],
                         2
@@ -35683,12 +35867,6 @@ var staticRenderFns = [
       _vm._v("Select "),
       _c("i", { staticClass: "fas fa-chevron-down" })
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", { staticClass: "status" }, [_c("span", [_vm._v("N/A")])])
   },
   function() {
     var _vm = this
@@ -60825,11 +61003,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     userPermissionLevel: 1,
     loadingInit: true,
     viewAdminPermissionLevel: 3,
-    adminPermissionLevel: 4
+    adminPermissionLevel: 4,
+    availableCurrencies: ['AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF', 'BMD', 'BND', 'BOB', 'BRL', 'BSD', 'BTC', 'BTN', 'BWP', 'BYN', 'BZD', 'CAD', 'CDF', 'CHF', 'CLF', 'CLP', 'CNH', 'CNY', 'COP', 'CRC', 'CUC', 'CUP', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EGP', 'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP', 'GEL', 'GGP', 'GHS', 'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HRK', 'HTG', 'HUF', 'IDR', 'ILS', 'IMP', 'INR', 'IQD', 'IRR', 'ISK', 'JEP', 'JMD', 'JOD', 'JPY', 'KES', 'KGS', 'KHR', 'KMF', 'KPW', 'KRW', 'KWD', 'KYD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MNT', 'MOP', 'MRO', 'MRU', 'MUR', 'MVR', 'MWK', 'MXN', 'MYR', 'MZN', 'NAD', 'NGN', 'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PGK', 'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR', 'SBD', 'SCR', 'SDG', 'SEK', 'SGD', 'SHP', 'SLL', 'SOS', 'SRD', 'SSP', 'STD', 'STN', 'SVC', 'SYP', 'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP', 'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'UYU', 'UZS', 'VEF', 'VES', 'VND', 'VUV', 'WST', 'XAF', 'XAG', 'XAU', 'XCD', 'XDR', 'XOF', 'XPD', 'XPF', 'XPT', 'YER', 'ZAR', 'ZMW', 'ZWL']
   },
   getters: {
     currentTeamId: function currentTeamId(state) {
       return state.currentTeamId;
+    },
+    availableCurrencies: function availableCurrencies(state) {
+      return state.availableCurrencies;
     },
     teamFilterId: function teamFilterId(state) {
       return state.teamFilterId;
@@ -60960,6 +61142,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return axios__WEBPACK_IMPORTED_MODULE_7___default.a.put("/api/cache/workspace", {
                   workspace_id: workspace_id,
                   user_id: user_id
+                }, {
+                  headers: {}
                 }).then(function (response) {
                   console.log('cached workspace id');
                 })["catch"](function (err) {

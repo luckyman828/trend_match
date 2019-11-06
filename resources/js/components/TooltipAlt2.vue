@@ -84,32 +84,19 @@ export default {
         setHeight() {
             const offsetLeft = 4
             const el = this.$refs.tooltip
-            // const parent = el.closest('.has-tooltip') // Use a set parent as parent
-            // const parent = this.$refs.parent // Use the slots wrapper as parent
             const parent = this.$slots.default[0].elm // Use the slot as parent
             const wrapper = this.$refs.wrapper
 
-            // if (parent != null) {
-            // const parentPos = this.getPosition(parent)
-            // const parentTop = parentPos.y
-            // const parentLeft = parentPos.x
             const parentTop = parent.getBoundingClientRect().top
             const parentLeft = parent.getBoundingClientRect().left
             const parentHeight = parent.getBoundingClientRect().height
             const parentWidth = parent.getBoundingClientRect().width
             const parentRect = parent.getBoundingClientRect()
-            // console.log(parent.getBoundingClientRect().top)
-            // }
+
             const elHeight = el.getBoundingClientRect().height
             const elWidth = el.getBoundingClientRect().width
 
-            // Check if the dropdown should be shown above or below the hovered item
-            // console.log('Bottom dist: ' + parentTop + parentHeight + elHeight)
-            // console.log('Window height: ' + window.innerHeight)
-            // console.log('El height: ' + elHeight)
             const windownHeight = window.innerHeight
-
-
             const distToBottom = parentTop + parentHeight + elHeight
             const bottomSpace = windownHeight - distToBottom
             const bottomOffset = 100;

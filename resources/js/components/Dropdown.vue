@@ -80,11 +80,11 @@ export default {
             const parentRect = parent.getBoundingClientRect()
 
             // Show above or below depending on space available
-             const windownHeight = window.innerHeight
+            const windownHeight = window.innerHeight
             const distToBottom = parentTop + parentHeight + elHeight
             const bottomSpace = windownHeight - distToBottom
             const bottomOffset = 100;
-            const showAbove = bottomSpace < 50
+            const showAbove = bottomSpace < 10
             this.showAbove = showAbove
 
             // const bottomDist = windownHeight - parentTop
@@ -95,7 +95,7 @@ export default {
 
                 // Set top distance
                 if (showAbove) {
-                    el.style.bottom = `${bottomDist}px`
+                    el.style.bottom = `${bottomDist + offset}px`
                     el.style.top = 'auto'
                 } else {
                     el.style.top = `${parentRect.bottom + offset}px`

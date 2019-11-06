@@ -19,8 +19,8 @@
                 <th :class="{active: this.sortBy == 'files'}" class="clickable files" @click="onSortBy('files', false)">
                     files <i class="fas" :class="[(this.sortBy == 'files' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'status'}" class="clickable status" @click="onSortBy('status', false)">
-                    Status <i class="fas" :class="[(this.sortBy == 'status' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                <th :class="{active: this.sortBy == 'currency'}" class="clickable currency" @click="onSortBy('currency', false)">
+                    Currency <i class="fas" :class="[(this.sortBy == 'currency' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
                 <th class="action">Action</th>
                 <th></th>
@@ -41,14 +41,14 @@
                             </label>
                         </td>
                         <td class="title clickable">
-                            <span v-if="teamToEdit.id != team.id" :class="(expandedIds.includes(team.id)) ? 'light-2' : 'invisible'" class="button icon-left" @click="expandUsers(team)"><i class="far fa-chevron-right"></i>{{team.title}}</span>
-                            <div :class="{hidden: teamToEdit.id != team.id}" class="edit-title input-parent controls-right">
+                            <div v-if="editTitle && teamToEdit.id == team.id" class="edit-title input-parent controls-right">
                                 <input type="text" :ref="'editTitleField-'+team.id" class="input-wrapper" v-model="teamToEdit.title" @keyup.enter="onUpdateTeam(teamToEdit); resetTeamToEdit()" @keyup.esc="resetTeamToEdit()">
                                 <div class="controls">
                                     <span class="button green true-square" @click="onUpdateTeam(teamToEdit); resetTeamToEdit()"><i class="fas fa-check"></i></span>
                                     <span class="button red true-square" @click="resetTeamToEdit()"><i class="fas fa-times"></i></span>
                                 </div>
                             </div>
+                            <span v-else :class="(expandedIds.includes(team.id)) ? 'light-2' : 'invisible'" class="button icon-left" @click="expandUsers(team)"><i class="far fa-chevron-right"></i>{{team.title}}</span>
                         </td>
                         <td class="assigned">{{team.expanded}}</td>
                         <td class="members clickable" @click="expandUsers(team)"><span>{{team.users.length}}<template v-if="team.invites.length > 0"> ({{team.invites.length}})</template></span></td>
@@ -58,7 +58,25 @@
                             </TooltipAlt2>
                             <span v-else>{{team.files.length}}</span>
                         </td>
-                        <td class="status"><span>N/A</span></td>
+                        <td class="currency">
+                            <div v-if="editCurrency && teamToEdit.id == team.id" class="edit-title input-parent controls-right">
+                                <Dropdown class="dark" ref="editCurrencyDropdown">
+                                    <template v-slot:button="slotProps">
+                                        <span @click="slotProps.toggle(); $refs.currencySelect[0].focusSearch()" class="open-dropdown dropdown-parent input-wrapper" :class="{active: !slotProps.collapsed}">
+                                            {{teamToEdit.currency}} <i class="fas fa-chevron-down"></i>
+                                        </span>
+                                    </template>
+                                    <template v-slot:body>
+                                        <RadioButtons :options="availableCurrencies" ref="currencySelect" @change="$refs.editCurrencyDropdown[0].toggle()" :search="true" :submitOnChange="true" v-model="teamToEdit.currency"/>
+                                    </template>
+                                </Dropdown>
+                                <div class="controls">
+                                    <span class="button green true-square" @click="onUpdateTeam(teamToEdit); resetTeamToEdit()"><i class="fas fa-check"></i></span>
+                                    <span class="button red true-square" @click="resetTeamToEdit()"><i class="fas fa-times"></i></span>
+                                </div>
+                            </div>
+                            <span v-else>{{team.currency}}</span>
+                        </td>
                         <td class="action">
                             <span v-if="expandedIds.includes(team.id)" class="button green active"  @click="openInviteToTeam(team)">Add to team</span>
                             <span v-else class="button ghost"  @click="expandUsers(team)">Edit team</span>
@@ -70,6 +88,7 @@
                                 <template v-slot:body>
                                     <div class="option-buttons">
                                         <span class="option icon-left" @click="onRenameTeam(team, index); $refs['moreOptions-'+team.id][0].toggle()"><i class="fas fa-pencil primary"></i> Rename</span>
+                                        <span class="option icon-left" @click="onChangeTeamCurrency(team); $refs['moreOptions-'+team.id][0].toggle()"><i class="fas fa-pencil primary"></i> Change currency</span>
                                         <span class="option icon-left" @click="onDeleteTeam(team); $refs['moreOptions-'+team.id][0].toggle()"><i class="fas fa-trash-alt red"></i> Delete</span>
                                     </div>
                                 </template>
@@ -180,10 +199,12 @@ export default {
         defaultTeamToEdit: {
             id: '',
             title: ''
-        }
+        },
+        editTitle: false,
+        editCurrency: false,
     }},
     computed: {
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel']),
+        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel', 'availableCurrencies']),
         roles () {
             return Role.all().filter(role => role.id <= this.userPermissionLevel)
         },
@@ -281,15 +302,21 @@ export default {
             ? this.deleteTeam(team.id) : false
         },
         onRenameTeam(team, index) {
+            this.editTitle = true
             this.teamToEdit = JSON.parse(JSON.stringify(team))
-            // this.$nextTick(() => this.$refs.editTitleField[index].focus())
-            // this.$nextTick(() => this.$refs.editTitleField[index].select())
-            // this.fileToEdit = JSON.parse(JSON.stringify(file))
-            const el = this.$refs['editTitleField-'+team.id][0]
-            this.$nextTick(() => el.focus())
-            this.$nextTick(() => el.select())
+            this.$nextTick(() => {
+                const el = this.$refs['editTitleField-'+team.id][0]
+                el.focus()
+                el.select()
+            })
+        },
+        onChangeTeamCurrency(team) {
+            this.editCurrency = true
+            this.teamToEdit = JSON.parse(JSON.stringify(team))
         },
         resetTeamToEdit() {
+            this.editTitle = false
+            this.editCurrency = false
             this.teamToEdit = this.defaultTeamToEdit
         },
         onUpdateTeam(team) {

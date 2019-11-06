@@ -10236,10 +10236,10 @@ form .form-element .label {
 
 .input-parent.controls-right .controls {
   position: absolute;
-  top: 4px;
+  top: 50%;
   right: -4px;
-  -webkit-transform: translateX(100%);
-          transform: translateX(100%);
+  -webkit-transform: translateX(100%) translateY(-50%);
+          transform: translateX(100%) translateY(-50%);
 }
 
 .input-parent.controls-left .input-wrapper {

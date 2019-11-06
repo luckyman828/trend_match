@@ -30,7 +30,8 @@ export default {
         'optionNameKey',
         'optionValueKey',
         'currentOptionId',
-        'search'
+        'search',
+        'submitOnChange'
     ],
     data: function () { return {
         selection: null,
@@ -89,6 +90,10 @@ export default {
         },
         change() {
             this.$emit('change', this.selection)
+            if (this.submitOnChange) {
+                this.$emit('input', this.selection)
+                this.$emit('submit', this.selection)
+            }
         },
         click() {
             this.$emit('onClick', this.selection)

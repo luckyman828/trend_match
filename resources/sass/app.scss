@@ -1072,9 +1072,9 @@ form {
         }
         .controls {
             position: absolute;
-            top: 4px;
+            top: 50%;
             right: -4px;
-            transform: translateX(100%);
+            transform: translateX(100%) translateY(-50%);
         }
     }
     &.controls-left {
