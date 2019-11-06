@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import File from '../Catalogue'
 import ScreenLoader from './ScreenLoader'
 import Collection from '../../../store/models/Collection'
@@ -24,6 +24,7 @@ export default {
     }},
     computed: {
         ...mapGetters('entities/products', ['products']),
+        ...mapGetters('entities/collections', ['filesUpdated']),
         ...mapGetters('entities/tasks', ['userTasks']),
         ...mapGetters('persist', ['currentWorkspaceId', 'currentFileId', 'authUser']),
         loading () {
@@ -37,6 +38,7 @@ export default {
     },
     methods: {
         ...mapActions('entities/collections', ['fetchCollections']),
+        ...mapMutations('entities/collections', ['setFilesUpdated']),
         ...mapActions('entities/products', ['fetchProducts', 'setCurrentProductId']),
         ...mapActions('entities/actions', ['fetchActions']),
         ...mapActions('entities/users', ['fetchUsers']),
@@ -44,10 +46,6 @@ export default {
         ...mapActions('entities/actions', ['updateAction']),
         ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
         ...mapActions('persist', ['setCurrentFileId', 'setCurrentTaskId']),
-        // ...mapActions('entities/teamProducts', ['fetchTeamProducts']),
-        // ...mapActions('entities/phaseProducts', ['fetchPhaseProducts']),
-        // ...mapActions('entities/taskActions', ['fetchTaskActions']),
-        // ...mapActions('entities/requests', ['fetchRequests']),
         async initRequiresWorkspace() {
             if (Collection.all().length <= 0)
                 await this.fetchCollections(this.currentWorkspaceId)
@@ -59,13 +57,9 @@ export default {
                 this.fetchProducts(this.currentFileId),
                 this.fetchActions(this.currentFileId),
                 this.fetchComments(this.currentFileId),
-                this.fetchCommentVotes(this.currentFileId)
-                // this.fetchTeamProducts(this.currentFileId),
-                // this.fetchPhaseProducts(this.currentFileId)
-                // this.fetchTaskActions(this.currentFileId),
-                // this.fetchRequests(this.currentFileId)
+                this.fetchCommentVotes(this.currentFileId),
+                this.setFilesUpdated(false)
             )
-            // this.setCurrentProductId(Product.query().first().id)
             this.loadingFile = false
         },
         async initRequiresTasks() {
@@ -108,7 +102,7 @@ export default {
     created() {
         // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
         const routeFileId = this.$route.params.fileId
-        if (this.currentFileId != routeFileId) {
+        if (this.currentFileId != routeFileId || this.filesUpdated) {
             this.setCurrentFileId(routeFileId)
             this.initRequiresFileId()
         } else {

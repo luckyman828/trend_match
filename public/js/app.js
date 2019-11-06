@@ -13211,7 +13211,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       loadingTasks: true
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['products']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/tasks', ['userTasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentWorkspaceId', 'currentFileId', 'authUser']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['products']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['filesUpdated']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/tasks', ['userTasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentWorkspaceId', 'currentFileId', 'authUser']), {
     loading: function loading() {
       return this.products != null && !this.loadingFile && !this.loadingTasks ? false : true;
     }
@@ -13221,11 +13221,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (newVal.length > oldVal) this.initRequiresTasks();
     }
   },
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts', 'setCurrentProductId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentFileId', 'setCurrentTaskId']), {
-    // ...mapActions('entities/teamProducts', ['fetchTeamProducts']),
-    // ...mapActions('entities/phaseProducts', ['fetchPhaseProducts']),
-    // ...mapActions('entities/taskActions', ['fetchTaskActions']),
-    // ...mapActions('entities/requests', ['fetchRequests']),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapMutations"])('entities/collections', ['setFilesUpdated']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['fetchProducts', 'setCurrentProductId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['fetchActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setCurrentFileId', 'setCurrentTaskId']), {
     initRequiresWorkspace: function () {
       var _initRequiresWorkspace = _asyncToGenerator(
       /*#__PURE__*/
@@ -13274,14 +13270,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.next = 2;
-                return this.fetchProducts(this.currentFileId), this.fetchActions(this.currentFileId), this.fetchComments(this.currentFileId), this.fetchCommentVotes(this.currentFileId) // this.fetchTeamProducts(this.currentFileId),
-                // this.fetchPhaseProducts(this.currentFileId)
-                // this.fetchTaskActions(this.currentFileId),
-                // this.fetchRequests(this.currentFileId)
-                ;
+                return this.fetchProducts(this.currentFileId), this.fetchActions(this.currentFileId), this.fetchComments(this.currentFileId), this.fetchCommentVotes(this.currentFileId), this.setFilesUpdated(false);
 
               case 2:
-                // this.setCurrentProductId(Product.query().first().id)
                 this.loadingFile = false;
 
               case 3:
@@ -13373,7 +13364,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     // Save a reference to the currently loaded file in the store, so we know if we need to refetch the products
     var routeFileId = this.$route.params.fileId;
 
-    if (this.currentFileId != routeFileId) {
+    if (this.currentFileId != routeFileId || this.filesUpdated) {
       this.setCurrentFileId(routeFileId);
       this.initRequiresFileId();
     } else {
@@ -59833,11 +59824,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 /* harmony default export */ __webpack_exports__["default"] = ({
   namespaced: true,
   state: {
-    loading: true
+    loading: true,
+    filesUpdated: false
   },
   getters: {
     loadingCollections: function loadingCollections(state) {
-      return state.loading; //comment
+      return state.loading;
+    },
+    filesUpdated: function filesUpdated(state) {
+      return state.filesUpdated;
     },
     files: function files(state, getters, rootState, rootGetters) {
       if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
@@ -59933,45 +59928,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }
       }
     },
-    // userTasks(state, getters, rootState, rootGetters) {
-    //     if (!rootGetters['persist/loadingInit'] && rootGetters['persist/currentTeam'] != null) {
-    //         const tasks = rootGetters['persist/currentTeam'].taskTeams
-    //         const userPermissionLevel = rootGetters['persist/userPermissionLevel']
-    //         let tasksToReturn = []
-    //         tasks.forEach(task => {
-    //             if (task.role_id == userPermissionLevel) tasksToReturn.push(task.task)
-    //         })
-    //         return tasksToReturn
-    //     }
-    // },
-    // currentTask(state, getters, rootState, rootGetters) {
-    //     if (!rootGetters['persist/loadingInit']) {
-    //         let taskToReturn
-    //         if (getters.userTasks.length > 0 && getters.currentFile != null) {
-    //             if (getters.userTasks != null) {
-    //                 if (getters.userTasks[0] != null) {
-    //                     getters.userTasks.forEach(task => {
-    //                         if (task.parents != null) {
-    //                             if (task.parents.length > 0) {
-    //                                 let parentsCompleted = true
-    //                                 task.parents.forEach(parent => {
-    //                                     if (parent.completed.length < 1) {
-    //                                         parentsCompleted = false
-    //                                     }
-    //                                 })
-    //                                 if (parentsCompleted && task.phase_id == getters.currentFile.phase)
-    //                                     taskToReturn = task
-    //                             }
-    //                         } else if (task.phase_id == getters.currentFile.phase) {
-    //                             taskToReturn = task
-    //                         }
-    //                     })
-    //                 }
-    //             }
-    //             return taskToReturn
-    //         }
-    //     }
-    // },
     actionScope: function actionScope(state, getters, rootState, rootGetters) {
       if (getters.currentTask != null) {
         var type = getters.currentTask.type;
@@ -60148,6 +60104,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   _models_Collection__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
                     data: response.data
                   });
+                  commit('setFilesUpdated', true);
                 })["catch"](function (err) {
                   console.log(err.response);
                 });
@@ -60196,6 +60153,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   console.log('succes');
                   console.log(response.data);
                   uploadSucces = true;
+                  commit('setFilesUpdated', true);
                 })["catch"](function (err) {
                   console.log('error');
                   console.log(err);
@@ -60260,6 +60218,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     //Set the loading status of the app
     setLoading: function setLoading(state, bool) {
       state.loading = bool;
+    },
+    setFilesUpdated: function setFilesUpdated(state, bool) {
+      state.filesUpdated = bool;
     },
     deleteFile: function deleteFile(state, fileId) {
       _models_Collection__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](fileId);

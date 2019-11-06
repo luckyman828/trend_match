@@ -8,12 +8,15 @@ export default {
 
     state: {
         loading: true,
+        filesUpdated: false,
     },
 
     getters: {
         loadingCollections: state => {
             return state.loading
-            //comment
+        },
+        filesUpdated: state => {
+            return state.filesUpdated
         },
         files: (state, getters, rootState, rootGetters) => {
             if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
@@ -109,45 +112,6 @@ export default {
                 }
             }
         },
-        // userTasks(state, getters, rootState, rootGetters) {
-        //     if (!rootGetters['persist/loadingInit'] && rootGetters['persist/currentTeam'] != null) {
-        //         const tasks = rootGetters['persist/currentTeam'].taskTeams
-        //         const userPermissionLevel = rootGetters['persist/userPermissionLevel']
-        //         let tasksToReturn = []
-        //         tasks.forEach(task => {
-        //             if (task.role_id == userPermissionLevel) tasksToReturn.push(task.task)
-        //         })
-        //         return tasksToReturn
-        //     }
-        // },
-        // currentTask(state, getters, rootState, rootGetters) {
-        //     if (!rootGetters['persist/loadingInit']) {
-        //         let taskToReturn
-        //         if (getters.userTasks.length > 0 && getters.currentFile != null) {
-        //             if (getters.userTasks != null) {
-        //                 if (getters.userTasks[0] != null) {
-        //                     getters.userTasks.forEach(task => {
-        //                         if (task.parents != null) {
-        //                             if (task.parents.length > 0) {
-        //                                 let parentsCompleted = true
-        //                                 task.parents.forEach(parent => {
-        //                                     if (parent.completed.length < 1) {
-        //                                         parentsCompleted = false
-        //                                     }
-        //                                 })
-        //                                 if (parentsCompleted && task.phase_id == getters.currentFile.phase)
-        //                                     taskToReturn = task
-        //                             }
-        //                         } else if (task.phase_id == getters.currentFile.phase) {
-        //                             taskToReturn = task
-        //                         }
-        //                     })
-        //                 }
-        //             }
-        //             return taskToReturn
-        //         }
-        //     }
-        // },
         actionScope(state, getters, rootState, rootGetters) {
             if (getters.currentTask != null) {
                 const type = getters.currentTask.type
@@ -251,6 +215,7 @@ export default {
                     console.log(response.data)
                     // Commit to store
                     Collection.insert({ data: response.data })
+                    commit('setFilesUpdated', true)
                 })
                 .catch(err => {
                     console.log(err.response)
@@ -281,6 +246,7 @@ export default {
                     console.log('succes')
                     console.log(response.data)
                     uploadSucces = true
+                    commit('setFilesUpdated', true)
                 })
                 .catch(err => {
                     console.log('error')
@@ -311,6 +277,9 @@ export default {
         //Set the loading status of the app
         setLoading(state, bool) {
             state.loading = bool
+        },
+        setFilesUpdated(state, bool) {
+            state.filesUpdated = bool
         },
         deleteFile(state, fileId) {
             Collection.delete(fileId)
