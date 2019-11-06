@@ -9407,10 +9407,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   watch: {
     product: function product(newVal, oldVal) {
-      if (newVal.id != oldVal.id) {
-        // New product
-        this.currentImgIndex = 0;
-      }
+      if (oldVal && oldVal.id != newVal.id) this.currentImgIndex = 0;
     }
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope', 'currentTaskPermissions', 'currentTask']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/products', ['currentProduct', 'nextProductId', 'prevProductId']), {

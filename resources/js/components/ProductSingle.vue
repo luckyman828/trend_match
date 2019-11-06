@@ -235,10 +235,8 @@ export default {
     }},
     watch: {
         product(newVal, oldVal) {
-            if (newVal.id != oldVal.id) {
-                // New product
+            if (oldVal && oldVal.id != newVal.id)
                 this.currentImgIndex = 0
-            }
         },
     },
     computed: {
