@@ -13,7 +13,7 @@
                             <span>{{product.updated_at}}</span>
                         </div>
                         <span class="button ghost icon-left" :class="{disabled: !hasChanges}" @click="onUpdateProduct"><i class="far fa-save"></i>Save</span>
-                        <span class="button ghost icon-left"><i class="far fa-file-edit"></i>Save</span>
+                        <span class="button ghost icon-left"><i class="far fa-file-edit"></i>Edit</span>
                         <span class="circle primary clickable" @click="onPrevSingle()" :class="[{ disabled: prevProductId == null}]"><i class="fas fa-chevron-left"></i></span>
                         <span class="circle primary clickable" @click="onNextSingle()" :class="[{ disabled: nextProductId == null}]"><i class="fas fa-chevron-right"></i></span>
                     </div>
@@ -54,17 +54,27 @@
                                 <option v-for="(currency, index) in product.prices" :key="index" :value="index">{{currency.currency}}</option>
                             </select>
                             <label for="wholesale">WHS ({{currentCurrency.currency}})</label>
-                            <input type="number" id="wholesale" v-model.number="currentCurrency.wholesale_price" class="input-wrapper">
+                            <EditInputWrapper :id="'recommended-retail'" :type="'number'" 
+                            :value="currentCurrency.wholesale_price" 
+                            :oldValue="originalProduct.prices[currencyIndex].wholesale_price" 
+                            v-model.number="currentCurrency.wholesale_price" @submit="savedMarkup = currentCurrency.markup"
+                            @change="calculateMarkup($event, 'wholesale_price')" @cancel="resetMarkup" @revert="revertMarkup"/>
                             <label for="recommended-retail">RPP ({{currentCurrency.currency}})</label>
-                            <input type="number" id="recommended-retail" v-model.number="currentCurrency.recommended_retail_price" class="input-wrapper">
+                            <EditInputWrapper :id="'recommended-retail'" :type="'number'" 
+                            :value="currentCurrency.recommended_retail_price" 
+                            :oldValue="originalProduct.prices[currencyIndex].recommended_retail_price" 
+                            v-model.number="currentCurrency.recommended_retail_price" @submit="savedMarkup = currentCurrency.markup"
+                            @change="calculateMarkup($event, 'recommended_retail_price')" @cancel="resetMarkup" @revert="revertMarkup"/>
                             <label>Mark Up</label>
                             <span class="input-wrapper read-only">{{currentCurrency.markup}}</span>
                         </div>
                         <div>
                             <label for="min-order">Min. Order</label>
-                            <input type="number" id="min-order" v-model.number="product.quantity" class="input-wrapper">
+                            <EditInputWrapper :id="'min-order'" :type="'number'" 
+                            :value="product.quantity" :oldValue="originalProduct.quantity" v-model.number="product.quantity"/>
                             <label for="delivery">Delivery</label>
-                            <input type="text" id="delivery" v-model="product.delivery_date" class="input-wrapper">
+                            <EditInputWrapper :id="'delivery'" :type="'text'" 
+                            :value="product.delivery_date" :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"/>
                         </div>
                     </div>
                 </div>
@@ -77,6 +87,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import Dropdown from './Dropdown'
 import TooltipAlt2 from './TooltipAlt2'
+import EditInputWrapper from './EditInputWrapper'
 import Product from './../store/models/Product'
 
 export default {
@@ -90,10 +101,12 @@ export default {
     components: {
         Dropdown,
         TooltipAlt2,
+        EditInputWrapper,
     },
     data: function () { return {
         currencyIndex: 0,
-        productToEdit: null
+        productToEdit: null,
+        savedMarkup: null,
     }},
     watch: {
         currentProductv1(newVal, oldVal) {
@@ -109,8 +122,18 @@ export default {
         product () {
             return this.productToEdit
         },
+        originalProduct () {
+            return this.currentProductv1
+        },
         currentCurrency () {
-            return this.product.prices[this.currencyIndex]
+            return this.productToEdit 
+            ? this.product.prices[this.currencyIndex] 
+            : {
+                currency: null,
+                markup: null,
+                recommended_retail_price: null,
+                wholesale_price: null
+            }
         },
         hasChanges() {
             const newProduct = this.productToEdit
@@ -157,10 +180,32 @@ export default {
             const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
             this.updateProduct(productToUpload)
         },
+        calculateMarkup(newValue, price) {
+            console.log('claculating markup')
+            const el = this.currentCurrency
+            const decimals = 2
+            if (price == 'wholesale_price')
+                el.markup = Number(Math.round((el.recommended_retail_price / newValue) + 'e' + decimals)+ 'e-' + decimals)
+            else 
+                el.markup = Number(Math.round((newValue / el.wholesale_price) + 'e' + decimals)+ 'e-' + decimals)
+                
+        },
+        resetMarkup() {
+            console.log('reset markup')
+            if (this.savedMarkup)
+                this.currentCurrency.markup = this.savedMarkup
+            else {
+                this.currentCurrency.markup = this.originalProduct.prices[this.currencyIndex].markup
+            }
+        },
+        revertMarkup() {
+            console.log('reverting to: ' + this.originalProduct.prices[this.currencyIndex].markup)
+            this.currentCurrency.markup = this.originalProduct.prices[this.currencyIndex].markup
+        },
         hotkeyHandler(event) {
             const key = event.code
             // Only do these if the current target is not the comment box
-            if (event.target.type != 'textarea' && this.visible) {
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.visible) {
                 const inAvailable = this.$refs.inButton ? !this.$refs.inButton.classList.contains('disabled') : false
                 const outAvailable = this.$refs.outButton ? !this.$refs.outButton.classList.contains('disabled') : false
                 const focusAvailable = this.$refs.focusButton ? !this.$refs.focusButton.classList.contains('disabled') : false
@@ -250,7 +295,7 @@ export default {
             justify-content: flex-end;
             width: 100%;
             > *:not(:last-child) {
-                margin-right: 8px;
+                margin-right: 12px;
             }
         }
     }
@@ -336,5 +381,10 @@ export default {
         font-size: 11px;
         font-weight: 500;
         text-align: right;
+    }
+    .details {
+        .currencies {
+            margin-bottom: 32px;
+        }
     }
 </style>

@@ -162,7 +162,7 @@ export default {
 @import '~@/_variables.scss';
 
     .body-wrapper {
-        padding: 8px;
+        padding: 8px 16px;
         display: block;
         font-size: 13px;
     }

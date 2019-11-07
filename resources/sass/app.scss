@@ -209,6 +209,23 @@ textarea {
 }
 
 // SHAPES: BUTTONS, SQUARES, PILLS, BUBBLES, CIRCLES
+.hotkey-wrapper {
+    display: inline-flex;
+    align-items: center;
+    flex-direction: column;
+    .hotkey {
+        font-size: 10px;
+        color: $dark2;
+        margin-top: 4px;
+        .key {
+            border-radius: 2px;
+            border: solid 1px $dark2;
+            padding: 1px 4px;
+            text-transform: uppercase;
+            font-size: 8px;
+        }
+    }
+}
 .button,
 .square,
 .pill,
@@ -274,6 +291,17 @@ textarea {
             background: transparent;
         }
     }
+    &.yellow-green,
+    &.yellow-green-hover:hover {
+        border-color: $yellowGreen;
+        background: $yellowGreen;
+        color: white;
+        &.invisible,
+        &.ghost {
+            color: $yellowGreen;
+            background: transparent;
+        }
+    }
     &.primary,
     &.primary-hover:hover,
     &.role-1 {
@@ -325,6 +353,7 @@ textarea {
         font-weight: 500;
         background: none;
         border-color: transparent;
+        color: $dark15;
         &:hover {
             border-color: inherit;
         }
@@ -413,6 +442,7 @@ textarea {
 }
 .square {
     font-weight: 700;
+    border-radius: 2px;
 }
 .pill {
     height: 32px;
@@ -620,7 +650,7 @@ textarea {
         border: solid 1px $light2;
         margin-top: 7px;
         overflow: hidden;
-        min-width: 100px;
+        // min-width: 100px;
     }
     &::before,
     .arrow {
@@ -1071,17 +1101,18 @@ form {
     label + & {
         margin-top: 2px;
     }
-    & + label {
-        display: block;
-        margin-top: 12px;
-    }
 }
 .input-parent {
     position: relative;
-    &.controls-right {
-        .input-wrapper {
-            // padding-right: 40px;
+    .controls {
+        display: flex;
+        > * {
+            &:not(:last-child) {
+                margin-right: 4px;
+            }
         }
+    }
+    &.controls-right {
         .controls {
             position: absolute;
             top: 50%;
@@ -1098,6 +1129,31 @@ form {
             top: 4px;
             left: 4px;
         }
+    }
+    &.controls-inside {
+        .input-wrapper {
+            padding-right: 40px;
+            .control-items-2 & {
+                padding-right: 80px;
+            }
+        }
+
+        &.controls-right {
+            .controls {
+                right: 4px;
+                top: 4px;
+                // transform: translateY(-50%);
+                transform: none;
+            }
+        }
+    }
+}
+.edit-input-wrapper,
+.input-parent,
+.input-wrapper {
+    & + label {
+        display: block;
+        margin-top: 12px;
     }
 }
 .drop-area {
@@ -1149,9 +1205,15 @@ form {
         display: none !important;
     }
 }
+// MAKE INPUT PRETTY
 input[type='search']::-webkit-search-decoration,
 input[type='search']::-webkit-search-cancel-button,
 input[type='search']::-webkit-search-results-button,
 input[type='search']::-webkit-search-results-decoration {
     -webkit-appearance: none;
+}
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }

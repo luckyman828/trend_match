@@ -8857,6 +8857,30 @@ textarea {
   color: white;
 }
 
+.hotkey-wrapper {
+  display: -webkit-inline-box;
+  display: inline-flex;
+  -webkit-box-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+          flex-direction: column;
+}
+
+.hotkey-wrapper .hotkey {
+  font-size: 10px;
+  color: #a8a8a8;
+  margin-top: 4px;
+}
+
+.hotkey-wrapper .hotkey .key {
+  border-radius: 2px;
+  border: solid 1px #a8a8a8;
+  padding: 1px 4px;
+  text-transform: uppercase;
+  font-size: 8px;
+}
+
 .button,
 .square,
 .pill,
@@ -9087,6 +9111,45 @@ textarea {
   background: transparent;
 }
 
+.button.yellow-green,
+.button.yellow-green-hover:hover,
+.square.yellow-green,
+.square.yellow-green-hover:hover,
+.pill.yellow-green,
+.pill.yellow-green-hover:hover,
+.bubble.yellow-green,
+.bubble.yellow-green-hover:hover,
+.circle.yellow-green,
+.circle.yellow-green-hover:hover {
+  border-color: #b5cc18;
+  background: #b5cc18;
+  color: white;
+}
+
+.button.yellow-green.invisible,
+.button.yellow-green.ghost,
+.button.yellow-green-hover:hover.invisible,
+.button.yellow-green-hover:hover.ghost,
+.square.yellow-green.invisible,
+.square.yellow-green.ghost,
+.square.yellow-green-hover:hover.invisible,
+.square.yellow-green-hover:hover.ghost,
+.pill.yellow-green.invisible,
+.pill.yellow-green.ghost,
+.pill.yellow-green-hover:hover.invisible,
+.pill.yellow-green-hover:hover.ghost,
+.bubble.yellow-green.invisible,
+.bubble.yellow-green.ghost,
+.bubble.yellow-green-hover:hover.invisible,
+.bubble.yellow-green-hover:hover.ghost,
+.circle.yellow-green.invisible,
+.circle.yellow-green.ghost,
+.circle.yellow-green-hover:hover.invisible,
+.circle.yellow-green-hover:hover.ghost {
+  color: #b5cc18;
+  background: transparent;
+}
+
 .button.primary,
 .button.primary-hover:hover,
 .button.role-1,
@@ -9282,6 +9345,7 @@ textarea {
   font-weight: 500;
   background: none;
   border-color: transparent;
+  color: #707070;
 }
 
 .button.invisible:hover,
@@ -9414,6 +9478,7 @@ textarea {
 
 .square {
   font-weight: 700;
+  border-radius: 2px;
 }
 
 .pill {
@@ -9652,7 +9717,6 @@ textarea {
   border: solid 1px #dfdfdf;
   margin-top: 7px;
   overflow: hidden;
-  min-width: 100px;
 }
 
 .dropdown::before,
@@ -10240,13 +10304,17 @@ label + .input-wrapper {
   margin-top: 2px;
 }
 
-.input-wrapper + label {
-  display: block;
-  margin-top: 12px;
-}
-
 .input-parent {
   position: relative;
+}
+
+.input-parent .controls {
+  display: -webkit-box;
+  display: flex;
+}
+
+.input-parent .controls > *:not(:last-child) {
+  margin-right: 4px;
 }
 
 .input-parent.controls-right .controls {
@@ -10265,6 +10333,28 @@ label + .input-wrapper {
   position: absolute;
   top: 4px;
   left: 4px;
+}
+
+.input-parent.controls-inside .input-wrapper {
+  padding-right: 40px;
+}
+
+.control-items-2 .input-parent.controls-inside .input-wrapper {
+  padding-right: 80px;
+}
+
+.input-parent.controls-inside.controls-right .controls {
+  right: 4px;
+  top: 4px;
+  -webkit-transform: none;
+          transform: none;
+}
+
+.edit-input-wrapper + label,
+.input-parent + label,
+.input-wrapper + label {
+  display: block;
+  margin-top: 12px;
 }
 
 .drop-area {
@@ -10330,5 +10420,11 @@ input[type=search]::-webkit-search-cancel-button,
 input[type=search]::-webkit-search-results-button,
 input[type=search]::-webkit-search-results-decoration {
   -webkit-appearance: none;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
