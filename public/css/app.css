@@ -10226,8 +10226,23 @@ form .form-element .label {
   cursor: auto;
 }
 
+.input-wrapper.read-only {
+  background: #f3f3f3;
+  color: #3c3b54;
+  cursor: auto;
+}
+
 .input-wrapper.light {
   background: #f3f3f3;
+}
+
+label + .input-wrapper {
+  margin-top: 2px;
+}
+
+.input-wrapper + label {
+  display: block;
+  margin-top: 12px;
 }
 
 .input-parent {

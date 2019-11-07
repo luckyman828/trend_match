@@ -85,6 +85,7 @@
                                 <div class="option-buttons">
                                     <span class="option icon-left" @click="onRenameFile(catalogue, index); $refs['moreOptions-'+catalogue.id][0].toggle()"><i class="fas fa-pencil primary"></i> Rename</span>
                                     <span class="option icon-left" @click="onAddToFile(catalogue); $refs['moreOptions-'+catalogue.id][0].toggle()"><i class="fas fa-plus green"></i> Add to file</span>
+                                    <span class="option icon-left" @click="onEdit(catalogue); $refs['moreOptions-'+catalogue.id][0].toggle()"><i class="fas fa-pencil primary"></i> Edit products</span>
                                     <span class="option icon-left" @click="onDeleteFile(catalogue.id); $refs['moreOptions-'+catalogue.id][0].toggle()"><i class="fas fa-trash-alt red"></i> Delete</span>
                                 </div>
                             </template>
@@ -126,7 +127,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ProductTotals from './ProductTotals'
 import ProductSingle from './ProductSingle'
 
@@ -230,6 +231,9 @@ export default {
                 this.$refs.editFileModal.toggle()
             })
 
+        },
+        onEdit(file) {
+            this.$router.push(`/file/${file.id}/edit`)
         },
         resetFileToEdit() {
             this.editingFile = false

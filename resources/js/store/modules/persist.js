@@ -14,6 +14,7 @@ export default {
         teamFilterId: -1,
         currentWorkspaceId: null,
         currentFileId: null,
+        // editFile: false,
         currentTaskId: null,
         userPermissionLevel: 1,
         loadingInit: true,
@@ -198,6 +199,9 @@ export default {
         currentTeamId: state => {
             return state.currentTeamId
         },
+        // editFile: state => {
+        //     return state.editFile
+        // },
         availableCurrencies: state => {
             return state.availableCurrencies
         },
@@ -414,6 +418,9 @@ export default {
         setLoadingInit(state, bool) {
             state.loadingInit = bool
         },
+        // setEditFile(state, bool) {
+        //     state.editFile = bool
+        // },
         // setAvailableCurrencies(state, currencies) {
         //     state.availableCurrencies = currencies
         // },

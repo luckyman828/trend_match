@@ -2,7 +2,7 @@
   <div class="header">
         <div>
             <h1>{{collection.title}}</h1>
-            <span class="square light">Stage {{currentTask.title}}</span>
+            <span v-if="currentTask" class="square light">Stage {{currentTask.title}}</span>
             <!-- <Dropdown class="dark dropdown-parent">
                 <template v-slot:button="slotProps">
                     <span class="square light" @click="slotProps.toggle">Stage {{currentTask.title}}</span>
@@ -32,8 +32,18 @@
                 <span class="square light">{{new Date(collection.start_date).toLocaleDateString('en-GB', {day: '2-digit', month: '2-digit', year: 'numeric'})}}</span>
             </div>
 
-            <TooltipAlt2 v-if="currentTask.type == 'feedback' && userPermissionLevel > 1" :header="'Progress'" :array="currentTask.input" :arrayLabelKey="'name'" :arrayValueKey="'progress'" :arrayValueUnit="'%'">
-                <div class="stat progress">
+            <template v-if="currentTask">
+                <TooltipAlt2 v-if="currentTask.type == 'feedback' && userPermissionLevel > 1" :header="'Progress'" :array="currentTask.input" :arrayLabelKey="'name'" :arrayValueKey="'progress'" :arrayValueUnit="'%'">
+                    <div class="stat progress">
+                        <span class="title">Progress</span>
+                        <svg height="4">
+                            <rect class="background" v-if="currentTaskProgress > 0" width="100%" height="4"/>
+                            <rect class="value" v-if="currentTaskProgress > 0" :width="currentTaskProgress + '%'" height="4"/>
+                        </svg>
+                        <span class="value">{{currentTaskProgress}}%</span>
+                    </div>
+                </TooltipAlt2>
+                <div class="stat progress" v-else>
                     <span class="title">Progress</span>
                     <svg height="4">
                         <rect class="background" v-if="currentTaskProgress > 0" width="100%" height="4"/>
@@ -41,15 +51,8 @@
                     </svg>
                     <span class="value">{{currentTaskProgress}}%</span>
                 </div>
-            </TooltipAlt2>
-            <div class="stat progress" v-else>
-                <span class="title">Progress</span>
-                <svg height="4">
-                    <rect class="background" v-if="currentTaskProgress > 0" width="100%" height="4"/>
-                    <rect class="value" v-if="currentTaskProgress > 0" :width="currentTaskProgress + '%'" height="4"/>
-                </svg>
-                <span class="value">{{currentTaskProgress}}%</span>
-            </div>
+            </template>
+
 
         </div>
     </div>

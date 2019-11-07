@@ -1060,8 +1060,20 @@ form {
         color: $dark2;
         cursor: auto;
     }
+    &.read-only {
+        background: $light1;
+        color: $dark05;
+        cursor: auto;
+    }
     &.light {
         background: $light1;
+    }
+    label + & {
+        margin-top: 2px;
+    }
+    & + label {
+        display: block;
+        margin-top: 12px;
     }
 }
 .input-parent {

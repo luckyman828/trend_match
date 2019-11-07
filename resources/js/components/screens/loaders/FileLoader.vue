@@ -39,7 +39,7 @@ export default {
     methods: {
         ...mapActions('entities/collections', ['fetchCollections']),
         ...mapMutations('entities/collections', ['setFilesUpdated']),
-        ...mapActions('entities/products', ['fetchProducts', 'setCurrentProductId']),
+        ...mapActions('entities/products', ['fetchProducts']),
         ...mapActions('entities/actions', ['fetchActions']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/comments', ['fetchComments']),

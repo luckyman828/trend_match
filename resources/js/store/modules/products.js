@@ -14,6 +14,7 @@ export default {
         unreadOnly: false,
         currentProductFilter: 'overview',
         singleVisible: false,
+        productScope: null,
     },
 
     getters: {
@@ -38,6 +39,21 @@ export default {
         singleVisible: state => {
             return state.singleVisible
         },
+        productScope: state => {
+            return state.productScope
+        },
+        productsRaw: (state, getters, rootState, rootGetters) => {
+            if (!rootGetters['persist/loadingInit']) {
+                const products = Product.query().all()
+                products.forEach(product => {
+                    if (typeof product.color_variants == 'string')
+                        product.color_variants = JSON.parse(product.color_variants)
+                    if (typeof product.assortments == 'string') product.assortments = JSON.parse(product.assortments)
+                    if (typeof product.prices == 'string') product.prices = JSON.parse(product.prices)
+                })
+                return products
+            }
+        },
         products: (state, getters, rootState, rootGetters) => {
             if (!rootGetters['persist/loadingInit'] && !state.loading && rootGetters['persist/currentTask'] != null) {
                 const products = Product.query()
@@ -53,9 +69,10 @@ export default {
                 // const inheritFromId = currentTask.inherit_from_id
                 const inheritFromTask = currentTask.inheritFromTask
                 products.forEach(product => {
-                    product.color_variants = JSON.parse(product.color_variants)
-                    product.assortments = JSON.parse(product.assortments)
-                    product.prices = JSON.parse(product.prices)
+                    if (typeof product.color_variants == 'string')
+                        product.color_variants = JSON.parse(product.color_variants)
+                    if (typeof product.assortments == 'string') product.assortments = JSON.parse(product.assortments)
+                    if (typeof product.prices == 'string') product.prices = JSON.parse(product.prices)
                     product.ins = []
                     product.outs = []
                     product.focus = []
@@ -653,6 +670,12 @@ export default {
                 ? getters.products.find(x => x.id == state.currentProductId)
                 : null
         },
+        currentProductv1: (state, getters, rootState, rootGetters) => {
+            const products = getters[getters.productScope]
+            return state.currentProductId != null && products != null
+                ? products.find(x => x.id == state.currentProductId)
+                : null
+        },
         nextProductId: (state, getters, rootState, rootGetters) => {
             if (state.currentProductId != null && getters.availableProductIds.length > 0) {
                 const productIds = getters.availableProductIds
@@ -670,6 +693,41 @@ export default {
                     return productIds[currentProductIndex - 1]
                 }
             }
+        },
+
+        productsFilteredv1(state, getters, rootState, rootGetters) {
+            const products = getters[getters.productScope]
+
+            const categories = getters.selectedCategories
+            const deliveryDates = getters.selectedDeliveryDates
+            const unreadOnly = getters.unreadOnly
+            let productsToReturn = []
+
+            if (products) {
+                productsToReturn = products
+                // First filter by category
+                if (categories.length > 0) {
+                    const filteredByCategory = productsToReturn.filter(product => {
+                        return Array.from(categories).includes(product.category)
+                    })
+                    productsToReturn = filteredByCategory
+                }
+                // Filter by delivery date
+                if (deliveryDates.length > 0) {
+                    const filteredByDeliveryDate = productsToReturn.filter(product => {
+                        return Array.from(deliveryDates).includes(product.delivery_date)
+                    })
+                    productsToReturn = filteredByDeliveryDate
+                }
+
+                // Filer by unread
+                if (unreadOnly) {
+                    const filteredByUnread = productsToReturn.filter(product => product.newComment)
+                    productsToReturn = filteredByUnread
+                }
+            }
+
+            return productsToReturn
         },
     },
 
@@ -712,6 +770,30 @@ export default {
             commit('setCurrentProductId', id)
             commit('setSingleVisisble', true)
         },
+        async updateProduct({ commit }, product) {
+            console.log('updating product in store')
+            product.prices = JSON.stringify(product.prices)
+            product.color_variants = JSON.stringify(product.color_variants)
+            product.assortments = JSON.stringify(product.assortments)
+            commit('updateProduct', product)
+
+            await axios
+                .put(`/api/product`, {
+                    id: product.id,
+                    title: product.title,
+                    prices: product.prices,
+                    assortments: product.assortments,
+                    color_variants: product.color_variants,
+                    quantity: product.quantity,
+                    delivery_date: product.delivery_date,
+                })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err.response)
+                })
+        },
     },
 
     mutations: {
@@ -742,6 +824,13 @@ export default {
         },
         setSingleVisisble(state, payload) {
             state.singleVisible = payload
+        },
+        setProductScope(state, productScope) {
+            state.productScope = productScope
+        },
+        updateProduct(state, product) {
+            console.log('so far so good')
+            Product.insert({ data: product })
         },
     },
 }
