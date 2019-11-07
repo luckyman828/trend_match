@@ -5,15 +5,23 @@
                 <div class="header">
                     <div class="left">
                         <span class="square true-square light close clickable" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
-                        <h3>{{product.title}}</h3>
+                        <h3><Editable :value="product.title" :type="'text'" v-model="product.title"/></h3>
+                        <!-- <h3 v-if="!editingTitle" class="clickable" @click="editTitle">{{product.title}}</h3>
+                        <h3 v-else><input ref="editTitleField" class="input-wrapper" type="text" v-model="product.title"></h3> -->
                     </div>
                     <div class="right controls">
                         <div class="last-update" v-if="product.created_at != product.updated_at">
                             <span>Changes saved</span>
                             <span>{{product.updated_at}}</span>
                         </div>
-                        <span class="button ghost icon-left" :class="{disabled: !hasChanges}" @click="onUpdateProduct"><i class="far fa-save"></i>Save</span>
-                        <span class="button ghost icon-left"><i class="far fa-file-edit"></i>Edit</span>
+                        <div class="hotkey-wrapper">
+                            <span class="button ghost icon-left" :class="{disabled: !hasChanges}" @click="onUpdateProduct"><i class="far fa-save"></i>Save</span>
+                            <span class="hotkey"><span class="key">S</span> Save</span>
+                        </div>
+                        <div class="hotkey-wrapper">
+                            <span class="button ghost icon-left"><i class="far fa-file-edit"></i>Edit</span>
+                            <span class="hotkey"><span class="key">E</span> Edit</span>
+                        </div>
                         <span class="circle primary clickable" @click="onPrevSingle()" :class="[{ disabled: prevProductId == null}]"><i class="fas fa-chevron-left"></i></span>
                         <span class="circle primary clickable" @click="onNextSingle()" :class="[{ disabled: nextProductId == null}]"><i class="fas fa-chevron-right"></i></span>
                     </div>
@@ -44,7 +52,7 @@
                         <label>Cateogry</label>
                         <span class="input-wrapper read-only">{{product.category}}</span>
                         <label>Composition</label>
-                        <span class="input-wrapper read-only composition">{{product.composition.split(',').join(',\n')}}</span>
+                        <span class="input-wrapper read-only composition multiline">{{product.composition.split(',').join(',\n')}}</span>
                     </div>
                     <div class="border"></div>
                     <div class="details">
@@ -73,8 +81,9 @@
                             <EditInputWrapper :id="'min-order'" :type="'number'" 
                             :value="product.quantity" :oldValue="originalProduct.quantity" v-model.number="product.quantity"/>
                             <label for="delivery">Delivery</label>
-                            <EditInputWrapper :id="'delivery'" :type="'text'" 
-                            :value="product.delivery_date" :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"/>
+                            <EditInputWrapper ref="deliveryInput" :id="'delivery'" :type="'text'" 
+                            :value="product.delivery_date" :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"
+                            @submit="formatDelivery"/>
                         </div>
                     </div>
                 </div>
@@ -88,6 +97,7 @@ import { mapActions, mapGetters } from 'vuex'
 import Dropdown from './Dropdown'
 import TooltipAlt2 from './TooltipAlt2'
 import EditInputWrapper from './EditInputWrapper'
+import Editable from './Editable'
 import Product from './../store/models/Product'
 
 export default {
@@ -102,18 +112,18 @@ export default {
         Dropdown,
         TooltipAlt2,
         EditInputWrapper,
+        Editable,
     },
     data: function () { return {
         currencyIndex: 0,
         productToEdit: null,
         savedMarkup: null,
+        editingTitle: false,
     }},
     watch: {
         currentProductv1(newVal, oldVal) {
-            // console.log('new product')
-            // if (!oldVal || oldVal.id != newVal.id)
-            //     this.productToEdit = JSON.parse(JSON.stringify(newVal))
             this.productToEdit = JSON.parse(JSON.stringify(newVal))
+            this.productToEdit.delivery_date = new Date(this.productToEdit.delivery_date).toLocaleDateString("en-GB", {month: "long",year: "numeric"})
         }
     },
     computed: {
@@ -123,7 +133,9 @@ export default {
             return this.productToEdit
         },
         originalProduct () {
-            return this.currentProductv1
+            const product = this.currentProductv1
+            product.delivery_date = new Date(product.delivery_date).toLocaleDateString("en-GB", {month: "long",year: "numeric"})
+            return product
         },
         currentCurrency () {
             return this.productToEdit 
@@ -178,6 +190,11 @@ export default {
         onUpdateProduct() {
             // Prepare the file to fit the database schema
             const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
+
+            // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
+            // Since we are only using months add + ' 3' -> set the date to the 3rd to avoid the month changing when we slice due to timezone differences.
+            productToUpload.delivery_date = new Date (productToUpload.delivery_date + ' 3').toJSON().slice(0,10)
+
             this.updateProduct(productToUpload)
         },
         calculateMarkup(newValue, price) {
@@ -199,8 +216,9 @@ export default {
             }
         },
         revertMarkup() {
-            console.log('reverting to: ' + this.originalProduct.prices[this.currencyIndex].markup)
-            this.currentCurrency.markup = this.originalProduct.prices[this.currencyIndex].markup
+            const el = this.currentCurrency
+            const decimals = 2
+            el.markup = Number(Math.round((el.recommended_retail_price / el.wholesale_price) + 'e' + decimals)+ 'e-' + decimals)
         },
         hotkeyHandler(event) {
             const key = event.code
@@ -217,6 +235,20 @@ export default {
                 if (key == 'ArrowLeft')
                     this.onPrevSingle()
             }
+        },
+        formatDelivery(e) {
+            let product = this.product
+            let date = this.product.delivery_date
+            let newDate = new Date(date).toLocaleDateString("en-GB", {month: "long",year: "numeric"})
+            product.delivery_date = newDate
+        },
+        editTitle() {
+            this.editingTitle = true
+            this.$nextTick(() => {
+                const el = this.$refs.editTitleField
+                el.focus()
+                el.select()
+            })
         }
     },
     created() {
@@ -282,6 +314,9 @@ export default {
         background: white;
         height: 72px;
         align-items: center;
+        h3 {
+            width: 100%;
+        }
         > * {
             flex: 1;
             display: flex;
@@ -294,6 +329,7 @@ export default {
             display: flex;
             justify-content: flex-end;
             width: 100%;
+            align-items: flex-start;
             > *:not(:last-child) {
                 margin-right: 12px;
             }

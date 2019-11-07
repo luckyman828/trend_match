@@ -8906,8 +8906,16 @@ textarea {
 .pill.ghost,
 .bubble.ghost,
 .circle.ghost {
-  border: solid 2px;
+  border: solid 1px #a8a8a8;
   background: transparent;
+}
+
+.button.ghost:hover,
+.square.ghost:hover,
+.pill.ghost:hover,
+.bubble.ghost:hover,
+.circle.ghost:hover {
+  background: #dfdfdf;
 }
 
 .button.dark,
@@ -9380,7 +9388,7 @@ textarea {
   height: 32px;
   font-size: 12px;
   padding: 0 12px;
-  color: #a8a8a8;
+  color: #1b1c1d;
   border-radius: 4px;
 }
 
@@ -9521,6 +9529,14 @@ textarea {
   width: 14px;
   height: 14px;
   font-size: 10px;
+}
+
+.circle .fa-chevron-right {
+  margin-left: 2px;
+}
+
+.circle .fa-chevron-left {
+  margin-right: 2px;
 }
 
 .close {
@@ -10270,10 +10286,23 @@ form .form-element .label {
   position: relative;
 }
 
+.input-wrapper:not(.multiline) {
+  height: 40px;
+}
+
+.input-wrapper:focus,
+.input-wrapper.active {
+  border: solid 2px #3b86ff;
+}
+
 .input-wrapper.small {
   min-height: 30px;
   padding: 4px 12px;
   font-size: 13px;
+}
+
+.input-wrapper.small:not(.multiline) {
+  height: 30px;
 }
 
 .input-wrapper.check-button {

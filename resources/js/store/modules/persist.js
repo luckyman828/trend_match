@@ -206,7 +206,7 @@ export default {
             return state.availableCurrencies
         },
         teamFilterId: state => {
-            return state.teamFilterId
+            return state.teamFilterIdx
         },
         currentWorkspace: state => {
             return Workspace.find(state.currentWorkspaceId)

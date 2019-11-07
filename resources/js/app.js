@@ -33,6 +33,9 @@ Vue.filter('truncate', function(value, limit) {
 
     return value
 })
+Vue.filter('formatDate', function(value) {
+    return new Date(value).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+})
 
 // Define global mixins
 // Vue.mixin({

@@ -4,9 +4,10 @@
             <input ref="input" :id="id" class="input-wrapper" :type="type" :value="value" :placeholder="placeholder"
             @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" @keyup="change">
             <div class="controls">
-                <Tooltip :body="'Edit'">
+                <Tooltip v-if="!editActive" :body="'Edit'">
                     <span class="edit square true-square light-2-hover"><i class="far fa-pen"></i></span>
                 </Tooltip>
+                <span v-else class="edit square true-square"><i class="far fa-pen"></i></span>
                 <Tooltip :body="`<span style='white-space: nowrap;'>Revert to original</span>`" v-if="value != oldValue">
                     <span @click.stop="revert" class="square true-square yellow-green">E</span>
                 </Tooltip>
@@ -44,7 +45,7 @@ export default {
         },
         submit() {
             this.emit()
-            this.$emit('submit')
+            this.$emit('submit', this.$refs.input.value)
             this.editActive = false
             document.activeElement.blur()
         },
@@ -63,8 +64,7 @@ export default {
             e.preventDefault()
             this.$emit('input', this.oldValue)
             this.$emit('revert')
-            // this.cancel()
-        }
+        },
     }
 }
 </script>
@@ -76,6 +76,7 @@ export default {
         &:not(.active) {
             cursor: pointer;
             .input-wrapper {
+                transition: .3s;
                 cursor: pointer;
             }
             &:hover {

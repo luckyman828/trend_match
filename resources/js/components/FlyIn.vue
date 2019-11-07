@@ -76,7 +76,6 @@ export default {
         width: 100%;
         transition-timing-function: ease-out;
         transition: .3s;
-        border-radius: 6px;
         &.animate {
             animation-name: fly-in;
             animation-duration: .3s;

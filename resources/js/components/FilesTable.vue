@@ -75,11 +75,11 @@
                 </div>
                 <div class="flex-group">
                     <td class="action">
-                        <span class="button invisible ghost light-1-hover " @click="viewSingle(catalogue.id, catalogue.title)">View</span>
+                        <span class="button invisible ghost dark-hover " @click="viewSingle(catalogue.id, catalogue.title)">View</span>
                         <Dropdown :ref="'moreOptions-'+catalogue.id">
                             <template v-slot:button>
                                 <!-- <span class="button invisible ghost light-1-hover true-square" @click="testCon(catalogue.id)">{{key}}</span> -->
-                                <span class="button invisible ghost light-1-hover true-square" @click="$refs['moreOptions-'+catalogue.id][0].toggle()"><i class="fas fa-ellipsis-v"></i></span>
+                                <span class="button invisible ghost dark-hover true-square" @click="$refs['moreOptions-'+catalogue.id][0].toggle()"><i class="fas fa-ellipsis-v"></i></span>
                             </template>
                             <template v-slot:body>
                                 <div class="option-buttons">
