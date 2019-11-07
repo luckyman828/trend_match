@@ -829,7 +829,10 @@ export default {
             state.productScope = productScope
         },
         updateProduct(state, product) {
-            console.log('so far so good')
+            product.updated_at = new Date()
+                .toISOString()
+                .slice(0, 19)
+                .replace('T', ' ')
             Product.insert({ data: product })
         },
     },

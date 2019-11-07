@@ -38,6 +38,8 @@ export default class Product extends Model {
             comments: this.hasMany(Comment, 'product_id'),
             actions: this.hasMany(Action, 'product_id'),
             taskActions: this.hasMany(TaskAction, 'product_id'),
+            updated_at: this.attr(''),
+            created_at: this.attr(''),
         }
 
         return data

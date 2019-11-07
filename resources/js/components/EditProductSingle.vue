@@ -8,7 +8,12 @@
                         <h3>{{product.title}}</h3>
                     </div>
                     <div class="right controls">
-                        <span class="button ghost icon-left" @click="onUpdateProduct"><i class="far fa-save"></i>Save</span>
+                        <div class="last-update" v-if="product.created_at != product.updated_at">
+                            <span>Changes saved</span>
+                            <span>{{product.updated_at}}</span>
+                        </div>
+                        <span class="button ghost icon-left" :class="{disabled: !hasChanges}" @click="onUpdateProduct"><i class="far fa-save"></i>Save</span>
+                        <span class="button ghost icon-left"><i class="far fa-file-edit"></i>Save</span>
                         <span class="circle primary clickable" @click="onPrevSingle()" :class="[{ disabled: prevProductId == null}]"><i class="fas fa-chevron-left"></i></span>
                         <span class="circle primary clickable" @click="onNextSingle()" :class="[{ disabled: nextProductId == null}]"><i class="fas fa-chevron-right"></i></span>
                     </div>
@@ -92,9 +97,10 @@ export default {
     }},
     watch: {
         currentProductv1(newVal, oldVal) {
-            console.log('new product')
-            if (!oldVal || oldVal.id != newVal.id)
-                this.productToEdit = JSON.parse(JSON.stringify(newVal))
+            // console.log('new product')
+            // if (!oldVal || oldVal.id != newVal.id)
+            //     this.productToEdit = JSON.parse(JSON.stringify(newVal))
+            this.productToEdit = JSON.parse(JSON.stringify(newVal))
         }
     },
     computed: {
@@ -323,5 +329,12 @@ export default {
     }
     .input-wrapper.composition {
         white-space: pre-line;
+    }
+    .last-update {
+        display: flex;
+        flex-direction: column;
+        font-size: 11px;
+        font-weight: 500;
+        text-align: right;
     }
 </style>

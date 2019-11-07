@@ -7748,6 +7748,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 
@@ -7767,8 +7772,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   watch: {
     currentProductv1: function currentProductv1(newVal, oldVal) {
-      console.log('new product');
-      if (!oldVal || oldVal.id != newVal.id) this.productToEdit = JSON.parse(JSON.stringify(newVal));
+      // console.log('new product')
+      // if (!oldVal || oldVal.id != newVal.id)
+      //     this.productToEdit = JSON.parse(JSON.stringify(newVal))
+      this.productToEdit = JSON.parse(JSON.stringify(newVal));
     }
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['userPermissionLevel']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/products', ['currentProductv1', 'nextProductId', 'prevProductId']), {
@@ -16498,7 +16505,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".edit-product-single[data-v-8542425c] {\n  height: 100%;\n}\n.edit-product-single > .inner[data-v-8542425c] {\n  height: 100%;\n  width: 100%;\n  background: #f9f9f9;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.edit-product-single > .inner .body[data-v-8542425c] {\n  padding: 24px;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.edit-product-single .details[data-v-8542425c] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\nh3[data-v-8542425c] {\n  font-size: 16px;\n  font-weight: 400;\n}\n.close i[data-v-8542425c] {\n  font-size: 22px;\n}\n.card > .grid-2[data-v-8542425c] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-2.grid-border-between[data-v-8542425c] {\n  grid-template-columns: 1fr 2px 1fr;\n  grid-gap: 17px;\n}\n.grid-2.grid-border-between[data-v-8542425c] > :nth-child(2) {\n  background: #dfdfdf;\n}\n.header[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header > *[data-v-8542425c] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header .close[data-v-8542425c] {\n  margin-right: 24px;\n}\n.header .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n}\n.header .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-right: 8px;\n}\n.product-variants[data-v-8542425c] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n  margin-bottom: 40px;\n}\n.product-variant[data-v-8542425c] {\n  width: 180px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .img-wrapper[data-v-8542425c] {\n  padding-top: 133.33%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 2px;\n  border: solid 1px #dfdfdf;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-8542425c] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant .img-wrapper .controls[data-v-8542425c] {\n  position: absolute;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n}\n.product-variant .img-wrapper .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.product-variant .img-wrapper .controls .button[data-v-8542425c] {\n  width: 124px;\n}\n.product-variant .color-wrapper[data-v-8542425c] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-8542425c] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-8542425c] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-8542425c] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.input-wrapper.composition[data-v-8542425c] {\n  white-space: pre-line;\n}", ""]);
+exports.push([module.i, ".edit-product-single[data-v-8542425c] {\n  height: 100%;\n}\n.edit-product-single > .inner[data-v-8542425c] {\n  height: 100%;\n  width: 100%;\n  background: #f9f9f9;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.edit-product-single > .inner .body[data-v-8542425c] {\n  padding: 24px;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.edit-product-single .details[data-v-8542425c] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\nh3[data-v-8542425c] {\n  font-size: 16px;\n  font-weight: 400;\n}\n.close i[data-v-8542425c] {\n  font-size: 22px;\n}\n.card > .grid-2[data-v-8542425c] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-2.grid-border-between[data-v-8542425c] {\n  grid-template-columns: 1fr 2px 1fr;\n  grid-gap: 17px;\n}\n.grid-2.grid-border-between[data-v-8542425c] > :nth-child(2) {\n  background: #dfdfdf;\n}\n.header[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header > *[data-v-8542425c] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header .close[data-v-8542425c] {\n  margin-right: 24px;\n}\n.header .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n}\n.header .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-right: 8px;\n}\n.product-variants[data-v-8542425c] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n  margin-bottom: 40px;\n}\n.product-variant[data-v-8542425c] {\n  width: 180px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .img-wrapper[data-v-8542425c] {\n  padding-top: 133.33%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 2px;\n  border: solid 1px #dfdfdf;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-8542425c] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant .img-wrapper .controls[data-v-8542425c] {\n  position: absolute;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n}\n.product-variant .img-wrapper .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.product-variant .img-wrapper .controls .button[data-v-8542425c] {\n  width: 124px;\n}\n.product-variant .color-wrapper[data-v-8542425c] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-8542425c] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-8542425c] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-8542425c] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.input-wrapper.composition[data-v-8542425c] {\n  white-space: pre-line;\n}\n.last-update[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  font-size: 11px;\n  font-weight: 500;\n  text-align: right;\n}", ""]);
 
 // exports
 
@@ -29184,14 +29191,25 @@ var render = function() {
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "right controls" }, [
+                  _vm.product.created_at != _vm.product.updated_at
+                    ? _c("div", { staticClass: "last-update" }, [
+                        _c("span", [_vm._v("Changes saved")]),
+                        _vm._v(" "),
+                        _c("span", [_vm._v(_vm._s(_vm.product.updated_at))])
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
                   _c(
                     "span",
                     {
                       staticClass: "button ghost icon-left",
+                      class: { disabled: !_vm.hasChanges },
                       on: { click: _vm.onUpdateProduct }
                     },
                     [_c("i", { staticClass: "far fa-save" }), _vm._v("Save")]
                   ),
+                  _vm._v(" "),
+                  _vm._m(0),
                   _vm._v(" "),
                   _c(
                     "span",
@@ -29274,7 +29292,7 @@ var render = function() {
                                       }
                                     }
                                   })
-                                : [_vm._m(0, true)]
+                                : [_vm._m(1, true)]
                             ],
                             2
                           ),
@@ -29528,6 +29546,15 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("span", { staticClass: "button ghost icon-left" }, [
+      _c("i", { staticClass: "far fa-file-edit" }),
+      _vm._v("Save")
+    ])
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -60156,7 +60183,9 @@ function (_Model) {
         assortments: this.attr(''),
         comments: this.hasMany(_Comment__WEBPACK_IMPORTED_MODULE_1__["default"], 'product_id'),
         actions: this.hasMany(_Action__WEBPACK_IMPORTED_MODULE_2__["default"], 'product_id'),
-        taskActions: this.hasMany(_TaskAction__WEBPACK_IMPORTED_MODULE_6__["default"], 'product_id')
+        taskActions: this.hasMany(_TaskAction__WEBPACK_IMPORTED_MODULE_6__["default"], 'product_id'),
+        updated_at: this.attr(''),
+        created_at: this.attr('')
       };
       return data;
     }
@@ -65021,7 +65050,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   }), _defineProperty(_mutations, "setProductScope", function setProductScope(state, productScope) {
     state.productScope = productScope;
   }), _defineProperty(_mutations, "updateProduct", function updateProduct(state, product) {
-    console.log('so far so good');
+    product.updated_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
     _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
       data: product
     });
