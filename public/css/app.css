@@ -10284,6 +10284,16 @@ form .form-element .label {
   background: white;
   width: 100%;
   position: relative;
+  -webkit-transition: 0.3s;
+  transition: 0.3s;
+}
+
+.input-wrapper:not(.active):not(:focus):not(.disabled):not(:disabled):not(.read-only):hover {
+  box-shadow: 0 3px 6px rgba(27, 28, 29, 0.1);
+}
+
+select.input-wrapper {
+  cursor: pointer;
 }
 
 .input-wrapper:not(.multiline) {

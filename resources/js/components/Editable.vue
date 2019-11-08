@@ -1,7 +1,7 @@
 <template>
         <span ref="original" class="editable" v-if="!editActive" @click="activate">{{value}}</span>
         <input v-else ref="input" :id="id" class="input-wrapper active" :type="type" :value="value" :placeholder="placeholder"
-            @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel">
+            @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" @blur="submit">
 </template>
 
 <script>
@@ -39,9 +39,10 @@ export default {
             document.activeElement.blur()
         },
         cancel() {
+            this.$emit('cancel')
             this.editActive = false
             document.activeElement.blur()
-            this.$emit('cancel')
+            this.$emit('input', this.oldValue)
         }
     }
 }
@@ -52,6 +53,7 @@ export default {
 
     .editable {
         cursor: pointer;
+        display: block;
     }
 
 </style>

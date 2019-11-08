@@ -15,6 +15,9 @@ Vue.use(VueCookies)
 import UUID from 'vue-uuid'
 Vue.use(UUID)
 
+import directive from './directive'
+Vue.use(directive)
+
 Vue.component('app', require('./App.vue').default)
 
 // Global components

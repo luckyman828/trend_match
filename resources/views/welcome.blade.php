@@ -32,7 +32,7 @@
         <div class="main-wrapper">
             
             <div id="app">
-                <app/>
+                <app></app>
             </div>
         </div>
 

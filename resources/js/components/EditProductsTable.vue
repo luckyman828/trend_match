@@ -38,7 +38,7 @@
                 <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
 
                 <td class="action">
-                    <span class="button invisible ghost dark-hover" @click="onViewSingle(product.id)">View</span>
+                    <span class="button invisible ghost dark-hover" @click="onViewSingle(product.id)">View / Edit</span>
                 </td>
 
             </div>

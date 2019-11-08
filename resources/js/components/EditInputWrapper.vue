@@ -2,15 +2,11 @@
     <div class="edit-input-wrapper" :class="{active: editActive}">
         <div class="input-parent controls-right controls-inside control-items-2" @click="setActive">
             <input ref="input" :id="id" class="input-wrapper" :type="type" :value="value" :placeholder="placeholder"
-            @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" @keyup="change">
+            @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" @keyup="change" step="any">
             <div class="controls">
-                <Tooltip v-if="!editActive" :body="'Edit'">
-                    <span class="edit square true-square light-2-hover"><i class="far fa-pen"></i></span>
-                </Tooltip>
-                <span v-else class="edit square true-square"><i class="far fa-pen"></i></span>
-                <Tooltip :body="`<span style='white-space: nowrap;'>Revert to original</span>`" v-if="value != oldValue">
-                    <span @click.stop="revert" class="square true-square yellow-green">E</span>
-                </Tooltip>
+                <span v-if="!editActive" v-tooltip.top="'Edit'" class="edit square true-square light-2-hover"><i class="far fa-pen"></i></span>
+                <span v-if="editActive" class="edit square true-square"><i class="far fa-pen"></i></span>
+                <span v-if="value != oldValue" v-tooltip.top="`Revert to original (${oldValue})`" @click.stop="revert" class="square true-square yellow-green">E</span>
             </div>
         </div>
         <div class="buttons">
@@ -78,11 +74,6 @@ export default {
             .input-wrapper {
                 transition: .3s;
                 cursor: pointer;
-            }
-            &:hover {
-                .input-wrapper {
-                    box-shadow: 0 3px 6px rgba($dark, 10%)
-                }
             }
             .buttons {
                 display: none;

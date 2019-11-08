@@ -48,11 +48,11 @@
                             </div>
                         </div>
                         <label>Product ID</label>
-                        <span class="input-wrapper read-only">{{product.datasource_id}}</span>
+                        <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{product.datasource_id}}</span>
                         <label>Cateogry</label>
-                        <span class="input-wrapper read-only">{{product.category}}</span>
+                        <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{product.category}}</span>
                         <label>Composition</label>
-                        <span class="input-wrapper read-only composition multiline">{{product.composition.split(',').join(',\n')}}</span>
+                        <span v-tooltip.top="'Not editable'" class="input-wrapper read-only composition multiline">{{product.composition.split(',').join(',\n')}}</span>
                     </div>
                     <div class="border"></div>
                     <div class="details">
@@ -74,7 +74,7 @@
                             v-model.number="currentCurrency.recommended_retail_price" @submit="savedMarkup = currentCurrency.markup"
                             @change="calculateMarkup($event, 'recommended_retail_price')" @cancel="resetMarkup" @revert="revertMarkup"/>
                             <label>Mark Up</label>
-                            <span class="input-wrapper read-only">{{currentCurrency.markup}}</span>
+                            <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{currentCurrency.markup}}</span>
                         </div>
                         <div>
                             <label for="min-order">Min. Order</label>
@@ -234,6 +234,8 @@ export default {
                     this.onNextSingle()
                 if (key == 'ArrowLeft')
                     this.onPrevSingle()
+                if (key == 's' && this.hasChanges)
+                    this.onUpdateProduct()
             }
         },
         formatDelivery(e) {

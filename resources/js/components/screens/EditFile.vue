@@ -1,6 +1,6 @@
 <template>
     <div class="edit-file-component">
-      <FileHeader :collection="collection"/>
+      <EditFileHeader :file="collection"/>
         <div class="filters">
             <div class="left">
                 <Dropdown class="dropdown-parent left">
@@ -53,14 +53,14 @@
 <script>
 import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 import EditProductsTable from '../EditProductsTable'
-import FileHeader from '../CatalogueHeader'
+import EditFileHeader from '../EditFileHeader'
 import CheckboxButtons from '../input/CheckboxButtons'
 import Dropdown from '../Dropdown'
 
 export default{
     name: 'editFile',
     components: {
-        FileHeader,
+        EditFileHeader,
         CheckboxButtons,
         Dropdown,
         EditProductsTable,
