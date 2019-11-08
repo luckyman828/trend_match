@@ -1,5 +1,5 @@
 <template>
-        <span ref="original" class="editable" v-if="!editActive" @click="activate">{{value}}</span>
+        <span ref="original" class="editable" v-if="!editActive" @click="activate">{{value}} <span v-tooltip.top="'Edit'" class="edit square true-square light-2-hover"><i class="far fa-pen"></i></span></span>
         <input v-else ref="input" :id="id" class="input-wrapper active" :type="type" :value="value" :placeholder="placeholder"
             @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" @blur="submit">
 </template>
@@ -54,6 +54,15 @@ export default {
     .editable {
         cursor: pointer;
         display: block;
+        .edit {
+            opacity: 0;
+            transition: .3s;
+        }
+        &:hover {
+            .edit {
+                opacity: 1;
+            }
+        }
     }
 
 </style>

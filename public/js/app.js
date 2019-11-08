@@ -16871,7 +16871,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".editable[data-v-083431cf] {\n  cursor: pointer;\n  display: block;\n}", ""]);
+exports.push([module.i, ".editable[data-v-083431cf] {\n  cursor: pointer;\n  display: block;\n}\n.editable .edit[data-v-083431cf] {\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.editable:hover .edit[data-v-083431cf] {\n  opacity: 1;\n}", ""]);
 
 // exports
 
@@ -33288,7 +33288,25 @@ var render = function() {
           staticClass: "editable",
           on: { click: _vm.activate }
         },
-        [_vm._v(_vm._s(_vm.value))]
+        [
+          _vm._v(_vm._s(_vm.value) + " "),
+          _c(
+            "span",
+            {
+              directives: [
+                {
+                  name: "tooltip",
+                  rawName: "v-tooltip.top",
+                  value: "Edit",
+                  expression: "'Edit'",
+                  modifiers: { top: true }
+                }
+              ],
+              staticClass: "edit square true-square light-2-hover"
+            },
+            [_c("i", { staticClass: "far fa-pen" })]
+          )
+        ]
       )
     : _c("input", {
         ref: "input",
