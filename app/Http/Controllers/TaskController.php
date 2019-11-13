@@ -89,29 +89,32 @@ class TaskController extends Controller
         }
 
         foreach ($file_ids as $file_id) {
+            $pushWithAccess = false;
+            $taskToPush = null;
             if (count(Array($user_tasks)) > 0) {
                 foreach($user_tasks as $user_task) {
                     $file = Collection::find($file_id);
                     if ($file->phase == $user_task->phase_id) {
-                        $shouldPush = true;
-                    } else {
-                        $shouldPush = false;
+                        $pushWithAccess = true;
+                        $taskToPush = $user_task->id;
                     }
+
+                    // Check if the task has been completed
                     if (count($user_task->fileTasks) > 0) {
 
                         foreach($user_task->fileTasks as $file_task) {
                             // array_push($dataToReturn, $file_task);
                             if ($file_task->file_id == $file_id) {
-                                $shouldPush = false;
+                                $pushWithAccess = false;
                             }
                         }
                     }
-                    if ($shouldPush) {
-                        array_push($dataToReturn, ['task_id' => $user_task->id, 'file_id' => $file_id, 'has_access' => true]);
-                    } else {
-                        array_push($dataToReturn, ['task_id' => $user_task->id, 'file_id' => $file_id, 'has_access' => false]);
-                    }
                 }
+            }
+            if ($pushWithAccess) {
+                array_push($dataToReturn, ['task_id' => $taskToPush, 'file_id' => $file_id, 'has_access' => true]);
+            } else {
+                array_push($dataToReturn, ['task_id' => $taskToPush, 'file_id' => $file_id, 'has_access' => false]);
             }
         }
 
