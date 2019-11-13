@@ -6,8 +6,6 @@
                     <div class="left">
                         <span class="square true-square light close clickable" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
                         <h3><Editable :value="product.title" :type="'text'" v-model="product.title"/></h3>
-                        <!-- <h3 v-if="!editingTitle" class="clickable" @click="editTitle">{{product.title}}</h3>
-                        <h3 v-else><input ref="editTitleField" class="input-wrapper" type="text" v-model="product.title"></h3> -->
                     </div>
                     <div class="right controls">
                         <div class="last-update" v-if="product.created_at != product.updated_at">
@@ -33,18 +31,48 @@
                         <div class="product-variants" v-dragscroll>
                             <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index">
                                 <div class="img-wrapper">
-                                    <img v-if="variant.image" :src="variantImg(variant)" @error="imgError(variant)">
-                                    <template v-else>
-                                        <div class="controls">
-                                            <span class="button light-2">Choose from file</span>
-                                            <span class="button light-2">URL</span>
-                                        </div>
-                                    </template>
+                                    <div class="drop-area" :class="{disabled: variant.image}" @dragenter="dragActive" @dragleave="dragInactive" @drop="dragInactive">
+                                        <input v-if="variant.image" type="file" accept=".csv, text/csv" @change="filesChange($event, index, variant)" @click.prevent>
+                                        <input v-else type="file" :ref="'fileInput-'+index" accept=".csv, text/csv" @change="filesChange($event, index, variant)">
+                                        <img v-if="variant.image" :src="variantImg(variant)" @error="imgError(variant)">
+                                        <template v-else>
+                                            <div class="controls">
+                                                <span class="button light-2" @click="$refs['fileInput-'+index][0].click()">Choose from file</span>
+                                                <span class="button light-2">URL</span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    <div class="controls">
+                                        <Dropdown class="dropdown-parent dark">
+                                            <template v-slot:button="slotProps">
+                                                <span class="square true-square light-2 clickable" @click="slotProps.toggle()"><i class="fas fa-ellipsis-h"></i></span>
+                                            </template>
+                                            <template v-slot:header="slotProps">
+                                                <div class="header">
+                                                    <span>Edit Variant</span>
+                                                    <span class="circle small dark" @click="slotProps.toggle()"><i class="far fa-times"></i></span>
+                                                </div>
+                                            </template>
+                                            <template v-slot:body>
+                                                <div class="hotkeys">
+                                                    <div class="hotkey">
+                                                        <span class="button white">Choose file</span><span class="square true-square white">C</span>
+                                                    </div>
+                                                    <div class="hotkey">
+                                                        <span class="button white">URL</span><span class="square true-square white">U</span>
+                                                    </div>
+                                                    <div class="hotkey">
+                                                        <span class="button white">Rename</span><span class="square true-square white">R</span>
+                                                    </div>
+                                                    <div class="hotkey">
+                                                        <span class="button red" @click="removeVariant(index)">Delete</span><span class="square true-square red">D</span>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </Dropdown>
+                                    </div>
                                 </div>
-                                <div class="color-wrapper">
-                                    <div class="circle-img"><img :src="variantImg(variant)" @error="imgError(variant)"></div>
-                                    <span>{{variant.color}}</span>
-                                </div>
+                                <Editable :placeholder="'Untitled'" :value="variant.color" :type="'text'" v-model="variant.color"/>
                             </div>
                         </div>
                         <label>Product ID</label>
@@ -119,6 +147,7 @@ export default {
         productToEdit: null,
         savedMarkup: null,
         editingTitle: false,
+        filesToUpload: [],
     }},
     watch: {
         currentProductv1(newVal, oldVal) {
@@ -187,9 +216,19 @@ export default {
                 sizes: null,
             })
         },
+        removeVariant(index) {
+            console.log('hekk')
+            this.productToEdit.color_variants.splice(index)
+        },
         onUpdateProduct() {
             // Prepare the file to fit the database schema
             const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
+
+            // Check if we have any files (images) we need to upload
+            const files = this.filesToUpload
+            if (files.length > 0) {
+
+            }
 
             // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
             // Since we are only using months add + ' 3' -> set the date to the 3rd to avoid the month changing when we slice due to timezone differences.
@@ -244,14 +283,77 @@ export default {
             let newDate = new Date(date).toLocaleDateString("en-GB", {month: "long",year: "numeric"})
             product.delivery_date = newDate
         },
-        editTitle() {
-            this.editingTitle = true
-            this.$nextTick(() => {
-                const el = this.$refs.editTitleField
-                el.focus()
-                el.select()
-            })
+        dragActive(e) {
+            e.target.closest('.drop-area').classList.add('drag')
+        },
+        dragInactive(e) {
+            e.target.closest('.drop-area').classList.remove('drag')
+        },
+        filesChange(e, index, variant) {
+            const file = e.target.files[0]
+            // Check that the file is an image
+            if (file && file['type'].split('/')[0] === 'image') {
+                // if (this.filesToUpload.index) {
+                //     this.filesToUpload.index = file
+                // } else {
+                //     this.filesToUpload.index = file
+                // }
+                const existingFile = this.filesToUpload.find(x => x.index == index)
+                if (!existingFile) {
+                    this.filesToUpload.push({index: index, file: file, image: null})
+                } else {
+                    existingFile.file = file
+                }
+            } else {
+                // Throw error
+                console.log('invalid file extension')
+            }
+            const fileReader = new FileReader()
+            fileReader.readAsDataURL(file)
+            // fileReader.onload = this.imageLoadHandler
+            fileReader.onload = (e) => {
+                console.log(' load load?')
+                const newImage = e.target.result
+                variant.image = newImage
+            }
+        },
+        imageLoadHandler(e) {
+            image = e.target.result
+            console.log(e.target.result)
         }
+        // removeFile(index) {
+        //     this.newFile.files.splice(index, 1)
+        // },
+        // uploadFiles() {
+        //     // Set new file data
+        //     const newFile = this.newFile
+        //     newFile.phase = Phase.query().first().id
+        //     newFile.folderId = File.query().first().catalog_id
+        //     newFile.workspace_id = this.currentWorkspaceId
+
+
+        //     // Create collection from name
+        //     this.uploadingFile = true
+        //     this.uploadFile(newFile)
+        //     .then(success => {
+        //         this.uploadingFile = false
+                
+        //         // Close modal on succes
+        //         if (success) 
+        //             this.$refs.addFileModal.toggle()
+        //         else window.alert('Something went wrong. Please try again')
+        //     })
+
+
+        //     // Do some validation with fileReader
+
+        //     // newFile.files.forEach(file => {
+        //     //     this.filesToProces++
+        //     //     const fileReader = new FileReader()
+        //     //     fileReader.readAsText(file)
+        //     //     fileReader.onload = this.loadHandler
+        //     // })
+        // },
     },
     created() {
         document.body.addEventListener('keydown', this.hotkeyHandler)
@@ -272,6 +374,37 @@ export default {
             background: $light;
             display: flex;
             flex-direction: column;
+            > .header {
+                display: flex;
+                border-bottom: solid 2px $light1;
+                padding: 6px 20px;
+                position: sticky;
+                top: 0;
+                z-index: 2;
+                background: white;
+                height: 72px;
+                align-items: center;
+                h3 {
+                    width: 100%;
+                }
+                > * {
+                    flex: 1;
+                    display: flex;
+                    align-items: center;
+                }
+                .close {
+                    margin-right: 24px;
+                }
+                .controls {
+                    display: flex;
+                    justify-content: flex-end;
+                    width: 100%;
+                    align-items: flex-start;
+                    > *:not(:last-child) {
+                        margin-right: 12px;
+                    }
+                }
+            }
             .body {
                 padding: 24px;
                 height: 50%;
@@ -306,37 +439,6 @@ export default {
             background: $light2;
         }
     }
-    .header {
-        display: flex;
-        border-bottom: solid 2px $light1;
-        padding: 6px 20px;
-        position: sticky;
-        top: 0;
-        z-index: 2;
-        background: white;
-        height: 72px;
-        align-items: center;
-        h3 {
-            width: 100%;
-        }
-        > * {
-            flex: 1;
-            display: flex;
-            align-items: center;
-        }
-        .close {
-            margin-right: 24px;
-        }
-        .controls {
-            display: flex;
-            justify-content: flex-end;
-            width: 100%;
-            align-items: flex-start;
-            > *:not(:last-child) {
-                margin-right: 12px;
-            }
-        }
-    }
     .product-variants {
         margin-top: 12px;
         white-space: nowrap;
@@ -346,7 +448,6 @@ export default {
     .product-variant {
         width: 180px;
         display: inline-block;
-        cursor: pointer;
         &:not(:last-child) {
             margin-right: 12px;
         }
@@ -367,7 +468,10 @@ export default {
                 top: 0;
                 left: 0;
             }
-            .controls {
+            .drop-area {
+                input[type=file] {
+                    cursor: auto;
+                }
                 position: absolute;
                 display: flex;
                 flex-direction: column;
@@ -377,12 +481,35 @@ export default {
                 left: 0;
                 width: 100%;
                 height: 100%;
-                > *:not(:last-child) {
-                    margin-bottom: 8px;
+                &.drag {
+                    background: $light1;
                 }
-                .button {
-                    width: 124px;
+                &.disabled {
+                    pointer-events: none;
                 }
+                .controls {
+                    display: flex;
+                    flex-direction: column;
+                    position: relative;
+                    z-index: 1;
+                    > *:not(:last-child) {
+                        margin-bottom: 8px;
+                    }
+                    .button {
+                        width: 124px;
+                    }
+                }
+            }
+            > .controls {
+                position: absolute;
+                z-index: 2;
+                right: 4px;
+                top: 4px;
+                opacity: 0;
+                transition: .3s;
+            }
+            &:hover .controls {
+                opacity: 1;
             }
         }
         .color-wrapper {
@@ -423,6 +550,29 @@ export default {
     .details {
         .currencies {
             margin-bottom: 32px;
+        }
+    }
+    .dropdown {
+        .header {
+            color: white;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 0 0 4px;
+        }
+        .hotkeys {
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            .hotkey {
+                &:not(:last-child) {
+                    margin-bottom: 8px;
+                }
+                > :first-child {
+                    margin-right: 6px;
+                    width: 86px;
+                }
+            }
         }
     }
 </style>

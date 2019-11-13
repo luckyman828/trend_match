@@ -7890,6 +7890,34 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -7910,7 +7938,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       currencyIndex: 0,
       productToEdit: null,
       savedMarkup: null,
-      editingTitle: false
+      editingTitle: false,
+      filesToUpload: []
     };
   },
   watch: {
@@ -7979,10 +8008,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         sizes: null
       });
     },
+    removeVariant: function removeVariant(index) {
+      console.log('hekk');
+      this.productToEdit.color_variants.splice(index);
+    },
     onUpdateProduct: function onUpdateProduct() {
       // Prepare the file to fit the database schema
-      var productToUpload = JSON.parse(JSON.stringify(this.productToEdit)); // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
+      var productToUpload = JSON.parse(JSON.stringify(this.productToEdit)); // Check if we have any files (images) we need to upload
+
+      var files = this.filesToUpload;
+
+      if (files.length > 0) {} // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
       // Since we are only using months add + ' 3' -> set the date to the 3rd to avoid the month changing when we slice due to timezone differences.
+
 
       productToUpload.delivery_date = new Date(productToUpload.delivery_date + ' 3').toJSON().slice(0, 10);
       this.updateProduct(productToUpload);
@@ -8026,16 +8064,79 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       product.delivery_date = newDate;
     },
-    editTitle: function editTitle() {
-      var _this = this;
+    dragActive: function dragActive(e) {
+      e.target.closest('.drop-area').classList.add('drag');
+    },
+    dragInactive: function dragInactive(e) {
+      e.target.closest('.drop-area').classList.remove('drag');
+    },
+    filesChange: function filesChange(e, index, variant) {
+      var file = e.target.files[0]; // Check that the file is an image
 
-      this.editingTitle = true;
-      this.$nextTick(function () {
-        var el = _this.$refs.editTitleField;
-        el.focus();
-        el.select();
-      });
-    }
+      if (file && file['type'].split('/')[0] === 'image') {
+        // if (this.filesToUpload.index) {
+        //     this.filesToUpload.index = file
+        // } else {
+        //     this.filesToUpload.index = file
+        // }
+        var existingFile = this.filesToUpload.find(function (x) {
+          return x.index == index;
+        });
+
+        if (!existingFile) {
+          this.filesToUpload.push({
+            index: index,
+            file: file,
+            image: null
+          });
+        } else {
+          existingFile.file = file;
+        }
+      } else {
+        // Throw error
+        console.log('invalid file extension');
+      }
+
+      var fileReader = new FileReader();
+      fileReader.readAsDataURL(file); // fileReader.onload = this.imageLoadHandler
+
+      fileReader.onload = function (e) {
+        console.log(' load load?');
+        var newImage = e.target.result;
+        variant.image = newImage;
+      };
+    },
+    imageLoadHandler: function imageLoadHandler(e) {
+      image = e.target.result;
+      console.log(e.target.result);
+    } // removeFile(index) {
+    //     this.newFile.files.splice(index, 1)
+    // },
+    // uploadFiles() {
+    //     // Set new file data
+    //     const newFile = this.newFile
+    //     newFile.phase = Phase.query().first().id
+    //     newFile.folderId = File.query().first().catalog_id
+    //     newFile.workspace_id = this.currentWorkspaceId
+    //     // Create collection from name
+    //     this.uploadingFile = true
+    //     this.uploadFile(newFile)
+    //     .then(success => {
+    //         this.uploadingFile = false
+    //         // Close modal on succes
+    //         if (success) 
+    //             this.$refs.addFileModal.toggle()
+    //         else window.alert('Something went wrong. Please try again')
+    //     })
+    //     // Do some validation with fileReader
+    //     // newFile.files.forEach(file => {
+    //     //     this.filesToProces++
+    //     //     const fileReader = new FileReader()
+    //     //     fileReader.readAsText(file)
+    //     //     fileReader.onload = this.loadHandler
+    //     // })
+    // },
+
   }),
   created: function created() {
     document.body.addEventListener('keydown', this.hotkeyHandler);
@@ -16833,7 +16934,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".edit-product-single[data-v-8542425c] {\n  height: 100%;\n}\n.edit-product-single > .inner[data-v-8542425c] {\n  height: 100%;\n  width: 100%;\n  background: #f9f9f9;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.edit-product-single > .inner .body[data-v-8542425c] {\n  padding: 24px;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.edit-product-single .details[data-v-8542425c] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\nh3[data-v-8542425c] {\n  font-size: 16px;\n  font-weight: 400;\n}\n.close i[data-v-8542425c] {\n  font-size: 22px;\n}\n.card > .grid-2[data-v-8542425c] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-2.grid-border-between[data-v-8542425c] {\n  grid-template-columns: 1fr 2px 1fr;\n  grid-gap: 17px;\n}\n.grid-2.grid-border-between[data-v-8542425c] > :nth-child(2) {\n  background: #dfdfdf;\n}\n.header[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header h3[data-v-8542425c] {\n  width: 100%;\n}\n.header > *[data-v-8542425c] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header .close[data-v-8542425c] {\n  margin-right: 24px;\n}\n.header .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  -webkit-box-align: start;\n          align-items: flex-start;\n}\n.header .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variants[data-v-8542425c] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n  margin-bottom: 40px;\n}\n.product-variant[data-v-8542425c] {\n  width: 180px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .img-wrapper[data-v-8542425c] {\n  padding-top: 133.33%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 2px;\n  border: solid 1px #dfdfdf;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-8542425c] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant .img-wrapper .controls[data-v-8542425c] {\n  position: absolute;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n}\n.product-variant .img-wrapper .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.product-variant .img-wrapper .controls .button[data-v-8542425c] {\n  width: 124px;\n}\n.product-variant .color-wrapper[data-v-8542425c] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-8542425c] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-8542425c] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-8542425c] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.input-wrapper.composition[data-v-8542425c] {\n  white-space: pre-line;\n}\n.last-update[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  font-size: 11px;\n  font-weight: 500;\n  text-align: right;\n}\n.details .currencies[data-v-8542425c] {\n  margin-bottom: 32px;\n}", ""]);
+exports.push([module.i, ".edit-product-single[data-v-8542425c] {\n  height: 100%;\n}\n.edit-product-single > .inner[data-v-8542425c] {\n  height: 100%;\n  width: 100%;\n  background: #f9f9f9;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.edit-product-single > .inner > .header[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.edit-product-single > .inner > .header h3[data-v-8542425c] {\n  width: 100%;\n}\n.edit-product-single > .inner > .header > *[data-v-8542425c] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.edit-product-single > .inner > .header .close[data-v-8542425c] {\n  margin-right: 24px;\n}\n.edit-product-single > .inner > .header .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  -webkit-box-align: start;\n          align-items: flex-start;\n}\n.edit-product-single > .inner > .header .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.edit-product-single > .inner .body[data-v-8542425c] {\n  padding: 24px;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.edit-product-single .details[data-v-8542425c] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\nh3[data-v-8542425c] {\n  font-size: 16px;\n  font-weight: 400;\n}\n.close i[data-v-8542425c] {\n  font-size: 22px;\n}\n.card > .grid-2[data-v-8542425c] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-2.grid-border-between[data-v-8542425c] {\n  grid-template-columns: 1fr 2px 1fr;\n  grid-gap: 17px;\n}\n.grid-2.grid-border-between[data-v-8542425c] > :nth-child(2) {\n  background: #dfdfdf;\n}\n.product-variants[data-v-8542425c] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n  margin-bottom: 40px;\n}\n.product-variant[data-v-8542425c] {\n  width: 180px;\n  display: inline-block;\n}\n.product-variant[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .img-wrapper[data-v-8542425c] {\n  padding-top: 133.33%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 2px;\n  border: solid 1px #dfdfdf;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-8542425c] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant .img-wrapper .drop-area[data-v-8542425c] {\n  position: absolute;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n}\n.product-variant .img-wrapper .drop-area input[type=file][data-v-8542425c] {\n  cursor: auto;\n}\n.product-variant .img-wrapper .drop-area.drag[data-v-8542425c] {\n  background: #f3f3f3;\n}\n.product-variant .img-wrapper .drop-area.disabled[data-v-8542425c] {\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  position: relative;\n  z-index: 1;\n}\n.product-variant .img-wrapper .drop-area .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.product-variant .img-wrapper .drop-area .controls .button[data-v-8542425c] {\n  width: 124px;\n}\n.product-variant .img-wrapper > .controls[data-v-8542425c] {\n  position: absolute;\n  z-index: 2;\n  right: 4px;\n  top: 4px;\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.product-variant .img-wrapper:hover .controls[data-v-8542425c] {\n  opacity: 1;\n}\n.product-variant .color-wrapper[data-v-8542425c] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-8542425c] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-8542425c] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-8542425c] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.input-wrapper.composition[data-v-8542425c] {\n  white-space: pre-line;\n}\n.last-update[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  font-size: 11px;\n  font-weight: 500;\n  text-align: right;\n}\n.details .currencies[data-v-8542425c] {\n  margin-bottom: 32px;\n}\n.dropdown .header[data-v-8542425c] {\n  color: white;\n  font-size: 12px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  padding: 0 0 0 4px;\n}\n.dropdown .hotkeys[data-v-8542425c] {\n  padding: 8px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.dropdown .hotkeys .hotkey[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.dropdown .hotkeys .hotkey[data-v-8542425c] > :first-child {\n  margin-right: 6px;\n  width: 86px;\n}", ""]);
 
 // exports
 
@@ -32152,12 +32253,14 @@ var render = function() {
         },
         [
           _c("div", { staticClass: "inner" }, [
-            _c(
-              "div",
-              { staticClass: "header" },
-              [_vm._t("header", null, { toggle: _vm.toggle })],
-              2
-            ),
+            _vm.$scopedSlots.header
+              ? _c(
+                  "div",
+                  { staticClass: "header" },
+                  [_vm._t("header", null, { toggle: _vm.toggle })],
+                  2
+                )
+              : _vm._e(),
             _vm._v(" "),
             _c(
               "div",
@@ -32166,12 +32269,14 @@ var render = function() {
               2
             ),
             _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "footer" },
-              [_vm._t("footer", null, { toggle: _vm.toggle })],
-              2
-            )
+            _vm.$scopedSlots.footer
+              ? _c(
+                  "div",
+                  { staticClass: "footer" },
+                  [_vm._t("footer", null, { toggle: _vm.toggle })],
+                  2
+                )
+              : _vm._e()
           ])
         ]
       )
@@ -32671,39 +32776,301 @@ var render = function() {
                         "div",
                         { key: index, staticClass: "product-variant" },
                         [
-                          _c(
-                            "div",
-                            { staticClass: "img-wrapper" },
-                            [
-                              variant.image
-                                ? _c("img", {
-                                    attrs: { src: _vm.variantImg(variant) },
-                                    on: {
-                                      error: function($event) {
-                                        return _vm.imgError(variant)
-                                      }
-                                    }
-                                  })
-                                : [_vm._m(2, true)]
-                            ],
-                            2
-                          ),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "color-wrapper" }, [
-                            _c("div", { staticClass: "circle-img" }, [
-                              _c("img", {
-                                attrs: { src: _vm.variantImg(variant) },
+                          _c("div", { staticClass: "img-wrapper" }, [
+                            _c(
+                              "div",
+                              {
+                                staticClass: "drop-area",
+                                class: { disabled: variant.image },
                                 on: {
-                                  error: function($event) {
-                                    return _vm.imgError(variant)
-                                  }
+                                  dragenter: _vm.dragActive,
+                                  dragleave: _vm.dragInactive,
+                                  drop: _vm.dragInactive
                                 }
-                              })
-                            ]),
+                              },
+                              [
+                                variant.image
+                                  ? _c("input", {
+                                      attrs: {
+                                        type: "file",
+                                        accept: ".csv, text/csv"
+                                      },
+                                      on: {
+                                        change: function($event) {
+                                          return _vm.filesChange(
+                                            $event,
+                                            index,
+                                            variant
+                                          )
+                                        },
+                                        click: function($event) {
+                                          $event.preventDefault()
+                                        }
+                                      }
+                                    })
+                                  : _c("input", {
+                                      ref: "fileInput-" + index,
+                                      refInFor: true,
+                                      attrs: {
+                                        type: "file",
+                                        accept: ".csv, text/csv"
+                                      },
+                                      on: {
+                                        change: function($event) {
+                                          return _vm.filesChange(
+                                            $event,
+                                            index,
+                                            variant
+                                          )
+                                        }
+                                      }
+                                    }),
+                                _vm._v(" "),
+                                variant.image
+                                  ? _c("img", {
+                                      attrs: { src: _vm.variantImg(variant) },
+                                      on: {
+                                        error: function($event) {
+                                          return _vm.imgError(variant)
+                                        }
+                                      }
+                                    })
+                                  : [
+                                      _c("div", { staticClass: "controls" }, [
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass: "button light-2",
+                                            on: {
+                                              click: function($event) {
+                                                _vm.$refs[
+                                                  "fileInput-" + index
+                                                ][0].click()
+                                              }
+                                            }
+                                          },
+                                          [_vm._v("Choose from file")]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "span",
+                                          { staticClass: "button light-2" },
+                                          [_vm._v("URL")]
+                                        )
+                                      ])
+                                    ]
+                              ],
+                              2
+                            ),
                             _vm._v(" "),
-                            _c("span", [_vm._v(_vm._s(variant.color))])
-                          ])
-                        ]
+                            _c(
+                              "div",
+                              { staticClass: "controls" },
+                              [
+                                _c("Dropdown", {
+                                  staticClass: "dropdown-parent dark",
+                                  scopedSlots: _vm._u(
+                                    [
+                                      {
+                                        key: "button",
+                                        fn: function(slotProps) {
+                                          return [
+                                            _c(
+                                              "span",
+                                              {
+                                                staticClass:
+                                                  "square true-square light-2 clickable",
+                                                on: {
+                                                  click: function($event) {
+                                                    return slotProps.toggle()
+                                                  }
+                                                }
+                                              },
+                                              [
+                                                _c("i", {
+                                                  staticClass:
+                                                    "fas fa-ellipsis-h"
+                                                })
+                                              ]
+                                            )
+                                          ]
+                                        }
+                                      },
+                                      {
+                                        key: "header",
+                                        fn: function(slotProps) {
+                                          return [
+                                            _c(
+                                              "div",
+                                              { staticClass: "header" },
+                                              [
+                                                _c("span", [
+                                                  _vm._v("Edit Variant")
+                                                ]),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "span",
+                                                  {
+                                                    staticClass:
+                                                      "circle small dark",
+                                                    on: {
+                                                      click: function($event) {
+                                                        return slotProps.toggle()
+                                                      }
+                                                    }
+                                                  },
+                                                  [
+                                                    _c("i", {
+                                                      staticClass:
+                                                        "far fa-times"
+                                                    })
+                                                  ]
+                                                )
+                                              ]
+                                            )
+                                          ]
+                                        }
+                                      },
+                                      {
+                                        key: "body",
+                                        fn: function() {
+                                          return [
+                                            _c(
+                                              "div",
+                                              { staticClass: "hotkeys" },
+                                              [
+                                                _c(
+                                                  "div",
+                                                  { staticClass: "hotkey" },
+                                                  [
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
+                                                          "button white"
+                                                      },
+                                                      [_vm._v("Choose file")]
+                                                    ),
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
+                                                          "square true-square white"
+                                                      },
+                                                      [_vm._v("C")]
+                                                    )
+                                                  ]
+                                                ),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "div",
+                                                  { staticClass: "hotkey" },
+                                                  [
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
+                                                          "button white"
+                                                      },
+                                                      [_vm._v("URL")]
+                                                    ),
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
+                                                          "square true-square white"
+                                                      },
+                                                      [_vm._v("U")]
+                                                    )
+                                                  ]
+                                                ),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "div",
+                                                  { staticClass: "hotkey" },
+                                                  [
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
+                                                          "button white"
+                                                      },
+                                                      [_vm._v("Rename")]
+                                                    ),
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
+                                                          "square true-square white"
+                                                      },
+                                                      [_vm._v("R")]
+                                                    )
+                                                  ]
+                                                ),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "div",
+                                                  { staticClass: "hotkey" },
+                                                  [
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
+                                                          "button red",
+                                                        on: {
+                                                          click: function(
+                                                            $event
+                                                          ) {
+                                                            return _vm.removeVariant(
+                                                              index
+                                                            )
+                                                          }
+                                                        }
+                                                      },
+                                                      [_vm._v("Delete")]
+                                                    ),
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
+                                                          "square true-square red"
+                                                      },
+                                                      [_vm._v("D")]
+                                                    )
+                                                  ]
+                                                )
+                                              ]
+                                            )
+                                          ]
+                                        },
+                                        proxy: true
+                                      }
+                                    ],
+                                    null,
+                                    true
+                                  )
+                                })
+                              ],
+                              1
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("Editable", {
+                            attrs: {
+                              placeholder: "Untitled",
+                              value: variant.color,
+                              type: "text"
+                            },
+                            model: {
+                              value: variant.color,
+                              callback: function($$v) {
+                                _vm.$set(variant, "color", $$v)
+                              },
+                              expression: "variant.color"
+                            }
+                          })
+                        ],
+                        1
                       )
                     }),
                     0
@@ -33007,18 +33374,6 @@ var staticRenderFns = [
         _vm._v(" Edit")
       ])
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "controls" }, [
-      _c("span", { staticClass: "button light-2" }, [
-        _vm._v("Choose from file")
-      ]),
-      _vm._v(" "),
-      _c("span", { staticClass: "button light-2" }, [_vm._v("URL")])
-    ])
   }
 ]
 render._withStripped = true
@@ -33289,7 +33644,7 @@ var render = function() {
           on: { click: _vm.activate }
         },
         [
-          _vm._v(_vm._s(_vm.value) + " "),
+          _vm._v(_vm._s(_vm.value ? _vm.value : _vm.placeholder) + " "),
           _c(
             "span",
             {

@@ -9,13 +9,13 @@
 
         <div class="dropdown" :class="[{collapsed: collapsed}, {above: showAbove}]" ref="dropdown">
             <div class="inner">
-                <div class="header">
+                <div v-if="$scopedSlots.header" class="header">
                     <slot name="header" :toggle="toggle"></slot>
                 </div>
                 <div class="body">
                     <slot name="body" :toggle="toggle"></slot>
                 </div>
-                <div class="footer">
+                <div v-if="$scopedSlots.footer" class="footer">
                     <slot name="footer" :toggle="toggle"></slot>
                 </div>
             </div>
