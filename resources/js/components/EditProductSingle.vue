@@ -15,12 +15,12 @@
                         <div class="hotkey-wrapper">
                             <span v-if="!updatingProduct" class="button ghost icon-left" :class="{disabled: !hasChanges}" @click="onUpdateProduct"><i class="far fa-save"></i>Save</span>
                             <span v-else class="button ghost icon-left disabled"><Loader/></span>
-                            <span class="hotkey"><span class="key">S</span> Save</span>
+                            <!-- <span class="hotkey"><span class="key">S</span> Save</span> -->
                         </div>
-                        <div class="hotkey-wrapper">
+                        <!-- <div class="hotkey-wrapper">
                             <span class="button ghost icon-left"><i class="far fa-file-edit"></i>Edit</span>
                             <span class="hotkey"><span class="key">E</span> Edit</span>
-                        </div>
+                        </div> -->
                         <span class="circle primary clickable" @click="onPrevSingle()" :class="[{ disabled: prevProductId == null}]"><i class="fas fa-chevron-left"></i></span>
                         <span class="circle primary clickable" @click="onNextSingle()" :class="[{ disabled: nextProductId == null}]"><i class="fas fa-chevron-right"></i></span>
                     </div>
@@ -39,7 +39,7 @@
                                         <template v-else>
                                             <div class="controls">
                                                 <span class="button light-2" @click="$refs['fileInput-'+index][0].click()">Choose from file</span>
-                                                <span class="button light-2">URL</span>
+                                                <!-- <span class="button light-2">URL</span> -->
                                             </div>
                                         </template>
                                     </div>
@@ -51,12 +51,12 @@
                                             <template v-slot:header="slotProps">
                                                 <div class="header">
                                                     <span>Edit Variant</span>
-                                                    <span class="circle small dark" @click="slotProps.toggle()"><i class="far fa-times"></i></span>
+                                                    <span class="circle small dark clickable" @click="slotProps.toggle()"><i class="far fa-times"></i></span>
                                                 </div>
                                             </template>
                                             <template v-slot:body>
                                                 <div class="hotkeys">
-                                                    <div class="hotkey">
+                                                    <!-- <div class="hotkey">
                                                         <span class="button white">Choose file</span><span class="square true-square white">C</span>
                                                     </div>
                                                     <div class="hotkey">
@@ -64,9 +64,10 @@
                                                     </div>
                                                     <div class="hotkey">
                                                         <span class="button white">Rename</span><span class="square true-square white">R</span>
-                                                    </div>
+                                                    </div> -->
                                                     <div class="hotkey">
-                                                        <span class="button red" @click="removeVariant(index)">Delete</span><span class="square true-square red">D</span>
+                                                        <span class="button red" @click="removeVariant(index)">Delete</span>
+                                                        <!-- <span class="square true-square red">D</span> -->
                                                     </div>
                                                 </div>
                                             </template>

@@ -7693,6 +7693,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'editFileHeader',
@@ -7804,6 +7816,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
 //
 //
 //
@@ -32489,22 +32502,7 @@ var render = function() {
       _c("div", [
         _vm._m(0),
         _vm._v(" "),
-        _c(
-          "h1",
-          [
-            _c("Editable", {
-              attrs: { value: _vm.file.title, type: "text" },
-              model: {
-                value: _vm.file.title,
-                callback: function($$v) {
-                  _vm.$set(_vm.file, "title", $$v)
-                },
-                expression: "file.title"
-              }
-            })
-          ],
-          1
-        )
+        _c("h1", [_vm._v(_vm._s(_vm.file.title))])
       ])
     ]),
     _vm._v(" "),
@@ -32809,12 +32807,8 @@ var render = function() {
                           { staticClass: "button ghost icon-left disabled" },
                           [_c("Loader")],
                           1
-                        ),
-                    _vm._v(" "),
-                    _vm._m(0)
+                        )
                   ]),
-                  _vm._v(" "),
-                  _vm._m(1),
                   _vm._v(" "),
                   _c(
                     "span",
@@ -32958,12 +32952,6 @@ var render = function() {
                                             }
                                           },
                                           [_vm._v("Choose from file")]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "span",
-                                          { staticClass: "button light-2" },
-                                          [_vm._v("URL")]
                                         )
                                       ])
                                     ]
@@ -33020,7 +33008,7 @@ var render = function() {
                                                   "span",
                                                   {
                                                     staticClass:
-                                                      "circle small dark",
+                                                      "circle small dark clickable",
                                                     on: {
                                                       click: function($event) {
                                                         return slotProps.toggle()
@@ -33055,75 +33043,6 @@ var render = function() {
                                                       "span",
                                                       {
                                                         staticClass:
-                                                          "button white"
-                                                      },
-                                                      [_vm._v("Choose file")]
-                                                    ),
-                                                    _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "square true-square white"
-                                                      },
-                                                      [_vm._v("C")]
-                                                    )
-                                                  ]
-                                                ),
-                                                _vm._v(" "),
-                                                _c(
-                                                  "div",
-                                                  { staticClass: "hotkey" },
-                                                  [
-                                                    _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "button white"
-                                                      },
-                                                      [_vm._v("URL")]
-                                                    ),
-                                                    _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "square true-square white"
-                                                      },
-                                                      [_vm._v("U")]
-                                                    )
-                                                  ]
-                                                ),
-                                                _vm._v(" "),
-                                                _c(
-                                                  "div",
-                                                  { staticClass: "hotkey" },
-                                                  [
-                                                    _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "button white"
-                                                      },
-                                                      [_vm._v("Rename")]
-                                                    ),
-                                                    _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "square true-square white"
-                                                      },
-                                                      [_vm._v("R")]
-                                                    )
-                                                  ]
-                                                ),
-                                                _vm._v(" "),
-                                                _c(
-                                                  "div",
-                                                  { staticClass: "hotkey" },
-                                                  [
-                                                    _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
                                                           "button red",
                                                         on: {
                                                           click: function(
@@ -33136,14 +33055,6 @@ var render = function() {
                                                         }
                                                       },
                                                       [_vm._v("Delete")]
-                                                    ),
-                                                    _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "square true-square red"
-                                                      },
-                                                      [_vm._v("D")]
                                                     )
                                                   ]
                                                 )
@@ -33457,33 +33368,7 @@ var render = function() {
     )
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("span", { staticClass: "hotkey" }, [
-      _c("span", { staticClass: "key" }, [_vm._v("S")]),
-      _vm._v(" Save")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "hotkey-wrapper" }, [
-      _c("span", { staticClass: "button ghost icon-left" }, [
-        _c("i", { staticClass: "far fa-file-edit" }),
-        _vm._v("Edit")
-      ]),
-      _vm._v(" "),
-      _c("span", { staticClass: "hotkey" }, [
-        _c("span", { staticClass: "key" }, [_vm._v("E")]),
-        _vm._v(" Edit")
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
