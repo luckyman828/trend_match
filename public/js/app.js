@@ -7786,16 +7786,25 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Dropdown */ "./resources/js/components/Dropdown.vue");
-/* harmony import */ var _TooltipAlt2__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./TooltipAlt2 */ "./resources/js/components/TooltipAlt2.vue");
-/* harmony import */ var _EditInputWrapper__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EditInputWrapper */ "./resources/js/components/EditInputWrapper.vue");
-/* harmony import */ var _Editable__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Editable */ "./resources/js/components/Editable.vue");
-/* harmony import */ var _store_models_Product__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../store/models/Product */ "./resources/js/store/models/Product.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Dropdown */ "./resources/js/components/Dropdown.vue");
+/* harmony import */ var _TooltipAlt2__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./TooltipAlt2 */ "./resources/js/components/TooltipAlt2.vue");
+/* harmony import */ var _EditInputWrapper__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EditInputWrapper */ "./resources/js/components/EditInputWrapper.vue");
+/* harmony import */ var _Editable__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Editable */ "./resources/js/components/Editable.vue");
+/* harmony import */ var _store_models_Product__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../store/models/Product */ "./resources/js/store/models/Product.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
 //
 //
 //
@@ -7928,10 +7937,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   name: 'editProductSingle',
   props: ['authUser', 'sticky', 'visible', 'loading'],
   components: {
-    Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_1__["default"],
-    TooltipAlt2: _TooltipAlt2__WEBPACK_IMPORTED_MODULE_2__["default"],
-    EditInputWrapper: _EditInputWrapper__WEBPACK_IMPORTED_MODULE_3__["default"],
-    Editable: _Editable__WEBPACK_IMPORTED_MODULE_4__["default"]
+    Dropdown: _Dropdown__WEBPACK_IMPORTED_MODULE_2__["default"],
+    TooltipAlt2: _TooltipAlt2__WEBPACK_IMPORTED_MODULE_3__["default"],
+    EditInputWrapper: _EditInputWrapper__WEBPACK_IMPORTED_MODULE_4__["default"],
+    Editable: _Editable__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
   data: function data() {
     return {
@@ -7939,7 +7948,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       productToEdit: null,
       savedMarkup: null,
       editingTitle: false,
-      filesToUpload: []
+      filesToUpload: [],
+      updatingProduct: false
     };
   },
   watch: {
@@ -7951,7 +7961,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['userPermissionLevel']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/products', ['currentProductv1', 'nextProductId', 'prevProductId']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['userPermissionLevel']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['currentProductv1', 'nextProductId', 'prevProductId']), {
     product: function product() {
       return this.productToEdit;
     },
@@ -7975,9 +7985,30 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var newProduct = this.productToEdit;
       var oldProduct = this.currentProductv1;
       return JSON.stringify(newProduct) != JSON.stringify(oldProduct);
+    },
+    filesToDelete: function filesToDelete() {
+      var newProduct = this.productToEdit;
+      var oldProduct = this.currentProductv1;
+      var filesToDelete = []; // Loop through the variants on the old product
+
+      oldProduct.color_variants.forEach(function (variant) {
+        // First check if the current variant has a blob id
+        if (variant.blob_id != null) {
+          // See if we can find the blob_id on the new product.
+          var exists = newProduct.color_variants.find(function (x) {
+            return x.blob_id == variant.blob_id;
+          }); // If we cannot find the blob_ib on the new product, it must mean that the blob is no longer used.
+          // We can therefore delete it
+
+          if (!exists) {
+            filesToDelete.push(variant.blob_id);
+          }
+        }
+      });
+      return filesToDelete;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/products', ['showNextProduct', 'showPrevProduct', 'updateProduct']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'uploadImages', 'deleteImages']), {
     variantImg: function variantImg(variant) {
       if (!variant.error && variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
     },
@@ -8009,30 +8040,91 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     removeVariant: function removeVariant(index) {
-      console.log('hekk');
-      this.productToEdit.color_variants.splice(index);
+      console.log('removing variant: ' + index);
+      this.productToEdit.color_variants.splice(index, 1); // this.removeFile(index)
     },
-    onUpdateProduct: function onUpdateProduct() {
-      // Prepare the file to fit the database schema
-      var productToUpload = JSON.parse(JSON.stringify(this.productToEdit)); // Check if we have any files (images) we need to upload
+    onUpdateProduct: function () {
+      var _onUpdateProduct = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        var _this = this;
 
-      var files = this.filesToUpload;
+        var productToUpload, files, filesToDelete;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                // Prepare the file to fit the database schema
+                this.updatingProduct = true;
+                productToUpload = JSON.parse(JSON.stringify(this.productToEdit)); // Check if we have any files (images) we need to upload
 
-      if (files.length > 0) {} // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
-      // Since we are only using months add + ' 3' -> set the date to the 3rd to avoid the month changing when we slice due to timezone differences.
+                files = this.filesToUpload;
+
+                if (!(files.length > 0)) {
+                  _context.next = 6;
+                  break;
+                }
+
+                _context.next = 6;
+                return this.uploadImages(files).then(function (success) {
+                  // When done trying to upload the images
+                  // Loop through the variants the images where uploaded to
+                  files.forEach(function (file) {
+                    // Find the variant the new file is being uploaded to
+                    var variant = productToUpload.color_variants[file.index];
+
+                    if (success) {
+                      // If the images were uploaded successfully
+                      // Set the variant blob_id equal to the files UUID to point to the newly uploaded image
+                      variant.blob_id = file.id; // Reset the files to be uploaded
+
+                      _this.filesToUpload = [];
+                    } // If we have new files to upload, it means that the variants image has changed.
+                    // Reset the respective variants image value, so the temp image, does not get saved to the DB.
+                    // Set the image URL of the variant to null
 
 
-      productToUpload.delivery_date = new Date(productToUpload.delivery_date + ' 3').toJSON().slice(0, 10);
-      this.updateProduct(productToUpload);
-    },
+                    variant.image = null;
+                  });
+                });
+
+              case 6:
+                // Check if we have any files (images) we need to delete
+                filesToDelete = this.filesToDelete;
+
+                if (filesToDelete.length > 0) {
+                  // Attempt to delete the images
+                  this.deleteImages(filesToDelete);
+                } // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
+                // Since we are only using months add + ' 3' -> set the date to the 3rd to avoid the month changing when we slice due to timezone differences.
+
+
+                productToUpload.delivery_date = new Date(productToUpload.delivery_date + ' 3').toJSON().slice(0, 10);
+                _context.next = 11;
+                return this.updateProduct(productToUpload).then(function (success) {
+                  _this.updatingProduct = false;
+                });
+
+              case 11:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function onUpdateProduct() {
+        return _onUpdateProduct.apply(this, arguments);
+      }
+
+      return onUpdateProduct;
+    }(),
     calculateMarkup: function calculateMarkup(newValue, price) {
-      console.log('claculating markup');
       var el = this.currentCurrency;
       var decimals = 2;
       if (price == 'wholesale_price') el.markup = Number(Math.round(el.recommended_retail_price / newValue + 'e' + decimals) + 'e-' + decimals);else el.markup = Number(Math.round(newValue / el.wholesale_price + 'e' + decimals) + 'e-' + decimals);
     },
     resetMarkup: function resetMarkup() {
-      console.log('reset markup');
       if (this.savedMarkup) this.currentCurrency.markup = this.savedMarkup;else {
         this.currentCurrency.markup = this.originalProduct.prices[this.currencyIndex].markup;
       }
@@ -8074,11 +8166,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var file = e.target.files[0]; // Check that the file is an image
 
       if (file && file['type'].split('/')[0] === 'image') {
-        // if (this.filesToUpload.index) {
-        //     this.filesToUpload.index = file
-        // } else {
-        //     this.filesToUpload.index = file
-        // }
+        // Generate UUID for the new image
+        var newUUID = this.$uuid.v4();
         var existingFile = this.filesToUpload.find(function (x) {
           return x.index == index;
         });
@@ -8087,56 +8176,35 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           this.filesToUpload.push({
             index: index,
             file: file,
-            image: null
+            id: newUUID
           });
         } else {
           existingFile.file = file;
         }
+
+        var fileReader = new FileReader();
+        fileReader.readAsDataURL(file); // fileReader.onload = this.imageLoadHandler
+
+        fileReader.onload = function (e) {
+          // Show the new image on the variant
+          var newImage = e.target.result;
+          variant.image = newImage;
+        };
       } else {
         // Throw error
         console.log('invalid file extension');
       }
-
-      var fileReader = new FileReader();
-      fileReader.readAsDataURL(file); // fileReader.onload = this.imageLoadHandler
-
-      fileReader.onload = function (e) {
-        console.log(' load load?');
-        var newImage = e.target.result;
-        variant.image = newImage;
-      };
     },
     imageLoadHandler: function imageLoadHandler(e) {
       image = e.target.result;
       console.log(e.target.result);
-    } // removeFile(index) {
-    //     this.newFile.files.splice(index, 1)
-    // },
-    // uploadFiles() {
-    //     // Set new file data
-    //     const newFile = this.newFile
-    //     newFile.phase = Phase.query().first().id
-    //     newFile.folderId = File.query().first().catalog_id
-    //     newFile.workspace_id = this.currentWorkspaceId
-    //     // Create collection from name
-    //     this.uploadingFile = true
-    //     this.uploadFile(newFile)
-    //     .then(success => {
-    //         this.uploadingFile = false
-    //         // Close modal on succes
-    //         if (success) 
-    //             this.$refs.addFileModal.toggle()
-    //         else window.alert('Something went wrong. Please try again')
-    //     })
-    //     // Do some validation with fileReader
-    //     // newFile.files.forEach(file => {
-    //     //     this.filesToProces++
-    //     //     const fileReader = new FileReader()
-    //     //     fileReader.readAsText(file)
-    //     //     fileReader.onload = this.loadHandler
-    //     // })
-    // },
-
+    },
+    removeFile: function removeFile(index) {
+      var fileToRemoveIndex = this.filesToUpload.findIndex(function (x) {
+        return x.index == index;
+      });
+      this.filesToUpload.splice(fileToRemoveIndex, 1);
+    }
   }),
   created: function created() {
     document.body.addEventListener('keydown', this.hotkeyHandler);
@@ -8711,6 +8779,36 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -17029,7 +17127,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".loader[data-v-e79ec684] {\n  height: 100%;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\nsvg[data-v-e79ec684] {\n  height: 100%;\n  max-height: 50px;\n  width: 100%;\n  margin: 12px 0;\n}\n.message[data-v-e79ec684] {\n  font-size: 12px;\n  font-weight: 700;\n  color: #a8a8a8;\n}", ""]);
+exports.push([module.i, ".loader[data-v-e79ec684] {\n  height: 100%;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\nsvg[data-v-e79ec684] {\n  height: 100%;\n  max-height: 50px;\n  width: 100%;\n}\n.message[data-v-e79ec684] {\n  font-size: 12px;\n  font-weight: 700;\n  color: #a8a8a8;\n}", ""]);
 
 // exports
 
@@ -32693,15 +32791,25 @@ var render = function() {
                     : _vm._e(),
                   _vm._v(" "),
                   _c("div", { staticClass: "hotkey-wrapper" }, [
-                    _c(
-                      "span",
-                      {
-                        staticClass: "button ghost icon-left",
-                        class: { disabled: !_vm.hasChanges },
-                        on: { click: _vm.onUpdateProduct }
-                      },
-                      [_c("i", { staticClass: "far fa-save" }), _vm._v("Save")]
-                    ),
+                    !_vm.updatingProduct
+                      ? _c(
+                          "span",
+                          {
+                            staticClass: "button ghost icon-left",
+                            class: { disabled: !_vm.hasChanges },
+                            on: { click: _vm.onUpdateProduct }
+                          },
+                          [
+                            _c("i", { staticClass: "far fa-save" }),
+                            _vm._v("Save")
+                          ]
+                        )
+                      : _c(
+                          "span",
+                          { staticClass: "button ghost icon-left disabled" },
+                          [_c("Loader")],
+                          1
+                        ),
                     _vm._v(" "),
                     _vm._m(0)
                   ]),
@@ -32789,11 +32897,11 @@ var render = function() {
                                 }
                               },
                               [
-                                variant.image
+                                variant.image || variant.blob_id
                                   ? _c("input", {
                                       attrs: {
                                         type: "file",
-                                        accept: ".csv, text/csv"
+                                        accept: "image/*"
                                       },
                                       on: {
                                         change: function($event) {
@@ -32813,7 +32921,7 @@ var render = function() {
                                       refInFor: true,
                                       attrs: {
                                         type: "file",
-                                        accept: ".csv, text/csv"
+                                        accept: "image/*"
                                       },
                                       on: {
                                         change: function($event) {
@@ -32826,7 +32934,7 @@ var render = function() {
                                       }
                                     }),
                                 _vm._v(" "),
-                                variant.image
+                                variant.image || variant.blob_id
                                   ? _c("img", {
                                       attrs: { src: _vm.variantImg(variant) },
                                       on: {
@@ -69462,6 +69570,88 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return updateProduct;
+    }(),
+    uploadImages: function () {
+      var _uploadImages = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref8, files) {
+        var commit, dispatch, uploadSucces, uploadApiUrl, data;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                commit = _ref8.commit, dispatch = _ref8.dispatch;
+                // Upload images to Blob storage
+                uploadSucces = false;
+                uploadApiUrl = "/api/product/images"; // Append the files
+
+                data = new FormData();
+                files.forEach(function (file) {
+                  data.append('files', file.file, file.id);
+                }); // console.log(data)
+
+                _context3.next = 7;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(uploadApiUrl, data).then(function (response) {
+                  console.log(response.data);
+                  uploadSucces = true;
+                })["catch"](function (err) {
+                  console.log('error');
+                  console.log(err.response);
+                  uploadSucces = false;
+                });
+
+              case 7:
+                return _context3.abrupt("return", uploadSucces);
+
+              case 8:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+
+      function uploadImages(_x5, _x6) {
+        return _uploadImages.apply(this, arguments);
+      }
+
+      return uploadImages;
+    }(),
+    deleteImages: function () {
+      var _deleteImages = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref9, imagesToDelete) {
+        var commit;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                commit = _ref9.commit;
+                console.log('Deleting images product in store');
+                _context4.next = 4;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/product/images", {
+                  data: {
+                    ids: imagesToDelete
+                  }
+                }).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err.response);
+                });
+
+              case 4:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }));
+
+      function deleteImages(_x7, _x8) {
+        return _deleteImages.apply(this, arguments);
+      }
+
+      return deleteImages;
     }()
   },
   mutations: (_mutations = {

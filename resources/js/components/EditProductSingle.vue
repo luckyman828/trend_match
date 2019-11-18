@@ -13,7 +13,8 @@
                             <span>{{product.updated_at}}</span>
                         </div>
                         <div class="hotkey-wrapper">
-                            <span class="button ghost icon-left" :class="{disabled: !hasChanges}" @click="onUpdateProduct"><i class="far fa-save"></i>Save</span>
+                            <span v-if="!updatingProduct" class="button ghost icon-left" :class="{disabled: !hasChanges}" @click="onUpdateProduct"><i class="far fa-save"></i>Save</span>
+                            <span v-else class="button ghost icon-left disabled"><Loader/></span>
                             <span class="hotkey"><span class="key">S</span> Save</span>
                         </div>
                         <div class="hotkey-wrapper">
@@ -32,9 +33,9 @@
                             <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index">
                                 <div class="img-wrapper">
                                     <div class="drop-area" :class="{disabled: variant.image}" @dragenter="dragActive" @dragleave="dragInactive" @drop="dragInactive">
-                                        <input v-if="variant.image" type="file" accept=".csv, text/csv" @change="filesChange($event, index, variant)" @click.prevent>
-                                        <input v-else type="file" :ref="'fileInput-'+index" accept=".csv, text/csv" @change="filesChange($event, index, variant)">
-                                        <img v-if="variant.image" :src="variantImg(variant)" @error="imgError(variant)">
+                                        <input v-if="variant.image || variant.blob_id" type="file" accept="image/*" @change="filesChange($event, index, variant)" @click.prevent>
+                                        <input v-else type="file" :ref="'fileInput-'+index" accept="image/*" @change="filesChange($event, index, variant)">
+                                        <img v-if="variant.image || variant.blob_id" :src="variantImg(variant)" @error="imgError(variant)">
                                         <template v-else>
                                             <div class="controls">
                                                 <span class="button light-2" @click="$refs['fileInput-'+index][0].click()">Choose from file</span>
@@ -148,6 +149,7 @@ export default {
         savedMarkup: null,
         editingTitle: false,
         filesToUpload: [],
+        updatingProduct: false,
     }},
     watch: {
         currentProductv1(newVal, oldVal) {
@@ -180,10 +182,29 @@ export default {
             const newProduct = this.productToEdit
             const oldProduct = this.currentProductv1
             return JSON.stringify(newProduct) != JSON.stringify(oldProduct)
+        },
+        filesToDelete() {
+            const newProduct = this.productToEdit
+            const oldProduct = this.currentProductv1
+            let filesToDelete = []
+            // Loop through the variants on the old product
+            oldProduct.color_variants.forEach(variant => {
+                // First check if the current variant has a blob id
+                if (variant.blob_id != null) {
+                    // See if we can find the blob_id on the new product.
+                    const exists = newProduct.color_variants.find(x => x.blob_id == variant.blob_id)
+                    // If we cannot find the blob_ib on the new product, it must mean that the blob is no longer used.
+                    // We can therefore delete it
+                    if (!exists) {
+                        filesToDelete.push(variant.blob_id)
+                    }
+                }
+            })
+            return filesToDelete
         }
     },
     methods: {
-        ...mapActions('entities/products', ['showNextProduct', 'showPrevProduct', 'updateProduct']),
+        ...mapActions('entities/products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'uploadImages', 'deleteImages']),
         variantImg (variant) {
             if (!variant.error && variant.blob_id != null)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
@@ -217,27 +238,61 @@ export default {
             })
         },
         removeVariant(index) {
-            console.log('hekk')
-            this.productToEdit.color_variants.splice(index)
+            console.log('removing variant: ' + index)
+            this.productToEdit.color_variants.splice(index, 1)
+            // this.removeFile(index)
         },
-        onUpdateProduct() {
+        async onUpdateProduct() {
             // Prepare the file to fit the database schema
+            this.updatingProduct = true
             const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
 
             // Check if we have any files (images) we need to upload
             const files = this.filesToUpload
             if (files.length > 0) {
+                // Attempt to upload the new images
+                await this.uploadImages(files)
+                .then(success => {
+                    // When done trying to upload the images
+                    // Loop through the variants the images where uploaded to
+                    files.forEach(file => {
+                        // Find the variant the new file is being uploaded to
+                        const variant = productToUpload.color_variants[file.index]
 
+                        if (success) {
+                            // If the images were uploaded successfully
+                            // Set the variant blob_id equal to the files UUID to point to the newly uploaded image
+                            variant.blob_id = file.id
+
+                            // Reset the files to be uploaded
+                            this.filesToUpload = []
+                        }
+                        // If we have new files to upload, it means that the variants image has changed.
+                        // Reset the respective variants image value, so the temp image, does not get saved to the DB.
+                        // Set the image URL of the variant to null
+                        variant.image = null
+                    })
+                    
+                })
+            }
+
+            // Check if we have any files (images) we need to delete
+            const filesToDelete = this.filesToDelete
+            if (filesToDelete.length > 0) {
+                // Attempt to delete the images
+                this.deleteImages(filesToDelete)
             }
 
             // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
             // Since we are only using months add + ' 3' -> set the date to the 3rd to avoid the month changing when we slice due to timezone differences.
             productToUpload.delivery_date = new Date (productToUpload.delivery_date + ' 3').toJSON().slice(0,10)
 
-            this.updateProduct(productToUpload)
+            await this.updateProduct(productToUpload)
+            .then(success => {
+                this.updatingProduct = false
+            })
         },
         calculateMarkup(newValue, price) {
-            console.log('claculating markup')
             const el = this.currentCurrency
             const decimals = 2
             if (price == 'wholesale_price')
@@ -247,7 +302,6 @@ export default {
                 
         },
         resetMarkup() {
-            console.log('reset markup')
             if (this.savedMarkup)
                 this.currentCurrency.markup = this.savedMarkup
             else {
@@ -293,67 +347,39 @@ export default {
             const file = e.target.files[0]
             // Check that the file is an image
             if (file && file['type'].split('/')[0] === 'image') {
-                // if (this.filesToUpload.index) {
-                //     this.filesToUpload.index = file
-                // } else {
-                //     this.filesToUpload.index = file
-                // }
+                // Generate UUID for the new image
+                const newUUID = this.$uuid.v4()
+
                 const existingFile = this.filesToUpload.find(x => x.index == index)
                 if (!existingFile) {
-                    this.filesToUpload.push({index: index, file: file, image: null})
+                    this.filesToUpload.push({index: index, file: file, id: newUUID})
                 } else {
                     existingFile.file = file
                 }
+
+                 const fileReader = new FileReader()
+                fileReader.readAsDataURL(file)
+                // fileReader.onload = this.imageLoadHandler
+                fileReader.onload = (e) => {
+                    // Show the new image on the variant
+                    const newImage = e.target.result
+                    variant.image = newImage
+                }
+
+
             } else {
                 // Throw error
                 console.log('invalid file extension')
-            }
-            const fileReader = new FileReader()
-            fileReader.readAsDataURL(file)
-            // fileReader.onload = this.imageLoadHandler
-            fileReader.onload = (e) => {
-                console.log(' load load?')
-                const newImage = e.target.result
-                variant.image = newImage
             }
         },
         imageLoadHandler(e) {
             image = e.target.result
             console.log(e.target.result)
-        }
-        // removeFile(index) {
-        //     this.newFile.files.splice(index, 1)
-        // },
-        // uploadFiles() {
-        //     // Set new file data
-        //     const newFile = this.newFile
-        //     newFile.phase = Phase.query().first().id
-        //     newFile.folderId = File.query().first().catalog_id
-        //     newFile.workspace_id = this.currentWorkspaceId
-
-
-        //     // Create collection from name
-        //     this.uploadingFile = true
-        //     this.uploadFile(newFile)
-        //     .then(success => {
-        //         this.uploadingFile = false
-                
-        //         // Close modal on succes
-        //         if (success) 
-        //             this.$refs.addFileModal.toggle()
-        //         else window.alert('Something went wrong. Please try again')
-        //     })
-
-
-        //     // Do some validation with fileReader
-
-        //     // newFile.files.forEach(file => {
-        //     //     this.filesToProces++
-        //     //     const fileReader = new FileReader()
-        //     //     fileReader.readAsText(file)
-        //     //     fileReader.onload = this.loadHandler
-        //     // })
-        // },
+        },
+        removeFile(index) {
+            const fileToRemoveIndex = this.filesToUpload.findIndex(x => x.index == index)
+            this.filesToUpload.splice(fileToRemoveIndex, 1)
+        },
     },
     created() {
         document.body.addEventListener('keydown', this.hotkeyHandler)

@@ -794,6 +794,49 @@ export default {
                     console.log(err.response)
                 })
         },
+        async uploadImages({ commit, dispatch }, files) {
+            // Upload images to Blob storage
+            let uploadSucces = false
+
+            const uploadApiUrl = `/api/product/images`
+
+            // Append the files
+            let data = new FormData()
+            files.forEach(file => {
+                data.append('files', file.file, file.id)
+            })
+
+            // console.log(data)
+
+            await axios
+                .post(uploadApiUrl, data)
+                .then(response => {
+                    console.log(response.data)
+                    uploadSucces = true
+                })
+                .catch(err => {
+                    console.log('error')
+                    console.log(err.response)
+                    uploadSucces = false
+                })
+            return uploadSucces
+        },
+        async deleteImages({ commit }, imagesToDelete) {
+            console.log('Deleting images product in store')
+
+            await axios
+                .delete(`/api/product/images`, {
+                    data: {
+                        ids: imagesToDelete,
+                    },
+                })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err.response)
+                })
+        },
     },
 
     mutations: {
