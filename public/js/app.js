@@ -8594,6 +8594,136 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -8618,7 +8748,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       uploadingToFile: false
     };
   },
-  computed: {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['userPermissionLevel']), {
     selectedCount: function selectedCount() {
       return this.selected.length;
     },
@@ -8636,7 +8766,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       return dataSorted;
     }
-  },
+  }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/collections', ['deleteFile', 'updateFile', 'uploadToExistingFile']), {
     onSelect: function onSelect(index) {
       this.$emit('onSelect', index);
@@ -33752,7 +33882,7 @@ var render = function() {
                   }
                 },
                 [
-                  _vm._v("\n                    ID "),
+                  _vm._v("\n                    ID\n                    "),
                   _c("i", {
                     staticClass: "fas",
                     class: [
@@ -33776,7 +33906,9 @@ var render = function() {
                   }
                 },
                 [
-                  _vm._v("\n                File name "),
+                  _vm._v(
+                    "\n                    File name\n                    "
+                  ),
                   _c("i", {
                     staticClass: "fas",
                     class: [
@@ -33802,7 +33934,7 @@ var render = function() {
                   }
                 },
                 [
-                  _vm._v("\n                    Created "),
+                  _vm._v("\n                    Created\n                    "),
                   _c("i", {
                     staticClass: "fas",
                     class: [
@@ -33826,7 +33958,9 @@ var render = function() {
                   }
                 },
                 [
-                  _vm._v("\n                    Deadline "),
+                  _vm._v(
+                    "\n                    Deadline\n                    "
+                  ),
                   _c("i", {
                     staticClass: "fas",
                     class: [
@@ -33850,7 +33984,7 @@ var render = function() {
                   }
                 },
                 [
-                  _vm._v("\n                    Status "),
+                  _vm._v("\n                    Status\n                    "),
                   _c("i", {
                     staticClass: "fas",
                     class: [
@@ -34112,136 +34246,152 @@ var render = function() {
                         [_vm._v("View")]
                       ),
                       _vm._v(" "),
-                      _c("Dropdown", {
-                        ref: "moreOptions-" + catalogue.id,
-                        refInFor: true,
-                        scopedSlots: _vm._u(
-                          [
-                            {
-                              key: "button",
-                              fn: function() {
-                                return [
-                                  _c(
-                                    "span",
-                                    {
-                                      staticClass:
-                                        "button invisible ghost dark-hover true-square",
-                                      on: {
-                                        click: function($event) {
-                                          _vm.$refs[
-                                            "moreOptions-" + catalogue.id
-                                          ][0].toggle()
-                                        }
-                                      }
-                                    },
-                                    [
-                                      _c("i", {
-                                        staticClass: "fas fa-ellipsis-v"
-                                      })
+                      _vm.userPermissionLevel >= 3
+                        ? _c("Dropdown", {
+                            ref: "moreOptions-" + catalogue.id,
+                            refInFor: true,
+                            scopedSlots: _vm._u(
+                              [
+                                {
+                                  key: "button",
+                                  fn: function() {
+                                    return [
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "button invisible ghost dark-hover true-square",
+                                          on: {
+                                            click: function($event) {
+                                              _vm.$refs[
+                                                "moreOptions-" + catalogue.id
+                                              ][0].toggle()
+                                            }
+                                          }
+                                        },
+                                        [
+                                          _c("i", {
+                                            staticClass: "fas fa-ellipsis-v"
+                                          })
+                                        ]
+                                      )
                                     ]
-                                  )
-                                ]
-                              },
-                              proxy: true
-                            },
-                            {
-                              key: "body",
-                              fn: function() {
-                                return [
-                                  _c("div", { staticClass: "option-buttons" }, [
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass: "option icon-left",
-                                        on: {
-                                          click: function($event) {
-                                            _vm.onRenameFile(catalogue, index)
-                                            _vm.$refs[
-                                              "moreOptions-" + catalogue.id
-                                            ][0].toggle()
-                                          }
-                                        }
-                                      },
-                                      [
-                                        _c("i", {
-                                          staticClass: "fas fa-pencil primary"
-                                        }),
-                                        _vm._v(" Rename")
-                                      ]
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass: "option icon-left",
-                                        on: {
-                                          click: function($event) {
-                                            _vm.onAddToFile(catalogue)
-                                            _vm.$refs[
-                                              "moreOptions-" + catalogue.id
-                                            ][0].toggle()
-                                          }
-                                        }
-                                      },
-                                      [
-                                        _c("i", {
-                                          staticClass: "fas fa-plus green"
-                                        }),
-                                        _vm._v(" Add to file")
-                                      ]
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass: "option icon-left",
-                                        on: {
-                                          click: function($event) {
-                                            _vm.onEdit(catalogue)
-                                            _vm.$refs[
-                                              "moreOptions-" + catalogue.id
-                                            ][0].toggle()
-                                          }
-                                        }
-                                      },
-                                      [
-                                        _c("i", {
-                                          staticClass: "fas fa-pencil primary"
-                                        }),
-                                        _vm._v(" Edit products")
-                                      ]
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass: "option icon-left",
-                                        on: {
-                                          click: function($event) {
-                                            _vm.onDeleteFile(catalogue.id)
-                                            _vm.$refs[
-                                              "moreOptions-" + catalogue.id
-                                            ][0].toggle()
-                                          }
-                                        }
-                                      },
-                                      [
-                                        _c("i", {
-                                          staticClass: "fas fa-trash-alt red"
-                                        }),
-                                        _vm._v(" Delete")
-                                      ]
-                                    )
-                                  ])
-                                ]
-                              },
-                              proxy: true
-                            }
-                          ],
-                          null,
-                          true
-                        )
-                      })
+                                  },
+                                  proxy: true
+                                },
+                                {
+                                  key: "body",
+                                  fn: function() {
+                                    return [
+                                      _c(
+                                        "div",
+                                        { staticClass: "option-buttons" },
+                                        [
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass: "option icon-left",
+                                              on: {
+                                                click: function($event) {
+                                                  _vm.onRenameFile(
+                                                    catalogue,
+                                                    index
+                                                  )
+                                                  _vm.$refs[
+                                                    "moreOptions-" +
+                                                      catalogue.id
+                                                  ][0].toggle()
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _c("i", {
+                                                staticClass:
+                                                  "fas fa-pencil primary"
+                                              }),
+                                              _vm._v(" Rename")
+                                            ]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass: "option icon-left",
+                                              on: {
+                                                click: function($event) {
+                                                  _vm.onAddToFile(catalogue)
+                                                  _vm.$refs[
+                                                    "moreOptions-" +
+                                                      catalogue.id
+                                                  ][0].toggle()
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _c("i", {
+                                                staticClass: "fas fa-plus green"
+                                              }),
+                                              _vm._v(" Add to file")
+                                            ]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass: "option icon-left",
+                                              on: {
+                                                click: function($event) {
+                                                  _vm.onEdit(catalogue)
+                                                  _vm.$refs[
+                                                    "moreOptions-" +
+                                                      catalogue.id
+                                                  ][0].toggle()
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _c("i", {
+                                                staticClass:
+                                                  "fas fa-pencil primary"
+                                              }),
+                                              _vm._v(" Edit products")
+                                            ]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass: "option icon-left",
+                                              on: {
+                                                click: function($event) {
+                                                  _vm.onDeleteFile(catalogue.id)
+                                                  _vm.$refs[
+                                                    "moreOptions-" +
+                                                      catalogue.id
+                                                  ][0].toggle()
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _c("i", {
+                                                staticClass:
+                                                  "fas fa-trash-alt red"
+                                              }),
+                                              _vm._v(" Delete")
+                                            ]
+                                          )
+                                        ]
+                                      )
+                                    ]
+                                  },
+                                  proxy: true
+                                }
+                              ],
+                              null,
+                              true
+                            )
+                          })
+                        : _vm._e()
                     ],
                     1
                   )
@@ -34319,7 +34469,7 @@ var render = function() {
                                       _vm._v(
                                         "\n                            " +
                                           _vm._s(file.name) +
-                                          " \n                            "
+                                          "\n                            "
                                       ),
                                       _c("i", {
                                         staticClass:
@@ -59127,8 +59277,11 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
 });
 router.beforeEach(function (to, from, next) {
   var authUser = window.auth_user; // Guard paths
+  // Guard teams
 
-  if (to.path == '/teams' && authUser.role_id < 2) next('/collection'), console.log('acces denied');else next();
+  console.log(to);
+  if (to.path == '/teams' && authUser.role_id < 2) next('/files'), console.log('access denied'); // Guard file edit
+  else if (to.path.startsWith('/file') && to.path.endsWith('edit') && authUser.role_id < 3) next('/files'), console.log('access denied');else next();
 });
 var app = new Vue({
   store: _store_index__WEBPACK_IMPORTED_MODULE_0__["default"],

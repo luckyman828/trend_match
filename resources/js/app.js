@@ -81,7 +81,12 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
     const authUser = window.auth_user
     // Guard paths
-    if (to.path == '/teams' && authUser.role_id < 2) next('/collection'), console.log('acces denied')
+    // Guard teams
+    console.log(to)
+    if (to.path == '/teams' && authUser.role_id < 2) next('/files'), console.log('access denied')
+    // Guard file edit
+    else if (to.path.startsWith('/file') && to.path.endsWith('edit') && authUser.role_id < 3)
+        next('/files'), console.log('access denied')
     else next()
 })
 
