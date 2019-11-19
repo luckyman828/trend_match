@@ -1,5 +1,5 @@
 <template>
-    <div class="catalogues-table card">
+    <div class="files-table card">
         <div class="catalogue-totals">
             <span>{{ selectedCount }} selected</span>
             <span>{{ files.length }} records</span>
@@ -77,15 +77,11 @@
                 </div>
             </div>
 
-            <div v-if="cataloguesSorted.length <= 0" class="catalogue-row flex-table-row item-row">
-                <span style="text-align: center">You don't have access to any catalogues</span>
+            <div v-if="files.length <= 0" class="catalogue-row flex-table-row item-row">
+                <span style="text-align: center">You don't have access to any files</span>
             </div>
 
-            <div
-                class="catalogue-row flex-table-row item-row"
-                v-for="(catalogue, index) in cataloguesSorted"
-                :key="catalogue.id"
-            >
+            <div class="catalogue-row flex-table-row item-row" v-for="(catalogue, index) in files" :key="catalogue.id">
                 <div class="flex-group">
                     <td v-if="authUser.role_id >= 3" class="select">
                         <label class="checkbox">
@@ -287,24 +283,25 @@ export default {
         selectedCount() {
             return this.selected.length
         },
-        cataloguesSorted() {
-            const catalogues = this.files
-            let key = this.sortBy
-            let sortAsc = this.sortAsc
-            const dataSorted = catalogues.sort((a, b) => {
-                // If the keys don't have length - sort by the key
-                if (!catalogues[0][key].length) {
-                    if (sortAsc) return a[key] > b[key] ? 1 : -1
-                    else return a[key] < b[key] ? 1 : -1
+        // filesSorted() {
+        //     const files = this.files
+        //     let key = this.sortBy
+        //     let sortAsc = this.sortAsc
+        //     const dataSorted = files.sort((a, b) => {
+        //         console.log('sorting')
+        //         // If the keys don't have length - sort by the key
+        //         if (!files[0][key].length) {
+        //             if (sortAsc) return a[key] > b[key] ? 1 : -1
+        //             else return a[key] < b[key] ? 1 : -1
 
-                    // If the keys have lengths - sort by their length
-                } else {
-                    if (sortAsc) return a[key].length > b[key].length ? 1 : -1
-                    else return a[key].length < b[key].length ? 1 : -1
-                }
-            })
-            return dataSorted
-        },
+        //             // If the keys have lengths - sort by their length
+        //         } else {
+        //             if (sortAsc) return a[key].length > b[key].length ? 1 : -1
+        //             else return a[key].length < b[key].length ? 1 : -1
+        //         }
+        //     })
+        //     return dataSorted
+        // },
     },
     methods: {
         ...mapActions('entities/collections', ['deleteFile', 'updateFile', 'uploadToExistingFile']),
@@ -324,6 +321,26 @@ export default {
             } else {
                 this.sortAsc = !this.sortAsc
             }
+            this.sortFiles()
+        },
+        sortFiles() {
+            console.log('sorting files')
+            const files = this.files
+            let key = this.sortBy
+            let sortAsc = this.sortAsc
+            const dataSorted = files.sort((a, b) => {
+                // If the keys don't have length - sort by the key
+                if (!files[0][key].length) {
+                    if (sortAsc) return a[key] > b[key] ? 1 : -1
+                    else return a[key] < b[key] ? 1 : -1
+
+                    // If the keys have lengths - sort by their length
+                } else {
+                    if (sortAsc) return a[key].length > b[key].length ? 1 : -1
+                    else return a[key].length < b[key].length ? 1 : -1
+                }
+            })
+            return dataSorted
         },
         viewSingle(fileId, fileTitle) {
             this.$router.push({ name: 'file', params: { fileId: fileId, fileTitle: fileTitle } })
@@ -389,7 +406,7 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-.catalogues-table {
+.files-table {
     margin-top: 52px;
     padding-top: 0;
     position: relative;
