@@ -10674,8 +10674,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
 
 
 
@@ -38469,68 +38467,70 @@ var render = function() {
                 })
               ]),
               _vm._v(" "),
-              _c(
-                "label",
-                { staticClass: "checkbox" },
-                [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.newComment.important,
-                        expression: "newComment.important"
-                      }
-                    ],
-                    attrs: { type: "checkbox", name: "comment-important" },
-                    domProps: {
-                      checked: Array.isArray(_vm.newComment.important)
-                        ? _vm._i(_vm.newComment.important, null) > -1
-                        : _vm.newComment.important
-                    },
-                    on: {
-                      change: function($event) {
-                        var $$a = _vm.newComment.important,
-                          $$el = $event.target,
-                          $$c = $$el.checked ? true : false
-                        if (Array.isArray($$a)) {
-                          var $$v = null,
-                            $$i = _vm._i($$a, $$v)
-                          if ($$el.checked) {
-                            $$i < 0 &&
-                              _vm.$set(
-                                _vm.newComment,
-                                "important",
-                                $$a.concat([$$v])
-                              )
-                          } else {
-                            $$i > -1 &&
-                              _vm.$set(
-                                _vm.newComment,
-                                "important",
-                                $$a.slice(0, $$i).concat($$a.slice($$i + 1))
-                              )
-                          }
+              _c("label", { staticClass: "checkbox" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.newComment.important,
+                      expression: "newComment.important"
+                    }
+                  ],
+                  attrs: { type: "checkbox", name: "comment-important" },
+                  domProps: {
+                    checked: Array.isArray(_vm.newComment.important)
+                      ? _vm._i(_vm.newComment.important, null) > -1
+                      : _vm.newComment.important
+                  },
+                  on: {
+                    change: function($event) {
+                      var $$a = _vm.newComment.important,
+                        $$el = $event.target,
+                        $$c = $$el.checked ? true : false
+                      if (Array.isArray($$a)) {
+                        var $$v = null,
+                          $$i = _vm._i($$a, $$v)
+                        if ($$el.checked) {
+                          $$i < 0 &&
+                            _vm.$set(
+                              _vm.newComment,
+                              "important",
+                              $$a.concat([$$v])
+                            )
                         } else {
-                          _vm.$set(_vm.newComment, "important", $$c)
+                          $$i > -1 &&
+                            _vm.$set(
+                              _vm.newComment,
+                              "important",
+                              $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                            )
                         }
+                      } else {
+                        _vm.$set(_vm.newComment, "important", $$c)
                       }
                     }
-                  }),
-                  _vm._v(" "),
-                  _c("TooltipAlt2", { attrs: { body: "Important comment" } }, [
-                    _c(
-                      "span",
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "span",
+                  {
+                    directives: [
                       {
-                        staticClass: "checkmark",
-                        class: { active: _vm.newComment.important }
-                      },
-                      [_c("i", { staticClass: "fas fa-exclamation" })]
-                    )
-                  ])
-                ],
-                1
-              ),
+                        name: "tooltip",
+                        rawName: "v-tooltip.top",
+                        value: "Important comment",
+                        expression: "'Important comment'",
+                        modifiers: { top: true }
+                      }
+                    ],
+                    staticClass: "checkmark",
+                    class: { active: _vm.newComment.important }
+                  },
+                  [_c("i", { staticClass: "fas fa-exclamation" })]
+                )
+              ]),
               _vm._v(" "),
               _vm.writeActive
                 ? _c("div", { staticClass: "flex-wrapper" }, [

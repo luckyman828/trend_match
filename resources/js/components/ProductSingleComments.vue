@@ -123,9 +123,7 @@
                 </div>
                 <label class="checkbox">
                     <input type="checkbox" v-model="newComment.important" name="comment-important">
-                    <TooltipAlt2 :body="'Important comment'">
-                        <span class="checkmark" :class="{active: newComment.important}"><i class="fas fa-exclamation"></i></span>
-                    </TooltipAlt2>
+                    <span v-tooltip.top="'Important comment'" class="checkmark" :class="{active: newComment.important}"><i class="fas fa-exclamation"></i></span>
                 </label>
                 <div class="flex-wrapper" v-if="writeActive">
                     <div class="left">
