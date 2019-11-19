@@ -254,6 +254,9 @@ export default {
                 await this.uploadImages(files)
                 .then(success => {
                     // When done trying to upload the images
+                    
+                    // Reset the files to be uploaded
+                    this.filesToUpload = []
                     // Loop through the variants the images where uploaded to
                     files.forEach(file => {
                         // Find the variant the new file is being uploaded to
@@ -263,9 +266,6 @@ export default {
                             // If the images were uploaded successfully
                             // Set the variant blob_id equal to the files UUID to point to the newly uploaded image
                             variant.blob_id = file.id
-
-                            // Reset the files to be uploaded
-                            this.filesToUpload = []
                         }
                         // If we have new files to upload, it means that the variants image has changed.
                         // Reset the respective variants image value, so the temp image, does not get saved to the DB.

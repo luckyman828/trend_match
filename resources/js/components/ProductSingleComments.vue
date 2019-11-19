@@ -84,9 +84,16 @@
             </div>
 
             <div class="form-input" :class="[{active: writeActive}, {hidden: writeScope != 'request'}]">
-                <div class="input-wrapper request">
+                <!-- <div class="input-wrapper request">
                     <textarea @click="activateWrite" ref="requestField" @keydown.enter.exact.prevent name="request" id="request-input" placeholder="Write your request here..." v-model="newRequest.comment" 
                     @input="resizeTextarea($event)" @keyup.esc="deactivateWrite"></textarea>
+                    <div class="edit-request" v-if="taskRequest && !writeActive">
+                        <span>Edit Request <span class="circle small light"><i class="fas fa-pencil"></i></span></span>
+                    </div>
+                </div> -->
+                <div class="input-parent request">
+                    <textarea class="input-wrapper" @click="activateWrite" ref="requestField" @keydown.enter.exact.prevent name="request" id="request-input" placeholder="Write your request here..." v-model="newRequest.comment" 
+                   @input="resizeTextarea($event.target)" @keyup.esc="deactivateWrite"></textarea>
                     <div class="edit-request" v-if="taskRequest && !writeActive">
                         <span>Edit Request <span class="circle small light"><i class="fas fa-pencil"></i></span></span>
                     </div>
@@ -110,9 +117,9 @@
             </div>
 
             <div class="form-input" :class="[{active: writeActive}, {hidden: writeScope != 'comment'}]">
-                <div class="input-wrapper comment">
-                    <textarea @click="activateWrite" ref="commentField" @keydown.enter.exact.prevent name="comment" id="comment-input" placeholder="Write your comment here..." v-model="newComment.comment" 
-                    @input="resizeTextarea($event)" @keyup.esc="deactivateWrite"></textarea>
+                <div class="input-parent comment">
+                    <textarea class="input-wrapper" @click="activateWrite" ref="commentField" @keydown.enter.exact.prevent name="comment" id="comment-input" placeholder="Write your comment here..." v-model="newComment.comment" 
+                    @input="resizeTextarea($event.target)" @keyup.esc="deactivateWrite"></textarea>
                 </div>
                 <label class="checkbox">
                     <input type="checkbox" v-model="newComment.important" name="comment-important">
@@ -308,10 +315,18 @@ export default {
             // .then(reponse => succes = response)
             this.submittingTaskComplete = false
         },
-        resizeTextarea(event) {
-            const commentField = event.target
-            commentField.style.height = ''
-            commentField.style.height = commentField.scrollHeight + "px"
+        resizeTextarea(textarea) {
+            const commentField = textarea
+            // Avoid weird resizing when there is only 1 character in the textarea
+            // if (event.target.value.length > 1) {
+                commentField.style.height = ''
+
+                // Avoid making the textarea smaller than default
+                const offset = 4
+                if (commentField.scrollHeight + offset > 42) {
+                    commentField.style.height = commentField.scrollHeight + offset + "px"
+                }
+            // }
         },
         setCommentScope(scope) {
             this.commentScope = scope
@@ -331,6 +346,14 @@ export default {
 
             // Save a reference to the current tasks id so we can tell if it has changed
             this.currentTaskId = this.currentTask.id
+
+            // Preset the height of the request field
+            // Use the nextTick function to make sure all the data has been set
+
+            this.$nextTick(() => {
+                if (this.writeScope == 'request' && this.$refs.requestField)
+                    this.resizeTextarea(this.$refs.requestField)
+            })
         },
         setDefaultScope() {
             // Set the default write / view scope
@@ -367,9 +390,6 @@ export default {
         this.setDefaultScope()
     },
     updated() {
-        // Preset the height of the request field
-        if (this.writeScope == 'request' && this.newRequest.comment.length > 1 && this.$refs.requestField)
-                this.$refs.requestField.style.height = this.$refs.requestField.scrollHeight + "px"
     },
     created() {
         document.body.addEventListener('keyup', this.hotkeyHandler)
@@ -506,37 +526,37 @@ export default {
                 display: block;
                 margin-top: -2px;
             }
+            .edit-request {
+                position: absolute;
+                right: 12px;
+                font-size: 10px;
+                color: $dark;
+                font-weight: 500;
+                top: 50%;
+                transform: translateY(-50%);
+                pointer-events: none;
+                .circle {
+                    height: 24px;
+                    width: 24px;
+                    margin-left: 4px;
+                }
+            }
             .input-wrapper {
                 border-radius: 6px;
                 border: solid 2px $light2;
                 background: $light2;
                 box-sizing: border-box;
                 font-size: 14px;
-                color: $dark2;
+                // color: $dark2;
                 max-height: 200px;
                 overflow: auto;
                 cursor: pointer;
                 position: relative;
-                .edit-request {
-                    position: absolute;
-                    right: 12px;
-                    font-size: 10px;
-                    color: $dark;
-                    font-weight: 500;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    pointer-events: none;
-                    .circle {
-                        height: 24px;
-                        width: 24px;
-                        margin-left: 4px;
-                    }
-                }
             }
             textarea {
                 padding: 8px 108px 8px 12px;
                 border: none;
-                height: 30px;
+                height: 42px;
                 overflow: hidden;
                 width: 100%;
                 resize: none;

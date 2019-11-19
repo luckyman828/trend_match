@@ -8080,7 +8080,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 _context.next = 6;
                 return this.uploadImages(files).then(function (success) {
                   // When done trying to upload the images
-                  // Loop through the variants the images where uploaded to
+                  // Reset the files to be uploaded
+                  _this.filesToUpload = []; // Loop through the variants the images where uploaded to
+
                   files.forEach(function (file) {
                     // Find the variant the new file is being uploaded to
                     var variant = productToUpload.color_variants[file.index];
@@ -8088,9 +8090,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                     if (success) {
                       // If the images were uploaded successfully
                       // Set the variant blob_id equal to the files UUID to point to the newly uploaded image
-                      variant.blob_id = file.id; // Reset the files to be uploaded
-
-                      _this.filesToUpload = [];
+                      variant.blob_id = file.id;
                     } // If we have new files to upload, it means that the variants image has changed.
                     // Reset the respective variants image value, so the temp image, does not get saved to the DB.
                     // Set the image URL of the variant to null
@@ -10669,6 +10669,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -10884,10 +10891,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       return onCompleteTask;
     }(),
-    resizeTextarea: function resizeTextarea(event) {
-      var commentField = event.target;
-      commentField.style.height = '';
-      commentField.style.height = commentField.scrollHeight + "px";
+    resizeTextarea: function resizeTextarea(textarea) {
+      var commentField = textarea; // Avoid weird resizing when there is only 1 character in the textarea
+      // if (event.target.value.length > 1) {
+
+      commentField.style.height = ''; // Avoid making the textarea smaller than default
+
+      var offset = 4;
+
+      if (commentField.scrollHeight + offset > 42) {
+        commentField.style.height = commentField.scrollHeight + offset + "px";
+      } // }
+
     },
     setCommentScope: function setCommentScope(scope) {
       this.commentScope = scope;
@@ -10897,6 +10912,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.writeScope = scope;
     },
     update: function update() {
+      var _this3 = this;
+
       // Set the new request equal to the existing if one exists
       this.newRequest.comment = this.taskRequest ? this.taskRequest.comment : ''; // Set the id of the new request if one exists
 
@@ -10905,7 +10922,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.newComment.comment = '';
       this.writeActive = false; // Save a reference to the current tasks id so we can tell if it has changed
 
-      this.currentTaskId = this.currentTask.id;
+      this.currentTaskId = this.currentTask.id; // Preset the height of the request field
+      // Use the nextTick function to make sure all the data has been set
+
+      this.$nextTick(function () {
+        if (_this3.writeScope == 'request' && _this3.$refs.requestField) _this3.resizeTextarea(_this3.$refs.requestField);
+      });
     },
     setDefaultScope: function setDefaultScope() {
       // Set the default write / view scope
@@ -10943,10 +10965,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.update();
     this.setDefaultScope();
   },
-  updated: function updated() {
-    // Preset the height of the request field
-    if (this.writeScope == 'request' && this.newRequest.comment.length > 1 && this.$refs.requestField) this.$refs.requestField.style.height = this.$refs.requestField.scrollHeight + "px";
-  },
+  updated: function updated() {},
   created: function created() {
     document.body.addEventListener('keyup', this.hotkeyHandler);
   },
@@ -17480,7 +17499,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.hotkey-tip[data-v-6d61fa50] {\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.hotkey-tip .square[data-v-6d61fa50] {\n  border-width: 1px;\n  height: auto;\n  padding: 2px 4px;\n  min-width: 0;\n  font-weight: 400;\n  border-radius: 2px;\n  font-size: 9px;\n  margin-right: 2px;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.tab-headers .tab[data-v-6d61fa50] {\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.request-wrapper[data-v-6d61fa50] {\n  margin-bottom: 16px;\n}\n.sender-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  margin-bottom: 4px;\n}\n.sender-wrapper.own[data-v-6d61fa50] {\n  -webkit-box-align: end;\n          align-items: flex-end;\n}\n.sender[data-v-6d61fa50] {\n  margin-bottom: 20px;\n}\n.break-line[data-v-6d61fa50] {\n  color: #a8a8a8;\n  font-size: 12px;\n  font-weight: 500;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-top: 20px;\n  margin-bottom: 12px;\n}\n.break-line[data-v-6d61fa50]::after, .break-line[data-v-6d61fa50]::before {\n  content: \"\";\n  display: block;\n  height: 2px;\n  background: #a8a8a8;\n  -webkit-box-flex: 1;\n          flex: 1;\n}\n.break-line[data-v-6d61fa50]::after {\n  margin-left: 12px;\n}\n.break-line[data-v-6d61fa50]::before {\n  margin-right: 12px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #f3f3f3;\n  border-radius: 0 8px 0 0;\n  padding: 16px 4px 16px 0;\n  height: 100%;\n  width: 100%;\n}\n.comments-wrapper .inner[data-v-6d61fa50] {\n  padding: 0 16px;\n  height: 100%;\n  overflow-y: auto;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comments-wrapper .sender[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\nform[data-v-6d61fa50] {\n  padding: 8px 0 24px;\n  background: white;\n  box-shadow: 0 -3px 6px rgba(27, 28, 29, 0.1);\n}\nform .controls[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 8px;\n}\nform .controls .set-scope span[data-v-6d61fa50] {\n  font-size: 14px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\nform .controls .set-scope span[data-v-6d61fa50]:not(:last-child) {\n  margin-right: -8px;\n}\nform .controls .set-scope span.active[data-v-6d61fa50] {\n  color: #1b1c1d;\n  cursor: auto;\n}\nform .form-input[data-v-6d61fa50] {\n  position: relative;\n  padding: 0 12px;\n}\nform .form-input.hidden[data-v-6d61fa50] {\n  display: none;\n}\nform .form-input .id[data-v-6d61fa50] {\n  font-size: 12px;\n  color: #a8a8a8;\n  display: block;\n  margin-top: -2px;\n}\nform .form-input .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #dfdfdf;\n  background: #dfdfdf;\n  box-sizing: border-box;\n  font-size: 14px;\n  color: #a8a8a8;\n  max-height: 200px;\n  overflow: auto;\n  cursor: pointer;\n  position: relative;\n}\nform .form-input .input-wrapper .edit-request[data-v-6d61fa50] {\n  position: absolute;\n  right: 12px;\n  font-size: 10px;\n  color: #1b1c1d;\n  font-weight: 500;\n  top: 50%;\n  -webkit-transform: translateY(-50%);\n          transform: translateY(-50%);\n  pointer-events: none;\n}\nform .form-input .input-wrapper .edit-request .circle[data-v-6d61fa50] {\n  height: 24px;\n  width: 24px;\n  margin-left: 4px;\n}\nform .form-input textarea[data-v-6d61fa50] {\n  padding: 8px 108px 8px 12px;\n  border: none;\n  height: 30px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  color: #535353;\n  background: transparent;\n  cursor: pointer;\n}\nform .form-input textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform .form-input textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::placeholder {\n  color: #a8a8a8;\n}\nform .form-input.active .input-wrapper[data-v-6d61fa50] {\n  border: solid 2px #dfdfdf;\n  background: white;\n  cursor: auto;\n}\nform .form-input.active textarea[data-v-6d61fa50] {\n  cursor: auto;\n}\nform .form-input .flex-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: 8px;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #f3f3f3;\n  color: #a8a8a8;\n  position: absolute;\n  right: 16px;\n  top: 4px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3b86ff;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}\n.request-succes[data-v-6d61fa50] {\n  margin-right: 8px;\n  font-weight: 500;\n}", ""]);
+exports.push([module.i, "h4[data-v-6d61fa50] {\n  font-size: 18px;\n  font-weight: 400;\n  margin: 0;\n}\n.hotkey-tip[data-v-6d61fa50] {\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.hotkey-tip .square[data-v-6d61fa50] {\n  border-width: 1px;\n  height: auto;\n  padding: 2px 4px;\n  min-width: 0;\n  font-weight: 400;\n  border-radius: 2px;\n  font-size: 9px;\n  margin-right: 2px;\n}\n.header[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-bottom: 8px;\n}\n.tab-headers .tab[data-v-6d61fa50] {\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n}\n.request-wrapper[data-v-6d61fa50] {\n  margin-bottom: 16px;\n}\n.sender-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-align: start;\n          align-items: flex-start;\n  margin-bottom: 4px;\n}\n.sender-wrapper.own[data-v-6d61fa50] {\n  -webkit-box-align: end;\n          align-items: flex-end;\n}\n.sender[data-v-6d61fa50] {\n  margin-bottom: 20px;\n}\n.break-line[data-v-6d61fa50] {\n  color: #a8a8a8;\n  font-size: 12px;\n  font-weight: 500;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n  margin-top: 20px;\n  margin-bottom: 12px;\n}\n.break-line[data-v-6d61fa50]::after, .break-line[data-v-6d61fa50]::before {\n  content: \"\";\n  display: block;\n  height: 2px;\n  background: #a8a8a8;\n  -webkit-box-flex: 1;\n          flex: 1;\n}\n.break-line[data-v-6d61fa50]::after {\n  margin-left: 12px;\n}\n.break-line[data-v-6d61fa50]::before {\n  margin-right: 12px;\n}\n.comments-wrapper[data-v-6d61fa50] {\n  background: #f3f3f3;\n  border-radius: 0 8px 0 0;\n  padding: 16px 4px 16px 0;\n  height: 100%;\n  width: 100%;\n}\n.comments-wrapper .inner[data-v-6d61fa50] {\n  padding: 0 16px;\n  height: 100%;\n  overflow-y: auto;\n  overflow-x: hidden;\n  box-sizing: border-box;\n}\n.comments-wrapper .sender[data-v-6d61fa50] {\n  display: block;\n  font-size: 12px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\nform[data-v-6d61fa50] {\n  padding: 8px 0 24px;\n  background: white;\n  box-shadow: 0 -3px 6px rgba(27, 28, 29, 0.1);\n}\nform .controls[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-bottom: 8px;\n}\nform .controls .set-scope span[data-v-6d61fa50] {\n  font-size: 14px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\nform .controls .set-scope span[data-v-6d61fa50]:not(:last-child) {\n  margin-right: -8px;\n}\nform .controls .set-scope span.active[data-v-6d61fa50] {\n  color: #1b1c1d;\n  cursor: auto;\n}\nform .form-input[data-v-6d61fa50] {\n  position: relative;\n  padding: 0 12px;\n}\nform .form-input.hidden[data-v-6d61fa50] {\n  display: none;\n}\nform .form-input .id[data-v-6d61fa50] {\n  font-size: 12px;\n  color: #a8a8a8;\n  display: block;\n  margin-top: -2px;\n}\nform .form-input .edit-request[data-v-6d61fa50] {\n  position: absolute;\n  right: 12px;\n  font-size: 10px;\n  color: #1b1c1d;\n  font-weight: 500;\n  top: 50%;\n  -webkit-transform: translateY(-50%);\n          transform: translateY(-50%);\n  pointer-events: none;\n}\nform .form-input .edit-request .circle[data-v-6d61fa50] {\n  height: 24px;\n  width: 24px;\n  margin-left: 4px;\n}\nform .form-input .input-wrapper[data-v-6d61fa50] {\n  border-radius: 6px;\n  border: solid 2px #dfdfdf;\n  background: #dfdfdf;\n  box-sizing: border-box;\n  font-size: 14px;\n  max-height: 200px;\n  overflow: auto;\n  cursor: pointer;\n  position: relative;\n}\nform .form-input textarea[data-v-6d61fa50] {\n  padding: 8px 108px 8px 12px;\n  border: none;\n  height: 42px;\n  overflow: hidden;\n  width: 100%;\n  resize: none;\n  color: #535353;\n  background: transparent;\n  cursor: pointer;\n}\nform .form-input textarea[data-v-6d61fa50]:focus {\n  outline: none;\n}\nform .form-input textarea[data-v-6d61fa50]::-webkit-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-moz-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]:-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::-ms-input-placeholder {\n  color: #a8a8a8;\n}\nform .form-input textarea[data-v-6d61fa50]::placeholder {\n  color: #a8a8a8;\n}\nform .form-input.active .input-wrapper[data-v-6d61fa50] {\n  border: solid 2px #dfdfdf;\n  background: white;\n  cursor: auto;\n}\nform .form-input.active textarea[data-v-6d61fa50] {\n  cursor: auto;\n}\nform .form-input .flex-wrapper[data-v-6d61fa50] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  margin-top: 8px;\n}\nform .checkmark[data-v-6d61fa50] {\n  height: 32px;\n  width: 32px;\n  line-height: 32px;\n  text-align: center;\n  border-radius: 16px;\n  background: #f3f3f3;\n  color: #a8a8a8;\n  position: absolute;\n  right: 16px;\n  top: 4px;\n  cursor: pointer;\n}\nform .checkmark.active[data-v-6d61fa50] {\n  color: #3b86ff;\n}\nform input[type=submit][data-v-6d61fa50] {\n  margin-top: 12px;\n}\n.request-succes[data-v-6d61fa50] {\n  margin-right: 8px;\n  font-weight: 500;\n}", ""]);
 
 // exports
 
@@ -38240,7 +38259,7 @@ var render = function() {
               ]
             },
             [
-              _c("div", { staticClass: "input-wrapper request" }, [
+              _c("div", { staticClass: "input-parent request" }, [
                 _c("textarea", {
                   directives: [
                     {
@@ -38251,6 +38270,7 @@ var render = function() {
                     }
                   ],
                   ref: "requestField",
+                  staticClass: "input-wrapper",
                   attrs: {
                     name: "request",
                     id: "request-input",
@@ -38284,7 +38304,7 @@ var render = function() {
                         _vm.$set(_vm.newRequest, "comment", $event.target.value)
                       },
                       function($event) {
-                        return _vm.resizeTextarea($event)
+                        return _vm.resizeTextarea($event.target)
                       }
                     ],
                     keyup: function($event) {
@@ -38385,7 +38405,7 @@ var render = function() {
               ]
             },
             [
-              _c("div", { staticClass: "input-wrapper comment" }, [
+              _c("div", { staticClass: "input-parent comment" }, [
                 _c("textarea", {
                   directives: [
                     {
@@ -38396,6 +38416,7 @@ var render = function() {
                     }
                   ],
                   ref: "commentField",
+                  staticClass: "input-wrapper",
                   attrs: {
                     name: "comment",
                     id: "comment-input",
@@ -38429,7 +38450,7 @@ var render = function() {
                         _vm.$set(_vm.newComment, "comment", $event.target.value)
                       },
                       function($event) {
-                        return _vm.resizeTextarea($event)
+                        return _vm.resizeTextarea($event.target)
                       }
                     ],
                     keyup: function($event) {
