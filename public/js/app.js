@@ -63921,12 +63921,18 @@ dragscrollDirective.install = function (Vue) {
       addEvents(el, binding);
     },
     unbind: function unbind(el, binding) {
-      el.removeEventListener('mousedown', mouseDownEvent);
-      el.removeEventListener('mouseleave', mouseLeaveEvent);
-      el.removeEventListener('mouseup', mouseUpEvent);
-      el.removeEventListener('mousemove', mouseMoveEvent);
+      el.removeEventListener('mousedown', unbindEvents.mouseDownEvent);
+      el.removeEventListener('mouseleave', unbindEvents.mouseLeaveEvent);
+      el.removeEventListener('mouseup', unbindEvents.mouseUpEvent);
+      el.removeEventListener('mousemove', unbindEvents.mouseMoveEvent);
     }
   });
+  var unbindEvents = {
+    mouseDownEvent: null,
+    mouseLeaveEvent: null,
+    mouseUpEvent: null,
+    mouseMoveEvent: null
+  };
 
   var addEvents = function addEvents(el, binding) {
     var slider = el;
@@ -63936,7 +63942,8 @@ dragscrollDirective.install = function (Vue) {
     var scrollLeft;
 
     var mouseDownEvent = function mouseDownEvent(e) {
-      // Only enable dragscroll if the clicked element is not an input field
+      console.log('MOUSE DOWN!'); // Only enable dragscroll if the clicked element is not an input field
+
       if (e.target.tagName.toUpperCase() == 'INPUT' && e.target.type != 'file' || e.target.tagName.toUpperCase() == 'TEXTAREA') return;
       isDown = true;
       slider.classList.add('active');
@@ -63967,6 +63974,10 @@ dragscrollDirective.install = function (Vue) {
     el.addEventListener('mouseleave', mouseLeaveEvent);
     el.addEventListener('mouseup', mouseUpEvent);
     el.addEventListener('mousemove', mouseMoveEvent);
+    unbindEvents.mouseDownEvent = mouseDownEvent;
+    unbindEvents.mouseLeaveEvent = mouseLeaveEvent;
+    unbindEvents.mouseUpEvent = mouseUpEvent;
+    unbindEvents.mouseMoveEvent = mouseMoveEvent;
   };
 };
 

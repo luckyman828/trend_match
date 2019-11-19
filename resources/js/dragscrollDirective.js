@@ -6,12 +6,19 @@ dragscrollDirective.install = Vue => {
         },
 
         unbind: function(el, binding) {
-            el.removeEventListener('mousedown', mouseDownEvent)
-            el.removeEventListener('mouseleave', mouseLeaveEvent)
-            el.removeEventListener('mouseup', mouseUpEvent)
-            el.removeEventListener('mousemove', mouseMoveEvent)
+            el.removeEventListener('mousedown', unbindEvents.mouseDownEvent)
+            el.removeEventListener('mouseleave', unbindEvents.mouseLeaveEvent)
+            el.removeEventListener('mouseup', unbindEvents.mouseUpEvent)
+            el.removeEventListener('mousemove', unbindEvents.mouseMoveEvent)
         },
     })
+
+    let unbindEvents = {
+        mouseDownEvent: null,
+        mouseLeaveEvent: null,
+        mouseUpEvent: null,
+        mouseMoveEvent: null,
+    }
 
     const addEvents = (el, binding) => {
         const slider = el
@@ -21,6 +28,7 @@ dragscrollDirective.install = Vue => {
         let scrollLeft
 
         const mouseDownEvent = e => {
+            console.log('MOUSE DOWN!')
             // Only enable dragscroll if the clicked element is not an input field
             if (
                 (e.target.tagName.toUpperCase() == 'INPUT' && e.target.type != 'file') ||
@@ -52,6 +60,11 @@ dragscrollDirective.install = Vue => {
         el.addEventListener('mouseleave', mouseLeaveEvent)
         el.addEventListener('mouseup', mouseUpEvent)
         el.addEventListener('mousemove', mouseMoveEvent)
+
+        unbindEvents.mouseDownEvent = mouseDownEvent
+        unbindEvents.mouseLeaveEvent = mouseLeaveEvent
+        unbindEvents.mouseUpEvent = mouseUpEvent
+        unbindEvents.mouseMoveEvent = mouseMoveEvent
     }
 }
 
