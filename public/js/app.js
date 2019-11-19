@@ -9682,6 +9682,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/tasks', ['completeTask', 'undoCompleteTask']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTaskId']), {
+    variantImg: function variantImg(variant) {
+      if (!variant.error && variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
+    },
+    imgError: function imgError(variant) {
+      variant.error = true;
+    },
     printToPdf: function () {
       var _printToPdf = _asyncToGenerator(
       /*#__PURE__*/
@@ -36070,15 +36076,23 @@ var render = function() {
                             }
                           },
                           [
-                            _c("img", {
-                              attrs: {
-                                height: "400px; width: auto;",
-                                src:
-                                  "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/" +
-                                  product.color_variants[0].blob_id +
-                                  "_thumbnail.jpg"
-                              }
-                            }),
+                            product.color_variants[0] != null
+                              ? _c("img", {
+                                  attrs: {
+                                    height: "400px; width: auto;",
+                                    src: _vm.variantImg(
+                                      product.color_variants[0]
+                                    )
+                                  },
+                                  on: {
+                                    error: function($event) {
+                                      return _vm.imgError(
+                                        product.color_variants[0]
+                                      )
+                                    }
+                                  }
+                                })
+                              : _vm._e(),
                             _vm._v(" "),
                             _c(
                               "div",
@@ -37319,22 +37333,26 @@ var render = function() {
                           }
                         },
                         [
-                          _c("img", {
-                            attrs: {
-                              src: _vm.variantImg(
-                                _vm.product.color_variants[_vm.currentImgIndex]
-                              )
-                            },
-                            on: {
-                              error: function($event) {
-                                return _vm.imgError(
-                                  _vm.product.color_variants[
-                                    _vm.currentImgIndex
-                                  ]
-                                )
-                              }
-                            }
-                          })
+                          _vm.product.color_variants[0] != null
+                            ? _c("img", {
+                                attrs: {
+                                  src: _vm.variantImg(
+                                    _vm.product.color_variants[
+                                      _vm.currentImgIndex
+                                    ]
+                                  )
+                                },
+                                on: {
+                                  error: function($event) {
+                                    return _vm.imgError(
+                                      _vm.product.color_variants[
+                                        _vm.currentImgIndex
+                                      ]
+                                    )
+                                  }
+                                }
+                              })
+                            : _vm._e()
                         ]
                       ),
                       _vm._v(" "),
@@ -39144,16 +39162,20 @@ var render = function() {
                           }
                         },
                         [
-                          _c("img", {
-                            attrs: {
-                              src: _vm.productImg(product.color_variants[0])
-                            },
-                            on: {
-                              error: function($event) {
-                                return _vm.imgError(product.color_variants[0])
-                              }
-                            }
-                          })
+                          product.color_variants[0] != null
+                            ? _c("img", {
+                                attrs: {
+                                  src: _vm.productImg(product.color_variants[0])
+                                },
+                                on: {
+                                  error: function($event) {
+                                    return _vm.imgError(
+                                      product.color_variants[0]
+                                    )
+                                  }
+                                }
+                              })
+                            : _vm._e()
                         ]
                       ),
                       _vm._v(" "),
@@ -69922,11 +69944,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 files.forEach(function (file) {
                   count++;
                   data.append('files[' + count + ']', file.file, file.id);
-                }); // files.forEach(file => {
-                //     count++
-                //     data.append('flowers', file.file, file.id)
-                // })
-
+                });
                 console.log(count + ' images sent to API from store');
                 _context3.next = 11;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(uploadApiUrl, data, axiosConfig).then(function (response) {

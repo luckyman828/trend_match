@@ -813,10 +813,6 @@ export default {
                 count++
                 data.append('files[' + count + ']', file.file, file.id)
             })
-            // files.forEach(file => {
-            //     count++
-            //     data.append('flowers', file.file, file.id)
-            // })
             console.log(count + ' images sent to API from store')
 
             await axios

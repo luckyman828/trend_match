@@ -92,7 +92,7 @@
                     <div class="details">
                         <div class="grid-2">
                             <div class="image" @click="cycleImage()">
-                                <img :src="variantImg(product.color_variants[currentImgIndex])" @error="imgError(product.color_variants[currentImgIndex])">
+                                <img v-if="product.color_variants[0] != null" :src="variantImg(product.color_variants[currentImgIndex])" @error="imgError(product.color_variants[currentImgIndex])">
                             </div>
                             <div class="description">
                                 <div class="stat">

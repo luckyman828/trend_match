@@ -48,7 +48,7 @@
                     <span style="display: block; color: #3B86FF; font-size: 20px; font-weight: 700; padding-top: 20px; box-sizing: border-box; margin-bottom: 8px;">#{{index+1}} of {{productsToExport.length}} styles</span>
                     <span style="display: block; font-size: 24px; margin-bottom: 12px;">{{product.title}}</span>
                     <div style="display: flex; margin-bottom: 12px;">
-                        <img height="400px; width: auto;" :src="`https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${product.color_variants[0].blob_id}_thumbnail.jpg`">
+                        <img height="400px; width: auto;" v-if="product.color_variants[0] != null" :src="variantImg(product.color_variants[0])" @error="imgError(product.color_variants[0])">
                         <div style="margin-left: 16px;">
                             <span style="display: block; font-size: 14px; font-weight: 700;">Style number</span>
                             <span style="display: block; margin-bottom: 12px; font-size: 14px;">{{product.datasource_id}}</span>
@@ -173,6 +173,14 @@ export default {
     methods: {
         ...mapActions('entities/tasks', ['completeTask', 'undoCompleteTask']),
         ...mapActions('persist', ['setCurrentTaskId']),
+        variantImg (variant) {
+            if (!variant.error && variant.blob_id != null)
+                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
+            else return variant.image
+        },
+        imgError (variant) {
+             variant.error = true
+        },
         printToPdf: async function(event) {
             const vm = this
             var endpoint = "https://v2018.api2pdf.com/chrome/html"
