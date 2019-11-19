@@ -8222,7 +8222,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   created: function created() {
-    document.body.addEventListener('keydown', this.hotkeyHandler);
+    document.body.addEventListener('keydown', this.hotkeyHandler); // Save an initial reference to the product we are going to edit
+
+    if (this.currentProductv1) {
+      this.productToEdit = JSON.parse(JSON.stringify(this.currentProductv1));
+    }
   },
   destroyed: function destroyed() {
     document.body.removeEventListener('keydown', this.hotkeyHandler);
