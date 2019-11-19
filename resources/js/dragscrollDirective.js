@@ -1,0 +1,58 @@
+const dragscrollDirective = {}
+dragscrollDirective.install = Vue => {
+    Vue.directive('dragscroll', {
+        bind: function(el, binding, vnode) {
+            addEvents(el, binding)
+        },
+
+        unbind: function(el, binding) {
+            el.removeEventListener('mousedown', mouseDownEvent)
+            el.removeEventListener('mouseleave', mouseLeaveEvent)
+            el.removeEventListener('mouseup', mouseUpEvent)
+            el.removeEventListener('mousemove', mouseMoveEvent)
+        },
+    })
+
+    const addEvents = (el, binding) => {
+        const slider = el
+        let target = null
+        let isDown = false
+        let startX
+        let scrollLeft
+
+        const mouseDownEvent = e => {
+            // Only enable dragscroll if the clicked element is not an input field
+            if (
+                (e.target.tagName.toUpperCase() == 'INPUT' && e.target.type != 'file') ||
+                e.target.tagName.toUpperCase() == 'TEXTAREA'
+            )
+                return
+            isDown = true
+            slider.classList.add('active')
+            startX = e.pageX - slider.offsetLeft
+            scrollLeft = slider.scrollLeft
+        }
+        const mouseLeaveEvent = () => {
+            isDown = false
+            slider.classList.remove('active')
+        }
+        const mouseUpEvent = () => {
+            isDown = false
+            slider.classList.remove('active')
+        }
+        const mouseMoveEvent = e => {
+            if (!isDown) return
+            e.preventDefault()
+            const x = e.pageX - slider.offsetLeft
+            const walk = (x - startX) * 3 //scroll-fast
+            slider.scrollLeft = scrollLeft - walk
+        }
+
+        el.addEventListener('mousedown', mouseDownEvent)
+        el.addEventListener('mouseleave', mouseLeaveEvent)
+        el.addEventListener('mouseup', mouseUpEvent)
+        el.addEventListener('mousemove', mouseMoveEvent)
+    }
+}
+
+export default dragscrollDirective

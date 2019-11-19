@@ -7939,7 +7939,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 
 
@@ -8217,6 +8216,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return x.index == index;
       });
       this.filesToUpload.splice(fileToRemoveIndex, 1);
+    },
+    testFuncA: function testFuncA() {
+      console.log('AAAA');
     }
   }),
   created: function created() {
@@ -32175,18 +32177,6 @@ module.exports = v35('v5', 0x50, sha1);
 
 /***/ }),
 
-/***/ "./node_modules/vue-dragscroll/dist/vue-dragscroll.min.js":
-/*!****************************************************************!*\
-  !*** ./node_modules/vue-dragscroll/dist/vue-dragscroll.min.js ***!
-  \****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-!function(e,o){ true?module.exports=o():undefined}(window,(function(){return function(e){var o={};function t(r){if(o[r])return o[r].exports;var n=o[r]={i:r,l:!1,exports:{}};return e[r].call(n.exports,n,n.exports,t),n.l=!0,n.exports}return t.m=e,t.c=o,t.d=function(e,o,r){t.o(e,o)||Object.defineProperty(e,o,{enumerable:!0,get:r})},t.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},t.t=function(e,o){if(1&o&&(e=t(e)),8&o)return e;if(4&o&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(t.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&o&&"string"!=typeof e)for(var n in e)t.d(r,n,function(o){return e[o]}.bind(null,n));return r},t.n=function(e){var o=e&&e.__esModule?function(){return e.default}:function(){return e};return t.d(o,"a",o),o},t.o=function(e,o){return Object.prototype.hasOwnProperty.call(e,o)},t.p="/dist/",t(t.s=0)}([function(e,o,t){"use strict";t.r(o);var r=function(e,o,t){for(var r=0,n=o.length;r<n;r++)e.addEventListener(o[r],t)},n=function(e,o,t){for(var r=0,n=o.length;r<n;r++)e.removeEventListener(o[r],t)},i=function(e,o,t){var r;e.componentInstance?e.componentInstance.$emit(o,t):("function"==typeof window.CustomEvent?r=new window.CustomEvent(o,{detail:t}):(r=document.createEvent("CustomEvent")).initCustomEvent(o,!0,!0,t),e.elm.dispatchEvent(r))};function l(e){return(l="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e})(e)}var u=["mousedown","touchstart"],c=["mousemove","touchmove"],d=["mouseup","touchend"],a=function(e,o,t){var a=e,s=!0;"boolean"==typeof o.value?s=o.value:"object"===l(o.value)?("string"==typeof o.value.target?(a=e.querySelector(o.value.target))||console.error("There is no element with the current target value."):void 0!==o.value.target&&console.error("The parameter \"target\" should be be either 'undefined' or 'string'."),"boolean"==typeof o.value.active?s=o.value.active:void 0!==o.value.active&&console.error("The parameter \"active\" value should be either 'undefined', 'true' or 'false'.")):void 0!==o.value&&console.error("The passed value should be either 'undefined', 'true' or 'false' or 'object'.");var f=function(){var e,n,l,s=!1,f=!1;a.md=function(t){t.preventDefault();var r=t instanceof window.MouseEvent,i=r?t.pageX:t.touches[0].pageX,u=r?t.pageY:t.touches[0].pageY,c=document.elementFromPoint(i-window.pageXOffset,u-window.pageYOffset),d="nochilddrag"===o.arg,s=o.modifiers.noleft,m=o.modifiers.noright,v=o.modifiers.nomiddle,p=o.modifiers.noback,w=o.modifiers.noforward,y="firstchilddrag"===o.arg,h=c===a,g=c===a.firstChild,b=d?void 0!==c.dataset.dragscroll:void 0===c.dataset.noDragscroll;(h||b&&(!y||g))&&(1===t.which&&s||2===t.which&&v||3===t.which&&m||4===t.which&&p||5===t.which&&w||(l=1,e=r?t.clientX:t.touches[0].clientX,n=r?t.clientY:t.touches[0].clientY,"touchstart"===t.type&&(f=!0)))},a.mu=function(e){l=0,s&&i(t,"dragscrollend"),s=!1,"touchend"===e.type&&!0===f?(e.target.click(),f=!1):e.target.focus()},a.mm=function(r){var u,c,d=r instanceof window.MouseEvent,f={};if(l){s||i(t,"dragscrollstart"),s=!0;var m=a.scrollLeft+a.clientWidth>=a.scrollWidth||0===a.scrollLeft,v=a.scrollTop+a.clientHeight>=a.scrollHeight||0===a.scrollTop;u=-e+(e=d?r.clientX:r.touches[0].clientX),c=-n+(n=d?r.clientY:r.touches[0].clientY),o.modifiers.pass?(a.scrollLeft-=o.modifiers.y?-0:u,a.scrollTop-=o.modifiers.x?-0:c,a===document.body&&(a.scrollLeft-=o.modifiers.y?-0:u,a.scrollTop-=o.modifiers.x?-0:c),(m||o.modifiers.y)&&window.scrollBy(-u,0),(v||o.modifiers.x)&&window.scrollBy(0,-c)):(o.modifiers.x&&(c=-0),o.modifiers.y&&(u=-0),a.scrollLeft-=u,a.scrollTop-=c,a===document.body&&(a.scrollLeft-=u,a.scrollTop-=c)),f.deltaX=-u,f.deltaY=-c,i(t,"dragscrollmove",f)}},r(a,u,a.md),r(window,d,a.mu),r(window,c,a.mm)};s?"complete"===document.readyState?f():window.addEventListener("load",f):(n(a,u,a.md),n(window,d,a.mu),n(window,c,a.mm))},s={bind:function(e,o,t){a(e,o,t)},update:function(e,o,t,r){JSON.stringify(o.value)!==JSON.stringify(o.oldValue)&&a(e,o,t)},unbind:function(e,o,t){var r=e;n(r,u,r.md),n(window,d,r.mu),n(window,c,r.mm)}};t.d(o,"dragscroll",(function(){return s}));var f={install:function(e,o){var t=Number(e.version.split(".")[0]),r=Number(e.version.split(".")[1]);if(t<2&&r<1)throw new Error("v-dragscroll supports vue version 2.1 and above. You are using Vue@".concat(e.version,". Please upgrade to the latest version of Vue."));e.directive("dragscroll",s)}};"undefined"!=typeof window&&window.Vue&&(window.VueDragscroll=f,window.Vue.use(f));o.default=f}])}));
-//# sourceMappingURL=vue-dragscroll.min.js.map
-
-/***/ }),
-
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/App.vue?vue&type=template&id=f348271a&":
 /*!*******************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/App.vue?vue&type=template&id=f348271a& ***!
@@ -32937,8 +32927,12 @@ var render = function() {
                           { staticClass: "button ghost icon-left disabled" },
                           [_c("Loader")],
                           1
-                        )
+                        ),
+                    _vm._v(" "),
+                    _vm._m(0)
                   ]),
+                  _vm._v(" "),
+                  _vm._m(1),
                   _vm._v(" "),
                   _c(
                     "span",
@@ -33082,6 +33076,12 @@ var render = function() {
                                             }
                                           },
                                           [_vm._v("Choose from file")]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "span",
+                                          { staticClass: "button light-2" },
+                                          [_vm._v("URL")]
                                         )
                                       ])
                                     ]
@@ -33104,9 +33104,34 @@ var render = function() {
                                             _c(
                                               "span",
                                               {
+                                                ref: "hotkeys-" + index,
+                                                refInFor: true,
                                                 staticClass:
                                                   "square true-square light-2 clickable",
+                                                attrs: { tabindex: "0" },
                                                 on: {
+                                                  "!click": function($event) {
+                                                    _vm.$refs[
+                                                      "hotkeys-" + index
+                                                    ][0].focus()
+                                                  },
+                                                  keyup: function($event) {
+                                                    if (
+                                                      !$event.type.indexOf(
+                                                        "key"
+                                                      ) &&
+                                                      _vm._k(
+                                                        $event.keyCode,
+                                                        "d",
+                                                        undefined,
+                                                        $event.key,
+                                                        undefined
+                                                      )
+                                                    ) {
+                                                      return null
+                                                    }
+                                                    return _vm.testFuncA($event)
+                                                  },
                                                   click: function($event) {
                                                     return slotProps.toggle()
                                                   }
@@ -33115,7 +33140,25 @@ var render = function() {
                                               [
                                                 _c("i", {
                                                   staticClass:
-                                                    "fas fa-ellipsis-h"
+                                                    "fas fa-ellipsis-h",
+                                                  on: {
+                                                    click: function($event) {
+                                                      if (
+                                                        !$event.type.indexOf(
+                                                          "key"
+                                                        ) &&
+                                                        _vm._k(
+                                                          $event.keyCode,
+                                                          "bu",
+                                                          undefined,
+                                                          $event.key,
+                                                          undefined
+                                                        )
+                                                      ) {
+                                                        return null
+                                                      }
+                                                    }
+                                                  }
                                                 })
                                               ]
                                             )
@@ -33173,6 +33216,75 @@ var render = function() {
                                                       "span",
                                                       {
                                                         staticClass:
+                                                          "button white"
+                                                      },
+                                                      [_vm._v("Choose file")]
+                                                    ),
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
+                                                          "square true-square white"
+                                                      },
+                                                      [_vm._v("C")]
+                                                    )
+                                                  ]
+                                                ),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "div",
+                                                  { staticClass: "hotkey" },
+                                                  [
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
+                                                          "button white"
+                                                      },
+                                                      [_vm._v("URL")]
+                                                    ),
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
+                                                          "square true-square white"
+                                                      },
+                                                      [_vm._v("U")]
+                                                    )
+                                                  ]
+                                                ),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "div",
+                                                  { staticClass: "hotkey" },
+                                                  [
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
+                                                          "button white"
+                                                      },
+                                                      [_vm._v("Rename")]
+                                                    ),
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
+                                                          "square true-square white"
+                                                      },
+                                                      [_vm._v("R")]
+                                                    )
+                                                  ]
+                                                ),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "div",
+                                                  { staticClass: "hotkey" },
+                                                  [
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
                                                           "button red",
                                                         on: {
                                                           click: function(
@@ -33185,6 +33297,14 @@ var render = function() {
                                                         }
                                                       },
                                                       [_vm._v("Delete")]
+                                                    ),
+                                                    _c(
+                                                      "span",
+                                                      {
+                                                        staticClass:
+                                                          "square true-square red"
+                                                      },
+                                                      [_vm._v("D")]
                                                     )
                                                   ]
                                                 )
@@ -33498,7 +33618,33 @@ var render = function() {
     )
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("span", { staticClass: "hotkey" }, [
+      _c("span", { staticClass: "key" }, [_vm._v("S")]),
+      _vm._v(" Save")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "hotkey-wrapper" }, [
+      _c("span", { staticClass: "button ghost icon-left" }, [
+        _c("i", { staticClass: "far fa-file-edit" }),
+        _vm._v("Edit")
+      ]),
+      _vm._v(" "),
+      _c("span", { staticClass: "hotkey" }, [
+        _c("span", { staticClass: "key" }, [_vm._v("E")]),
+        _vm._v(" Edit")
+      ])
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -59181,12 +59327,11 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./store/index */ "./resources/js/store/index.js");
 /* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
-/* harmony import */ var vue_dragscroll__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-dragscroll */ "./node_modules/vue-dragscroll/dist/vue-dragscroll.min.js");
-/* harmony import */ var vue_dragscroll__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(vue_dragscroll__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var vue_cookies__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue-cookies */ "./node_modules/vue-cookies/vue-cookies.js");
-/* harmony import */ var vue_cookies__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(vue_cookies__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var vue_uuid__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vue-uuid */ "./node_modules/vue-uuid/dist/vue-uuid.es.js");
-/* harmony import */ var _directive__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./directive */ "./resources/js/directive.js");
+/* harmony import */ var vue_cookies__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-cookies */ "./node_modules/vue-cookies/vue-cookies.js");
+/* harmony import */ var vue_cookies__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(vue_cookies__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var vue_uuid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue-uuid */ "./node_modules/vue-uuid/dist/vue-uuid.es.js");
+/* harmony import */ var _directive__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./directive */ "./resources/js/directive.js");
+/* harmony import */ var _dragscrollDirective__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./dragscrollDirective */ "./resources/js/dragscrollDirective.js");
 /* harmony import */ var _components_screens_loaders_TeamsLoader__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/screens/loaders/TeamsLoader */ "./resources/js/components/screens/loaders/TeamsLoader.vue");
 /* harmony import */ var _components_screens_loaders_FileLoader__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/screens/loaders/FileLoader */ "./resources/js/components/screens/loaders/FileLoader.vue");
 /* harmony import */ var _components_screens_loaders_FolderLoader__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/screens/loaders/FolderLoader */ "./resources/js/components/screens/loaders/FolderLoader.vue");
@@ -59196,15 +59341,17 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 
 
-Vue.use(vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]);
+Vue.use(vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]); // import VueDragscroll from 'vue-dragscroll'
+// Vue.use(VueDragscroll)
 
-Vue.use(vue_dragscroll__WEBPACK_IMPORTED_MODULE_2___default.a);
 
-Vue.use(vue_cookies__WEBPACK_IMPORTED_MODULE_3___default.a);
+Vue.use(vue_cookies__WEBPACK_IMPORTED_MODULE_2___default.a);
 
-Vue.use(vue_uuid__WEBPACK_IMPORTED_MODULE_4__["default"]);
+Vue.use(vue_uuid__WEBPACK_IMPORTED_MODULE_3__["default"]);
 
-Vue.use(_directive__WEBPACK_IMPORTED_MODULE_5__["default"]);
+Vue.use(_directive__WEBPACK_IMPORTED_MODULE_4__["default"]);
+
+Vue.use(_dragscrollDirective__WEBPACK_IMPORTED_MODULE_5__["default"]);
 Vue.component('app', __webpack_require__(/*! ./App.vue */ "./resources/js/App.vue")["default"]); // Global components
 
 Vue.component('TooltipAlt2', __webpack_require__(/*! ./components/TooltipAlt2.vue */ "./resources/js/components/TooltipAlt2.vue")["default"]);
@@ -59279,7 +59426,6 @@ router.beforeEach(function (to, from, next) {
   var authUser = window.auth_user; // Guard paths
   // Guard teams
 
-  console.log(to);
   if (to.path == '/teams' && authUser.role_id < 2) next('/files'), console.log('access denied'); // Guard file edit
   else if (to.path.startsWith('/file') && to.path.endsWith('edit') && authUser.role_id < 3) next('/files'), console.log('access denied');else next();
 });
@@ -63755,6 +63901,76 @@ tooltipDirective.install = function (Vue) {
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (tooltipDirective);
+
+/***/ }),
+
+/***/ "./resources/js/dragscrollDirective.js":
+/*!*********************************************!*\
+  !*** ./resources/js/dragscrollDirective.js ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var dragscrollDirective = {};
+
+dragscrollDirective.install = function (Vue) {
+  Vue.directive('dragscroll', {
+    bind: function bind(el, binding, vnode) {
+      addEvents(el, binding);
+    },
+    unbind: function unbind(el, binding) {
+      el.removeEventListener('mousedown', mouseDownEvent);
+      el.removeEventListener('mouseleave', mouseLeaveEvent);
+      el.removeEventListener('mouseup', mouseUpEvent);
+      el.removeEventListener('mousemove', mouseMoveEvent);
+    }
+  });
+
+  var addEvents = function addEvents(el, binding) {
+    var slider = el;
+    var target = null;
+    var isDown = false;
+    var startX;
+    var scrollLeft;
+
+    var mouseDownEvent = function mouseDownEvent(e) {
+      // Only enable dragscroll if the clicked element is not an input field
+      if (e.target.tagName.toUpperCase() == 'INPUT' && e.target.type != 'file' || e.target.tagName.toUpperCase() == 'TEXTAREA') return;
+      isDown = true;
+      slider.classList.add('active');
+      startX = e.pageX - slider.offsetLeft;
+      scrollLeft = slider.scrollLeft;
+    };
+
+    var mouseLeaveEvent = function mouseLeaveEvent() {
+      isDown = false;
+      slider.classList.remove('active');
+    };
+
+    var mouseUpEvent = function mouseUpEvent() {
+      isDown = false;
+      slider.classList.remove('active');
+    };
+
+    var mouseMoveEvent = function mouseMoveEvent(e) {
+      if (!isDown) return;
+      e.preventDefault();
+      var x = e.pageX - slider.offsetLeft;
+      var walk = (x - startX) * 3; //scroll-fast
+
+      slider.scrollLeft = scrollLeft - walk;
+    };
+
+    el.addEventListener('mousedown', mouseDownEvent);
+    el.addEventListener('mouseleave', mouseLeaveEvent);
+    el.addEventListener('mouseup', mouseUpEvent);
+    el.addEventListener('mousemove', mouseMoveEvent);
+  };
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (dragscrollDirective);
 
 /***/ }),
 

@@ -6,8 +6,8 @@ import store from './store/index'
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
-import VueDragscroll from 'vue-dragscroll'
-Vue.use(VueDragscroll)
+// import VueDragscroll from 'vue-dragscroll'
+// Vue.use(VueDragscroll)
 
 import VueCookies from 'vue-cookies'
 Vue.use(VueCookies)
@@ -17,6 +17,8 @@ Vue.use(UUID)
 
 import directive from './directive'
 Vue.use(directive)
+import dragscrollDirective from './dragscrollDirective'
+Vue.use(dragscrollDirective)
 
 Vue.component('app', require('./App.vue').default)
 
@@ -82,7 +84,6 @@ router.beforeEach((to, from, next) => {
     const authUser = window.auth_user
     // Guard paths
     // Guard teams
-    console.log(to)
     if (to.path == '/teams' && authUser.role_id < 2) next('/files'), console.log('access denied')
     // Guard file edit
     else if (to.path.startsWith('/file') && to.path.endsWith('edit') && authUser.role_id < 3)
