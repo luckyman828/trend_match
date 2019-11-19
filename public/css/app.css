@@ -10300,7 +10300,7 @@ select.input-wrapper {
   cursor: pointer;
 }
 
-.input-wrapper:not(.multiline) {
+.input-wrapper:not(.multiline):not(.drop-area) {
   height: 40px;
 }
 

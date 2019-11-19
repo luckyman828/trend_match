@@ -1092,7 +1092,7 @@ form {
             cursor: pointer;
         }
     }
-    &:not(.multiline) {
+    &:not(.multiline):not(.drop-area) {
         height: 40px;
     }
     // > input[type='text'] {
