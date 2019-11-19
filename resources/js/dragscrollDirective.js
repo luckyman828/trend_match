@@ -28,7 +28,6 @@ dragscrollDirective.install = Vue => {
         let scrollLeft
 
         const mouseDownEvent = e => {
-            console.log('MOUSE DOWN!')
             // Only enable dragscroll if the clicked element is not an input field
             if (
                 (e.target.tagName.toUpperCase() == 'INPUT' && e.target.type != 'file') ||

@@ -799,17 +799,28 @@ export default {
             let uploadSucces = false
 
             const uploadApiUrl = `/api/product/images`
+            const axiosConfig = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }
 
             // Append the files
+            console.log(files)
             let data = new FormData()
+            let count = 0
             files.forEach(file => {
-                data.append('files', file.file, file.id)
+                count++
+                data.append('files[' + count + ']', file.file, file.id)
             })
-
-            // console.log(data)
+            // files.forEach(file => {
+            //     count++
+            //     data.append('flowers', file.file, file.id)
+            // })
+            console.log(count + ' images sent to API from store')
 
             await axios
-                .post(uploadApiUrl, data)
+                .post(uploadApiUrl, data, axiosConfig)
                 .then(response => {
                     console.log(response.data)
                     uploadSucces = true

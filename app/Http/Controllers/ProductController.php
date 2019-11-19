@@ -40,7 +40,11 @@ class ProductController extends Controller
     public function uploadImages(Request $request)
     {
         // Loop through the files
-        foreach ( $request->files as $file ) {
+        $countImgs = 0;
+
+        foreach ( $request->file('files') as $file ) {
+            // Cound how many images are uploaded
+            $countImgs++;
             // Create HQ Image of 
             $hqImage = Image::make($file);
             $hqImage->resize('2000', '2000', function ($constaint) {
@@ -58,11 +62,10 @@ class ProductController extends Controller
             });
             $thumbnail->encode('jpg', 80);
             Storage::disk('azure')->put($file->getClientOriginalName() . '_thumbnail.jpg', $thumbnail->__toString());
-            continue;
          }
 
         // return $output;
-        return 'Images uploaded successfully to blob storage';
+        return 'Hurrah! ' . $countImgs . ' images uploaded successfully to blob storage';
     }
     public function deleteImages(Request $request)
     {

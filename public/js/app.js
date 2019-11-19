@@ -7966,11 +7966,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   watch: {
     currentProductv1: function currentProductv1(newVal, oldVal) {
+      // This function fires when a new product is shown. It also fires initially the first time the PDP is opened
       this.productToEdit = JSON.parse(JSON.stringify(newVal));
       this.productToEdit.delivery_date = new Date(this.productToEdit.delivery_date).toLocaleDateString("en-GB", {
         month: "long",
         year: "numeric"
-      });
+      }); // Create an empty variant if no variants are present
+
+      var variants = this.productToEdit.color_variants;
+
+      if (variants.length <= 0) {
+        this.onAddVariant();
+      }
     }
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['userPermissionLevel']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['currentProductv1', 'nextProductId', 'prevProductId']), {
@@ -8052,8 +8059,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     removeVariant: function removeVariant(index) {
-      console.log('removing variant: ' + index);
-      this.productToEdit.color_variants.splice(index, 1); // this.removeFile(index)
+      var variants = this.productToEdit.color_variants;
+      variants.splice(index, 1);
+
+      if (variants.length <= 0) {
+        // Add a blank variant if the last one is deleted
+        this.onAddVariant();
+      } // this.removeFile(index)
+
     },
     onUpdateProduct: function () {
       var _onUpdateProduct = _asyncToGenerator(
@@ -33256,7 +33269,7 @@ var render = function() {
                                       },
                                       {
                                         key: "body",
-                                        fn: function() {
+                                        fn: function(slotProps) {
                                           return [
                                             _c(
                                               "div",
@@ -33344,9 +33357,10 @@ var render = function() {
                                                           click: function(
                                                             $event
                                                           ) {
-                                                            return _vm.removeVariant(
+                                                            _vm.removeVariant(
                                                               index
                                                             )
+                                                            slotProps.toggle()
                                                           }
                                                         }
                                                       },
@@ -33365,8 +33379,7 @@ var render = function() {
                                               ]
                                             )
                                           ]
-                                        },
-                                        proxy: true
+                                        }
                                       }
                                     ],
                                     null,
@@ -63992,8 +64005,7 @@ dragscrollDirective.install = function (Vue) {
     var scrollLeft;
 
     var mouseDownEvent = function mouseDownEvent(e) {
-      console.log('MOUSE DOWN!'); // Only enable dragscroll if the clicked element is not an input field
-
+      // Only enable dragscroll if the clicked element is not an input field
       if (e.target.tagName.toUpperCase() == 'INPUT' && e.target.type != 'file' || e.target.tagName.toUpperCase() == 'TEXTAREA') return;
       isDown = true;
       slider.classList.add('active');
@@ -69890,7 +69902,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _uploadImages = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref8, files) {
-        var commit, dispatch, uploadSucces, uploadApiUrl, data;
+        var commit, dispatch, uploadSucces, uploadApiUrl, axiosConfig, data, count;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
@@ -69898,15 +69910,27 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit = _ref8.commit, dispatch = _ref8.dispatch;
                 // Upload images to Blob storage
                 uploadSucces = false;
-                uploadApiUrl = "/api/product/images"; // Append the files
+                uploadApiUrl = "/api/product/images";
+                axiosConfig = {
+                  headers: {
+                    'Content-Type': 'multipart/form-data'
+                  } // Append the files
 
+                };
+                console.log(files);
                 data = new FormData();
+                count = 0;
                 files.forEach(function (file) {
-                  data.append('files', file.file, file.id);
-                }); // console.log(data)
+                  count++;
+                  data.append('files[' + count + ']', file.file, file.id);
+                }); // files.forEach(file => {
+                //     count++
+                //     data.append('flowers', file.file, file.id)
+                // })
 
-                _context3.next = 7;
-                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(uploadApiUrl, data).then(function (response) {
+                console.log(count + ' images sent to API from store');
+                _context3.next = 11;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(uploadApiUrl, data, axiosConfig).then(function (response) {
                   console.log(response.data);
                   uploadSucces = true;
                 })["catch"](function (err) {
@@ -69915,10 +69939,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   uploadSucces = false;
                 });
 
-              case 7:
+              case 11:
                 return _context3.abrupt("return", uploadSucces);
 
-              case 8:
+              case 12:
               case "end":
                 return _context3.stop();
             }

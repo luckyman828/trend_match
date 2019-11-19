@@ -54,7 +54,7 @@
                                                     <span class="circle small dark clickable" @click="slotProps.toggle()"><i class="far fa-times"></i></span>
                                                 </div>
                                             </template>
-                                            <template v-slot:body>
+                                            <template v-slot:body="slotProps">
                                                 <div class="hotkeys">
                                                     <div class="hotkey">
                                                         <span class="button white">Choose file</span><span class="square true-square white">C</span>
@@ -66,7 +66,7 @@
                                                         <span class="button white">Rename</span><span class="square true-square white">R</span>
                                                     </div>
                                                     <div class="hotkey">
-                                                        <span class="button red" @click="removeVariant(index)">Delete</span><span class="square true-square red">D</span>
+                                                        <span class="button red" @click="removeVariant(index); slotProps.toggle()">Delete</span><span class="square true-square red">D</span>
                                                     </div>
                                                 </div>
                                             </template>
@@ -153,8 +153,16 @@ export default {
     }},
     watch: {
         currentProductv1(newVal, oldVal) {
+            // This function fires when a new product is shown. It also fires initially the first time the PDP is opened
             this.productToEdit = JSON.parse(JSON.stringify(newVal))
             this.productToEdit.delivery_date = new Date(this.productToEdit.delivery_date).toLocaleDateString("en-GB", {month: "long",year: "numeric"})
+
+            // Create an empty variant if no variants are present
+            const variants = this.productToEdit.color_variants
+            if (variants.length <= 0) {
+                this.onAddVariant()
+            }
+
         }
     },
     computed: {
@@ -238,8 +246,13 @@ export default {
             })
         },
         removeVariant(index) {
-            console.log('removing variant: ' + index)
-            this.productToEdit.color_variants.splice(index, 1)
+            const variants = this.productToEdit.color_variants
+            variants.splice(index, 1)
+
+            if (variants.length <= 0) {
+                // Add a blank variant if the last one is deleted
+                this.onAddVariant()
+            }
             // this.removeFile(index)
         },
         async onUpdateProduct() {
