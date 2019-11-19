@@ -11797,6 +11797,31 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -11813,27 +11838,35 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/products', ['productsScoped']), {
     resultsToShow: function resultsToShow() {
+      var _this = this;
+
       var limit = 5;
       var resultsToReturn = [];
       var index = 0;
       this.results.forEach(function (result) {
         var matchIndex = 0;
         result.matches.forEach(function (match) {
-          var indexStart = match.indices[matchIndex][0];
-          var indexEnd = match.indices[matchIndex][1];
           result[match.key] = {};
-          result[match.key].start = match.value.substr(0, indexStart);
-          result[match.key].match = match.value.substr(indexStart, indexEnd + 1);
-          result[match.key].end = match.value.substr(indexEnd + 1, match.value.length);
-          matchIndex++;
+          result[match.key] = _this.generateHighlightedText(match.value, match.indices);
         });
         if (index <= limit) resultsToReturn.push(result);
         index++;
       });
-      return resultsToReturn; // return this.results.slice(0, limit)
+      return resultsToReturn;
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/products', ['showSingle', 'setAvailableProductIds']), {
+    generateHighlightedText: function generateHighlightedText(text, regions) {
+      if (!regions) return text;
+      var content = '',
+          nextUnhighlightedRegionStartingIndex = 0;
+      regions.forEach(function (region) {
+        content += '' + text.substring(nextUnhighlightedRegionStartingIndex, region[0]) + '<span class="highlight">' + text.substring(region[0], region[1] + 1) + '</span>' + '';
+        nextUnhighlightedRegionStartingIndex = region[1] + 1;
+      });
+      content += text.substring(nextUnhighlightedRegionStartingIndex);
+      return content;
+    },
     showResult: function showResult(id) {
       this.showSingle(id);
       this.setAvailableProductIds([id]);
@@ -11855,7 +11888,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         distance: 100,
         maxPatternLength: 32,
         minMatchCharLength: 2,
-        keys: ["title", "datasource_id"]
+        keys: ['title', 'datasource_id']
       };
       var fuse = new fuse_js__WEBPACK_IMPORTED_MODULE_1___default.a(this.productsScoped, options);
       this.results = fuse.search(this.searchStr);
@@ -17561,7 +17594,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".search-modal .close[data-v-0709236c] {\n  display: none;\n}\n.results[data-v-0709236c] {\n  margin-top: 20px;\n}\n.results table[data-v-0709236c] {\n  width: 100%;\n  border-collapse: collapse;\n}\n.results .result[data-v-0709236c]:hover {\n  background: #f3f3f3;\n}\n.results .result > *[data-v-0709236c] {\n  padding-top: 8px;\n  padding-bottom: 8px;\n  border-top: 1px solid #dfdfdf;\n}\n.results .result .img[data-v-0709236c] {\n  padding-right: 20px;\n}\n.results .result .id[data-v-0709236c] {\n  padding-right: 40px;\n}\n.results .result img[data-v-0709236c] {\n  height: 70px;\n  width: 60px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  -o-object-position: center;\n     object-position: center;\n  display: block;\n}\nspan.match[data-v-0709236c] {\n  border-bottom: solid 1px #3b86ff;\n}\n.search[data-v-0709236c] {\n  position: relative;\n}\n.search input.input-wrapper[data-v-0709236c] {\n  padding-right: 32px;\n  box-sizing: border-box;\n}\n.search .clear[data-v-0709236c] {\n  position: absolute;\n  right: 10px;\n  top: 12px;\n  font-size: 16px;\n  color: #3c3b54;\n  cursor: pointer;\n  padding: 4px 12px;\n}\n.search .clear[data-v-0709236c]:hover {\n  opacity: 0.8;\n}", ""]);
+exports.push([module.i, ".search-modal .close[data-v-0709236c] {\n  display: none;\n}\n.results[data-v-0709236c] {\n  margin-top: 20px;\n}\n.results table[data-v-0709236c] {\n  width: 100%;\n  border-collapse: collapse;\n}\n.results .result[data-v-0709236c]:hover {\n  background: #f3f3f3;\n}\n.results .result > *[data-v-0709236c] {\n  padding-top: 8px;\n  padding-bottom: 8px;\n  border-top: 1px solid #dfdfdf;\n}\n.results .result .img[data-v-0709236c] {\n  padding-right: 20px;\n}\n.results .result .id[data-v-0709236c] {\n  padding-right: 40px;\n}\n.results .result img[data-v-0709236c] {\n  height: 70px;\n  width: 60px;\n  -o-object-fit: cover;\n     object-fit: cover;\n  -o-object-position: center;\n     object-position: center;\n  display: block;\n}\n.search[data-v-0709236c] {\n  position: relative;\n}\n.search input.input-wrapper[data-v-0709236c] {\n  padding-right: 32px;\n  box-sizing: border-box;\n}\n.search .clear[data-v-0709236c] {\n  position: absolute;\n  right: 10px;\n  top: 12px;\n  font-size: 16px;\n  color: #3c3b54;\n  cursor: pointer;\n  padding: 4px 12px;\n}\n.search .clear[data-v-0709236c]:hover {\n  opacity: 0.8;\n}", ""]);
 
 // exports
 
@@ -40157,15 +40190,11 @@ var render = function() {
                       [
                         result.datasource_id
                           ? [
-                              _c("span", [
-                                _vm._v(_vm._s(result.datasource_id.start))
-                              ]),
-                              _c("span", { staticClass: "match" }, [
-                                _vm._v(_vm._s(result.datasource_id.match))
-                              ]),
-                              _c("span", [
-                                _vm._v(_vm._s(result.datasource_id.end))
-                              ])
+                              _c("span", {
+                                domProps: {
+                                  innerHTML: _vm._s(result.datasource_id)
+                                }
+                              })
                             ]
                           : [
                               _vm._v(
@@ -40183,13 +40212,9 @@ var render = function() {
                       { staticClass: "title" },
                       [
                         result.title
-                          ? [
-                              _c("span", [_vm._v(_vm._s(result.title.start))]),
-                              _c("span", { staticClass: "match" }, [
-                                _vm._v(_vm._s(result.title.match))
-                              ]),
-                              _c("span", [_vm._v(_vm._s(result.title.end))])
-                            ]
+                          ? _c("span", {
+                              domProps: { innerHTML: _vm._s(result.title) }
+                            })
                           : [
                               _vm._v(
                                 "\n                        " +
@@ -40217,7 +40242,7 @@ var render = function() {
               "margin-bottom": "20px"
             }
           },
-          [_vm._v("No results")]
+          [_vm._v("\n        No results\n    ")]
         )
       : _vm._e()
   ])

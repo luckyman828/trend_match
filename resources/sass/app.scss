@@ -69,6 +69,9 @@ p {
         margin-bottom: 4px;
     }
 }
+span.highlight {
+    border-bottom: solid 1px $primary;
+}
 textarea {
     white-space: pre-wrap;
     word-wrap: break-word;
