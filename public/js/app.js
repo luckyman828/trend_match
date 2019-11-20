@@ -35869,8 +35869,25 @@ var render = function() {
                       [_c("Loader")],
                       1
                     )
-                  : _vm.currentTask.completed.length <= 0
-                  ? [
+                  : _vm.currentTask.completed.find(function(x) {
+                      return x.file_id == _vm.currentFile.id
+                    })
+                  ? _c(
+                      "span",
+                      {
+                        staticClass: "button wide red",
+                        on: {
+                          click: function($event) {
+                            return _vm.onUndoCompleteTask(
+                              _vm.currentFile.id,
+                              _vm.currentTask.id
+                            )
+                          }
+                        }
+                      },
+                      [_vm._v("Reopen task")]
+                    )
+                  : [
                       _vm.currentTask.isActive
                         ? _c(
                             "span",
@@ -35889,21 +35906,6 @@ var render = function() {
                           )
                         : _vm._e()
                     ]
-                  : _c(
-                      "span",
-                      {
-                        staticClass: "button wide red",
-                        on: {
-                          click: function($event) {
-                            return _vm.onUndoCompleteTask(
-                              _vm.currentFile.id,
-                              _vm.currentTask.id
-                            )
-                          }
-                        }
-                      },
-                      [_vm._v("Reopen task")]
-                    )
               ]
             : _vm._e(),
           _vm._v(" "),
@@ -38778,7 +38780,9 @@ var render = function() {
     "div",
     { staticClass: "products card", class: [{ sticky: _vm.sticky }] },
     [
-      _vm.currentTask.completed.length > 0
+      _vm.currentTask.completed.find(function(x) {
+        return x.file_id == _vm.currentFile.id
+      })
         ? _c("div", { staticClass: "overlay" }, [_vm._v("Task done")])
         : !_vm.currentTask.isActive
         ? _c("div", { staticClass: "overlay" }, [

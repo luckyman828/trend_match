@@ -23,10 +23,10 @@
 
             <template v-if="userPermissionLevel >= 2 && userPermissionLevel != 3">
                 <span class="button wide light-2" v-if="submittingTaskComplete"><Loader/></span>
-                <template v-else-if="currentTask.completed.length <= 0">
+                <span class="button wide red" v-else-if="currentTask.completed.find(x => x.file_id == currentFile.id)" @click="onUndoCompleteTask(currentFile.id, currentTask.id)">Reopen task</span>
+                <template v-else>
                     <span class="button wide primary" v-if="currentTask.isActive" @click="onCompleteTask(currentFile.id, currentTask.id)">Complete task</span>
                 </template>
-                <span class="button wide red" v-else @click="onUndoCompleteTask(currentFile.id, currentTask.id)">Reopen task</span>
             </template>
             <span v-if="userPermissionLevel >= 2" class="button wide primary" @click="$refs.exportModal.toggle(); setPageHeight()">Export to PDF</span>
 
