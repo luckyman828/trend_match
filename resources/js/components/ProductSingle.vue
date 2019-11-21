@@ -379,9 +379,21 @@ export default {
         }  
         .image {
             cursor: pointer;
+            padding-top: 133.33%; // 4:3 
+            width: 100%;
+            height: 0;
+            position: relative;
+            overflow: hidden;
+            border-radius: 2px;
+            border: solid 1px $light2;
             img {
-                border: solid 1px $light2;
                 width: 100%;
+                height: 100%;
+                object-fit: contain;
+                object-position: center;
+                position: absolute;
+                top: 0;
+                left: 0;
             }
         }
         .description {
@@ -594,6 +606,9 @@ export default {
             overflow: hidden;
             img {
                 width: 100%;
+                height: 100%;
+                object-fit: contain;
+                object-position: center;
                 position: absolute;
                 top: 0;
                 left: 0;

@@ -31,8 +31,8 @@
                         <span class="button light-2 icon-left" @click="onAddVariant"><i class="far fa-plus"></i> Add Variant</span>
                         <div class="product-variants" v-dragscroll>
                             <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index">
-                                <div class="img-wrapper">
-                                    <div class="drop-area" :class="{disabled: variant.image}" @dragenter="dragActive" @dragleave="dragInactive" @drop="dragInactive">
+                                <div class="img-wrapper" @dragenter="dragActive($event, index)" @dragleave="dragLeave" @drop="dragDrop">
+                                    <div class="drop-area" :class="{drag: dragActiveIndex == index}">
                                         <input v-if="variant.image || variant.blob_id" type="file" accept="image/*" @change="filesChange($event, index, variant)" @click.prevent>
                                         <input v-else type="file" :ref="'fileInput-'+index" accept="image/*" @change="filesChange($event, index, variant)">
                                         <img v-if="variant.image || variant.blob_id" :src="variantImg(variant)" @error="imgError(variant)">
@@ -42,6 +42,9 @@
                                                 <span class="button light-2">URL</span>
                                             </div>
                                         </template>
+                                        <div class="drop-msg">
+                                            <span>Drop image here</span>
+                                        </div>
                                     </div>
                                     <div class="controls">
                                         <Dropdown class="dropdown-parent dark">
@@ -56,7 +59,7 @@
                                             </template>
                                             <template v-slot:body="slotProps">
                                                 <div class="hotkeys">
-                                                    <div class="hotkey">
+                                                    <!-- <div class="hotkey">
                                                         <span class="button white">Choose file</span><span class="square true-square white">C</span>
                                                     </div>
                                                     <div class="hotkey">
@@ -64,7 +67,7 @@
                                                     </div>
                                                     <div class="hotkey">
                                                         <span class="button white">Rename</span><span class="square true-square white">R</span>
-                                                    </div>
+                                                    </div> -->
                                                     <div class="hotkey">
                                                         <span class="button red" @click="removeVariant(index); slotProps.toggle()">Delete</span><span class="square true-square red">D</span>
                                                     </div>
@@ -150,6 +153,8 @@ export default {
         editingTitle: false,
         filesToUpload: [],
         updatingProduct: false,
+        dragActiveIndex: null,
+        dragCounter: 0,
     }},
     watch: {
         currentProductv1(newVal, oldVal) {
@@ -350,11 +355,21 @@ export default {
             let newDate = new Date(date).toLocaleDateString("en-GB", {month: "long",year: "numeric"})
             product.delivery_date = newDate
         },
-        dragActive(e) {
-            e.target.closest('.drop-area').classList.add('drag')
+        dragActive(e, index) {
+            // e.target.querySelector('.drop-area').classList.add('drag')
+            this.dragActiveIndex = index
+            this.dragCounter++
         },
-        dragInactive(e) {
-            e.target.closest('.drop-area').classList.remove('drag')
+        dragLeave(e) {
+            this.dragCounter--
+            if (this.dragCounter == 0) {
+                this.dragActiveIndex = null
+            }
+            // e.target.querySelector('.drop-area').classList.remove('drag')
+        },
+        dragDrop() {
+            this.dragActiveIndex = null
+            this.dragCounter = 0
         },
         filesChange(e, index, variant) {
             const file = e.target.files[0]
@@ -504,19 +519,21 @@ export default {
             position: relative;
             overflow: hidden;
             display: inline-block;
-            margin-right: 4px;
             border-radius: 2px;
             border: solid 1px $light2;
             overflow: hidden;
             img {
                 width: 100%;
+                height: 100%;
+                object-fit: contain;
+                object-position: center;
                 position: absolute;
                 top: 0;
                 left: 0;
             }
             .drop-area {
                 input[type=file] {
-                    cursor: auto;
+                    pointer-events: none
                 }
                 position: absolute;
                 display: flex;
@@ -527,17 +544,42 @@ export default {
                 left: 0;
                 width: 100%;
                 height: 100%;
-                &.drag {
+                cursor: auto;
+                .drop-msg {
+                    z-index: 1;
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    height: 100%;
+                    width: 100%;
+                    justify-content: center;
+                    align-items: center;
+                    display: none;
+                    outline: 2px dashed #dfdfdf;
+                    outline-offset: -10px;
+                    background: white;
+                    padding: 12px 12px;
                     background: $light1;
                 }
-                &.disabled {
-                    pointer-events: none;
+                &.drag {
+                    background: $light1;
+                    .drop-msg {
+                        display: flex;
+                        pointer-events: none;
+                    }
+                    .controls {
+                        pointer-events: none;
+                    }
+                    input[type=file] {
+                        z-index: 2;
+                        pointer-events: all
+                    }
                 }
                 .controls {
                     display: flex;
                     flex-direction: column;
-                    position: relative;
-                    z-index: 1;
+                    // position: relative;
+                    // z-index: 1;
                     > *:not(:last-child) {
                         margin-bottom: 8px;
                     }

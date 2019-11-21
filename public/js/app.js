@@ -7939,6 +7939,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 
 
@@ -7961,7 +7964,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       savedMarkup: null,
       editingTitle: false,
       filesToUpload: [],
-      updatingProduct: false
+      updatingProduct: false,
+      dragActiveIndex: null,
+      dragCounter: 0
     };
   },
   watch: {
@@ -8181,11 +8186,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       product.delivery_date = newDate;
     },
-    dragActive: function dragActive(e) {
-      e.target.closest('.drop-area').classList.add('drag');
+    dragActive: function dragActive(e, index) {
+      // e.target.querySelector('.drop-area').classList.add('drag')
+      this.dragActiveIndex = index;
+      this.dragCounter++;
     },
-    dragInactive: function dragInactive(e) {
-      e.target.closest('.drop-area').classList.remove('drag');
+    dragLeave: function dragLeave(e) {
+      this.dragCounter--;
+
+      if (this.dragCounter == 0) {
+        this.dragActiveIndex = null;
+      } // e.target.querySelector('.drop-area').classList.remove('drag')
+
+    },
+    dragDrop: function dragDrop() {
+      this.dragActiveIndex = null;
+      this.dragCounter = 0;
     },
     filesChange: function filesChange(e, index, variant) {
       var file = e.target.files[0]; // Check that the file is an image
@@ -17249,7 +17265,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".edit-product-single[data-v-8542425c] {\n  height: 100%;\n}\n.edit-product-single > .inner[data-v-8542425c] {\n  height: 100%;\n  width: 100%;\n  background: #f9f9f9;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.edit-product-single > .inner > .header[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.edit-product-single > .inner > .header h3[data-v-8542425c] {\n  width: 100%;\n}\n.edit-product-single > .inner > .header > *[data-v-8542425c] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.edit-product-single > .inner > .header .close[data-v-8542425c] {\n  margin-right: 24px;\n}\n.edit-product-single > .inner > .header .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  -webkit-box-align: start;\n          align-items: flex-start;\n}\n.edit-product-single > .inner > .header .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.edit-product-single > .inner .body[data-v-8542425c] {\n  padding: 24px;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.edit-product-single .details[data-v-8542425c] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\nh3[data-v-8542425c] {\n  font-size: 16px;\n  font-weight: 400;\n}\n.close i[data-v-8542425c] {\n  font-size: 22px;\n}\n.card > .grid-2[data-v-8542425c] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-2.grid-border-between[data-v-8542425c] {\n  grid-template-columns: 1fr 2px 1fr;\n  grid-gap: 17px;\n}\n.grid-2.grid-border-between[data-v-8542425c] > :nth-child(2) {\n  background: #dfdfdf;\n}\n.product-variants[data-v-8542425c] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n  margin-bottom: 40px;\n}\n.product-variant[data-v-8542425c] {\n  width: 180px;\n  display: inline-block;\n}\n.product-variant[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .img-wrapper[data-v-8542425c] {\n  padding-top: 133.33%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 2px;\n  border: solid 1px #dfdfdf;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-8542425c] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant .img-wrapper .drop-area[data-v-8542425c] {\n  position: absolute;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n}\n.product-variant .img-wrapper .drop-area input[type=file][data-v-8542425c] {\n  cursor: auto;\n}\n.product-variant .img-wrapper .drop-area.drag[data-v-8542425c] {\n  background: #f3f3f3;\n}\n.product-variant .img-wrapper .drop-area.disabled[data-v-8542425c] {\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  position: relative;\n  z-index: 1;\n}\n.product-variant .img-wrapper .drop-area .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.product-variant .img-wrapper .drop-area .controls .button[data-v-8542425c] {\n  width: 124px;\n}\n.product-variant .img-wrapper > .controls[data-v-8542425c] {\n  position: absolute;\n  z-index: 2;\n  right: 4px;\n  top: 4px;\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.product-variant .img-wrapper:hover .controls[data-v-8542425c] {\n  opacity: 1;\n}\n.product-variant .color-wrapper[data-v-8542425c] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-8542425c] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-8542425c] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-8542425c] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.input-wrapper.composition[data-v-8542425c] {\n  white-space: pre-line;\n}\n.last-update[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  font-size: 11px;\n  font-weight: 500;\n  text-align: right;\n}\n.details .currencies[data-v-8542425c] {\n  margin-bottom: 32px;\n}\n.dropdown .header[data-v-8542425c] {\n  color: white;\n  font-size: 12px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  padding: 0 0 0 4px;\n}\n.dropdown .hotkeys[data-v-8542425c] {\n  padding: 8px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.dropdown .hotkeys .hotkey[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.dropdown .hotkeys .hotkey[data-v-8542425c] > :first-child {\n  margin-right: 6px;\n  width: 86px;\n}", ""]);
+exports.push([module.i, ".edit-product-single[data-v-8542425c] {\n  height: 100%;\n}\n.edit-product-single > .inner[data-v-8542425c] {\n  height: 100%;\n  width: 100%;\n  background: #f9f9f9;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.edit-product-single > .inner > .header[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.edit-product-single > .inner > .header h3[data-v-8542425c] {\n  width: 100%;\n}\n.edit-product-single > .inner > .header > *[data-v-8542425c] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.edit-product-single > .inner > .header .close[data-v-8542425c] {\n  margin-right: 24px;\n}\n.edit-product-single > .inner > .header .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  -webkit-box-align: start;\n          align-items: flex-start;\n}\n.edit-product-single > .inner > .header .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.edit-product-single > .inner .body[data-v-8542425c] {\n  padding: 24px;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.edit-product-single .details[data-v-8542425c] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\nh3[data-v-8542425c] {\n  font-size: 16px;\n  font-weight: 400;\n}\n.close i[data-v-8542425c] {\n  font-size: 22px;\n}\n.card > .grid-2[data-v-8542425c] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-2.grid-border-between[data-v-8542425c] {\n  grid-template-columns: 1fr 2px 1fr;\n  grid-gap: 17px;\n}\n.grid-2.grid-border-between[data-v-8542425c] > :nth-child(2) {\n  background: #dfdfdf;\n}\n.product-variants[data-v-8542425c] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n  margin-bottom: 40px;\n}\n.product-variant[data-v-8542425c] {\n  width: 180px;\n  display: inline-block;\n}\n.product-variant[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .img-wrapper[data-v-8542425c] {\n  padding-top: 133.33%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  border-radius: 2px;\n  border: solid 1px #dfdfdf;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-8542425c] {\n  width: 100%;\n  height: 100%;\n  -o-object-fit: contain;\n     object-fit: contain;\n  -o-object-position: center;\n     object-position: center;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant .img-wrapper .drop-area[data-v-8542425c] {\n  position: absolute;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  cursor: auto;\n}\n.product-variant .img-wrapper .drop-area input[type=file][data-v-8542425c] {\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area .drop-msg[data-v-8542425c] {\n  z-index: 1;\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  width: 100%;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  display: none;\n  outline: 2px dashed #dfdfdf;\n  outline-offset: -10px;\n  background: white;\n  padding: 12px 12px;\n  background: #f3f3f3;\n}\n.product-variant .img-wrapper .drop-area.drag[data-v-8542425c] {\n  background: #f3f3f3;\n}\n.product-variant .img-wrapper .drop-area.drag .drop-msg[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area.drag .controls[data-v-8542425c] {\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area.drag input[type=file][data-v-8542425c] {\n  z-index: 2;\n  pointer-events: all;\n}\n.product-variant .img-wrapper .drop-area .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-variant .img-wrapper .drop-area .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.product-variant .img-wrapper .drop-area .controls .button[data-v-8542425c] {\n  width: 124px;\n}\n.product-variant .img-wrapper > .controls[data-v-8542425c] {\n  position: absolute;\n  z-index: 2;\n  right: 4px;\n  top: 4px;\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.product-variant .img-wrapper:hover .controls[data-v-8542425c] {\n  opacity: 1;\n}\n.product-variant .color-wrapper[data-v-8542425c] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-8542425c] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-8542425c] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-8542425c] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.input-wrapper.composition[data-v-8542425c] {\n  white-space: pre-line;\n}\n.last-update[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  font-size: 11px;\n  font-weight: 500;\n  text-align: right;\n}\n.details .currencies[data-v-8542425c] {\n  margin-bottom: 32px;\n}\n.dropdown .header[data-v-8542425c] {\n  color: white;\n  font-size: 12px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  padding: 0 0 0 4px;\n}\n.dropdown .hotkeys[data-v-8542425c] {\n  padding: 8px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.dropdown .hotkeys .hotkey[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.dropdown .hotkeys .hotkey[data-v-8542425c] > :first-child {\n  margin-right: 6px;\n  width: 86px;\n}", ""]);
 
 // exports
 
@@ -17496,7 +17512,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".product-single[data-v-019a7388] {\n  height: 100%;\n}\n.product-single > .inner[data-v-019a7388] {\n  height: 100%;\n  width: 100%;\n  background: #f9f9f9;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single > .inner .body[data-v-019a7388] {\n  padding: 1em;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.product-single > .inner .body .comments[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  overflow: hidden;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n}\n.product-single .image img[data-v-019a7388] {\n  border: solid 1px #dfdfdf;\n  width: 100%;\n}\n.product-single .description .stat[data-v-019a7388] > :first-child {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\n.product-single .details[data-v-019a7388] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\nh3[data-v-019a7388] {\n  font-size: 16px;\n  font-weight: 400;\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #a8a8a8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #dfdfdf;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.header[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header > *[data-v-019a7388] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header .close[data-v-019a7388] {\n  margin-right: 24px;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-flex: 1;\n          flex: 1;\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  border-bottom: solid 2px #dfdfdf;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #f9f9f9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1b1c1d;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #f3f3f3;\n  color: #1b1c1d;\n  border-color: #3b86ff;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tab-body[data-v-019a7388] {\n  background: #f3f3f3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #dfdfdf;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3b86ff;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #f3f3f3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3c3b54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}\n.details[data-v-019a7388] {\n  padding-right: 1px;\n}", ""]);
+exports.push([module.i, ".product-single[data-v-019a7388] {\n  height: 100%;\n}\n.product-single > .inner[data-v-019a7388] {\n  height: 100%;\n  width: 100%;\n  background: #f9f9f9;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single > .inner .body[data-v-019a7388] {\n  padding: 1em;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.product-single > .inner .body .comments[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  overflow: hidden;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n  padding-top: 133.33%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  border-radius: 2px;\n  border: solid 1px #dfdfdf;\n}\n.product-single .image img[data-v-019a7388] {\n  width: 100%;\n  height: 100%;\n  -o-object-fit: contain;\n     object-fit: contain;\n  -o-object-position: center;\n     object-position: center;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-single .description .stat[data-v-019a7388] > :first-child {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\n.product-single .details[data-v-019a7388] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\nh3[data-v-019a7388] {\n  font-size: 16px;\n  font-weight: 400;\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #a8a8a8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #dfdfdf;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.header[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header > *[data-v-019a7388] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header .close[data-v-019a7388] {\n  margin-right: 24px;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-flex: 1;\n          flex: 1;\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  border-bottom: solid 2px #dfdfdf;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #f9f9f9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1b1c1d;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #f3f3f3;\n  color: #1b1c1d;\n  border-color: #3b86ff;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tab-body[data-v-019a7388] {\n  background: #f3f3f3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #dfdfdf;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3b86ff;\n  margin-left: 4px;\n  font-size: 16px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #f3f3f3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  height: 100%;\n  -o-object-fit: contain;\n     object-fit: contain;\n  -o-object-position: center;\n     object-position: center;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3c3b54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}\n.details[data-v-019a7388] {\n  padding-right: 1px;\n}", ""]);
 
 // exports
 
@@ -33074,154 +33090,136 @@ var render = function() {
                         "div",
                         { key: index, staticClass: "product-variant" },
                         [
-                          _c("div", { staticClass: "img-wrapper" }, [
-                            _c(
-                              "div",
-                              {
-                                staticClass: "drop-area",
-                                class: { disabled: variant.image },
-                                on: {
-                                  dragenter: _vm.dragActive,
-                                  dragleave: _vm.dragInactive,
-                                  drop: _vm.dragInactive
-                                }
-                              },
-                              [
-                                variant.image || variant.blob_id
-                                  ? _c("input", {
-                                      attrs: {
-                                        type: "file",
-                                        accept: "image/*"
-                                      },
-                                      on: {
-                                        change: function($event) {
-                                          return _vm.filesChange(
-                                            $event,
-                                            index,
-                                            variant
-                                          )
+                          _c(
+                            "div",
+                            {
+                              staticClass: "img-wrapper",
+                              on: {
+                                dragenter: function($event) {
+                                  return _vm.dragActive($event, index)
+                                },
+                                dragleave: _vm.dragLeave,
+                                drop: _vm.dragDrop
+                              }
+                            },
+                            [
+                              _c(
+                                "div",
+                                {
+                                  staticClass: "drop-area",
+                                  class: { drag: _vm.dragActiveIndex == index }
+                                },
+                                [
+                                  variant.image || variant.blob_id
+                                    ? _c("input", {
+                                        attrs: {
+                                          type: "file",
+                                          accept: "image/*"
                                         },
-                                        click: function($event) {
-                                          $event.preventDefault()
-                                        }
-                                      }
-                                    })
-                                  : _c("input", {
-                                      ref: "fileInput-" + index,
-                                      refInFor: true,
-                                      attrs: {
-                                        type: "file",
-                                        accept: "image/*"
-                                      },
-                                      on: {
-                                        change: function($event) {
-                                          return _vm.filesChange(
-                                            $event,
-                                            index,
-                                            variant
-                                          )
-                                        }
-                                      }
-                                    }),
-                                _vm._v(" "),
-                                variant.image || variant.blob_id
-                                  ? _c("img", {
-                                      attrs: { src: _vm.variantImg(variant) },
-                                      on: {
-                                        error: function($event) {
-                                          return _vm.imgError(variant)
-                                        }
-                                      }
-                                    })
-                                  : [
-                                      _c("div", { staticClass: "controls" }, [
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass: "button light-2",
-                                            on: {
-                                              click: function($event) {
-                                                _vm.$refs[
-                                                  "fileInput-" + index
-                                                ][0].click()
-                                              }
-                                            }
+                                        on: {
+                                          change: function($event) {
+                                            return _vm.filesChange(
+                                              $event,
+                                              index,
+                                              variant
+                                            )
                                           },
-                                          [_vm._v("Choose from file")]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "span",
-                                          { staticClass: "button light-2" },
-                                          [_vm._v("URL")]
-                                        )
-                                      ])
-                                    ]
-                              ],
-                              2
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "div",
-                              { staticClass: "controls" },
-                              [
-                                _c("Dropdown", {
-                                  staticClass: "dropdown-parent dark",
-                                  scopedSlots: _vm._u(
-                                    [
-                                      {
-                                        key: "button",
-                                        fn: function(slotProps) {
-                                          return [
-                                            _c(
-                                              "span",
-                                              {
-                                                ref: "hotkeys-" + index,
-                                                refInFor: true,
-                                                staticClass:
-                                                  "square true-square light-2 clickable",
-                                                attrs: { tabindex: "0" },
-                                                on: {
-                                                  "!click": function($event) {
-                                                    _vm.$refs[
-                                                      "hotkeys-" + index
-                                                    ][0].focus()
-                                                  },
-                                                  keyup: function($event) {
-                                                    if (
-                                                      !$event.type.indexOf(
-                                                        "key"
-                                                      ) &&
-                                                      _vm._k(
-                                                        $event.keyCode,
-                                                        "d",
-                                                        undefined,
-                                                        $event.key,
-                                                        undefined
-                                                      )
-                                                    ) {
-                                                      return null
-                                                    }
-                                                    return _vm.testFuncA($event)
-                                                  },
-                                                  click: function($event) {
-                                                    return slotProps.toggle()
-                                                  }
+                                          click: function($event) {
+                                            $event.preventDefault()
+                                          }
+                                        }
+                                      })
+                                    : _c("input", {
+                                        ref: "fileInput-" + index,
+                                        refInFor: true,
+                                        attrs: {
+                                          type: "file",
+                                          accept: "image/*"
+                                        },
+                                        on: {
+                                          change: function($event) {
+                                            return _vm.filesChange(
+                                              $event,
+                                              index,
+                                              variant
+                                            )
+                                          }
+                                        }
+                                      }),
+                                  _vm._v(" "),
+                                  variant.image || variant.blob_id
+                                    ? _c("img", {
+                                        attrs: { src: _vm.variantImg(variant) },
+                                        on: {
+                                          error: function($event) {
+                                            return _vm.imgError(variant)
+                                          }
+                                        }
+                                      })
+                                    : [
+                                        _c("div", { staticClass: "controls" }, [
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass: "button light-2",
+                                              on: {
+                                                click: function($event) {
+                                                  _vm.$refs[
+                                                    "fileInput-" + index
+                                                  ][0].click()
                                                 }
-                                              },
-                                              [
-                                                _c("i", {
+                                              }
+                                            },
+                                            [_vm._v("Choose from file")]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "span",
+                                            { staticClass: "button light-2" },
+                                            [_vm._v("URL")]
+                                          )
+                                        ])
+                                      ],
+                                  _vm._v(" "),
+                                  _vm._m(2, true)
+                                ],
+                                2
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                { staticClass: "controls" },
+                                [
+                                  _c("Dropdown", {
+                                    staticClass: "dropdown-parent dark",
+                                    scopedSlots: _vm._u(
+                                      [
+                                        {
+                                          key: "button",
+                                          fn: function(slotProps) {
+                                            return [
+                                              _c(
+                                                "span",
+                                                {
+                                                  ref: "hotkeys-" + index,
+                                                  refInFor: true,
                                                   staticClass:
-                                                    "fas fa-ellipsis-h",
+                                                    "square true-square light-2 clickable",
+                                                  attrs: { tabindex: "0" },
                                                   on: {
-                                                    click: function($event) {
+                                                    "!click": function($event) {
+                                                      _vm.$refs[
+                                                        "hotkeys-" + index
+                                                      ][0].focus()
+                                                    },
+                                                    keyup: function($event) {
                                                       if (
                                                         !$event.type.indexOf(
                                                           "key"
                                                         ) &&
                                                         _vm._k(
                                                           $event.keyCode,
-                                                          "bu",
+                                                          "d",
                                                           undefined,
                                                           $event.key,
                                                           undefined
@@ -33229,172 +33227,135 @@ var render = function() {
                                                       ) {
                                                         return null
                                                       }
+                                                      return _vm.testFuncA(
+                                                        $event
+                                                      )
+                                                    },
+                                                    click: function($event) {
+                                                      return slotProps.toggle()
                                                     }
                                                   }
-                                                })
-                                              ]
-                                            )
-                                          ]
-                                        }
-                                      },
-                                      {
-                                        key: "header",
-                                        fn: function(slotProps) {
-                                          return [
-                                            _c(
-                                              "div",
-                                              { staticClass: "header" },
-                                              [
-                                                _c("span", [
-                                                  _vm._v("Edit Variant")
-                                                ]),
-                                                _vm._v(" "),
-                                                _c(
-                                                  "span",
-                                                  {
+                                                },
+                                                [
+                                                  _c("i", {
                                                     staticClass:
-                                                      "circle small dark clickable",
+                                                      "fas fa-ellipsis-h",
                                                     on: {
                                                       click: function($event) {
-                                                        return slotProps.toggle()
+                                                        if (
+                                                          !$event.type.indexOf(
+                                                            "key"
+                                                          ) &&
+                                                          _vm._k(
+                                                            $event.keyCode,
+                                                            "bu",
+                                                            undefined,
+                                                            $event.key,
+                                                            undefined
+                                                          )
+                                                        ) {
+                                                          return null
+                                                        }
                                                       }
                                                     }
-                                                  },
-                                                  [
-                                                    _c("i", {
+                                                  })
+                                                ]
+                                              )
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          key: "header",
+                                          fn: function(slotProps) {
+                                            return [
+                                              _c(
+                                                "div",
+                                                { staticClass: "header" },
+                                                [
+                                                  _c("span", [
+                                                    _vm._v("Edit Variant")
+                                                  ]),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "span",
+                                                    {
                                                       staticClass:
-                                                        "far fa-times"
-                                                    })
-                                                  ]
-                                                )
-                                              ]
-                                            )
-                                          ]
-                                        }
-                                      },
-                                      {
-                                        key: "body",
-                                        fn: function(slotProps) {
-                                          return [
-                                            _c(
-                                              "div",
-                                              { staticClass: "hotkeys" },
-                                              [
-                                                _c(
-                                                  "div",
-                                                  { staticClass: "hotkey" },
-                                                  [
-                                                    _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "button white"
-                                                      },
-                                                      [_vm._v("Choose file")]
-                                                    ),
-                                                    _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "square true-square white"
-                                                      },
-                                                      [_vm._v("C")]
-                                                    )
-                                                  ]
-                                                ),
-                                                _vm._v(" "),
-                                                _c(
-                                                  "div",
-                                                  { staticClass: "hotkey" },
-                                                  [
-                                                    _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "button white"
-                                                      },
-                                                      [_vm._v("URL")]
-                                                    ),
-                                                    _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "square true-square white"
-                                                      },
-                                                      [_vm._v("U")]
-                                                    )
-                                                  ]
-                                                ),
-                                                _vm._v(" "),
-                                                _c(
-                                                  "div",
-                                                  { staticClass: "hotkey" },
-                                                  [
-                                                    _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "button white"
-                                                      },
-                                                      [_vm._v("Rename")]
-                                                    ),
-                                                    _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "square true-square white"
-                                                      },
-                                                      [_vm._v("R")]
-                                                    )
-                                                  ]
-                                                ),
-                                                _vm._v(" "),
-                                                _c(
-                                                  "div",
-                                                  { staticClass: "hotkey" },
-                                                  [
-                                                    _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "button red",
-                                                        on: {
-                                                          click: function(
-                                                            $event
-                                                          ) {
-                                                            _vm.removeVariant(
-                                                              index
-                                                            )
-                                                            slotProps.toggle()
-                                                          }
+                                                        "circle small dark clickable",
+                                                      on: {
+                                                        click: function(
+                                                          $event
+                                                        ) {
+                                                          return slotProps.toggle()
                                                         }
-                                                      },
-                                                      [_vm._v("Delete")]
-                                                    ),
-                                                    _c(
-                                                      "span",
-                                                      {
+                                                      }
+                                                    },
+                                                    [
+                                                      _c("i", {
                                                         staticClass:
-                                                          "square true-square red"
-                                                      },
-                                                      [_vm._v("D")]
-                                                    )
-                                                  ]
-                                                )
-                                              ]
-                                            )
-                                          ]
+                                                          "far fa-times"
+                                                      })
+                                                    ]
+                                                  )
+                                                ]
+                                              )
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          key: "body",
+                                          fn: function(slotProps) {
+                                            return [
+                                              _c(
+                                                "div",
+                                                { staticClass: "hotkeys" },
+                                                [
+                                                  _c(
+                                                    "div",
+                                                    { staticClass: "hotkey" },
+                                                    [
+                                                      _c(
+                                                        "span",
+                                                        {
+                                                          staticClass:
+                                                            "button red",
+                                                          on: {
+                                                            click: function(
+                                                              $event
+                                                            ) {
+                                                              _vm.removeVariant(
+                                                                index
+                                                              )
+                                                              slotProps.toggle()
+                                                            }
+                                                          }
+                                                        },
+                                                        [_vm._v("Delete")]
+                                                      ),
+                                                      _c(
+                                                        "span",
+                                                        {
+                                                          staticClass:
+                                                            "square true-square red"
+                                                        },
+                                                        [_vm._v("D")]
+                                                      )
+                                                    ]
+                                                  )
+                                                ]
+                                              )
+                                            ]
+                                          }
                                         }
-                                      }
-                                    ],
-                                    null,
-                                    true
-                                  )
-                                })
-                              ],
-                              1
-                            )
-                          ]),
+                                      ],
+                                      null,
+                                      true
+                                    )
+                                  })
+                                ],
+                                1
+                              )
+                            ]
+                          ),
                           _vm._v(" "),
                           _c("Editable", {
                             attrs: {
@@ -33714,6 +33675,14 @@ var staticRenderFns = [
         _c("span", { staticClass: "key" }, [_vm._v("E")]),
         _vm._v(" Edit")
       ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "drop-msg" }, [
+      _c("span", [_vm._v("Drop image here")])
     ])
   }
 ]
