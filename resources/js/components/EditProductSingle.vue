@@ -13,7 +13,7 @@
                             <span>{{product.updated_at}}</span>
                         </div>
                         <div class="hotkey-wrapper">
-                            <span v-if="!updatingProduct" class="button ghost icon-left" :class="{disabled: !hasChanges}" @click="onUpdateProduct"><i class="far fa-save"></i>Save</span>
+                            <span v-if="!updatingProduct && gettingImagesFromURL <= 0" class="button ghost icon-left" :class="{disabled: !hasChanges}" @click="onUpdateProduct"><i class="far fa-save"></i>Save</span>
                             <span v-else class="button ghost icon-left disabled"><Loader/></span>
                             <span class="hotkey"><span class="key">S</span> Save</span>
                         </div>
@@ -39,9 +39,18 @@
                                         <template v-else>
                                             <div class="controls">
                                                 <span class="button light-2" @click="$refs['fileInput-'+index][0].click()">Choose from file</span>
-                                                <span class="button light-2">URL</span>
+                                                <span @click="editURL(index)" class="button light-2">URL</span>
                                             </div>
                                         </template>
+                                        <div v-if="URLActiveIndex == index" class="enter-url">
+                                            <label :for="'url-input-'+index">Enter URL</label>
+                                            <input :id="'url-input-'+index" :ref="'url-input-'+index" type="url" class="input-wrapper" 
+                                            @keyup.enter="setVariantImageURL(variant, $refs['url-input-'+index][0].value); URLActiveIndex = null">
+                                            <div class="buttons-wrapper">
+                                                <span class="button green" @click="setVariantImageURL(variant, $refs['url-input-'+index][0].value); URLActiveIndex = null">Save</span>
+                                                <span class="button ghost" @click="URLActiveIndex = null">Cancel</span>
+                                            </div>
+                                        </div>
                                         <div class="drop-msg">
                                             <span>Drop image here</span>
                                         </div>
@@ -51,7 +60,8 @@
                                             <template v-slot:button="slotProps">
                                                 <span tabindex="0" class="square true-square light-2 clickable" @click="slotProps.toggle()"
                                                 @keyup.d="removeVariant(index); slotProps.toggle()" 
-                                                @keyup.c="$refs['fileInput-'+index][0].click(); slotProps.toggle()">
+                                                @keyup.c="$refs['fileInput-'+index][0].click(); slotProps.toggle()"
+                                                @keyup.u="editURL(index); slotProps.toggle()">
                                                     <i class="fas fa-ellipsis-h"></i>
                                                 </span>
                                             </template>
@@ -66,12 +76,12 @@
                                                     <div class="hotkey">
                                                         <span class="button white" @click="$refs['fileInput-'+index][0].click(); slotProps.toggle()">Choose file</span><span class="square true-square white">C</span>
                                                     </div>
-                                                    <!-- <div class="hotkey">
-                                                        <span class="button white">URL</span><span class="square true-square white">U</span>
+                                                    <div class="hotkey">
+                                                        <span class="button white" @click="editURL(index); slotProps.toggle()">URL</span><span class="square true-square white">U</span>
                                                     </div>
                                                     <div class="hotkey">
                                                         <span class="button white">Rename</span><span class="square true-square white">R</span>
-                                                    </div> -->
+                                                    </div>
                                                     <div class="hotkey">
                                                         <span class="button red" @click="removeVariant(index); slotProps.toggle()">Delete</span><span class="square true-square red">D</span>
                                                     </div>
@@ -158,6 +168,8 @@ export default {
         updatingProduct: false,
         dragActiveIndex: null,
         dragCounter: 0,
+        URLActiveIndex: null,
+        gettingImagesFromURL: 0,
     }},
     watch: {
         currentProductv1(newVal, oldVal) {
@@ -407,6 +419,40 @@ export default {
                 console.log('invalid file extension')
             }
         },
+        editURL(index) {
+            this.URLActiveIndex = index
+            this.$nextTick(() => {
+                this.$refs['url-input-'+index][0].focus()
+            })
+        },
+        async getImageFromURL(variant) {
+            if (variant.image) {
+                // Add to a counter of images we are currently processing
+                const vm = this
+                vm.gettingImagesFromURL++
+                // Generate a new uuid for the image
+                const newUUID = this.$uuid.v4()
+                // Send a request to get the image
+                var request = new XMLHttpRequest();
+                await (
+                    request.open('GET', variant.image, true),
+                    request.responseType = 'blob',
+                    request.onload = function() {
+                        variant.imageToUpload = {file: request.response, id: newUUID}
+                        // decrement the images in process counter
+                        vm.gettingImagesFromURL--
+                    },
+                    request.send()
+                )
+            }
+        },
+        setVariantImageURL(variant, imageURL) {
+            variant.image = imageURL
+            variant.blob_id = null
+            if (variant.imageToUpload)
+                delete variant.imageToUpload
+            this.getImageFromURL(variant)
+        }
     },
     created() {
         document.body.addEventListener('keydown', this.hotkeyHandler)
@@ -541,6 +587,29 @@ export default {
                 width: 100%;
                 height: 100%;
                 cursor: auto;
+                .enter-url {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    height: 100%;
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex-direction: column;
+                    background: #f3f3f3;
+                    padding: 10px;
+                    .buttons-wrapper {
+                        display: flex;
+                        justify-content: space-between;
+                        width: 100%;
+                        > * {
+                            width: calc(50% - 4px);
+                            margin-top: 8px;
+                            min-width: 0;
+                        }
+                    }
+                }
                 .drop-msg {
                     z-index: 1;
                     position: absolute;

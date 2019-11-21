@@ -7946,6 +7946,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -7969,7 +7979,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       editingTitle: false,
       updatingProduct: false,
       dragActiveIndex: null,
-      dragCounter: 0
+      dragCounter: 0,
+      URLActiveIndex: null,
+      gettingImagesFromURL: 0
     };
   },
   watch: {
@@ -8236,6 +8248,65 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         // Throw error
         console.log('invalid file extension');
       }
+    },
+    editURL: function editURL(index) {
+      var _this2 = this;
+
+      this.URLActiveIndex = index;
+      this.$nextTick(function () {
+        _this2.$refs['url-input-' + index][0].focus();
+      });
+    },
+    getImageFromURL: function () {
+      var _getImageFromURL = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(variant) {
+        var vm, newUUID, request;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                if (!variant.image) {
+                  _context2.next = 7;
+                  break;
+                }
+
+                // Add to a counter of images we are currently processing
+                vm = this;
+                vm.gettingImagesFromURL++; // Generate a new uuid for the image
+
+                newUUID = this.$uuid.v4(); // Send a request to get the image
+
+                request = new XMLHttpRequest();
+                _context2.next = 7;
+                return request.open('GET', variant.image, true), request.responseType = 'blob', request.onload = function () {
+                  variant.imageToUpload = {
+                    file: request.response,
+                    id: newUUID // decrement the images in process counter
+
+                  };
+                  vm.gettingImagesFromURL--;
+                }, request.send();
+
+              case 7:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function getImageFromURL(_x) {
+        return _getImageFromURL.apply(this, arguments);
+      }
+
+      return getImageFromURL;
+    }(),
+    setVariantImageURL: function setVariantImageURL(variant, imageURL) {
+      variant.image = imageURL;
+      variant.blob_id = null;
+      if (variant.imageToUpload) delete variant.imageToUpload;
+      this.getImageFromURL(variant);
     }
   }),
   created: function created() {
@@ -17253,7 +17324,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".edit-product-single[data-v-8542425c] {\n  height: 100%;\n}\n.edit-product-single > .inner[data-v-8542425c] {\n  height: 100%;\n  width: 100%;\n  background: #f9f9f9;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.edit-product-single > .inner > .header[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.edit-product-single > .inner > .header h3[data-v-8542425c] {\n  width: 100%;\n}\n.edit-product-single > .inner > .header > *[data-v-8542425c] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.edit-product-single > .inner > .header .close[data-v-8542425c] {\n  margin-right: 24px;\n}\n.edit-product-single > .inner > .header .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  -webkit-box-align: start;\n          align-items: flex-start;\n}\n.edit-product-single > .inner > .header .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.edit-product-single > .inner .body[data-v-8542425c] {\n  padding: 24px;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.edit-product-single .details[data-v-8542425c] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\nh3[data-v-8542425c] {\n  font-size: 16px;\n  font-weight: 400;\n}\n.close i[data-v-8542425c] {\n  font-size: 22px;\n}\n.card > .grid-2[data-v-8542425c] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-2.grid-border-between[data-v-8542425c] {\n  grid-template-columns: 1fr 2px 1fr;\n  grid-gap: 17px;\n}\n.grid-2.grid-border-between[data-v-8542425c] > :nth-child(2) {\n  background: #dfdfdf;\n}\n.product-variants[data-v-8542425c] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n  margin-bottom: 40px;\n}\n.product-variant[data-v-8542425c] {\n  width: 180px;\n  display: inline-block;\n}\n.product-variant[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .img-wrapper[data-v-8542425c] {\n  padding-top: 133.33%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  border-radius: 2px;\n  border: solid 1px #dfdfdf;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-8542425c] {\n  width: 100%;\n  height: 100%;\n  -o-object-fit: contain;\n     object-fit: contain;\n  -o-object-position: center;\n     object-position: center;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant .img-wrapper .drop-area[data-v-8542425c] {\n  position: absolute;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  cursor: auto;\n}\n.product-variant .img-wrapper .drop-area input[type=file][data-v-8542425c] {\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area .drop-msg[data-v-8542425c] {\n  z-index: 1;\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  width: 100%;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  display: none;\n  outline: 2px dashed #dfdfdf;\n  outline-offset: -10px;\n  background: white;\n  padding: 12px 12px;\n  background: #f3f3f3;\n}\n.product-variant .img-wrapper .drop-area.drag .drop-msg[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area.drag .controls[data-v-8542425c] {\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area.drag input[type=file][data-v-8542425c] {\n  z-index: 2;\n  pointer-events: all;\n}\n.product-variant .img-wrapper .drop-area .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-variant .img-wrapper .drop-area .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.product-variant .img-wrapper .drop-area .controls .button[data-v-8542425c] {\n  width: 124px;\n}\n.product-variant .img-wrapper > .controls[data-v-8542425c] {\n  position: absolute;\n  z-index: 2;\n  right: 4px;\n  top: 4px;\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.product-variant .img-wrapper:hover .controls[data-v-8542425c] {\n  opacity: 1;\n}\n.product-variant .color-wrapper[data-v-8542425c] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-8542425c] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-8542425c] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-8542425c] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.input-wrapper.composition[data-v-8542425c] {\n  white-space: pre-line;\n}\n.last-update[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  font-size: 11px;\n  font-weight: 500;\n  text-align: right;\n}\n.details .currencies[data-v-8542425c] {\n  margin-bottom: 32px;\n}\n.dropdown .header[data-v-8542425c] {\n  color: white;\n  font-size: 12px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  padding: 0 0 0 4px;\n}\n.dropdown .hotkeys[data-v-8542425c] {\n  padding: 8px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.dropdown .hotkeys .hotkey[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.dropdown .hotkeys .hotkey[data-v-8542425c] > :first-child {\n  margin-right: 6px;\n  width: 86px;\n}", ""]);
+exports.push([module.i, ".edit-product-single[data-v-8542425c] {\n  height: 100%;\n}\n.edit-product-single > .inner[data-v-8542425c] {\n  height: 100%;\n  width: 100%;\n  background: #f9f9f9;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.edit-product-single > .inner > .header[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.edit-product-single > .inner > .header h3[data-v-8542425c] {\n  width: 100%;\n}\n.edit-product-single > .inner > .header > *[data-v-8542425c] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.edit-product-single > .inner > .header .close[data-v-8542425c] {\n  margin-right: 24px;\n}\n.edit-product-single > .inner > .header .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  -webkit-box-align: start;\n          align-items: flex-start;\n}\n.edit-product-single > .inner > .header .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.edit-product-single > .inner .body[data-v-8542425c] {\n  padding: 24px;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.edit-product-single .details[data-v-8542425c] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\nh3[data-v-8542425c] {\n  font-size: 16px;\n  font-weight: 400;\n}\n.close i[data-v-8542425c] {\n  font-size: 22px;\n}\n.card > .grid-2[data-v-8542425c] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-2.grid-border-between[data-v-8542425c] {\n  grid-template-columns: 1fr 2px 1fr;\n  grid-gap: 17px;\n}\n.grid-2.grid-border-between[data-v-8542425c] > :nth-child(2) {\n  background: #dfdfdf;\n}\n.product-variants[data-v-8542425c] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n  margin-bottom: 40px;\n}\n.product-variant[data-v-8542425c] {\n  width: 180px;\n  display: inline-block;\n}\n.product-variant[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .img-wrapper[data-v-8542425c] {\n  padding-top: 133.33%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  border-radius: 2px;\n  border: solid 1px #dfdfdf;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-8542425c] {\n  width: 100%;\n  height: 100%;\n  -o-object-fit: contain;\n     object-fit: contain;\n  -o-object-position: center;\n     object-position: center;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant .img-wrapper .drop-area[data-v-8542425c] {\n  position: absolute;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  cursor: auto;\n}\n.product-variant .img-wrapper .drop-area input[type=file][data-v-8542425c] {\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area .enter-url[data-v-8542425c] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  background: #f3f3f3;\n  padding: 10px;\n}\n.product-variant .img-wrapper .drop-area .enter-url .buttons-wrapper[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  width: 100%;\n}\n.product-variant .img-wrapper .drop-area .enter-url .buttons-wrapper > *[data-v-8542425c] {\n  width: calc(50% - 4px);\n  margin-top: 8px;\n  min-width: 0;\n}\n.product-variant .img-wrapper .drop-area .drop-msg[data-v-8542425c] {\n  z-index: 1;\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  width: 100%;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  display: none;\n  outline: 2px dashed #dfdfdf;\n  outline-offset: -10px;\n  background: white;\n  padding: 12px 12px;\n  background: #f3f3f3;\n}\n.product-variant .img-wrapper .drop-area.drag .drop-msg[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area.drag .controls[data-v-8542425c] {\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area.drag input[type=file][data-v-8542425c] {\n  z-index: 2;\n  pointer-events: all;\n}\n.product-variant .img-wrapper .drop-area .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-variant .img-wrapper .drop-area .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.product-variant .img-wrapper .drop-area .controls .button[data-v-8542425c] {\n  width: 124px;\n}\n.product-variant .img-wrapper > .controls[data-v-8542425c] {\n  position: absolute;\n  z-index: 2;\n  right: 4px;\n  top: 4px;\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.product-variant .img-wrapper:hover .controls[data-v-8542425c] {\n  opacity: 1;\n}\n.product-variant .color-wrapper[data-v-8542425c] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-8542425c] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-8542425c] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-8542425c] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.input-wrapper.composition[data-v-8542425c] {\n  white-space: pre-line;\n}\n.last-update[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  font-size: 11px;\n  font-weight: 500;\n  text-align: right;\n}\n.details .currencies[data-v-8542425c] {\n  margin-bottom: 32px;\n}\n.dropdown .header[data-v-8542425c] {\n  color: white;\n  font-size: 12px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  padding: 0 0 0 4px;\n}\n.dropdown .hotkeys[data-v-8542425c] {\n  padding: 8px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.dropdown .hotkeys .hotkey[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.dropdown .hotkeys .hotkey[data-v-8542425c] > :first-child {\n  margin-right: 6px;\n  width: 86px;\n}", ""]);
 
 // exports
 
@@ -32985,7 +33056,7 @@ var render = function() {
                     : _vm._e(),
                   _vm._v(" "),
                   _c("div", { staticClass: "hotkey-wrapper" }, [
-                    !_vm.updatingProduct
+                    !_vm.updatingProduct && _vm.gettingImagesFromURL <= 0
                       ? _c(
                           "span",
                           {
@@ -33141,11 +33212,101 @@ var render = function() {
                                           _vm._v(" "),
                                           _c(
                                             "span",
-                                            { staticClass: "button light-2" },
+                                            {
+                                              staticClass: "button light-2",
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.editURL(index)
+                                                }
+                                              }
+                                            },
                                             [_vm._v("URL")]
                                           )
                                         ])
                                       ],
+                                  _vm._v(" "),
+                                  _vm.URLActiveIndex == index
+                                    ? _c("div", { staticClass: "enter-url" }, [
+                                        _c(
+                                          "label",
+                                          {
+                                            attrs: { for: "url-input-" + index }
+                                          },
+                                          [_vm._v("Enter URL")]
+                                        ),
+                                        _vm._v(" "),
+                                        _c("input", {
+                                          ref: "url-input-" + index,
+                                          refInFor: true,
+                                          staticClass: "input-wrapper",
+                                          attrs: {
+                                            id: "url-input-" + index,
+                                            type: "url"
+                                          },
+                                          on: {
+                                            keyup: function($event) {
+                                              if (
+                                                !$event.type.indexOf("key") &&
+                                                _vm._k(
+                                                  $event.keyCode,
+                                                  "enter",
+                                                  13,
+                                                  $event.key,
+                                                  "Enter"
+                                                )
+                                              ) {
+                                                return null
+                                              }
+                                              _vm.setVariantImageURL(
+                                                variant,
+                                                _vm.$refs[
+                                                  "url-input-" + index
+                                                ][0].value
+                                              )
+                                              _vm.URLActiveIndex = null
+                                            }
+                                          }
+                                        }),
+                                        _vm._v(" "),
+                                        _c(
+                                          "div",
+                                          { staticClass: "buttons-wrapper" },
+                                          [
+                                            _c(
+                                              "span",
+                                              {
+                                                staticClass: "button green",
+                                                on: {
+                                                  click: function($event) {
+                                                    _vm.setVariantImageURL(
+                                                      variant,
+                                                      _vm.$refs[
+                                                        "url-input-" + index
+                                                      ][0].value
+                                                    )
+                                                    _vm.URLActiveIndex = null
+                                                  }
+                                                }
+                                              },
+                                              [_vm._v("Save")]
+                                            ),
+                                            _vm._v(" "),
+                                            _c(
+                                              "span",
+                                              {
+                                                staticClass: "button ghost",
+                                                on: {
+                                                  click: function($event) {
+                                                    _vm.URLActiveIndex = null
+                                                  }
+                                                }
+                                              },
+                                              [_vm._v("Cancel")]
+                                            )
+                                          ]
+                                        )
+                                      ])
+                                    : _vm._e(),
                                   _vm._v(" "),
                                   _vm._m(2, true)
                                 ],
@@ -33211,6 +33372,24 @@ var render = function() {
                                                         _vm.$refs[
                                                           "fileInput-" + index
                                                         ][0].click()
+                                                        slotProps.toggle()
+                                                      },
+                                                      function($event) {
+                                                        if (
+                                                          !$event.type.indexOf(
+                                                            "key"
+                                                          ) &&
+                                                          _vm._k(
+                                                            $event.keyCode,
+                                                            "u",
+                                                            undefined,
+                                                            $event.key,
+                                                            undefined
+                                                          )
+                                                        ) {
+                                                          return null
+                                                        }
+                                                        _vm.editURL(index)
                                                         slotProps.toggle()
                                                       }
                                                     ]
@@ -33301,6 +33480,60 @@ var render = function() {
                                                             "square true-square white"
                                                         },
                                                         [_vm._v("C")]
+                                                      )
+                                                    ]
+                                                  ),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "div",
+                                                    { staticClass: "hotkey" },
+                                                    [
+                                                      _c(
+                                                        "span",
+                                                        {
+                                                          staticClass:
+                                                            "button white",
+                                                          on: {
+                                                            click: function(
+                                                              $event
+                                                            ) {
+                                                              _vm.editURL(index)
+                                                              slotProps.toggle()
+                                                            }
+                                                          }
+                                                        },
+                                                        [_vm._v("URL")]
+                                                      ),
+                                                      _c(
+                                                        "span",
+                                                        {
+                                                          staticClass:
+                                                            "square true-square white"
+                                                        },
+                                                        [_vm._v("U")]
+                                                      )
+                                                    ]
+                                                  ),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "div",
+                                                    { staticClass: "hotkey" },
+                                                    [
+                                                      _c(
+                                                        "span",
+                                                        {
+                                                          staticClass:
+                                                            "button white"
+                                                        },
+                                                        [_vm._v("Rename")]
+                                                      ),
+                                                      _c(
+                                                        "span",
+                                                        {
+                                                          staticClass:
+                                                            "square true-square white"
+                                                        },
+                                                        [_vm._v("R")]
                                                       )
                                                     ]
                                                   ),
