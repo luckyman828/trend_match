@@ -33,8 +33,8 @@
                             <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index">
                                 <div class="img-wrapper" @dragenter="dragActive($event, index)" @dragleave="dragLeave" @drop="dragDrop">
                                     <div class="drop-area" :class="{drag: dragActiveIndex == index}">
-                                        <input v-if="variant.image || variant.blob_id" type="file" accept="image/*" @change="filesChange($event, index, variant)" @click.prevent>
-                                        <input v-else type="file" :ref="'fileInput-'+index" accept="image/*" @change="filesChange($event, index, variant)">
+                                        <!-- <input v-if="variant.image || variant.blob_id" type="file" accept="image/*" @change="filesChange($event, index, variant)" @click.prevent> -->
+                                        <input type="file" :ref="'fileInput-'+index" accept="image/*" @change="filesChange($event, index, variant)">
                                         <img v-if="variant.image || variant.blob_id" :src="variantImg(variant)" @error="imgError(variant)">
                                         <template v-else>
                                             <div class="controls">
@@ -49,7 +49,11 @@
                                     <div class="controls">
                                         <Dropdown class="dropdown-parent dark">
                                             <template v-slot:button="slotProps">
-                                                <span :ref="'hotkeys-'+index" @click.capture="$refs['hotkeys-'+index][0].focus()" @keyup.d="testFuncA" tabindex="0" class="square true-square light-2 clickable" @click="slotProps.toggle()"><i @click.bu class="fas fa-ellipsis-h"></i></span>
+                                                <span tabindex="0" class="square true-square light-2 clickable" @click="slotProps.toggle()"
+                                                @keyup.d="removeVariant(index); slotProps.toggle()" 
+                                                @keyup.c="$refs['fileInput-'+index][0].click(); slotProps.toggle()">
+                                                    <i class="fas fa-ellipsis-h"></i>
+                                                </span>
                                             </template>
                                             <template v-slot:header="slotProps">
                                                 <div class="header">
@@ -59,10 +63,10 @@
                                             </template>
                                             <template v-slot:body="slotProps">
                                                 <div class="hotkeys">
-                                                    <!-- <div class="hotkey">
-                                                        <span class="button white">Choose file</span><span class="square true-square white">C</span>
-                                                    </div>
                                                     <div class="hotkey">
+                                                        <span class="button white" @click="$refs['fileInput-'+index][0].click(); slotProps.toggle()">Choose file</span><span class="square true-square white">C</span>
+                                                    </div>
+                                                    <!-- <div class="hotkey">
                                                         <span class="button white">URL</span><span class="square true-square white">U</span>
                                                     </div>
                                                     <div class="hotkey">
@@ -151,7 +155,6 @@ export default {
         productToEdit: null,
         savedMarkup: null,
         editingTitle: false,
-        filesToUpload: [],
         updatingProduct: false,
         dragActiveIndex: null,
         dragCounter: 0,
@@ -214,7 +217,18 @@ export default {
                 }
             })
             return filesToDelete
-        }
+        },
+        imagesToUpload() {
+            // Check if we have any files (images) we need to upload
+            const variants = this.productToEdit.color_variants
+            let imagesToUpload = []
+            variants.forEach(variant => {
+                if (variant.imageToUpload) {
+                    imagesToUpload.push(variant.imageToUpload)
+                }
+            })
+            return imagesToUpload
+        },
     },
     methods: {
         ...mapActions('entities/products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'uploadImages', 'deleteImages']),
@@ -251,6 +265,7 @@ export default {
             })
         },
         removeVariant(index) {
+            // Remove the variant from the product
             const variants = this.productToEdit.color_variants
             variants.splice(index, 1)
 
@@ -258,7 +273,6 @@ export default {
                 // Add a blank variant if the last one is deleted
                 this.onAddVariant()
             }
-            // this.removeFile(index)
         },
         async onUpdateProduct() {
             // Prepare the file to fit the database schema
@@ -266,29 +280,23 @@ export default {
             const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
 
             // Check if we have any files (images) we need to upload
-            const files = this.filesToUpload
-            if (files.length > 0) {
-                // Attempt to upload the new images
-                await this.uploadImages(files)
+            const variants = productToUpload.color_variants
+
+            // Attempt to upload the new images if we have any
+            if (this.imagesToUpload.length > 0) {
+                await this.uploadImages(this.imagesToUpload)
                 .then(success => {
                     // When done trying to upload the images
-                    
-                    // Reset the files to be uploaded
-                    this.filesToUpload = []
-                    // Loop through the variants the images where uploaded to
-                    files.forEach(file => {
-                        // Find the variant the new file is being uploaded to
-                        const variant = productToUpload.color_variants[file.index]
 
-                        if (success) {
-                            // If the images were uploaded successfully
-                            // Set the variant blob_id equal to the files UUID to point to the newly uploaded image
-                            variant.blob_id = file.id
+                    // Loop through the variants, set the blob_id equal to the blob_id og the newly uploaded image. Then remove the imageToUpload from the variant
+                    variants.forEach(variant => {
+                        if (variant.imageToUpload) {
+                            if (success) {
+                                variant.blob_id = variant.imageToUpload.id
+                                delete variant.imageToUpload
+                                variant.image = null
+                            }
                         }
-                        // If we have new files to upload, it means that the variants image has changed.
-                        // Reset the respective variants image value, so the temp image, does not get saved to the DB.
-                        // Set the image URL of the variant to null
-                        variant.image = null
                     })
                     
                 })
@@ -378,12 +386,8 @@ export default {
                 // Generate UUID for the new image
                 const newUUID = this.$uuid.v4()
 
-                const existingFile = this.filesToUpload.find(x => x.index == index)
-                if (!existingFile) {
-                    this.filesToUpload.push({index: index, file: file, id: newUUID})
-                } else {
-                    existingFile.file = file
-                }
+                // Set the image to upload on the variant in question
+                variant.imageToUpload = {file: file, id: newUUID}
 
                 // Process the uplaoded image
                 const fileReader = new FileReader()
@@ -403,13 +407,6 @@ export default {
                 console.log('invalid file extension')
             }
         },
-        removeFile(index) {
-            const fileToRemoveIndex = this.filesToUpload.findIndex(x => x.index == index)
-            this.filesToUpload.splice(fileToRemoveIndex, 1)
-        },
-        testFuncA() {
-            console.log('AAAA')
-        }
     },
     created() {
         document.body.addEventListener('keydown', this.hotkeyHandler)

@@ -7942,6 +7942,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -7963,7 +7967,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       productToEdit: null,
       savedMarkup: null,
       editingTitle: false,
-      filesToUpload: [],
       updatingProduct: false,
       dragActiveIndex: null,
       dragCounter: 0
@@ -8030,6 +8033,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
       });
       return filesToDelete;
+    },
+    imagesToUpload: function imagesToUpload() {
+      // Check if we have any files (images) we need to upload
+      var variants = this.productToEdit.color_variants;
+      var imagesToUpload = [];
+      variants.forEach(function (variant) {
+        if (variant.imageToUpload) {
+          imagesToUpload.push(variant.imageToUpload);
+        }
+      });
+      return imagesToUpload;
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'uploadImages', 'deleteImages']), {
@@ -8064,14 +8078,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     removeVariant: function removeVariant(index) {
+      // Remove the variant from the product
       var variants = this.productToEdit.color_variants;
       variants.splice(index, 1);
 
       if (variants.length <= 0) {
         // Add a blank variant if the last one is deleted
         this.onAddVariant();
-      } // this.removeFile(index)
-
+      }
     },
     onUpdateProduct: function () {
       var _onUpdateProduct = _asyncToGenerator(
@@ -8079,7 +8093,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
         var _this = this;
 
-        var productToUpload, files, filesToDelete;
+        var productToUpload, variants, filesToDelete;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -8088,33 +8102,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 this.updatingProduct = true;
                 productToUpload = JSON.parse(JSON.stringify(this.productToEdit)); // Check if we have any files (images) we need to upload
 
-                files = this.filesToUpload;
+                variants = productToUpload.color_variants; // Attempt to upload the new images if we have any
 
-                if (!(files.length > 0)) {
+                if (!(this.imagesToUpload.length > 0)) {
                   _context.next = 6;
                   break;
                 }
 
                 _context.next = 6;
-                return this.uploadImages(files).then(function (success) {
+                return this.uploadImages(this.imagesToUpload).then(function (success) {
                   // When done trying to upload the images
-                  // Reset the files to be uploaded
-                  _this.filesToUpload = []; // Loop through the variants the images where uploaded to
-
-                  files.forEach(function (file) {
-                    // Find the variant the new file is being uploaded to
-                    var variant = productToUpload.color_variants[file.index];
-
-                    if (success) {
-                      // If the images were uploaded successfully
-                      // Set the variant blob_id equal to the files UUID to point to the newly uploaded image
-                      variant.blob_id = file.id;
-                    } // If we have new files to upload, it means that the variants image has changed.
-                    // Reset the respective variants image value, so the temp image, does not get saved to the DB.
-                    // Set the image URL of the variant to null
-
-
-                    variant.image = null;
+                  // Loop through the variants, set the blob_id equal to the blob_id og the newly uploaded image. Then remove the imageToUpload from the variant
+                  variants.forEach(function (variant) {
+                    if (variant.imageToUpload) {
+                      if (success) {
+                        variant.blob_id = variant.imageToUpload.id;
+                        delete variant.imageToUpload;
+                        variant.image = null;
+                      }
+                    }
                   });
                 });
 
@@ -8208,22 +8214,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       if (file && file['type'].split('/')[0] === 'image') {
         // Generate UUID for the new image
-        var newUUID = this.$uuid.v4();
-        var existingFile = this.filesToUpload.find(function (x) {
-          return x.index == index;
-        });
+        var newUUID = this.$uuid.v4(); // Set the image to upload on the variant in question
 
-        if (!existingFile) {
-          this.filesToUpload.push({
-            index: index,
-            file: file,
-            id: newUUID
-          });
-        } else {
-          existingFile.file = file;
-        } // Process the uplaoded image
+        variant.imageToUpload = {
+          file: file,
+          id: newUUID // Process the uplaoded image
 
-
+        };
         var fileReader = new FileReader();
         fileReader.readAsDataURL(file);
 
@@ -8239,15 +8236,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         // Throw error
         console.log('invalid file extension');
       }
-    },
-    removeFile: function removeFile(index) {
-      var fileToRemoveIndex = this.filesToUpload.findIndex(function (x) {
-        return x.index == index;
-      });
-      this.filesToUpload.splice(fileToRemoveIndex, 1);
-    },
-    testFuncA: function testFuncA() {
-      console.log('AAAA');
     }
   }),
   created: function created() {
@@ -33110,42 +33098,20 @@ var render = function() {
                                   class: { drag: _vm.dragActiveIndex == index }
                                 },
                                 [
-                                  variant.image || variant.blob_id
-                                    ? _c("input", {
-                                        attrs: {
-                                          type: "file",
-                                          accept: "image/*"
-                                        },
-                                        on: {
-                                          change: function($event) {
-                                            return _vm.filesChange(
-                                              $event,
-                                              index,
-                                              variant
-                                            )
-                                          },
-                                          click: function($event) {
-                                            $event.preventDefault()
-                                          }
-                                        }
-                                      })
-                                    : _c("input", {
-                                        ref: "fileInput-" + index,
-                                        refInFor: true,
-                                        attrs: {
-                                          type: "file",
-                                          accept: "image/*"
-                                        },
-                                        on: {
-                                          change: function($event) {
-                                            return _vm.filesChange(
-                                              $event,
-                                              index,
-                                              variant
-                                            )
-                                          }
-                                        }
-                                      }),
+                                  _c("input", {
+                                    ref: "fileInput-" + index,
+                                    refInFor: true,
+                                    attrs: { type: "file", accept: "image/*" },
+                                    on: {
+                                      change: function($event) {
+                                        return _vm.filesChange(
+                                          $event,
+                                          index,
+                                          variant
+                                        )
+                                      }
+                                    }
+                                  }),
                                   _vm._v(" "),
                                   variant.image || variant.blob_id
                                     ? _c("img", {
@@ -33201,54 +33167,22 @@ var render = function() {
                                               _c(
                                                 "span",
                                                 {
-                                                  ref: "hotkeys-" + index,
-                                                  refInFor: true,
                                                   staticClass:
                                                     "square true-square light-2 clickable",
                                                   attrs: { tabindex: "0" },
                                                   on: {
-                                                    "!click": function($event) {
-                                                      _vm.$refs[
-                                                        "hotkeys-" + index
-                                                      ][0].focus()
-                                                    },
-                                                    keyup: function($event) {
-                                                      if (
-                                                        !$event.type.indexOf(
-                                                          "key"
-                                                        ) &&
-                                                        _vm._k(
-                                                          $event.keyCode,
-                                                          "d",
-                                                          undefined,
-                                                          $event.key,
-                                                          undefined
-                                                        )
-                                                      ) {
-                                                        return null
-                                                      }
-                                                      return _vm.testFuncA(
-                                                        $event
-                                                      )
-                                                    },
                                                     click: function($event) {
                                                       return slotProps.toggle()
-                                                    }
-                                                  }
-                                                },
-                                                [
-                                                  _c("i", {
-                                                    staticClass:
-                                                      "fas fa-ellipsis-h",
-                                                    on: {
-                                                      click: function($event) {
+                                                    },
+                                                    keyup: [
+                                                      function($event) {
                                                         if (
                                                           !$event.type.indexOf(
                                                             "key"
                                                           ) &&
                                                           _vm._k(
                                                             $event.keyCode,
-                                                            "bu",
+                                                            "d",
                                                             undefined,
                                                             $event.key,
                                                             undefined
@@ -33256,8 +33190,36 @@ var render = function() {
                                                         ) {
                                                           return null
                                                         }
+                                                        _vm.removeVariant(index)
+                                                        slotProps.toggle()
+                                                      },
+                                                      function($event) {
+                                                        if (
+                                                          !$event.type.indexOf(
+                                                            "key"
+                                                          ) &&
+                                                          _vm._k(
+                                                            $event.keyCode,
+                                                            "c",
+                                                            undefined,
+                                                            $event.key,
+                                                            undefined
+                                                          )
+                                                        ) {
+                                                          return null
+                                                        }
+                                                        _vm.$refs[
+                                                          "fileInput-" + index
+                                                        ][0].click()
+                                                        slotProps.toggle()
                                                       }
-                                                    }
+                                                    ]
+                                                  }
+                                                },
+                                                [
+                                                  _c("i", {
+                                                    staticClass:
+                                                      "fas fa-ellipsis-h"
                                                   })
                                                 ]
                                               )
@@ -33309,6 +33271,40 @@ var render = function() {
                                                 "div",
                                                 { staticClass: "hotkeys" },
                                                 [
+                                                  _c(
+                                                    "div",
+                                                    { staticClass: "hotkey" },
+                                                    [
+                                                      _c(
+                                                        "span",
+                                                        {
+                                                          staticClass:
+                                                            "button white",
+                                                          on: {
+                                                            click: function(
+                                                              $event
+                                                            ) {
+                                                              _vm.$refs[
+                                                                "fileInput-" +
+                                                                  index
+                                                              ][0].click()
+                                                              slotProps.toggle()
+                                                            }
+                                                          }
+                                                        },
+                                                        [_vm._v("Choose file")]
+                                                      ),
+                                                      _c(
+                                                        "span",
+                                                        {
+                                                          staticClass:
+                                                            "square true-square white"
+                                                        },
+                                                        [_vm._v("C")]
+                                                      )
+                                                    ]
+                                                  ),
+                                                  _vm._v(" "),
                                                   _c(
                                                     "div",
                                                     { staticClass: "hotkey" },
@@ -69912,6 +69908,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                 };
                 console.log(files);
+                console.log(files[0].file);
                 data = new FormData();
                 count = 0;
                 files.forEach(function (file) {
@@ -69919,7 +69916,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data.append('files[' + count + ']', file.file, file.id);
                 });
                 console.log(count + ' images sent to API from store');
-                _context3.next = 11;
+                _context3.next = 12;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(uploadApiUrl, data, axiosConfig).then(function (response) {
                   console.log(response.data);
                   uploadSucces = true;
@@ -69929,10 +69926,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   uploadSucces = false;
                 });
 
-              case 11:
+              case 12:
                 return _context3.abrupt("return", uploadSucces);
 
-              case 12:
+              case 13:
               case "end":
                 return _context3.stop();
             }
