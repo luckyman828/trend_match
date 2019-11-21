@@ -17,10 +17,10 @@
                             <span v-else class="button ghost icon-left disabled"><Loader/></span>
                             <span class="hotkey"><span class="key">S</span> Save</span>
                         </div>
-                        <div class="hotkey-wrapper">
+                        <!-- <div class="hotkey-wrapper">
                             <span class="button ghost icon-left"><i class="far fa-file-edit"></i>Edit</span>
                             <span class="hotkey"><span class="key">E</span> Edit</span>
-                        </div>
+                        </div> -->
                         <span class="circle primary clickable" @click="onPrevSingle()" :class="[{ disabled: prevProductId == null}]"><i class="fas fa-chevron-left"></i></span>
                         <span class="circle primary clickable" @click="onNextSingle()" :class="[{ disabled: nextProductId == null}]"><i class="fas fa-chevron-right"></i></span>
                     </div>
@@ -45,7 +45,7 @@
                                         <div v-if="URLActiveIndex == index" class="enter-url">
                                             <label :for="'url-input-'+index">Enter URL</label>
                                             <input :id="'url-input-'+index" :ref="'url-input-'+index" type="url" class="input-wrapper" 
-                                            @keyup.enter="setVariantImageURL(variant, $refs['url-input-'+index][0].value); URLActiveIndex = null">
+                                            @keyup.enter="setVariantImageURL(variant, $refs['url-input-'+index][0].value); URLActiveIndex = null" @keyup.esc="URLActiveIndex = null">
                                             <div class="buttons-wrapper">
                                                 <span class="button green" @click="setVariantImageURL(variant, $refs['url-input-'+index][0].value); URLActiveIndex = null">Save</span>
                                                 <span class="button ghost" @click="URLActiveIndex = null">Cancel</span>
@@ -61,7 +61,8 @@
                                                 <span tabindex="0" class="square true-square light-2 clickable" @click="slotProps.toggle()"
                                                 @keyup.d="removeVariant(index); slotProps.toggle()" 
                                                 @keyup.c="$refs['fileInput-'+index][0].click(); slotProps.toggle()"
-                                                @keyup.u="editURL(index); slotProps.toggle()">
+                                                @keyup.u="editURL(index); slotProps.toggle()"
+                                                @keyup.r="$refs['nameInput-'+index][0].$el.click(); slotProps.toggle()">
                                                     <i class="fas fa-ellipsis-h"></i>
                                                 </span>
                                             </template>
@@ -80,7 +81,7 @@
                                                         <span class="button white" @click="editURL(index); slotProps.toggle()">URL</span><span class="square true-square white">U</span>
                                                     </div>
                                                     <div class="hotkey">
-                                                        <span class="button white">Rename</span><span class="square true-square white">R</span>
+                                                        <span class="button white" @click="$refs['nameInput-'+index][0].$el.click(); slotProps.toggle()">Rename</span><span class="square true-square white">R</span>
                                                     </div>
                                                     <div class="hotkey">
                                                         <span class="button red" @click="removeVariant(index); slotProps.toggle()">Delete</span><span class="square true-square red">D</span>
@@ -90,7 +91,7 @@
                                         </Dropdown>
                                     </div>
                                 </div>
-                                <Editable :placeholder="'Untitled'" :value="variant.color" :type="'text'" v-model="variant.color"/>
+                                <Editable :ref="'nameInput-'+index" :placeholder="'Untitled'" :value="variant.color" :type="'text'" v-model="variant.color"/>
                             </div>
                         </div>
                         <label>Product ID</label>
@@ -173,7 +174,8 @@ export default {
     }},
     watch: {
         currentProductv1(newVal, oldVal) {
-            // This function fires when a new product is shown. It also fires initially the first time the PDP is opened
+            // This function fires when a change happens to the current product in the store. It also fires initially
+            // This can mean: A new product is shown. The product in the store has been updated
             this.productToEdit = JSON.parse(JSON.stringify(newVal))
             this.productToEdit.delivery_date = new Date(this.productToEdit.delivery_date).toLocaleDateString("en-GB", {month: "long",year: "numeric"})
 
@@ -195,6 +197,9 @@ export default {
             const product = this.currentProductv1
             product.delivery_date = new Date(product.delivery_date).toLocaleDateString("en-GB", {month: "long",year: "numeric"})
             return product
+        },
+        saveActive() {
+            return !this.updatingProduct && this.gettingImagesFromURL <= 0 && this.hasChanges
         },
         currentCurrency () {
             return this.productToEdit 
@@ -292,15 +297,23 @@ export default {
             const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
 
             // Check if we have any files (images) we need to upload
-            const variants = productToUpload.color_variants
+            // Use the edit variants instead of the copy to make sure we get the correct blob data
+            const Editvariants = this.productToEdit.color_variants
+            let imagesToUpload = []
+            Editvariants.forEach(variant => {
+                if (variant.imageToUpload) {
+                    imagesToUpload.push(variant.imageToUpload)
+                }
+            })
 
             // Attempt to upload the new images if we have any
-            if (this.imagesToUpload.length > 0) {
-                await this.uploadImages(this.imagesToUpload)
+            if (imagesToUpload.length > 0) {
+                await this.uploadImages(imagesToUpload)
                 .then(success => {
                     // When done trying to upload the images
 
                     // Loop through the variants, set the blob_id equal to the blob_id og the newly uploaded image. Then remove the imageToUpload from the variant
+                    const variants = productToUpload.color_variants
                     variants.forEach(variant => {
                         if (variant.imageToUpload) {
                             if (success) {
@@ -353,11 +366,9 @@ export default {
         },
         hotkeyHandler(event) {
             const key = event.code
+
             // Only do these if the current target is not the comment box
             if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.visible) {
-                const inAvailable = this.$refs.inButton ? !this.$refs.inButton.classList.contains('disabled') : false
-                const outAvailable = this.$refs.outButton ? !this.$refs.outButton.classList.contains('disabled') : false
-                const focusAvailable = this.$refs.focusButton ? !this.$refs.focusButton.classList.contains('disabled') : false
 
                 if (key == 'Escape')
                     this.onCloseSingle()
@@ -365,7 +376,7 @@ export default {
                     this.onNextSingle()
                 if (key == 'ArrowLeft')
                     this.onPrevSingle()
-                if (key == 's' && this.hasChanges)
+                if (key == 'KeyS' && this.saveActive)
                     this.onUpdateProduct()
             }
         },
@@ -449,8 +460,8 @@ export default {
         setVariantImageURL(variant, imageURL) {
             variant.image = imageURL
             variant.blob_id = null
-            if (variant.imageToUpload)
-                delete variant.imageToUpload
+            // if (variant.imageToUpload)
+            //     delete variant.imageToUpload
             this.getImageFromURL(variant)
         }
     },

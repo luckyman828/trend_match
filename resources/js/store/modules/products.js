@@ -806,8 +806,6 @@ export default {
             }
 
             // Append the files
-            console.log(files)
-            console.log(files[0].file)
             let data = new FormData()
             let count = 0
             files.forEach(file => {

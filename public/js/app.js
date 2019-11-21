@@ -7956,6 +7956,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 
@@ -7986,7 +7987,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   watch: {
     currentProductv1: function currentProductv1(newVal, oldVal) {
-      // This function fires when a new product is shown. It also fires initially the first time the PDP is opened
+      // This function fires when a change happens to the current product in the store. It also fires initially
+      // This can mean: A new product is shown. The product in the store has been updated
       this.productToEdit = JSON.parse(JSON.stringify(newVal));
       this.productToEdit.delivery_date = new Date(this.productToEdit.delivery_date).toLocaleDateString("en-GB", {
         month: "long",
@@ -8011,6 +8013,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         year: "numeric"
       });
       return product;
+    },
+    saveActive: function saveActive() {
+      return !this.updatingProduct && this.gettingImagesFromURL <= 0 && this.hasChanges;
     },
     currentCurrency: function currentCurrency() {
       return this.productToEdit ? this.product.prices[this.currencyIndex] : {
@@ -8105,7 +8110,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
         var _this = this;
 
-        var productToUpload, variants, filesToDelete;
+        var productToUpload, Editvariants, imagesToUpload, filesToDelete;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -8113,18 +8118,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 // Prepare the file to fit the database schema
                 this.updatingProduct = true;
                 productToUpload = JSON.parse(JSON.stringify(this.productToEdit)); // Check if we have any files (images) we need to upload
+                // Use the edit variants instead of the copy to make sure we get the correct blob data
 
-                variants = productToUpload.color_variants; // Attempt to upload the new images if we have any
+                Editvariants = this.productToEdit.color_variants;
+                imagesToUpload = [];
+                Editvariants.forEach(function (variant) {
+                  if (variant.imageToUpload) {
+                    imagesToUpload.push(variant.imageToUpload);
+                  }
+                }); // Attempt to upload the new images if we have any
 
-                if (!(this.imagesToUpload.length > 0)) {
-                  _context.next = 6;
+                if (!(imagesToUpload.length > 0)) {
+                  _context.next = 8;
                   break;
                 }
 
-                _context.next = 6;
-                return this.uploadImages(this.imagesToUpload).then(function (success) {
+                _context.next = 8;
+                return this.uploadImages(imagesToUpload).then(function (success) {
                   // When done trying to upload the images
                   // Loop through the variants, set the blob_id equal to the blob_id og the newly uploaded image. Then remove the imageToUpload from the variant
+                  var variants = productToUpload.color_variants;
                   variants.forEach(function (variant) {
                     if (variant.imageToUpload) {
                       if (success) {
@@ -8136,7 +8149,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   });
                 });
 
-              case 6:
+              case 8:
                 // Check if we have any files (images) we need to delete
                 filesToDelete = this.filesToDelete;
 
@@ -8148,12 +8161,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
                 productToUpload.delivery_date = new Date(productToUpload.delivery_date + ' 3').toJSON().slice(0, 10);
-                _context.next = 11;
+                _context.next = 13;
                 return this.updateProduct(productToUpload).then(function (success) {
                   _this.updatingProduct = false;
                 });
 
-              case 11:
+              case 13:
               case "end":
                 return _context.stop();
             }
@@ -8186,13 +8199,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var key = event.code; // Only do these if the current target is not the comment box
 
       if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.visible) {
-        var inAvailable = this.$refs.inButton ? !this.$refs.inButton.classList.contains('disabled') : false;
-        var outAvailable = this.$refs.outButton ? !this.$refs.outButton.classList.contains('disabled') : false;
-        var focusAvailable = this.$refs.focusButton ? !this.$refs.focusButton.classList.contains('disabled') : false;
         if (key == 'Escape') this.onCloseSingle();
         if (key == 'ArrowRight') this.onNextSingle();
         if (key == 'ArrowLeft') this.onPrevSingle();
-        if (key == 's' && this.hasChanges) this.onUpdateProduct();
+        if (key == 'KeyS' && this.saveActive) this.onUpdateProduct();
       }
     },
     formatDelivery: function formatDelivery(e) {
@@ -8304,8 +8314,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }(),
     setVariantImageURL: function setVariantImageURL(variant, imageURL) {
       variant.image = imageURL;
-      variant.blob_id = null;
-      if (variant.imageToUpload) delete variant.imageToUpload;
+      variant.blob_id = null; // if (variant.imageToUpload)
+      //     delete variant.imageToUpload
+
       this.getImageFromURL(variant);
     }
   }),
@@ -33079,8 +33090,6 @@ var render = function() {
                     _vm._m(0)
                   ]),
                   _vm._v(" "),
-                  _vm._m(1),
-                  _vm._v(" "),
                   _c(
                     "span",
                     {
@@ -33244,27 +33253,44 @@ var render = function() {
                                             type: "url"
                                           },
                                           on: {
-                                            keyup: function($event) {
-                                              if (
-                                                !$event.type.indexOf("key") &&
-                                                _vm._k(
-                                                  $event.keyCode,
-                                                  "enter",
-                                                  13,
-                                                  $event.key,
-                                                  "Enter"
+                                            keyup: [
+                                              function($event) {
+                                                if (
+                                                  !$event.type.indexOf("key") &&
+                                                  _vm._k(
+                                                    $event.keyCode,
+                                                    "enter",
+                                                    13,
+                                                    $event.key,
+                                                    "Enter"
+                                                  )
+                                                ) {
+                                                  return null
+                                                }
+                                                _vm.setVariantImageURL(
+                                                  variant,
+                                                  _vm.$refs[
+                                                    "url-input-" + index
+                                                  ][0].value
                                                 )
-                                              ) {
-                                                return null
+                                                _vm.URLActiveIndex = null
+                                              },
+                                              function($event) {
+                                                if (
+                                                  !$event.type.indexOf("key") &&
+                                                  _vm._k(
+                                                    $event.keyCode,
+                                                    "esc",
+                                                    27,
+                                                    $event.key,
+                                                    ["Esc", "Escape"]
+                                                  )
+                                                ) {
+                                                  return null
+                                                }
+                                                _vm.URLActiveIndex = null
                                               }
-                                              _vm.setVariantImageURL(
-                                                variant,
-                                                _vm.$refs[
-                                                  "url-input-" + index
-                                                ][0].value
-                                              )
-                                              _vm.URLActiveIndex = null
-                                            }
+                                            ]
                                           }
                                         }),
                                         _vm._v(" "),
@@ -33308,7 +33334,7 @@ var render = function() {
                                       ])
                                     : _vm._e(),
                                   _vm._v(" "),
-                                  _vm._m(2, true)
+                                  _vm._m(1, true)
                                 ],
                                 2
                               ),
@@ -33390,6 +33416,26 @@ var render = function() {
                                                           return null
                                                         }
                                                         _vm.editURL(index)
+                                                        slotProps.toggle()
+                                                      },
+                                                      function($event) {
+                                                        if (
+                                                          !$event.type.indexOf(
+                                                            "key"
+                                                          ) &&
+                                                          _vm._k(
+                                                            $event.keyCode,
+                                                            "r",
+                                                            undefined,
+                                                            $event.key,
+                                                            undefined
+                                                          )
+                                                        ) {
+                                                          return null
+                                                        }
+                                                        _vm.$refs[
+                                                          "nameInput-" + index
+                                                        ][0].$el.click()
                                                         slotProps.toggle()
                                                       }
                                                     ]
@@ -33523,7 +33569,18 @@ var render = function() {
                                                         "span",
                                                         {
                                                           staticClass:
-                                                            "button white"
+                                                            "button white",
+                                                          on: {
+                                                            click: function(
+                                                              $event
+                                                            ) {
+                                                              _vm.$refs[
+                                                                "nameInput-" +
+                                                                  index
+                                                              ][0].$el.click()
+                                                              slotProps.toggle()
+                                                            }
+                                                          }
                                                         },
                                                         [_vm._v("Rename")]
                                                       ),
@@ -33587,6 +33644,8 @@ var render = function() {
                           ),
                           _vm._v(" "),
                           _c("Editable", {
+                            ref: "nameInput-" + index,
+                            refInFor: true,
                             attrs: {
                               placeholder: "Untitled",
                               value: variant.color,
@@ -33888,22 +33947,6 @@ var staticRenderFns = [
     return _c("span", { staticClass: "hotkey" }, [
       _c("span", { staticClass: "key" }, [_vm._v("S")]),
       _vm._v(" Save")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "hotkey-wrapper" }, [
-      _c("span", { staticClass: "button ghost icon-left" }, [
-        _c("i", { staticClass: "far fa-file-edit" }),
-        _vm._v("Edit")
-      ]),
-      _vm._v(" "),
-      _c("span", { staticClass: "hotkey" }, [
-        _c("span", { staticClass: "key" }, [_vm._v("E")]),
-        _vm._v(" Edit")
-      ])
     ])
   },
   function() {
@@ -70140,8 +70183,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   } // Append the files
 
                 };
-                console.log(files);
-                console.log(files[0].file);
                 data = new FormData();
                 count = 0;
                 files.forEach(function (file) {
@@ -70149,7 +70190,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data.append('files[' + count + ']', file.file, file.id);
                 });
                 console.log(count + ' images sent to API from store');
-                _context3.next = 12;
+                _context3.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(uploadApiUrl, data, axiosConfig).then(function (response) {
                   console.log(response.data);
                   uploadSucces = true;
@@ -70159,10 +70200,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   uploadSucces = false;
                 });
 
-              case 12:
+              case 10:
                 return _context3.abrupt("return", uploadSucces);
 
-              case 13:
+              case 11:
               case "end":
                 return _context3.stop();
             }
