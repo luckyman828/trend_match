@@ -385,13 +385,16 @@ export default {
                     existingFile.file = file
                 }
 
-                 const fileReader = new FileReader()
+                // Process the uplaoded image
+                const fileReader = new FileReader()
                 fileReader.readAsDataURL(file)
-                // fileReader.onload = this.imageLoadHandler
                 fileReader.onload = (e) => {
                     // Show the new image on the variant
                     const newImage = e.target.result
                     variant.image = newImage
+                    // Set the blob_id to null, to we know to show the new image instead.
+                    // The blob_id will be set again if we upload the image
+                    variant.blob_id = null
                 }
 
 
@@ -399,10 +402,6 @@ export default {
                 // Throw error
                 console.log('invalid file extension')
             }
-        },
-        imageLoadHandler(e) {
-            image = e.target.result
-            console.log(e.target.result)
         },
         removeFile(index) {
             const fileToRemoveIndex = this.filesToUpload.findIndex(x => x.index == index)
@@ -562,7 +561,6 @@ export default {
                     background: $light1;
                 }
                 &.drag {
-                    background: $light1;
                     .drop-msg {
                         display: flex;
                         pointer-events: none;
