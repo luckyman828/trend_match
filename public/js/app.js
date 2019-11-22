@@ -67515,7 +67515,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _uploadFile = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, newFile) {
-        var commit, dispatch, uploadSucces, proxyUrl, uploadApiUrl, axiosConfig, data;
+        var commit, dispatch, uploadSucces, uploadApiUrl, axiosConfig, data;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -67525,8 +67525,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 newFile.id = this._vm.$uuid.v4(); // Upload products to DB
 
                 uploadSucces = false;
-                proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-                uploadApiUrl = "https://api-beta.kollekt.dk/hooks/import-csv?collection_id=".concat(newFile.id);
+                uploadApiUrl = "".concat("https://api-beta.kollekt.dk", "/hooks/import-csv?collection_id=").concat(newFile.id);
                 axiosConfig = {
                   headers: {
                     'X-Kollekt-App-Key': 'mnkAEefWBEL7cY1gEetlW4dM_YYL9Vu4K6dmavW2'
@@ -67538,7 +67537,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data.append('files', file);
                 }); // console.log(data)
 
-                _context2.next = 10;
+                _context2.next = 9;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(uploadApiUrl, data, axiosConfig) // .post(proxyUrl + uploadApiUrl, data, axiosConfig)
                 .then(function (response) {
                   console.log('succes');
@@ -67550,7 +67549,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   uploadSucces = false;
                 });
 
-              case 10:
+              case 9:
                 // If success create a file (collection) for the products
                 if (uploadSucces) {
                   dispatch('updateFile', newFile);
@@ -67558,7 +67557,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                 return _context2.abrupt("return", uploadSucces);
 
-              case 12:
+              case 11:
               case "end":
                 return _context2.stop();
             }
