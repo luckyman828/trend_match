@@ -1,5 +1,5 @@
 <template>
-    <div class="edit-product-single">
+    <div class="edit-product-single" ref="editPDP">
         <div class="inner">
             <template v-if="product != null">
                 <div class="header">
@@ -178,6 +178,12 @@ export default {
             // This can mean: A new product is shown. The product in the store has been updated
             this.productToEdit = JSON.parse(JSON.stringify(newVal))
             this.productToEdit.delivery_date = new Date(this.productToEdit.delivery_date).toLocaleDateString("en-GB", {month: "long",year: "numeric"})
+            // Reset the value of all file input fields
+            this.$nextTick(() => {
+                this.$refs.editPDP.querySelectorAll('input[type=file]').forEach(input => {
+                    input.value = null
+                })
+            })
 
             // Create an empty variant if no variants are present
             const variants = this.productToEdit.color_variants
@@ -460,7 +466,7 @@ export default {
             // if (variant.imageToUpload)
             //     delete variant.imageToUpload
             this.getImageFromURL(variant)
-        }
+        },
     },
     created() {
         document.body.addEventListener('keydown', this.hotkeyHandler)
@@ -583,7 +589,7 @@ export default {
             }
             .drop-area {
                 input[type=file] {
-                    pointer-events: none
+                    pointer-events: none;
                 }
                 position: absolute;
                 display: flex;

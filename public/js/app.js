@@ -7987,12 +7987,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   watch: {
     currentProductv1: function currentProductv1(newVal, oldVal) {
+      var _this = this;
+
       // This function fires when a change happens to the current product in the store. It also fires initially
       // This can mean: A new product is shown. The product in the store has been updated
       this.productToEdit = JSON.parse(JSON.stringify(newVal));
       this.productToEdit.delivery_date = new Date(this.productToEdit.delivery_date).toLocaleDateString("en-GB", {
         month: "long",
         year: "numeric"
+      }); // Reset the value of all file input fields
+
+      this.$nextTick(function () {
+        _this.$refs.editPDP.querySelectorAll('input[type=file]').forEach(function (input) {
+          input.value = null;
+        });
       }); // Create an empty variant if no variants are present
 
       var variants = this.productToEdit.color_variants;
@@ -8105,7 +8113,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _onUpdateProduct = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var _this = this;
+        var _this2 = this;
 
         var productToUpload, Editvariants, imagesToUpload, filesToDelete;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
@@ -8160,7 +8168,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 productToUpload.delivery_date = new Date(productToUpload.delivery_date + ' 3').toJSON().slice(0, 10);
                 _context.next = 13;
                 return this.updateProduct(productToUpload).then(function (success) {
-                  _this.updatingProduct = false;
+                  _this2.updatingProduct = false;
                 });
 
               case 13:
@@ -8257,11 +8265,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     editURL: function editURL(index) {
-      var _this2 = this;
+      var _this3 = this;
 
       this.URLActiveIndex = index;
       this.$nextTick(function () {
-        _this2.$refs['url-input-' + index][0].focus();
+        _this3.$refs['url-input-' + index][0].focus();
       });
     },
     getImageFromURL: function () {
@@ -33014,7 +33022,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "edit-product-single" }, [
+  return _c("div", { ref: "editPDP", staticClass: "edit-product-single" }, [
     _c(
       "div",
       { staticClass: "inner" },
