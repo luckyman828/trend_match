@@ -8065,10 +8065,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'uploadImages', 'deleteImages']), {
     variantImg: function variantImg(variant) {
-      if (!variant.error && variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
-    },
-    imgError: function imgError(variant) {
-      variant.error = true;
+      if (variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
     },
     onCloseSingle: function onCloseSingle() {
       // Emit event to parent
@@ -33195,12 +33192,7 @@ var render = function() {
                                   _vm._v(" "),
                                   variant.image || variant.blob_id
                                     ? _c("img", {
-                                        attrs: { src: _vm.variantImg(variant) },
-                                        on: {
-                                          error: function($event) {
-                                            return _vm.imgError(variant)
-                                          }
-                                        }
+                                        attrs: { src: _vm.variantImg(variant) }
                                       })
                                     : [
                                         _c("div", { staticClass: "controls" }, [

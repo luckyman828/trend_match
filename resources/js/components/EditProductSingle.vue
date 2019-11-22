@@ -35,7 +35,7 @@
                                     <div class="drop-area" :class="{drag: dragActiveIndex == index}">
                                         <!-- <input v-if="variant.image || variant.blob_id" type="file" accept="image/*" @change="filesChange($event, index, variant)" @click.prevent> -->
                                         <input type="file" :ref="'fileInput-'+index" accept="image/*" @change="filesChange($event, index, variant)">
-                                        <img v-if="variant.image || variant.blob_id" :src="variantImg(variant)" @error="imgError(variant)">
+                                        <img v-if="variant.image || variant.blob_id" :src="variantImg(variant)">
                                         <template v-else>
                                             <div class="controls">
                                                 <span class="button light-2" @click="$refs['fileInput-'+index][0].click()">Choose from file</span>
@@ -250,12 +250,9 @@ export default {
     methods: {
         ...mapActions('entities/products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'uploadImages', 'deleteImages']),
         variantImg (variant) {
-            if (!variant.error && variant.blob_id != null)
+            if (variant.blob_id != null)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
             else return variant.image
-        },
-        imgError (variant) {
-             variant.error = true
         },
         onCloseSingle() {
             // Emit event to parent
