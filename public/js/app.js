@@ -67528,7 +67528,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 uploadApiUrl = "".concat("https://api-beta.kollekt.dk", "/hooks/import-csv?collection_id=").concat(newFile.id);
                 axiosConfig = {
                   headers: {
-                    'X-Kollekt-App-Key': 'mnkAEefWBEL7cY1gEetlW4dM_YYL9Vu4K6dmavW2'
+                    'X-Kollekt-App-Key': "mnkAEefWBEL7cY1gEetlW4dM_YYL9Vu4K6dmavW2"
                   }
                 };
                 data = new FormData(); // Append the files
