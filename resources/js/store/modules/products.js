@@ -787,6 +787,7 @@ export default {
                     quantity: product.quantity,
                     delivery_date: product.delivery_date,
                     composition: product.composition,
+                    category: product.category,
                 })
                 .then(response => {
                     console.log(response.data)

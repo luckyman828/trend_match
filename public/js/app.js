@@ -7959,6 +7959,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 
@@ -33721,24 +33723,25 @@ var render = function() {
                       [_vm._v(_vm._s(_vm.product.datasource_id))]
                     ),
                     _vm._v(" "),
-                    _c("label", [_vm._v("Cateogry")]),
+                    _c("label", { attrs: { for: "category" } }, [
+                      _vm._v("Category")
+                    ]),
                     _vm._v(" "),
-                    _c(
-                      "span",
-                      {
-                        directives: [
-                          {
-                            name: "tooltip",
-                            rawName: "v-tooltip.top",
-                            value: "Not editable",
-                            expression: "'Not editable'",
-                            modifiers: { top: true }
-                          }
-                        ],
-                        staticClass: "input-wrapper read-only"
+                    _c("EditInputWrapper", {
+                      attrs: {
+                        id: "category",
+                        type: "text",
+                        value: _vm.product.category,
+                        oldValue: _vm.originalProduct.category
                       },
-                      [_vm._v(_vm._s(_vm.product.category))]
-                    ),
+                      model: {
+                        value: _vm.product.category,
+                        callback: function($$v) {
+                          _vm.$set(_vm.product, "category", $$v)
+                        },
+                        expression: "product.category"
+                      }
+                    }),
                     _vm._v(" "),
                     _c("label", { attrs: { for: "composition" } }, [
                       _vm._v("Composition")
@@ -70177,7 +70180,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   color_variants: product.color_variants,
                   quantity: product.quantity,
                   delivery_date: product.delivery_date,
-                  composition: product.composition
+                  composition: product.composition,
+                  category: product.category
                 }).then(function (response) {
                   console.log(response.data);
                 })["catch"](function (err) {
