@@ -98,8 +98,10 @@
                         <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{product.datasource_id}}</span>
                         <label>Cateogry</label>
                         <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{product.category}}</span>
-                        <label>Composition</label>
-                        <span v-tooltip.top="'Not editable'" class="input-wrapper read-only composition multiline">{{product.composition.split(',').join(',\n')}}</span>
+                        <label for="composition">Composition</label>
+                        <!-- <span v-tooltip.top="'Not editable'" class="input-wrapper read-only composition multiline">{{product.composition.split(',').join(',\n')}}</span> -->
+                        <EditInputWrapper id="composition" :type="'text'" 
+                        :value="product.composition" :oldValue="originalProduct.composition" v-model="product.composition"/>
                     </div>
                     <div class="border"></div>
                     <div class="details">

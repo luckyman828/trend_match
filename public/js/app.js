@@ -7957,6 +7957,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 
@@ -33126,184 +33128,168 @@ var render = function() {
               ]),
               _vm._v(" "),
               _c("div", { staticClass: "grid-2 grid-border-between body" }, [
-                _c("div", { staticClass: "details" }, [
-                  _c("span", [
-                    _vm._v(
-                      "Variants (" +
-                        _vm._s(_vm.product.color_variants.length) +
-                        ")"
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "span",
-                    {
-                      staticClass: "button light-2 icon-left",
-                      on: { click: _vm.onAddVariant }
-                    },
-                    [
-                      _c("i", { staticClass: "far fa-plus" }),
-                      _vm._v(" Add Variant")
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    {
-                      directives: [
-                        { name: "dragscroll", rawName: "v-dragscroll" }
-                      ],
-                      staticClass: "product-variants"
-                    },
-                    _vm._l(_vm.product.color_variants, function(
-                      variant,
-                      index
-                    ) {
-                      return _c(
-                        "div",
-                        { key: index, staticClass: "product-variant" },
-                        [
-                          _c(
-                            "div",
-                            {
-                              staticClass: "img-wrapper",
-                              on: {
-                                dragenter: function($event) {
-                                  return _vm.dragActive($event, index)
-                                },
-                                dragleave: _vm.dragLeave,
-                                drop: _vm.dragDrop
-                              }
-                            },
-                            [
-                              _c(
-                                "div",
-                                {
-                                  staticClass: "drop-area",
-                                  class: { drag: _vm.dragActiveIndex == index }
-                                },
-                                [
-                                  _c("input", {
-                                    ref: "fileInput-" + index,
-                                    refInFor: true,
-                                    attrs: { type: "file", accept: "image/*" },
-                                    on: {
-                                      change: function($event) {
-                                        return _vm.filesChange(
-                                          $event,
-                                          index,
-                                          variant
-                                        )
-                                      }
+                _c(
+                  "div",
+                  { staticClass: "details" },
+                  [
+                    _c("span", [
+                      _vm._v(
+                        "Variants (" +
+                          _vm._s(_vm.product.color_variants.length) +
+                          ")"
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "span",
+                      {
+                        staticClass: "button light-2 icon-left",
+                        on: { click: _vm.onAddVariant }
+                      },
+                      [
+                        _c("i", { staticClass: "far fa-plus" }),
+                        _vm._v(" Add Variant")
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      {
+                        directives: [
+                          { name: "dragscroll", rawName: "v-dragscroll" }
+                        ],
+                        staticClass: "product-variants"
+                      },
+                      _vm._l(_vm.product.color_variants, function(
+                        variant,
+                        index
+                      ) {
+                        return _c(
+                          "div",
+                          { key: index, staticClass: "product-variant" },
+                          [
+                            _c(
+                              "div",
+                              {
+                                staticClass: "img-wrapper",
+                                on: {
+                                  dragenter: function($event) {
+                                    return _vm.dragActive($event, index)
+                                  },
+                                  dragleave: _vm.dragLeave,
+                                  drop: _vm.dragDrop
+                                }
+                              },
+                              [
+                                _c(
+                                  "div",
+                                  {
+                                    staticClass: "drop-area",
+                                    class: {
+                                      drag: _vm.dragActiveIndex == index
                                     }
-                                  }),
-                                  _vm._v(" "),
-                                  variant.image || variant.blob_id
-                                    ? _c("img", {
-                                        attrs: { src: _vm.variantImg(variant) }
-                                      })
-                                    : [
-                                        _c("div", { staticClass: "controls" }, [
-                                          _c(
-                                            "span",
-                                            {
-                                              staticClass: "button light-2",
-                                              on: {
-                                                click: function($event) {
-                                                  _vm.$refs[
-                                                    "fileInput-" + index
-                                                  ][0].click()
-                                                }
-                                              }
-                                            },
-                                            [_vm._v("Choose from file")]
-                                          ),
-                                          _vm._v(" "),
-                                          _c(
-                                            "span",
-                                            {
-                                              staticClass: "button light-2",
-                                              on: {
-                                                click: function($event) {
-                                                  return _vm.editURL(index)
-                                                }
-                                              }
-                                            },
-                                            [_vm._v("URL")]
+                                  },
+                                  [
+                                    _c("input", {
+                                      ref: "fileInput-" + index,
+                                      refInFor: true,
+                                      attrs: {
+                                        type: "file",
+                                        accept: "image/*"
+                                      },
+                                      on: {
+                                        change: function($event) {
+                                          return _vm.filesChange(
+                                            $event,
+                                            index,
+                                            variant
                                           )
-                                        ])
-                                      ],
-                                  _vm._v(" "),
-                                  _vm.URLActiveIndex == index
-                                    ? _c("div", { staticClass: "enter-url" }, [
-                                        _c(
-                                          "label",
-                                          {
-                                            attrs: { for: "url-input-" + index }
-                                          },
-                                          [_vm._v("Enter URL")]
-                                        ),
-                                        _vm._v(" "),
-                                        _c("input", {
-                                          ref: "url-input-" + index,
-                                          refInFor: true,
-                                          staticClass: "input-wrapper",
+                                        }
+                                      }
+                                    }),
+                                    _vm._v(" "),
+                                    variant.image || variant.blob_id
+                                      ? _c("img", {
                                           attrs: {
-                                            id: "url-input-" + index,
-                                            type: "url"
-                                          },
-                                          on: {
-                                            keyup: [
-                                              function($event) {
-                                                if (
-                                                  !$event.type.indexOf("key") &&
-                                                  _vm._k(
-                                                    $event.keyCode,
-                                                    "enter",
-                                                    13,
-                                                    $event.key,
-                                                    "Enter"
-                                                  )
-                                                ) {
-                                                  return null
-                                                }
-                                                _vm.setVariantImageURL(
-                                                  variant,
-                                                  _vm.$refs[
-                                                    "url-input-" + index
-                                                  ][0].value
-                                                )
-                                                _vm.URLActiveIndex = null
-                                              },
-                                              function($event) {
-                                                if (
-                                                  !$event.type.indexOf("key") &&
-                                                  _vm._k(
-                                                    $event.keyCode,
-                                                    "esc",
-                                                    27,
-                                                    $event.key,
-                                                    ["Esc", "Escape"]
-                                                  )
-                                                ) {
-                                                  return null
-                                                }
-                                                _vm.URLActiveIndex = null
-                                              }
-                                            ]
+                                            src: _vm.variantImg(variant)
                                           }
-                                        }),
-                                        _vm._v(" "),
-                                        _c(
+                                        })
+                                      : [
+                                          _c(
+                                            "div",
+                                            { staticClass: "controls" },
+                                            [
+                                              _c(
+                                                "span",
+                                                {
+                                                  staticClass: "button light-2",
+                                                  on: {
+                                                    click: function($event) {
+                                                      _vm.$refs[
+                                                        "fileInput-" + index
+                                                      ][0].click()
+                                                    }
+                                                  }
+                                                },
+                                                [_vm._v("Choose from file")]
+                                              ),
+                                              _vm._v(" "),
+                                              _c(
+                                                "span",
+                                                {
+                                                  staticClass: "button light-2",
+                                                  on: {
+                                                    click: function($event) {
+                                                      return _vm.editURL(index)
+                                                    }
+                                                  }
+                                                },
+                                                [_vm._v("URL")]
+                                              )
+                                            ]
+                                          )
+                                        ],
+                                    _vm._v(" "),
+                                    _vm.URLActiveIndex == index
+                                      ? _c(
                                           "div",
-                                          { staticClass: "buttons-wrapper" },
+                                          { staticClass: "enter-url" },
                                           [
                                             _c(
-                                              "span",
+                                              "label",
                                               {
-                                                staticClass: "button green",
-                                                on: {
-                                                  click: function($event) {
+                                                attrs: {
+                                                  for: "url-input-" + index
+                                                }
+                                              },
+                                              [_vm._v("Enter URL")]
+                                            ),
+                                            _vm._v(" "),
+                                            _c("input", {
+                                              ref: "url-input-" + index,
+                                              refInFor: true,
+                                              staticClass: "input-wrapper",
+                                              attrs: {
+                                                id: "url-input-" + index,
+                                                type: "url"
+                                              },
+                                              on: {
+                                                keyup: [
+                                                  function($event) {
+                                                    if (
+                                                      !$event.type.indexOf(
+                                                        "key"
+                                                      ) &&
+                                                      _vm._k(
+                                                        $event.keyCode,
+                                                        "enter",
+                                                        13,
+                                                        $event.key,
+                                                        "Enter"
+                                                      )
+                                                    ) {
+                                                      return null
+                                                    }
                                                     _vm.setVariantImageURL(
                                                       variant,
                                                       _vm.$refs[
@@ -33311,423 +33297,471 @@ var render = function() {
                                                       ][0].value
                                                     )
                                                     _vm.URLActiveIndex = null
-                                                  }
-                                                }
-                                              },
-                                              [_vm._v("Save")]
-                                            ),
-                                            _vm._v(" "),
-                                            _c(
-                                              "span",
-                                              {
-                                                staticClass: "button ghost",
-                                                on: {
-                                                  click: function($event) {
+                                                  },
+                                                  function($event) {
+                                                    if (
+                                                      !$event.type.indexOf(
+                                                        "key"
+                                                      ) &&
+                                                      _vm._k(
+                                                        $event.keyCode,
+                                                        "esc",
+                                                        27,
+                                                        $event.key,
+                                                        ["Esc", "Escape"]
+                                                      )
+                                                    ) {
+                                                      return null
+                                                    }
                                                     _vm.URLActiveIndex = null
                                                   }
-                                                }
+                                                ]
+                                              }
+                                            }),
+                                            _vm._v(" "),
+                                            _c(
+                                              "div",
+                                              {
+                                                staticClass: "buttons-wrapper"
                                               },
-                                              [_vm._v("Cancel")]
+                                              [
+                                                _c(
+                                                  "span",
+                                                  {
+                                                    staticClass: "button green",
+                                                    on: {
+                                                      click: function($event) {
+                                                        _vm.setVariantImageURL(
+                                                          variant,
+                                                          _vm.$refs[
+                                                            "url-input-" + index
+                                                          ][0].value
+                                                        )
+                                                        _vm.URLActiveIndex = null
+                                                      }
+                                                    }
+                                                  },
+                                                  [_vm._v("Save")]
+                                                ),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "span",
+                                                  {
+                                                    staticClass: "button ghost",
+                                                    on: {
+                                                      click: function($event) {
+                                                        _vm.URLActiveIndex = null
+                                                      }
+                                                    }
+                                                  },
+                                                  [_vm._v("Cancel")]
+                                                )
+                                              ]
                                             )
                                           ]
                                         )
-                                      ])
-                                    : _vm._e(),
-                                  _vm._v(" "),
-                                  _vm._m(1, true)
-                                ],
-                                2
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "div",
-                                { staticClass: "controls" },
-                                [
-                                  _c("Dropdown", {
-                                    staticClass: "dropdown-parent dark",
-                                    scopedSlots: _vm._u(
-                                      [
-                                        {
-                                          key: "button",
-                                          fn: function(slotProps) {
-                                            return [
-                                              _c(
-                                                "span",
-                                                {
-                                                  staticClass:
-                                                    "square true-square light-2 clickable",
-                                                  attrs: { tabindex: "0" },
-                                                  on: {
-                                                    click: function($event) {
-                                                      return slotProps.toggle()
-                                                    },
-                                                    keyup: [
-                                                      function($event) {
-                                                        if (
-                                                          !$event.type.indexOf(
-                                                            "key"
-                                                          ) &&
-                                                          _vm._k(
-                                                            $event.keyCode,
-                                                            "d",
-                                                            undefined,
-                                                            $event.key,
-                                                            undefined
-                                                          )
-                                                        ) {
-                                                          return null
-                                                        }
-                                                        _vm.removeVariant(index)
-                                                        slotProps.toggle()
-                                                      },
-                                                      function($event) {
-                                                        if (
-                                                          !$event.type.indexOf(
-                                                            "key"
-                                                          ) &&
-                                                          _vm._k(
-                                                            $event.keyCode,
-                                                            "c",
-                                                            undefined,
-                                                            $event.key,
-                                                            undefined
-                                                          )
-                                                        ) {
-                                                          return null
-                                                        }
-                                                        _vm.$refs[
-                                                          "fileInput-" + index
-                                                        ][0].click()
-                                                        slotProps.toggle()
-                                                      },
-                                                      function($event) {
-                                                        if (
-                                                          !$event.type.indexOf(
-                                                            "key"
-                                                          ) &&
-                                                          _vm._k(
-                                                            $event.keyCode,
-                                                            "u",
-                                                            undefined,
-                                                            $event.key,
-                                                            undefined
-                                                          )
-                                                        ) {
-                                                          return null
-                                                        }
-                                                        _vm.editURL(index)
-                                                        slotProps.toggle()
-                                                      },
-                                                      function($event) {
-                                                        if (
-                                                          !$event.type.indexOf(
-                                                            "key"
-                                                          ) &&
-                                                          _vm._k(
-                                                            $event.keyCode,
-                                                            "r",
-                                                            undefined,
-                                                            $event.key,
-                                                            undefined
-                                                          )
-                                                        ) {
-                                                          return null
-                                                        }
-                                                        _vm.$refs[
-                                                          "nameInput-" + index
-                                                        ][0].$el.click()
-                                                        slotProps.toggle()
-                                                      }
-                                                    ]
-                                                  }
-                                                },
-                                                [
-                                                  _c("i", {
+                                      : _vm._e(),
+                                    _vm._v(" "),
+                                    _vm._m(1, true)
+                                  ],
+                                  2
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "div",
+                                  { staticClass: "controls" },
+                                  [
+                                    _c("Dropdown", {
+                                      staticClass: "dropdown-parent dark",
+                                      scopedSlots: _vm._u(
+                                        [
+                                          {
+                                            key: "button",
+                                            fn: function(slotProps) {
+                                              return [
+                                                _c(
+                                                  "span",
+                                                  {
                                                     staticClass:
-                                                      "fas fa-ellipsis-h"
-                                                  })
-                                                ]
-                                              )
-                                            ]
-                                          }
-                                        },
-                                        {
-                                          key: "header",
-                                          fn: function(slotProps) {
-                                            return [
-                                              _c(
-                                                "div",
-                                                { staticClass: "header" },
-                                                [
-                                                  _c("span", [
-                                                    _vm._v("Edit Variant")
-                                                  ]),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "span",
-                                                    {
-                                                      staticClass:
-                                                        "circle small dark clickable",
-                                                      on: {
-                                                        click: function(
-                                                          $event
-                                                        ) {
-                                                          return slotProps.toggle()
+                                                      "square true-square light-2 clickable",
+                                                    attrs: { tabindex: "0" },
+                                                    on: {
+                                                      click: function($event) {
+                                                        return slotProps.toggle()
+                                                      },
+                                                      keyup: [
+                                                        function($event) {
+                                                          if (
+                                                            !$event.type.indexOf(
+                                                              "key"
+                                                            ) &&
+                                                            _vm._k(
+                                                              $event.keyCode,
+                                                              "d",
+                                                              undefined,
+                                                              $event.key,
+                                                              undefined
+                                                            )
+                                                          ) {
+                                                            return null
+                                                          }
+                                                          _vm.removeVariant(
+                                                            index
+                                                          )
+                                                          slotProps.toggle()
+                                                        },
+                                                        function($event) {
+                                                          if (
+                                                            !$event.type.indexOf(
+                                                              "key"
+                                                            ) &&
+                                                            _vm._k(
+                                                              $event.keyCode,
+                                                              "c",
+                                                              undefined,
+                                                              $event.key,
+                                                              undefined
+                                                            )
+                                                          ) {
+                                                            return null
+                                                          }
+                                                          _vm.$refs[
+                                                            "fileInput-" + index
+                                                          ][0].click()
+                                                          slotProps.toggle()
+                                                        },
+                                                        function($event) {
+                                                          if (
+                                                            !$event.type.indexOf(
+                                                              "key"
+                                                            ) &&
+                                                            _vm._k(
+                                                              $event.keyCode,
+                                                              "u",
+                                                              undefined,
+                                                              $event.key,
+                                                              undefined
+                                                            )
+                                                          ) {
+                                                            return null
+                                                          }
+                                                          _vm.editURL(index)
+                                                          slotProps.toggle()
+                                                        },
+                                                        function($event) {
+                                                          if (
+                                                            !$event.type.indexOf(
+                                                              "key"
+                                                            ) &&
+                                                            _vm._k(
+                                                              $event.keyCode,
+                                                              "r",
+                                                              undefined,
+                                                              $event.key,
+                                                              undefined
+                                                            )
+                                                          ) {
+                                                            return null
+                                                          }
+                                                          _vm.$refs[
+                                                            "nameInput-" + index
+                                                          ][0].$el.click()
+                                                          slotProps.toggle()
                                                         }
-                                                      }
-                                                    },
-                                                    [
-                                                      _c("i", {
+                                                      ]
+                                                    }
+                                                  },
+                                                  [
+                                                    _c("i", {
+                                                      staticClass:
+                                                        "fas fa-ellipsis-h"
+                                                    })
+                                                  ]
+                                                )
+                                              ]
+                                            }
+                                          },
+                                          {
+                                            key: "header",
+                                            fn: function(slotProps) {
+                                              return [
+                                                _c(
+                                                  "div",
+                                                  { staticClass: "header" },
+                                                  [
+                                                    _c("span", [
+                                                      _vm._v("Edit Variant")
+                                                    ]),
+                                                    _vm._v(" "),
+                                                    _c(
+                                                      "span",
+                                                      {
                                                         staticClass:
-                                                          "far fa-times"
-                                                      })
-                                                    ]
-                                                  )
-                                                ]
-                                              )
-                                            ]
-                                          }
-                                        },
-                                        {
-                                          key: "body",
-                                          fn: function(slotProps) {
-                                            return [
-                                              _c(
-                                                "div",
-                                                { staticClass: "hotkeys" },
-                                                [
-                                                  _c(
-                                                    "div",
-                                                    { staticClass: "hotkey" },
-                                                    [
-                                                      _c(
-                                                        "span",
-                                                        {
+                                                          "circle small dark clickable",
+                                                        on: {
+                                                          click: function(
+                                                            $event
+                                                          ) {
+                                                            return slotProps.toggle()
+                                                          }
+                                                        }
+                                                      },
+                                                      [
+                                                        _c("i", {
                                                           staticClass:
-                                                            "button white",
-                                                          on: {
-                                                            click: function(
-                                                              $event
-                                                            ) {
-                                                              _vm.$refs[
-                                                                "fileInput-" +
+                                                            "far fa-times"
+                                                        })
+                                                      ]
+                                                    )
+                                                  ]
+                                                )
+                                              ]
+                                            }
+                                          },
+                                          {
+                                            key: "body",
+                                            fn: function(slotProps) {
+                                              return [
+                                                _c(
+                                                  "div",
+                                                  { staticClass: "hotkeys" },
+                                                  [
+                                                    _c(
+                                                      "div",
+                                                      { staticClass: "hotkey" },
+                                                      [
+                                                        _c(
+                                                          "span",
+                                                          {
+                                                            staticClass:
+                                                              "button white",
+                                                            on: {
+                                                              click: function(
+                                                                $event
+                                                              ) {
+                                                                _vm.$refs[
+                                                                  "fileInput-" +
+                                                                    index
+                                                                ][0].click()
+                                                                slotProps.toggle()
+                                                              }
+                                                            }
+                                                          },
+                                                          [
+                                                            _vm._v(
+                                                              "Choose file"
+                                                            )
+                                                          ]
+                                                        ),
+                                                        _c(
+                                                          "span",
+                                                          {
+                                                            staticClass:
+                                                              "square true-square white"
+                                                          },
+                                                          [_vm._v("C")]
+                                                        )
+                                                      ]
+                                                    ),
+                                                    _vm._v(" "),
+                                                    _c(
+                                                      "div",
+                                                      { staticClass: "hotkey" },
+                                                      [
+                                                        _c(
+                                                          "span",
+                                                          {
+                                                            staticClass:
+                                                              "button white",
+                                                            on: {
+                                                              click: function(
+                                                                $event
+                                                              ) {
+                                                                _vm.editURL(
                                                                   index
-                                                              ][0].click()
-                                                              slotProps.toggle()
+                                                                )
+                                                                slotProps.toggle()
+                                                              }
                                                             }
-                                                          }
-                                                        },
-                                                        [_vm._v("Choose file")]
-                                                      ),
-                                                      _c(
-                                                        "span",
-                                                        {
-                                                          staticClass:
-                                                            "square true-square white"
-                                                        },
-                                                        [_vm._v("C")]
-                                                      )
-                                                    ]
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "div",
-                                                    { staticClass: "hotkey" },
-                                                    [
-                                                      _c(
-                                                        "span",
-                                                        {
-                                                          staticClass:
-                                                            "button white",
-                                                          on: {
-                                                            click: function(
-                                                              $event
-                                                            ) {
-                                                              _vm.editURL(index)
-                                                              slotProps.toggle()
+                                                          },
+                                                          [_vm._v("URL")]
+                                                        ),
+                                                        _c(
+                                                          "span",
+                                                          {
+                                                            staticClass:
+                                                              "square true-square white"
+                                                          },
+                                                          [_vm._v("U")]
+                                                        )
+                                                      ]
+                                                    ),
+                                                    _vm._v(" "),
+                                                    _c(
+                                                      "div",
+                                                      { staticClass: "hotkey" },
+                                                      [
+                                                        _c(
+                                                          "span",
+                                                          {
+                                                            staticClass:
+                                                              "button white",
+                                                            on: {
+                                                              click: function(
+                                                                $event
+                                                              ) {
+                                                                _vm.$refs[
+                                                                  "nameInput-" +
+                                                                    index
+                                                                ][0].$el.click()
+                                                                slotProps.toggle()
+                                                              }
                                                             }
-                                                          }
-                                                        },
-                                                        [_vm._v("URL")]
-                                                      ),
-                                                      _c(
-                                                        "span",
-                                                        {
-                                                          staticClass:
-                                                            "square true-square white"
-                                                        },
-                                                        [_vm._v("U")]
-                                                      )
-                                                    ]
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "div",
-                                                    { staticClass: "hotkey" },
-                                                    [
-                                                      _c(
-                                                        "span",
-                                                        {
-                                                          staticClass:
-                                                            "button white",
-                                                          on: {
-                                                            click: function(
-                                                              $event
-                                                            ) {
-                                                              _vm.$refs[
-                                                                "nameInput-" +
+                                                          },
+                                                          [_vm._v("Rename")]
+                                                        ),
+                                                        _c(
+                                                          "span",
+                                                          {
+                                                            staticClass:
+                                                              "square true-square white"
+                                                          },
+                                                          [_vm._v("R")]
+                                                        )
+                                                      ]
+                                                    ),
+                                                    _vm._v(" "),
+                                                    _c(
+                                                      "div",
+                                                      { staticClass: "hotkey" },
+                                                      [
+                                                        _c(
+                                                          "span",
+                                                          {
+                                                            staticClass:
+                                                              "button red",
+                                                            on: {
+                                                              click: function(
+                                                                $event
+                                                              ) {
+                                                                _vm.removeVariant(
                                                                   index
-                                                              ][0].$el.click()
-                                                              slotProps.toggle()
+                                                                )
+                                                                slotProps.toggle()
+                                                              }
                                                             }
-                                                          }
-                                                        },
-                                                        [_vm._v("Rename")]
-                                                      ),
-                                                      _c(
-                                                        "span",
-                                                        {
-                                                          staticClass:
-                                                            "square true-square white"
-                                                        },
-                                                        [_vm._v("R")]
-                                                      )
-                                                    ]
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "div",
-                                                    { staticClass: "hotkey" },
-                                                    [
-                                                      _c(
-                                                        "span",
-                                                        {
-                                                          staticClass:
-                                                            "button red",
-                                                          on: {
-                                                            click: function(
-                                                              $event
-                                                            ) {
-                                                              _vm.removeVariant(
-                                                                index
-                                                              )
-                                                              slotProps.toggle()
-                                                            }
-                                                          }
-                                                        },
-                                                        [_vm._v("Delete")]
-                                                      ),
-                                                      _c(
-                                                        "span",
-                                                        {
-                                                          staticClass:
-                                                            "square true-square red"
-                                                        },
-                                                        [_vm._v("D")]
-                                                      )
-                                                    ]
-                                                  )
-                                                ]
-                                              )
-                                            ]
+                                                          },
+                                                          [_vm._v("Delete")]
+                                                        ),
+                                                        _c(
+                                                          "span",
+                                                          {
+                                                            staticClass:
+                                                              "square true-square red"
+                                                          },
+                                                          [_vm._v("D")]
+                                                        )
+                                                      ]
+                                                    )
+                                                  ]
+                                                )
+                                              ]
+                                            }
                                           }
-                                        }
-                                      ],
-                                      null,
-                                      true
-                                    )
-                                  })
-                                ],
-                                1
-                              )
-                            ]
-                          ),
-                          _vm._v(" "),
-                          _c("Editable", {
-                            ref: "nameInput-" + index,
-                            refInFor: true,
-                            attrs: {
-                              placeholder: "Untitled",
-                              value: variant.color,
-                              type: "text"
-                            },
-                            model: {
-                              value: variant.color,
-                              callback: function($$v) {
-                                _vm.$set(variant, "color", $$v)
+                                        ],
+                                        null,
+                                        true
+                                      )
+                                    })
+                                  ],
+                                  1
+                                )
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _c("Editable", {
+                              ref: "nameInput-" + index,
+                              refInFor: true,
+                              attrs: {
+                                placeholder: "Untitled",
+                                value: variant.color,
+                                type: "text"
                               },
-                              expression: "variant.color"
-                            }
-                          })
+                              model: {
+                                value: variant.color,
+                                callback: function($$v) {
+                                  _vm.$set(variant, "color", $$v)
+                                },
+                                expression: "variant.color"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      }),
+                      0
+                    ),
+                    _vm._v(" "),
+                    _c("label", [_vm._v("Product ID")]),
+                    _vm._v(" "),
+                    _c(
+                      "span",
+                      {
+                        directives: [
+                          {
+                            name: "tooltip",
+                            rawName: "v-tooltip.top",
+                            value: "Not editable",
+                            expression: "'Not editable'",
+                            modifiers: { top: true }
+                          }
                         ],
-                        1
-                      )
-                    }),
-                    0
-                  ),
-                  _vm._v(" "),
-                  _c("label", [_vm._v("Product ID")]),
-                  _vm._v(" "),
-                  _c(
-                    "span",
-                    {
-                      directives: [
-                        {
-                          name: "tooltip",
-                          rawName: "v-tooltip.top",
-                          value: "Not editable",
-                          expression: "'Not editable'",
-                          modifiers: { top: true }
-                        }
-                      ],
-                      staticClass: "input-wrapper read-only"
-                    },
-                    [_vm._v(_vm._s(_vm.product.datasource_id))]
-                  ),
-                  _vm._v(" "),
-                  _c("label", [_vm._v("Cateogry")]),
-                  _vm._v(" "),
-                  _c(
-                    "span",
-                    {
-                      directives: [
-                        {
-                          name: "tooltip",
-                          rawName: "v-tooltip.top",
-                          value: "Not editable",
-                          expression: "'Not editable'",
-                          modifiers: { top: true }
-                        }
-                      ],
-                      staticClass: "input-wrapper read-only"
-                    },
-                    [_vm._v(_vm._s(_vm.product.category))]
-                  ),
-                  _vm._v(" "),
-                  _c("label", [_vm._v("Composition")]),
-                  _vm._v(" "),
-                  _c(
-                    "span",
-                    {
-                      directives: [
-                        {
-                          name: "tooltip",
-                          rawName: "v-tooltip.top",
-                          value: "Not editable",
-                          expression: "'Not editable'",
-                          modifiers: { top: true }
-                        }
-                      ],
-                      staticClass:
-                        "input-wrapper read-only composition multiline"
-                    },
-                    [
-                      _vm._v(
-                        _vm._s(_vm.product.composition.split(",").join(",\n"))
-                      )
-                    ]
-                  )
-                ]),
+                        staticClass: "input-wrapper read-only"
+                      },
+                      [_vm._v(_vm._s(_vm.product.datasource_id))]
+                    ),
+                    _vm._v(" "),
+                    _c("label", [_vm._v("Cateogry")]),
+                    _vm._v(" "),
+                    _c(
+                      "span",
+                      {
+                        directives: [
+                          {
+                            name: "tooltip",
+                            rawName: "v-tooltip.top",
+                            value: "Not editable",
+                            expression: "'Not editable'",
+                            modifiers: { top: true }
+                          }
+                        ],
+                        staticClass: "input-wrapper read-only"
+                      },
+                      [_vm._v(_vm._s(_vm.product.category))]
+                    ),
+                    _vm._v(" "),
+                    _c("label", { attrs: { for: "composition" } }, [
+                      _vm._v("Composition")
+                    ]),
+                    _vm._v(" "),
+                    _c("EditInputWrapper", {
+                      attrs: {
+                        id: "composition",
+                        type: "text",
+                        value: _vm.product.composition,
+                        oldValue: _vm.originalProduct.composition
+                      },
+                      model: {
+                        value: _vm.product.composition,
+                        callback: function($$v) {
+                          _vm.$set(_vm.product, "composition", $$v)
+                        },
+                        expression: "product.composition"
+                      }
+                    })
+                  ],
+                  1
+                ),
                 _vm._v(" "),
                 _c("div", { staticClass: "border" }),
                 _vm._v(" "),
@@ -70142,7 +70176,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   assortments: product.assortments,
                   color_variants: product.color_variants,
                   quantity: product.quantity,
-                  delivery_date: product.delivery_date
+                  delivery_date: product.delivery_date,
+                  composition: product.composition
                 }).then(function (response) {
                   console.log(response.data);
                 })["catch"](function (err) {

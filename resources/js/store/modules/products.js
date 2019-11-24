@@ -786,6 +786,7 @@ export default {
                     color_variants: product.color_variants,
                     quantity: product.quantity,
                     delivery_date: product.delivery_date,
+                    composition: product.composition,
                 })
                 .then(response => {
                     console.log(response.data)

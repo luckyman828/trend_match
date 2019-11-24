@@ -23,6 +23,7 @@ class ProductController extends Controller
         $product->color_variants = $request->color_variants;
         $product->quantity = $request->quantity;
         $product->delivery_date = $request->delivery_date;
+        $product->composition = $request->composition;
 
         // return $action;
 
