@@ -76,7 +76,7 @@
                         </label>
                     </td>
                     <td class="id clickable bind-view-single" @click="onViewSingle(product.id)">{{product.datasource_id}}</td>
-                    <td class="image clickable" @click="onViewSingle(product.id)"><img v-if="product.color_variants[0] != null" :src="productImg(product.color_variants[0])" @error="imgError(product.color_variants[0])"></td>
+                    <td class="image clickable" @click="onViewSingle(product.id)"><img v-if="product.color_variants[0] != null" :src="productImg(product.color_variants[0])"></td>
                     <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
                     
                     <template v-if="currentTaskPermissions.feedback">
@@ -258,13 +258,9 @@ export default {
             this.pageLimit += this.itemsPerPage
         },
         productImg(variant) {
-            if (!variant.error && variant.blob_id != null)
+            if (variant.blob_id != null)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-                // return `https://devenviromentdiag.blob.core.windows.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
             else return variant.image
-        },
-        imgError (variant) {
-             variant.error = true
         },
         toggleInOut(product, action) {
             if (this.currentTask.type == 'feedback') {

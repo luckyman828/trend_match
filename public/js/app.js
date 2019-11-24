@@ -8436,11 +8436,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/collections', ['currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/products', ['singleVisible']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['userPermissionLevel', 'currentWorkspaceId'])),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/products', ['setCurrentProductId', 'setAvailableProductIds']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])('entities/products', ['setSingleVisisble']), {
     productImg: function productImg(variant) {
-      if (!variant.error && variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg"); // return `https://devenviromentdiag.blob.core.windows.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-      else return variant.image;
-    },
-    imgError: function imgError(variant) {
-      variant.error = true;
+      if (variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
     },
     onViewSingle: function onViewSingle(id) {
       this.setCurrentProductId(id);
@@ -11411,11 +11407,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.pageLimit += this.itemsPerPage;
     },
     productImg: function productImg(variant) {
-      if (!variant.error && variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg"); // return `https://devenviromentdiag.blob.core.windows.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-      else return variant.image;
-    },
-    imgError: function imgError(variant) {
-      variant.error = true;
+      if (variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
     },
     toggleInOut: function toggleInOut(product, action) {
       if (this.currentTask.type == 'feedback') {
@@ -34163,12 +34155,7 @@ var render = function() {
                   },
                   [
                     _c("img", {
-                      attrs: { src: _vm.productImg(product.color_variants[0]) },
-                      on: {
-                        error: function($event) {
-                          return _vm.imgError(product.color_variants[0])
-                        }
-                      }
+                      attrs: { src: _vm.productImg(product.color_variants[0]) }
                     })
                   ]
                 ),
@@ -39448,13 +39435,6 @@ var render = function() {
                             ? _c("img", {
                                 attrs: {
                                   src: _vm.productImg(product.color_variants[0])
-                                },
-                                on: {
-                                  error: function($event) {
-                                    return _vm.imgError(
-                                      product.color_variants[0]
-                                    )
-                                  }
                                 }
                               })
                             : _vm._e()
