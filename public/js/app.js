@@ -34010,7 +34010,7 @@ var render = function() {
                       }),
                       _vm._v(" "),
                       _c("label", { attrs: { for: "description" } }, [
-                        _vm._v("Composition")
+                        _vm._v("Description")
                       ]),
                       _vm._v(" "),
                       _c("EditInputWrapper", {
