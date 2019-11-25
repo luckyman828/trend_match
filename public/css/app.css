@@ -9601,7 +9601,7 @@ textarea {
 
 .modal-wrapper > .modal {
   display: none;
-  position: fixed;
+  position: absolute;
   z-index: 120;
   left: 50vw;
   top: 10vh;
