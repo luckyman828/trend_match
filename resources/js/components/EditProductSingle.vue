@@ -29,7 +29,8 @@
                     <div class="details">
                         <span>Variants ({{product.color_variants.length}})</span>
                         <span class="button light-2 icon-left" @click="onAddVariant"><i class="far fa-plus"></i> Add Variant</span>
-                        <div class="product-variants" v-dragscroll>
+                        <Draggable v-model="product.color_variants" class="product-variants">
+                            
                             <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index">
                                 <div class="img-wrapper" @dragenter="dragActive($event, index)" @dragleave="dragLeave" @drop="dragDrop">
                                     <div class="drop-area" :class="{drag: dragActiveIndex == index}">
@@ -93,7 +94,7 @@
                                 </div>
                                 <Editable :ref="'nameInput-'+index" :placeholder="'Untitled'" :value="variant.color" :type="'text'" v-model="variant.color"/>
                             </div>
-                        </div>
+                        </Draggable>
                         <label>Product ID</label>
                         <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{product.datasource_id}}</span>
                         <label for="category">Category</label>
@@ -153,6 +154,7 @@ import TooltipAlt2 from './TooltipAlt2'
 import EditInputWrapper from './EditInputWrapper'
 import Editable from './Editable'
 import Product from './../store/models/Product'
+import Draggable from 'vuedraggable'
 
 export default {
     name: 'editProductSingle',
@@ -167,6 +169,7 @@ export default {
         TooltipAlt2,
         EditInputWrapper,
         Editable,
+        Draggable
     },
     data: function () { return {
         currencyIndex: 0,
