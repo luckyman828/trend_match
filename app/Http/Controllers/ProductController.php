@@ -25,6 +25,7 @@ class ProductController extends Controller
         $product->delivery_date = $request->delivery_date;
         $product->composition = $request->composition;
         $product->category = $request->category;
+        $product->sale_description = $request->description;
 
         // return $action;
 

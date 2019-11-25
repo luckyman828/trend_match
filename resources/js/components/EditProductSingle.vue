@@ -135,6 +135,9 @@
                             <EditInputWrapper ref="deliveryInput" :id="'delivery'" :type="'text'" 
                             :value="product.delivery_date" :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"
                             @submit="formatDelivery"/>
+                            <label for="description">Composition</label>
+                            <EditInputWrapper id="description" :type="'text'" 
+                            :value="product.sale_description" :oldValue="originalProduct.sale_description" v-model="product.sale_description"/>
                         </div>
                     </div>
                 </div>
@@ -416,6 +419,11 @@ export default {
                 // Generate UUID for the new image
                 const newUUID = this.$uuid.v4()
 
+                // Get the orientation of the image
+                // this.getOrientation(file, orientation => {
+                //     alert(orientation)
+                // })
+
                 // Set the image to upload on the variant in question
                 variant.imageToUpload = {file: file, id: newUUID}
 
@@ -423,8 +431,8 @@ export default {
                 const fileReader = new FileReader()
                 fileReader.readAsDataURL(file)
                 fileReader.onload = (e) => {
-                    // Show the new image on the variant
                     const newImage = e.target.result
+                    // Show the new image on the variant
                     variant.image = newImage
                     // Set the blob_id to null, to we know to show the new image instead.
                     // The blob_id will be set again if we upload the image
@@ -436,6 +444,53 @@ export default {
                 // Throw error
                 console.log('invalid file extension')
             }
+        },
+        getOrientation(image, callback) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+
+                var view = new DataView(e.target.result);
+                if (view.getUint16(0, false) != 0xFFD8)
+                {
+                    return callback(-2);
+                }
+                var length = view.byteLength, offset = 2;
+                while (offset < length) 
+                {
+                    if (view.getUint16(offset+2, false) <= 8) return callback(-1);
+                    var marker = view.getUint16(offset, false);
+                    offset += 2;
+                    if (marker == 0xFFE1) 
+                    {
+                        if (view.getUint32(offset += 2, false) != 0x45786966) 
+                        {
+                            return callback(-1);
+                        }
+
+                        var little = view.getUint16(offset += 6, false) == 0x4949;
+                        offset += view.getUint32(offset + 4, little);
+                        var tags = view.getUint16(offset, little);
+                        offset += 2;
+                        for (var i = 0; i < tags; i++)
+                        {
+                            if (view.getUint16(offset + (i * 12), little) == 0x0112)
+                            {
+                                return callback(view.getUint16(offset + (i * 12) + 8, little));
+                            }
+                        }
+                    }
+                    else if ((marker & 0xFF00) != 0xFF00)
+                    {
+                        break;
+                    }
+                    else
+                    { 
+                        offset += view.getUint16(offset, false);
+                    }
+                }
+                return callback(-1);
+            };
+            reader.readAsArrayBuffer(image);
         },
         editURL(index) {
             this.URLActiveIndex = index
