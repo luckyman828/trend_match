@@ -261,7 +261,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('entities/products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'uploadImages', 'deleteImages']),
+        ...mapActions('entities/products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'uploadImages', 'deleteImages', 'rotateImage']),
         variantImg (variant) {
             if (variant.blob_id != null)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
@@ -412,85 +412,34 @@ export default {
             this.dragActiveIndex = null
             this.dragCounter = 0
         },
-        filesChange(e, index, variant) {
+        async filesChange(e, index, variant) {
             const file = e.target.files[0]
             // Check that the file is an image
             if (file && file['type'].split('/')[0] === 'image') {
                 // Generate UUID for the new image
                 const newUUID = this.$uuid.v4()
 
-                // Get the orientation of the image
-                // this.getOrientation(file, orientation => {
-                //     alert(orientation)
-                // })
+                // Rotate the image in PHP
+                // This image rotates the image and returns the image as a data-url.
+                // This means the response can be used in the <img> src tag directly.
+                // This replaces the need for a filereader 
+                await this.rotateImage(file)
+                .then(image => {
+                    if (image) {
+                        // On a success, 
+                        variant.imageToUpload = {file: file, id: newUUID}
+                        // Show the new image on the variant
+                        variant.image = image
+                        // Set the blob_id to null, so we know to show the new image instead.
+                        // The blob_id will be set again if we upload the image
+                        variant.blob_id = null
+                    }
 
-                // Set the image to upload on the variant in question
-                variant.imageToUpload = {file: file, id: newUUID}
-
-                // Process the uplaoded image
-                const fileReader = new FileReader()
-                fileReader.readAsDataURL(file)
-                fileReader.onload = (e) => {
-                    const newImage = e.target.result
-                    // Show the new image on the variant
-                    variant.image = newImage
-                    // Set the blob_id to null, to we know to show the new image instead.
-                    // The blob_id will be set again if we upload the image
-                    variant.blob_id = null
-                }
-
-
+                })
             } else {
                 // Throw error
                 console.log('invalid file extension')
             }
-        },
-        getOrientation(image, callback) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-
-                var view = new DataView(e.target.result);
-                if (view.getUint16(0, false) != 0xFFD8)
-                {
-                    return callback(-2);
-                }
-                var length = view.byteLength, offset = 2;
-                while (offset < length) 
-                {
-                    if (view.getUint16(offset+2, false) <= 8) return callback(-1);
-                    var marker = view.getUint16(offset, false);
-                    offset += 2;
-                    if (marker == 0xFFE1) 
-                    {
-                        if (view.getUint32(offset += 2, false) != 0x45786966) 
-                        {
-                            return callback(-1);
-                        }
-
-                        var little = view.getUint16(offset += 6, false) == 0x4949;
-                        offset += view.getUint32(offset + 4, little);
-                        var tags = view.getUint16(offset, little);
-                        offset += 2;
-                        for (var i = 0; i < tags; i++)
-                        {
-                            if (view.getUint16(offset + (i * 12), little) == 0x0112)
-                            {
-                                return callback(view.getUint16(offset + (i * 12) + 8, little));
-                            }
-                        }
-                    }
-                    else if ((marker & 0xFF00) != 0xFF00)
-                    {
-                        break;
-                    }
-                    else
-                    { 
-                        offset += view.getUint16(offset, false);
-                    }
-                }
-                return callback(-1);
-            };
-            reader.readAsArrayBuffer(image);
         },
         editURL(index) {
             this.URLActiveIndex = index

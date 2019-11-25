@@ -8078,7 +8078,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return imagesToUpload;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'uploadImages', 'deleteImages']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'uploadImages', 'deleteImages', 'rotateImage']), {
     variantImg: function variantImg(variant) {
       if (variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
     },
@@ -8243,83 +8243,66 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.dragActiveIndex = null;
       this.dragCounter = 0;
     },
-    filesChange: function filesChange(e, index, variant) {
-      var file = e.target.files[0]; // Check that the file is an image
+    filesChange: function () {
+      var _filesChange = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e, index, variant) {
+        var file, newUUID;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                file = e.target.files[0]; // Check that the file is an image
 
-      if (file && file['type'].split('/')[0] === 'image') {
-        // Generate UUID for the new image
-        var newUUID = this.$uuid.v4(); // Get the orientation of the image
-        // this.getOrientation(file, orientation => {
-        //     alert(orientation)
-        // })
-        // Set the image to upload on the variant in question
+                if (!(file && file['type'].split('/')[0] === 'image')) {
+                  _context2.next = 7;
+                  break;
+                }
 
-        variant.imageToUpload = {
-          file: file,
-          id: newUUID // Process the uplaoded image
+                // Generate UUID for the new image
+                newUUID = this.$uuid.v4(); // Rotate the image in PHP
+                // This image rotates the image and returns the image as a data-url.
+                // This means the response can be used in the <img> src tag directly.
+                // This replaces the need for a filereader 
 
-        };
-        var fileReader = new FileReader();
-        fileReader.readAsDataURL(file);
+                _context2.next = 5;
+                return this.rotateImage(file).then(function (image) {
+                  if (image) {
+                    // On a success, 
+                    variant.imageToUpload = {
+                      file: file,
+                      id: newUUID // Show the new image on the variant
 
-        fileReader.onload = function (e) {
-          var newImage = e.target.result; // Show the new image on the variant
+                    };
+                    variant.image = image; // Set the blob_id to null, so we know to show the new image instead.
+                    // The blob_id will be set again if we upload the image
 
-          variant.image = newImage; // Set the blob_id to null, to we know to show the new image instead.
-          // The blob_id will be set again if we upload the image
+                    variant.blob_id = null;
+                  }
+                });
 
-          variant.blob_id = null;
-        };
-      } else {
-        // Throw error
-        console.log('invalid file extension');
-      }
-    },
-    getOrientation: function getOrientation(image, callback) {
-      var reader = new FileReader();
+              case 5:
+                _context2.next = 8;
+                break;
 
-      reader.onload = function (e) {
-        var view = new DataView(e.target.result);
+              case 7:
+                // Throw error
+                console.log('invalid file extension');
 
-        if (view.getUint16(0, false) != 0xFFD8) {
-          return callback(-2);
-        }
-
-        var length = view.byteLength,
-            offset = 2;
-
-        while (offset < length) {
-          if (view.getUint16(offset + 2, false) <= 8) return callback(-1);
-          var marker = view.getUint16(offset, false);
-          offset += 2;
-
-          if (marker == 0xFFE1) {
-            if (view.getUint32(offset += 2, false) != 0x45786966) {
-              return callback(-1);
+              case 8:
+              case "end":
+                return _context2.stop();
             }
-
-            var little = view.getUint16(offset += 6, false) == 0x4949;
-            offset += view.getUint32(offset + 4, little);
-            var tags = view.getUint16(offset, little);
-            offset += 2;
-
-            for (var i = 0; i < tags; i++) {
-              if (view.getUint16(offset + i * 12, little) == 0x0112) {
-                return callback(view.getUint16(offset + i * 12 + 8, little));
-              }
-            }
-          } else if ((marker & 0xFF00) != 0xFF00) {
-            break;
-          } else {
-            offset += view.getUint16(offset, false);
           }
-        }
+        }, _callee2, this);
+      }));
 
-        return callback(-1);
-      };
+      function filesChange(_x, _x2, _x3) {
+        return _filesChange.apply(this, arguments);
+      }
 
-      reader.readAsArrayBuffer(image);
-    },
+      return filesChange;
+    }(),
     editURL: function editURL(index) {
       var _this3 = this;
 
@@ -8331,14 +8314,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     getImageFromURL: function () {
       var _getImageFromURL = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(variant) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(variant) {
         var vm, newUUID, request;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
                 if (!variant.image) {
-                  _context2.next = 7;
+                  _context3.next = 7;
                   break;
                 }
 
@@ -8349,7 +8332,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 newUUID = this.$uuid.v4(); // Send a request to get the image
 
                 request = new XMLHttpRequest();
-                _context2.next = 7;
+                _context3.next = 7;
                 return request.open('GET', variant.image, true), request.responseType = 'blob', request.onload = function () {
                   variant.imageToUpload = {
                     file: request.response,
@@ -8361,13 +8344,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
               case 7:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee3, this);
       }));
 
-      function getImageFromURL(_x) {
+      function getImageFromURL(_x4) {
         return _getImageFromURL.apply(this, arguments);
       }
 
@@ -70255,16 +70238,62 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       return updateProduct;
     }(),
-    uploadImages: function () {
-      var _uploadImages = _asyncToGenerator(
+    rotateImage: function () {
+      var _rotateImage = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref8, files) {
-        var commit, dispatch, uploadSucces, uploadApiUrl, axiosConfig, data, count;
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref8, file) {
+        var commit, imageToReturn, uploadApiUrl, axiosConfig, data;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                commit = _ref8.commit, dispatch = _ref8.dispatch;
+                commit = _ref8.commit;
+                uploadApiUrl = "/api/product/rotate-img";
+                axiosConfig = {} // headers: {
+                //     'Content-Type': 'multipart/form-data',
+                // },
+                // Append the file
+                ;
+                data = new FormData();
+                data.append('file', file);
+                console.log('Send rotate image request from store');
+                _context3.next = 8;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(uploadApiUrl, data, axiosConfig).then(function (response) {
+                  console.log('returning image');
+                  imageToReturn = response.data;
+                })["catch"](function (err) {
+                  imageToReturn = false;
+                  console.log('error');
+                  console.log(err.response);
+                });
+
+              case 8:
+                return _context3.abrupt("return", imageToReturn);
+
+              case 9:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+
+      function rotateImage(_x5, _x6) {
+        return _rotateImage.apply(this, arguments);
+      }
+
+      return rotateImage;
+    }(),
+    uploadImages: function () {
+      var _uploadImages = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref9, files) {
+        var commit, dispatch, uploadSucces, uploadApiUrl, axiosConfig, data, count;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                commit = _ref9.commit, dispatch = _ref9.dispatch;
                 // Upload images to Blob storage
                 uploadSucces = false;
                 uploadApiUrl = "/api/product/images";
@@ -70281,7 +70310,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data.append('files[' + count + ']', file.file, file.id);
                 });
                 console.log(count + ' images sent to API from store');
-                _context3.next = 10;
+                _context4.next = 10;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(uploadApiUrl, data, axiosConfig).then(function (response) {
                   console.log(response.data);
                   uploadSucces = true;
@@ -70292,17 +70321,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 });
 
               case 10:
-                return _context3.abrupt("return", uploadSucces);
+                return _context4.abrupt("return", uploadSucces);
 
               case 11:
               case "end":
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3);
+        }, _callee4);
       }));
 
-      function uploadImages(_x5, _x6) {
+      function uploadImages(_x7, _x8) {
         return _uploadImages.apply(this, arguments);
       }
 
@@ -70311,15 +70340,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     deleteImages: function () {
       var _deleteImages = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref9, imagesToDelete) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5(_ref10, imagesToDelete) {
         var commit;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
-                commit = _ref9.commit;
+                commit = _ref10.commit;
                 console.log('Deleting images product in store');
-                _context4.next = 4;
+                _context5.next = 4;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/product/images", {
                   data: {
                     ids: imagesToDelete
@@ -70332,13 +70361,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 4:
               case "end":
-                return _context4.stop();
+                return _context5.stop();
             }
           }
-        }, _callee4);
+        }, _callee5);
       }));
 
-      function deleteImages(_x7, _x8) {
+      function deleteImages(_x9, _x10) {
         return _deleteImages.apply(this, arguments);
       }
 

@@ -7,6 +7,7 @@ use App\Http\Resources\Product as ProductResource;
 use Intervention\Image\Facades\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Response;
 
 class ProductController extends Controller
 {
@@ -40,6 +41,21 @@ class ProductController extends Controller
             return json_decode( json_encode($dataToReturn), true);
         }
     }
+    public function rotateImage(Request $request)
+    {
+        // Create an image from the file and rotate it
+        $img = Image::make($request->file);
+        // Rotate the image
+        // The orientate method automatically orientates the image correctly by reading it's EXIF data
+        $img->orientate();
+        // Resize the image to a thumbnail size
+        $img->resize('400', '400', function ($constaint) {
+            $constaint->aspectRatio();
+            $constaint->upsize();
+        });
+        // Encode the image as data-url to be used as src for an <img> tag
+        return $img->encode('data-url')->__toString();
+    }
     public function uploadImages(Request $request)
     {
         // Loop through the files
@@ -50,6 +66,10 @@ class ProductController extends Controller
             $countImgs++;
             // Create HQ Image of 
             $hqImage = Image::make($file);
+            // Rotate the image
+            // The orientate method automatically orientates the image correctly by reading it's EXIF data
+            $hqImage->orientate();
+            // Resize the image
             $hqImage->resize('2000', '2000', function ($constaint) {
                 $constaint->aspectRatio();
                 $constaint->upsize();
@@ -59,6 +79,10 @@ class ProductController extends Controller
 
             // Create a thumbnail and save it
             $thumbnail = Image::make($file);
+            // Rotate the image
+            // The orientate method automatically orientates the image correctly by reading it's EXIF data
+            $thumbnail->orientate();
+            // Resize the image
             $thumbnail->resize('400', '400', function ($constaint) {
                 $constaint->aspectRatio();
                 $constaint->upsize();

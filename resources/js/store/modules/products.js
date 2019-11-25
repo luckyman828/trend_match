@@ -797,6 +797,35 @@ export default {
                     console.log(err.response)
                 })
         },
+        async rotateImage({ commit }, file) {
+            // Upload images to Blob storage
+            let imageToReturn
+
+            const uploadApiUrl = `/api/product/rotate-img`
+            const axiosConfig = {
+                // headers: {
+                //     'Content-Type': 'multipart/form-data',
+                // },
+            }
+
+            // Append the file
+            let data = new FormData()
+            data.append('file', file)
+            console.log('Send rotate image request from store')
+
+            await axios
+                .post(uploadApiUrl, data, axiosConfig)
+                .then(response => {
+                    console.log('returning image')
+                    imageToReturn = response.data
+                })
+                .catch(err => {
+                    imageToReturn = false
+                    console.log('error')
+                    console.log(err.response)
+                })
+            return imageToReturn
+        },
         async uploadImages({ commit, dispatch }, files) {
             // Upload images to Blob storage
             let uploadSucces = false

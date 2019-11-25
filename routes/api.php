@@ -72,6 +72,7 @@ Route::middleware('auth:api')->group( function(){
     Route::put('product', 'ProductController@insertOrUpdate');
     Route::post('product/images', 'ProductController@uploadImages');
     Route::delete('product/images', 'ProductController@deleteImages');
+    Route::post('product/rotate-img', 'ProductController@rotateImage');
     
 
     // xxx CATALOGS xxx
