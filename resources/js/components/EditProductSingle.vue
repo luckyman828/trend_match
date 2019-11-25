@@ -135,7 +135,7 @@
                             <EditInputWrapper ref="deliveryInput" :id="'delivery'" :type="'text'" 
                             :value="product.delivery_date" :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"
                             @submit="formatDelivery"/>
-                            <label for="description">Composition</label>
+                            <label for="description">Description</label>
                             <EditInputWrapper id="description" :type="'text'" 
                             :value="product.sale_description" :oldValue="originalProduct.sale_description" v-model="product.sale_description"/>
                         </div>
