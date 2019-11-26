@@ -27,6 +27,8 @@ class ProductController extends Controller
         $product->composition = $request->composition;
         $product->category = $request->category;
         $product->sale_description = $request->description;
+        $product->collection_id = $request->collection_id;
+        $product->datasource_id = $request->datasource_id;
 
         // return $action;
 

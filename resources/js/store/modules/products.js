@@ -46,10 +46,11 @@ export default {
             if (!rootGetters['persist/loadingInit']) {
                 const products = Product.query().all()
                 products.forEach(product => {
-                    if (typeof product.color_variants == 'string')
+                    if (product.color_variants && typeof product.color_variants == 'string')
                         product.color_variants = JSON.parse(product.color_variants)
-                    if (typeof product.assortments == 'string') product.assortments = JSON.parse(product.assortments)
-                    if (typeof product.prices == 'string') product.prices = JSON.parse(product.prices)
+                    if (product.assortments && typeof product.assortments == 'string')
+                        product.assortments = JSON.parse(product.assortments)
+                    if (product.prices && typeof product.prices == 'string') product.prices = JSON.parse(product.prices)
                 })
                 return products
             }
@@ -770,6 +771,13 @@ export default {
             commit('setCurrentProductId', id)
             commit('setSingleVisisble', true)
         },
+        instantiateNewProduct({ commit }, { id, fileId }) {
+            console.log('instantiating new product in store with id: ' + id + ', and file id: ' + fileId)
+            Product.insert({
+                data: { id: id, collection_id: fileId, title: 'Unnamed product' },
+            })
+            // Product.insert({ data: product })
+        },
         async updateProduct({ commit }, product) {
             console.log('updating product in store')
             product.prices = JSON.stringify(product.prices)
@@ -789,6 +797,8 @@ export default {
                     composition: product.composition,
                     category: product.category,
                     description: product.sale_description,
+                    collection_id: product.collection_id,
+                    datasource_id: product.datasource_id,
                 })
                 .then(response => {
                     console.log(response.data)

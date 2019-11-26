@@ -30,10 +30,7 @@
                     @click="showResult(result.item.id)"
                 >
                     <td class="img">
-                        <img
-                            :src="productImg(result.item.color_variants[0])"
-                            @error="imgError(product.color_variants[0])"
-                        />
+                        <img :src="productImg(result.item.color_variants[0])">
                     </td>
                     <td class="id">
                         <template v-if="result.datasource_id">
@@ -84,7 +81,13 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('entities/products', ['productsScoped']),
+        ...mapGetters('entities/products', ['productsScoped', 'productsRaw']),
+        products() {
+            if (this.$route.name == 'file')
+                return this.productsScoped
+            else if (this.$route.name == 'editFile')
+                return this.productsRaw
+        },
         resultsToShow() {
             const limit = 5
             let resultsToReturn = []
@@ -147,16 +150,13 @@ export default {
                 minMatchCharLength: 2,
                 keys: ['title', 'datasource_id'],
             }
-            const fuse = new Fuse(this.productsScoped, options)
+            const fuse = new Fuse(this.products, options)
             this.results = fuse.search(this.searchStr)
         },
         productImg(variant) {
-            if (!variant.error && variant.blob_id != null)
+            if (variant.blob_id != null)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
             else return variant.image
-        },
-        imgError(variant) {
-            variant.error = true
         },
     },
 }
@@ -166,6 +166,9 @@ export default {
 @import '~@/_variables.scss';
 
 .search-modal {
+    &.active {
+        z-index: 9;
+    }
     .close {
         display: none;
     }

@@ -101,11 +101,23 @@
                                         </Dropdown>
                                     </div>
                                 </div>
-                                <Editable :ref="'nameInput-'+index" :placeholder="'Untitled'" :value="variant.color" :type="'text'" v-model="variant.color"/>
+                                <Editable :ref="'nameInput-'+index" :placeholder="'Untitled variant'" :value="variant.color" :type="'text'" v-model="variant.color"/>
                             </div>
                         </Draggable>
-                        <label>Product ID</label>
-                        <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{product.datasource_id}}</span>
+                        <label for="datasource-id">Product ID</label>
+                        <EditInputWrapper id="datasource-id" :type="'number'" 
+                        :value="product.datasource_id" :oldValue="originalProduct.datasource_id" v-model="product.datasource_id"/>
+                        <!-- <template v-if="product.datasource_id">
+                            <label>Product ID</label>
+                            <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{product.datasource_id}}</span>
+                        </template>
+                        <template v-else>
+                            <label for="datasource-id">Product ID</label>
+                            <EditInputWrapper id="datasource-id" :type="'number'" 
+                            :value="product.datasource_id" :oldValue="originalProduct.datasource_id" v-model="product.datasource_id"/>
+                        </template> -->
+                        <!-- <label>Product ID</label>
+                        <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{product.datasource_id}}</span> -->
                         <label for="category">Category</label>
                         <!-- <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{product.category}}</span> -->
                         <EditInputWrapper id="category" :type="'text'" 
