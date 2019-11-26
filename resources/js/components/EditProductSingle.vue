@@ -334,10 +334,12 @@ export default {
                 if (variant.imageToUpload) {
                     // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
                     await this.uploadImages({files: [editVariant.imageToUpload], callback: function(uploadProgress) {
-                    console.log('In the component:')
-                    console.log(uploadProgress)
-
-                    vm.$set(editVariant.imageToUpload, 'progress', uploadProgress)
+                    
+                    if (uploadProgress == 100) {
+                        vm.$set(editVariant.imageToUpload, 'progress', 99)
+                    } else {
+                        vm.$set(editVariant.imageToUpload, 'progress', uploadProgress)
+                    }
                     // editVariant.imageToUpload.progress = uploadProgress
                     } })
                     .then(success => {

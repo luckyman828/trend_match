@@ -8178,9 +8178,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                           return _this2.uploadImages({
                             files: [editVariant.imageToUpload],
                             callback: function callback(uploadProgress) {
-                              console.log('In the component:');
-                              console.log(uploadProgress);
-                              vm.$set(editVariant.imageToUpload, 'progress', uploadProgress); // editVariant.imageToUpload.progress = uploadProgress
+                              if (uploadProgress == 100) {
+                                vm.$set(editVariant.imageToUpload, 'progress', 99);
+                              } else {
+                                vm.$set(editVariant.imageToUpload, 'progress', uploadProgress);
+                              } // editVariant.imageToUpload.progress = uploadProgress
+
                             }
                           }).then(function (success) {
                             // When done trying to upload the image
