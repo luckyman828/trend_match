@@ -2,7 +2,7 @@
     <div class="edit-input-wrapper" :class="{active: editActive}">
         <div class="input-parent controls-right controls-inside control-items-2" @click="setActive">
             <input ref="input" :id="id" class="input-wrapper" :type="type" :value="value" :placeholder="placeholder"
-            @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" @keyup="change" step="any">
+            @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" @keyup="change" step="any" @keydown="validateInput" :maxlength="maxlength" :pattern="pattern">
             <div class="controls">
                 <span v-if="!editActive" v-tooltip.top="'Edit'" class="edit square true-square light-2-hover"><i class="far fa-pen"></i></span>
                 <span v-if="editActive" class="edit square true-square"><i class="far fa-pen"></i></span>
@@ -28,6 +28,8 @@ export default {
         'oldValue',
         'placeholder',
         'id',
+        'maxlength',
+        'pattern',
     ],
     data: function () { return {
         editActive: false,
@@ -61,6 +63,16 @@ export default {
             this.$emit('input', this.oldValue)
             this.$emit('revert')
         },
+        validateInput(e) {
+            // First check if the key presses was Enter or Escape and don't do anything if true
+            if (e.key == "Escape" || e.key == "Enter" || e.key == "Backspace") return
+            // Then check if we have a pattern. If we do, don't allow anything that doesn't match the pattern to be entered
+            if(this.pattern) {
+                const regex = new RegExp(this.pattern)
+                if(!regex.test(e.key))
+                    e.preventDefault()
+            }
+        }
     }
 }
 </script>

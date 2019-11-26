@@ -7749,7 +7749,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'editInputWrapper',
-  props: ['type', 'value', 'oldValue', 'placeholder', 'id'],
+  props: ['type', 'value', 'oldValue', 'placeholder', 'id', 'maxlength', 'pattern'],
   data: function data() {
     return {
       editActive: false
@@ -7783,6 +7783,15 @@ __webpack_require__.r(__webpack_exports__);
       e.preventDefault();
       this.$emit('input', this.oldValue);
       this.$emit('revert');
+    },
+    validateInput: function validateInput(e) {
+      // First check if the key presses was Enter or Escape and don't do anything if true
+      if (e.key == "Escape" || e.key == "Enter" || e.key == "Backspace") return; // Then check if we have a pattern. If we do, don't allow anything that doesn't match the pattern to be entered
+
+      if (this.pattern) {
+        var regex = new RegExp(this.pattern);
+        if (!regex.test(e.key)) e.preventDefault();
+      }
     }
   }
 });
@@ -8554,6 +8563,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -8575,7 +8598,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/collections', ['currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/products', ['singleVisible']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['userPermissionLevel', 'currentWorkspaceId'])),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/products', ['setCurrentProductId', 'setAvailableProductIds']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])('entities/products', ['setSingleVisisble']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/products', ['setCurrentProductId', 'setAvailableProductIds', 'deleteProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])('entities/products', ['setSingleVisisble']), {
     productImg: function productImg(variant) {
       if (variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
     },
@@ -8631,6 +8654,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       } else {
         this.sticky = false;
       }
+    },
+    onDeleteProduct: function onDeleteProduct(id) {
+      window.confirm('Are you sure you want to permanently delete this product?') ? this.deleteProduct(id) : false;
     }
   }),
   created: function created() {
@@ -36865,7 +36891,9 @@ var render = function() {
               id: _vm.id,
               type: _vm.type,
               placeholder: _vm.placeholder,
-              step: "any"
+              step: "any",
+              maxlength: _vm.maxlength,
+              pattern: _vm.pattern
             },
             domProps: { value: _vm.value },
             on: {
@@ -36893,18 +36921,21 @@ var render = function() {
                 },
                 _vm.change
               ],
-              keydown: function($event) {
-                if (
-                  !$event.type.indexOf("key") &&
-                  _vm._k($event.keyCode, "esc", 27, $event.key, [
-                    "Esc",
-                    "Escape"
-                  ])
-                ) {
-                  return null
-                }
-                $event.stopPropagation()
-              }
+              keydown: [
+                function($event) {
+                  if (
+                    !$event.type.indexOf("key") &&
+                    _vm._k($event.keyCode, "esc", 27, $event.key, [
+                      "Esc",
+                      "Escape"
+                    ])
+                  ) {
+                    return null
+                  }
+                  $event.stopPropagation()
+                },
+                _vm.validateInput
+              ]
             }
           }),
           _vm._v(" "),
@@ -37762,7 +37793,9 @@ var render = function() {
                     _c("EditInputWrapper", {
                       attrs: {
                         id: "datasource-id",
-                        type: "number",
+                        type: "text",
+                        maxlength: 9,
+                        pattern: "[0-9]",
                         value: _vm.product.datasource_id,
                         oldValue: _vm.originalProduct.datasource_id
                       },
@@ -38245,20 +38278,102 @@ var render = function() {
                   [_c("span", [_vm._v(_vm._s(product.title))])]
                 ),
                 _vm._v(" "),
-                _c("td", { staticClass: "action" }, [
-                  _c(
-                    "span",
-                    {
-                      staticClass: "button invisible ghost dark-hover",
-                      on: {
-                        click: function($event) {
-                          return _vm.onViewSingle(product.id)
+                _c(
+                  "td",
+                  { staticClass: "action" },
+                  [
+                    _c(
+                      "span",
+                      {
+                        staticClass: "button invisible ghost dark-hover",
+                        on: {
+                          click: function($event) {
+                            return _vm.onViewSingle(product.id)
+                          }
                         }
-                      }
-                    },
-                    [_vm._v("View / Edit")]
-                  )
-                ])
+                      },
+                      [_vm._v("View / Edit")]
+                    ),
+                    _vm._v(" "),
+                    _vm.userPermissionLevel >= 3
+                      ? _c("Dropdown", {
+                          ref: "moreOptions-" + product.id,
+                          refInFor: true,
+                          scopedSlots: _vm._u(
+                            [
+                              {
+                                key: "button",
+                                fn: function() {
+                                  return [
+                                    _c(
+                                      "span",
+                                      {
+                                        staticClass:
+                                          "button invisible ghost dark-hover true-square",
+                                        on: {
+                                          click: function($event) {
+                                            _vm.$refs[
+                                              "moreOptions-" + product.id
+                                            ][0].toggle()
+                                          }
+                                        }
+                                      },
+                                      [
+                                        _c("i", {
+                                          staticClass: "fas fa-ellipsis-v"
+                                        })
+                                      ]
+                                    )
+                                  ]
+                                },
+                                proxy: true
+                              },
+                              {
+                                key: "body",
+                                fn: function() {
+                                  return [
+                                    _c(
+                                      "div",
+                                      { staticClass: "option-buttons" },
+                                      [
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass: "option icon-left",
+                                            on: {
+                                              click: function($event) {
+                                                _vm.onDeleteProduct(product.id)
+                                                _vm.$refs[
+                                                  "moreOptions-" + product.id
+                                                ][0].toggle()
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _c("i", {
+                                              staticClass:
+                                                "fas fa-trash-alt red"
+                                            }),
+                                            _vm._v(
+                                              " Delete\n                            "
+                                            )
+                                          ]
+                                        )
+                                      ]
+                                    )
+                                  ]
+                                },
+                                proxy: true
+                              }
+                            ],
+                            null,
+                            true
+                          )
+                        })
+                      : _vm._e()
+                  ],
+                  1
+                )
               ]
             )
           }),
@@ -77844,8 +77959,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context5.prev = _context5.next) {
               case 0:
                 commit = _ref13.commit;
-                console.log('Deleting images product in store');
-                _context5.next = 4;
+                _context5.next = 3;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/product/images", {
                   data: {
                     ids: imagesToDelete
@@ -77856,7 +77970,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   console.log(err.response);
                 });
 
-              case 4:
+              case 3:
               case "end":
                 return _context5.stop();
             }
@@ -77869,6 +77983,43 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return deleteImages;
+    }(),
+    deleteProduct: function () {
+      var _deleteProduct = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee6(_ref14, productId) {
+        var commit;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee6$(_context6) {
+          while (1) {
+            switch (_context6.prev = _context6.next) {
+              case 0:
+                commit = _ref14.commit;
+                console.log('Deleting product in store');
+                _context6.next = 4;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/product", {
+                  data: {
+                    id: productId
+                  }
+                }).then(function (response) {
+                  _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](id);
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err.response);
+                });
+
+              case 4:
+              case "end":
+                return _context6.stop();
+            }
+          }
+        }, _callee6);
+      }));
+
+      function deleteProduct(_x11, _x12) {
+        return _deleteProduct.apply(this, arguments);
+      }
+
+      return deleteProduct;
     }()
   },
   mutations: (_mutations = {

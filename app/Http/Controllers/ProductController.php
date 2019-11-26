@@ -43,6 +43,34 @@ class ProductController extends Controller
             return json_decode( json_encode($dataToReturn), true);
         }
     }
+    public function delete(Request $request)
+    {
+        // Find all file specific records
+        $product_id = $request->id;
+        
+        $product = Product::find($product_id);
+        $products = Product::where('collection_id', $file_id);
+        $completed_files = FileTask::where('file_id', $file_id);
+        $team_files = TeamFile::where('file_id', $file_id);
+        $comments = Comment::whereHas('product', function (Builder $query) use($file_id) {
+            $query->where('collection_id', $file_id);
+        });
+        $actions = Action::whereHas('product', function (Builder $query) use($file_id) {
+            $query->where('collection_id', $file_id);
+        });
+        
+        // Use a transaction to make sure all file related records are deleted or none
+        DB::transaction(function() use($file, $products, $completed_files, $team_files, $comments, $actions) {
+            $file->delete();
+            $products->delete();
+            $completed_files->delete();
+            $team_files->delete();
+            $comments->delete();
+            $actions->delete();
+        });
+
+        return 'Deleted file with id: ' . $file_id;
+    }
     public function rotateImage(Request $request)
     {
         // Create an image from the file and rotate it

@@ -39,6 +39,20 @@
 
                 <td class="action">
                     <span class="button invisible ghost dark-hover" @click="onViewSingle(product.id)">View / Edit</span>
+                    <Dropdown v-if="userPermissionLevel >= 3" :ref="'moreOptions-' + product.id">
+                        <template v-slot:button>
+                            <span class="button invisible ghost dark-hover true-square" @click="$refs['moreOptions-' + product.id][0].toggle()">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </span>
+                        </template>
+                        <template v-slot:body>
+                            <div class="option-buttons">
+                                <span class="option icon-left" @click="onDeleteProduct(product.id); $refs['moreOptions-' + product.id][0].toggle()">
+                                    <i class="fas fa-trash-alt red"></i> Delete
+                                </span>
+                            </div>
+                        </template>
+                    </Dropdown>
                 </td>
 
             </div>
@@ -83,7 +97,7 @@ export default {
         ...mapGetters('persist', ['userPermissionLevel', 'currentWorkspaceId']),
     },
     methods: {
-        ...mapActions('entities/products', ['setCurrentProductId', 'setAvailableProductIds']),
+        ...mapActions('entities/products', ['setCurrentProductId', 'setAvailableProductIds', 'deleteProduct']),
         ...mapMutations('entities/products', ['setSingleVisisble']),
         productImg(variant) {
             if (variant.blob_id != null)
@@ -136,6 +150,13 @@ export default {
                 this.sticky = false
             }
         },
+        onDeleteProduct(id) {
+            window.confirm(
+                'Are you sure you want to permanently delete this product?'
+            )
+                ? this.deleteProduct(id)
+                : false
+        }
     },
     created () {
         document.getElementById('main').addEventListener('scroll', this.handleScroll);

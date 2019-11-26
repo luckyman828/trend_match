@@ -875,8 +875,6 @@ export default {
             return uploadSucces
         },
         async deleteImages({ commit }, imagesToDelete) {
-            console.log('Deleting images product in store')
-
             await axios
                 .delete(`/api/product/images`, {
                     data: {
@@ -884,6 +882,23 @@ export default {
                     },
                 })
                 .then(response => {
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err.response)
+                })
+        },
+        async deleteProduct({ commit }, productId) {
+            console.log('Deleting product in store')
+
+            await axios
+                .delete(`/api/product`, {
+                    data: {
+                        id: productId,
+                    },
+                })
+                .then(response => {
+                    Product.delete(id)
                     console.log(response.data)
                 })
                 .catch(err => {

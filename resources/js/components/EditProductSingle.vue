@@ -105,7 +105,7 @@
                             </div>
                         </Draggable>
                         <label for="datasource-id">Product ID</label>
-                        <EditInputWrapper id="datasource-id" :type="'number'" 
+                        <EditInputWrapper id="datasource-id" :type="'text'" :maxlength="9" :pattern="'[0-9]'"
                         :value="product.datasource_id" :oldValue="originalProduct.datasource_id" v-model="product.datasource_id"/>
                         <!-- <template v-if="product.datasource_id">
                             <label>Product ID</label>
