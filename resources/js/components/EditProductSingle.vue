@@ -36,7 +36,7 @@
                                     <div class="drop-area" :class="{drag: dragActiveIndex == index}">
                                         <!-- <input v-if="variant.image || variant.blob_id" type="file" accept="image/*" @change="filesChange($event, index, variant)" @click.prevent> -->
                                         <input type="file" :ref="'fileInput-'+index" accept="image/*" @change="filesChange($event, index, variant)">
-                                        <img v-if="variant.image || variant.blob_id" :src="variantImg(variant)">
+                                        <img v-if="variant.image || variant.blob_id" :src="variantImg(variant)" :class="[(variant.imageToUpload) ? 'rotation-'+variant.imageToUpload.rotation : '']">
                                         <template v-else>
                                             <div class="controls">
                                                 <span class="button light-2" @click="$refs['fileInput-'+index][0].click()">Choose from file</span>
@@ -422,27 +422,63 @@ export default {
                 // Generate UUID for the new image
                 const newUUID = this.$uuid.v4()
 
-                // Rotate the image in PHP
-                // This image rotates the image and returns the image as a data-url.
-                // This means the response can be used in the <img> src tag directly.
-                // This replaces the need for a filereader 
-                await this.rotateImage(file)
-                .then(image => {
-                    if (image) {
-                        // On a success, 
-                        variant.imageToUpload = {file: file, id: newUUID}
-                        // Show the new image on the variant
-                        variant.image = image
-                        // Set the blob_id to null, so we know to show the new image instead.
-                        // The blob_id will be set again if we upload the image
-                        variant.blob_id = null
-                    }
-
+                // Get the orientation of the image to correct for photos taken with an iPhone
+                await this.getOrientation(file, imgRotation => {
+                        // save the image to upload to the variant with its rotation data, 
+                        variant.imageToUpload = {file: file, id: newUUID, rotation: imgRotation}
                 })
+
+                // Process the uploaded image
+                const fileReader = new FileReader()
+                fileReader.readAsDataURL(file)
+                fileReader.onload = (e) => {
+                    // Show the new image on the variant
+                    const newImage = e.target.result
+                    variant.image = newImage
+                    // Set the blob_id to null, to we know to show the new image instead.
+                    // The blob_id will be set again if we upload the image
+                    variant.blob_id = null
+                }
             } else {
                 // Throw error
                 console.log('invalid file extension')
             }
+        },
+        getOrientation(file, callback) {
+            var reader = new FileReader();
+
+            reader.onload = function(event) {
+                var view = new DataView(event.target.result);
+
+                if (view.getUint16(0, false) != 0xFFD8) return callback(-2);
+
+                var length = view.byteLength,
+                    offset = 2;
+
+                while (offset < length) {
+                var marker = view.getUint16(offset, false);
+                offset += 2;
+
+                if (marker == 0xFFE1) {
+                    if (view.getUint32(offset += 2, false) != 0x45786966) {
+                    return callback(-1);
+                    }
+                    var little = view.getUint16(offset += 6, false) == 0x4949;
+                    offset += view.getUint32(offset + 4, little);
+                    var tags = view.getUint16(offset, little);
+                    offset += 2;
+
+                    for (var i = 0; i < tags; i++)
+                    if (view.getUint16(offset + (i * 12), little) == 0x0112)
+                        return callback(view.getUint16(offset + (i * 12) + 8, little));
+                }
+                else if ((marker & 0xFF00) != 0xFF00) break;
+                else offset += view.getUint16(offset, false);
+                }
+                return callback(-1);
+            };
+
+            reader.readAsArrayBuffer(file.slice(0, 64 * 1024));
         },
         editURL(index) {
             this.URLActiveIndex = index
@@ -597,6 +633,14 @@ export default {
                 position: absolute;
                 top: 0;
                 left: 0;
+                //Check for rotation
+                &.rotation-6 {
+                    // -90 degree rotation
+                    transform: rotate(90deg) translateY(-100%);
+                    transform-origin: top left;
+                    width: 242px;
+                    height: 180px;
+                }
             }
             .drop-area {
                 input[type=file] {
