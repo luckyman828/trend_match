@@ -36,6 +36,15 @@
                                     <div class="drop-area" :class="{drag: dragActiveIndex == index}">
                                         <!-- <input v-if="variant.image || variant.blob_id" type="file" accept="image/*" @change="filesChange($event, index, variant)" @click.prevent> -->
                                         <input type="file" :ref="'fileInput-'+index" accept="image/*" @change="filesChange($event, index, variant)">
+                                        <p v-if="variant.imageToUpload != null">TESTSS</p>
+                                        <p v-if="variant.imageToUpload != null && variant.imageToUpload.progress">TESsasadasdasdTSS</p>
+                                        <div v-if="variant.imageToUpload != null && variant.imageToUpload.progress != null" class="progress-wrapper">
+                                            <span>{{variant.imageToUpload.progress}}%</span>
+                                            <svg height="4">
+                                                <rect class="background" width="100%" height="4"/>
+                                                <rect class="value" v-if="variant.imageToUpload.progress > 0" :width="variant.imageToUpload.progress + '%'" height="4"/>
+                                            </svg>
+                                        </div>
                                         <img v-if="variant.image || variant.blob_id" :src="variantImg(variant)" :class="[(variant.imageToUpload) ? 'rotation-'+variant.imageToUpload.rotation : '']">
                                         <template v-else>
                                             <div class="controls">
@@ -306,38 +315,41 @@ export default {
         },
         async onUpdateProduct() {
             // Prepare the file to fit the database schema
+            const vm = this
             this.updatingProduct = true
             const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
 
             // Check if we have any files (images) we need to upload
-            // Use the edit variants instead of the copy to make sure we get the correct blob data
-            const Editvariants = this.productToEdit.color_variants
-            let imagesToUpload = []
-            Editvariants.forEach(variant => {
+            const variants = productToUpload.color_variants
+            for (let i = 0; i < variants.length; i++) {
+                const variant = variants[i]
+                const editVariant = this.productToEdit.color_variants[i]
                 if (variant.imageToUpload) {
-                    imagesToUpload.push(variant.imageToUpload)
+                    vm.$set(editVariant.imageToUpload, 'progress', 0)
                 }
-            })
+            }
+            for (let i = 0; i < variants.length; i++) {
+                const variant = variants[i]
+                const editVariant = this.productToEdit.color_variants[i]
+                if (variant.imageToUpload) {
+                    // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
+                    await this.uploadImages({files: [editVariant.imageToUpload], callback: function(uploadProgress) {
+                    console.log('In the component:')
+                    console.log(uploadProgress)
 
-            // Attempt to upload the new images if we have any
-            if (imagesToUpload.length > 0) {
-                await this.uploadImages(imagesToUpload)
-                .then(success => {
-                    // When done trying to upload the images
-
-                    // Loop through the variants, set the blob_id equal to the blob_id og the newly uploaded image. Then remove the imageToUpload from the variant
-                    const variants = productToUpload.color_variants
-                    variants.forEach(variant => {
-                        if (variant.imageToUpload) {
-                            if (success) {
-                                variant.blob_id = variant.imageToUpload.id
-                                delete variant.imageToUpload
-                                variant.image = null
-                            }
+                    vm.$set(editVariant.imageToUpload, 'progress', uploadProgress)
+                    // editVariant.imageToUpload.progress = uploadProgress
+                    } })
+                    .then(success => {
+                        // When done trying to upload the image
+                        if (success) {
+                            variant.blob_id = variant.imageToUpload.id
+                            delete variant.imageToUpload
+                            variant.image = null
                         }
                     })
-                    
-                })
+
+                }
             }
 
             // Check if we have any files (images) we need to delete
@@ -416,6 +428,7 @@ export default {
             this.dragCounter = 0
         },
         async filesChange(e, index, variant) {
+            const vm = this
             const file = e.target.files[0]
             // Check that the file is an image
             if (file && file['type'].split('/')[0] === 'image') {
@@ -424,8 +437,9 @@ export default {
 
                 // Get the orientation of the image to correct for photos taken with an iPhone
                 await this.getOrientation(file, imgRotation => {
-                        // save the image to upload to the variant with its rotation data, 
-                        variant.imageToUpload = {file: file, id: newUUID, rotation: imgRotation}
+                        // save the image to upload to the variant with its rotation data,
+                        vm.$set(variant, 'imageToUpload', {file: file, id: newUUID, rotation: imgRotation})
+                        // variant.imageToUpload = {file: file, id: newUUID, rotation: imgRotation}
                 })
 
                 // Process the uploaded image
@@ -792,6 +806,33 @@ export default {
                 > :first-child {
                     margin-right: 6px;
                     width: 86px;
+                }
+            }
+        }
+    }
+    .progress-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba($dark, .5);
+        z-index: 3;
+        flex-direction: column;
+        color: white;
+        padding: 20px;
+        svg {
+            width: 100%;
+            rect {
+                &.value {
+                    transition: .3s;
+                    fill: $primary;
+                }
+                &.background {
+                    fill: $light2;
                 }
             }
         }

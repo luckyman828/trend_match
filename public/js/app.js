@@ -7967,6 +7967,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -8127,46 +8136,84 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
         var _this2 = this;
 
-        var productToUpload, Editvariants, imagesToUpload, filesToDelete;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+        var vm, productToUpload, variants, i, variant, editVariant, _loop, _i, filesToDelete;
+
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context2) {
           while (1) {
-            switch (_context.prev = _context.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
                 // Prepare the file to fit the database schema
+                vm = this;
                 this.updatingProduct = true;
                 productToUpload = JSON.parse(JSON.stringify(this.productToEdit)); // Check if we have any files (images) we need to upload
-                // Use the edit variants instead of the copy to make sure we get the correct blob data
 
-                Editvariants = this.productToEdit.color_variants;
-                imagesToUpload = [];
-                Editvariants.forEach(function (variant) {
+                variants = productToUpload.color_variants;
+
+                for (i = 0; i < variants.length; i++) {
+                  variant = variants[i];
+                  editVariant = this.productToEdit.color_variants[i];
+
                   if (variant.imageToUpload) {
-                    imagesToUpload.push(variant.imageToUpload);
+                    vm.$set(editVariant.imageToUpload, 'progress', 0);
                   }
-                }); // Attempt to upload the new images if we have any
+                }
 
-                if (!(imagesToUpload.length > 0)) {
-                  _context.next = 8;
+                _loop =
+                /*#__PURE__*/
+                _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _loop(_i) {
+                  var variant, editVariant;
+                  return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _loop$(_context) {
+                    while (1) {
+                      switch (_context.prev = _context.next) {
+                        case 0:
+                          variant = variants[_i];
+                          editVariant = _this2.productToEdit.color_variants[_i];
+
+                          if (!variant.imageToUpload) {
+                            _context.next = 5;
+                            break;
+                          }
+
+                          _context.next = 5;
+                          return _this2.uploadImages({
+                            files: [editVariant.imageToUpload],
+                            callback: function callback(uploadProgress) {
+                              console.log('In the component:');
+                              console.log(uploadProgress);
+                              vm.$set(editVariant.imageToUpload, 'progress', uploadProgress); // editVariant.imageToUpload.progress = uploadProgress
+                            }
+                          }).then(function (success) {
+                            // When done trying to upload the image
+                            if (success) {
+                              variant.blob_id = variant.imageToUpload.id;
+                              delete variant.imageToUpload;
+                              variant.image = null;
+                            }
+                          });
+
+                        case 5:
+                        case "end":
+                          return _context.stop();
+                      }
+                    }
+                  }, _loop);
+                });
+                _i = 0;
+
+              case 7:
+                if (!(_i < variants.length)) {
+                  _context2.next = 12;
                   break;
                 }
 
-                _context.next = 8;
-                return this.uploadImages(imagesToUpload).then(function (success) {
-                  // When done trying to upload the images
-                  // Loop through the variants, set the blob_id equal to the blob_id og the newly uploaded image. Then remove the imageToUpload from the variant
-                  var variants = productToUpload.color_variants;
-                  variants.forEach(function (variant) {
-                    if (variant.imageToUpload) {
-                      if (success) {
-                        variant.blob_id = variant.imageToUpload.id;
-                        delete variant.imageToUpload;
-                        variant.image = null;
-                      }
-                    }
-                  });
-                });
+                return _context2.delegateYield(_loop(_i), "t0", 9);
 
-              case 8:
+              case 9:
+                _i++;
+                _context2.next = 7;
+                break;
+
+              case 12:
                 // Check if we have any files (images) we need to delete
                 filesToDelete = this.filesToDelete;
 
@@ -8178,14 +8225,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
                 productToUpload.delivery_date = new Date(productToUpload.delivery_date + ' 3').toJSON().slice(0, 10);
-                _context.next = 13;
+                _context2.next = 17;
                 return this.updateProduct(productToUpload).then(function (success) {
                   _this2.updatingProduct = false;
                 });
 
-              case 13:
+              case 17:
               case "end":
-                return _context.stop();
+                return _context2.stop();
             }
           }
         }, _callee, this);
@@ -8252,32 +8299,33 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _filesChange = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e, index, variant) {
-        var file, newUUID, fileReader;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+        var vm, file, newUUID, fileReader;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context3) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
+                vm = this;
                 file = e.target.files[0]; // Check that the file is an image
 
                 if (!(file && file['type'].split('/')[0] === 'image')) {
-                  _context2.next = 10;
+                  _context3.next = 11;
                   break;
                 }
 
                 // Generate UUID for the new image
                 newUUID = this.$uuid.v4(); // Get the orientation of the image to correct for photos taken with an iPhone
 
-                _context2.next = 5;
+                _context3.next = 6;
                 return this.getOrientation(file, function (imgRotation) {
-                  // save the image to upload to the variant with its rotation data, 
-                  variant.imageToUpload = {
+                  // save the image to upload to the variant with its rotation data,
+                  vm.$set(variant, 'imageToUpload', {
                     file: file,
                     id: newUUID,
                     rotation: imgRotation
-                  };
+                  }); // variant.imageToUpload = {file: file, id: newUUID, rotation: imgRotation}
                 });
 
-              case 5:
+              case 6:
                 // Process the uploaded image
                 fileReader = new FileReader();
                 fileReader.readAsDataURL(file);
@@ -8291,16 +8339,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   variant.blob_id = null;
                 };
 
-                _context2.next = 11;
+                _context3.next = 12;
                 break;
 
-              case 10:
+              case 11:
                 // Throw error
                 console.log('invalid file extension');
 
-              case 11:
+              case 12:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
         }, _callee2, this);
@@ -8359,12 +8407,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(variant) {
         var vm, newUUID, request;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
                 if (!variant.image) {
-                  _context3.next = 7;
+                  _context4.next = 7;
                   break;
                 }
 
@@ -8375,7 +8423,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 newUUID = this.$uuid.v4(); // Send a request to get the image
 
                 request = new XMLHttpRequest();
-                _context3.next = 7;
+                _context4.next = 7;
                 return request.open('GET', variant.image, true), request.responseType = 'blob', request.onload = function () {
                   variant.imageToUpload = {
                     file: request.response,
@@ -8387,7 +8435,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
               case 7:
               case "end":
-                return _context3.stop();
+                return _context4.stop();
             }
           }
         }, _callee3, this);
@@ -17414,7 +17462,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".edit-product-single[data-v-8542425c] {\n  height: 100%;\n}\n.edit-product-single > .inner[data-v-8542425c] {\n  height: 100%;\n  width: 100%;\n  background: #f9f9f9;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.edit-product-single > .inner > .header[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.edit-product-single > .inner > .header h3[data-v-8542425c] {\n  width: 100%;\n}\n.edit-product-single > .inner > .header > *[data-v-8542425c] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.edit-product-single > .inner > .header .close[data-v-8542425c] {\n  margin-right: 24px;\n}\n.edit-product-single > .inner > .header .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  -webkit-box-align: start;\n          align-items: flex-start;\n}\n.edit-product-single > .inner > .header .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.edit-product-single > .inner .body[data-v-8542425c] {\n  padding: 24px;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.edit-product-single .details[data-v-8542425c] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\nh3[data-v-8542425c] {\n  font-size: 16px;\n  font-weight: 400;\n}\n.close i[data-v-8542425c] {\n  font-size: 22px;\n}\n.card > .grid-2[data-v-8542425c] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-2.grid-border-between[data-v-8542425c] {\n  grid-template-columns: 1fr 2px 1fr;\n  grid-gap: 17px;\n}\n.grid-2.grid-border-between[data-v-8542425c] > :nth-child(2) {\n  background: #dfdfdf;\n}\n.product-variants[data-v-8542425c] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n  margin-bottom: 40px;\n}\n.product-variant[data-v-8542425c] {\n  width: 180px;\n  display: inline-block;\n}\n.product-variant[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .img-wrapper[data-v-8542425c] {\n  padding-top: 133.33%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  border-radius: 2px;\n  border: solid 1px #dfdfdf;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-8542425c] {\n  width: 100%;\n  height: 100%;\n  -o-object-fit: contain;\n     object-fit: contain;\n  -o-object-position: center;\n     object-position: center;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant .img-wrapper img.rotation-6[data-v-8542425c] {\n  -webkit-transform: rotate(90deg) translateY(-100%);\n          transform: rotate(90deg) translateY(-100%);\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n  width: 242px;\n  height: 180px;\n}\n.product-variant .img-wrapper .drop-area[data-v-8542425c] {\n  position: absolute;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  cursor: auto;\n}\n.product-variant .img-wrapper .drop-area input[type=file][data-v-8542425c] {\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area .enter-url[data-v-8542425c] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  background: #f3f3f3;\n  padding: 10px;\n}\n.product-variant .img-wrapper .drop-area .enter-url .buttons-wrapper[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  width: 100%;\n}\n.product-variant .img-wrapper .drop-area .enter-url .buttons-wrapper > *[data-v-8542425c] {\n  width: calc(50% - 4px);\n  margin-top: 8px;\n  min-width: 0;\n}\n.product-variant .img-wrapper .drop-area .drop-msg[data-v-8542425c] {\n  z-index: 1;\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  width: 100%;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  display: none;\n  outline: 2px dashed #dfdfdf;\n  outline-offset: -10px;\n  background: white;\n  padding: 12px 12px;\n  background: #f3f3f3;\n}\n.product-variant .img-wrapper .drop-area.drag .drop-msg[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area.drag .controls[data-v-8542425c] {\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area.drag input[type=file][data-v-8542425c] {\n  z-index: 2;\n  pointer-events: all;\n}\n.product-variant .img-wrapper .drop-area .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-variant .img-wrapper .drop-area .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.product-variant .img-wrapper .drop-area .controls .button[data-v-8542425c] {\n  width: 124px;\n}\n.product-variant .img-wrapper > .controls[data-v-8542425c] {\n  position: absolute;\n  z-index: 2;\n  right: 4px;\n  top: 4px;\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.product-variant .img-wrapper:hover .controls[data-v-8542425c] {\n  opacity: 1;\n}\n.product-variant .color-wrapper[data-v-8542425c] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-8542425c] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-8542425c] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-8542425c] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.input-wrapper.composition[data-v-8542425c] {\n  white-space: pre-line;\n}\n.last-update[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  font-size: 11px;\n  font-weight: 500;\n  text-align: right;\n}\n.details .currencies[data-v-8542425c] {\n  margin-bottom: 32px;\n}\n.dropdown .header[data-v-8542425c] {\n  color: white;\n  font-size: 12px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  padding: 0 0 0 4px;\n}\n.dropdown .hotkeys[data-v-8542425c] {\n  padding: 8px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.dropdown .hotkeys .hotkey[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.dropdown .hotkeys .hotkey[data-v-8542425c] > :first-child {\n  margin-right: 6px;\n  width: 86px;\n}", ""]);
+exports.push([module.i, ".edit-product-single[data-v-8542425c] {\n  height: 100%;\n}\n.edit-product-single > .inner[data-v-8542425c] {\n  height: 100%;\n  width: 100%;\n  background: #f9f9f9;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.edit-product-single > .inner > .header[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.edit-product-single > .inner > .header h3[data-v-8542425c] {\n  width: 100%;\n}\n.edit-product-single > .inner > .header > *[data-v-8542425c] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.edit-product-single > .inner > .header .close[data-v-8542425c] {\n  margin-right: 24px;\n}\n.edit-product-single > .inner > .header .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n  -webkit-box-align: start;\n          align-items: flex-start;\n}\n.edit-product-single > .inner > .header .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.edit-product-single > .inner .body[data-v-8542425c] {\n  padding: 24px;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.edit-product-single .details[data-v-8542425c] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\nh3[data-v-8542425c] {\n  font-size: 16px;\n  font-weight: 400;\n}\n.close i[data-v-8542425c] {\n  font-size: 22px;\n}\n.card > .grid-2[data-v-8542425c] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-2.grid-border-between[data-v-8542425c] {\n  grid-template-columns: 1fr 2px 1fr;\n  grid-gap: 17px;\n}\n.grid-2.grid-border-between[data-v-8542425c] > :nth-child(2) {\n  background: #dfdfdf;\n}\n.product-variants[data-v-8542425c] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n  margin-bottom: 40px;\n}\n.product-variant[data-v-8542425c] {\n  width: 180px;\n  display: inline-block;\n}\n.product-variant[data-v-8542425c]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .img-wrapper[data-v-8542425c] {\n  padding-top: 133.33%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  border-radius: 2px;\n  border: solid 1px #dfdfdf;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-8542425c] {\n  width: 100%;\n  height: 100%;\n  -o-object-fit: contain;\n     object-fit: contain;\n  -o-object-position: center;\n     object-position: center;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant .img-wrapper img.rotation-6[data-v-8542425c] {\n  -webkit-transform: rotate(90deg) translateY(-100%);\n          transform: rotate(90deg) translateY(-100%);\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n  width: 242px;\n  height: 180px;\n}\n.product-variant .img-wrapper .drop-area[data-v-8542425c] {\n  position: absolute;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  cursor: auto;\n}\n.product-variant .img-wrapper .drop-area input[type=file][data-v-8542425c] {\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area .enter-url[data-v-8542425c] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  height: 100%;\n  width: 100%;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  background: #f3f3f3;\n  padding: 10px;\n}\n.product-variant .img-wrapper .drop-area .enter-url .buttons-wrapper[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  width: 100%;\n}\n.product-variant .img-wrapper .drop-area .enter-url .buttons-wrapper > *[data-v-8542425c] {\n  width: calc(50% - 4px);\n  margin-top: 8px;\n  min-width: 0;\n}\n.product-variant .img-wrapper .drop-area .drop-msg[data-v-8542425c] {\n  z-index: 1;\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  width: 100%;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  display: none;\n  outline: 2px dashed #dfdfdf;\n  outline-offset: -10px;\n  background: white;\n  padding: 12px 12px;\n  background: #f3f3f3;\n}\n.product-variant .img-wrapper .drop-area.drag .drop-msg[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area.drag .controls[data-v-8542425c] {\n  pointer-events: none;\n}\n.product-variant .img-wrapper .drop-area.drag input[type=file][data-v-8542425c] {\n  z-index: 2;\n  pointer-events: all;\n}\n.product-variant .img-wrapper .drop-area .controls[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-variant .img-wrapper .drop-area .controls > *[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.product-variant .img-wrapper .drop-area .controls .button[data-v-8542425c] {\n  width: 124px;\n}\n.product-variant .img-wrapper > .controls[data-v-8542425c] {\n  position: absolute;\n  z-index: 2;\n  right: 4px;\n  top: 4px;\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n}\n.product-variant .img-wrapper:hover .controls[data-v-8542425c] {\n  opacity: 1;\n}\n.product-variant .color-wrapper[data-v-8542425c] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-8542425c] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-8542425c] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-8542425c] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.input-wrapper.composition[data-v-8542425c] {\n  white-space: pre-line;\n}\n.last-update[data-v-8542425c] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  font-size: 11px;\n  font-weight: 500;\n  text-align: right;\n}\n.details .currencies[data-v-8542425c] {\n  margin-bottom: 32px;\n}\n.dropdown .header[data-v-8542425c] {\n  color: white;\n  font-size: 12px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: justify;\n          justify-content: space-between;\n  padding: 0 0 0 4px;\n}\n.dropdown .hotkeys[data-v-8542425c] {\n  padding: 8px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.dropdown .hotkeys .hotkey[data-v-8542425c]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.dropdown .hotkeys .hotkey[data-v-8542425c] > :first-child {\n  margin-right: 6px;\n  width: 86px;\n}\n.progress-wrapper[data-v-8542425c] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n          align-items: center;\n  background: rgba(27, 28, 29, 0.5);\n  z-index: 3;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  color: white;\n  padding: 20px;\n}\n.progress-wrapper svg[data-v-8542425c] {\n  width: 100%;\n}\n.progress-wrapper svg rect.value[data-v-8542425c] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  fill: #3b86ff;\n}\n.progress-wrapper svg rect.background[data-v-8542425c] {\n  fill: #dfdfdf;\n}", ""]);
 
 // exports
 
@@ -36992,6 +37040,59 @@ var render = function() {
                                         }
                                       }
                                     }),
+                                    _vm._v(" "),
+                                    variant.imageToUpload != null
+                                      ? _c("p", [_vm._v("TESTSS")])
+                                      : _vm._e(),
+                                    _vm._v(" "),
+                                    variant.imageToUpload != null &&
+                                    variant.imageToUpload.progress
+                                      ? _c("p", [_vm._v("TESsasadasdasdTSS")])
+                                      : _vm._e(),
+                                    _vm._v(" "),
+                                    variant.imageToUpload != null &&
+                                    variant.imageToUpload.progress != null
+                                      ? _c(
+                                          "div",
+                                          { staticClass: "progress-wrapper" },
+                                          [
+                                            _c("span", [
+                                              _vm._v(
+                                                _vm._s(
+                                                  variant.imageToUpload.progress
+                                                ) + "%"
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c(
+                                              "svg",
+                                              { attrs: { height: "4" } },
+                                              [
+                                                _c("rect", {
+                                                  staticClass: "background",
+                                                  attrs: {
+                                                    width: "100%",
+                                                    height: "4"
+                                                  }
+                                                }),
+                                                _vm._v(" "),
+                                                variant.imageToUpload.progress >
+                                                0
+                                                  ? _c("rect", {
+                                                      staticClass: "value",
+                                                      attrs: {
+                                                        width:
+                                                          variant.imageToUpload
+                                                            .progress + "%",
+                                                        height: "4"
+                                                      }
+                                                    })
+                                                  : _vm._e()
+                                              ]
+                                            )
+                                          ]
+                                        )
+                                      : _vm._e(),
                                     _vm._v(" "),
                                     variant.image || variant.blob_id
                                       ? _c("img", {
@@ -77314,19 +77415,25 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     uploadImages: function () {
       var _uploadImages = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref9, files) {
-        var commit, dispatch, uploadSucces, uploadApiUrl, axiosConfig, data, count;
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(_ref9, _ref10) {
+        var commit, dispatch, files, callback, uploadSucces, uploadPercentage, uploadApiUrl, axiosConfig, data, count;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
                 commit = _ref9.commit, dispatch = _ref9.dispatch;
+                files = _ref10.files, callback = _ref10.callback;
                 // Upload images to Blob storage
                 uploadSucces = false;
+                uploadPercentage = 0;
                 uploadApiUrl = "/api/product/images";
                 axiosConfig = {
                   headers: {
                     'Content-Type': 'multipart/form-data'
+                  },
+                  onUploadProgress: function onUploadProgress(progressEvent) {
+                    uploadPercentage = parseInt(Math.round(progressEvent.loaded / progressEvent.total * 100));
+                    return callback(uploadPercentage);
                   } // Append the files
 
                 };
@@ -77337,7 +77444,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   data.append('files[' + count + ']', file.file, file.id);
                 });
                 console.log(count + ' images sent to API from store');
-                _context4.next = 10;
+                _context4.next = 12;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(uploadApiUrl, data, axiosConfig).then(function (response) {
                   console.log(response.data);
                   uploadSucces = true;
@@ -77347,10 +77454,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   uploadSucces = false;
                 });
 
-              case 10:
+              case 12:
                 return _context4.abrupt("return", uploadSucces);
 
-              case 11:
+              case 13:
               case "end":
                 return _context4.stop();
             }
@@ -77367,13 +77474,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     deleteImages: function () {
       var _deleteImages = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5(_ref10, imagesToDelete) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5(_ref11, imagesToDelete) {
         var commit;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                commit = _ref10.commit;
+                commit = _ref11.commit;
                 console.log('Deleting images product in store');
                 _context5.next = 4;
                 return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/product/images", {

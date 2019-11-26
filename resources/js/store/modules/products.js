@@ -826,14 +826,19 @@ export default {
                 })
             return imageToReturn
         },
-        async uploadImages({ commit, dispatch }, files) {
+        async uploadImages({ commit, dispatch }, { files, callback }) {
             // Upload images to Blob storage
             let uploadSucces = false
+            let uploadPercentage = 0
 
             const uploadApiUrl = `/api/product/images`
             const axiosConfig = {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                },
+                onUploadProgress: progressEvent => {
+                    uploadPercentage = parseInt(Math.round((progressEvent.loaded / progressEvent.total) * 100))
+                    return callback(uploadPercentage)
                 },
             }
 
