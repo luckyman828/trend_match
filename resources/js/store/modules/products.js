@@ -236,14 +236,14 @@ export default {
                         currentTask.parentTasks.forEach(parentTask => {
                             // if parent type is feedback -> push users
                             // else -> push task
-                            if (parentTask.type == 'feedback')
+                            if (parentTask.type == 'feedback') {
                                 product.nds = product.nds.concat(
                                     JSON.parse(JSON.stringify(parentTask.users)).map(x => {
-                                        x.task = currentTask
+                                        x.task = parentTask
                                         return x
                                     })
                                 )
-                            else product.nds.push(parentTask)
+                            } else product.nds.push(parentTask)
                         })
                     }
                     product.ndsTotal = product.nds.length

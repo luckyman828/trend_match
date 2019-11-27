@@ -76736,10 +76736,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             currentTask.parentTasks.forEach(function (parentTask) {
               // if parent type is feedback -> push users
               // else -> push task
-              if (parentTask.type == 'feedback') product.nds = product.nds.concat(JSON.parse(JSON.stringify(parentTask.users)).map(function (x) {
-                x.task = currentTask;
-                return x;
-              }));else product.nds.push(parentTask);
+              if (parentTask.type == 'feedback') {
+                product.nds = product.nds.concat(JSON.parse(JSON.stringify(parentTask.users)).map(function (x) {
+                  x.task = parentTask;
+                  return x;
+                }));
+              } else product.nds.push(parentTask);
             });
           }
 
