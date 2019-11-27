@@ -80,9 +80,10 @@ export default {
             const parentRect = parent.getBoundingClientRect()
 
             // Show above or below depending on space available
+            const scrollY = window.pageYOffset || document.documentElement.scrollTop
             const windownHeight = window.innerHeight
             const distToBottom = parentTop + parentHeight + elHeight
-            const bottomSpace = windownHeight - distToBottom
+            const bottomSpace = windownHeight + scrollY - distToBottom
             const bottomOffset = 100;
             const showAbove = bottomSpace < 10
             this.showAbove = showAbove

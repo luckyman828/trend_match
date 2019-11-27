@@ -7536,9 +7536,10 @@ __webpack_require__.r(__webpack_exports__);
       var elRect = el.getBoundingClientRect();
       var parentRect = parent.getBoundingClientRect(); // Show above or below depending on space available
 
+      var scrollY = window.pageYOffset || document.documentElement.scrollTop;
       var windownHeight = window.innerHeight;
       var distToBottom = parentTop + parentHeight + elHeight;
-      var bottomSpace = windownHeight - distToBottom;
+      var bottomSpace = windownHeight + scrollY - distToBottom;
       var bottomOffset = 100;
       var showAbove = bottomSpace < 10;
       this.showAbove = showAbove; // const bottomDist = windownHeight - parentTop
