@@ -40626,7 +40626,15 @@ var render = function() {
                                             margin: "0"
                                           }
                                         },
-                                        [_vm._v(_vm._s(request.user.name))]
+                                        [
+                                          _vm._v(
+                                            _vm._s(
+                                              request.user
+                                                ? request.user.name
+                                                : "Unknown user"
+                                            )
+                                          )
+                                        ]
                                       ),
                                       _vm._v(" "),
                                       _c(
@@ -40696,7 +40704,11 @@ var render = function() {
                                         _vm._v(
                                           _vm._s(comment.task.title) +
                                             " | " +
-                                            _vm._s(comment.user.name)
+                                            _vm._s(
+                                              comment.user
+                                                ? comment.user.name
+                                                : "Unknown user"
+                                            )
                                         )
                                       ]
                                     )
@@ -43384,10 +43396,10 @@ var render = function() {
                                     return x.task
                                       ? x.task.type != "feedback"
                                         ? x.task.title
-                                        : x.user.name != null
+                                        : x.user && x.user.name != null
                                         ? x.user.name
                                         : x.title
-                                      : x.user.name != null
+                                      : x.user && x.user.name != null
                                       ? x.user.name
                                       : x.title
                                   })
@@ -43428,10 +43440,10 @@ var render = function() {
                                       return x.task
                                         ? x.task.type != "feedback"
                                           ? x.task.title
-                                          : x.user.name != null
+                                          : x.user && x.user.name != null
                                           ? x.user.name
                                           : x.title
-                                        : x.user.name != null
+                                        : x.user && x.user.name != null
                                         ? x.user.name
                                         : x.title
                                     })
@@ -43440,10 +43452,10 @@ var render = function() {
                                         return x.task
                                           ? x.task.type != "feedback"
                                             ? x.task.title
-                                            : x.user.name != null
+                                            : x.user && x.user.name != null
                                             ? x.user.name
                                             : x.title
-                                          : x.user.name != null
+                                          : x.user && x.user.name != null
                                           ? x.user.name
                                           : x.title
                                       })
@@ -43485,10 +43497,10 @@ var render = function() {
                                     return x.task
                                       ? x.task.type != "feedback"
                                         ? x.task.title
-                                        : x.user.name != null
+                                        : x.user && x.user.name != null
                                         ? x.user.name
                                         : x.title
-                                      : x.user.name != null
+                                      : x.user && x.user.name != null
                                       ? x.user.name
                                       : x.title
                                   })
@@ -43570,10 +43582,10 @@ var render = function() {
                                     return x.task
                                       ? x.task.type != "feedback"
                                         ? x.task.title
-                                        : x.user.name != null
+                                        : x.user && x.user.name != null
                                         ? x.user.name
                                         : x.title
-                                      : x.user.name != null
+                                      : x.user && x.user.name != null
                                       ? x.user.name
                                       : x.title
                                   })
