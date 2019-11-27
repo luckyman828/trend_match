@@ -41109,7 +41109,11 @@ var render = function() {
                                         _vm._v(
                                           _vm._s(comment.task.title) +
                                             " | " +
-                                            _vm._s(comment.user.name)
+                                            _vm._s(
+                                              comment.user
+                                                ? comment.user.name
+                                                : "Unknown user"
+                                            )
                                         )
                                       ]
                                     )
@@ -44164,10 +44168,10 @@ var render = function() {
                                     return x.task
                                       ? x.task.type != "feedback"
                                         ? x.task.title
-                                        : x.user.name != null
+                                        : x.user && x.user.name != null
                                         ? x.user.name
                                         : x.title
-                                      : x.user.name != null
+                                      : x.user && x.user.name != null
                                       ? x.user.name
                                       : x.title
                                   })
@@ -44208,10 +44212,10 @@ var render = function() {
                                       return x.task
                                         ? x.task.type != "feedback"
                                           ? x.task.title
-                                          : x.user.name != null
+                                          : x.user && x.user.name != null
                                           ? x.user.name
                                           : x.title
-                                        : x.user.name != null
+                                        : x.user && x.user.name != null
                                         ? x.user.name
                                         : x.title
                                     })
@@ -44220,10 +44224,10 @@ var render = function() {
                                         return x.task
                                           ? x.task.type != "feedback"
                                             ? x.task.title
-                                            : x.user.name != null
+                                            : x.user && x.user.name != null
                                             ? x.user.name
                                             : x.title
-                                          : x.user.name != null
+                                          : x.user && x.user.name != null
                                           ? x.user.name
                                           : x.title
                                       })
@@ -44265,10 +44269,10 @@ var render = function() {
                                     return x.task
                                       ? x.task.type != "feedback"
                                         ? x.task.title
-                                        : x.user.name != null
+                                        : x.user && x.user.name != null
                                         ? x.user.name
                                         : x.title
-                                      : x.user.name != null
+                                      : x.user && x.user.name != null
                                       ? x.user.name
                                       : x.title
                                   })
@@ -44350,10 +44354,10 @@ var render = function() {
                                     return x.task
                                       ? x.task.type != "feedback"
                                         ? x.task.title
-                                        : x.user.name != null
+                                        : x.user && x.user.name != null
                                         ? x.user.name
                                         : x.title
-                                      : x.user.name != null
+                                      : x.user && x.user.name != null
                                       ? x.user.name
                                       : x.title
                                   })
@@ -77733,7 +77737,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           return x.team_id == currentTeam.id;
         })) {
           return productsToReturn.filter(function (product) {
-            return currentTeam.category_scope.split(',').includes(product.category.toLowerCase());
+            return currentTeam.category_scope.toLowerCase().split(',').includes(product.category.toLowerCase());
           });
         } else {
           return productsToReturn;
@@ -79425,12 +79429,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
             if (task.parents.length <= 0) {
               // If the task has no parents
-              if (task.completed.length <= 0) // And the task is not completed
+              if (!task.completed.find(function (x) {
+                return x.file_id == currentFile.id;
+              })) // And the task is not completed
                 task.isActive = true;
             } else {
               task.parents.forEach(function (parent) {
                 // If the task has parents
-                if (parent.completed.length > 0) // And the parents are completed
+                if (parent.completed.find(function (x) {
+                  return x.file_id == currentFile.id;
+                })) // And the parents are completed
                   task.isActive = true;
               });
             } // Find task input (users/tasks that have to give input to the task)

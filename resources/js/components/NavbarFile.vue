@@ -90,7 +90,7 @@
                         </div>
                         <div v-for="comment in product.commentsScoped" :key="comment.id">
                             <p style="border-radius: 6px; background: #DFDFDF; color: #1B1C1D; padding: 8px 12px; display: inline-block; white-space: pre-wrap; word-wrap: break-word; margin-bottom: 0; max-width: calc(100% - 120px);">{{comment.comment}}</p>
-                            <p style="font-size: 12px; font-weight: 500; color: #A8A8A8; margin-bottom: 16px; margin-top: 0">{{comment.task.title}} | {{comment.user.name}}</p>
+                            <p style="font-size: 12px; font-weight: 500; color: #A8A8A8; margin-bottom: 16px; margin-top: 0">{{comment.task.title}} | {{comment.user ? comment.user.name : 'Unknown user'}}</p>
                         </div>
                     </div>
 

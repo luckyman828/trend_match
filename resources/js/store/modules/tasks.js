@@ -67,13 +67,13 @@ export default {
                         task.isActive = false
                         if (task.parents.length <= 0) {
                             // If the task has no parents
-                            if (task.completed.length <= 0)
+                            if (!task.completed.find(x => x.file_id == currentFile.id))
                                 // And the task is not completed
                                 task.isActive = true
                         } else {
                             task.parents.forEach(parent => {
                                 // If the task has parents
-                                if (parent.completed.length > 0)
+                                if (parent.completed.find(x => x.file_id == currentFile.id))
                                     // And the parents are completed
                                     task.isActive = true
                             })
