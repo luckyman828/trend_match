@@ -40,6 +40,7 @@ export default class Product extends Model {
             taskActions: this.hasMany(TaskAction, 'product_id'),
             updated_at: this.attr(''),
             created_at: this.attr(''),
+            buyer_group: this.attr(''),
         }
 
         return data

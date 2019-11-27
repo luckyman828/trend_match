@@ -11,6 +11,7 @@ export default {
         availableProductIds: [],
         selectedCategories: [],
         selectedDeliveryDates: [],
+        selectedBuyerGroups: [],
         unreadOnly: false,
         currentProductFilter: 'overview',
         singleVisible: false,
@@ -29,6 +30,9 @@ export default {
         },
         selectedDeliveryDates: state => {
             return state.selectedDeliveryDates
+        },
+        selectedBuyerGroups: state => {
+            return state.selectedBuyerGroups
         },
         unreadOnly: state => {
             return state.unreadOnly
@@ -538,6 +542,7 @@ export default {
             const products = getters.products
             const categories = getters.selectedCategories
             const deliveryDates = getters.selectedDeliveryDates
+            const buyerGroups = getters.selectedBuyerGroups
             const unreadOnly = getters.unreadOnly
             let productsToReturn = []
 
@@ -556,6 +561,13 @@ export default {
                         return Array.from(deliveryDates).includes(product.delivery_date)
                     })
                     productsToReturn = filteredByDeliveryDate
+                }
+                // Filter by buyer group
+                if (buyerGroups.length > 0) {
+                    const filteredByBuyerGroups = productsToReturn.filter(product => {
+                        return Array.from(buyerGroups).includes(product.buyer_group)
+                    })
+                    productsToReturn = filteredByBuyerGroups
                 }
 
                 // Filer by unread
@@ -571,6 +583,7 @@ export default {
             const products = getters.productsScoped
             const categories = getters.selectedCategories
             const deliveryDates = getters.selectedDeliveryDates
+            const buyerGroups = getters.selectedBuyerGroups
             const unreadOnly = getters.unreadOnly
             let productsToReturn = []
 
@@ -589,6 +602,12 @@ export default {
                         return Array.from(deliveryDates).includes(product.delivery_date)
                     })
                     productsToReturn = filteredByDeliveryDate
+                }
+                if (buyerGroups.length > 0) {
+                    const filteredByBuyerGroups = productsToReturn.filter(product => {
+                        return Array.from(buyerGroups).includes(product.buyer_group)
+                    })
+                    productsToReturn = filteredByBuyerGroups
                 }
 
                 // Filer by unread
@@ -929,6 +948,9 @@ export default {
         },
         updateSelectedDeliveryDates(state, payload) {
             state.selectedDeliveryDates = payload
+        },
+        updateSelectedBuyerGroups(state, payload) {
+            state.selectedBuyerGroups = payload
         },
         setUnreadOnly(state, payload) {
             state.unreadOnly = payload

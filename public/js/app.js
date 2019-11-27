@@ -13750,6 +13750,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -13883,6 +13898,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.updateSelectedDeliveryDates(value);
       }
     },
+    selectedBuyerGroups: {
+      get: function get() {
+        return this.$store.state.entities.products.selectedBuyerGroups;
+      },
+      set: function set(value) {
+        this.updateSelectedBuyerGroups(value);
+      }
+    },
     unreadOnly: {
       get: function get() {
         return this.$store.state.entities.products.unreadOnly;
@@ -13931,8 +13954,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var products = this.products;
       var uniqueCategories = [];
       products.forEach(function (product) {
-        var found = uniqueCategories.includes(product.category);
-        if (!found) uniqueCategories.push(product.category);
+        if (product.category) {
+          var found = uniqueCategories.includes(product.category);
+          if (!found) uniqueCategories.push(product.category);
+        }
       });
       return uniqueCategories;
     },
@@ -13940,18 +13965,31 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var products = this.products;
       var uniqueDeliveryDates = [];
       products.forEach(function (product) {
-        var found = uniqueDeliveryDates.find(function (x) {
-          return x.value == product.delivery_date;
-        });
-        if (!found) uniqueDeliveryDates.push({
-          name: new Date(product.delivery_date).toLocaleDateString('en-GB', {
-            month: 'long',
-            year: 'numeric'
-          }),
-          value: product.delivery_date
-        });
+        if (product.delivery_date) {
+          var found = uniqueDeliveryDates.find(function (x) {
+            return x.value == product.delivery_date;
+          });
+          if (!found) uniqueDeliveryDates.push({
+            name: new Date(product.delivery_date).toLocaleDateString('en-GB', {
+              month: 'long',
+              year: 'numeric'
+            }),
+            value: product.delivery_date
+          });
+        }
       });
       return uniqueDeliveryDates;
+    },
+    dynamicBuyerGroups: function dynamicBuyerGroups() {
+      var products = this.products;
+      var unique = [];
+      products.forEach(function (product) {
+        if (product.buyer_group) {
+          var found = unique.includes(product.buyer_group);
+          if (!found) unique.push(product.buyer_group);
+        }
+      });
+      return unique;
     },
     teamsForFilter: function teamsForFilter() {
       if (this.userPermissionLevel >= 3) {
@@ -13984,7 +14022,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return productMatches;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapMutations"])('entities/products', ['updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setTeamFilter', 'setCurrentTaskId']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/collections', ['fetchCollections']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/products', ['fetchProducts']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapMutations"])('entities/products', ['updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter', 'updateSelectedBuyerGroups']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/users', ['fetchUsers']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/comments', ['fetchComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/actions', ['updateAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/commentVotes', ['fetchCommentVotes']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setTeamFilter', 'setCurrentTaskId']), {
     InNoOutNoCommentStyles: function InNoOutNoCommentStyles() {
       this.setHideQuickIn();
       this.massSubmitAction(this.productsNoOutNoComment, 1);
@@ -47701,6 +47739,98 @@ var render = function() {
                           )
                         }),
                         _vm._v(" "),
+                        _vm.currentTask.type == "approval" &&
+                        _vm.userPermissionLevel == 3
+                          ? _c("Dropdown", {
+                              staticClass: "dropdown-parent left",
+                              scopedSlots: _vm._u(
+                                [
+                                  {
+                                    key: "button",
+                                    fn: function(slotProps) {
+                                      return [
+                                        _c(
+                                          "div",
+                                          {
+                                            staticClass:
+                                              "dropdown-button dropdown-parent item-filter-button",
+                                            on: { click: slotProps.toggle }
+                                          },
+                                          [
+                                            _c("span", [
+                                              _vm._v("Buyer group ")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("i", {
+                                              staticClass: "far fa-chevron-down"
+                                            }),
+                                            _vm._v(" "),
+                                            _vm.selectedBuyerGroups.length > 0
+                                              ? _c(
+                                                  "span",
+                                                  { staticClass: "bubble" },
+                                                  [
+                                                    _vm._v(
+                                                      "\n                                    " +
+                                                        _vm._s(
+                                                          _vm
+                                                            .selectedBuyerGroups
+                                                            .length
+                                                        ) +
+                                                        "\n                                "
+                                                    )
+                                                  ]
+                                                )
+                                              : _vm._e()
+                                          ]
+                                        )
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    key: "header",
+                                    fn: function(slotProps) {
+                                      return [
+                                        _c("span", [
+                                          _vm._v("Filter by buyer group")
+                                        ])
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    key: "body",
+                                    fn: function() {
+                                      return [
+                                        _c("CheckboxButtons", {
+                                          ref: "filterBuyerGroup",
+                                          attrs: {
+                                            options: _vm.dynamicBuyerGroups
+                                          },
+                                          on: {
+                                            change: function($event) {
+                                              return _vm.$refs.filterBuyerGroup.submit()
+                                            }
+                                          },
+                                          model: {
+                                            value: _vm.selectedBuyerGroups,
+                                            callback: function($$v) {
+                                              _vm.selectedBuyerGroups = $$v
+                                            },
+                                            expression: "selectedBuyerGroups"
+                                          }
+                                        })
+                                      ]
+                                    },
+                                    proxy: true
+                                  }
+                                ],
+                                null,
+                                false,
+                                3382882640
+                              )
+                            })
+                          : _vm._e(),
+                        _vm._v(" "),
                         _vm.currentTask.type == "approval"
                           ? _c(
                               "label",
@@ -47757,6 +47887,7 @@ var render = function() {
                         _vm._v(" "),
                         _vm.selectedCategories.length > 0 ||
                         _vm.selectedDeliveryDates.length > 0 ||
+                        _vm.selectedBuyerGroups.length > 0 ||
                         _vm.unreadOnly
                           ? _c(
                               "span",
@@ -47768,6 +47899,8 @@ var render = function() {
                                     _vm.selectedCategories = []
                                     _vm.$refs.filterDelivery.clear()
                                     _vm.selectedDeliveryDates = []
+                                    _vm.$refs.filterBuyerGroup.clear()
+                                    _vm.selectedBuyerGroups = []
                                     _vm.unreadOnly = false
                                   }
                                 }
@@ -73400,7 +73533,8 @@ function (_Model) {
         actions: this.hasMany(_Action__WEBPACK_IMPORTED_MODULE_2__["default"], 'product_id'),
         taskActions: this.hasMany(_TaskAction__WEBPACK_IMPORTED_MODULE_6__["default"], 'product_id'),
         updated_at: this.attr(''),
-        created_at: this.attr('')
+        created_at: this.attr(''),
+        buyer_group: this.attr('')
       };
       return data;
     }
@@ -77395,6 +77529,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     availableProductIds: [],
     selectedCategories: [],
     selectedDeliveryDates: [],
+    selectedBuyerGroups: [],
     unreadOnly: false,
     currentProductFilter: 'overview',
     singleVisible: false,
@@ -77412,6 +77547,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     selectedDeliveryDates: function selectedDeliveryDates(state) {
       return state.selectedDeliveryDates;
+    },
+    selectedBuyerGroups: function selectedBuyerGroups(state) {
+      return state.selectedBuyerGroups;
     },
     unreadOnly: function unreadOnly(state) {
       return state.unreadOnly;
@@ -77898,6 +78036,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var products = getters.products;
       var categories = getters.selectedCategories;
       var deliveryDates = getters.selectedDeliveryDates;
+      var buyerGroups = getters.selectedBuyerGroups;
       var unreadOnly = getters.unreadOnly;
       var productsToReturn = [];
 
@@ -77917,6 +78056,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             return Array.from(deliveryDates).includes(product.delivery_date);
           });
           productsToReturn = filteredByDeliveryDate;
+        } // Filter by buyer group
+
+
+        if (buyerGroups.length > 0) {
+          var filteredByBuyerGroups = productsToReturn.filter(function (product) {
+            return Array.from(buyerGroups).includes(product.buyer_group);
+          });
+          productsToReturn = filteredByBuyerGroups;
         } // Filer by unread
 
 
@@ -77934,6 +78081,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var products = getters.productsScoped;
       var categories = getters.selectedCategories;
       var deliveryDates = getters.selectedDeliveryDates;
+      var buyerGroups = getters.selectedBuyerGroups;
       var unreadOnly = getters.unreadOnly;
       var productsToReturn = [];
 
@@ -77953,6 +78101,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             return Array.from(deliveryDates).includes(product.delivery_date);
           });
           productsToReturn = filteredByDeliveryDate;
+        }
+
+        if (buyerGroups.length > 0) {
+          var filteredByBuyerGroups = productsToReturn.filter(function (product) {
+            return Array.from(buyerGroups).includes(product.buyer_group);
+          });
+          productsToReturn = filteredByBuyerGroups;
         } // Filer by unread
 
 
@@ -78450,6 +78605,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     state.selectedCategories = payload;
   }), _defineProperty(_mutations, "updateSelectedDeliveryDates", function updateSelectedDeliveryDates(state, payload) {
     state.selectedDeliveryDates = payload;
+  }), _defineProperty(_mutations, "updateSelectedBuyerGroups", function updateSelectedBuyerGroups(state, payload) {
+    state.selectedBuyerGroups = payload;
   }), _defineProperty(_mutations, "setUnreadOnly", function setUnreadOnly(state, payload) {
     state.unreadOnly = payload;
   }), _defineProperty(_mutations, "setCurrentProductFilter", function setCurrentProductFilter(state, payload) {
