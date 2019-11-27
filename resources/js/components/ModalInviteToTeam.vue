@@ -93,10 +93,9 @@
                             <input class="input-wrapper" type="text" name="name" :id="'invite-name-' + index" placeholder="Optional" v-model="newUsers[index].name">
                         </div>
 
-                        <div class="form-element dropdown-parent role">
+                        <!-- <div class="form-element dropdown-parent role">
                             <label :for="'invite-role-' + index">Role</label>
                             <div class="input-wrapper">
-                                <!-- <input type="text" name="role" :id="'invite-role-' + index"> -->
                                 <span @click="$refs.roleDropdown[index].toggle()" class="role square" :class="'role-' + [newUsers[index].permission_level]">{{(roles[(Number([newUsers[index].permission_level])-1)].title).charAt(0).toUpperCase() + (roles[(Number([newUsers[index].permission_level])-1)].title).slice(1)}}</span>
 
                                 <Dropdown class="dark" ref="roleDropdown">
@@ -118,7 +117,7 @@
                                     </template>
                                 </Dropdown>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
 
                 </div>
