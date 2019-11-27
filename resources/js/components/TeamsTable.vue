@@ -103,7 +103,8 @@
                             <td class="email">{{user.email}}</td>
                             <td class="files">-</td>
                             <td class="role dropdown-parent">
-                                <template v-if="userPermissionLevel < user.role_id">
+                                <span class="square" :class="'role-' + user.role_id">{{user.role.title}}</span>
+                                <!-- <template v-if="userPermissionLevel < user.role_id">
                                     <span class="square" :class="'role-' + user.role_id">{{user.role.title}}</span>
                                 </template>
                                 <template v-else>
@@ -126,7 +127,7 @@
                                             </div>
                                         </template>
                                     </Dropdown>
-                                </template>
+                                </template> -->
                             </td>
                             <td></td>
                             <td class="action">
