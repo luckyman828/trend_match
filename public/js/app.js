@@ -76878,7 +76878,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           return x.team_id == currentTeam.id;
         })) {
           return productsToReturn.filter(function (product) {
-            return currentTeam.category_scope.split(',').includes(product.category.toLowerCase());
+            return currentTeam.category_scope.toLowerCase().split(',').includes(product.category.toLowerCase());
           });
         } else {
           return productsToReturn;
