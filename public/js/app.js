@@ -38070,7 +38070,12 @@ var render = function() {
                   },
                   [
                     _c("img", {
-                      attrs: { src: _vm.productImg(product.color_variants[0]) }
+                      attrs: {
+                        src:
+                          product.color_variants.length > 0
+                            ? _vm.productImg(product.color_variants[0])
+                            : null
+                      }
                     })
                   ]
                 ),
