@@ -9871,6 +9871,48 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -9885,7 +9927,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       exportingPDF: false,
       exportComments: true,
       generatedPDF: null,
-      onlyWithRequests: false
+      onlyWithRequests: false,
+      includeDistribution: false,
+      includeNotDecided: false
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', {
@@ -9903,10 +9947,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('entities/tasks', ['completeTask', 'undoCompleteTask']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapActions"])('persist', ['setCurrentTaskId']), {
     variantImg: function variantImg(variant) {
-      if (!variant.error && variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
-    },
-    imgError: function imgError(variant) {
-      variant.error = true;
+      if (variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
     },
     printToPdf: function () {
       var _printToPdf = _asyncToGenerator(
@@ -10050,7 +10091,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       console.log(pages);
       var nextPageIndex = 1;
       pages.forEach(function (page) {
-        var pageHeight = 1040;
+        // const pageHeight = 1040
+        var pageHeight = 1000;
         var heightDif = pageHeight - (page.clientHeight - pageHeight);
 
         if (heightDif > 0 && nextPageIndex < pages.length) {
@@ -40265,13 +40307,6 @@ var render = function() {
                                     src: _vm.variantImg(
                                       product.color_variants[0]
                                     )
-                                  },
-                                  on: {
-                                    error: function($event) {
-                                      return _vm.imgError(
-                                        product.color_variants[0]
-                                      )
-                                    }
                                   }
                                 })
                               : _vm._e(),
@@ -40566,10 +40601,7 @@ var render = function() {
                                             "object-fit": "cover"
                                           },
                                           attrs: {
-                                            src:
-                                              "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/" +
-                                              variant.blob_id +
-                                              "_thumbnail.jpg"
+                                            src: _vm.variantImg(variant)
                                           }
                                         })
                                       ]
@@ -40626,7 +40658,15 @@ var render = function() {
                                             margin: "0"
                                           }
                                         },
-                                        [_vm._v(_vm._s(request.user.name))]
+                                        [
+                                          _vm._v(
+                                            _vm._s(
+                                              request.user
+                                                ? request.user.name
+                                                : "Unknown user"
+                                            )
+                                          )
+                                        ]
                                       ),
                                       _vm._v(" "),
                                       _c(
@@ -40705,6 +40745,216 @@ var render = function() {
                               ],
                               2
                             )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.includeDistribution
+                          ? _c(
+                              "div",
+                              { staticClass: "distribution-wrapper" },
+                              [
+                                _c("h2", [_vm._v("Distribution")]),
+                                _vm._v(" "),
+                                _c("h3", [
+                                  _vm._v(
+                                    "IN (" +
+                                      _vm._s(
+                                        product.actions.filter(function(x) {
+                                          return x.action != 0
+                                        }).length
+                                      ) +
+                                      ")"
+                                  )
+                                ]),
+                                _vm._v(" "),
+                                _vm._l(
+                                  product.actions.filter(function(x) {
+                                    return x.action != 0
+                                  }),
+                                  function(action) {
+                                    return _c(
+                                      "div",
+                                      {
+                                        key: action.user_id,
+                                        staticStyle: {
+                                          "max-width": "calc(100% - 120px)",
+                                          display: "flex",
+                                          "justify-content": "space-between"
+                                        }
+                                      },
+                                      [
+                                        _c(
+                                          "p",
+                                          {
+                                            staticStyle: {
+                                              "font-size": "12px",
+                                              "font-weight": "700",
+                                              margin: "0"
+                                            }
+                                          },
+                                          [
+                                            _vm._v(
+                                              _vm._s(
+                                                action.task
+                                                  ? action.task.title
+                                                  : "Uknown task"
+                                              ) +
+                                                " | " +
+                                                _vm._s(
+                                                  action.user
+                                                    ? action.user.name
+                                                    : "Unknown user"
+                                                ) +
+                                                " " +
+                                                _vm._s(
+                                                  action.user
+                                                    ? "(" +
+                                                        action.user.email +
+                                                        ")"
+                                                    : ""
+                                                )
+                                            )
+                                          ]
+                                        ),
+                                        action.action == 2
+                                          ? _c(
+                                              "span",
+                                              {
+                                                staticStyle: {
+                                                  "font-size": "12px",
+                                                  "font-weight": "700"
+                                                }
+                                              },
+                                              [_vm._v("Focus")]
+                                            )
+                                          : _vm._e()
+                                      ]
+                                    )
+                                  }
+                                ),
+                                _vm._v(" "),
+                                _c("h3", [
+                                  _vm._v(
+                                    "OUT (" +
+                                      _vm._s(
+                                        product.actions.filter(function(x) {
+                                          return x.action == 0
+                                        }).length
+                                      ) +
+                                      ")"
+                                  )
+                                ]),
+                                _vm._v(" "),
+                                _vm._l(
+                                  product.actions.filter(function(x) {
+                                    return x.action == 0
+                                  }),
+                                  function(action) {
+                                    return _c(
+                                      "div",
+                                      {
+                                        key: action.user_id,
+                                        staticStyle: {
+                                          "max-width": "calc(100% - 120px)"
+                                        }
+                                      },
+                                      [
+                                        _c(
+                                          "p",
+                                          {
+                                            staticStyle: {
+                                              "font-size": "12px",
+                                              "font-weight": "700",
+                                              margin: "0"
+                                            }
+                                          },
+                                          [
+                                            _vm._v(
+                                              _vm._s(
+                                                action.task
+                                                  ? action.task.title
+                                                  : "Uknown task"
+                                              ) +
+                                                " | " +
+                                                _vm._s(
+                                                  action.user
+                                                    ? action.user.name
+                                                    : "Unknown user"
+                                                ) +
+                                                " " +
+                                                _vm._s(
+                                                  action.user
+                                                    ? "(" +
+                                                        action.user.email +
+                                                        ")"
+                                                    : ""
+                                                )
+                                            )
+                                          ]
+                                        )
+                                      ]
+                                    )
+                                  }
+                                ),
+                                _vm._v(" "),
+                                _vm.includeNotDecided
+                                  ? [
+                                      _c("h3", [
+                                        _vm._v(
+                                          "Not decided (" +
+                                            _vm._s(product.nds.length) +
+                                            ")"
+                                        )
+                                      ]),
+                                      _vm._v(" "),
+                                      _vm._l(product.nds, function(nd, index) {
+                                        return _c(
+                                          "div",
+                                          {
+                                            key: index,
+                                            staticStyle: {
+                                              "max-width": "calc(100% - 120px)"
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "p",
+                                              {
+                                                staticStyle: {
+                                                  "font-size": "12px",
+                                                  "font-weight": "700",
+                                                  margin: "0"
+                                                }
+                                              },
+                                              [
+                                                _vm._v(
+                                                  _vm._s(
+                                                    nd.task
+                                                      ? nd.task.title
+                                                      : "Uknown task"
+                                                  ) +
+                                                    " | " +
+                                                    _vm._s(
+                                                      nd.name != null
+                                                        ? nd.name +
+                                                            " " +
+                                                            (nd.email
+                                                              ? "(" +
+                                                                nd.email +
+                                                                ")"
+                                                              : "")
+                                                        : nd.title
+                                                    )
+                                                )
+                                              ]
+                                            )
+                                          ]
+                                        )
+                                      })
+                                    ]
+                                  : _vm._e()
+                              ],
+                              2
+                            )
                           : _vm._e()
                       ]
                     )
@@ -40729,6 +40979,8 @@ var render = function() {
             fn: function() {
               return [
                 _c("form", [
+                  _c("label", [_vm._v("Requests & comments")]),
+                  _vm._v(" "),
                   _c("div", { staticClass: "form-element" }, [
                     _c("label", { staticClass: "input-wrapper check-button" }, [
                       _c("div", { staticClass: "checkbox" }, [
@@ -40833,6 +41085,124 @@ var render = function() {
                     ])
                   ]),
                   _vm._v(" "),
+                  _c("label", [_vm._v("Distribution")]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-element" }, [
+                    _c("label", { staticClass: "input-wrapper check-button" }, [
+                      _c("div", { staticClass: "checkbox" }, [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.includeDistribution,
+                              expression: "includeDistribution"
+                            }
+                          ],
+                          attrs: { type: "checkbox" },
+                          domProps: {
+                            checked: Array.isArray(_vm.includeDistribution)
+                              ? _vm._i(_vm.includeDistribution, null) > -1
+                              : _vm.includeDistribution
+                          },
+                          on: {
+                            change: function($event) {
+                              var $$a = _vm.includeDistribution,
+                                $$el = $event.target,
+                                $$c = $$el.checked ? true : false
+                              if (Array.isArray($$a)) {
+                                var $$v = null,
+                                  $$i = _vm._i($$a, $$v)
+                                if ($$el.checked) {
+                                  $$i < 0 &&
+                                    (_vm.includeDistribution = $$a.concat([
+                                      $$v
+                                    ]))
+                                } else {
+                                  $$i > -1 &&
+                                    (_vm.includeDistribution = $$a
+                                      .slice(0, $$i)
+                                      .concat($$a.slice($$i + 1)))
+                                }
+                              } else {
+                                _vm.includeDistribution = $$c
+                              }
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("span", { staticClass: "checkmark solid" }, [
+                          _c("i", { staticClass: "fas fa-check" })
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("span", [
+                        _vm._v("Include distribution (In/Out/Focus)")
+                      ])
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _vm.includeDistribution
+                    ? _c("div", { staticClass: "form-element" }, [
+                        _c(
+                          "label",
+                          { staticClass: "input-wrapper check-button" },
+                          [
+                            _c("div", { staticClass: "checkbox" }, [
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.includeNotDecided,
+                                    expression: "includeNotDecided"
+                                  }
+                                ],
+                                attrs: { type: "checkbox" },
+                                domProps: {
+                                  checked: Array.isArray(_vm.includeNotDecided)
+                                    ? _vm._i(_vm.includeNotDecided, null) > -1
+                                    : _vm.includeNotDecided
+                                },
+                                on: {
+                                  change: function($event) {
+                                    var $$a = _vm.includeNotDecided,
+                                      $$el = $event.target,
+                                      $$c = $$el.checked ? true : false
+                                    if (Array.isArray($$a)) {
+                                      var $$v = null,
+                                        $$i = _vm._i($$a, $$v)
+                                      if ($$el.checked) {
+                                        $$i < 0 &&
+                                          (_vm.includeNotDecided = $$a.concat([
+                                            $$v
+                                          ]))
+                                      } else {
+                                        $$i > -1 &&
+                                          (_vm.includeNotDecided = $$a
+                                            .slice(0, $$i)
+                                            .concat($$a.slice($$i + 1)))
+                                      }
+                                    } else {
+                                      _vm.includeNotDecided = $$c
+                                    }
+                                  }
+                                }
+                              }),
+                              _vm._v(" "),
+                              _c("span", { staticClass: "checkmark solid" }, [
+                                _c("i", { staticClass: "fas fa-check" })
+                              ])
+                            ]),
+                            _vm._v(" "),
+                            _c("span", [
+                              _vm._v('Include "Not Decided" in distribution')
+                            ])
+                          ]
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
                   _c("div", { staticClass: "form-element" }, [
                     _c("label", [_vm._v("Export details")]),
                     _vm._v(" "),
@@ -40841,7 +41211,8 @@ var render = function() {
                         "p",
                         [
                           _vm._v(
-                            _vm._s(_vm.productsToExport.length) + " products "
+                            _vm._s(_vm.productsToExport.length) +
+                              " products \n                            "
                           ),
                           _vm.exportComments
                             ? [
@@ -40853,6 +41224,42 @@ var render = function() {
                                       }).length
                                     ) +
                                     " with requests"
+                                )
+                              ]
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _vm.includeDistribution
+                            ? [
+                                _vm._v(
+                                  ", with " +
+                                    _vm._s(
+                                      _vm.productsToExport.reduce(function(
+                                        acc,
+                                        el
+                                      ) {
+                                        return acc + el.actions.length
+                                      },
+                                      0)
+                                    ) +
+                                    " actions"
+                                )
+                              ]
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _vm.includeNotDecided
+                            ? [
+                                _vm._v(
+                                  ", and " +
+                                    _vm._s(
+                                      _vm.productsToExport.reduce(function(
+                                        acc,
+                                        el
+                                      ) {
+                                        return acc + el.nds.length
+                                      },
+                                      0)
+                                    ) +
+                                    " not decided"
                                 )
                               ]
                             : _vm._e()
