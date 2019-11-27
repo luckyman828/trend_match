@@ -34,7 +34,7 @@
                     </label>
                 </td>
                 <td class="id clickable" @click="onViewSingle(product.id)">{{product.datasource_id}}</td>
-                <td class="image clickable" @click="onViewSingle(product.id)"><img :src="productImg(product.color_variants[0])"></td>
+                <td class="image clickable" @click="onViewSingle(product.id)"><img :src="product.color_variants.length > 0 ? productImg(product.color_variants[0]) : null"></td>
                 <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
 
                 <td class="action">
