@@ -192,6 +192,9 @@
                                     <template v-if="row.focus != null">
                                         <span class="focus" v-if="row.focus">Focus <i class="fas fa-star"></i></span>
                                     </template>
+                                    <span class="impact" v-if="row.user ? row.user.impact : row.impact" :class="[row.user ? 'impact-'+row.user.impact : 'impact-'+row.impact]">
+                                        Impact ({{row.user ? row.user.impact : row.impact}}) <span class="circle tiny"></span>
+                                    </span>
                                 </p>
                             </div>
                         </div>
@@ -551,6 +554,7 @@ export default {
                 color: $primary;
                 margin-left: 4px;
                 font-size: 16px;
+                margin-top: -2px;
             }
         }
     }
@@ -633,5 +637,37 @@ export default {
     }
     .details {
         padding-right: 1px;
+    }
+    .focus + .impact {
+        margin-right: 8px;
+    }
+    .impact {
+        display: inline-flex;
+        align-items: center;
+        float: right;
+        // margin-right: 8px;
+        font-size: 10px;
+        font-weight: 500;
+        color: $dark2;
+        margin-top: 2px;
+        .circle {
+            margin-bottom: 2px;
+            margin-left: 4px;
+        }
+        &.impact-1 {
+            .circle {
+                background: $red;
+            }
+        }
+        &.impact-2 {
+            .circle {
+                background: $yellow;
+            }
+        }
+        &.impact-3 {
+            .circle {
+                background: $green;
+            }
+        }
     }
 </style>

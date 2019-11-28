@@ -21,9 +21,11 @@ class User extends JsonResource
             'email' => $this->email,
             'name' => $this->name,
             'country_id' => $this->country_id,
-            'team_ids' => $this->team_ids,
+            // 'team_ids' => $this->team_ids,
             'role_id' => $this->role_id,
-            'assigned_room_id' => $this->assigned_room_id,
+            'created_at' => $this->created_at,
+            'impact' => $this->impact,
+            // 'assigned_room_id' => $this->assigned_room_id,
             // 'workspaces' => $this->workspaces
         ];
     }
