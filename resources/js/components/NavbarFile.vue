@@ -48,7 +48,7 @@
                     <span style="display: block; color: #3B86FF; font-size: 20px; font-weight: 700; padding-top: 20px; box-sizing: border-box; margin-bottom: 8px;">#{{index+1}} of {{productsToExport.length}} styles</span>
                     <span style="display: block; font-size: 24px; margin-bottom: 12px;">{{product.title}}</span>
                     <div style="display: flex; margin-bottom: 12px;">
-                        <img height="400px; width: auto;" v-if="product.color_variants[0] != null" :src="variantImg(product.color_variants[0])" @error="imgError(product.color_variants[0])">
+                        <img height="400px; width: auto;" v-if="product.color_variants[0] != null" :src="variantImg(product.color_variants[0])">
                         <div style="margin-left: 16px;">
                             <span style="display: block; font-size: 14px; font-weight: 700;">Style number</span>
                             <span style="display: block; margin-bottom: 12px; font-size: 14px;">{{product.datasource_id}}</span>
@@ -74,7 +74,7 @@
                         <div v-for="(variant, index) in product.color_variants" :key="index" style="flex: 1; overflow: hidden; padding: 8px; box-sizing: border-box; max-width: 100px;">
                             <div style="width: 100%; height: 100%;">
                                 <div style="padding-top: 110%; width: 100%; position: relative; overflow: hidden;">
-                                    <img style="position: absolute; top: 0; left: 0; height:100%; width: 100%; object-fit: cover;" :src="`https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`">
+                                    <img style="position: absolute; top: 0; left: 0; height:100%; width: 100%; object-fit: cover;" :src="variantImg(variant)">
                                 </div>
                             </div>
                             <span style="font-size: 10px; font-weight: 500;">{{variant.color}}</span>
@@ -94,6 +94,24 @@
                         </div>
                     </div>
 
+                    <div class="distribution-wrapper" v-if="includeDistribution">
+                        <h2>Distribution</h2>
+                        <h3>IN ({{product.actions.filter(x => x.action != 0).length}})</h3>
+                        <div v-for="action in product.actions.filter(x => x.action != 0)" :key="action.user_id" style="max-width: calc(100% - 120px); display: flex; justify-content: space-between;">
+                            <p style="font-size: 12px; font-weight: 700; margin: 0;">{{action.task ? action.task.title : 'Uknown task'}} | {{action.user ? action.user.name : 'Unknown user'}} {{action.user ? '('+action.user.email+')' : ''}}</p><span style="font-size: 12px; font-weight: 700;" v-if="action.action == 2">Focus</span>
+                        </div>
+                        <h3>OUT ({{product.actions.filter(x => x.action == 0).length}})</h3>
+                        <div v-for="action in product.actions.filter(x => x.action == 0)" :key="action.user_id" style="max-width: calc(100% - 120px);">
+                            <p style="font-size: 12px; font-weight: 700; margin: 0;">{{action.task ? action.task.title : 'Uknown task'}} | {{action.user ? action.user.name : 'Unknown user'}} {{action.user ? '('+action.user.email+')' : ''}}</p>
+                        </div>
+                        <template v-if="includeNotDecided">
+                            <h3>Not decided ({{product.nds.length}})</h3>
+                            <div v-for="(nd, index) in product.nds" :key="index" style="max-width: calc(100% - 120px);">
+                                <p style="font-size: 12px; font-weight: 700; margin: 0;">{{nd.task ? nd.task.title : 'Uknown task'}} | {{nd.name != null ? nd.name +' '+ ((nd.email) ? '('+nd.email+')' : '') : nd.title}}</p>
+                            </div>
+                        </template>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -103,6 +121,7 @@
         <Modal ref="exportModal" :header="'Export <strong>' + currentFile.title + '</strong> to PDF'" :subHeader="'The products in your current view will be exported'">
             <template v-slot:body>
                 <form>
+                    <label>Requests & comments</label>
                     <div class="form-element">
                         <label class="input-wrapper check-button">
                             <div class="checkbox">
@@ -121,10 +140,33 @@
                             <span>Only include Products with Requests</span>
                         </label>
                     </div>
+                    <label>Distribution</label>
+                    <div class="form-element">
+                        <label class="input-wrapper check-button">
+                            <div class="checkbox">
+                                <input type="checkbox" v-model="includeDistribution">
+                                <span class="checkmark solid"><i class="fas fa-check"></i></span>
+                            </div>
+                            <span>Include distribution (In/Out/Focus)</span>
+                        </label>
+                    </div>
+                    <div class="form-element" v-if="includeDistribution">
+                        <label class="input-wrapper check-button">
+                            <div class="checkbox">
+                                <input type="checkbox" v-model="includeNotDecided">
+                                <span class="checkmark solid"><i class="fas fa-check"></i></span>
+                            </div>
+                            <span>Include "Not Decided" in distribution</span>
+                        </label>
+                    </div>
                     <div class="form-element">
                         <label>Export details</label>
                         <div class="input-wrapper disabled">
-                            <p>{{productsToExport.length}} products <template v-if="exportComments">, {{productsToExport.filter(x => x.requests.length > 0).length}} with requests</template></p>
+                            <p>{{productsToExport.length}} products 
+                                <template v-if="exportComments">, {{productsToExport.filter(x => x.requests.length > 0).length}} with requests</template>
+                                <template v-if="includeDistribution">, with {{productsToExport.reduce((acc, el) => acc + el.actions.length, 0)}} actions</template>
+                                <template v-if="includeNotDecided">, and {{productsToExport.reduce((acc, el) => acc + el.nds.length, 0)}} not decided</template>
+                            </p>
                         </div>
                     </div>
                 </form>
@@ -157,6 +199,8 @@ export default {
         exportComments: true,
         generatedPDF: null,
         onlyWithRequests: false,
+        includeDistribution: false,
+        includeNotDecided: false,
     }},
     computed: {
         ...mapGetters('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']),
@@ -174,12 +218,9 @@ export default {
         ...mapActions('entities/tasks', ['completeTask', 'undoCompleteTask']),
         ...mapActions('persist', ['setCurrentTaskId']),
         variantImg (variant) {
-            if (!variant.error && variant.blob_id != null)
+            if (variant.blob_id != null)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
             else return variant.image
-        },
-        imgError (variant) {
-             variant.error = true
         },
         printToPdf: async function(event) {
             const vm = this
@@ -235,7 +276,8 @@ export default {
             console.log(pages)
             let nextPageIndex = 1
             pages.forEach(page => {
-                const pageHeight = 1040
+                // const pageHeight = 1040
+                const pageHeight = 1000
                 const heightDif = pageHeight - (page.clientHeight - pageHeight)
                 if (heightDif > 0 && nextPageIndex < pages.length) {
                     pages[nextPageIndex].style.marginTop = heightDif + 'px'
