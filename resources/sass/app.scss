@@ -229,6 +229,7 @@ textarea {
         }
     }
 }
+button,
 .button,
 .square,
 .pill,
@@ -325,7 +326,7 @@ textarea {
         border-color: white;
         background: white;
         color: $dark;
-        &.invisible,
+        // &.invisible,
         &.ghost {
             color: white;
             background: transparent;
@@ -371,6 +372,7 @@ textarea {
         opacity: 0.5;
     }
 }
+button,
 .button,
 .square {
     height: 32px;
@@ -431,6 +433,7 @@ textarea {
         font-size: 14px;
     }
 }
+button,
 .button {
     min-width: 92px;
     font-weight: 700;
@@ -489,6 +492,40 @@ textarea {
     }
     .fa-chevron-left {
         margin-right: 2px;
+    }
+}
+
+// ICONS
+i {
+    transition: 0.3s;
+    position: relative;
+    &.primary,
+    &.primary-hover:hover {
+        color: $primary;
+    }
+    &.dark15,
+    &.dark15-hover:hover {
+        color: $dark15;
+    }
+    &.green,
+    &.green-hover:hover {
+        color: $green;
+    }
+    &.red,
+    &.red-hover:hover {
+        color: $red;
+    }
+    &.dark,
+    &.dark-hover:hover {
+        color: $dark;
+    }
+    // Icons in icons
+    i {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        font-size: 9px;
+        transform: translate(-50%, -50%);
     }
 }
 

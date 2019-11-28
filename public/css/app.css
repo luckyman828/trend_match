@@ -8885,6 +8885,7 @@ textarea {
   font-size: 8px;
 }
 
+button,
 .button,
 .square,
 .pill,
@@ -8905,6 +8906,7 @@ textarea {
   text-decoration: none;
 }
 
+button.ghost,
 .button.ghost,
 .square.ghost,
 .pill.ghost,
@@ -8914,6 +8916,7 @@ textarea {
   background: transparent;
 }
 
+button.ghost:hover,
 .button.ghost:hover,
 .square.ghost:hover,
 .pill.ghost:hover,
@@ -8922,6 +8925,9 @@ textarea {
   background: #dfdfdf;
 }
 
+button.dark,
+button.dark-hover:hover,
+button.role-2,
 .button.dark,
 .button.dark-hover:hover,
 .button.role-2,
@@ -8942,6 +8948,12 @@ textarea {
   background: #3c3b54;
 }
 
+button.dark.invisible,
+button.dark.ghost,
+button.dark-hover:hover.invisible,
+button.dark-hover:hover.ghost,
+button.role-2.invisible,
+button.role-2.ghost,
 .button.dark.invisible,
 .button.dark.ghost,
 .button.dark-hover:hover.invisible,
@@ -8976,6 +8988,9 @@ textarea {
   background: transparent;
 }
 
+button.green,
+button.green-hover:hover,
+button.role-4,
 .button.green,
 .button.green-hover:hover,
 .button.role-4,
@@ -8996,6 +9011,12 @@ textarea {
   color: white;
 }
 
+button.green.invisible,
+button.green.ghost,
+button.green-hover:hover.invisible,
+button.green-hover:hover.ghost,
+button.role-4.invisible,
+button.role-4.ghost,
 .button.green.invisible,
 .button.green.ghost,
 .button.green-hover:hover.invisible,
@@ -9030,6 +9051,9 @@ textarea {
   background: transparent;
 }
 
+button.red,
+button.red-hover:hover,
+button.role-5,
 .button.red,
 .button.red-hover:hover,
 .button.role-5,
@@ -9050,6 +9074,12 @@ textarea {
   color: white;
 }
 
+button.red.invisible,
+button.red.ghost,
+button.red-hover:hover.invisible,
+button.red-hover:hover.ghost,
+button.role-5.invisible,
+button.role-5.ghost,
 .button.red.invisible,
 .button.red.ghost,
 .button.red-hover:hover.invisible,
@@ -9084,6 +9114,8 @@ textarea {
   background: transparent;
 }
 
+button.yellow,
+button.yellow-hover:hover,
 .button.yellow,
 .button.yellow-hover:hover,
 .square.yellow,
@@ -9099,6 +9131,10 @@ textarea {
   color: #1b1c1d;
 }
 
+button.yellow.invisible,
+button.yellow.ghost,
+button.yellow-hover:hover.invisible,
+button.yellow-hover:hover.ghost,
 .button.yellow.invisible,
 .button.yellow.ghost,
 .button.yellow-hover:hover.invisible,
@@ -9123,6 +9159,8 @@ textarea {
   background: transparent;
 }
 
+button.yellow-green,
+button.yellow-green-hover:hover,
 .button.yellow-green,
 .button.yellow-green-hover:hover,
 .square.yellow-green,
@@ -9138,6 +9176,10 @@ textarea {
   color: white;
 }
 
+button.yellow-green.invisible,
+button.yellow-green.ghost,
+button.yellow-green-hover:hover.invisible,
+button.yellow-green-hover:hover.ghost,
 .button.yellow-green.invisible,
 .button.yellow-green.ghost,
 .button.yellow-green-hover:hover.invisible,
@@ -9162,6 +9204,9 @@ textarea {
   background: transparent;
 }
 
+button.primary,
+button.primary-hover:hover,
+button.role-1,
 .button.primary,
 .button.primary-hover:hover,
 .button.role-1,
@@ -9182,6 +9227,12 @@ textarea {
   color: white;
 }
 
+button.primary.invisible,
+button.primary.ghost,
+button.primary-hover:hover.invisible,
+button.primary-hover:hover.ghost,
+button.role-1.invisible,
+button.role-1.ghost,
 .button.primary.invisible,
 .button.primary.ghost,
 .button.primary-hover:hover.invisible,
@@ -9216,6 +9267,8 @@ textarea {
   background: transparent;
 }
 
+button.white,
+button.white-hover:hover,
 .button.white,
 .button.white-hover:hover,
 .square.white,
@@ -9231,30 +9284,24 @@ textarea {
   color: #1b1c1d;
 }
 
-.button.white.invisible,
+button.white.ghost,
+button.white-hover:hover.ghost,
 .button.white.ghost,
-.button.white-hover:hover.invisible,
 .button.white-hover:hover.ghost,
-.square.white.invisible,
 .square.white.ghost,
-.square.white-hover:hover.invisible,
 .square.white-hover:hover.ghost,
-.pill.white.invisible,
 .pill.white.ghost,
-.pill.white-hover:hover.invisible,
 .pill.white-hover:hover.ghost,
-.bubble.white.invisible,
 .bubble.white.ghost,
-.bubble.white-hover:hover.invisible,
 .bubble.white-hover:hover.ghost,
-.circle.white.invisible,
 .circle.white.ghost,
-.circle.white-hover:hover.invisible,
 .circle.white-hover:hover.ghost {
   color: white;
   background: transparent;
 }
 
+button.light,
+button.light-hover:hover,
 .button.light,
 .button.light-hover:hover,
 .square.light,
@@ -9270,6 +9317,10 @@ textarea {
   color: #3c3b54;
 }
 
+button.light.invisible,
+button.light.ghost,
+button.light-hover:hover.invisible,
+button.light-hover:hover.ghost,
 .button.light.invisible,
 .button.light.ghost,
 .button.light-hover:hover.invisible,
@@ -9294,6 +9345,9 @@ textarea {
   background: transparent;
 }
 
+button.light-2,
+button.light-2-hover:hover,
+button.role-3,
 .button.light-2,
 .button.light-2-hover:hover,
 .button.role-3,
@@ -9314,6 +9368,12 @@ textarea {
   color: #3c3b54;
 }
 
+button.light-2.invisible,
+button.light-2.ghost,
+button.light-2-hover:hover.invisible,
+button.light-2-hover:hover.ghost,
+button.role-3.invisible,
+button.role-3.ghost,
 .button.light-2.invisible,
 .button.light-2.ghost,
 .button.light-2-hover:hover.invisible,
@@ -9349,6 +9409,7 @@ textarea {
   background: transparent;
 }
 
+button.invisible,
 .button.invisible,
 .square.invisible,
 .pill.invisible,
@@ -9360,6 +9421,7 @@ textarea {
   color: #707070;
 }
 
+button.invisible:hover,
 .button.invisible:hover,
 .square.invisible:hover,
 .pill.invisible:hover,
@@ -9368,6 +9430,9 @@ textarea {
   border-color: inherit;
 }
 
+button.disabled,
+button:disabled,
+button[disabled=disabled],
 .button.disabled,
 .button:disabled,
 .button[disabled=disabled],
@@ -9387,6 +9452,7 @@ textarea {
   opacity: 0.5;
 }
 
+button,
 .button,
 .square {
   height: 32px;
@@ -9396,6 +9462,8 @@ textarea {
   border-radius: 4px;
 }
 
+button.icon-right,
+button.icon-left,
 .button.icon-right,
 .button.icon-left,
 .square.icon-right,
@@ -9403,6 +9471,8 @@ textarea {
   min-width: 76px;
 }
 
+button.icon-right i,
+button.icon-left i,
 .button.icon-right i,
 .button.icon-left i,
 .square.icon-right i,
@@ -9410,6 +9480,8 @@ textarea {
   font-size: 14px;
 }
 
+button.icon-right.active i,
+button.icon-left.active i,
 .button.icon-right.active i,
 .button.icon-left.active i,
 .square.icon-right.active i,
@@ -9417,28 +9489,33 @@ textarea {
   font-weight: 900;
 }
 
+button.icon-right,
 .button.icon-right,
 .square.icon-right {
   padding-right: 8px;
   text-align: right;
 }
 
+button.icon-right i,
 .button.icon-right i,
 .square.icon-right i {
   margin-left: 12px;
 }
 
+button.icon-left,
 .button.icon-left,
 .square.icon-left {
   padding-left: 8px;
   text-align: left;
 }
 
+button.icon-left i,
 .button.icon-left i,
 .square.icon-left i {
   margin-right: 8px;
 }
 
+button.true-square,
 .button.true-square,
 .square.true-square {
   min-width: 32px;
@@ -9446,18 +9523,21 @@ textarea {
   padding: 0;
 }
 
+button.tiny,
 .button.tiny,
 .square.tiny {
   min-width: 0;
   padding: 0;
 }
 
+button.wide,
 .button.wide,
 .square.wide {
   min-width: 155px;
   padding: 0 12px;
 }
 
+button.xl,
 .button.xl,
 .square.xl {
   height: 50px;
@@ -9467,6 +9547,7 @@ textarea {
   font-size: 14px;
 }
 
+button,
 .button {
   min-width: 92px;
   font-weight: 700;
@@ -9477,6 +9558,7 @@ textarea {
   cursor: pointer;
 }
 
+button.text-link,
 .button.text-link {
   padding-top: 4px;
   padding-bottom: 4px;
@@ -9484,6 +9566,7 @@ textarea {
   border-radius: 0;
 }
 
+button.text-link:hover,
 .button.text-link:hover {
   border-bottom: solid 1px;
 }
@@ -9541,6 +9624,46 @@ textarea {
 
 .circle .fa-chevron-left {
   margin-right: 2px;
+}
+
+i {
+  -webkit-transition: 0.3s;
+  transition: 0.3s;
+  position: relative;
+}
+
+i.primary,
+i.primary-hover:hover {
+  color: #3b86ff;
+}
+
+i.dark15,
+i.dark15-hover:hover {
+  color: #707070;
+}
+
+i.green,
+i.green-hover:hover {
+  color: #5ee2a0;
+}
+
+i.red,
+i.red-hover:hover {
+  color: #ff6565;
+}
+
+i.dark,
+i.dark-hover:hover {
+  color: #1b1c1d;
+}
+
+i i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  font-size: 9px;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
 }
 
 .close {

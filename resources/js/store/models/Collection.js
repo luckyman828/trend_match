@@ -17,6 +17,7 @@ export default class Collection extends Model {
             title: this.attr(''),
             phase: this.attr(''),
             catalog_id: this.attr(''),
+            folder_id: this.attr(''),
             start_date: this.attr('unset'),
             end_date: this.attr('unset'),
             teamFiles: this.hasMany(TeamFile, 'file_id'),

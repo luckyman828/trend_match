@@ -1,7 +1,24 @@
 <template>
     <div class="collection">
-        <h1>Files</h1>
-        <div class="underline"></div>
+        <div class="breadcrumbs">
+            <button @click="setCurrentFolder(null)" class="invisible white-hover icon-left"><i class="far fa-building"></i> {{currentWorkspace.name}}</button>
+            <div class="breadcrumb" v-for="(folder, index) in path" :key="folder.id">
+                <template v-if="folder.id != currentFolderId">
+                    <button @click="setCurrentFolder(folder, index)" class="invisible white-hover icon-left">
+                        <i class="far fa-folder"></i>
+                        {{folder.title}}
+                        <!-- <i class="fas fa-caret-down contextual-menu-icon"></i> -->
+                    </button>
+                </template>
+                <template v-else>
+                    <button class="invisible white-hover icon-left">
+                        <i class="far fa-folder-open"></i>
+                        {{folder.title}}
+                        <!-- <i class="fas fa-caret-down contextual-menu-icon"></i> -->
+                    </button>
+                </template>
+            </div>
+        </div>
         <div class="filters">
             <!-- <Dropdown class="dropdown-parent left">
                 <template v-slot:button="slotProps">
@@ -58,7 +75,9 @@
                 </Dropdown> -->
             </div>
         </div>
-        <FilesTable :authUser="authUser" :files="userFiles" :selected="selected" @onSelect="onSelect"/>
+        <FoldersTable v-if="currentFolder" :folder="currentFolder" :selected="selected" 
+        @setCurrentFolder="setCurrentFolder" @onSelect="onSelect"/>
+        <!-- <FilesTable :authUser="authUser" :files="userFiles" :selected="selected" @onSelect="onSelect"/> -->
     </div>
 </template>
 
@@ -67,6 +86,7 @@ import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
 import Loader from '../Loader'
 import FilesTable from '../FilesTable'
+import FoldersTable from '../FoldersTable'
 import RadioButtons from '../RadioButtons'
 import CheckboxButtons from '../input/CheckboxButtons'
 import Dropdown from '../Dropdown'
@@ -84,7 +104,8 @@ export default {
         FilesTable,
         Dropdown,
         CheckboxButtons,
-        RadioButtons
+        RadioButtons,
+        FoldersTable,
     },
     data: function() { return {
         selected: [],
@@ -92,14 +113,35 @@ export default {
         // teamFilterId: '-1',
         loadingOverwrite: false,
         unsub: '',
+        currentFolderId: null,
+        path: []
     }},
     computed: {
         ...mapGetters('entities/collections', ['loadingCollections', 'files']),
-        ...mapGetters('persist', ['teamFilterId', 'currentTeam', 'currentWorkspaceId', 'userPermissionLevel', 'authUser']),
+        ...mapGetters('entities/folders', ['loadingFolders', 'folders']),
+        ...mapGetters('persist', ['teamFilterId', 'currentTeam', 'currentWorkspace', 'currentWorkspaceId', 'userPermissionLevel', 'authUser']),
         defaultTeam() {
             if (this.userPermissionLevel >= 3)
                 return {id: 0, title: 'Global'}
             else return null
+        },
+        currentFolder() {
+            // If we have no folder id we are the ROOT folder
+            if(this.currentFolderId == null) {
+                // Find all folders and files of the root folder
+                // Find folders in root
+                const rootFolders = this.folders.filter(x => !x.parent_id)
+                // Find files in root
+                const rootFiles = this.files.filter(x => !x.folder_id)
+                // Instantioate a rootfolder object
+                const rootFolder = {files: rootFiles, folders: rootFolders}
+                return rootFolder
+            } else {
+                return this.folders.find(x => x.id == this.currentFolderId)
+            }
+        },
+        userFolders() {
+            return this.folders
         },
         userFiles() {
             const files = this.files
@@ -158,6 +200,23 @@ export default {
         onViewSingle(collectionID) {
             this.$router.push({name: 'catalogue', params: {catalogueId: collectionID}})
         },
+        setCurrentFolder(folder, pathIndex) {
+            if (folder != null) {
+                // Remove folders after the new folder from the current path
+                if (pathIndex != null) {
+                    this.path.splice(pathIndex)
+                }
+                // Store what folder we are in now, so we know the path
+                this.path.push(folder)
+                // Set the current folder to the new id
+                this.currentFolderId = folder.id
+            } else {
+                // Reset the folder and path
+                this.path = []
+                this.currentFolderId = null
+            }
+            
+        }
         // initRequiresWorkspace() {
         //     if (Collection.all().length <= 0)
         //         this.fetchCollections(this.currentWorkspaceId)
@@ -200,6 +259,22 @@ export default {
     .item-filter-button {
         min-width: 120px;
         background: $light2;
+    }
+    .breadcrumbs {
+        display: flex;
+        // Before Bracket
+        > *:not(:first-child)::before {
+            content: "\F105";
+            font-family: "Font Awesome 5 Pro";
+            font-weight: 400;
+            -webkit-font-smoothing: antialiased;
+            display: inline-block;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            line-height: 1;
+            padding: 0 8px 0 2px;
+        }
     }
     
 </style>

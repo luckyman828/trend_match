@@ -29,6 +29,8 @@ Vue.component('Toggle', require('./components/Toggle.vue').default)
 Vue.component('Loader', require('./components/Loader.vue').default)
 Vue.component('Modal', require('./components/Modal.vue').default)
 Vue.component('Dropdown', require('./components/Dropdown.vue').default)
+Vue.component('GridTable', require('./components/GridTable.vue').default)
+Vue.component('Checkbox', require('./components/Checkbox.vue').default)
 
 // Define global filters
 Vue.filter('truncate', function(value, limit) {

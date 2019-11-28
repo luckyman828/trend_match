@@ -11,6 +11,9 @@
         <template v-if="$route.name == 'file' && currentTask && !loadingProducts">
             <NavbarFile/>
         </template>
+        <template v-if="$route.name == 'editFile'">
+            <NavbarEditFile/>
+        </template>
         <template v-if="$route.name == 'teams'">
             <NavbarTeam/>
         </template>
@@ -23,6 +26,7 @@ import Modal from './Modal'
 import NavbarFile from './NavbarFile'
 import NavbarFiles from './NavbarFiles'
 import NavbarTeam from './NavbarTeam'
+import NavbarEditFile from './NavbarEditFile'
 import ModalCreateTeam from './ModalCreateTeam'
 import Team from '../store/models/Team'
 
@@ -34,6 +38,7 @@ export default {
         NavbarFile,
         NavbarFiles,
         NavbarTeam,
+        NavbarEditFile,
     },
     computed: {
         ...mapGetters('persist', ['currentTask']),
