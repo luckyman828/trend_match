@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Action;
+use App\Comment;
+use App\CommentVote;
 use App\Product;
 use App\Http\Resources\Product as ProductResource;
+use Illuminate\Database\Eloquent\Builder;
 use Intervention\Image\Facades\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Response;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -49,27 +53,21 @@ class ProductController extends Controller
         $product_id = $request->id;
         
         $product = Product::find($product_id);
-        $products = Product::where('collection_id', $file_id);
-        $completed_files = FileTask::where('file_id', $file_id);
-        $team_files = TeamFile::where('file_id', $file_id);
-        $comments = Comment::whereHas('product', function (Builder $query) use($file_id) {
-            $query->where('collection_id', $file_id);
-        });
-        $actions = Action::whereHas('product', function (Builder $query) use($file_id) {
-            $query->where('collection_id', $file_id);
+        $comments = Comment::where('product_id', $product_id);
+        $actions = Action::where('product_id', $product_id);
+        $commentVotes = CommentVote::whereHas('comment', function (Builder $query) use($product_id) {
+            $query->where('product_id', $product_id);
         });
         
         // Use a transaction to make sure all file related records are deleted or none
-        DB::transaction(function() use($file, $products, $completed_files, $team_files, $comments, $actions) {
-            $file->delete();
-            $products->delete();
-            $completed_files->delete();
-            $team_files->delete();
+        DB::transaction(function() use($product, $comments, $actions, $commentVotes) {
+            $product->delete();
             $comments->delete();
             $actions->delete();
+            $commentVotes->delete();
         });
 
-        return 'Deleted file with id: ' . $file_id;
+        return 'Deleted product with id: ' . $product_id;
     }
     public function rotateImage(Request $request)
     {

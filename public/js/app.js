@@ -78217,10 +78217,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                     id: productId
                   }
                 }).then(function (response) {
-                  _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](id);
+                  console.log('product deleted!');
+                  _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](productId);
                   console.log(response.data);
                 })["catch"](function (err) {
                   console.log(err.response);
+                  commit('alertError');
                 });
 
               case 4:
@@ -78270,6 +78272,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
       data: product
     });
+  }), _defineProperty(_mutations, "alertError", function alertError(state) {
+    window.alert('Network error. Please check your connection');
   }), _mutations)
 });
 

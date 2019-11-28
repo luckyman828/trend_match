@@ -16,5 +16,9 @@ class CommentVote extends Model
     {
         return $this->hasOneThrough(Product::class, Comment::class, 'id', 'id', 'comment_id', 'product_id');
     }
+    public function comment()
+    {
+        return $this->belongsTo(Comment::class, 'comment_id', 'id');
+    }
 
 }

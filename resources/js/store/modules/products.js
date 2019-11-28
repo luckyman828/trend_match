@@ -920,11 +920,13 @@ export default {
                     },
                 })
                 .then(response => {
-                    Product.delete(id)
+                    console.log('product deleted!')
+                    Product.delete(productId)
                     console.log(response.data)
                 })
                 .catch(err => {
                     console.log(err.response)
+                    commit('alertError')
                 })
         },
     },
@@ -970,6 +972,9 @@ export default {
                 .slice(0, 19)
                 .replace('T', ' ')
             Product.insert({ data: product })
+        },
+        alertError: state => {
+            window.alert('Network error. Please check your connection')
         },
     },
 }
