@@ -661,7 +661,7 @@ export default {
         }
         &.impact-2 {
             .circle {
-                background: $yellow;
+                background: $orange;
             }
         }
         &.impact-3 {

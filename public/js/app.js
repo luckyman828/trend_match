@@ -9913,6 +9913,35 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -17758,7 +17787,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".product-single[data-v-019a7388] {\n  height: 100%;\n}\n.product-single > .inner[data-v-019a7388] {\n  height: 100%;\n  width: 100%;\n  background: #f9f9f9;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single > .inner .body[data-v-019a7388] {\n  padding: 1em;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.product-single > .inner .body .comments[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  overflow: hidden;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n  padding-top: 133.33%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  border-radius: 2px;\n  border: solid 1px #dfdfdf;\n}\n.product-single .image img[data-v-019a7388] {\n  width: 100%;\n  height: 100%;\n  -o-object-fit: contain;\n     object-fit: contain;\n  -o-object-position: center;\n     object-position: center;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-single .description .stat[data-v-019a7388] > :first-child {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\n.product-single .details[data-v-019a7388] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\nh3[data-v-019a7388] {\n  font-size: 16px;\n  font-weight: 400;\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #a8a8a8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #dfdfdf;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.header[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header > *[data-v-019a7388] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header .close[data-v-019a7388] {\n  margin-right: 24px;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-flex: 1;\n          flex: 1;\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  border-bottom: solid 2px #dfdfdf;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #f9f9f9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1b1c1d;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #f3f3f3;\n  color: #1b1c1d;\n  border-color: #3b86ff;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tab-body[data-v-019a7388] {\n  background: #f3f3f3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #dfdfdf;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3b86ff;\n  margin-left: 4px;\n  font-size: 16px;\n  margin-top: -2px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #f3f3f3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  height: 100%;\n  -o-object-fit: contain;\n     object-fit: contain;\n  -o-object-position: center;\n     object-position: center;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3c3b54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}\n.details[data-v-019a7388] {\n  padding-right: 1px;\n}\n.focus + .impact[data-v-019a7388] {\n  margin-right: 8px;\n}\n.impact[data-v-019a7388] {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n          align-items: center;\n  float: right;\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  margin-top: 2px;\n}\n.impact .circle[data-v-019a7388] {\n  margin-bottom: 2px;\n  margin-left: 4px;\n}\n.impact.impact-1 .circle[data-v-019a7388] {\n  background: #ff6565;\n}\n.impact.impact-2 .circle[data-v-019a7388] {\n  background: #f3e959;\n}\n.impact.impact-3 .circle[data-v-019a7388] {\n  background: #5ee2a0;\n}", ""]);
+exports.push([module.i, ".product-single[data-v-019a7388] {\n  height: 100%;\n}\n.product-single > .inner[data-v-019a7388] {\n  height: 100%;\n  width: 100%;\n  background: #f9f9f9;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n}\n.product-single > .inner .body[data-v-019a7388] {\n  padding: 1em;\n  height: 50%;\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: grid;\n  grid-template-rows: 100%;\n}\n.product-single > .inner .body .comments[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  overflow: hidden;\n}\n.product-single .image[data-v-019a7388] {\n  cursor: pointer;\n  padding-top: 133.33%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  border-radius: 2px;\n  border: solid 1px #dfdfdf;\n}\n.product-single .image img[data-v-019a7388] {\n  width: 100%;\n  height: 100%;\n  -o-object-fit: contain;\n     object-fit: contain;\n  -o-object-position: center;\n     object-position: center;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-single .description .stat[data-v-019a7388] > :first-child {\n  margin-bottom: -4px;\n  margin-top: 8px;\n  display: block;\n}\n.product-single .details[data-v-019a7388] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\nh3[data-v-019a7388] {\n  font-size: 16px;\n  font-weight: 400;\n}\n.close i[data-v-019a7388] {\n  font-size: 22px;\n}\n.square i[data-v-019a7388] {\n  color: #a8a8a8;\n}\n.square.active i[data-v-019a7388] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.card > .grid-2[data-v-019a7388] > :first-child {\n  overflow-x: hidden;\n  overflow-y: auto;\n  height: 100%;\n}\n.grid-border-between[data-v-019a7388] > :first-child {\n  position: relative;\n}\n.grid-border-between[data-v-019a7388] > :first-child::after {\n  content: \"\";\n  position: absolute;\n  height: 100%;\n  right: calc(-.5rem - 1px);\n  top: 0;\n  background: #dfdfdf;\n  width: 2px;\n}\n.button[data-v-019a7388]:nth-child(1n+2) {\n  margin-left: 8px;\n}\n.header[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  border-bottom: solid 2px #f3f3f3;\n  padding: 6px 20px;\n  position: -webkit-sticky;\n  position: sticky;\n  top: 0;\n  z-index: 2;\n  background: white;\n  height: 72px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header > *[data-v-019a7388] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.header .close[data-v-019a7388] {\n  margin-right: 24px;\n}\n.controls[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n  width: 100%;\n}\n.controls[data-v-019a7388] :last-child {\n  margin-right: 0;\n}\n.tab-headers[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n}\n.tab[data-v-019a7388] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n          flex-direction: column;\n  -webkit-box-pack: center;\n          justify-content: center;\n  -webkit-box-flex: 1;\n          flex: 1;\n  background: white;\n  height: 40px;\n  text-align: center;\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  cursor: pointer;\n  border-bottom: solid 2px #dfdfdf;\n  line-height: 1.1;\n}\n.tab[data-v-019a7388]:hover {\n  background: #f9f9f9;\n}\n.tab .count[data-v-019a7388] {\n  color: #1b1c1d;\n  font-size: 12px;\n  font-weight: 700;\n}\n.tab.active[data-v-019a7388] {\n  background: #f3f3f3;\n  color: #1b1c1d;\n  border-color: #3b86ff;\n  color: #535353;\n}\n.tab.active .count[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tab-body[data-v-019a7388] {\n  background: #f3f3f3;\n  padding: 12px 16px;\n}\n.tab-body .tab-title[data-v-019a7388] {\n  font-size: 12px;\n  text-transform: capitalize;\n}\n.tab-body p[data-v-019a7388] {\n  border-bottom: solid 1px #dfdfdf;\n  padding-bottom: 4px;\n  margin-bottom: 12px;\n}\n.tab-body .team[data-v-019a7388] {\n  width: 100px;\n  display: inline-block;\n  text-transform: uppercase;\n  font-size: 10px;\n  color: #a8a8a8;\n}\n.tab-body .user[data-v-019a7388] {\n  font-weight: 500;\n}\n.tab-body .focus[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  float: right;\n  display: -webkit-box;\n  display: flex;\n  margin-top: 2px;\n}\n.tab-body .focus i[data-v-019a7388] {\n  color: #3b86ff;\n  margin-left: 4px;\n  font-size: 16px;\n  margin-top: -2px;\n}\n.grid-2[data-v-019a7388] {\n  grid-template-columns: repeat(auto-fit, minmax(33.33%, 1fr));\n}\n.product-variants[data-v-019a7388] {\n  margin-top: 12px;\n  white-space: nowrap;\n  overflow-x: auto;\n}\n.product-variant[data-v-019a7388] {\n  width: 85px;\n  display: inline-block;\n  cursor: pointer;\n}\n.product-variant[data-v-019a7388]:not(:last-child) {\n  margin-right: 12px;\n}\n.product-variant .color-wrapper[data-v-019a7388] {\n  overflow: hidden;\n  margin-right: 5px;\n}\n.product-variant .color-wrapper span[data-v-019a7388] {\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n}\n.product-variant .color-wrapper .circle-img[data-v-019a7388] {\n  width: 12px;\n  height: 12px;\n  border-radius: 6px;\n  border: solid 1px #f3f3f3;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n}\n.product-variant .color-wrapper .circle-img img[data-v-019a7388] {\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  position: absolute;\n}\n.product-variant .img-wrapper[data-v-019a7388] {\n  padding-top: 100%;\n  width: 100%;\n  height: 0;\n  position: relative;\n  overflow: hidden;\n  display: inline-block;\n  margin-right: 4px;\n  border-radius: 4px;\n  border: solid 1px #f3f3f3;\n  overflow: hidden;\n}\n.product-variant .img-wrapper img[data-v-019a7388] {\n  width: 100%;\n  height: 100%;\n  -o-object-fit: contain;\n     object-fit: contain;\n  -o-object-position: center;\n     object-position: center;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.product-variant.active .img-wrapper[data-v-019a7388] {\n  border-color: #3c3b54;\n}\n.product-variant.active .color-wrapper span[data-v-019a7388] {\n  color: #1b1c1d;\n}\n.tabs-wrapper[data-v-019a7388] {\n  margin-bottom: 60px;\n}\np[data-v-019a7388] {\n  margin: 0;\n}\n.details[data-v-019a7388] {\n  padding-right: 1px;\n}\n.focus + .impact[data-v-019a7388] {\n  margin-right: 8px;\n}\n.impact[data-v-019a7388] {\n  display: -webkit-inline-box;\n  display: inline-flex;\n  -webkit-box-align: center;\n          align-items: center;\n  float: right;\n  font-size: 10px;\n  font-weight: 500;\n  color: #a8a8a8;\n  margin-top: 2px;\n}\n.impact .circle[data-v-019a7388] {\n  margin-bottom: 2px;\n  margin-left: 4px;\n}\n.impact.impact-1 .circle[data-v-019a7388] {\n  background: #ff6565;\n}\n.impact.impact-2 .circle[data-v-019a7388] {\n  background: #f6993f;\n}\n.impact.impact-3 .circle[data-v-019a7388] {\n  background: #5ee2a0;\n}", ""]);
 
 // exports
 
@@ -40568,143 +40597,383 @@ var render = function() {
                                   _vm._v(
                                     "IN (" +
                                       _vm._s(
-                                        product.actions.filter(function(x) {
-                                          return x.action != 0
-                                        }).length
+                                        product.ins.length +
+                                          product.focus.length
                                       ) +
                                       ")"
                                   )
                                 ]),
                                 _vm._v(" "),
-                                _vm._l(
-                                  product.actions.filter(function(x) {
-                                    return x.action != 0
-                                  }),
-                                  function(action) {
-                                    return _c(
-                                      "div",
-                                      {
-                                        key: action.user_id,
-                                        staticStyle: {
-                                          "max-width": "calc(100% - 120px)",
-                                          display: "flex",
-                                          "justify-content": "space-between"
-                                        }
-                                      },
-                                      [
-                                        _c(
-                                          "p",
-                                          {
-                                            staticStyle: {
-                                              "font-size": "12px",
-                                              "font-weight": "700",
-                                              margin: "0"
-                                            }
-                                          },
-                                          [
-                                            _vm._v(
+                                _vm._l(product.focus, function(action) {
+                                  return _c(
+                                    "div",
+                                    {
+                                      key: action.user_id,
+                                      staticStyle: {
+                                        "max-width": "calc(100% - 120px)",
+                                        display: "flex",
+                                        "align-items": "center"
+                                      }
+                                    },
+                                    [
+                                      action.user && action.user.impact
+                                        ? _c(
+                                            "span",
+                                            {
+                                              staticClass: "impact",
+                                              staticStyle: {
+                                                width: "80px",
+                                                "font-size": "10px",
+                                                "font-weight": "500",
+                                                display: "inline-flex",
+                                                "align-items": "center"
+                                              }
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                            Impact (" +
+                                                  _vm._s(action.user.impact) +
+                                                  ") \n                            "
+                                              ),
+                                              action.user.impact == 1
+                                                ? _c("span", {
+                                                    staticStyle: {
+                                                      display: "inline-block",
+                                                      height: "12px",
+                                                      width: "12px",
+                                                      "border-radius": "50%",
+                                                      background: "#ff6565",
+                                                      "margin-left": "4px"
+                                                    }
+                                                  })
+                                                : _vm._e(),
+                                              _vm._v(" "),
+                                              action.user.impact == 2
+                                                ? _c("span", {
+                                                    staticStyle: {
+                                                      display: "inline-block",
+                                                      height: "12px",
+                                                      width: "12px",
+                                                      "border-radius": "50%",
+                                                      background: "#f6993f",
+                                                      "margin-left": "4px"
+                                                    }
+                                                  })
+                                                : _vm._e(),
+                                              _vm._v(" "),
+                                              action.user.impact == 3
+                                                ? _c("span", {
+                                                    staticStyle: {
+                                                      display: "inline-block",
+                                                      height: "12px",
+                                                      width: "12px",
+                                                      "border-radius": "50%",
+                                                      background: "#5ee2a0",
+                                                      "margin-left": "4px"
+                                                    }
+                                                  })
+                                                : _vm._e()
+                                            ]
+                                          )
+                                        : _vm._e(),
+                                      _vm._v(" "),
+                                      _c(
+                                        "p",
+                                        {
+                                          staticStyle: {
+                                            "font-size": "12px",
+                                            "font-weight": "700",
+                                            margin: "0",
+                                            display: "inline-block"
+                                          }
+                                        },
+                                        [
+                                          _vm._v(
+                                            _vm._s(
+                                              action.task
+                                                ? action.task.title
+                                                : "Uknown task"
+                                            ) +
+                                              " | " +
                                               _vm._s(
-                                                action.task
-                                                  ? action.task.title
-                                                  : "Uknown task"
+                                                action.user
+                                                  ? action.user.name
+                                                  : "Unknown user"
                                               ) +
-                                                " | " +
-                                                _vm._s(
-                                                  action.user
-                                                    ? action.user.name
-                                                    : "Unknown user"
-                                                ) +
-                                                " " +
-                                                _vm._s(
-                                                  action.user
-                                                    ? "(" +
-                                                        action.user.email +
-                                                        ")"
-                                                    : ""
-                                                )
-                                            )
-                                          ]
-                                        ),
-                                        action.action == 2
-                                          ? _c(
-                                              "span",
-                                              {
-                                                staticStyle: {
-                                                  "font-size": "12px",
-                                                  "font-weight": "700"
-                                                }
-                                              },
-                                              [_vm._v("Focus")]
-                                            )
-                                          : _vm._e()
-                                      ]
-                                    )
-                                  }
-                                ),
+                                              " " +
+                                              _vm._s(
+                                                action.user
+                                                  ? "(" +
+                                                      action.user.email +
+                                                      ")"
+                                                  : ""
+                                              )
+                                          )
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      action.action == 2
+                                        ? _c(
+                                            "span",
+                                            {
+                                              staticStyle: {
+                                                "margin-left": "12px",
+                                                "font-size": "10px",
+                                                "font-weight": "700",
+                                                "text-transform": "uppercase",
+                                                color: "#3b86ff"
+                                              }
+                                            },
+                                            [_vm._v("Focus")]
+                                          )
+                                        : _vm._e()
+                                    ]
+                                  )
+                                }),
+                                _vm._v(" "),
+                                _vm._l(product.ins, function(action) {
+                                  return _c(
+                                    "div",
+                                    {
+                                      key: action.user_id,
+                                      staticStyle: {
+                                        "max-width": "calc(100% - 120px)",
+                                        display: "flex",
+                                        "align-items": "center"
+                                      }
+                                    },
+                                    [
+                                      action.user && action.user.impact
+                                        ? _c(
+                                            "span",
+                                            {
+                                              staticClass: "impact",
+                                              staticStyle: {
+                                                width: "80px",
+                                                "font-size": "10px",
+                                                "font-weight": "500",
+                                                display: "inline-flex",
+                                                "align-items": "center"
+                                              }
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                            Impact (" +
+                                                  _vm._s(action.user.impact) +
+                                                  ") \n                            "
+                                              ),
+                                              action.user.impact == 1
+                                                ? _c("span", {
+                                                    staticStyle: {
+                                                      display: "inline-block",
+                                                      height: "12px",
+                                                      width: "12px",
+                                                      "border-radius": "50%",
+                                                      background: "#ff6565",
+                                                      "margin-left": "4px"
+                                                    }
+                                                  })
+                                                : _vm._e(),
+                                              _vm._v(" "),
+                                              action.user.impact == 2
+                                                ? _c("span", {
+                                                    staticStyle: {
+                                                      display: "inline-block",
+                                                      height: "12px",
+                                                      width: "12px",
+                                                      "border-radius": "50%",
+                                                      background: "#f6993f",
+                                                      "margin-left": "4px"
+                                                    }
+                                                  })
+                                                : _vm._e(),
+                                              _vm._v(" "),
+                                              action.user.impact == 3
+                                                ? _c("span", {
+                                                    staticStyle: {
+                                                      display: "inline-block",
+                                                      height: "12px",
+                                                      width: "12px",
+                                                      "border-radius": "50%",
+                                                      background: "#5ee2a0",
+                                                      "margin-left": "4px"
+                                                    }
+                                                  })
+                                                : _vm._e()
+                                            ]
+                                          )
+                                        : _vm._e(),
+                                      _vm._v(" "),
+                                      _c(
+                                        "p",
+                                        {
+                                          staticStyle: {
+                                            "font-size": "12px",
+                                            "font-weight": "700",
+                                            margin: "0",
+                                            display: "inline-block"
+                                          }
+                                        },
+                                        [
+                                          _vm._v(
+                                            _vm._s(
+                                              action.task
+                                                ? action.task.title
+                                                : "Uknown task"
+                                            ) +
+                                              " | " +
+                                              _vm._s(
+                                                action.user
+                                                  ? action.user.name
+                                                  : "Unknown user"
+                                              ) +
+                                              " " +
+                                              _vm._s(
+                                                action.user
+                                                  ? "(" +
+                                                      action.user.email +
+                                                      ")"
+                                                  : ""
+                                              )
+                                          )
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      action.action == 2
+                                        ? _c(
+                                            "span",
+                                            {
+                                              staticStyle: {
+                                                "margin-left": "12px",
+                                                "font-size": "10px",
+                                                "font-weight": "700",
+                                                "text-transform": "uppercase",
+                                                color: "#3b86ff"
+                                              }
+                                            },
+                                            [_vm._v("Focus")]
+                                          )
+                                        : _vm._e()
+                                    ]
+                                  )
+                                }),
                                 _vm._v(" "),
                                 _c("h3", [
                                   _vm._v(
-                                    "OUT (" +
-                                      _vm._s(
-                                        product.actions.filter(function(x) {
-                                          return x.action == 0
-                                        }).length
-                                      ) +
-                                      ")"
+                                    "OUT (" + _vm._s(product.outs.length) + ")"
                                   )
                                 ]),
                                 _vm._v(" "),
-                                _vm._l(
-                                  product.actions.filter(function(x) {
-                                    return x.action == 0
-                                  }),
-                                  function(action) {
-                                    return _c(
-                                      "div",
-                                      {
-                                        key: action.user_id,
-                                        staticStyle: {
-                                          "max-width": "calc(100% - 120px)"
-                                        }
-                                      },
-                                      [
-                                        _c(
-                                          "p",
-                                          {
-                                            staticStyle: {
-                                              "font-size": "12px",
-                                              "font-weight": "700",
-                                              margin: "0"
-                                            }
-                                          },
-                                          [
-                                            _vm._v(
+                                _vm._l(product.outs, function(action) {
+                                  return _c(
+                                    "div",
+                                    {
+                                      key: action.user_id,
+                                      staticStyle: {
+                                        "max-width": "calc(100% - 120px)",
+                                        display: "flex",
+                                        "align-items": "center"
+                                      }
+                                    },
+                                    [
+                                      action.user && action.user.impact
+                                        ? _c(
+                                            "span",
+                                            {
+                                              staticClass: "impact",
+                                              staticStyle: {
+                                                width: "80px",
+                                                "font-size": "10px",
+                                                "font-weight": "500",
+                                                display: "inline-flex",
+                                                "align-items": "center"
+                                              }
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                            Impact (" +
+                                                  _vm._s(action.user.impact) +
+                                                  ") \n                            "
+                                              ),
+                                              action.user.impact == 1
+                                                ? _c("span", {
+                                                    staticStyle: {
+                                                      display: "inline-block",
+                                                      height: "12px",
+                                                      width: "12px",
+                                                      "border-radius": "50%",
+                                                      background: "#ff6565",
+                                                      "margin-left": "4px"
+                                                    }
+                                                  })
+                                                : _vm._e(),
+                                              _vm._v(" "),
+                                              action.user.impact == 2
+                                                ? _c("span", {
+                                                    staticStyle: {
+                                                      display: "inline-block",
+                                                      height: "12px",
+                                                      width: "12px",
+                                                      "border-radius": "50%",
+                                                      background: "#f6993f",
+                                                      "margin-left": "4px"
+                                                    }
+                                                  })
+                                                : _vm._e(),
+                                              _vm._v(" "),
+                                              action.user.impact == 3
+                                                ? _c("span", {
+                                                    staticStyle: {
+                                                      display: "inline-block",
+                                                      height: "12px",
+                                                      width: "12px",
+                                                      "border-radius": "50%",
+                                                      background: "#5ee2a0",
+                                                      "margin-left": "4px"
+                                                    }
+                                                  })
+                                                : _vm._e()
+                                            ]
+                                          )
+                                        : _vm._e(),
+                                      _vm._v(" "),
+                                      _c(
+                                        "p",
+                                        {
+                                          staticStyle: {
+                                            "font-size": "12px",
+                                            "font-weight": "700",
+                                            margin: "0",
+                                            display: "inline-block"
+                                          }
+                                        },
+                                        [
+                                          _vm._v(
+                                            _vm._s(
+                                              action.task
+                                                ? action.task.title
+                                                : "Uknown task"
+                                            ) +
+                                              " | " +
                                               _vm._s(
-                                                action.task
-                                                  ? action.task.title
-                                                  : "Uknown task"
+                                                action.user
+                                                  ? action.user.name
+                                                  : "Unknown user"
                                               ) +
-                                                " | " +
-                                                _vm._s(
-                                                  action.user
-                                                    ? action.user.name
-                                                    : "Unknown user"
-                                                ) +
-                                                " " +
-                                                _vm._s(
-                                                  action.user
-                                                    ? "(" +
-                                                        action.user.email +
-                                                        ")"
-                                                    : ""
-                                                )
-                                            )
-                                          ]
-                                        )
-                                      ]
-                                    )
-                                  }
-                                ),
+                                              " " +
+                                              _vm._s(
+                                                action.user
+                                                  ? "(" +
+                                                      action.user.email +
+                                                      ")"
+                                                  : ""
+                                              )
+                                          )
+                                        ]
+                                      )
+                                    ]
+                                  )
+                                }),
                                 _vm._v(" "),
                                 _vm.includeNotDecided
                                   ? [
@@ -40722,17 +40991,90 @@ var render = function() {
                                           {
                                             key: index,
                                             staticStyle: {
-                                              "max-width": "calc(100% - 120px)"
+                                              "max-width": "calc(100% - 120px)",
+                                              display: "flex",
+                                              "align-items": "center"
                                             }
                                           },
                                           [
+                                            nd.impact
+                                              ? _c(
+                                                  "span",
+                                                  {
+                                                    staticClass: "impact",
+                                                    staticStyle: {
+                                                      width: "80px",
+                                                      "font-size": "10px",
+                                                      "font-weight": "500",
+                                                      display: "inline-flex",
+                                                      "align-items": "center"
+                                                    }
+                                                  },
+                                                  [
+                                                    _vm._v(
+                                                      "\n                                Impact (" +
+                                                        _vm._s(nd.impact) +
+                                                        ") \n                                "
+                                                    ),
+                                                    nd.impact == 1
+                                                      ? _c("span", {
+                                                          staticStyle: {
+                                                            display:
+                                                              "inline-block",
+                                                            height: "12px",
+                                                            width: "12px",
+                                                            "border-radius":
+                                                              "50%",
+                                                            background:
+                                                              "#ff6565",
+                                                            "margin-left": "4px"
+                                                          }
+                                                        })
+                                                      : _vm._e(),
+                                                    _vm._v(" "),
+                                                    nd.impact == 2
+                                                      ? _c("span", {
+                                                          staticStyle: {
+                                                            display:
+                                                              "inline-block",
+                                                            height: "12px",
+                                                            width: "12px",
+                                                            "border-radius":
+                                                              "50%",
+                                                            background:
+                                                              "#f6993f",
+                                                            "margin-left": "4px"
+                                                          }
+                                                        })
+                                                      : _vm._e(),
+                                                    _vm._v(" "),
+                                                    nd.impact == 3
+                                                      ? _c("span", {
+                                                          staticStyle: {
+                                                            display:
+                                                              "inline-block",
+                                                            height: "12px",
+                                                            width: "12px",
+                                                            "border-radius":
+                                                              "50%",
+                                                            background:
+                                                              "#5ee2a0",
+                                                            "margin-left": "4px"
+                                                          }
+                                                        })
+                                                      : _vm._e()
+                                                  ]
+                                                )
+                                              : _vm._e(),
+                                            _vm._v(" "),
                                             _c(
                                               "p",
                                               {
                                                 staticStyle: {
                                                   "font-size": "12px",
                                                   "font-weight": "700",
-                                                  margin: "0"
+                                                  margin: "0",
+                                                  display: "inline-block"
                                                 }
                                               },
                                               [
