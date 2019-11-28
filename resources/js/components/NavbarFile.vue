@@ -96,18 +96,47 @@
 
                     <div class="distribution-wrapper" v-if="includeDistribution">
                         <h2>Distribution</h2>
-                        <h3>IN ({{product.actions.filter(x => x.action != 0).length}})</h3>
-                        <div v-for="action in product.actions.filter(x => x.action != 0)" :key="action.user_id" style="max-width: calc(100% - 120px); display: flex; justify-content: space-between;">
-                            <p style="font-size: 12px; font-weight: 700; margin: 0;">{{action.task ? action.task.title : 'Uknown task'}} | {{action.user ? action.user.name : 'Unknown user'}} {{action.user ? '('+action.user.email+')' : ''}}</p><span style="font-size: 12px; font-weight: 700;" v-if="action.action == 2">Focus</span>
+                        <h3>IN ({{product.ins.length + product.focus.length}})</h3>
+                        <div v-for="action in product.focus" :key="action.user_id" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
+                            <span class="impact" v-if="action.user && action.user.impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
+                                Impact ({{action.user.impact}}) 
+                                <span v-if="action.user.impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
+                                <span v-if="action.user.impact == 2" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #f6993f; margin-left: 4px;"></span>
+                                <span v-if="action.user.impact == 3" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #5ee2a0; margin-left: 4px;"></span>
+                            </span>
+                            <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{action.task ? action.task.title : 'Uknown task'}} | {{action.user ? action.user.name : 'Unknown user'}} {{action.user ? '('+action.user.email+')' : ''}}</p>
+                            <span style="margin-left: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #3b86ff;" v-if="action.action == 2">Focus</span>
                         </div>
-                        <h3>OUT ({{product.actions.filter(x => x.action == 0).length}})</h3>
-                        <div v-for="action in product.actions.filter(x => x.action == 0)" :key="action.user_id" style="max-width: calc(100% - 120px);">
-                            <p style="font-size: 12px; font-weight: 700; margin: 0;">{{action.task ? action.task.title : 'Uknown task'}} | {{action.user ? action.user.name : 'Unknown user'}} {{action.user ? '('+action.user.email+')' : ''}}</p>
+                        <div v-for="action in product.ins" :key="action.user_id" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
+                            <span class="impact" v-if="action.user && action.user.impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
+                                Impact ({{action.user.impact}}) 
+                                <span v-if="action.user.impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
+                                <span v-if="action.user.impact == 2" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #f6993f; margin-left: 4px;"></span>
+                                <span v-if="action.user.impact == 3" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #5ee2a0; margin-left: 4px;"></span>
+                            </span>
+                            <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{action.task ? action.task.title : 'Uknown task'}} | {{action.user ? action.user.name : 'Unknown user'}} {{action.user ? '('+action.user.email+')' : ''}}</p>
+                            <span style="margin-left: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #3b86ff;" v-if="action.action == 2">Focus</span>
+                        </div>
+                        <h3>OUT ({{product.outs.length}})</h3>
+                        <div v-for="action in product.outs" :key="action.user_id" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
+                            <span class="impact" v-if="action.user && action.user.impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
+                                Impact ({{action.user.impact}}) 
+                                <span v-if="action.user.impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
+                                <span v-if="action.user.impact == 2" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #f6993f; margin-left: 4px;"></span>
+                                <span v-if="action.user.impact == 3" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #5ee2a0; margin-left: 4px;"></span>
+                            </span>
+                            <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{action.task ? action.task.title : 'Uknown task'}} | {{action.user ? action.user.name : 'Unknown user'}} {{action.user ? '('+action.user.email+')' : ''}}</p>
                         </div>
                         <template v-if="includeNotDecided">
                             <h3>Not decided ({{product.nds.length}})</h3>
-                            <div v-for="(nd, index) in product.nds" :key="index" style="max-width: calc(100% - 120px);">
-                                <p style="font-size: 12px; font-weight: 700; margin: 0;">{{nd.task ? nd.task.title : 'Uknown task'}} | {{nd.name != null ? nd.name +' '+ ((nd.email) ? '('+nd.email+')' : '') : nd.title}}</p>
+                            <div v-for="(nd, index) in product.nds" :key="index" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
+                                <span class="impact" v-if="nd.impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
+                                    Impact ({{nd.impact}}) 
+                                    <span v-if="nd.impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
+                                    <span v-if="nd.impact == 2" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #f6993f; margin-left: 4px;"></span>
+                                    <span v-if="nd.impact == 3" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #5ee2a0; margin-left: 4px;"></span>
+                                </span>
+                                <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{nd.task ? nd.task.title : 'Uknown task'}} | {{nd.name != null ? nd.name +' '+ ((nd.email) ? '('+nd.email+')' : '') : nd.title}}</p>
                             </div>
                         </template>
                     </div>
