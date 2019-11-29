@@ -224,7 +224,7 @@ export default {
             // Upload products to DB
             let uploadSucces = false
 
-            const uploadApiUrl = `https://api-beta.kollekt.dk/hooks/import-csv?collection_id=${file.id}`
+            const uploadApiUrl = `${process.env.MIX_UPLOAD_API_URL_BASE}/hooks/import-csv?collection_id=${file.id}`
             const axiosConfig = {
                 headers: {
                     'X-Kollekt-App-Key': 'mnkAEefWBEL7cY1gEetlW4dM_YYL9Vu4K6dmavW2',

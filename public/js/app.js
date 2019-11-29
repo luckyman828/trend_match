@@ -74494,7 +74494,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit = _ref4.commit, dispatch = _ref4.dispatch;
                 // Upload products to DB
                 uploadSucces = false;
-                uploadApiUrl = "https://api-beta.kollekt.dk/hooks/import-csv?collection_id=".concat(file.id);
+                uploadApiUrl = "".concat("https://api-beta.kollekt.dk", "/hooks/import-csv?collection_id=").concat(file.id);
                 axiosConfig = {
                   headers: {
                     'X-Kollekt-App-Key': 'mnkAEefWBEL7cY1gEetlW4dM_YYL9Vu4K6dmavW2'
