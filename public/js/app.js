@@ -10078,6 +10078,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 
@@ -10614,6 +10616,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
 //
 //
 //
@@ -41541,297 +41545,341 @@ var render = function() {
             key: "body",
             fn: function() {
               return [
-                _c("form", [
-                  _c("label", [_vm._v("Requests & comments")]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-element" }, [
-                    _c("label", { staticClass: "input-wrapper check-button" }, [
-                      _c("div", { staticClass: "checkbox" }, [
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.exportComments,
-                              expression: "exportComments"
-                            }
-                          ],
-                          attrs: { type: "checkbox" },
-                          domProps: {
-                            checked: Array.isArray(_vm.exportComments)
-                              ? _vm._i(_vm.exportComments, null) > -1
-                              : _vm.exportComments
-                          },
-                          on: {
-                            change: function($event) {
-                              var $$a = _vm.exportComments,
-                                $$el = $event.target,
-                                $$c = $$el.checked ? true : false
-                              if (Array.isArray($$a)) {
-                                var $$v = null,
-                                  $$i = _vm._i($$a, $$v)
-                                if ($$el.checked) {
-                                  $$i < 0 &&
-                                    (_vm.exportComments = $$a.concat([$$v]))
-                                } else {
-                                  $$i > -1 &&
-                                    (_vm.exportComments = $$a
-                                      .slice(0, $$i)
-                                      .concat($$a.slice($$i + 1)))
-                                }
-                              } else {
-                                _vm.exportComments = $$c
-                              }
-                            }
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("span", { staticClass: "checkmark solid" }, [
-                          _c("i", { staticClass: "fas fa-check" })
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("span", [_vm._v("Include Requests and comments")])
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-element" }, [
-                    _c("label", { staticClass: "input-wrapper check-button" }, [
-                      _c("div", { staticClass: "checkbox" }, [
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.onlyWithRequests,
-                              expression: "onlyWithRequests"
-                            }
-                          ],
-                          attrs: { type: "checkbox" },
-                          domProps: {
-                            checked: Array.isArray(_vm.onlyWithRequests)
-                              ? _vm._i(_vm.onlyWithRequests, null) > -1
-                              : _vm.onlyWithRequests
-                          },
-                          on: {
-                            change: function($event) {
-                              var $$a = _vm.onlyWithRequests,
-                                $$el = $event.target,
-                                $$c = $$el.checked ? true : false
-                              if (Array.isArray($$a)) {
-                                var $$v = null,
-                                  $$i = _vm._i($$a, $$v)
-                                if ($$el.checked) {
-                                  $$i < 0 &&
-                                    (_vm.onlyWithRequests = $$a.concat([$$v]))
-                                } else {
-                                  $$i > -1 &&
-                                    (_vm.onlyWithRequests = $$a
-                                      .slice(0, $$i)
-                                      .concat($$a.slice($$i + 1)))
-                                }
-                              } else {
-                                _vm.onlyWithRequests = $$c
-                              }
-                            }
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("span", { staticClass: "checkmark solid" }, [
-                          _c("i", { staticClass: "fas fa-check" })
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("span", [
-                        _vm._v("Only include Products with Requests")
-                      ])
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("label", [_vm._v("Distribution")]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-element" }, [
-                    _c("label", { staticClass: "input-wrapper check-button" }, [
-                      _c("div", { staticClass: "checkbox" }, [
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.includeDistribution,
-                              expression: "includeDistribution"
-                            }
-                          ],
-                          attrs: { type: "checkbox" },
-                          domProps: {
-                            checked: Array.isArray(_vm.includeDistribution)
-                              ? _vm._i(_vm.includeDistribution, null) > -1
-                              : _vm.includeDistribution
-                          },
-                          on: {
-                            change: function($event) {
-                              var $$a = _vm.includeDistribution,
-                                $$el = $event.target,
-                                $$c = $$el.checked ? true : false
-                              if (Array.isArray($$a)) {
-                                var $$v = null,
-                                  $$i = _vm._i($$a, $$v)
-                                if ($$el.checked) {
-                                  $$i < 0 &&
-                                    (_vm.includeDistribution = $$a.concat([
-                                      $$v
-                                    ]))
-                                } else {
-                                  $$i > -1 &&
-                                    (_vm.includeDistribution = $$a
-                                      .slice(0, $$i)
-                                      .concat($$a.slice($$i + 1)))
-                                }
-                              } else {
-                                _vm.includeDistribution = $$c
-                              }
-                            }
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("span", { staticClass: "checkmark solid" }, [
-                          _c("i", { staticClass: "fas fa-check" })
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("span", [
-                        _vm._v("Include distribution (In/Out/Focus)")
-                      ])
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _vm.includeDistribution
-                    ? _c("div", { staticClass: "form-element" }, [
-                        _c(
-                          "label",
-                          { staticClass: "input-wrapper check-button" },
-                          [
-                            _c("div", { staticClass: "checkbox" }, [
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.includeNotDecided,
-                                    expression: "includeNotDecided"
-                                  }
-                                ],
-                                attrs: { type: "checkbox" },
-                                domProps: {
-                                  checked: Array.isArray(_vm.includeNotDecided)
-                                    ? _vm._i(_vm.includeNotDecided, null) > -1
-                                    : _vm.includeNotDecided
-                                },
-                                on: {
-                                  change: function($event) {
-                                    var $$a = _vm.includeNotDecided,
-                                      $$el = $event.target,
-                                      $$c = $$el.checked ? true : false
-                                    if (Array.isArray($$a)) {
-                                      var $$v = null,
-                                        $$i = _vm._i($$a, $$v)
-                                      if ($$el.checked) {
-                                        $$i < 0 &&
-                                          (_vm.includeNotDecided = $$a.concat([
-                                            $$v
-                                          ]))
-                                      } else {
-                                        $$i > -1 &&
-                                          (_vm.includeNotDecided = $$a
-                                            .slice(0, $$i)
-                                            .concat($$a.slice($$i + 1)))
-                                      }
-                                    } else {
-                                      _vm.includeNotDecided = $$c
-                                    }
-                                  }
-                                }
-                              }),
-                              _vm._v(" "),
-                              _c("span", { staticClass: "checkmark solid" }, [
-                                _c("i", { staticClass: "fas fa-check" })
-                              ])
-                            ]),
-                            _vm._v(" "),
-                            _c("span", [
-                              _vm._v('Include "Not Decided" in distribution')
-                            ])
-                          ]
-                        )
-                      ])
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-element" }, [
-                    _c("label", [_vm._v("Export details")]),
+                _c(
+                  "form",
+                  [
+                    _c("label", [_vm._v("Requests & comments")]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "input-wrapper disabled" }, [
+                    _c("div", { staticClass: "form-element" }, [
                       _c(
-                        "p",
+                        "label",
+                        { staticClass: "input-wrapper check-button" },
                         [
-                          _vm._v(
-                            _vm._s(_vm.productsToExport.length) +
-                              " products \n                            "
-                          ),
-                          _vm.exportComments
-                            ? [
-                                _vm._v(
-                                  ", " +
-                                    _vm._s(
-                                      _vm.productsToExport.filter(function(x) {
-                                        return x.requests.length > 0
-                                      }).length
-                                    ) +
-                                    " with requests"
-                                )
+                          _c("div", { staticClass: "checkbox" }, [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.exportComments,
+                                  expression: "exportComments"
+                                }
+                              ],
+                              attrs: { type: "checkbox" },
+                              domProps: {
+                                checked: Array.isArray(_vm.exportComments)
+                                  ? _vm._i(_vm.exportComments, null) > -1
+                                  : _vm.exportComments
+                              },
+                              on: {
+                                change: function($event) {
+                                  var $$a = _vm.exportComments,
+                                    $$el = $event.target,
+                                    $$c = $$el.checked ? true : false
+                                  if (Array.isArray($$a)) {
+                                    var $$v = null,
+                                      $$i = _vm._i($$a, $$v)
+                                    if ($$el.checked) {
+                                      $$i < 0 &&
+                                        (_vm.exportComments = $$a.concat([$$v]))
+                                    } else {
+                                      $$i > -1 &&
+                                        (_vm.exportComments = $$a
+                                          .slice(0, $$i)
+                                          .concat($$a.slice($$i + 1)))
+                                    }
+                                  } else {
+                                    _vm.exportComments = $$c
+                                  }
+                                }
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c("span", { staticClass: "checkmark solid" }, [
+                              _c("i", { staticClass: "fas fa-check" })
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("span", [_vm._v("Include Requests and comments")])
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-element" }, [
+                      _c(
+                        "label",
+                        { staticClass: "input-wrapper check-button" },
+                        [
+                          _c("div", { staticClass: "checkbox" }, [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.onlyWithRequests,
+                                  expression: "onlyWithRequests"
+                                }
+                              ],
+                              attrs: { type: "checkbox" },
+                              domProps: {
+                                checked: Array.isArray(_vm.onlyWithRequests)
+                                  ? _vm._i(_vm.onlyWithRequests, null) > -1
+                                  : _vm.onlyWithRequests
+                              },
+                              on: {
+                                change: function($event) {
+                                  var $$a = _vm.onlyWithRequests,
+                                    $$el = $event.target,
+                                    $$c = $$el.checked ? true : false
+                                  if (Array.isArray($$a)) {
+                                    var $$v = null,
+                                      $$i = _vm._i($$a, $$v)
+                                    if ($$el.checked) {
+                                      $$i < 0 &&
+                                        (_vm.onlyWithRequests = $$a.concat([
+                                          $$v
+                                        ]))
+                                    } else {
+                                      $$i > -1 &&
+                                        (_vm.onlyWithRequests = $$a
+                                          .slice(0, $$i)
+                                          .concat($$a.slice($$i + 1)))
+                                    }
+                                  } else {
+                                    _vm.onlyWithRequests = $$c
+                                  }
+                                }
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c("span", { staticClass: "checkmark solid" }, [
+                              _c("i", { staticClass: "fas fa-check" })
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("span", [
+                            _vm._v("Only include Products with Requests")
+                          ])
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _vm.userPermissionLevel >= 4
+                      ? [
+                          _c("label", [_vm._v("Distribution")]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "form-element" }, [
+                            _c(
+                              "label",
+                              { staticClass: "input-wrapper check-button" },
+                              [
+                                _c("div", { staticClass: "checkbox" }, [
+                                  _c("input", {
+                                    directives: [
+                                      {
+                                        name: "model",
+                                        rawName: "v-model",
+                                        value: _vm.includeDistribution,
+                                        expression: "includeDistribution"
+                                      }
+                                    ],
+                                    attrs: { type: "checkbox" },
+                                    domProps: {
+                                      checked: Array.isArray(
+                                        _vm.includeDistribution
+                                      )
+                                        ? _vm._i(
+                                            _vm.includeDistribution,
+                                            null
+                                          ) > -1
+                                        : _vm.includeDistribution
+                                    },
+                                    on: {
+                                      change: function($event) {
+                                        var $$a = _vm.includeDistribution,
+                                          $$el = $event.target,
+                                          $$c = $$el.checked ? true : false
+                                        if (Array.isArray($$a)) {
+                                          var $$v = null,
+                                            $$i = _vm._i($$a, $$v)
+                                          if ($$el.checked) {
+                                            $$i < 0 &&
+                                              (_vm.includeDistribution = $$a.concat(
+                                                [$$v]
+                                              ))
+                                          } else {
+                                            $$i > -1 &&
+                                              (_vm.includeDistribution = $$a
+                                                .slice(0, $$i)
+                                                .concat($$a.slice($$i + 1)))
+                                          }
+                                        } else {
+                                          _vm.includeDistribution = $$c
+                                        }
+                                      }
+                                    }
+                                  }),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    { staticClass: "checkmark solid" },
+                                    [_c("i", { staticClass: "fas fa-check" })]
+                                  )
+                                ]),
+                                _vm._v(" "),
+                                _c("span", [
+                                  _vm._v("Include distribution (In/Out/Focus)")
+                                ])
                               ]
-                            : _vm._e(),
+                            )
+                          ]),
                           _vm._v(" "),
                           _vm.includeDistribution
-                            ? [
-                                _vm._v(
-                                  ", with " +
-                                    _vm._s(
-                                      _vm.productsToExport.reduce(function(
-                                        acc,
-                                        el
-                                      ) {
-                                        return acc + el.actions.length
-                                      },
-                                      0)
-                                    ) +
-                                    " actions"
+                            ? _c("div", { staticClass: "form-element" }, [
+                                _c(
+                                  "label",
+                                  { staticClass: "input-wrapper check-button" },
+                                  [
+                                    _c("div", { staticClass: "checkbox" }, [
+                                      _c("input", {
+                                        directives: [
+                                          {
+                                            name: "model",
+                                            rawName: "v-model",
+                                            value: _vm.includeNotDecided,
+                                            expression: "includeNotDecided"
+                                          }
+                                        ],
+                                        attrs: { type: "checkbox" },
+                                        domProps: {
+                                          checked: Array.isArray(
+                                            _vm.includeNotDecided
+                                          )
+                                            ? _vm._i(
+                                                _vm.includeNotDecided,
+                                                null
+                                              ) > -1
+                                            : _vm.includeNotDecided
+                                        },
+                                        on: {
+                                          change: function($event) {
+                                            var $$a = _vm.includeNotDecided,
+                                              $$el = $event.target,
+                                              $$c = $$el.checked ? true : false
+                                            if (Array.isArray($$a)) {
+                                              var $$v = null,
+                                                $$i = _vm._i($$a, $$v)
+                                              if ($$el.checked) {
+                                                $$i < 0 &&
+                                                  (_vm.includeNotDecided = $$a.concat(
+                                                    [$$v]
+                                                  ))
+                                              } else {
+                                                $$i > -1 &&
+                                                  (_vm.includeNotDecided = $$a
+                                                    .slice(0, $$i)
+                                                    .concat($$a.slice($$i + 1)))
+                                              }
+                                            } else {
+                                              _vm.includeNotDecided = $$c
+                                            }
+                                          }
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c(
+                                        "span",
+                                        { staticClass: "checkmark solid" },
+                                        [
+                                          _c("i", {
+                                            staticClass: "fas fa-check"
+                                          })
+                                        ]
+                                      )
+                                    ]),
+                                    _vm._v(" "),
+                                    _c("span", [
+                                      _vm._v(
+                                        'Include "Not Decided" in distribution'
+                                      )
+                                    ])
+                                  ]
                                 )
-                              ]
-                            : _vm._e(),
-                          _vm._v(" "),
-                          _vm.includeNotDecided
-                            ? [
-                                _vm._v(
-                                  ", and " +
-                                    _vm._s(
-                                      _vm.productsToExport.reduce(function(
-                                        acc,
-                                        el
-                                      ) {
-                                        return acc + el.nds.length
-                                      },
-                                      0)
-                                    ) +
-                                    " not decided"
-                                )
-                              ]
+                              ])
                             : _vm._e()
-                        ],
-                        2
-                      )
+                        ]
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-element" }, [
+                      _c("label", [_vm._v("Export details")]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "input-wrapper disabled" }, [
+                        _c(
+                          "p",
+                          [
+                            _vm._v(
+                              _vm._s(_vm.productsToExport.length) +
+                                " products \n                            "
+                            ),
+                            _vm.exportComments
+                              ? [
+                                  _vm._v(
+                                    ", " +
+                                      _vm._s(
+                                        _vm.productsToExport.filter(function(
+                                          x
+                                        ) {
+                                          return x.requests.length > 0
+                                        }).length
+                                      ) +
+                                      " with requests"
+                                  )
+                                ]
+                              : _vm._e(),
+                            _vm._v(" "),
+                            _vm.includeDistribution
+                              ? [
+                                  _vm._v(
+                                    ", with " +
+                                      _vm._s(
+                                        _vm.productsToExport.reduce(function(
+                                          acc,
+                                          el
+                                        ) {
+                                          return acc + el.actions.length
+                                        },
+                                        0)
+                                      ) +
+                                      " actions"
+                                  )
+                                ]
+                              : _vm._e(),
+                            _vm._v(" "),
+                            _vm.includeNotDecided
+                              ? [
+                                  _vm._v(
+                                    ", and " +
+                                      _vm._s(
+                                        _vm.productsToExport.reduce(function(
+                                          acc,
+                                          el
+                                        ) {
+                                          return acc + el.nds.length
+                                        },
+                                        0)
+                                      ) +
+                                      " not decided"
+                                  )
+                                ]
+                              : _vm._e()
+                          ],
+                          2
+                        )
+                      ])
                     ])
-                  ])
-                ]),
+                  ],
+                  2
+                ),
                 _vm._v(" "),
                 _vm.exportingPDF
                   ? _c(
@@ -42928,34 +42976,38 @@ var render = function() {
                                     ]
                                   : _vm._e(),
                                 _vm._v(" "),
-                                (row.user
-                                ? row.user.impact
-                                : row.impact)
-                                  ? _c(
-                                      "span",
-                                      {
-                                        staticClass: "impact",
-                                        class: [
-                                          row.user
-                                            ? "impact-" + row.user.impact
-                                            : "impact-" + row.impact
-                                        ]
-                                      },
-                                      [
-                                        _vm._v(
-                                          "\n                                    Impact (" +
-                                            _vm._s(
-                                              row.user
-                                                ? row.user.impact
-                                                : row.impact
-                                            ) +
-                                            ") "
-                                        ),
-                                        _c("span", {
-                                          staticClass: "circle tiny"
-                                        })
-                                      ]
-                                    )
+                                _vm.userPermissionLevel >= 4
+                                  ? [
+                                      (row.user
+                                      ? row.user.impact
+                                      : row.impact)
+                                        ? _c(
+                                            "span",
+                                            {
+                                              staticClass: "impact",
+                                              class: [
+                                                row.user
+                                                  ? "impact-" + row.user.impact
+                                                  : "impact-" + row.impact
+                                              ]
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                                        Impact (" +
+                                                  _vm._s(
+                                                    row.user
+                                                      ? row.user.impact
+                                                      : row.impact
+                                                  ) +
+                                                  ") "
+                                              ),
+                                              _c("span", {
+                                                staticClass: "circle tiny"
+                                              })
+                                            ]
+                                          )
+                                        : _vm._e()
+                                    ]
                                   : _vm._e()
                               ],
                               2

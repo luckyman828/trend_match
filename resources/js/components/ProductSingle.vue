@@ -192,9 +192,11 @@
                                     <template v-if="row.focus != null">
                                         <span class="focus" v-if="row.focus">Focus <i class="fas fa-star"></i></span>
                                     </template>
-                                    <span class="impact" v-if="row.user ? row.user.impact : row.impact" :class="[row.user ? 'impact-'+row.user.impact : 'impact-'+row.impact]">
-                                        Impact ({{row.user ? row.user.impact : row.impact}}) <span class="circle tiny"></span>
-                                    </span>
+                                    <template v-if="userPermissionLevel >= 4">
+                                        <span class="impact" v-if="row.user ? row.user.impact : row.impact" :class="[row.user ? 'impact-'+row.user.impact : 'impact-'+row.impact]">
+                                            Impact ({{row.user ? row.user.impact : row.impact}}) <span class="circle tiny"></span>
+                                        </span>
+                                    </template>
                                 </p>
                             </div>
                         </div>

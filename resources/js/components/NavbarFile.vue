@@ -169,25 +169,27 @@
                             <span>Only include Products with Requests</span>
                         </label>
                     </div>
-                    <label>Distribution</label>
-                    <div class="form-element">
-                        <label class="input-wrapper check-button">
-                            <div class="checkbox">
-                                <input type="checkbox" v-model="includeDistribution">
-                                <span class="checkmark solid"><i class="fas fa-check"></i></span>
-                            </div>
-                            <span>Include distribution (In/Out/Focus)</span>
-                        </label>
-                    </div>
-                    <div class="form-element" v-if="includeDistribution">
-                        <label class="input-wrapper check-button">
-                            <div class="checkbox">
-                                <input type="checkbox" v-model="includeNotDecided">
-                                <span class="checkmark solid"><i class="fas fa-check"></i></span>
-                            </div>
-                            <span>Include "Not Decided" in distribution</span>
-                        </label>
-                    </div>
+                    <template v-if="userPermissionLevel >= 4">
+                        <label>Distribution</label>
+                        <div class="form-element">
+                            <label class="input-wrapper check-button">
+                                <div class="checkbox">
+                                    <input type="checkbox" v-model="includeDistribution">
+                                    <span class="checkmark solid"><i class="fas fa-check"></i></span>
+                                </div>
+                                <span>Include distribution (In/Out/Focus)</span>
+                            </label>
+                        </div>
+                        <div class="form-element" v-if="includeDistribution">
+                            <label class="input-wrapper check-button">
+                                <div class="checkbox">
+                                    <input type="checkbox" v-model="includeNotDecided">
+                                    <span class="checkmark solid"><i class="fas fa-check"></i></span>
+                                </div>
+                                <span>Include "Not Decided" in distribution</span>
+                            </label>
+                        </div>
+                    </template>
                     <div class="form-element">
                         <label>Export details</label>
                         <div class="input-wrapper disabled">
