@@ -80,6 +80,19 @@ IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
   IF !ERRORLEVEL! NEQ 0 goto error
 )
 
+:: Install NPM
+echo Install NPM Packages
+call npm install
+
+:: Optimize Laravel
+echo Optimizing Laravel - Updating cache
+call php artisan config:cache
+call php artisan route:cache
+
+:: Build NPM
+echo Building NPM (NPM RUN PRODUCTION)
+call npm run production
+
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 goto end
 
