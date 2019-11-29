@@ -125,6 +125,8 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 
 :: 4. Custom scripts
 echo Running custom scripts
+echo generate key
+call :ExecuteCmd php artisan key:generate 
 echo config cache
 call :ExecuteCmd php artisan config:cache
 echo route cache
