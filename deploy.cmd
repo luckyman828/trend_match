@@ -86,8 +86,26 @@ goto :EOF
 :: ----------
 
 :Deployment
-echo Handling node.js deployment.
 
+echo Handling Composer deployment
+IF EXIST "%DEPLOYMENT_SOURCE%\composer.json" (
+  cd %DEPLOYMENT_SOURCE%
+
+  IF NOT EXIST "%DEPLOYMENT_SOURCE%\composer.phar" (
+    echo Composer.phar not found. Downloading...
+    call curl -s https://getcomposer.org/installer | php
+    IF !ERRORLEVEL! NEQ 0 goto error
+  ) ELSE (
+      echo Attempting to update composer.phar
+      php composer.phar self-update
+  )
+  
+  call php composer.phar install --no-dev
+  IF !ERRORLEVEL! NEQ 0 goto error
+)
+
+
+echo Handling node.js deployment.
 :: 1. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
   call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_SOURCE%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
