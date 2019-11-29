@@ -123,18 +123,6 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
   popd
 )
 
-:: 4. Custom scripts
-:: echo Running custom scripts
-:: echo generate key
-:: call :ExecuteCmd php artisan key:generate 
-:: echo config cache
-:: call :ExecuteCmd php artisan config:cache
-:: echo route cache
-:: call :ExecuteCmd php artisan route:cache
-:: echo Build app
-:: call :ExecuteCmd npm run production
-
-
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 goto end
