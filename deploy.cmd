@@ -82,16 +82,16 @@ IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
 
 :: Install NPM
 echo Install NPM Packages
-call npm install
+call :ExecuteCmd npm install
 
 :: Optimize Laravel
 echo Optimizing Laravel - Updating cache
-call php artisan config:cache
-call php artisan route:cache
+call :ExecuteCmd php artisan config:cache
+call :ExecuteCmd php artisan route:cache
 
 :: Build NPM
 echo Building NPM (NPM RUN PRODUCTION)
-call npm run production
+call :ExecuteCmd npm run production
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 goto end
