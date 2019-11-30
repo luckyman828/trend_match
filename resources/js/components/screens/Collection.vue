@@ -1,6 +1,6 @@
 <template>
     <div class="collection">
-        <h1>Files 30</h1>
+        <h1>Files</h1>
         <div class="underline"></div>
         <div class="filters">
             <!-- <Dropdown class="dropdown-parent left">

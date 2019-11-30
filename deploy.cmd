@@ -87,22 +87,22 @@ goto :EOF
 
 :Deployment
 
-REM echo Handling Composer deployment
-REM IF EXIST "%DEPLOYMENT_SOURCE%\composer.json" (
-REM   cd %DEPLOYMENT_SOURCE%
+echo Handling Composer deployment
+IF EXIST "%DEPLOYMENT_SOURCE%\composer.json" (
+  cd %DEPLOYMENT_SOURCE%
 
-REM   IF NOT EXIST "%DEPLOYMENT_SOURCE%\composer.phar" (
-REM     echo Composer.phar not found. Downloading...
-REM     call curl -s https://getcomposer.org/installer | php
-REM     IF !ERRORLEVEL! NEQ 0 goto error
-REM   ) ELSE (
-REM       echo Attempting to update composer.phar
-REM       php composer.phar self-update
-REM   )
+  IF NOT EXIST "%DEPLOYMENT_SOURCE%\composer.phar" (
+    echo Composer.phar not found. Downloading...
+    call curl -s https://getcomposer.org/installer | php
+    IF !ERRORLEVEL! NEQ 0 goto error
+  ) ELSE (
+      echo Attempting to update composer.phar
+      php composer.phar self-update
+  )
   
-REM   call php composer.phar install --no-dev
-REM   IF !ERRORLEVEL! NEQ 0 goto error
-REM )
+  call php composer.phar install --no-dev
+  IF !ERRORLEVEL! NEQ 0 goto error
+)
 
 
 echo Handling node.js deployment.
@@ -115,9 +115,10 @@ IF !ERRORLEVEL! NEQ 0 goto error
 :: 2. Select node version
 call :SelectNodeVersion
 
-:: 3. Install npm packages
+:: 3. Install npm packages + build app
 IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 pushd "%DEPLOYMENT_TARGET%"
+echo "Install node packages"
 call :ExecuteCmd !NPM_CMD! install --production
 echo "Optimize Laravel"
 call :ExecuteCmd php artisan config:cache
