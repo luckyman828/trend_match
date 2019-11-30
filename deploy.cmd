@@ -87,29 +87,29 @@ goto :EOF
 
 :Deployment
 
-echo Handling Composer deployment
-IF EXIST "%DEPLOYMENT_SOURCE%\composer.json" (
-  cd %DEPLOYMENT_SOURCE%
+REM echo Handling Composer deployment
+REM IF EXIST "%DEPLOYMENT_SOURCE%\composer.json" (
+REM   cd %DEPLOYMENT_SOURCE%
 
-  IF NOT EXIST "%DEPLOYMENT_SOURCE%\composer.phar" (
-    echo Composer.phar not found. Downloading...
-    call curl -s https://getcomposer.org/installer | php
-    IF !ERRORLEVEL! NEQ 0 goto error
-  ) ELSE (
-      echo Attempting to update composer.phar
-      php composer.phar self-update
-  )
+REM   IF NOT EXIST "%DEPLOYMENT_SOURCE%\composer.phar" (
+REM     echo Composer.phar not found. Downloading...
+REM     call curl -s https://getcomposer.org/installer | php
+REM     IF !ERRORLEVEL! NEQ 0 goto error
+REM   ) ELSE (
+REM       echo Attempting to update composer.phar
+REM       php composer.phar self-update
+REM   )
   
-  call php composer.phar install --no-dev
-  IF !ERRORLEVEL! NEQ 0 goto error
-)
+REM   call php composer.phar install --no-dev
+REM   IF !ERRORLEVEL! NEQ 0 goto error
+REM )
 
 
 echo Handling node.js deployment.
 :: 1. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
-  call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_SOURCE%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
-  IF !ERRORLEVEL! NEQ 0 goto error
+call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_SOURCE%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
+IF !ERRORLEVEL! NEQ 0 goto error
 )
 
 :: 2. Select node version
@@ -117,24 +117,24 @@ call :SelectNodeVersion
 
 :: 3. Install npm packages
 IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
-  pushd "%DEPLOYMENT_TARGET%"
-  call :ExecuteCmd !NPM_CMD! install --production
-  IF !ERRORLEVEL! NEQ 0 goto error
-  popd
+pushd "%DEPLOYMENT_TARGET%"
+call :ExecuteCmd !NPM_CMD! install --production
+IF !ERRORLEVEL! NEQ 0 goto error
+popd
 )
 
 :: 4. Build the website
-IF EXIST "%DEPLOYMENT_TEMP%\scripts\build.js" (
+REM IF EXIST "%DEPLOYMENT_TEMP%\scripts\build.js" (
 pushd "%DEPLOYMENT_TEMP%"
 echo "Building web site"
 call npm run production
 if !ERRORLEVEL! NEQ 0 goto error
 popd
-)
+REM )
 
 :: 5. KuduSync to DEPLOYMENT_TARGET
 echo "Syncing site to Deployment Target"
-call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_TEMP%\build" -t "%DEPLOYMENT_TARGET%" -x true -i ".git;.hg;.deployment;deploy.cmd"
+call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_TEMP%" -t "%DEPLOYMENT_TARGET%" -x true -i ".git;.hg;.deployment;deploy.cmd"
 IF !ERRORLEVEL! NEQ 0 goto error
 
 
