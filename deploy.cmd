@@ -119,27 +119,14 @@ call :SelectNodeVersion
 IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 pushd "%DEPLOYMENT_TARGET%"
 call :ExecuteCmd !NPM_CMD! install --production
+echo "Optimize Laravel"
+call :ExecuteCmd php artisan config:cache
+call :ExecuteCmd php artisan route:cache
+echo "Build site with npm run production"
+call :ExecuteCmd !NPM_CMD! run production
 IF !ERRORLEVEL! NEQ 0 goto error
 popd
 )
-
-:: 4. Build the website
-REM IF EXIST "%DEPLOYMENT_TEMP%\scripts\build.js" (
-REM pushd "%DEPLOYMENT_TEMP%"
-echo "Building web site"
-echo "Optimize Laravel"
-call php artisan config:cahce
-call php artisan route:cache
-echo "Build site with npm run production"
-call npm run production
-if !ERRORLEVEL! NEQ 0 goto error
-REM popd
-REM )
-
-:: 5. KuduSync to DEPLOYMENT_TARGET
-echo "Syncing site to Deployment Target"
-call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_SOURCE%" -t "%DEPLOYMENT_TARGET%" -x true -i ".git;.hg;.deployment;deploy.cmd"
-IF !ERRORLEVEL! NEQ 0 goto error
 
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
