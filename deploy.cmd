@@ -124,13 +124,13 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 )
 
 :: 4. Build the website
-::IF EXIST "%DEPLOYMENT_TEMP%\scripts\build.js" (
+IF EXIST "%DEPLOYMENT_TEMP%\scripts\build.js" (
 pushd "%DEPLOYMENT_TEMP%"
 echo "Building web site"
 call npm run production
 if !ERRORLEVEL! NEQ 0 goto error
 popd
-:: )
+)
 
 :: 5. KuduSync to DEPLOYMENT_TARGET
 echo "Syncing site to Deployment Target"
