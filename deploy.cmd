@@ -127,8 +127,6 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 ::IF EXIST "%DEPLOYMENT_TEMP%\scripts\build.js" (
 pushd "%DEPLOYMENT_TEMP%"
 echo "Building web site"
-call php artisan config:cache
-call php artisan route:cache
 call npm run production
 if !ERRORLEVEL! NEQ 0 goto error
 popd
