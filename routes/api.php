@@ -70,6 +70,7 @@ Route::middleware('auth:api')->group( function(){
 
     // xxx PRODUCTS xxx
     Route::put('product', 'ProductController@insertOrUpdate');
+    Route::delete('product', 'ProductController@delete');
     Route::post('product/images', 'ProductController@uploadImages');
     Route::delete('product/images', 'ProductController@deleteImages');
     Route::post('product/rotate-img', 'ProductController@rotateImage');

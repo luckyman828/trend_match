@@ -22,7 +22,6 @@
                                         {{selectedCategories.length}}
                                     </span>
                                 </div>
-                                <!-- <span v-if="selectedCategories.length > 0" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]">Clear filter</span> -->
                             </template>
                             <template v-slot:header="slotProps">
                                 <span>Filter by category</span>
@@ -40,7 +39,6 @@
                                         {{selectedDeliveryDates.length}}
                                     </span>
                                 </div>
-                                <!-- <span v-if="selectedDeliveryDates.length > 0" class="clear button invisible primary" @click="$refs.filterDelivery.clear(); selectedDeliveryDates=[]">Clear filter</span> -->
                             </template>
                             <template v-slot:header="slotProps">
                                 <span>Filter by delivery date</span>
@@ -49,13 +47,30 @@
                                 <CheckboxButtons :options="dynamicDeliveryDates" :optionNameKey="'name'" :optionValueKey="'value'" ref="filterDelivery" v-model="selectedDeliveryDates" @change="$refs.filterDelivery.submit()"/>
                             </template>
                         </Dropdown>
+                        <Dropdown class="dropdown-parent left" v-if="currentTask.type == 'approval' && userPermissionLevel == 3">
+                            <template v-slot:button="slotProps">
+                                <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
+                                    <span>Buyer group </span>
+                                    <i class="far fa-chevron-down"></i>
+                                    <span v-if="selectedBuyerGroups.length > 0" class="bubble">
+                                        {{selectedBuyerGroups.length}}
+                                    </span>
+                                </div>
+                            </template>
+                            <template v-slot:header="slotProps">
+                                <span>Filter by buyer group</span>
+                            </template>
+                            <template v-slot:body>
+                                <CheckboxButtons :options="dynamicBuyerGroups" ref="filterBuyerGroup" v-model="selectedBuyerGroups" @change="$refs.filterBuyerGroup.submit()"/>
+                            </template>
+                        </Dropdown>
                         <label v-if="currentTask.type == 'approval'" class="square checkbutton ghost light-2 checkbox clickable">
                             <span>Show UNREAD only</span>
                             <input type="checkbox" v-model="unreadOnly">
                             <span class="checkmark solid"><i class="fas fa-check"></i></span>
                         </label>
 
-                        <span v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || unreadOnly" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]; $refs.filterDelivery.clear(); selectedDeliveryDates=[]; unreadOnly = false">Clear filter</span>
+                        <span v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]; $refs.filterDelivery.clear(); selectedDeliveryDates=[]; $refs.filterBuyerGroup.clear(); selectedBuyerGroups=[]; unreadOnly = false">Clear filter</span>
                     </div>
 
                     <div class="right">
@@ -248,6 +263,14 @@ export default{
                 this.updateSelectedDeliveryDates(value)
             }
         },
+        selectedBuyerGroups: {
+            get () {
+                return this.$store.state.entities.products.selectedBuyerGroups
+            },
+            set (value) {
+                this.updateSelectedBuyerGroups(value)
+            }
+        },
         unreadOnly: {
             get () {
                 return this.$store.state.entities.products.unreadOnly
@@ -298,9 +321,11 @@ export default{
             const products = this.products
             let uniqueCategories = []
             products.forEach(product => {
-                const found = (uniqueCategories.includes(product.category))
-                if (!found)
-                    uniqueCategories.push(product.category)
+                if (product.category) {
+                    const found = (uniqueCategories.includes(product.category))
+                    if (!found)
+                        uniqueCategories.push(product.category)
+                }
             })
             return uniqueCategories
         },
@@ -308,14 +333,28 @@ export default{
             const products = this.products
             let uniqueDeliveryDates = []
             products.forEach(product => {
-                const found = (uniqueDeliveryDates.find(x => x.value == product.delivery_date))
-                if (!found)
-                    uniqueDeliveryDates.push({
-                        name: new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'}), 
-                        value: product.delivery_date
-                        })
+                if (product.delivery_date) {
+                    const found = (uniqueDeliveryDates.find(x => x.value == product.delivery_date))
+                    if (!found)
+                        uniqueDeliveryDates.push({
+                            name: new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'}), 
+                            value: product.delivery_date
+                            })
+                }
             })
             return uniqueDeliveryDates
+        },
+        dynamicBuyerGroups() {
+            const products = this.products
+            let unique = []
+            products.forEach(product => {
+                if (product.buyer_group) {
+                    const found = (unique.includes(product.buyer_group))
+                    if (!found)
+                        unique.push(product.buyer_group)
+                }
+            })
+            return unique
         },
         teamsForFilter() {
             if (this.userPermissionLevel >= 3) {
@@ -349,7 +388,7 @@ export default{
     methods: {
         ...mapActions('entities/collections', ['fetchCollections']),
         ...mapActions('entities/products', ['fetchProducts']),
-        ...mapMutations('entities/products', ['updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter']),
+        ...mapMutations('entities/products', ['updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter', 'updateSelectedBuyerGroups']),
         ...mapActions('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/comments', ['fetchComments']),

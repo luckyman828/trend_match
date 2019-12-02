@@ -11,6 +11,7 @@ export default {
         availableProductIds: [],
         selectedCategories: [],
         selectedDeliveryDates: [],
+        selectedBuyerGroups: [],
         unreadOnly: false,
         currentProductFilter: 'overview',
         singleVisible: false,
@@ -30,6 +31,9 @@ export default {
         selectedDeliveryDates: state => {
             return state.selectedDeliveryDates
         },
+        selectedBuyerGroups: state => {
+            return state.selectedBuyerGroups
+        },
         unreadOnly: state => {
             return state.unreadOnly
         },
@@ -46,10 +50,11 @@ export default {
             if (!rootGetters['persist/loadingInit']) {
                 const products = Product.query().all()
                 products.forEach(product => {
-                    if (typeof product.color_variants == 'string')
+                    if (product.color_variants && typeof product.color_variants == 'string')
                         product.color_variants = JSON.parse(product.color_variants)
-                    if (typeof product.assortments == 'string') product.assortments = JSON.parse(product.assortments)
-                    if (typeof product.prices == 'string') product.prices = JSON.parse(product.prices)
+                    if (product.assortments && typeof product.assortments == 'string')
+                        product.assortments = JSON.parse(product.assortments)
+                    if (product.prices && typeof product.prices == 'string') product.prices = JSON.parse(product.prices)
                 })
                 return products
             }
@@ -537,6 +542,7 @@ export default {
             const products = getters.products
             const categories = getters.selectedCategories
             const deliveryDates = getters.selectedDeliveryDates
+            const buyerGroups = getters.selectedBuyerGroups
             const unreadOnly = getters.unreadOnly
             let productsToReturn = []
 
@@ -555,6 +561,13 @@ export default {
                         return Array.from(deliveryDates).includes(product.delivery_date)
                     })
                     productsToReturn = filteredByDeliveryDate
+                }
+                // Filter by buyer group
+                if (buyerGroups.length > 0) {
+                    const filteredByBuyerGroups = productsToReturn.filter(product => {
+                        return Array.from(buyerGroups).includes(product.buyer_group)
+                    })
+                    productsToReturn = filteredByBuyerGroups
                 }
 
                 // Filer by unread
@@ -570,6 +583,7 @@ export default {
             const products = getters.productsScoped
             const categories = getters.selectedCategories
             const deliveryDates = getters.selectedDeliveryDates
+            const buyerGroups = getters.selectedBuyerGroups
             const unreadOnly = getters.unreadOnly
             let productsToReturn = []
 
@@ -588,6 +602,12 @@ export default {
                         return Array.from(deliveryDates).includes(product.delivery_date)
                     })
                     productsToReturn = filteredByDeliveryDate
+                }
+                if (buyerGroups.length > 0) {
+                    const filteredByBuyerGroups = productsToReturn.filter(product => {
+                        return Array.from(buyerGroups).includes(product.buyer_group)
+                    })
+                    productsToReturn = filteredByBuyerGroups
                 }
 
                 // Filer by unread
@@ -773,6 +793,13 @@ export default {
             commit('setCurrentProductId', id)
             commit('setSingleVisisble', true)
         },
+        instantiateNewProduct({ commit }, { id, fileId }) {
+            console.log('instantiating new product in store with id: ' + id + ', and file id: ' + fileId)
+            Product.insert({
+                data: { id: id, collection_id: fileId, title: 'Unnamed product' },
+            })
+            // Product.insert({ data: product })
+        },
         async updateProduct({ commit }, product) {
             console.log('updating product in store')
             product.prices = JSON.stringify(product.prices)
@@ -792,6 +819,8 @@ export default {
                     composition: product.composition,
                     category: product.category,
                     description: product.sale_description,
+                    collection_id: product.collection_id,
+                    datasource_id: product.datasource_id,
                 })
                 .then(response => {
                     console.log(response.data)
@@ -868,8 +897,6 @@ export default {
             return uploadSucces
         },
         async deleteImages({ commit }, imagesToDelete) {
-            console.log('Deleting images product in store')
-
             await axios
                 .delete(`/api/product/images`, {
                     data: {
@@ -881,6 +908,25 @@ export default {
                 })
                 .catch(err => {
                     console.log(err.response)
+                })
+        },
+        async deleteProduct({ commit }, productId) {
+            console.log('Deleting product in store')
+
+            await axios
+                .delete(`/api/product`, {
+                    data: {
+                        id: productId,
+                    },
+                })
+                .then(response => {
+                    console.log('product deleted!')
+                    Product.delete(productId)
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err.response)
+                    commit('alertError')
                 })
         },
     },
@@ -905,6 +951,9 @@ export default {
         updateSelectedDeliveryDates(state, payload) {
             state.selectedDeliveryDates = payload
         },
+        updateSelectedBuyerGroups(state, payload) {
+            state.selectedBuyerGroups = payload
+        },
         setUnreadOnly(state, payload) {
             state.unreadOnly = payload
         },
@@ -923,6 +972,9 @@ export default {
                 .slice(0, 19)
                 .replace('T', ' ')
             Product.insert({ data: product })
+        },
+        alertError: state => {
+            window.alert('Network error. Please check your connection')
         },
     },
 }

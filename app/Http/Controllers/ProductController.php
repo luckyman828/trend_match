@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Action;
+use App\Comment;
+use App\CommentVote;
 use App\Product;
 use App\Http\Resources\Product as ProductResource;
+use Illuminate\Database\Eloquent\Builder;
 use Intervention\Image\Facades\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Response;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -27,6 +31,8 @@ class ProductController extends Controller
         $product->composition = $request->composition;
         $product->category = $request->category;
         $product->sale_description = $request->description;
+        $product->collection_id = $request->collection_id;
+        $product->datasource_id = $request->datasource_id;
 
         // return $action;
 
@@ -40,6 +46,28 @@ class ProductController extends Controller
             // return $dataToReturn;
             return json_decode( json_encode($dataToReturn), true);
         }
+    }
+    public function delete(Request $request)
+    {
+        // Find all file specific records
+        $product_id = $request->id;
+        
+        $product = Product::find($product_id);
+        $comments = Comment::where('product_id', $product_id);
+        $actions = Action::where('product_id', $product_id);
+        $commentVotes = CommentVote::whereHas('comment', function (Builder $query) use($product_id) {
+            $query->where('product_id', $product_id);
+        });
+        
+        // Use a transaction to make sure all file related records are deleted or none
+        DB::transaction(function() use($product, $comments, $actions, $commentVotes) {
+            $product->delete();
+            $comments->delete();
+            $actions->delete();
+            $commentVotes->delete();
+        });
+
+        return 'Deleted product with id: ' . $product_id;
     }
     public function rotateImage(Request $request)
     {
