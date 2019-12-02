@@ -28,6 +28,7 @@ export default {
         'oldValue',
         'placeholder',
         'id',
+        'activateOnMount'
     ],
     data: function () { return {
         editActive: false,
@@ -61,6 +62,10 @@ export default {
             this.$emit('input', this.oldValue)
             this.$emit('revert')
         },
+    },
+    mounted() {
+        // Set default active state
+        if (this.activateOnMount) this.setActive()
     }
 }
 </script>
@@ -69,6 +74,7 @@ export default {
 @import '~@/_variables.scss';
 
     .edit-input-wrapper {
+        line-height: 1.6;
         &:not(.active) {
             cursor: pointer;
             .input-wrapper {

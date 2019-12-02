@@ -4,53 +4,34 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
-use App\Product;
-use App\Http\Resources\Product as ProductResource;
-use App\Action;
-use App\Http\Resources\Action as ActionResource;
-use App\Comment;
-use App\Http\Resources\Comment as CommentResource;
-use App\ProductFinalAction;
-use App\Http\Resources\ProductFinalAction as ProductFinalActionResource;
-use App\CommentVote;
-use App\Http\Resources\CommentVote as CommentVoteResource;
-use App\PhaseProduct;
-use App\Http\Resources\PhaseProduct as PhaseProductResource;
-use App\TeamProduct;
-use App\Http\Resources\TeamProduct as TeamProductResource;
-use App\Collection;
-use App\FileTask;
-use App\Http\Resources\Collection as CollectionResource;
-use App\TaskAction;
-use App\Request as RequestModel;
-use App\TeamFile as TeamFile;
+use App\Catalogue as Folder;
+use App\Http\Resources\Catalogue as FolderResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class FileController extends Controller
+class FolderController extends Controller
 {
 
-    public function insertOrUpdate(Request $request)
+    public function insertOrUpdate(Request $request, $id)
     {
-        $existingFile = Collection::find($request->id);
+        if ($id) {
+            $existingFolder = Folder::find($id);
+            $folder = $existingFolder;
+            $folder->id = $id;
+        } else {
+            $folder = new Folder;
+        }
 
-        $file = ($existingFile) ? $existingFile : new Collection;
-
-        $file->id = $request->id;
-        $file->workspace_id = $request->workspace_id;
-        $file->title = $request->title;
-        $file->phase = $request->phase;
-        $file->folder_id = $request->catalog_id;
-        $file->catalog_id = $request->catalog_id;
-        $file->start_date = $request->start_date;
-        $file->end_date = $request->end_date;
+        $folder->workspace_id = $request->folder['workspace_id'];
+        $folder->parent_id = $request->folder['parent_id'];
+        $folder->title = $request->folder['title'];
 
         // return $action;
 
-        if($file->save()) {
+        if($folder->save()) {
 
             // Fire event
-            $dataToReturn = new CollectionResource($file);
+            $dataToReturn = new FolderResource($folder);
             // broadcast(new ActionUpdated($actionToReturn))->toOthers();
             // broadcast(new ActionUpdated($actionToReturn))->toOthers();
 

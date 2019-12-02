@@ -59,6 +59,15 @@ export default {
         white-space: nowrap;
         border-spacing: 0 2px;
         tr {
+            &:hover {
+                td {
+                    background: $light1;
+                    i {
+                        color: $dark05;
+                        transition: 0;
+                    }
+                }
+            }
             > :first-child {
                 border-radius: $rowRadius 0 0 $rowRadius;
             }

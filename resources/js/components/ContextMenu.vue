@@ -1,5 +1,5 @@
 <template>
-    <div v-if="visible" v-click-outside="hide" class="context-menu" ref="contextMenu">
+    <div v-if="visible" v-click-outside="hide" class="context-menu" ref="contextMenu" @click.capture="hide">
         <slot/>
     </div>
 </template>

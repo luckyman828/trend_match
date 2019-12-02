@@ -7822,7 +7822,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'editInputWrapper',
-  props: ['type', 'value', 'oldValue', 'placeholder', 'id'],
+  props: ['type', 'value', 'oldValue', 'placeholder', 'id', 'activateOnMount'],
   data: function data() {
     return {
       editActive: false
@@ -7857,6 +7857,10 @@ __webpack_require__.r(__webpack_exports__);
       this.$emit('input', this.oldValue);
       this.$emit('revert');
     }
+  },
+  mounted: function mounted() {
+    // Set default active state
+    if (this.activateOnMount) this.setActive();
   }
 });
 
@@ -8613,9 +8617,12 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     submit: function submit() {
-      this.$emit('input', this.$refs.input.value);
-      this.editActive = false;
-      document.activeElement.blur();
+      if (this.editActive) {
+        this.$emit('input', this.$refs.input.value);
+        this.$emit('submit', this.$refs.input.value);
+        this.editActive = false;
+        document.activeElement.blur();
+      }
     },
     cancel: function cancel() {
       this.$emit('cancel');
@@ -9103,6 +9110,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ProductTotals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ProductTotals */ "./resources/js/components/ProductTotals.vue");
 /* harmony import */ var _ProductSingle__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ProductSingle */ "./resources/js/components/ProductSingle.vue");
 /* harmony import */ var _ContextMenu__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ContextMenu */ "./resources/js/components/ContextMenu.vue");
+/* harmony import */ var _Editable__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Editable */ "./resources/js/components/Editable.vue");
+/* harmony import */ var _EditInputWrapper__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EditInputWrapper */ "./resources/js/components/EditInputWrapper.vue");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -9461,6 +9470,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 
 
 
@@ -9469,7 +9488,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   name: 'foldersTable',
   props: ['selected', 'folder'],
   components: {
-    ContextMenu: _ContextMenu__WEBPACK_IMPORTED_MODULE_3__["default"]
+    ContextMenu: _ContextMenu__WEBPACK_IMPORTED_MODULE_3__["default"],
+    Editable: _Editable__WEBPACK_IMPORTED_MODULE_4__["default"],
+    EditInputWrapper: _EditInputWrapper__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
   data: function data() {
     return {
@@ -9486,7 +9507,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       editingFile: false,
       filesToAdd: [],
       uploadingToFile: false,
-      contextMenuItem: null
+      contextMenuItem: null,
+      toEdit: null
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['userPermissionLevel', 'authUser']), {
@@ -9494,24 +9516,39 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return this.selected.length;
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/collections', ['deleteFile', 'updateFile', 'uploadToExistingFile']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/collections', ['deleteFile', 'updateFile', 'uploadToExistingFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/folders', ['deleteFolder', 'updateFolder']), {
     setCurrentFolder: function setCurrentFolder(folder) {
       this.$emit('setCurrentFolder', folder);
     },
     showContextMenu: function showContextMenu(e, item, type) {
-      // Set the current context menu item
+      var folderMenu = this.$refs.contextMenuFolder;
+      var fileMenu = this.$refs.contextMenuFile; // Hide any current contextMenus
+
+      if (fileMenu) fileMenu.hide();
+      if (folderMenu) folderMenu.hide(); // Set the current context menu item
+
       this.contextMenuItem = item; // Save a reference to the contextual menu to show
 
       var contextMenu;
 
       if (type == 'folder') {
-        contextMenu = this.$refs.contextMenuFolder;
+        contextMenu = folderMenu;
       } else {
-        contextMenu = this.$refs.contextMenuFile;
+        contextMenu = fileMenu;
       } // Position the contextual menu
 
 
       contextMenu.show(e);
+    },
+    onEditField: function onEditField(item, type, field) {
+      this.toEdit = {
+        item: item,
+        type: type,
+        field: field
+      };
+    },
+    clearToEdit: function clearToEdit() {
+      this.toEdit = null;
     },
     // onSelect(index) {
     //     this.$emit('onSelect', index)
@@ -9546,12 +9583,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       return dataSorted;
     },
-    viewSingle: function viewSingle(fileId, fileTitle) {
+    viewSingle: function viewSingle(fileId) {
       this.$router.push({
         name: 'file',
         params: {
-          fileId: fileId,
-          fileTitle: fileTitle
+          fileId: fileId
         }
       });
     },
@@ -18165,7 +18201,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".edit-input-wrapper[data-v-3ff4617e]:not(.active) {\n  cursor: pointer;\n}\n.edit-input-wrapper:not(.active) .input-wrapper[data-v-3ff4617e] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  cursor: pointer;\n}\n.edit-input-wrapper:not(.active) .buttons[data-v-3ff4617e] {\n  display: none;\n}\n.edit-input-wrapper .input-parent .edit[data-v-3ff4617e] {\n  opacity: 0;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n}\n.edit-input-wrapper .input-parent:hover .edit[data-v-3ff4617e] {\n  opacity: 1;\n}\n.edit-input-wrapper.active .input-parent .edit[data-v-3ff4617e] {\n  opacity: 1;\n}\n.edit-input-wrapper .buttons[data-v-3ff4617e] {\n  margin-top: 8px;\n}\n.edit-input-wrapper .buttons > *[data-v-3ff4617e]:not(:last-child) {\n  margin-right: 16px;\n}", ""]);
+exports.push([module.i, ".edit-input-wrapper[data-v-3ff4617e] {\n  line-height: 1.6;\n}\n.edit-input-wrapper[data-v-3ff4617e]:not(.active) {\n  cursor: pointer;\n}\n.edit-input-wrapper:not(.active) .input-wrapper[data-v-3ff4617e] {\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  cursor: pointer;\n}\n.edit-input-wrapper:not(.active) .buttons[data-v-3ff4617e] {\n  display: none;\n}\n.edit-input-wrapper .input-parent .edit[data-v-3ff4617e] {\n  opacity: 0;\n  -webkit-transition: 0.2s;\n  transition: 0.2s;\n}\n.edit-input-wrapper .input-parent:hover .edit[data-v-3ff4617e] {\n  opacity: 1;\n}\n.edit-input-wrapper.active .input-parent .edit[data-v-3ff4617e] {\n  opacity: 1;\n}\n.edit-input-wrapper .buttons[data-v-3ff4617e] {\n  margin-top: 8px;\n}\n.edit-input-wrapper .buttons > *[data-v-3ff4617e]:not(:last-child) {\n  margin-right: 16px;\n}", ""]);
 
 // exports
 
@@ -18279,7 +18315,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".folders-table[data-v-6ab81718] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.folders-table td.title i[data-v-6ab81718] {\n  width: 24px;\n}\n.clickable[data-v-6ab81718] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-6ab81718] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-6ab81718]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-6ab81718]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n}\n.flex-table .flex-group:nth-child(2) > *[data-v-6ab81718] {\n  -webkit-box-flex: 0;\n          flex: none;\n  flex-basis: 100px;\n}\n.flex-table .flex-group:nth-child(2) > *.stage[data-v-6ab81718] {\n  flex-basis: 132px;\n}\n.flex-table .flex-group[data-v-6ab81718]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-6ab81718] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-6ab81718] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-6ab81718] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-6ab81718] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table .flex-group > *.action > *[data-v-6ab81718]:not(:last-child) {\n  margin-right: 8px;\n}\n.flex-table .flex-group > td.action[data-v-6ab81718] {\n  text-align: right;\n}\n.flex-table .flex-table-row[data-v-6ab81718] {\n  height: 82px;\n}\n.flex-table .flex-table-row > *[data-v-6ab81718] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-6ab81718]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-6ab81718]:last-child {\n  margin-right: 16px;\n}\n.flex-table .flex-table-row th.action[data-v-6ab81718] {\n  text-align: right;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.show-more[data-v-6ab81718] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.view-single[data-v-6ab81718] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-6ab81718] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-6ab81718] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.edit-title.hidden[data-v-6ab81718] {\n  display: none;\n}\n.file-list p[data-v-6ab81718] {\n  position: relative;\n}\n.file-list p:hover .remove[data-v-6ab81718] {\n  opacity: 1;\n}\n.file-list .remove[data-v-6ab81718] {\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  margin-left: 4px;\n  cursor: pointer;\n}\n.file-list .remove[data-v-6ab81718]:hover {\n  color: #ff6565;\n}", ""]);
+exports.push([module.i, ".folders-table[data-v-6ab81718] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.folders-table td[data-v-6ab81718] {\n  vertical-align: top;\n  line-height: 40px;\n}\n.folders-table td.title[data-v-6ab81718] {\n  display: -webkit-box;\n  display: flex;\n}\n.folders-table td.title i[data-v-6ab81718] {\n  width: 24px;\n  line-height: 40px;\n  font-size: 16px;\n  margin-right: 8px;\n}\n.clickable[data-v-6ab81718] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-6ab81718] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-6ab81718]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-6ab81718]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n}\n.flex-table .flex-group:nth-child(2) > *[data-v-6ab81718] {\n  -webkit-box-flex: 0;\n          flex: none;\n  flex-basis: 100px;\n}\n.flex-table .flex-group:nth-child(2) > *.stage[data-v-6ab81718] {\n  flex-basis: 132px;\n}\n.flex-table .flex-group[data-v-6ab81718]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-6ab81718] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-6ab81718] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-6ab81718] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-6ab81718] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table .flex-group > *.action > *[data-v-6ab81718]:not(:last-child) {\n  margin-right: 8px;\n}\n.flex-table .flex-group > td.action[data-v-6ab81718] {\n  text-align: right;\n}\n.flex-table .flex-table-row[data-v-6ab81718] {\n  height: 82px;\n}\n.flex-table .flex-table-row > *[data-v-6ab81718] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-6ab81718]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-6ab81718]:last-child {\n  margin-right: 16px;\n}\n.flex-table .flex-table-row th.action[data-v-6ab81718] {\n  text-align: right;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.show-more[data-v-6ab81718] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.view-single[data-v-6ab81718] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-6ab81718] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-6ab81718] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.edit-title.hidden[data-v-6ab81718] {\n  display: none;\n}\n.file-list p[data-v-6ab81718] {\n  position: relative;\n}\n.file-list p:hover .remove[data-v-6ab81718] {\n  opacity: 1;\n}\n.file-list .remove[data-v-6ab81718] {\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  margin-left: 4px;\n  cursor: pointer;\n}\n.file-list .remove[data-v-6ab81718]:hover {\n  color: #ff6565;\n}", ""]);
 
 // exports
 
@@ -18298,7 +18334,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".grid-table table[data-v-10f7324d] {\n  white-space: nowrap;\n  border-spacing: 0 2px;\n}\n.grid-table table tr[data-v-10f7324d] > :first-child {\n  border-radius: 2px 0 0 2px;\n}\n.grid-table table tr[data-v-10f7324d] > :last-child {\n  border-radius: 0 2px 2px 0;\n}\n.grid-table table tr.header[data-v-10f7324d] > :first-child {\n  border-radius: 4px 0 0 4px;\n}\n.grid-table table tr.header[data-v-10f7324d] > :last-child {\n  border-radius: 0 4px 4px 0;\n}\n.grid-table table tr.header th[data-v-10f7324d] {\n  padding: 6px 12px;\n  color: #707070;\n}\n.grid-table table th[data-v-10f7324d], .grid-table table td[data-v-10f7324d] {\n  overflow: hidden;\n  background: white;\n  padding: 12px 12px;\n}\n.grid-table table th.action[data-v-10f7324d], .grid-table table td.action[data-v-10f7324d] {\n  width: 100%;\n  text-align: right;\n}", ""]);
+exports.push([module.i, ".grid-table table[data-v-10f7324d] {\n  white-space: nowrap;\n  border-spacing: 0 2px;\n}\n.grid-table table tr:hover td[data-v-10f7324d] {\n  background: #f3f3f3;\n}\n.grid-table table tr:hover td i[data-v-10f7324d] {\n  color: #3c3b54;\n  -webkit-transition: 0;\n  transition: 0;\n}\n.grid-table table tr[data-v-10f7324d] > :first-child {\n  border-radius: 2px 0 0 2px;\n}\n.grid-table table tr[data-v-10f7324d] > :last-child {\n  border-radius: 0 2px 2px 0;\n}\n.grid-table table tr.header[data-v-10f7324d] > :first-child {\n  border-radius: 4px 0 0 4px;\n}\n.grid-table table tr.header[data-v-10f7324d] > :last-child {\n  border-radius: 0 4px 4px 0;\n}\n.grid-table table tr.header th[data-v-10f7324d] {\n  padding: 6px 12px;\n  color: #707070;\n}\n.grid-table table th[data-v-10f7324d], .grid-table table td[data-v-10f7324d] {\n  overflow: hidden;\n  background: white;\n  padding: 12px 12px;\n}\n.grid-table table th.action[data-v-10f7324d], .grid-table table td.action[data-v-10f7324d] {\n  width: 100%;\n  text-align: right;\n}", ""]);
 
 // exports
 
@@ -33727,7 +33763,12 @@ var render = function() {
             }
           ],
           ref: "contextMenu",
-          staticClass: "context-menu"
+          staticClass: "context-menu",
+          on: {
+            "!click": function($event) {
+              return _vm.hide($event)
+            }
+          }
         },
         [_vm._t("default")],
         2
@@ -36247,27 +36288,68 @@ var render = function() {
                     [
                       _c("td", { staticClass: "select" }, [_c("Checkbox")], 1),
                       _vm._v(" "),
-                      _c(
-                        "td",
-                        {
-                          staticClass: "title",
-                          on: {
-                            click: function($event) {
-                              return _vm.setCurrentFolder(folder)
-                            }
-                          }
-                        },
-                        [
-                          _c("i", { staticClass: "fas fa-folder dark15" }),
-                          _vm._v(" " + _vm._s(folder.title))
-                        ]
-                      ),
+                      _vm.toEdit &&
+                      _vm.toEdit.item.id == folder.id &&
+                      _vm.toEdit.type == "folder" &&
+                      _vm.toEdit.field == "title"
+                        ? _c(
+                            "td",
+                            { staticClass: "title" },
+                            [
+                              _c("i", { staticClass: "fas fa-folder dark15" }),
+                              _vm._v(" "),
+                              _c("EditInputWrapper", {
+                                attrs: {
+                                  activateOnMount: true,
+                                  type: "text",
+                                  value: _vm.toEdit.item.title,
+                                  oldValue: folder.title
+                                },
+                                on: {
+                                  submit: function($event) {
+                                    _vm.updateFolder(_vm.toEdit.item)
+                                    _vm.clearToEdit()
+                                  },
+                                  cancel: function($event) {
+                                    return _vm.clearToEdit()
+                                  }
+                                },
+                                model: {
+                                  value: _vm.toEdit.item.title,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.toEdit.item, "title", $$v)
+                                  },
+                                  expression: "toEdit.item.title"
+                                }
+                              })
+                            ],
+                            1
+                          )
+                        : _c(
+                            "td",
+                            {
+                              staticClass: "title clickable",
+                              on: {
+                                click: function($event) {
+                                  return _vm.setCurrentFolder(folder)
+                                }
+                              }
+                            },
+                            [
+                              _c("i", { staticClass: "fas fa-folder dark15" }),
+                              _vm._v(" " + _vm._s(folder.title))
+                            ]
+                          ),
                       _vm._v(" "),
                       _c("td", { staticClass: "modified" }, [_vm._v("-")]),
                       _vm._v(" "),
                       _c("td", { staticClass: "deadline" }, [_vm._v("-")]),
                       _vm._v(" "),
-                      _c("td", { staticClass: "items" }, [_vm._v("-")]),
+                      _c("td", { staticClass: "items" }, [
+                        _vm._v(
+                          _vm._s(folder.folders.length + folder.files.length)
+                        )
+                      ]),
                       _vm._v(" "),
                       _c("td", { staticClass: "teams" }, [_vm._v("-")]),
                       _vm._v(" "),
@@ -36288,39 +36370,63 @@ var render = function() {
                 }),
                 _vm._v(" "),
                 _vm._l(_vm.folder.files, function(file) {
-                  return _c("tr", { key: file.id, staticClass: "file" }, [
-                    _c("td", { staticClass: "select" }, [_c("Checkbox")], 1),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "title" }, [
-                      _c("i", { staticClass: "fas fa-file dark15" }),
-                      _vm._v(" " + _vm._s(file.title))
-                    ]),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "modified" }, [_vm._v("-")]),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "deadline" }, [
-                      _vm._v(_vm._s(file.end_date))
-                    ]),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "items" }, [_vm._v("-")]),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "teams" }, [_vm._v("-")]),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "status" }, [
-                      _vm._v("Stage " + _vm._s(file.phase.id))
-                    ]),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "action" }, [
+                  return _c(
+                    "tr",
+                    {
+                      key: file.id,
+                      staticClass: "file",
+                      on: {
+                        contextmenu: function($event) {
+                          $event.preventDefault()
+                          return _vm.showContextMenu($event, file, "file")
+                        }
+                      }
+                    },
+                    [
+                      _c("td", { staticClass: "select" }, [_c("Checkbox")], 1),
+                      _vm._v(" "),
                       _c(
-                        "span",
+                        "td",
                         {
-                          staticClass:
-                            "button invisible ghost dark-hover true-square"
+                          staticClass: "title clickable",
+                          on: {
+                            click: function($event) {
+                              return _vm.viewSingle(file.id)
+                            }
+                          }
                         },
-                        [_c("i", { staticClass: "fas fa-ellipsis-h" })]
-                      )
-                    ])
-                  ])
+                        [
+                          _c("i", { staticClass: "fas fa-file dark15" }),
+                          _vm._v(" " + _vm._s(file.title))
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c("td", { staticClass: "modified" }, [_vm._v("-")]),
+                      _vm._v(" "),
+                      _c("td", { staticClass: "deadline" }, [
+                        _vm._v(_vm._s(file.end_date))
+                      ]),
+                      _vm._v(" "),
+                      _c("td", { staticClass: "items" }, [_vm._v("-")]),
+                      _vm._v(" "),
+                      _c("td", { staticClass: "teams" }, [_vm._v("-")]),
+                      _vm._v(" "),
+                      _c("td", { staticClass: "status" }, [
+                        _vm._v("Stage " + _vm._s(file.phase.id))
+                      ]),
+                      _vm._v(" "),
+                      _c("td", { staticClass: "action" }, [
+                        _c(
+                          "span",
+                          {
+                            staticClass:
+                              "button invisible ghost dark-hover true-square"
+                          },
+                          [_c("i", { staticClass: "fas fa-ellipsis-h" })]
+                        )
+                      ])
+                    ]
+                  )
                 })
               ]
             },
@@ -36434,97 +36540,142 @@ var render = function() {
         ])
       }),
       _vm._v(" "),
-      _c("ContextMenu", { ref: "contextMenuFolder" }, [
-        _c("div", { staticClass: "item-group" }, [
-          _c("div", { staticClass: "item" }, [
-            _c("div", { staticClass: "icon-wrapper" }, [
-              _c("i", { staticClass: "far fa-folder-open" })
-            ]),
-            _vm._v(" "),
-            _c("u", [_vm._v("O")]),
-            _vm._v("pen folder\n            ")
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "item-group" }, [
-          _c("div", { staticClass: "item" }, [
-            _c("div", { staticClass: "icon-wrapper" }, [
-              _c("i", { staticClass: "far fa-pen" })
-            ]),
-            _vm._v(" "),
-            _c("u", [_vm._v("R")]),
-            _vm._v("ename\n            ")
+      _c(
+        "ContextMenu",
+        { ref: "contextMenuFolder", staticClass: "context-folder" },
+        [
+          _c("div", { staticClass: "item-group" }, [
+            _c(
+              "div",
+              {
+                staticClass: "item",
+                on: {
+                  click: function($event) {
+                    return _vm.setCurrentFolder(_vm.contextMenuItem)
+                  }
+                }
+              },
+              [
+                _c("div", { staticClass: "icon-wrapper" }, [
+                  _c("i", { staticClass: "far fa-folder-open" })
+                ]),
+                _vm._v(" "),
+                _c("u", [_vm._v("O")]),
+                _vm._v("pen folder\n            ")
+              ]
+            )
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "item" }, [
-            _c("div", { staticClass: "icon-wrapper" }, [
-              _c("i", { staticClass: "far fa-folder" }, [
-                _c("i", { staticClass: "fas fa-long-arrow-alt-right" })
-              ])
-            ]),
+          _c("div", { staticClass: "item-group" }, [
+            _c(
+              "div",
+              {
+                staticClass: "item",
+                on: {
+                  click: function($event) {
+                    return _vm.onEditField(
+                      _vm.contextMenuItem,
+                      "folder",
+                      "title"
+                    )
+                  }
+                }
+              },
+              [
+                _c("div", { staticClass: "icon-wrapper" }, [
+                  _c("i", { staticClass: "far fa-pen" })
+                ]),
+                _vm._v(" "),
+                _c("u", [_vm._v("R")]),
+                _vm._v("ename\n            ")
+              ]
+            ),
             _vm._v(" "),
-            _c("u", [_vm._v("M")]),
-            _vm._v("ove to\n            ")
+            _c("div", { staticClass: "item" }, [
+              _c("div", { staticClass: "icon-wrapper" }, [
+                _c("i", { staticClass: "far fa-folder" }, [
+                  _c("i", { staticClass: "fas fa-long-arrow-alt-right" })
+                ])
+              ]),
+              _vm._v(" "),
+              _c("u", [_vm._v("M")]),
+              _vm._v("ove to\n            ")
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "item-group" }, [
+            _c("div", { staticClass: "item" }, [
+              _c("div", { staticClass: "icon-wrapper" }, [
+                _c("i", { staticClass: "far fa-trash-alt" })
+              ]),
+              _vm._v(" "),
+              _c("u", [_vm._v("D")]),
+              _vm._v("elete folder\n            ")
+            ])
           ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "item-group" }, [
-          _c("div", { staticClass: "item" }, [
-            _c("div", { staticClass: "icon-wrapper" }, [
-              _c("i", { staticClass: "far fa-trash-alt" })
-            ]),
-            _vm._v(" "),
-            _c("u", [_vm._v("D")]),
-            _vm._v("elete\n            ")
-          ])
-        ])
-      ]),
+        ]
+      ),
       _vm._v(" "),
-      _c("ContextMenu", { ref: "contextMenuFile" }, [
-        _c("div", { staticClass: "item-group" }, [
-          _c("div", { staticClass: "item" }, [
-            _c("div", { staticClass: "icon-wrapper" }, [
-              _c("i", { staticClass: "far fa-folder-open" })
-            ]),
-            _vm._v(" "),
-            _c("u", [_vm._v("O")]),
-            _vm._v("pen folder\n            ")
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "item-group" }, [
-          _c("div", { staticClass: "item" }, [
-            _c("div", { staticClass: "icon-wrapper" }, [
-              _c("i", { staticClass: "far fa-pen" })
-            ]),
-            _vm._v(" "),
-            _c("u", [_vm._v("R")]),
-            _vm._v("ename\n            ")
+      _c(
+        "ContextMenu",
+        { ref: "contextMenuFile", staticClass: "context-file" },
+        [
+          _c("div", { staticClass: "item-group" }, [
+            _c(
+              "div",
+              {
+                staticClass: "item",
+                on: {
+                  click: function($event) {
+                    return _vm.viewSingle(_vm.file.id)
+                  }
+                }
+              },
+              [
+                _c("div", { staticClass: "icon-wrapper" }, [
+                  _c("i", { staticClass: "far fa-file" })
+                ]),
+                _vm._v(" "),
+                _c("u", [_vm._v("V")]),
+                _vm._v("iew file\n            ")
+              ]
+            )
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "item" }, [
-            _c("div", { staticClass: "icon-wrapper" }, [
-              _c("i", { staticClass: "far fa-folder" }, [
-                _c("i", { staticClass: "fas fa-long-arrow-alt-right" })
-              ])
+          _c("div", { staticClass: "item-group" }, [
+            _c("div", { staticClass: "item" }, [
+              _c("div", { staticClass: "icon-wrapper" }, [
+                _c("i", { staticClass: "far fa-pen" })
+              ]),
+              _vm._v(" "),
+              _c("u", [_vm._v("R")]),
+              _vm._v("ename\n            ")
             ]),
             _vm._v(" "),
-            _c("u", [_vm._v("M")]),
-            _vm._v("ove to\n            ")
+            _c("div", { staticClass: "item" }, [
+              _c("div", { staticClass: "icon-wrapper" }, [
+                _c("i", { staticClass: "far fa-folder" }, [
+                  _c("i", { staticClass: "fas fa-long-arrow-alt-right" })
+                ])
+              ]),
+              _vm._v(" "),
+              _c("u", [_vm._v("M")]),
+              _vm._v("ove to\n            ")
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "item-group" }, [
+            _c("div", { staticClass: "item" }, [
+              _c("div", { staticClass: "icon-wrapper" }, [
+                _c("i", { staticClass: "far fa-trash-alt" })
+              ]),
+              _vm._v(" "),
+              _c("u", [_vm._v("D")]),
+              _vm._v("elete file\n            ")
+            ])
           ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "item-group" }, [
-          _c("div", { staticClass: "item" }, [
-            _c("div", { staticClass: "icon-wrapper" }, [
-              _c("i", { staticClass: "far fa-trash-alt" })
-            ]),
-            _vm._v(" "),
-            _c("u", [_vm._v("D")]),
-            _vm._v("elete\n            ")
-          ])
-        ])
-      ])
+        ]
+      )
     ],
     1
   )
@@ -70548,7 +70699,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return state.loading;
     },
     folders: function folders(state) {
-      var folders = _models_Folder__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('folders')["with"]('files').all();
+      var folders = _models_Folder__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('folders.folders|files') // Get the folders and files of the the first level of subfolders
+      ["with"]('files').all();
       return folders;
     }
   },
@@ -70620,12 +70772,87 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return fetchFolders;
+    }(),
+    updateFolder: function () {
+      var _updateFolder = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, folderToUpdate) {
+        var commit;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                commit = _ref2.commit;
+                _context2.next = 3;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/folder/".concat(folderToUpdate.id), {
+                  folder: folderToUpdate
+                }).then(function (response) {
+                  console.log(response.data); // Commit to store
+
+                  commit('updateFolder', folderToUpdate);
+                })["catch"](function (err) {
+                  console.log(err.response);
+                });
+
+              case 3:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }));
+
+      function updateFolder(_x3, _x4) {
+        return _updateFolder.apply(this, arguments);
+      }
+
+      return updateFolder;
+    }(),
+    deleteFolder: function () {
+      var _deleteFolder = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref3, folderId) {
+        var commit;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                commit = _ref3.commit;
+                commit('deleteFolder', folderId);
+                _context3.next = 4;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/folder/".concat(id)).then(function (response) {
+                  console.log(response.data);
+                })["catch"](function (err) {
+                  console.log(err.response);
+                });
+
+              case 4:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+
+      function deleteFolder(_x5, _x6) {
+        return _deleteFolder.apply(this, arguments);
+      }
+
+      return deleteFolder;
     }()
   },
   mutations: {
     //Set the loading status of the app
     setLoading: function setLoading(state, bool) {
       state.loading = bool;
+    },
+    deleteFolder: function deleteFolder(state, folderId) {
+      _models_Folder__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"](folderId);
+    },
+    updateFolder: function updateFolder(state, folder) {
+      _models_Folder__WEBPACK_IMPORTED_MODULE_2__["default"].insert({
+        data: folder
+      });
     }
   }
 });

@@ -14,19 +14,27 @@
             <template v-slot:body>
                 <tr v-for="(folder) in folder.folders" :key="folder.id" class="folder" @contextmenu.prevent="showContextMenu($event, folder, 'folder')">
                     <td class="select"><Checkbox/></td>
-                    <td class="title" @click="setCurrentFolder(folder)"><i class="fas fa-folder dark15"></i> {{folder.title}}</td>
+                    <td v-if="toEdit && toEdit.item.id == folder.id && toEdit.type == 'folder' && toEdit.field == 'title'" class="title">
+                        <i class="fas fa-folder dark15"></i> 
+                        <!-- <Editable :value="toEdit.item.title" v-model="toEdit.item.title" @submit="updateFolder(toEdit.item)"/> -->
+                        <EditInputWrapper :activateOnMount="true" :type="'text'" 
+                            :value="toEdit.item.title" :oldValue="folder.title" v-model="toEdit.item.title"
+                            @submit="updateFolder(toEdit.item); clearToEdit()" @cancel="clearToEdit()"/>
+                        </td>
+                    <td v-else class="title clickable" @click="setCurrentFolder(folder)"><i class="fas fa-folder dark15"></i> {{folder.title}}</td>
+                    <!-- <td class="title" @click="setCurrentFolder(folder)"><i class="fas fa-folder dark15"></i> <Editable :value="folder.title"/></td> -->
                     <td class="modified">-</td>
                     <td class="deadline">-</td>
-                    <td class="items">-</td>
+                    <td class="items">{{folder.folders.length + folder.files.length}}</td>
                     <td class="teams">-</td>
                     <td class="status">-</td>
                     <td class="action">
                         <span class="button invisible ghost dark-hover true-square"><i class="fas fa-ellipsis-h"></i></span>
                     </td>
                 </tr>
-                <tr v-for="(file) in folder.files" :key="file.id" class="file">
+                <tr v-for="(file) in folder.files" :key="file.id" class="file" @contextmenu.prevent="showContextMenu($event, file, 'file')">
                     <td class="select"><Checkbox/></td>
-                    <td class="title"><i class="fas fa-file dark15"></i> {{file.title}}</td>
+                    <td class="title clickable" @click="viewSingle(file.id)"><i class="fas fa-file dark15"></i> {{file.title}}</td>
                     <td class="modified">-</td>
                     <td class="deadline">{{file.end_date}}</td>
                     <td class="items">-</td>
@@ -285,9 +293,9 @@
             </template>
         </Modal>
 
-        <ContextMenu ref="contextMenuFolder">
+        <ContextMenu ref="contextMenuFolder" class="context-folder">
             <div class="item-group">
-                <div class="item">
+                <div class="item" @click="setCurrentFolder(contextMenuItem)">
                     <div class="icon-wrapper">
                         <i class="far fa-folder-open"></i>
                     </div>
@@ -295,7 +303,7 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item">
+                <div class="item" @click="onEditField(contextMenuItem, 'folder', 'title')">
                     <div class="icon-wrapper">
                         <i class="far fa-pen"></i>
                     </div>
@@ -313,17 +321,17 @@
                     <div class="icon-wrapper">
                         <i class="far fa-trash-alt"></i>
                     </div>
-                    <u>D</u>elete
+                    <u>D</u>elete folder
                 </div>
             </div>
         </ContextMenu>
-        <ContextMenu ref="contextMenuFile">
+        <ContextMenu ref="contextMenuFile" class="context-file">
             <div class="item-group">
-                <div class="item">
+                <div class="item" @click="viewSingle(file.id)">
                     <div class="icon-wrapper">
-                        <i class="far fa-folder-open"></i>
+                        <i class="far fa-file"></i>
                     </div>
-                    <u>O</u>pen folder
+                    <u>V</u>iew file
                 </div>
             </div>
             <div class="item-group">
@@ -345,7 +353,7 @@
                     <div class="icon-wrapper">
                         <i class="far fa-trash-alt"></i>
                     </div>
-                    <u>D</u>elete
+                    <u>D</u>elete file
                 </div>
             </div>
         </ContextMenu>
@@ -357,6 +365,8 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ProductTotals from './ProductTotals'
 import ProductSingle from './ProductSingle'
 import ContextMenu from './ContextMenu'
+import Editable from './Editable'
+import EditInputWrapper from './EditInputWrapper'
 
 export default {
     name: 'foldersTable',
@@ -365,7 +375,9 @@ export default {
         'folder'
     ],
     components: {
-        ContextMenu
+        ContextMenu,
+        Editable,
+        EditInputWrapper,
     },
     data: function() {
         return {
@@ -383,6 +395,7 @@ export default {
             filesToAdd: [],
             uploadingToFile: false,
             contextMenuItem: null,
+            toEdit: null
         }
     },
     computed: {
@@ -412,21 +425,33 @@ export default {
     },
     methods: {
         ...mapActions('entities/collections', ['deleteFile', 'updateFile', 'uploadToExistingFile']),
+        ...mapActions('entities/folders', ['deleteFolder', 'updateFolder']),
         setCurrentFolder(folder) {
             this.$emit('setCurrentFolder', folder)
         },
         showContextMenu(e, item, type) {
+            const folderMenu = this.$refs.contextMenuFolder
+            const fileMenu = this.$refs.contextMenuFile
+            // Hide any current contextMenus
+            if (fileMenu) fileMenu.hide()
+            if (folderMenu) folderMenu.hide()
             // Set the current context menu item
             this.contextMenuItem = item
             // Save a reference to the contextual menu to show
             let contextMenu
             if (type == 'folder') {
-                contextMenu = this.$refs.contextMenuFolder
+                contextMenu = folderMenu
             } else {
-                contextMenu = this.$refs.contextMenuFile
+                contextMenu = fileMenu
             }
             // Position the contextual menu
             contextMenu.show(e)
+        },
+        onEditField(item, type, field) {
+            this.toEdit = {item: item, type: type, field: field}
+        },
+        clearToEdit() {
+            this.toEdit = null
         },
         // onSelect(index) {
         //     this.$emit('onSelect', index)
@@ -464,8 +489,8 @@ export default {
             })
             return dataSorted
         },
-        viewSingle(fileId, fileTitle) {
-            this.$router.push({ name: 'file', params: { fileId: fileId, fileTitle: fileTitle } })
+        viewSingle(fileId) {
+            this.$router.push({ name: 'file', params: { fileId: fileId } })
         },
         onDeleteFile(fileId) {
             window.confirm(
@@ -533,9 +558,15 @@ export default {
     padding-top: 0;
     position: relative;
     td {
+        vertical-align: top;
+        line-height: 40px;
         &.title {
+            display: flex;
             i {
                 width: 24px;
+                line-height: 40px;
+                font-size: 16px;
+                margin-right: 8px;
             }
         }
     }

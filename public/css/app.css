@@ -9627,8 +9627,6 @@ button.text-link:hover,
 }
 
 i {
-  -webkit-transition: 0.3s;
-  transition: 0.3s;
   position: relative;
 }
 

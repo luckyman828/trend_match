@@ -14,7 +14,7 @@ export default {
         },
         folders: state => {
             const folders = Folder.query()
-                .with('folders')
+                .with('folders.folders|files') // Get the folders and files of the the first level of subfolders
                 .with('files')
                 .all()
             return folders
@@ -44,12 +44,44 @@ export default {
                 }
             }
         },
+        async updateFolder({ commit }, folderToUpdate) {
+            await axios
+                .put(`/api/folder/${folderToUpdate.id}`, {
+                    folder: folderToUpdate,
+                })
+                .then(response => {
+                    console.log(response.data)
+                    // Commit to store
+                    commit('updateFolder', folderToUpdate)
+                })
+                .catch(err => {
+                    console.log(err.response)
+                })
+        },
+        async deleteFolder({ commit }, folderId) {
+            commit('deleteFolder', folderId)
+
+            await axios
+                .delete(`/api/folder/${id}`)
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err.response)
+                })
+        },
     },
 
     mutations: {
         //Set the loading status of the app
         setLoading(state, bool) {
             state.loading = bool
+        },
+        deleteFolder(state, folderId) {
+            Folder.delete(folderId)
+        },
+        updateFolder(state, folder) {
+            Folder.insert({ data: folder })
         },
     },
 }
