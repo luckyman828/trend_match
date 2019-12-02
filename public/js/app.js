@@ -48146,7 +48146,7 @@ var render = function() {
     "div",
     { staticClass: "collection" },
     [
-      _c("h1", [_vm._v("Files 22")]),
+      _c("h1", [_vm._v("Files")]),
       _vm._v(" "),
       _c("div", { staticClass: "underline" }),
       _vm._v(" "),
@@ -79621,7 +79621,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var currentFile = rootGetters['persist/currentFile'];
 
       if (currentFile) {
-        var tasks = _models_Task__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('taskTeams.team.users')["with"]('completed|children')["with"]('parents.completed|parentTask').get();
+        var tasks = _models_Task__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('taskTeams.team.users|files')["with"]('completed|children')["with"]('parents.completed|parentTask').get();
         tasks.forEach(function (task) {
           if (task.phase_id == currentFile.phase) {
             // Find task users
@@ -79630,11 +79630,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               return parseInt(x);
             }) : [];
             task.taskTeams.forEach(function (taskTeam) {
-              taskTeam.team.users.forEach(function (user) {
-                if (user.role_id == taskTeam.role_id && !task.users.find(function (x) {
-                  return x.id == user.id;
-                })) task.users.push(user);
-              });
+              // Check if the team has access to the files
+              if (taskTeam.team.files.find(function (x) {
+                return x.id == currentFile.id;
+              })) {
+                // Check if the users have access to the task
+                taskTeam.team.users.forEach(function (user) {
+                  if (user.role_id == taskTeam.role_id && !task.users.find(function (x) {
+                    return x.id == user.id;
+                  })) task.users.push(user);
+                });
+              }
             }); // Find task parent tasks
 
             task.parentTasks = [];

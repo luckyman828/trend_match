@@ -20,7 +20,7 @@ export default {
             const currentFile = rootGetters['persist/currentFile']
             if (currentFile) {
                 const tasks = Task.query()
-                    .with('taskTeams.team.users')
+                    .with('taskTeams.team.users|files')
                     .with('completed|children')
                     .with('parents.completed|parentTask')
                     .get()
@@ -32,10 +32,14 @@ export default {
                             ? task.filter_products_by_ids.split(',').map(x => parseInt(x))
                             : []
                         task.taskTeams.forEach(taskTeam => {
-                            taskTeam.team.users.forEach(user => {
-                                if (user.role_id == taskTeam.role_id && !task.users.find(x => x.id == user.id))
-                                    task.users.push(user)
-                            })
+                            // Check if the team has access to the files
+                            if (taskTeam.team.files.find(x => x.id == currentFile.id)) {
+                                // Check if the users have access to the task
+                                taskTeam.team.users.forEach(user => {
+                                    if (user.role_id == taskTeam.role_id && !task.users.find(x => x.id == user.id))
+                                        task.users.push(user)
+                                })
+                            }
                         })
 
                         // Find task parent tasks
