@@ -85,10 +85,10 @@ export default {
             const distToBottom = parentTop + parentHeight + elHeight
             const bottomSpace = windownHeight + scrollY - distToBottom
             const bottomOffset = 100;
-            const showAbove = bottomSpace < 10
+            const showAbove = bottomSpace < 20 && parentRect.top > (windownHeight - parentRect.bottom) 
             this.showAbove = showAbove
 
-            // const bottomDist = windownHeight - parentTop
+
             const bottomDist = windownHeight - parentRect.top
 
             // Align the dropdown after the parent

@@ -7541,9 +7541,8 @@ __webpack_require__.r(__webpack_exports__);
       var distToBottom = parentTop + parentHeight + elHeight;
       var bottomSpace = windownHeight + scrollY - distToBottom;
       var bottomOffset = 100;
-      var showAbove = bottomSpace < 10;
-      this.showAbove = showAbove; // const bottomDist = windownHeight - parentTop
-
+      var showAbove = bottomSpace < 20 && parentRect.top > windownHeight - parentRect.bottom;
+      this.showAbove = showAbove;
       var bottomDist = windownHeight - parentRect.top; // Align the dropdown after the parent
 
       if (parent != null) {
@@ -13506,37 +13505,38 @@ __webpack_require__.r(__webpack_exports__);
       var wrapper = this.$refs.wrapper;
       var parentTop = parent.getBoundingClientRect().top;
       var parentLeft = parent.getBoundingClientRect().left;
+      var parentBottom = parent.getBoundingClientRect().bottom;
       var parentHeight = parent.getBoundingClientRect().height;
       var parentWidth = parent.getBoundingClientRect().width;
       var parentRect = parent.getBoundingClientRect();
       var elHeight = el.getBoundingClientRect().height;
       var elWidth = el.getBoundingClientRect().width;
-      var windownHeight = window.innerHeight;
+      var windowHeight = window.innerHeight;
       var distToBottom = parentTop + parentHeight + elHeight;
-      var bottomSpace = windownHeight - distToBottom;
+      var bottomSpace = windowHeight - distToBottom;
       var bottomOffset = 100;
-      var showAbove = bottomSpace < 50;
+      var showBelow = bottomSpace > 50 || parentTop < windowHeight - parentBottom;
       var topDist = parentTop + parentHeight;
-      var bottomDist = windownHeight - parentTop; // Align the dropdown after the parent
+      var bottomDist = windowHeight - parentTop; // Align the dropdown after the parent
 
       if (parent != null) {
         // Top + Right align
         if (wrapper.classList.contains('right')) {
-          if (!showAbove) {
+          if (showBelow) {
             el.style.cssText = "bottom: auto; top: ".concat(topDist, "px; left: ").concat(parentLeft + parentWidth - elWidth + offsetLeft, "px;");
           } else {
             el.style.cssText = "top: auto; bottom: ".concat(bottomDist, "px; left: ").concat(parentLeft + parentWidth - elWidth + offsetLeft, "px;");
           }
         } // Top + Left align
         else if (wrapper.classList.contains('left')) {
-            if (!showAbove) {
+            if (showBelow) {
               el.style.cssText = "bottom: auto; top: ".concat(topDist, "px; left: ").concat(parentLeft - offsetLeft, "px;");
             } else {
               el.style.cssText = "top: auto; bottom: ".concat(bottomDist, "px; left: ").concat(parentLeft - offsetLeft, "px;");
             }
           } // Top + Center align
           else {
-              if (!showAbove) {
+              if (showBelow) {
                 el.style.cssText = "bottom: auto; top: ".concat(topDist, "px; left: ").concat(parentLeft + parentWidth / 2 - elWidth / 2, "px;");
               } else {
                 el.style.cssText = "top: auto; bottom: ".concat(bottomDist, "px; left: ").concat(parentLeft + parentWidth / 2 - elWidth / 2, "px;");
@@ -13545,7 +13545,7 @@ __webpack_require__.r(__webpack_exports__);
       } // Set the max height of the tooltip
 
 
-      if (showAbove) {
+      if (!showBelow) {
         el.classList.add('above');
         this.$refs.body.style.maxHeight = parentTop - bottomOffset + 'px';
       } else {

@@ -89,6 +89,7 @@ export default {
 
             const parentTop = parent.getBoundingClientRect().top
             const parentLeft = parent.getBoundingClientRect().left
+            const parentBottom = parent.getBoundingClientRect().bottom
             const parentHeight = parent.getBoundingClientRect().height
             const parentWidth = parent.getBoundingClientRect().width
             const parentRect = parent.getBoundingClientRect()
@@ -96,20 +97,20 @@ export default {
             const elHeight = el.getBoundingClientRect().height
             const elWidth = el.getBoundingClientRect().width
 
-            const windownHeight = window.innerHeight
+            const windowHeight = window.innerHeight
             const distToBottom = parentTop + parentHeight + elHeight
-            const bottomSpace = windownHeight - distToBottom
+            const bottomSpace = windowHeight - distToBottom
             const bottomOffset = 100;
-            const showAbove = bottomSpace < 50
+            const showBelow = bottomSpace > 50 || parentTop < (windowHeight - parentBottom)
 
             const topDist = parentTop + parentHeight
-            const bottomDist = windownHeight - parentTop
+            const bottomDist = windowHeight - parentTop
 
             // Align the dropdown after the parent
             if (parent != null) {
                 // Top + Right align
                 if (wrapper.classList.contains('right')) {
-                    if (!showAbove) {
+                    if (showBelow) {
                         el.style.cssText = `bottom: auto; top: ${topDist}px; left: ${parentLeft + parentWidth - elWidth + offsetLeft}px;`
                     } else {
                         el.style.cssText = `top: auto; bottom: ${bottomDist}px; left: ${parentLeft + parentWidth - elWidth + offsetLeft}px;`
@@ -117,7 +118,7 @@ export default {
                 }
                 // Top + Left align
                 else if (wrapper.classList.contains('left')) {
-                    if (!showAbove) {
+                    if (showBelow) {
                         el.style.cssText = `bottom: auto; top: ${topDist}px; left: ${parentLeft - offsetLeft}px;`
                     } else {
                         el.style.cssText = `top: auto; bottom: ${bottomDist}px; left: ${parentLeft - offsetLeft}px;`
@@ -126,7 +127,7 @@ export default {
                 }
                 // Top + Center align
                 else {
-                    if (!showAbove) {
+                    if (showBelow) {
                         el.style.cssText = `bottom: auto; top: ${topDist}px; left: ${parentLeft + ( parentWidth / 2 ) - ( elWidth / 2 ) }px;`
                     } else {
                         el.style.cssText = `top: auto; bottom: ${bottomDist}px; left: ${parentLeft + ( parentWidth / 2 ) - ( elWidth / 2 ) }px;`
@@ -136,7 +137,7 @@ export default {
             }
 
             // Set the max height of the tooltip
-            if (showAbove) {
+            if (!showBelow) {
                 el.classList.add('above')
                 this.$refs.body.style.maxHeight = parentTop - bottomOffset  + 'px'
             } else {
