@@ -87,6 +87,8 @@ goto :EOF
 
 :Deployment
 
+
+:: 0. Composer
 echo Handling Composer deployment
 IF EXIST "%DEPLOYMENT_SOURCE%\composer.json" (
   cd %DEPLOYMENT_SOURCE%
