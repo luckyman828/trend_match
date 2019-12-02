@@ -167,7 +167,7 @@ export default {
 
 .search-modal {
     &.active {
-        z-index: 9;
+        z-index: 10;
     }
     .close {
         display: none;
