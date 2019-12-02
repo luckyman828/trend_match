@@ -19,6 +19,8 @@ import directive from './directive'
 Vue.use(directive)
 import dragscrollDirective from './dragscrollDirective'
 Vue.use(dragscrollDirective)
+import clickOutsideDirective from './clickOutsideDirective'
+Vue.use(clickOutsideDirective)
 
 Vue.component('app', require('./App.vue').default)
 

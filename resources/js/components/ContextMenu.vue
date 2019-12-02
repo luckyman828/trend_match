@@ -1,0 +1,80 @@
+<template>
+    <div v-if="visible" v-click-outside="hide" class="context-menu" ref="contextMenu">
+        <slot/>
+    </div>
+</template>
+
+<script>
+export default {
+    name: 'contextMenu',
+    props: [
+
+    ],
+    data: function() {
+        return {
+            visible: false
+        }
+    },
+    methods: {
+        show(e) {
+            // e is expected to be a mouseclick event
+            // Set the current context menu item
+            const mouseX = e.clientX
+            const mouseY = e.clientY
+            // Make the context menu visisble
+            this.visible = true
+            // Wait for the DOM to update before we position the Context Menu
+            this.$nextTick(() => {
+                // Save a reference to the contextual menu
+                const contextMenu = this.$refs.contextMenu
+                // Position the contextual menu
+                contextMenu.style.left=mouseX+'px'
+                contextMenu.style.top=mouseY+'px'
+            })
+        },
+        hide() {
+            this.visible = false
+        },
+    },
+
+}
+</script>
+
+<style scoped lang="scss">
+@import '~@/_variables.scss';
+
+    .context-menu {
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 3px 30px rgba(black, .3);
+        z-index: 1;
+        position: fixed;
+        min-width: 200px;
+        .item-group {
+            padding: 8px 0;
+            &:not(:first-child) {
+                border-top: solid 1px $light2;
+            }
+        }
+        .item {
+            padding: 8px 16px;
+            line-height: 1;
+            color: $dark05;
+            &:hover {
+                background: $light1;
+                cursor: pointer;
+            }
+            .icon-wrapper {
+                width: 32px;
+                display: inline-block;
+                color: $dark15;
+                i {
+                    font-size: 16px;
+                    i {
+                        font-size: 9px;
+                    }
+                }
+            }
+        }
+    }
+</style>
