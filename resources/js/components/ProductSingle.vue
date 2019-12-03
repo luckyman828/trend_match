@@ -158,6 +158,10 @@
                             <p><strong>Delivery date</strong></p>
                             <p>{{new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})}}</p>
                         </div>
+                        <div class="stat">
+                            <p><strong>Description</strong></p>
+                            <p>{{product.sale_description}}</p>
+                        </div>
                         <div class="stat" v-if="product.assortments">
                             <p><strong>Assortments</strong></p>
                             <p v-for="(assortment, index) in product.assortments" :key="index">

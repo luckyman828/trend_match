@@ -268,6 +268,7 @@ export default {
                 fileName: (this.currentWorkspace.name + '_' + this.currentFile.title).replace(/ /g, '_'),
                 options: {
                     displayHeaderFooter: true,
+                    preferCSSPageSize: true,
                     footerTemplate: '<div class="page-footer" style="width:100%; text-align:right; font-size: 8px; font-weight: 700; font-family: Roboto, sans-serif, helvetica, arial; box-sizing: border-box; padding-right: 32px; padding-bottom: 12px;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>'
                 }
             }

@@ -10140,6 +10140,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   fileName: (this.currentWorkspace.name + '_' + this.currentFile.title).replace(/ /g, '_'),
                   options: {
                     displayHeaderFooter: true,
+                    preferCSSPageSize: true,
                     footerTemplate: '<div class="page-footer" style="width:100%; text-align:right; font-size: 8px; font-weight: 700; font-family: Roboto, sans-serif, helvetica, arial; box-sizing: border-box; padding-right: 32px; padding-bottom: 12px;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>'
                   }
                 };
@@ -10479,7 +10480,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // Set new file data
       var newFile = this.newFile;
       newFile.phase = _store_models_Phase__WEBPACK_IMPORTED_MODULE_3__["default"].query().first().id;
-      newFile.folderId = _store_models_Collection__WEBPACK_IMPORTED_MODULE_4__["default"].query().first().catalog_id;
+      newFile.folderId = _store_models_Collection__WEBPACK_IMPORTED_MODULE_4__["default"].query().first() ? _store_models_Collection__WEBPACK_IMPORTED_MODULE_4__["default"].query().first().catalog_id : 9999;
       newFile.workspace_id = this.currentWorkspaceId; // Create collection from name
 
       this.uploadingFile = true;
@@ -10615,6 +10616,10 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
 //
 //
 //
@@ -42774,12 +42779,18 @@ var render = function() {
                       ])
                     ]),
                     _vm._v(" "),
+                    _c("div", { staticClass: "stat" }, [
+                      _vm._m(4),
+                      _vm._v(" "),
+                      _c("p", [_vm._v(_vm._s(_vm.product.sale_description))])
+                    ]),
+                    _vm._v(" "),
                     _vm.product.assortments
                       ? _c(
                           "div",
                           { staticClass: "stat" },
                           [
-                            _vm._m(4),
+                            _vm._m(5),
                             _vm._v(" "),
                             _vm._l(_vm.product.assortments, function(
                               assortment,
@@ -43061,6 +43072,12 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("p", [_c("strong", [_vm._v("Delivery date")])])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", [_c("strong", [_vm._v("Description")])])
   },
   function() {
     var _vm = this
