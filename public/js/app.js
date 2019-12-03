@@ -9478,6 +9478,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -36385,21 +36389,56 @@ var render = function() {
                     [
                       _c("td", { staticClass: "select" }, [_c("Checkbox")], 1),
                       _vm._v(" "),
-                      _c(
-                        "td",
-                        {
-                          staticClass: "title clickable",
-                          on: {
-                            click: function($event) {
-                              return _vm.viewSingle(file.id)
-                            }
-                          }
-                        },
-                        [
-                          _c("i", { staticClass: "fas fa-file dark15" }),
-                          _vm._v(" " + _vm._s(file.title))
-                        ]
-                      ),
+                      _vm.toEdit &&
+                      _vm.toEdit.item.id == file.id &&
+                      _vm.toEdit.type == "file" &&
+                      _vm.toEdit.field == "title"
+                        ? _c(
+                            "td",
+                            { staticClass: "title" },
+                            [
+                              _c("EditInputWrapper", {
+                                attrs: {
+                                  activateOnMount: true,
+                                  type: "text",
+                                  value: _vm.toEdit.item.title,
+                                  oldValue: file.title
+                                },
+                                on: {
+                                  submit: function($event) {
+                                    _vm.updateFile(_vm.toEdit.item)
+                                    _vm.clearToEdit()
+                                  },
+                                  cancel: function($event) {
+                                    return _vm.clearToEdit()
+                                  }
+                                },
+                                model: {
+                                  value: _vm.toEdit.item.title,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.toEdit.item, "title", $$v)
+                                  },
+                                  expression: "toEdit.item.title"
+                                }
+                              })
+                            ],
+                            1
+                          )
+                        : _c(
+                            "td",
+                            {
+                              staticClass: "title clickable",
+                              on: {
+                                click: function($event) {
+                                  return _vm.viewSingle(file.id)
+                                }
+                              }
+                            },
+                            [
+                              _c("i", { staticClass: "fas fa-file dark15" }),
+                              _vm._v(" " + _vm._s(file.title))
+                            ]
+                          ),
                       _vm._v(" "),
                       _c("td", { staticClass: "modified" }, [_vm._v("-")]),
                       _vm._v(" "),
@@ -36643,14 +36682,25 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "item-group" }, [
-            _c("div", { staticClass: "item" }, [
-              _c("div", { staticClass: "icon-wrapper" }, [
-                _c("i", { staticClass: "far fa-pen" })
-              ]),
-              _vm._v(" "),
-              _c("u", [_vm._v("R")]),
-              _vm._v("ename\n            ")
-            ]),
+            _c(
+              "div",
+              {
+                staticClass: "item",
+                on: {
+                  click: function($event) {
+                    return _vm.onEditField(_vm.contextMenuItem, "file", "title")
+                  }
+                }
+              },
+              [
+                _c("div", { staticClass: "icon-wrapper" }, [
+                  _c("i", { staticClass: "far fa-pen" })
+                ]),
+                _vm._v(" "),
+                _c("u", [_vm._v("R")]),
+                _vm._v("ename\n            ")
+              ]
+            ),
             _vm._v(" "),
             _c("div", { staticClass: "item" }, [
               _c("div", { staticClass: "icon-wrapper" }, [

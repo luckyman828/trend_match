@@ -16,7 +16,6 @@
                     <td class="select"><Checkbox/></td>
                     <td v-if="toEdit && toEdit.item.id == folder.id && toEdit.type == 'folder' && toEdit.field == 'title'" class="title">
                         <i class="fas fa-folder dark15"></i> 
-                        <!-- <Editable :value="toEdit.item.title" v-model="toEdit.item.title" @submit="updateFolder(toEdit.item)"/> -->
                         <EditInputWrapper :activateOnMount="true" :type="'text'" 
                             :value="toEdit.item.title" :oldValue="folder.title" v-model="toEdit.item.title"
                             @submit="updateFolder(toEdit.item); clearToEdit()" @cancel="clearToEdit()"/>
@@ -34,7 +33,12 @@
                 </tr>
                 <tr v-for="(file) in folder.files" :key="file.id" class="file" @contextmenu.prevent="showContextMenu($event, file, 'file')">
                     <td class="select"><Checkbox/></td>
-                    <td class="title clickable" @click="viewSingle(file.id)"><i class="fas fa-file dark15"></i> {{file.title}}</td>
+                    <td v-if="toEdit && toEdit.item.id == file.id && toEdit.type == 'file' && toEdit.field == 'title'" class="title">
+                        <EditInputWrapper :activateOnMount="true" :type="'text'" 
+                            :value="toEdit.item.title" :oldValue="file.title" v-model="toEdit.item.title"
+                            @submit="updateFile(toEdit.item); clearToEdit()" @cancel="clearToEdit()"/>
+                        </td>
+                    <td v-else class="title clickable" @click="viewSingle(file.id)"><i class="fas fa-file dark15"></i> {{file.title}}</td>
                     <td class="modified">-</td>
                     <td class="deadline">{{file.end_date}}</td>
                     <td class="items">-</td>
@@ -335,7 +339,7 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item">
+                <div class="item" @click="onEditField(contextMenuItem, 'file', 'title')">
                     <div class="icon-wrapper">
                         <i class="far fa-pen"></i>
                     </div>
