@@ -412,11 +412,11 @@ export default{
         },
         setHideQuickOut() {
             this.hideQuickOut = true
-            this.$cookies.set(`quick_out_${this.currentFile.id}_${this.currentTask.id}`, true, Infinity)
+            // this.$cookies.set(`quick_out_${this.currentFile.id}_${this.currentTask.id}`, true, Infinity)
         },
         setHideQuickIn() {
             this.hideQuickIn = true
-            this.$cookies.set(`quick_in_${this.currentFile.id}_${this.currentTask.id}`, true, Infinity)
+            // this.$cookies.set(`quick_in_${this.currentFile.id}_${this.currentTask.id}`, true, Infinity)
         },
         setProductFilter(filter) {
             this.setCurrentProductFilter(filter)
@@ -735,8 +735,8 @@ export default{
         }
     },
     created() {
-        this.hideQuickOut = this.$cookies.get(`quick_out_${this.currentFile.id}_${this.currentTask.id}`)
-        this.hideQuickIn = this.$cookies.get(`quick_in_${this.currentFile.id}_${this.currentTask.id}`)
+        // this.hideQuickOut = this.$cookies.get(`quick_out_${this.currentFile.id}_${this.currentTask.id}`)
+        // this.hideQuickIn = this.$cookies.get(`quick_in_${this.currentFile.id}_${this.currentTask.id}`)
         // Initially sort the products
         // this.sortProducts()
     },

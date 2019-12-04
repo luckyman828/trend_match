@@ -90,32 +90,39 @@ export default {
 
                     // START Find the correct price
                     // Check if the chosen currency exists on the product
+                    let chosenCurrencyAvailable = true
                     if (product.prices != null) {
                         // First check if the user currency is available
-                        if (authUser.currency) {
+                        if (authUser.currency && product.prices.find(x => x.currency == authUser.currency)) {
                             const userPrices = product.prices.find(x => x.currency == authUser.currency)
-                            if (userPrices) product.userPrices = userPrices
+                            product.userPrices = userPrices
                         }
                         // Then check if the team currency is available
-                        else if (currentTeam && currentTeam.currency) {
+                        else if (
+                            currentTeam &&
+                            currentTeam.currency &&
+                            product.prices.find(x => x.currency == currentTeam.currency)
+                        ) {
                             const teamPrices = product.prices.find(x => x.currency == currentTeam.currency)
-                            if (teamPrices) product.userPrices = teamPrices
+                            product.userPrices = teamPrices
                         }
                         // Then check if the workspace currency is available
-                        else if (workspace.currency) {
+                        else if (workspace.currency && product.prices.find(x => x.currency == workspace.currency)) {
                             const workspacePrices = product.prices.find(x => x.currency == workspace.currency)
-                            if (workspacePrices) product.userPrices = workspacePrices
+                            product.userPrices = workspacePrices
                         }
                         // Else use the first available currency
                         else {
-                            if (product.prices[0]) product.userPrices = product.prices[0]
-                            else
-                                product.userPrices = {
-                                    currency: 'unset',
-                                    markup: null,
-                                    recommended_retail_price: null,
-                                    wholesale_price: null,
-                                }
+                            product.userPrices = product.prices[0]
+                        }
+                    }
+                    // If there are no prices
+                    else {
+                        product.userPrices = {
+                            currency: 'unset',
+                            markup: null,
+                            recommended_retail_price: null,
+                            wholesale_price: null,
                         }
                     }
                     // END Find the correct price
