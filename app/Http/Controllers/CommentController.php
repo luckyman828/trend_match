@@ -45,15 +45,34 @@ class CommentController extends Controller
         }
     }
 
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function insertOrUpdate(Request $request, $id)
     {
-        //
+        $comment = Comment::find($id);
+
+        $comment->comment = $request->comment['comment'];
+
+        // return $action;
+
+        if($comment->save()) {
+
+            // Fire event
+            $dataToReturn = new CommentResource($comment);
+
+            // return $dataToReturn;
+            return json_decode( json_encode($dataToReturn), true);
+        }
     }
+
+    public function destroy(Request $request, $id)
+    {
+        // Find all file specific records
+
+        $comment_id = $id;
+        $comment = Comment::find($comment_id);
+        $comment->delete();
+
+        return 'Deleted comment with id: ' . $comment_id;
+
+    }
+
 }

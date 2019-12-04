@@ -372,15 +372,16 @@ export default {
         },
         hotkeyHandler(e) {
             const key = e.code
-            if (key == 'Enter') {
-                if (this.writeActive && !e.shiftKey) {
-                    e.preventDefault()
-                    this.onSubmitComment()
-                } else {
-                    this.activateWrite()
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
+                if (key == 'Enter') {
+                    if (this.writeActive && !e.shiftKey) {
+                        e.preventDefault()
+                        this.onSubmitComment()
+                    } else {
+                        this.activateWrite()
+                    }
                 }
             }
-                // SET FOCUS ON ACTIVE TEXTFIELD
         }
     },
     mounted() {

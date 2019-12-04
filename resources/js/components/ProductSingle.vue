@@ -326,7 +326,7 @@ export default {
         hotkeyHandler(event) {
             const key = event.code
             // Only do these if the current target is not the comment box
-            if (event.target.type != 'textarea' && this.visible) {
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.visible) {
                 const inAvailable = this.$refs.inButton ? !this.$refs.inButton.classList.contains('disabled') : false
                 const outAvailable = this.$refs.outButton ? !this.$refs.outButton.classList.contains('disabled') : false
                 const focusAvailable = this.$refs.focusButton ? !this.$refs.focusButton.classList.contains('disabled') : false

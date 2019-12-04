@@ -138,6 +138,9 @@ Route::middleware('auth:api')->group( function(){
     // Update comment
     Route::put('comment/update-final', 'CommentController@updateFinal');
 
+    Route::put('comment/{id}', 'CommentController@insertOrUpdate');
+    Route::delete('comment/{id}', 'CommentController@destroy');
+
     // xxx Team Invites xxx
     // List team invites
     Route::get('team-invites', 'InviteController@index');

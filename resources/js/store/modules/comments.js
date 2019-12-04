@@ -74,6 +74,37 @@ export default {
             commit('setSubmitting', false)
             return success
         },
+        async updateComment({ commit }, comment) {
+            await axios
+                .put(`/api/comment/${comment.id}`, {
+                    comment: comment,
+                })
+                .then(response => {
+                    console.log(response.data)
+                    // Commit to store
+                    Comment.insert({ data: response.data })
+                })
+                .catch(err => {
+                    console.log(err.response)
+                })
+        },
+        async deleteComment({ commit }, id) {
+            console.log('delete comment in store')
+            commit('deleteComment', id)
+
+            await axios
+                .delete(`/api/comment/${id}`, {
+                    data: {
+                        id: id,
+                    },
+                })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err.response)
+                })
+        },
     },
 
     mutations: {
@@ -92,6 +123,9 @@ export default {
         },
         alertError: state => {
             window.alert('Network error. Please check your connection')
+        },
+        deleteComment(state, commentId) {
+            Comment.delete(commentId)
         },
     },
 }

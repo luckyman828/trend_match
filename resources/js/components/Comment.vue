@@ -6,27 +6,54 @@
             <span v-if="comment.votes.length > 0" class="pill small primary"> <i class="fas fa-plus"></i> {{comment.votes.length}}</span>
         </div>
         <div class="comment" :class="{important: comment.important}">
-            <span class="body">{{comment.comment}}</span>
-        </div>        
+            <span v-if="!own" class="body">{{comment.comment}}</span>
+            <span v-else class="body"><Editable :value="commentToEdit.comment" :type="'text'" v-model="commentToEdit.comment" @submit="updateComment(commentToEdit)"/></span>
+            
+            <div class="controls">
+                <button v-tooltip.top="'Delete'" class="button true-square invisible ghost dark-hover"
+                @click="onDeleteComment">
+                    <i class="far fa-trash-alt"></i></button>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import AuthUser from '../store/models/AuthUser';
+import Editable from './Editable'
 
 export default {
     name: 'comment',
     props: [
         'comment'
     ],
+    components: {
+        Editable,
+    },
+    data: function() {
+        return {
+            commentToEdit: this.comment
+        }
+    },
     computed: {
         ...mapGetters('persist', ['authUser', 'userPermissionLevel']),
         authUser() {
             return AuthUser.query().first()
         },
+        own() {
+            return this.comment.user_id == this.authUser.id
+        }
     },
     methods: {
+        ...mapActions('entities/comments', ['updateComment', 'deleteComment']),
+        onDeleteComment() {
+            window.confirm(
+                'Are you sure you want to delete this comment?'
+            )
+                ? this.deleteComment(this.comment.id)
+                : false
+        }
     }
 }
 </script>
@@ -37,7 +64,7 @@ export default {
     .comment-wrapper {
         position: relative;
         margin-bottom: 4px;
-        max-width: calc(100% - 56px);
+        max-width: calc(100% - 64px);
         &.has-traits {
             margin-top: 16px;
         }
@@ -52,7 +79,7 @@ export default {
         position: absolute;
         top: -16px;
         left: -10px;
-        z-index: 1;
+        z-index: 2;
         white-space: nowrap;
         > * {
             box-shadow: 0 3px 6px rgba(0,0,0,.2);
@@ -67,6 +94,7 @@ export default {
         background: $light2;
         border-radius: 6px;
         width: 100%;
+        z-index: 1;
         .own & {
             background: $primary;
             color: white;
@@ -78,6 +106,23 @@ export default {
         &.important {
             background: $yellow;
             color: $dark;
+        }
+        &:hover {
+            .controls {
+                opacity: 1;
+            }
+        }
+        .controls {
+            transition: .3s;
+            opacity: 0;
+            position: absolute;
+            left: -36px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: none;
+            .own & {
+                display: block;
+            }
         }
     }
 </style>
