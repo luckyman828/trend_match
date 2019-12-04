@@ -177,9 +177,9 @@
                 </div>
             </template>
         </div>
-        <div class="load-more">
-            <span class="button primary wide" v-if="products.length > pageLimit" @click="loadMore">Load {{itemsPerPage}} more products</span>
-            <span class="button dark wide" v-if="products.length > pageLimit" @click="pageLimit = null">Show all (may cause slowdown)</span>
+        <div class="load-more" v-if="pageLimit && products.length > pageLimit">
+            <span class="button primary wide" @click="loadMore">Load {{itemsPerPage}} more products</span>
+            <span class="button dark wide" @click="pageLimit = null">Show all (may cause slowdown)</span>
         </div>
         <template v-if="loading">
             <Loader/>
