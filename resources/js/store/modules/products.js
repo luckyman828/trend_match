@@ -66,7 +66,8 @@ export default {
                     .with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team|task'])
                     .all()
                 const currentTask = rootGetters['persist/currentTask']
-                const userId = rootGetters['persist/authUser'].id
+                const authUser = rootGetters['persist/authUser']
+                const userId = authUser.id
                 const currentTeam = rootGetters['persist/currentTeam']
                 const workspace = rootGetters['persist/currentWorkspace']
                 const userPermissionLevel = rootGetters['persist/userPermissionLevel']
@@ -85,43 +86,36 @@ export default {
                     product.ndsTotal
                     product.commentsScoped = []
                     product.commentsInherited = []
-
-                    // START Find current action for the product
-                    if (currentTask.type == 'feedback') {
-                        product.currentAction = product.actions.find(
-                            action => action.user_id == userId && action.task_id == currentTask.id
-                        )
-                    } else {
-                        product.currentAction = product.actions.find(action => action.task_id == currentTask.id)
-                    }
-                    // END Find current action for product
-
-                    // START Find inherit from task
-                    if (currentTask.inherit_from_id) {
-                        product.inheritedAction = product.actions.find(x => x.task_id == currentTask.inherit_from_id)
-                    }
-                    // END
+                    product.outInFilter = false
 
                     // START Find the correct price
                     // Check if the chosen currency exists on the product
                     if (product.prices != null) {
-                        let workspacePrices = null
-                        let teamPrices = null
-                        if (workspace.currency != null)
-                            workspacePrices = product.prices.find(x => x.currency == workspace.currency)
-                        if (currentTeam)
-                            if (currentTeam.currency != null)
-                                teamPrices = product.prices.find(x => x.currency == currentTeam.currency)
-
-                        if (userPermissionLevel < 3) {
-                            // Use team currency for low level members
-                            if (teamPrices != null) product.userPrices = teamPrices
-                            else if (workspacePrices != null) product.userPrices = workspacePrices
-                            else product.userPrices = product.prices[0]
-                        } else {
-                            // Use workspace currency for high level members
-                            if (workspacePrices != null) product.userPrices = workspacePrices
-                            else product.userPrices = product.prices[0]
+                        // First check if the user currency is available
+                        if (authUser.currency) {
+                            const userPrices = product.prices.find(x => x.currency == authUser.currency)
+                            if (userPrices) product.userPrices = userPrices
+                        }
+                        // Then check if the team currency is available
+                        else if (currentTeam && currentTeam.currency) {
+                            const teamPrices = product.prices.find(x => x.currency == currentTeam.currency)
+                            if (teamPrices) product.userPrices = teamPrices
+                        }
+                        // Then check if the workspace currency is available
+                        else if (workspace.currency) {
+                            const workspacePrices = product.prices.find(x => x.currency == workspace.currency)
+                            if (workspacePrices) product.userPrices = workspacePrices
+                        }
+                        // Else use the first available currency
+                        else {
+                            if (product.prices[0]) product.userPrices = product.prices[0]
+                            else
+                                product.userPrices = {
+                                    currency: 'unset',
+                                    markup: null,
+                                    recommended_retail_price: null,
+                                    wholesale_price: null,
+                                }
                         }
                     }
                     // END Find the correct price
@@ -144,17 +138,14 @@ export default {
                                     : product.commentsScoped.push(comment)
                         } else if (currentTask.type == 'approval') {
                             if (
-                                currentTask.children[0]
+                                currentTask.children.length > 0 // children are actually parents
                                     ? currentTask.children.find(x => x.task_id == comment.task_id)
                                     : false || comment.task_id == currentTask.id
                             )
                                 comment.is_request
                                     ? product.requests.push(comment)
                                     : product.commentsScoped.push(comment)
-                        } else if (
-                            !currentTask.parentTasks.find(x => x.type == 'approval') &&
-                            currentTask.approvalParent
-                        ) {
+                        } else if (currentTask.type == 'decision') {
                             // CSM DECISION
                             if (
                                 comment.task_id == currentTask.approvalParent.id ||
@@ -165,8 +156,7 @@ export default {
                                     ? product.requests.push(comment)
                                     : product.commentsScoped.push(comment)
                         } else {
-                            // If type is alignment
-                            comment.type = 'alignment'
+                            // If current task type is alignment
                             if (
                                 comment.task_id == currentTask.id ||
                                 currentTask.siblings.find(x => x.parent_id == comment.task_id) ||
@@ -256,6 +246,32 @@ export default {
 
                     // START Group actions by action type (DISTRIBUTION)
                     product.actions.forEach(action => {
+                        // START Find OUT Products (Out by filter)
+                        if (
+                            currentTask.filter_products_by_ids &&
+                            currentTask.filter_products_by_ids.includes(action.task_id) &&
+                            action.action == 0
+                        )
+                            product.outInFilter = action
+                        // END Find OUT Products
+
+                        // START Find current action for the product
+                        if (currentTask.type == 'feedback') {
+                            product.currentAction =
+                                action.user_id == userId && action.task_id == currentTask.id ? action : null
+                        } else {
+                            product.currentAction = action.task_id == currentTask.id ? action : null
+                        }
+                        // END Find current action for product
+
+                        // START Find inherit from task
+                        if (currentTask.inherit_from_id) {
+                            product.inheritedAction = product.actions.find(
+                                x => x.task_id == currentTask.inherit_from_id
+                            )
+                        }
+                        // END
+
                         if (currentTask.type == 'decision' && inheritFromTask.type == 'alignment') {
                             if (inheritFromTask.parentTasks.find(x => x.id == action.task_id)) {
                                 if (action.action == 2) {
@@ -334,16 +350,6 @@ export default {
                         }
                     }
                     // END NEW Comment
-
-                    // START Find OUT Products (Out by filter)
-                    if (product.actions.length > 1 && currentTask.filter_products_by_ids) {
-                        product.outInFilter = product.actions.find(
-                            x => currentTask.filter_products_by_ids.includes(x.task_id) && x.action == 0
-                        )
-                    }
-                    // END Find OUT Products
-
-                    // START Find Inherited Action
 
                     // START Mark comments as FOCUS if the users action was IN for the product
                     product.comments.forEach(comment => {

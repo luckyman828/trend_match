@@ -4,7 +4,7 @@
         <div class="overlay" v-else-if="!currentTask.isActive">Task not started yet</div>
         <div class="scroll-bg"></div>
         <FlyIn ref="singleFlyIn" :visibleOverwrite="singleVisible" @close="onCloseSingle">
-            <product-single :loading="loadingSingle" :authUser="authUser" :visible="singleVisible" @closeSingle="onCloseSingle" @onToggleInOut="toggleInOut" @nextProduct="nextSingle"/>
+            <product-single v-if="currentProduct" :loading="loadingSingle" :authUser="authUser" :visible="singleVisible" @closeSingle="onCloseSingle" @onToggleInOut="toggleInOut" @nextProduct="nextSingle"/>
         </FlyIn>
         <div class="flex-table">
             <div class="header-row flex-table-row">
@@ -177,7 +177,10 @@
                 </div>
             </template>
         </div>
-        <!-- <span class="load-more button primary wide" v-if="products.length > pageLimit" @click="loadMore">Loasd more</span> -->
+        <div class="load-more">
+            <span class="button primary wide" v-if="products.length > pageLimit" @click="loadMore">Load 10 more products</span>
+            <span class="button dark wide" v-if="products.length > pageLimit" @click="pageLimit = null">Show all (may cause slowdown)</span>
+        </div>
         <template v-if="loading">
             <Loader/>
         </template>
@@ -228,13 +231,13 @@ export default {
             data: {},
         },
         sticky: false,
-        itemsPerPage: 5,
-        pageLimit: 5,
+        itemsPerPage: 10,
+        pageLimit: 10,
     }},
     computed: {
         // ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
         ...mapGetters('entities/collections', ['currentFile', 'actionScope']),
-        ...mapGetters('entities/products', ['singleVisible']),
+        ...mapGetters('entities/products', ['singleVisible', 'currentProduct']),
         ...mapGetters('persist', ['currentTask', 'currentTaskPermissions', 'userPermissionLevel', 'currentWorkspaceId']),
         loadingSingle() {
             let loading = false
@@ -244,8 +247,10 @@ export default {
             return (this.currentTask != null) ? true : false
         },
         productsToShow() {
-            // const products = this.products.slice(0, this.pageLimit)
-            return this.products
+            if (this.pageLimit) {
+                const products = this.products.slice(0, this.pageLimit)
+                return products
+            } else return this.products
         }
     },
     methods: {
@@ -256,6 +261,9 @@ export default {
         ...mapMutations('entities/comments', ['setComment']),
         loadMore() {
             this.pageLimit += this.itemsPerPage
+        },
+        resetPageLimit() {
+            this.pageLimit = this.itemsPerPage
         },
         productImg(variant) {
             if (variant.blob_id != null)
@@ -737,8 +745,12 @@ export default {
         &:nth-child(1n+2) {
             margin-left: 12px;
         }
-        &.load-more {
-            position: absolute;
+    }
+    .load-more {
+        position: absolute;
+        width: 100%;
+        margin-top: 12px;
+        .button {
             width: 100%;
             margin-left: 0;
             margin: 12px 0;

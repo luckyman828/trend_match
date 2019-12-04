@@ -70,7 +70,7 @@
                             <span class="checkmark solid"><i class="fas fa-check"></i></span>
                         </label>
 
-                        <span v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]; $refs.filterDelivery.clear(); selectedDeliveryDates=[]; $refs.filterBuyerGroup.clear(); selectedBuyerGroups=[]; unreadOnly = false">Clear filter</span>
+                        <span v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]; $refs.filterDelivery.clear(); selectedDeliveryDates=[]; if ($refs.filterBuyerGroup) $refs.filterBuyerGroup.clear(); selectedBuyerGroups=[]; unreadOnly = false">Clear filter</span>
                     </div>
 
                     <div class="right">
@@ -190,7 +190,6 @@ export default{
             // CODE to make sure the products stay sorted in the same way
             // Save the old order of the products
             console.log('Products recalculated')
-            console.log(newValue)
             if (newValue.length == oldValue.length) {
                 let index = 0
                 oldValue.forEach(product => {
@@ -225,7 +224,7 @@ export default{
         }
     },
     computed: {
-        ...mapGetters('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productsScopedFilteredTotals']),
+        ...mapGetters('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productsScopedFilteredTotals', 'productsRaw']),
         ...mapState('entities/products', ['selectedCategories', 'selectedDeliveryDates']),
         ...mapGetters('entities/products', {allProducts: 'products'}),
         ...mapGetters('entities/actions', ['loadingActions']),
@@ -245,6 +244,8 @@ export default{
             },
             set (value) {
                 this.setCurrentProductFilter(value)
+                // Reset the products page limit
+                this.$refs.productsComponent.resetPageLimit()
             }
         },
         selectedCategories: {
@@ -253,6 +254,8 @@ export default{
             },
             set (value) {
                 this.updateSelectedCategories(value)
+                // Reset the products page limit
+                this.$refs.productsComponent.resetPageLimit()
             }
         },
         selectedDeliveryDates: {
@@ -261,6 +264,8 @@ export default{
             },
             set (value) {
                 this.updateSelectedDeliveryDates(value)
+                // Reset the products page limit
+                this.$refs.productsComponent.resetPageLimit()
             }
         },
         selectedBuyerGroups: {
@@ -269,6 +274,8 @@ export default{
             },
             set (value) {
                 this.updateSelectedBuyerGroups(value)
+                // Reset the products page limit
+                this.$refs.productsComponent.resetPageLimit()
             }
         },
         unreadOnly: {
@@ -356,14 +363,14 @@ export default{
             })
             return unique
         },
-        teamsForFilter() {
-            if (this.userPermissionLevel >= 3) {
-                const teamsToReturn = JSON.parse(JSON.stringify(this.teams))
-                teamsToReturn.unshift({title: 'Global', id: 0})
-                return teamsToReturn
-            }
-            else return this.teams
-        },
+        // teamsForFilter() {
+        //     if (this.userPermissionLevel >= 3) {
+        //         const teamsToReturn = JSON.parse(JSON.stringify(this.teams))
+        //         teamsToReturn.unshift({title: 'Global', id: 0})
+        //         return teamsToReturn
+        //     }
+        //     else return this.teams
+        // },
         productsNoIn() {
             const products = this.productsScopedFiltered
             let productMatches = []
@@ -413,7 +420,6 @@ export default{
         },
         setProductFilter(filter) {
             this.setCurrentProductFilter(filter)
-            // this.currentProductFilter = filter
             this.clearSelectedProducts()
         },
         setSelectedProduct(index) {
@@ -425,11 +431,6 @@ export default{
         clearSelectedProducts() {
             this.selectedProductIDs = []
             this.$refs.productsComponent.resetSelected()
-        },
-        setSelectedCategory(id) {
-            const selected = this.selectedCategoryIDs
-            const found = selected.findIndex(el => el == id)
-            const result = (found >= 0) ? selected.splice(found, 1) : selected.push(id)
         },
         clearSelectedCategories() {
             this.selectedCategoryIDs = []
@@ -524,6 +525,7 @@ export default{
             let key = (keyOverwrite) ? keyOverwrite : this.sortBy
             let sortAsc = (keyOverwrite) ? true : this.sortAsc
             const sortMethod = (keyOverwrite) ? 'custom' : this.sortMethod
+            const currentTaskType = this.currentTask.type
             let dataSorted = []
 
             if (products.length > 0) {
@@ -542,7 +544,7 @@ export default{
 
                     if (sortMethod == 'action') {
                         key = 'currentAction'
-                        if (this.currentTask.type == 'approval') {
+                        if (currentTaskType == 'approval') {
                             // First sort by has request
                             if (a.requests.length > 0 && !a.currentAction) {
                                 if (b.requests.length > 0 && !b.currentAction) {
@@ -581,7 +583,7 @@ export default{
                             else return 0
 
                         }
-                        else if (this.currentTask.type == 'decision') {
+                        else if (currentTaskType == 'decision') {
                             // Sort by current action
                             if (a[key] != null) {
                                 if (b[key] != null) {
@@ -690,7 +692,7 @@ export default{
 
                         if ( sortMethod == 'object' ) {
 
-                            if (this.currentTask.type == 'decision' && key == 'commentsScoped')
+                            if (currentTaskType == 'decision' && key == 'commentsScoped')
                                 key = 'commentsInherited'
 
                             // Sort by key length (arrays)
@@ -734,7 +736,7 @@ export default{
         this.hideQuickOut = this.$cookies.get(`quick_out_${this.currentFile.id}_${this.currentTask.id}`)
         this.hideQuickIn = this.$cookies.get(`quick_in_${this.currentFile.id}_${this.currentTask.id}`)
         // Initially sort the products
-        this.sortProducts()
+        // this.sortProducts()
     },
     async mounted() {
         this.setDefaultFilter()

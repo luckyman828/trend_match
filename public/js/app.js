@@ -11701,6 +11701,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 
 
@@ -11732,11 +11735,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         data: {}
       },
       sticky: false,
-      itemsPerPage: 5,
-      pageLimit: 5
+      itemsPerPage: 10,
+      pageLimit: 10
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['currentFile', 'actionScope']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['singleVisible']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTask', 'currentTaskPermissions', 'userPermissionLevel', 'currentWorkspaceId']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['currentFile', 'actionScope']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/products', ['singleVisible', 'currentProduct']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['currentTask', 'currentTaskPermissions', 'userPermissionLevel', 'currentWorkspaceId']), {
     loadingSingle: function loadingSingle() {
       var loading = false;
       return loading;
@@ -11745,13 +11748,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return this.currentTask != null ? true : false;
     },
     productsToShow: function productsToShow() {
-      // const products = this.products.slice(0, this.pageLimit)
-      return this.products;
+      if (this.pageLimit) {
+        var _products = this.products.slice(0, this.pageLimit);
+
+        return _products;
+      } else return this.products;
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('entities/products', ['setCurrentProductId', 'setAvailableProductIds']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapMutations"])('entities/products', ['setSingleVisisble']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapMutations"])('entities/actions', ['setAction', 'setTaskAction', 'destroyAction', 'destroyTaskAction', 'setManyActions', 'setManyTaskActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapMutations"])('entities/comments', ['setComment']), {
     loadMore: function loadMore() {
       this.pageLimit += this.itemsPerPage;
+    },
+    resetPageLimit: function resetPageLimit() {
+      this.pageLimit = this.itemsPerPage;
     },
     productImg: function productImg(variant) {
       if (variant.blob_id != null) return "https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/".concat(variant.blob_id, "_thumbnail.jpg");else return variant.image;
@@ -13868,7 +13877,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // CODE to make sure the products stay sorted in the same way
       // Save the old order of the products
       console.log('Products recalculated');
-      console.log(newValue);
 
       if (newValue.length == oldValue.length) {
         var index = 0;
@@ -13907,7 +13915,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     }
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productsScopedFilteredTotals']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapState"])('entities/products', ['selectedCategories', 'selectedDeliveryDates']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productsScopedFilteredTotals', 'productsRaw']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapState"])('entities/products', ['selectedCategories', 'selectedDeliveryDates']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/products', {
     allProducts: 'products'
   }), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/actions', ['loadingActions']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/comments', ['loadingComments']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/collections', ['loadingCollections', 'files', 'currentFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/teams', ['teams']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('entities/tasks', ['userTasks', 'tasks']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_2__["mapGetters"])('persist', ['currentTeamId', 'currentTask', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser', 'currentTask']), {
     defaultTeam: function defaultTeam() {
@@ -13921,7 +13929,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return this.$store.state.entities.products.currentProductFilter;
       },
       set: function set(value) {
-        this.setCurrentProductFilter(value);
+        this.setCurrentProductFilter(value); // Reset the products page limit
+
+        this.$refs.productsComponent.resetPageLimit();
       }
     },
     selectedCategories: {
@@ -13929,7 +13939,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return this.$store.state.entities.products.selectedCategories;
       },
       set: function set(value) {
-        this.updateSelectedCategories(value);
+        this.updateSelectedCategories(value); // Reset the products page limit
+
+        this.$refs.productsComponent.resetPageLimit();
       }
     },
     selectedDeliveryDates: {
@@ -13937,7 +13949,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return this.$store.state.entities.products.selectedDeliveryDates;
       },
       set: function set(value) {
-        this.updateSelectedDeliveryDates(value);
+        this.updateSelectedDeliveryDates(value); // Reset the products page limit
+
+        this.$refs.productsComponent.resetPageLimit();
       }
     },
     selectedBuyerGroups: {
@@ -13945,7 +13959,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return this.$store.state.entities.products.selectedBuyerGroups;
       },
       set: function set(value) {
-        this.updateSelectedBuyerGroups(value);
+        this.updateSelectedBuyerGroups(value); // Reset the products page limit
+
+        this.$refs.productsComponent.resetPageLimit();
       }
     },
     unreadOnly: {
@@ -14033,16 +14049,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
       return unique;
     },
-    teamsForFilter: function teamsForFilter() {
-      if (this.userPermissionLevel >= 3) {
-        var teamsToReturn = JSON.parse(JSON.stringify(this.teams));
-        teamsToReturn.unshift({
-          title: 'Global',
-          id: 0
-        });
-        return teamsToReturn;
-      } else return this.teams;
-    },
+    // teamsForFilter() {
+    //     if (this.userPermissionLevel >= 3) {
+    //         const teamsToReturn = JSON.parse(JSON.stringify(this.teams))
+    //         teamsToReturn.unshift({title: 'Global', id: 0})
+    //         return teamsToReturn
+    //     }
+    //     else return this.teams
+    // },
     productsNoIn: function productsNoIn() {
       var products = this.productsScopedFiltered;
       var productMatches = [];
@@ -14082,8 +14096,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$cookies.set("quick_in_".concat(this.currentFile.id, "_").concat(this.currentTask.id), true, Infinity);
     },
     setProductFilter: function setProductFilter(filter) {
-      this.setCurrentProductFilter(filter); // this.currentProductFilter = filter
-
+      this.setCurrentProductFilter(filter);
       this.clearSelectedProducts();
     },
     setSelectedProduct: function setSelectedProduct(index) {
@@ -14097,13 +14110,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     clearSelectedProducts: function clearSelectedProducts() {
       this.selectedProductIDs = [];
       this.$refs.productsComponent.resetSelected();
-    },
-    setSelectedCategory: function setSelectedCategory(id) {
-      var selected = this.selectedCategoryIDs;
-      var found = selected.findIndex(function (el) {
-        return el == id;
-      });
-      var result = found >= 0 ? selected.splice(found, 1) : selected.push(id);
     },
     clearSelectedCategories: function clearSelectedCategories() {
       this.selectedCategoryIDs = [];
@@ -14237,14 +14243,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.sortProducts();
     },
     sortProducts: function sortProducts(keyOverwrite) {
-      var _this2 = this;
-
       console.log('sorting products');
       var products = this.productsScopedFiltered; // let key = this.sortBy
 
       var key = keyOverwrite ? keyOverwrite : this.sortBy;
       var sortAsc = keyOverwrite ? true : this.sortAsc;
       var sortMethod = keyOverwrite ? 'custom' : this.sortMethod;
+      var currentTaskType = this.currentTask.type;
       var dataSorted = [];
 
       if (products.length > 0) {
@@ -14260,7 +14265,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           if (sortMethod == 'action') {
             key = 'currentAction';
 
-            if (_this2.currentTask.type == 'approval') {
+            if (currentTaskType == 'approval') {
               // First sort by has request
               if (a.requests.length > 0 && !a.currentAction) {
                 if (b.requests.length > 0 && !b.currentAction) {
@@ -14285,7 +14290,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   // If ONLY B has a key
                   if (sortAsc) return -1;else return 1;
                 } else return 0;
-            } else if (_this2.currentTask.type == 'decision') {
+            } else if (currentTaskType == 'decision') {
               // Sort by current action
               if (a[key] != null) {
                 if (b[key] != null) {
@@ -14350,7 +14355,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             }
           } else {
             if (sortMethod == 'object') {
-              if (_this2.currentTask.type == 'decision' && key == 'commentsScoped') key = 'commentsInherited'; // Sort by key length (arrays)
+              if (currentTaskType == 'decision' && key == 'commentsScoped') key = 'commentsInherited'; // Sort by key length (arrays)
 
               if (a[key].length == b[key].length) {
                 return 0;
@@ -14372,11 +14377,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return dataSorted;
     },
     setDefaultFilter: function setDefaultFilter() {
-      var _this3 = this;
+      var _this2 = this;
 
       // Set the starting product filter
       if (this.currentTask.completed.find(function (x) {
-        return x.file_id == _this3.currentFile.id;
+        return x.file_id == _this2.currentFile.id;
       })) {
         this.setProductFilter('ins');
       } else if (this.currentTask.type == 'approval') {
@@ -14389,8 +14394,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   created: function created() {
     this.hideQuickOut = this.$cookies.get("quick_out_".concat(this.currentFile.id, "_").concat(this.currentTask.id));
     this.hideQuickIn = this.$cookies.get("quick_in_".concat(this.currentFile.id, "_").concat(this.currentTask.id)); // Initially sort the products
-
-    this.sortProducts();
+    // this.sortProducts()
   },
   mounted: function () {
     var _mounted = _asyncToGenerator(
@@ -18062,7 +18066,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".overlay[data-v-57b394cf] {\n  display: block;\n  position: absolute;\n  color: white;\n  -webkit-box-pack: center;\n          justify-content: center;\n  text-align: center;\n  padding-top: 100px;\n  font-size: 20px;\n  z-index: 1;\n}\n.dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1b1c1d;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n  position: relative;\n  padding: 0;\n}\n.products .circle.tiny[data-v-57b394cf] {\n  position: absolute;\n  left: -26px;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 70px;\n  right: 0;\n  background: #f9f9f9;\n  width: 100%;\n  height: 60px;\n  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05) inset;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  margin-left: 1px;\n  border-radius: 0 6px 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.card > .flex-table[data-v-57b394cf] {\n  margin-left: 0;\n  margin-right: 0;\n  width: 100%;\n}\n.flex-table.disabled .product-row[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  min-width: 120px;\n  margin-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf], .flex-table-row > *.tooltip-wrapper .square-wrapper[data-v-57b394cf] {\n  min-width: 56px;\n  margin-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.square-wrapper .square[data-v-57b394cf], .flex-table-row > *.tooltip-wrapper .square-wrapper .square[data-v-57b394cf] {\n  min-width: 56px;\n  width: auto;\n  padding: 0 4px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 82px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: 16px;\n  margin-right: 16px;\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 284px;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table-row > *.action[data-v-57b394cf]:not(th) {\n  display: -webkit-box;\n  display: flex;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #f3f3f3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #f3f3f3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5ee2a0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #ff6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #f9f9f9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #dfdfdf;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #a8a8a8;\n  white-space: nowrap;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #dfdfdf;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3b86ff;\n}\nth.action[data-v-57b394cf] {\n  text-align: right;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1b1c1d;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #f9f9f9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.square[data-v-57b394cf] {\n  color: #1b1c1d;\n  font-weight: 600;\n}\n.square[data-v-57b394cf]:not(.true-square) {\n  min-width: 58px;\n}\n.square i[data-v-57b394cf] {\n  color: #a8a8a8;\n}\n.square.focus-action.active i[data-v-57b394cf] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.button[data-v-57b394cf] {\n  min-width: 72px;\n}\n.button[data-v-57b394cf]:nth-child(1n+2) {\n  margin-left: 12px;\n}\n.button.load-more[data-v-57b394cf] {\n  position: absolute;\n  width: 100%;\n  margin-left: 0;\n  margin: 12px 0;\n  height: 44px;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.product-totals[data-v-57b394cf] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.product-totals span[data-v-57b394cf] {\n  font-weight: 500;\n  font-size: 14px;\n}\n.product-totals span[data-v-57b394cf]:not(:last-child) {\n  margin-right: 20px;\n}", ""]);
+exports.push([module.i, ".overlay[data-v-57b394cf] {\n  display: block;\n  position: absolute;\n  color: white;\n  -webkit-box-pack: center;\n          justify-content: center;\n  text-align: center;\n  padding-top: 100px;\n  font-size: 20px;\n  z-index: 1;\n}\n.dropdown-parent[data-v-57b394cf] {\n  position: relative;\n  cursor: pointer;\n}\n.dropdown-parent[data-v-57b394cf]:hover {\n  color: #1b1c1d;\n}\n.products[data-v-57b394cf] {\n  margin-top: 0;\n  position: relative;\n  padding: 0;\n}\n.products .circle.tiny[data-v-57b394cf] {\n  position: absolute;\n  left: -26px;\n}\n.products.sticky[data-v-57b394cf] {\n  margin-top: 90px;\n}\n.products.sticky .scroll-bg[data-v-57b394cf] {\n  display: block;\n  z-index: 8;\n  position: fixed;\n  right: 20px;\n  top: 70px;\n  right: 0;\n  background: #f9f9f9;\n  width: 100%;\n  height: 60px;\n  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05) inset;\n}\n.products.sticky .header-row[data-v-57b394cf] {\n  position: fixed;\n  top: 130px;\n  z-index: 9;\n  background: white;\n  margin-left: 1px;\n  border-radius: 0 6px 0 0;\n  box-shadow: 0 6px 3px -2px rgba(0, 0, 0, 0.05);\n}\n.scroll-bg[data-v-57b394cf] {\n  display: none;\n}\n.clickable[data-v-57b394cf] {\n  cursor: pointer;\n}\n.products[data-v-57b394cf] {\n  padding-top: 0;\n}\n.card > .flex-table[data-v-57b394cf] {\n  margin-left: 0;\n  margin-right: 0;\n  width: 100%;\n}\n.flex-table.disabled .product-row[data-v-57b394cf] {\n  opacity: 0.5;\n}\n.flex-table-row[data-v-57b394cf] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table-row > *.select[data-v-57b394cf] {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table-row > *.id[data-v-57b394cf] {\n  min-width: 75px;\n  margin-left: 16px;\n}\n.flex-table-row > *.image[data-v-57b394cf] {\n  margin: 8px 0 8px 16px;\n  min-width: 55px;\n}\n.flex-table-row > *.title[data-v-57b394cf] {\n  width: 300px;\n  min-width: 120px;\n  margin-left: 16px;\n}\n.flex-table-row > *.focus[data-v-57b394cf] {\n  margin-left: auto;\n}\n.flex-table-row > *.square-wrapper[data-v-57b394cf], .flex-table-row > *.tooltip-wrapper .square-wrapper[data-v-57b394cf] {\n  min-width: 56px;\n  margin-left: 16px;\n  box-sizing: content-box;\n}\n.flex-table-row > *.square-wrapper .square[data-v-57b394cf], .flex-table-row > *.tooltip-wrapper .square-wrapper .square[data-v-57b394cf] {\n  min-width: 56px;\n  width: auto;\n  padding: 0 4px;\n}\n.flex-table-row > *.comments[data-v-57b394cf] {\n  min-width: 82px;\n}\n.flex-table-row > *.action[data-v-57b394cf] {\n  margin-left: 16px;\n  margin-right: 16px;\n  -webkit-box-flex: 1;\n          flex: 1;\n  min-width: 284px;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table-row > *.action[data-v-57b394cf]:not(th) {\n  display: -webkit-box;\n  display: flex;\n}\n.header-row[data-v-57b394cf] {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #f3f3f3;\n}\n.product-row[data-v-57b394cf] {\n  border-bottom: solid 1px #f3f3f3;\n}\n.product-row.in[data-v-57b394cf] {\n  box-shadow: 4px 0 #5ee2a0 inset;\n}\n.product-row.out[data-v-57b394cf] {\n  box-shadow: 4px 0 #ff6565 inset;\n}\n.product-row[data-v-57b394cf]:hover {\n  background: #f9f9f9;\n}\n.product-row .image[data-v-57b394cf] {\n  border: solid 1px #dfdfdf;\n  height: 75px;\n  position: relative;\n}\n.product-row .image img[data-v-57b394cf] {\n  width: 100%;\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  -webkit-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n  padding: 1px;\n}\nth[data-v-57b394cf] {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #a8a8a8;\n  white-space: nowrap;\n}\nth.id[data-v-57b394cf] {\n  padding-left: 20px;\n}\nth i[data-v-57b394cf] {\n  color: #dfdfdf;\n  margin: 0;\n  margin-left: 4px;\n}\nth.active i[data-v-57b394cf] {\n  color: #3b86ff;\n}\nth.action[data-v-57b394cf] {\n  text-align: right;\n}\ntd.title[data-v-57b394cf] {\n  font-size: 13px;\n  color: #1b1c1d;\n}\n.show-more[data-v-57b394cf] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.loading[data-v-57b394cf] {\n  -webkit-animation: loading-data-v-57b394cf 2s;\n          animation: loading-data-v-57b394cf 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading-data-v-57b394cf {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.checkbox[data-v-57b394cf] {\n  display: block;\n  position: relative;\n  cursor: pointer;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  margin-bottom: 0;\n  padding-top: 5px;\n  padding-bottom: 5px;\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.checkbox[data-v-57b394cf]:hover {\n  background: #f9f9f9;\n}\n.checkbox input[data-v-57b394cf] {\n  position: absolute;\n  opacity: 0;\n  cursor: pointer;\n  height: 0;\n  width: 0;\n}\n.square[data-v-57b394cf] {\n  color: #1b1c1d;\n  font-weight: 600;\n}\n.square[data-v-57b394cf]:not(.true-square) {\n  min-width: 58px;\n}\n.square i[data-v-57b394cf] {\n  color: #a8a8a8;\n}\n.square.focus-action.active i[data-v-57b394cf] {\n  font-weight: 900;\n  color: #3b86ff;\n}\n.button[data-v-57b394cf] {\n  min-width: 72px;\n}\n.button[data-v-57b394cf]:nth-child(1n+2) {\n  margin-left: 12px;\n}\n.load-more[data-v-57b394cf] {\n  position: absolute;\n  width: 100%;\n  margin-top: 12px;\n}\n.load-more .button[data-v-57b394cf] {\n  width: 100%;\n  margin-left: 0;\n  margin: 12px 0;\n  height: 44px;\n}\n.view-single[data-v-57b394cf] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.product-totals[data-v-57b394cf] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.product-totals span[data-v-57b394cf] {\n  font-weight: 500;\n  font-size: 14px;\n}\n.product-totals span[data-v-57b394cf]:not(:last-child) {\n  margin-right: 20px;\n}", ""]);
 
 // exports
 
@@ -44049,18 +44053,20 @@ var render = function() {
           on: { close: _vm.onCloseSingle }
         },
         [
-          _c("product-single", {
-            attrs: {
-              loading: _vm.loadingSingle,
-              authUser: _vm.authUser,
-              visible: _vm.singleVisible
-            },
-            on: {
-              closeSingle: _vm.onCloseSingle,
-              onToggleInOut: _vm.toggleInOut,
-              nextProduct: _vm.nextSingle
-            }
-          })
+          _vm.currentProduct
+            ? _c("product-single", {
+                attrs: {
+                  loading: _vm.loadingSingle,
+                  authUser: _vm.authUser,
+                  visible: _vm.singleVisible
+                },
+                on: {
+                  closeSingle: _vm.onCloseSingle,
+                  onToggleInOut: _vm.toggleInOut,
+                  nextProduct: _vm.nextSingle
+                }
+              })
+            : _vm._e()
         ],
         1
       ),
@@ -45120,6 +45126,34 @@ var render = function() {
         ],
         2
       ),
+      _vm._v(" "),
+      _c("div", { staticClass: "load-more" }, [
+        _vm.products.length > _vm.pageLimit
+          ? _c(
+              "span",
+              {
+                staticClass: "button primary wide",
+                on: { click: _vm.loadMore }
+              },
+              [_vm._v("Load 10 more products")]
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.products.length > _vm.pageLimit
+          ? _c(
+              "span",
+              {
+                staticClass: "button dark wide",
+                on: {
+                  click: function($event) {
+                    _vm.pageLimit = null
+                  }
+                }
+              },
+              [_vm._v("Show all (may cause slowdown)")]
+            )
+          : _vm._e()
+      ]),
       _vm._v(" "),
       _vm.loading ? [_c("Loader")] : _vm._e()
     ],
@@ -47992,7 +48026,9 @@ var render = function() {
                                     _vm.selectedCategories = []
                                     _vm.$refs.filterDelivery.clear()
                                     _vm.selectedDeliveryDates = []
-                                    _vm.$refs.filterBuyerGroup.clear()
+                                    if (_vm.$refs.filterBuyerGroup) {
+                                      _vm.$refs.filterBuyerGroup.clear()
+                                    }
                                     _vm.selectedBuyerGroups = []
                                     _vm.unreadOnly = false
                                   }
@@ -73919,6 +73955,7 @@ function (_Model) {
         completed: this.hasMany(_FileTask__WEBPACK_IMPORTED_MODULE_1__["default"], 'task_id'),
         parents: this.hasMany(_TaskParent__WEBPACK_IMPORTED_MODULE_2__["default"], 'task_id'),
         children: this.hasMany(_TaskParent__WEBPACK_IMPORTED_MODULE_2__["default"], 'parent_id'),
+        // Children are actually parents and vice versa
         taskTeams: this.hasMany(_TaskTeam__WEBPACK_IMPORTED_MODULE_3__["default"], 'task_id'),
         actions: this.hasMany(_Action__WEBPACK_IMPORTED_MODULE_4__["default"], 'task_id')
       };
@@ -74511,6 +74548,7 @@ function (_Model) {
         country_id: this.attr(''),
         role_id: this.attr(''),
         impact: this.attr(''),
+        currency: this.attr(''),
         comments: this.hasMany(_Comment__WEBPACK_IMPORTED_MODULE_1__["default"], 'user_id'),
         country: this.belongsTo(_Country__WEBPACK_IMPORTED_MODULE_2__["default"], 'country_id'),
         role: this.belongsTo(_Role__WEBPACK_IMPORTED_MODULE_5__["default"], 'role_id'),
@@ -77672,7 +77710,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       if (!rootGetters['persist/loadingInit'] && !state.loading && rootGetters['persist/currentTask'] != null) {
         var products = _models_Product__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"](['actions.task|user.teams'])["with"](['comments.votes.user.teams', 'comments.user.teams', 'comments.team|task']).all();
         var currentTask = rootGetters['persist/currentTask'];
-        var userId = rootGetters['persist/authUser'].id;
+        var authUser = rootGetters['persist/authUser'];
+        var userId = authUser.id;
         var currentTeam = rootGetters['persist/currentTeam'];
         var workspace = rootGetters['persist/currentWorkspace'];
         var userPermissionLevel = rootGetters['persist/userPermissionLevel'];
@@ -77689,46 +77728,38 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           product.nds = [];
           product.ndsTotal;
           product.commentsScoped = [];
-          product.commentsInherited = []; // START Find current action for the product
-
-          if (currentTask.type == 'feedback') {
-            product.currentAction = product.actions.find(function (action) {
-              return action.user_id == userId && action.task_id == currentTask.id;
-            });
-          } else {
-            product.currentAction = product.actions.find(function (action) {
-              return action.task_id == currentTask.id;
-            });
-          } // END Find current action for product
-          // START Find inherit from task
-
-
-          if (currentTask.inherit_from_id) {
-            product.inheritedAction = product.actions.find(function (x) {
-              return x.task_id == currentTask.inherit_from_id;
-            });
-          } // END
-          // START Find the correct price
+          product.commentsInherited = [];
+          product.outInFilter = false; // START Find the correct price
           // Check if the chosen currency exists on the product
 
-
           if (product.prices != null) {
-            var workspacePrices = null;
-            var teamPrices = null;
-            if (workspace.currency != null) workspacePrices = product.prices.find(function (x) {
-              return x.currency == workspace.currency;
-            });
-            if (currentTeam) if (currentTeam.currency != null) teamPrices = product.prices.find(function (x) {
-              return x.currency == currentTeam.currency;
-            });
-
-            if (userPermissionLevel < 3) {
-              // Use team currency for low level members
-              if (teamPrices != null) product.userPrices = teamPrices;else if (workspacePrices != null) product.userPrices = workspacePrices;else product.userPrices = product.prices[0];
-            } else {
-              // Use workspace currency for high level members
-              if (workspacePrices != null) product.userPrices = workspacePrices;else product.userPrices = product.prices[0];
-            }
+            // First check if the user currency is available
+            if (authUser.currency) {
+              var userPrices = product.prices.find(function (x) {
+                return x.currency == authUser.currency;
+              });
+              if (userPrices) product.userPrices = userPrices;
+            } // Then check if the team currency is available
+            else if (currentTeam && currentTeam.currency) {
+                var teamPrices = product.prices.find(function (x) {
+                  return x.currency == currentTeam.currency;
+                });
+                if (teamPrices) product.userPrices = teamPrices;
+              } // Then check if the workspace currency is available
+              else if (workspace.currency) {
+                  var workspacePrices = product.prices.find(function (x) {
+                    return x.currency == workspace.currency;
+                  });
+                  if (workspacePrices) product.userPrices = workspacePrices;
+                } // Else use the first available currency
+                else {
+                    if (product.prices[0]) product.userPrices = product.prices[0];else product.userPrices = {
+                      currency: 'unset',
+                      markup: null,
+                      recommended_retail_price: null,
+                      wholesale_price: null
+                    };
+                  }
           } // END Find the correct price
           //START COMMENTS
 
@@ -77741,12 +77772,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             } else if (currentTask.type == 'feedback') {
               if (comment.task_id == currentTask.id) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
             } else if (currentTask.type == 'approval') {
-              if (currentTask.children[0] ? currentTask.children.find(function (x) {
+              if (currentTask.children.length > 0 // children are actually parents
+              ? currentTask.children.find(function (x) {
                 return x.task_id == comment.task_id;
               }) :  false || comment.task_id == currentTask.id) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
-            } else if (!currentTask.parentTasks.find(function (x) {
-              return x.type == 'approval';
-            }) && currentTask.approvalParent) {
+            } else if (currentTask.type == 'decision') {
               // CSM DECISION
               if (comment.task_id == currentTask.approvalParent.id || currentTask.parentTasks.find(function (x) {
                 return x.id == comment.task_id;
@@ -77754,8 +77784,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return x.id == comment.task_id;
               })) comment.is_request ? product.requests.push(comment) : product.commentsScoped.push(comment);
             } else {
-              // If type is alignment
-              comment.type = 'alignment';
+              // If current task type is alignment
               if (comment.task_id == currentTask.id || currentTask.siblings.find(function (x) {
                 return x.parent_id == comment.task_id;
               }) || currentTask.parentTasks.find(function (x) {
@@ -77840,6 +77869,25 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           // START Group actions by action type (DISTRIBUTION)
 
           product.actions.forEach(function (action) {
+            // START Find OUT Products (Out by filter)
+            if (currentTask.filter_products_by_ids && currentTask.filter_products_by_ids.includes(action.task_id) && action.action == 0) product.outInFilter = action; // END Find OUT Products
+            // START Find current action for the product
+
+            if (currentTask.type == 'feedback') {
+              product.currentAction = action.user_id == userId && action.task_id == currentTask.id ? action : null;
+            } else {
+              product.currentAction = action.task_id == currentTask.id ? action : null;
+            } // END Find current action for product
+            // START Find inherit from task
+
+
+            if (currentTask.inherit_from_id) {
+              product.inheritedAction = product.actions.find(function (x) {
+                return x.task_id == currentTask.inherit_from_id;
+              });
+            } // END
+
+
             if (currentTask.type == 'decision' && inheritFromTask.type == 'alignment') {
               if (inheritFromTask.parentTasks.find(function (x) {
                 return x.id == action.task_id;
@@ -77920,15 +77968,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               }
             }
           } // END NEW Comment
-          // START Find OUT Products (Out by filter)
-
-
-          if (product.actions.length > 1 && currentTask.filter_products_by_ids) {
-            product.outInFilter = product.actions.find(function (x) {
-              return currentTask.filter_products_by_ids.includes(x.task_id) && x.action == 0;
-            });
-          } // END Find OUT Products
-          // START Find Inherited Action
           // START Mark comments as FOCUS if the users action was IN for the product
 
 
