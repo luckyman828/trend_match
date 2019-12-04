@@ -248,5 +248,30 @@ class FileController extends Controller
         return 'Deleted file with id: ' . $file_id;
 
     }
+
+    public function reset(Request $request)
+    {
+        // Find all file specific records
+
+        $file_id = $request->file_id;
+        
+        $completed_files = FileTask::where('file_id', $file_id);
+        $comments = Comment::whereHas('product', function (Builder $query) use($file_id) {
+            $query->where('collection_id', $file_id);
+        });
+        $actions = Action::whereHas('product', function (Builder $query) use($file_id) {
+            $query->where('collection_id', $file_id);
+        });
+        
+        // Use a transaction to make sure all file related records are deleted or none
+        DB::transaction(function() use($completed_files, $comments, $actions) {
+            $completed_files->delete();
+            $comments->delete();
+            $actions->delete();
+        });
+
+        return 'File Reset! Id: ' . $file_id;
+
+    }
     
 }

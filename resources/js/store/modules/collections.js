@@ -270,6 +270,20 @@ export default {
                     console.log(err.response)
                 })
         },
+        async resetFile({ commit }, fileId) {
+            console.log('resetting file!')
+
+            await axios
+                .post(`/api/file/reset`, {
+                    file_id: fileId,
+                })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err.response)
+                })
+        },
     },
 
     mutations: {

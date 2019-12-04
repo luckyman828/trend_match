@@ -200,6 +200,13 @@
                                         "
                                         ><i class="fas fa-pencil primary"></i> Edit products</span
                                     >
+                                    <span v-if="userPermissionLevel == 5"
+                                        class="option icon-left"
+                                        @click="
+                                            onResetFile(catalogue.id)
+                                            $refs['moreOptions-' + catalogue.id][0].toggle()
+                                        "
+                                        ><i class="fas fa-undo-alt"></i> Reset file</span>
                                     <span
                                         class="option icon-left"
                                         @click="
@@ -304,7 +311,7 @@ export default {
         // },
     },
     methods: {
-        ...mapActions('entities/collections', ['deleteFile', 'updateFile', 'uploadToExistingFile']),
+        ...mapActions('entities/collections', ['deleteFile', 'updateFile', 'uploadToExistingFile', 'resetFile']),
         onSelect(index) {
             this.$emit('onSelect', index)
         },
@@ -350,6 +357,13 @@ export default {
                 'Are you sure you want to delete this file?\nAll comments, requests and actions will be permanently deleted.'
             )
                 ? this.deleteFile(fileId)
+                : false
+        },
+        onResetFile(fileId) {
+            window.confirm(
+                'Are you sure you want to reset this file?\nAll comments, requests and actions will be permanently deleted.'
+            )
+                ? this.resetFile(fileId)
                 : false
         },
         onRenameFile(file, index) {
