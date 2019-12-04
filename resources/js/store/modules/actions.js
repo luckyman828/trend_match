@@ -32,7 +32,7 @@ export default {
                     succes = true
                 } catch (err) {
                     console.log('API error in actions.js :')
-                    console.log(err)
+                    console.log(err.response)
                     console.log(`Trying to fetch again. TryCount = ${tryCount}`)
                     if (tryCount <= 0) throw err
                 }
@@ -136,7 +136,7 @@ export default {
                     console.log(response.data)
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.log(err.response)
                     // On error restore the action and alert the user
                     if (existingAction) {
                         commit('setAction', {
@@ -169,7 +169,7 @@ export default {
                     commit('setManyActions', { productIds, task_id, user_id, action_code, is_task_action })
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.log(err.response)
                     commit('alertError')
                 })
         },
@@ -189,7 +189,7 @@ export default {
                     commit('setManyActions', { productIds, task_id, user_id, action_code, is_task_action })
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.log(err.response)
                     commit('alertError')
                 })
         },
@@ -210,7 +210,7 @@ export default {
                     commit('setManyTaskActions', { productIds, task_id, user_id, action_code, is_task_action })
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.log(err.response)
                     commit('alertError')
                 })
         },
@@ -236,7 +236,7 @@ export default {
                     console.log(response.data)
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.log(err.response)
                     // On error restore the action and alert the user
                     commit('setAction', {
                         user_id,
@@ -268,7 +268,7 @@ export default {
                     console.log(response.data)
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.log(err.response)
                     commit('setAction', {
                         user_id: existingAction.user_id,
                         task_id,

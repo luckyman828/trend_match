@@ -126,8 +126,24 @@ class ActionController extends Controller
         $timediff = $endtime - $starttime;
         Action::insert($dataToInsert);
 
-        // Fire event
-        broadcast(new ManyActionsCreated($dataToInsert))->toOthers();
+        // Loop theouh the data to insert and send a broadcast a chunk at a time
+        $broadcastLimit = 100;
+        $dataIndex = 0;
+        $dataToBroadcast = [];
+        foreach ($dataToInsert as $dataPoint) {
+            // Add the currenct datapoint to the data to be broadcast
+            array_push($dataToBroadcast, $dataPoint);
+            // Increase the dataIndex
+            $dataIndex++;
+            // Check if we have reaced the broadcast limit
+            if ($dataIndex > $broadcastLimit) {
+                // Fire event
+                broadcast(new ManyActionsCreated($dataToBroadcast))->toOthers();
+                // Reset data to broadcast and index
+                $dataToBroadcast = [];
+                $dataIndex = 0;
+            }
+        }
 
         return 'Inserted ' . $count . ' records. Time elapsed: ' . $timediff;
     }
@@ -139,8 +155,31 @@ class ActionController extends Controller
 
         Action::whereIn('product_id', $request->product_ids)->where('task_id', $request->task_id)->where('user_id', $request->user_id)->update(['action' => $request->action_code]);
 
-        // Fire event
-        broadcast(new ManyActionsUpdated($request->all()))->toOthers();
+        // Loop theouh the data to insert and send a broadcast a chunk at a time
+        $broadcastLimit = 150;
+        $dataIndex = 0;
+        $dataToBroadcast = [
+            "action_code" => $request->all()['action_code'],
+            "is_task_action" => $request->all()['is_task_action'],
+            "task_id" => $request->all()['task_id'],
+            "user_id" => $request->all()['user_id'],
+            "product_ids" => []
+        ];
+        foreach ($request->all()['product_ids'] as $dataPoint) {
+            // Add the currenct datapoint to the data to be broadcast
+            array_push($dataToBroadcast['product_ids'], $dataPoint);
+            // Increase the dataIndex
+            $dataIndex++;
+            // Check if we have reaced the broadcast limit
+            if ($dataIndex > $broadcastLimit) {
+                // Fire event
+                // return $dataToBroadcast;
+                broadcast(new ManyActionsUpdated($dataToBroadcast))->toOthers();
+                // Reset data to broadcast and index
+                $dataToBroadcast['product_ids'] = [];
+                $dataIndex = 0;
+            }
+        }
 
         $endtime = microtime(true);
         $timediff = $endtime - $starttime;
@@ -153,8 +192,31 @@ class ActionController extends Controller
 
         Action::whereIn('product_id', $request->product_ids)->where('task_id', $request->task_id)->update(['action' => $request->action_code]);
 
-        // Fire event
-        broadcast(new ManyActionsUpdated($request->all()))->toOthers();
+        // Loop theouh the data to insert and send a broadcast a chunk at a time
+        $broadcastLimit = 150;
+        $dataIndex = 0;
+        $dataToBroadcast = [
+            "action_code" => $request->all()['action_code'],
+            "is_task_action" => $request->all()['is_task_action'],
+            "task_id" => $request->all()['task_id'],
+            "user_id" => $request->all()['user_id'],
+            "product_ids" => []
+        ];
+        foreach ($request->all()['product_ids'] as $dataPoint) {
+            // Add the currenct datapoint to the data to be broadcast
+            array_push($dataToBroadcast['product_ids'], $dataPoint);
+            // Increase the dataIndex
+            $dataIndex++;
+            // Check if we have reaced the broadcast limit
+            if ($dataIndex > $broadcastLimit) {
+                // Fire event
+                // return $dataToBroadcast;
+                broadcast(new ManyActionsUpdated($dataToBroadcast))->toOthers();
+                // Reset data to broadcast and index
+                $dataToBroadcast['product_ids'] = [];
+                $dataIndex = 0;
+            }
+        }
 
         $endtime = microtime(true);
         $timediff = $endtime - $starttime;
