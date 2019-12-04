@@ -178,7 +178,7 @@
             </template>
         </div>
         <div class="load-more">
-            <span class="button primary wide" v-if="products.length > pageLimit" @click="loadMore">Load 10 more products</span>
+            <span class="button primary wide" v-if="products.length > pageLimit" @click="loadMore">Load {{itemsPerPage}} more products</span>
             <span class="button dark wide" v-if="products.length > pageLimit" @click="pageLimit = null">Show all (may cause slowdown)</span>
         </div>
         <template v-if="loading">
@@ -231,8 +231,8 @@ export default {
             data: {},
         },
         sticky: false,
-        itemsPerPage: 10,
-        pageLimit: 10,
+        itemsPerPage: 25,
+        pageLimit: 25,
     }},
     computed: {
         // ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
