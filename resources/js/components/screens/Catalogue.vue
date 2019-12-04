@@ -421,6 +421,8 @@ export default{
         setProductFilter(filter) {
             this.setCurrentProductFilter(filter)
             this.clearSelectedProducts()
+            // Reset the products page limit
+            this.$refs.productsComponent.resetPageLimit()
         },
         setSelectedProduct(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
