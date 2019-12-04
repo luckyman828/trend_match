@@ -93,7 +93,7 @@
                 </div> -->
                 <div class="input-parent request">
                     <textarea class="input-wrapper" @click="activateWrite" ref="requestField" @keydown.enter.exact.prevent name="request" id="request-input" placeholder="Write your request here..." v-model="newRequest.comment" 
-                   @input="resizeTextarea($event.target)" @keyup.esc="deactivateWrite"></textarea>
+                   @input="resizeTextarea($event.target)" @keyup.esc="deactivateWrite" @keyup.enter.exact="onSubmitComment"></textarea>
                     <div class="edit-request" v-if="taskRequest && !writeActive">
                         <span>Edit Request <span class="circle small light"><i class="fas fa-pencil"></i></span></span>
                     </div>
@@ -119,7 +119,7 @@
             <div class="form-input" :class="[{active: writeActive}, {hidden: writeScope != 'comment'}]">
                 <div class="input-parent comment">
                     <textarea class="input-wrapper" @click="activateWrite" ref="commentField" @keydown.enter.exact.prevent name="comment" id="comment-input" placeholder="Write your comment here..." v-model="newComment.comment" 
-                    @input="resizeTextarea($event.target)" @keyup.esc="deactivateWrite"></textarea>
+                    @input="resizeTextarea($event.target)" @keyup.esc="deactivateWrite" @keyup.enter.exact="onSubmitComment"></textarea>
                 </div>
                 <label class="checkbox">
                     <input type="checkbox" v-model="newComment.important" name="comment-important">
@@ -314,6 +314,7 @@ export default {
             this.submittingTaskComplete = false
         },
         resizeTextarea(textarea) {
+            console.log('resize textarea')
             const commentField = textarea
             // Avoid weird resizing when there is only 1 character in the textarea
             // if (event.target.value.length > 1) {
@@ -374,12 +375,7 @@ export default {
             const key = e.code
             if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
                 if (key == 'Enter') {
-                    if (this.writeActive && !e.shiftKey) {
-                        e.preventDefault()
-                        this.onSubmitComment()
-                    } else {
-                        this.activateWrite()
-                    }
+                    this.activateWrite()
                 }
             }
         }
@@ -562,6 +558,7 @@ export default {
                 color: $dark1;
                 background: transparent;
                 cursor: pointer;
+                line-height: 1.49;
                 &:focus {
                     outline: none;
                 }
