@@ -331,6 +331,7 @@ export default {
         authUser() {
             return AuthUser.query()
                 .with('teams.files|teamFiles|tasks.completed')
+                .with('role')
                 .with('workspaces')
                 .first()
         },
@@ -357,6 +358,9 @@ export default {
             commit('setTeamFilter', id)
         },
         async setCurrentWorkspace({ commit }, { workspace_id, user_id }) {
+            console.log('setting current workspace')
+            console.log(workspace_id)
+            console.log(user_id)
             commit('setCurrentWorkspace', workspace_id)
 
             // Cache the curent workspace id

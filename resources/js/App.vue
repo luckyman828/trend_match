@@ -74,30 +74,13 @@ export default{
                 this.fetchWorkspaces(),
             ])
             this.setUserPermissionLevel(this.authUser.role_id)
+            if (this.authUser.workspaces.length > 1) console.log('multiple workspaces!');
             this.setCurrentWorkspace({workspace_id: this.authUser.workspaces[0].id, user_id: this.authUser.id})
         },
-    },
-    watch : {
-        authUser(newVal) {
-            if (newVal.teams != null) {
-                if (newVal.teams.length > 0) {
-                    if (this.authUser.role_id >= 3) {
-                        this.setCurrentTeam(0)
-                    }
-                    else {
-                        this.setCurrentTeam(this.authUser.teams[0].id)
-                        this.setLoadingInit(false)
-                    }
-                }
-            }
-        }
-    },
-    created() {
-        this.fetchInitialData()
-        // Fetch data based on the Auth User
-        .then( async response => {
+        async initRequiresWorkspace() {
             // Only get data for the current workspace
-            console.log(this.userPermissionLevel)
+            console.log('getting init data from workspace: '+ this.currentWorkspaceId)
+            this.setLoadingInit(true)
             if (this.authUser) {
                 await (
                     this.fetchTeams(this.currentWorkspaceId),
@@ -125,7 +108,33 @@ export default{
             } else {
                 this.loadingOverwrite = true
             }
-        })
+        }
+    },
+    watch : {
+        authUser(newVal) {
+            if (newVal.teams != null) {
+                if (newVal.teams.length > 0) {
+                    if (this.authUser.role_id >= 3) {
+                        this.setCurrentTeam(0)
+                    }
+                    else {
+                        this.setCurrentTeam(this.authUser.teams[0].id)
+                        this.setLoadingInit(false)
+                    }
+                }
+            }
+        },
+        currentWorkspaceId(newVal, oldVal) {
+            console.log('There was a change in workspace!')
+            if (oldVal && oldVal != newVal) {
+                this.initRequiresWorkspace()
+            }
+        }
+    },
+    created() {
+        this.fetchInitialData()
+        // Fetch data based on the Auth User
+        .then(this.initRequiresWorkspace)
     },
 }
 </script>

@@ -7,7 +7,7 @@
 
         <div class="overlay invisible" :class="{active: !collapsed}" @click="toggle"></div>
 
-        <div class="dropdown" :class="[{collapsed: collapsed}, {above: showAbove}]" ref="dropdown">
+        <div class="dropdown" :class="[{collapsed: collapsed}, {above: !showMiddle && showAbove}, {middle: showMiddle}]" ref="dropdown">
             <div class="inner">
                 <div v-if="$scopedSlots.header" class="header">
                     <slot name="header" :toggle="toggle"></slot>
@@ -30,6 +30,7 @@ export default {
     data: function () { return {
         collapsed: true,
         showAbove: false,
+        showMiddle: false,
     }},
     methods: {
         toggle() {
@@ -87,6 +88,7 @@ export default {
             const bottomOffset = 100;
             const showAbove = bottomSpace < 20 && parentRect.top > (windownHeight - parentRect.bottom) 
             this.showAbove = showAbove
+            this.showMiddle = wrapper.classList.contains('middle')
 
 
             const bottomDist = windownHeight - parentRect.top
@@ -95,7 +97,10 @@ export default {
             if (parent != null) {
 
                 // Set top distance
-                if (showAbove) {
+                if (wrapper.classList.contains('middle')) {
+                    el.style.top = `${parentRect.bottom - elHeight/2 - parentHeight/2}px`
+                }
+                else if (showAbove) {
                     el.style.bottom = `${bottomDist + offset}px`
                     el.style.top = 'auto'
                 } else {
@@ -110,8 +115,15 @@ export default {
                     // el.style.cssText = `top: ${parentRect.bottom + offset}px; left: ${parentLeft + parentWidth - elWidth + offset}px ;max-height: ${el.scrollHeight}px;`
 
                 // Top + Left align
-                else if (wrapper.classList.contains('left'))
-                    el.style.left = `${parentLeft - offset}px`
+                else if (wrapper.classList.contains('left')) {
+                    if (wrapper.classList.contains('middle')) {
+                        console.log('contains middle!')
+                        el.style.left = `${parentLeft + parentWidth + offset}px`
+                    }
+                    else {
+                        el.style.left = `${parentLeft - offset}px`
+                    }
+                }
                     // el.style.cssText = `top: ${parentRect.bottom + offset}px; left: ${parentLeft - offset}px ;max-height: ${el.scrollHeight}px;`
                 
                 // Top + Center align (DEFAULT)

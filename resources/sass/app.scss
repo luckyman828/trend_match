@@ -833,6 +833,25 @@ textarea {
             margin-bottom: 8px;
         }
     }
+    .left &.middle {
+        &::before,
+        .arrow {
+            // Arrow
+            border-bottom: solid 1px $light2;
+            border-right: solid 1px $light2;
+            border-left: 0;
+            border-top: 0;
+            top: 50%;
+            bottom: auto;
+            left: 8px;
+            transform: translate(-50%, -50%) rotateZ(135deg);
+        }
+        .inner {
+            margin-top: 0;
+            margin-bottom: 0;
+            margin-left: 8px;
+        }
+    }
 }
 
 // CUSTOM RADIO AND CHECKBOX BUTTONS

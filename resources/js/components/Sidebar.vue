@@ -1,7 +1,7 @@
 <template>
   <div class="vue-component-sidebar sidebar">
     <div class="nav">
-        <div class="top-items">
+        <div class="top-items" v-if="currentWorkspace">
             <router-link to="/files" class="link"><i class="fas fa-signal-alt-3"></i> Files</router-link>
         <!-- <router-link to="/catalogue">Catalogue</router-link> -->
         <!-- <router-link class="stick-to-bottom" to="/teams"><i class="fas fa-users"></i> Teams</router-link> -->
@@ -13,9 +13,22 @@
           </template>
         </template>
       </div>
-      <!-- <div class="bottom-items">
-        <signout-button class="link"/>
-      </div> -->
+      <div class="bottom-items">
+        <Dropdown class="dropdown-parent left middle" ref="workspaceDropdown" v-if="authUser.workspaces.length > 1">
+            <template v-slot:button="slotProps">
+              <div class="link" @click="slotProps.toggle">
+                  <i class="far fa-building"></i>
+                  <span>Workspace</span>
+              </div>
+            </template>
+            <template v-slot:header="slotProps">
+                <span>Switch workspace</span>
+            </template>
+            <template v-slot:body>
+                <RadioButtons :options="authUser.workspaces" :currentOptionId="currentWorkspace.id" :optionNameKey="'name'" :optionValueKey="'id'" @change="setCurrentWorkspace({workspace_id: $event, user_id: authUser.id}); $refs.workspaceDropdown.toggle()"/>
+            </template>
+        </Dropdown>
+      </div>
     </div>
     <div class="bottom-drawer" @click="drawerExpanded = !drawerExpanded" :class="{collapsed: !drawerExpanded}">
         <div class="header">
@@ -45,24 +58,20 @@
 import { mapActions, mapGetters } from 'vuex'
 
 import SignoutButton from './SignoutButton'
-import AuthUser from '../store/models/AuthUser'
+import RadioButtons from './RadioButtons'
 import Role from '../store/models/Role'
 
 export default {
   name: "sidebar",
   components: {
-    SignoutButton
+    SignoutButton,
+    RadioButtons,
   },
   data: function () { return {
     drawerExpanded: false,
   }},
   computed: {
-    authUser() {
-        return AuthUser.query().with('role').first()
-    },
-    roles() {
-        return Role.query().all()
-    },
+    ...mapGetters('persist', ['currentWorkspace', 'authUser']),
     loadingUser () {
       let loading = false
       if (this.authUser == null) {
@@ -74,6 +83,9 @@ export default {
       return loading
     }
   },
+  methods: {
+    ...mapActions('persist', ['setCurrentWorkspace']),
+  }
 };
 </script>
 
@@ -109,6 +121,7 @@ export default {
     text-decoration: none;
     border-left: solid 5px white;
     cursor: pointer;
+    width: 100%;
     &.router-link-active {
       background-color: #f9f9f9;
       color: #1b1c1d;
@@ -174,6 +187,9 @@ export default {
         }
     }
     
+  }
+  .dropdown-parent .dropdown {
+    color: $primary;
   }
   // SMALL SCREENS AND HIGH DPI
     @media screen and (max-width: $screenSmall) {
