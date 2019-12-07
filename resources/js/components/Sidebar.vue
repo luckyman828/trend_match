@@ -13,7 +13,7 @@
           </template>
         </template>
       </div>
-      <div class="bottom-items">
+      <div class="bottom-items" v-if="authUser && currentWorkspace">
         <Dropdown class="dropdown-parent left middle" ref="workspaceDropdown" v-if="authUser.workspaces.length > 1">
             <template v-slot:button="slotProps">
               <div class="link" @click="slotProps.toggle">

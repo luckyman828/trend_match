@@ -24,7 +24,7 @@
                             <div class="sender">{{comment.task.title}} | {{(comment.user.id == authUser.id) ? 'You' : comment.user.name}}</div>
                         </div>
                         <div class="break-line" v-if="(product.currentAction)"><span class="pill" :class="product.currentAction.action == 1 ? 'green' : 'red'">Marked as {{product.currentAction.action == 1 ? 'IN' : 'OUT'}} by {{(product.currentAction.user_id == authUser.id) ? 'You' : product.currentAction.user.name}}</span></div>
-                        <div class="break-line" v-else-if="(product.requests.length < 1)"><span class="pill green">Marked as IN by {{(product.inheritedAction.user_id == authUser.id) ? 'You' : product.inheritedAction.user.name}} in {{currentTask.inheritFromTask.title}}</span></div>
+                        <div class="break-line" v-else-if="(product.requests.length < 1)"><span class="pill" :class="product.inheritedAction.action == 1 ? 'green' : 'red'">Marked as {{product.inheritedAction.action == 1 ? 'IN' : 'OUT'}} by {{(product.inheritedAction.user_id == authUser.id) ? 'You' : product.inheritedAction.user.name}} in {{currentTask.inheritFromTask.title}}</span></div>
                         <div class="break-line" v-else-if="!product.newComment">Awaiting response from {{userPermissionLevel == 3 ? 'Requester' : 'Approver'}}</div>
                     </template>
 

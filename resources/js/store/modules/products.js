@@ -435,7 +435,11 @@ export default {
                             if (product.requests.length > 0) {
                                 data.nds++
                             } else {
-                                data.ins++
+                                if (product.inheritedAction && product.inheritedAction.action == 0) {
+                                    data.outs++
+                                } else {
+                                    data.ins++
+                                }
                             }
                         } else {
                             data.nds++
@@ -492,7 +496,11 @@ export default {
                             if (product.requests.length > 0) {
                                 data.nds++
                             } else {
-                                data.ins++
+                                if (product.inheritedAction && product.inheritedAction.action == 0) {
+                                    data.outs++
+                                } else {
+                                    data.ins++
+                                }
                             }
                         } else {
                             data.nds++
@@ -653,14 +661,17 @@ export default {
                             return product.currentAction == null && product.requests.length > 0
                         } else return product.currentAction == null && !product.outInFilter
                     } else if (method == 'ins') {
-                        if (product.currentAction) return product.currentAction.action >= 1 && !product.outInFilter
-                        if (currentTask.type == 'approval') {
-                            if (product.inheritedAction && product.requests.length < 1)
-                                return product.inheritedAction.action >= 1
-                        }
+                        return (
+                            ((product.inheritedAction && product.inheritedAction.action >= 1) ||
+                                (product.currentAction && product.currentAction.action >= 1)) &&
+                            !product.outInFilter
+                        )
                     } else if (method == 'outs') {
-                        if (product.currentAction) return product.currentAction.action < 1
-                        else if (product.outInFilter) return true
+                        return (
+                            (product.inheritedAction && product.inheritedAction.action < 1) ||
+                            (product.currentAction && product.currentAction.action < 1) ||
+                            product.outInFilter
+                        )
                     }
                 })
                 productsToReturn = filteredByAction
@@ -687,16 +698,26 @@ export default {
                         if (product.currentAction) return product.currentAction.action >= 1 && !product.outInFilter
                         else if (currentTask.type == 'decision' && !product.outInFilter) {
                             if (product.inheritedAction) return product.inheritedAction.action >= 1
-                        }
-                        if (currentTask.type == 'approval') {
-                            if (product.inheritedAction && product.requests.length < 1)
-                                return product.inheritedAction.action >= 1
+                        } else if (currentTask.type == 'approval') {
+                            return (
+                                ((product.requests.length < 1 &&
+                                    product.inheritedAction &&
+                                    product.inheritedAction.action >= 1) ||
+                                    (product.currentAction && product.currentAction.action >= 1)) &&
+                                !product.outInFilter
+                            )
                         }
                     } else if (method == 'outs') {
                         if (product.outInFilter) return true
                         else if (product.currentAction) return product.currentAction.action < 1
                         else if (currentTask.type == 'decision') {
                             if (product.inheritedAction) return product.inheritedAction.action == 0
+                        } else if (currentTask.type == 'approval') {
+                            return (
+                                (product.inheritedAction && product.inheritedAction.action < 1) ||
+                                (product.currentAction && product.currentAction.action < 1) ||
+                                product.outInFilter
+                            )
                         }
                     }
                 })
