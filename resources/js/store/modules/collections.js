@@ -227,7 +227,7 @@ export default {
             const uploadApiUrl = `${process.env.MIX_UPLOAD_API_URL_BASE}/hooks/import-csv?collection_id=${file.id}`
             const axiosConfig = {
                 headers: {
-                    'X-Kollekt-App-Key': 'mnkAEefWBEL7cY1gEetlW4dM_YYL9Vu4K6dmavW2',
+                    'X-Kollekt-App-Key': process.env.MIX_KOLLEKT_APP_API_KEY,
                 },
             }
             let data = new FormData()

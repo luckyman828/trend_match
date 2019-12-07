@@ -75,10 +75,23 @@ export default {
                 // const inheritFromId = currentTask.inherit_from_id
                 const inheritFromTask = currentTask.inheritFromTask
                 products.forEach(product => {
-                    if (typeof product.color_variants == 'string')
+                    // Test that the JSON objects are valid JSON
+
+                    if (typeof product.color_variants == 'string' && isJSON(product.color_variants))
                         product.color_variants = JSON.parse(product.color_variants)
-                    if (typeof product.assortments == 'string') product.assortments = JSON.parse(product.assortments)
-                    if (typeof product.prices == 'string') product.prices = JSON.parse(product.prices)
+                    if (typeof product.assortments == 'string' && isJSON(product.assortments))
+                        product.assortments = JSON.parse(product.assortments)
+                    if (typeof product.prices == 'string' && isJSON(product.prices))
+                        product.prices = JSON.parse(product.prices)
+
+                    function isJSON(str) {
+                        try {
+                            return JSON.parse(str) && !!str
+                        } catch (e) {
+                            return false
+                        }
+                    }
+
                     product.ins = []
                     product.outs = []
                     product.focus = []
@@ -264,10 +277,10 @@ export default {
 
                         // START Find current action for the product
                         if (currentTask.type == 'feedback') {
-                            product.currentAction =
-                                action.user_id == userId && action.task_id == currentTask.id ? action : null
+                            if (action.user_id == userId && action.task_id == currentTask.id)
+                                product.currentAction = action
                         } else {
-                            product.currentAction = action.task_id == currentTask.id ? action : null
+                            if (action.task_id == currentTask.id) product.currentAction = action
                         }
                         // END Find current action for product
 
@@ -386,13 +399,7 @@ export default {
             if (products) {
                 let productsToReturn = []
                 const inheritFromId = currentTask.inherit_from_id
-                if (inheritFromId && currentTask.type == 'approval') {
-                    productsToReturn = products.filter(product =>
-                        product.actions.find(action => action.task_id == inheritFromId && action.action > 0)
-                    )
-                } else {
-                    productsToReturn = products
-                }
+                productsToReturn = products
 
                 if (currentTeam.category_scope && currentTask.taskTeams.find(x => x.team_id == currentTeam.id)) {
                     return productsToReturn.filter(product =>
