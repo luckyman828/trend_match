@@ -120,7 +120,6 @@
                                 </TooltipAlt2>
                             </template>
                             <template v-else-if="currentTask.type == 'approval' && product.requests.length < 1">
-                                Approval no Requests
                                 <span class="button icon-right disabled" :class="[(product.inheritedAction && product.inheritedAction.action >= 1) || (product.currentAction && prouct.currentAction.action >= 1) ? 'active green' : 'ghost']">
                                     In  <i class="far fa-heart"></i>
                                 </span>
@@ -140,7 +139,6 @@
 
                                 </template>
                                 <template v-else-if="userPermissionLevel != 3">
-                                    requester approval w/ requst
                                     <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id == 3 : false}]" @click="toggleInOut(product, 1)">
                                     In  <i class="far fa-heart"></i>
                                     </span>
@@ -150,7 +148,6 @@
 
                                 </template>
                                 <template v-else>
-                                    buyer approval w/ requst
                                     <TooltipAlt2 :body="'Open product to accept request'">
             
                                         <span class="button icon-right disabled" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id != 3 : false}]">

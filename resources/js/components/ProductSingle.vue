@@ -54,10 +54,10 @@
                                 </TooltipAlt2>
                             </template>
                             <template v-else-if="currentTask.type == 'approval' && product.requests.length < 1">
-                                <span class="button icon-right active green disabled" ref="inButton">
+                                <span class="button icon-right disabled" ref="inButton" :class="[(product.inheritedAction && product.inheritedAction.action >= 1) || (product.currentAction && prouct.currentAction.action >= 1) ? 'active green' : 'ghost']">
                                     In  <i class="far fa-heart"></i>
                                 </span>
-                                <span class="button icon-right ghost disabled" ref="outButton">
+                                <span class="button icon-right disabled"  ref="outButton" :class="[(product.inheritedAction && product.inheritedAction.action < 1) || (product.currentAction && prouct.currentAction.action < 1) ? 'active red' : 'ghost']">
                                     Out  <i class="far fa-times-circle"></i>
                                 </span>
                             </template>
