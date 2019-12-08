@@ -63,8 +63,8 @@
             </div>
             <template v-if="!loading">
                 <div class="product-row flex-table-row"
-                v-for="(product, index) in productsToShow" :key="product.id">
-                
+                v-for="(product, index) in productsToShow.slice(0, pageLimit)" :key="product.id">
+
                     <!-- New comment Bullet  -->
                     <span v-if="product.newComment" class="circle tiny primary"></span>
                     <!-- END New comment Bullet  -->
@@ -178,7 +178,7 @@
         </div>
         <div class="load-more" v-if="pageLimit && products.length > pageLimit">
             <span class="button primary wide" @click="loadMore">Load {{itemsPerPage}} more products</span>
-            <span class="button dark wide" @click="pageLimit = null">Show all (may cause slowdown)</span>
+            <span class="button dark wide" @click="pageLimit = products.length">Show all (may cause slowdown)</span>
         </div>
         <template v-if="loading">
             <Loader/>
@@ -246,10 +246,7 @@ export default {
             return (this.currentTask != null) ? true : false
         },
         productsToShow() {
-            if (this.pageLimit) {
-                const products = this.products.slice(0, this.pageLimit)
-                return products
-            } else return this.products
+            return this.products
         }
     },
     methods: {
