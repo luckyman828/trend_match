@@ -314,7 +314,6 @@ export default {
             this.submittingTaskComplete = false
         },
         resizeTextarea(textarea) {
-            console.log('resize textarea')
             const commentField = textarea
             // Avoid weird resizing when there is only 1 character in the textarea
             // if (event.target.value.length > 1) {

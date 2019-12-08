@@ -1,5 +1,5 @@
 <template>
-    <div class="comment-wrapper" :class="{'has-traits': comment.important || comment.votes.length > 0 || comment.focus}">
+    <div class="comment-wrapper" :class="[{'has-traits': comment.important || comment.votes.length > 0 || comment.focus}, {'edit-active': editActive}]">
         <div class="traits">
             <span v-if="comment.important" class="circle small yellow"><i class="fas fa-exclamation"></i></span>
             <span v-if="comment.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
@@ -7,7 +7,7 @@
         </div>
         <div class="comment" :class="{important: comment.important}">
             <span v-if="!own" class="body">{{comment.comment}}</span>
-            <span v-else class="body"><Editable :value="commentToEdit.comment" :type="'text'" v-model="commentToEdit.comment" @submit="updateComment(commentToEdit)"/></span>
+            <span v-else class="body"><EditableTextarea @activate="setEditActive" :value="commentToEdit.comment" v-model="commentToEdit.comment" @submit="updateComment(commentToEdit)"/></span>
             
             <div class="controls">
                 <button v-tooltip.top="'Delete'" class="button true-square invisible ghost dark-hover"
@@ -22,6 +22,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import AuthUser from '../store/models/AuthUser';
 import Editable from './Editable'
+import EditableTextarea from './EditableTextarea'
 
 export default {
     name: 'comment',
@@ -30,10 +31,12 @@ export default {
     ],
     components: {
         Editable,
+        EditableTextarea,
     },
     data: function() {
         return {
-            commentToEdit: this.comment
+            commentToEdit: this.comment,
+            editActive: false,
         }
     },
     computed: {
@@ -53,6 +56,9 @@ export default {
             )
                 ? this.deleteComment(this.comment.id)
                 : false
+        },
+        setEditActive(boolean) {
+            this.editActive = boolean
         }
     }
 }
@@ -65,6 +71,9 @@ export default {
         position: relative;
         margin-bottom: 4px;
         max-width: calc(100% - 64px);
+        &.edit-active {
+            width: 100%;
+        }
         &.has-traits {
             margin-top: 16px;
         }
@@ -102,6 +111,10 @@ export default {
         .body {
             white-space: pre-wrap;
             word-wrap: break-word;
+            input {
+                white-space: pre-wrap;
+                word-wrap: break-word;
+            }
         }
         &.important {
             background: $yellow;

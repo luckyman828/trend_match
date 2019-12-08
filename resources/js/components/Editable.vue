@@ -29,7 +29,7 @@ export default {
                 this.$refs.input.select()
                 // Set the size of the input field
                 const offset = 50
-                this.$refs.input.style.minWidth = width + offset + 'px'
+                this.$refs.input.style.width = width + offset + 'px'
             })
 
         },
