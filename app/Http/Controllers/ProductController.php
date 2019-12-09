@@ -105,6 +105,9 @@ class ProductController extends Controller
             $hqImage->encode('jpg', 90);
             Storage::disk('azure')->put($file->getClientOriginalName() . '.jpg', $hqImage->__toString());
 
+            // Remove the image from memory after it is uploaded
+            $hqImage->destroy();
+
             // Create a thumbnail and save it
             $thumbnail = Image::make($file);
             // Rotate the image
@@ -117,6 +120,9 @@ class ProductController extends Controller
             });
             $thumbnail->encode('jpg', 80);
             Storage::disk('azure')->put($file->getClientOriginalName() . '_thumbnail.jpg', $thumbnail->__toString());
+
+            // Remove the image from memory after it is uploaded
+            $thumbnail->destroy();
          }
 
         // return $output;
