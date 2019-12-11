@@ -6,6 +6,15 @@
         <FlyIn ref="singleFlyIn" :visibleOverwrite="singleVisible" @close="onCloseSingle">
             <product-single v-if="currentProduct" :loading="loadingSingle" :authUser="authUser" :visible="singleVisible" @closeSingle="onCloseSingle" @onToggleInOut="toggleInOut" @nextProduct="nextSingle"/>
         </FlyIn>
+        <div class="products-wrapper">
+            <h3>Products Static</h3>
+            <p v-for="product in productsStatic.slice(0,5)" :key="product.id">
+                <span>{{product.title}}, Ins: {{product.ins.length}}, Outs: {{product.outs.length}}</span>
+                <span class="add" 
+                @click="updateAction({productToUpdate: product.id, task_id: currentTask.id, user_id: $uuid.v4(), action_code: 1, is_task_action: 0})">
+                (+ Add action)</span>
+            </p>
+        </div>
         <div class="flex-table">
             <div class="header-row flex-table-row">
                 <div class="product-totals">
@@ -235,8 +244,10 @@ export default {
     }},
     computed: {
         // ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
+        ...mapGetters('entities/products', ['productsStatic']),
+
         ...mapGetters('entities/collections', ['currentFile', 'actionScope']),
-        ...mapGetters('entities/products', ['singleVisible', 'currentProduct']),
+        ...mapGetters('entities/products', ['singleVisible', 'currentProduct', 'productsTest']),
         ...mapGetters('persist', ['currentTask', 'currentTaskPermissions', 'userPermissionLevel', 'currentWorkspaceId']),
         loadingSingle() {
             let loading = false
@@ -247,6 +258,12 @@ export default {
         },
         productsToShow() {
             return this.products
+        }
+    },
+    watch: {
+        productsStatic: function(newVal, oldVal) {
+            console.log('Watching productsstaic!')
+            console.log(newVal)
         }
     },
     methods: {

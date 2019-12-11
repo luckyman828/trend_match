@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@vuex-orm/core": "^0.31.13",
+    "@vuex-orm/plugin-change-flags": "^1.2.0",
     "fuse.js": "^3.4.5",
     "jspdf": "^1.5.3",
     "kuduscript": "^1.0.17",

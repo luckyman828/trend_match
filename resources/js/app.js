@@ -65,12 +65,14 @@ import TeamsLoader from './components/screens/loaders/TeamsLoader'
 import FileLoader from './components/screens/loaders/FileLoader'
 import FolderLoader from './components/screens/loaders/FolderLoader'
 import EditFileLoader from './components/screens/loaders/EditFileLoader'
+import Test from './components/screens/Test'
 
 const routes = [
     { path: '/file/:fileId', name: 'file', component: FileLoader },
     { path: '/file/:fileId/edit', name: 'editFile', component: EditFileLoader },
     { path: '/files', name: 'files', component: FolderLoader },
     { path: '/teams', name: 'teams', component: TeamsLoader },
+    { path: '/test/:fileId', name: 'test', component: Test },
     { path: '*', redirect: '/files' },
 ]
 

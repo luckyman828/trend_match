@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import File from '../Catalogue'
 import ScreenLoader from './ScreenLoader'
 import Collection from '../../../store/models/Collection'
@@ -21,31 +21,54 @@ export default {
     data: function () { return {
         loadingFile: true,
         loadingTasks: true,
+        actionsProcessed: false,
     }},
     computed: {
-        ...mapGetters('entities/products', ['products']),
+        ...mapState('entities/products', ['productsStatic']),
+        ...mapGetters('entities/products', ['products', 'loadingProducts']),
+        ...mapGetters('entities/actions', ['loadingActions']),
         ...mapGetters('entities/collections', ['filesUpdated']),
         ...mapGetters('entities/tasks', ['userTasks']),
-        ...mapGetters('persist', ['currentWorkspaceId', 'currentFileId', 'authUser']),
+        ...mapGetters('persist', ['currentWorkspaceId', 'currentFileId', 'authUser', 'currentTask']),
         loading () {
-            return (this.products != null && !this.loadingFile && !this.loadingTasks) ? false : true
+            return (this.products != null && !this.loadingFile && !this.loadingTasks && this.actionsProcessed) ? false : true
         },
+        actionsReady() {
+            if (!this.loadingProducts && !this.loadingTasks && !this.loadingActions && this.currentTask) {
+                return true
+            } else return false
+        }
     },
     watch: {
-        userTasks(newVal, oldVal) {
+        userTasks: function(newVal, oldVal) {
             if (newVal.length > oldVal) this.initRequiresTasks()
+        },
+        actionsReady: async function(newVal, oldVal) {
+            // If the actions are ready, instantiate our products actions
+            if (newVal == true) {
+                await this.procesActions()
+                this.actionsProcessed = true
+            }
         }
     },
     methods: {
         ...mapActions('entities/collections', ['fetchCollections']),
         ...mapMutations('entities/collections', ['setFilesUpdated']),
-        ...mapActions('entities/products', ['fetchProducts']),
+        ...mapActions('entities/products', ['fetchProducts', 'updateActions']),
         ...mapActions('entities/actions', ['fetchActions']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/comments', ['fetchComments']),
         ...mapActions('entities/actions', ['updateAction']),
         ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
         ...mapActions('persist', ['setCurrentFileId', 'setCurrentTaskId']),
+        procesActions() {
+            // Instantiate our products actions
+            const products = this.productsStatic
+            // Loop through our products
+            products.forEach(product => {
+                this.updateActions(product.id, product)
+            })
+        },
         async initRequiresWorkspace() {
             if (Collection.all().length <= 0)
                 await this.fetchCollections(this.currentWorkspaceId)
