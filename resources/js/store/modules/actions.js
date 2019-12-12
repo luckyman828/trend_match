@@ -41,10 +41,7 @@ export default {
         },
 
         // Update the action of for a product for a user
-        async updateAction(
-            { commit, dispatch, rootState, rootGetters },
-            { user_id, task_id, productToUpdate, action_code, is_task_action }
-        ) {
+        async updateAction({ commit, dispatch }, { user_id, task_id, productToUpdate, action_code, is_task_action }) {
             // Save a reference to the existing action so we can revert to it in case of an error
             console.log('Updating actions aciton in vuex')
             const existingAction = Action.query()
@@ -55,43 +52,44 @@ export default {
 
             // Set the action on the product in our ORM loaded state, and wait for the products to recalculate
             await commit('setAction', { user_id, task_id, productToUpdate, action_code, is_task_action })
-            // Find the product we are going to update
-            // const product = rootGetters['entities/products/products'].find(x => x.id == productToUpdate)
+
             // Dispatch an action to update this product
-            // dispatch('entities/products/updateActions', product, { root: true })
             dispatch('entities/products/updateActions', productToUpdate, { root: true })
 
-            // await axios
-            //     .put(`/api/action`, {
-            //         user_id: user_id,
-            //         task_id: task_id,
-            //         product_id: productToUpdate,
-            //         action_code: action_code,
-            //         is_task_action: is_task_action,
-            //     })
-            //     .then(response => {
-            //         console.log(response.data)
-            //     })
-            //     .catch(err => {
-            //         console.log(err.response)
-            //         // On error restore the action and alert the user
-            //         if (existingAction) {
-            //             commit('setAction', {
-            //                 user_id,
-            //                 task_id,
-            //                 productToUpdate,
-            //                 action_code: existingAction.action,
-            //                 is_task_action,
-            //             })
-            //         } else {
-            //             commit('destroyAction', { productToUpdate, task_id, user_id })
-            //         }
-            //         commit('alertError')
-            //     })
+            await axios
+                .put(`/api/action`, {
+                    user_id: user_id,
+                    task_id: task_id,
+                    product_id: productToUpdate,
+                    action_code: action_code,
+                    is_task_action: is_task_action,
+                })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(async err => {
+                    console.log(err.response)
+                    // On error restore the action and alert the user
+                    commit('alertError')
+
+                    if (existingAction) {
+                        await commit('setAction', {
+                            user_id,
+                            task_id,
+                            productToUpdate,
+                            action_code: existingAction.action,
+                            is_task_action,
+                        })
+                    } else {
+                        await commit('destroyAction', { productToUpdate, task_id, user_id })
+                    }
+                    // Dispatch an action to update the products actions
+                    dispatch('entities/products/updateActions', productToUpdate, { root: true })
+                })
         },
         // Update the action of for a product for a user
         async createTaskAction(
-            { commit, dispatch, rootGetters },
+            { commit, dispatch },
             { user_id, task_id, productToUpdate, action_code, is_task_action }
         ) {
             // Save a reference to the existing action so we can revert to it in case of an error
@@ -101,10 +99,9 @@ export default {
                 .first()
 
             await commit('setAction', { user_id, task_id, productToUpdate, action_code, is_task_action })
-            // Find the product we are going to update
-            const product = rootGetters['entities/products/products'].find(x => x.id == productToUpdate)
+
             // Dispatch an action to update this product
-            dispatch('entities/products/updateActions', product, { root: true })
+            dispatch('entities/products/updateActions', productToUpdate, { root: true })
 
             await axios
                 .put(`/api/task-action`, {
@@ -117,11 +114,13 @@ export default {
                 .then(response => {
                     console.log(response.data)
                 })
-                .catch(err => {
+                .catch(async err => {
                     console.log(err.response)
                     // On error restore the action and alert the user
+                    commit('alertError')
+
                     if (existingAction) {
-                        commit('setAction', {
+                        await commit('setAction', {
                             user_id,
                             task_id,
                             productToUpdate,
@@ -129,13 +128,15 @@ export default {
                             is_task_action,
                         })
                     } else {
-                        commit('destroyTaskAction', { productToUpdate, task_id })
+                        await commit('destroyTaskAction', { productToUpdate, task_id })
                     }
-                    commit('alertError')
+
+                    // Dispatch an action to update the products actions
+                    dispatch('entities/products/updateActions', productToUpdate, { root: true })
                 })
         },
         async updateTaskAction(
-            { commit, dispatch, rootGetters },
+            { commit, dispatch },
             { task_id, user_id, productToUpdate, action_code, is_task_action }
         ) {
             const existingAction = Action.query()
@@ -144,10 +145,8 @@ export default {
                 .first()
 
             await commit('setTaskAction', { user_id, task_id, productToUpdate, action_code, is_task_action })
-            // Find the product we are going to update
-            const product = rootGetters['entities/products/products'].find(x => x.id == productToUpdate)
             // Dispatch an action to update this product
-            dispatch('entities/products/updateActions', product, { root: true })
+            dispatch('entities/products/updateActions', productToUpdate, { root: true })
 
             await axios
                 .put(`/api/task-action`, {
@@ -160,11 +159,13 @@ export default {
                 .then(response => {
                     console.log(response.data)
                 })
-                .catch(err => {
+                .catch(async err => {
                     console.log(err.response)
                     // On error restore the action and alert the user
+                    commit('alertError')
+
                     if (existingAction) {
-                        commit('setAction', {
+                        await commit('setAction', {
                             user_id,
                             task_id,
                             productToUpdate,
@@ -172,16 +173,15 @@ export default {
                             is_task_action,
                         })
                     } else {
-                        commit('destroyTaskAction', { productToUpdate, task_id })
+                        await commit('destroyTaskAction', { productToUpdate, task_id })
                     }
-                    commit('alertError')
+
+                    // Dispatch an action to update the products actions
+                    dispatch('entities/products/updateActions', productToUpdate, { root: true })
                 })
         },
 
-        async updateManyActions(
-            { commit, dispatch, rootGetters },
-            { productIds, task_id, user_id, action_code, is_task_action }
-        ) {
+        async updateManyActions({ commit, dispatch }, { productIds, task_id, user_id, action_code, is_task_action }) {
             console.log('updating actions')
 
             await axios
@@ -195,12 +195,11 @@ export default {
                 .then(async response => {
                     console.log(response.data)
                     await commit('setManyActions', { productIds, task_id, user_id, action_code, is_task_action })
-                    // Find all the products we are going to update
-                    const products = rootGetters['entities/products/products'].filter(x => x.id in productIds)
+
                     // Loop through our products and dispatch an update action for each
-                    products.forEach(product => {
+                    productIds.forEach(productId => {
                         // Dispatch an action to update this product
-                        dispatch('entities/products/updateActions', product, { root: true })
+                        dispatch('entities/products/updateActions', productId, { root: true })
                     })
                 })
                 .catch(err => {
@@ -209,7 +208,7 @@ export default {
                 })
         },
         async updateManyTaskActions(
-            { commit, dispatch, rootGetters },
+            { commit, dispatch },
             { productIds, task_id, user_id, action_code, is_task_action }
         ) {
             console.log('updating actions')
@@ -225,12 +224,10 @@ export default {
                 .then(async response => {
                     console.log(response.data)
                     await commit('setManyActions', { productIds, task_id, user_id, action_code, is_task_action })
-                    // Find all the products we are going to update
-                    const products = rootGetters['entities/products/products'].filter(x => x.id in productIds)
                     // Loop through our products and dispatch an update action for each
-                    products.forEach(product => {
+                    productIds.forEach(productId => {
                         // Dispatch an action to update this product
-                        dispatch('entities/products/updateActions', product, { root: true })
+                        dispatch('entities/products/updateActions', productId, { root: true })
                     })
                 })
                 .catch(err => {
@@ -256,12 +253,10 @@ export default {
                 .then(async response => {
                     console.log(response.data)
                     await commit('setManyTaskActions', { productIds, task_id, user_id, action_code, is_task_action })
-                    // Find all the products we are going to update
-                    const products = rootGetters['entities/products/products'].filter(x => x.id in productIds)
                     // Loop through our products and dispatch an update action for each
-                    products.forEach(product => {
+                    productIds.forEach(productId => {
                         // Dispatch an action to update this product
-                        dispatch('entities/products/updateActions', product, { root: true })
+                        dispatch('entities/products/updateActions', productId, { root: true })
                     })
                 })
                 .catch(err => {
@@ -270,7 +265,7 @@ export default {
                 })
         },
 
-        async deleteAction({ commit, dispatch, rootGetters }, { productToUpdate, task_id, user_id }) {
+        async deleteAction({ commit, dispatch }, { productToUpdate, task_id, user_id }) {
             const existingAction = Action.query()
                 .where('user_id', user_id)
                 .where('task_id', task_id)
@@ -278,10 +273,8 @@ export default {
                 .first()
 
             await commit('destroyAction', { productToUpdate, task_id, user_id })
-            // Find the product we are going to update
-            const product = rootGetters['entities/products/products'].find(x => x.id == productToUpdate)
             // Dispatch an action to update this product
-            dispatch('entities/products/updateActions', product, { root: true })
+            dispatch('entities/products/updateActions', productToUpdate, { root: true })
 
             await axios
                 .delete(`/api/action`, {
@@ -294,17 +287,20 @@ export default {
                 .then(response => {
                     console.log(response.data)
                 })
-                .catch(err => {
+                .catch(async err => {
                     console.log(err.response)
+                    commit('alertError')
                     // On error restore the action and alert the user
-                    commit('setAction', {
+                    await commit('setAction', {
                         user_id,
                         task_id,
                         productToUpdate,
                         action_code: existingAction.action,
                         is_task_action: existingAction.is_task_action,
                     })
-                    commit('alertError')
+
+                    // Dispatch an action to update the products actions
+                    dispatch('entities/products/updateActions', productToUpdate, { root: true })
                 })
         },
 
@@ -315,10 +311,8 @@ export default {
                 .first()
 
             await commit('destroyTaskAction', { productToUpdate, task_id })
-            // Find the product we are going to update
-            const product = rootGetters['entities/products/products'].find(x => x.id == productToUpdate)
-            // Dispatch an action to update this product
-            dispatch('entities/products/updateActions', product, { root: true })
+            // Dispatch an action to update the products actions
+            dispatch('entities/products/updateActions', productToUpdate, { root: true })
 
             await axios
                 .delete(`/api/task-action`, {
@@ -330,16 +324,20 @@ export default {
                 .then(response => {
                     console.log(response.data)
                 })
-                .catch(err => {
+                .catch(async err => {
                     console.log(err.response)
-                    commit('setAction', {
+                    commit('alertError')
+
+                    await commit('setAction', {
                         user_id: existingAction.user_id,
                         task_id,
                         productToUpdate,
                         action_code: existingAction.action,
                         is_task_action: existingAction.is_task_action,
                     })
-                    commit('alertError')
+
+                    // Dispatch an action to update the products actions
+                    dispatch('entities/products/updateActions', productToUpdate, { root: true })
                 })
         },
     },
@@ -378,11 +376,15 @@ export default {
             })
         },
         destroyAction: (state, { productToUpdate, task_id, user_id }) => {
-            console.log('deleting action')
+            console.log(
+                'deleting action, product: ' + productToUpdate + ', task id: ' + task_id + ', user id: ' + user_id
+            )
 
-            Action.delete(record => {
+            const deleted = Action.delete(record => {
                 return record.product_id == productToUpdate && record.user_id == user_id && record.task_id == task_id
             })
+            console.log('action is deleted!')
+            console.log(deleted)
         },
         destroyTaskAction: (state, { productToUpdate, task_id }) => {
             console.log('deleting action')

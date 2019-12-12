@@ -186,24 +186,24 @@ export default{
         // unreadOnly: false,
     }},
     watch: {
-        products: function(newValue, oldValue) {
-            // CODE to make sure the products stay sorted in the same way
-            // Save the old order of the products
-            console.log('Products recalculated')
-            if (newValue.length == oldValue.length) {
-                let index = 0
-                oldValue.forEach(product => {
-                    const newIndex = newValue.find(x => x.id == product.id)
-                    if (newIndex) {
-                        newIndex.sortIndex = index
-                    }
-                    product.sortIndex = index
-                    index++
-                })
-                // Sort the products in the same was as they were before
-                this.sortProducts('sortIndex')
-            }
-        },
+        // products: function(newValue, oldValue) {
+        //     // CODE to make sure the products stay sorted in the same way
+        //     // Save the old order of the products
+        //     console.log('Products recalculated')
+        //     if (newValue.length == oldValue.length) {
+        //         let index = 0
+        //         oldValue.forEach(product => {
+        //             const newIndex = newValue.find(x => x.id == product.id)
+        //             if (newIndex) {
+        //                 newIndex.sortIndex = index
+        //             }
+        //             product.sortIndex = index
+        //             index++
+        //         })
+        //         // Sort the products in the same was as they were before
+        //         this.sortProducts('sortIndex')
+        //     }
+        // },
         tasks: function(newValue, oldValue) {
             console.log('Tasks recalculated')
         },

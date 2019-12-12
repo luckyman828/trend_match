@@ -23,6 +23,7 @@ export default {
         loadingTasks: true,
         actionsProcessed: false,
         commentsProcessed: false,
+        ndsProcessed: false,
     }},
     computed: {
         ...mapState('entities/products', ['productsStatic']),
@@ -35,15 +36,20 @@ export default {
         ...mapGetters('entities/tasks', ['userTasks']),
         ...mapGetters('persist', ['currentWorkspaceId', 'currentFileId', 'authUser', 'currentTask']),
         loading () {
-            return (this.products != null && !this.loadingFile && !this.loadingTasks && this.actionsProcessed && this.commentsProcessed) ? false : true
+            return (this.products != null && !this.loadingFile && !this.loadingTasks && this.actionsProcessed && this.commentsProcessed && this.ndsProcessed) ? false : true
         },
         actionsReady() {
-            if (!this.loadingProducts && !this.loadingTasks && !this.loadingActions && this.currentTask) {
+            if (!this.loadingProducts && !this.loadingTasks && !this.loadingActions && this.currentTask && this.ndsProcessed) {
                 return true
             } else return false
         },
         commentsReady() {
             if (!this.loadingProducts && !this.loadingTasks && !this.loadingComments && this.currentTask && !this.loadingUsers && !this.loadingCommentVotes) {
+                return true
+            } else return false
+        },
+        currentTaskReady() {
+            if (!this.loadingProducts && !this.loadingTasks && this.currentTask && !this.loadingUsers) {
                 return true
             } else return false
         }
@@ -65,12 +71,19 @@ export default {
                 await this.processComments()
                 this.commentsProcessed = true
             }
+        },
+        currentTaskReady: async function(newVal, oldVal) {
+            // If the comments are ready, instantiate our products comments
+            if (newVal == true) {
+                await this.instantiateProductNDs()
+                this.ndsProcessed = true
+            }
         }
     },
     methods: {
         ...mapActions('entities/collections', ['fetchCollections']),
         ...mapMutations('entities/collections', ['setFilesUpdated']),
-        ...mapActions('entities/products', ['fetchProducts', 'updateActions', 'updateComments']),
+        ...mapActions('entities/products', ['fetchProducts', 'updateActions', 'updateComments', 'instantiateProductNDs']),
         ...mapActions('entities/actions', ['fetchActions']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/comments', ['fetchComments']),
@@ -142,8 +155,8 @@ export default {
             if (taskToSet != null) {
                 await this.setCurrentTaskId(taskToSet.id)
             }
-            this.loadingTasks = false
             // END Set current task
+            this.loadingTasks = false
         }
     },
     created() {
