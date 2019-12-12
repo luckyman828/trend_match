@@ -47,7 +47,7 @@
                                 <CheckboxButtons :options="dynamicDeliveryDates" :optionNameKey="'name'" :optionValueKey="'value'" ref="filterDelivery" v-model="selectedDeliveryDates" @change="$refs.filterDelivery.submit()"/>
                             </template>
                         </Dropdown>
-                        <Dropdown class="dropdown-parent left" v-if="currentTask.type == 'approval' && userPermissionLevel == 3">
+                        <Dropdown class="dropdown-parent left" v-if="userPermissionLevel == 3">
                             <template v-slot:button="slotProps">
                                 <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
                                     <span>Buyer group </span>
