@@ -74,7 +74,7 @@ export default {
             commit('setSubmitting', false)
             return success
         },
-        async updateComment({ commit }, comment) {
+        async updateComment({ commit, dispatch }, comment) {
             await axios
                 .put(`/api/comment/${comment.id}`, {
                     comment: comment,
@@ -83,14 +83,17 @@ export default {
                     console.log(response.data)
                     // Commit to store
                     Comment.insert({ data: response.data })
+                    // Dispatch an action to update this product
+                    dispatch('entities/products/updateComments', comment.product_id, { root: true })
                 })
                 .catch(err => {
                     console.log(err.response)
                 })
         },
-        async deleteComment({ commit }, id) {
+        async deleteComment({ commit, dispatch }, id) {
             console.log('delete comment in store')
             commit('deleteComment', id)
+            dispatch('entities/products/updateComments', Comment.find(id).product_id, { root: true })
 
             await axios
                 .delete(`/api/comment/${id}`, {

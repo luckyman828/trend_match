@@ -22,19 +22,28 @@ export default {
         loadingFile: true,
         loadingTasks: true,
         actionsProcessed: false,
+        commentsProcessed: false,
     }},
     computed: {
         ...mapState('entities/products', ['productsStatic']),
         ...mapGetters('entities/products', ['products', 'loadingProducts']),
         ...mapGetters('entities/actions', ['loadingActions']),
+        ...mapGetters('entities/comments', ['loadingComments']),
+        ...mapGetters('entities/commentVotes', ['loadingCommentVotes']),
+        ...mapGetters('entities/users', ['loadingUsers']),
         ...mapGetters('entities/collections', ['filesUpdated']),
         ...mapGetters('entities/tasks', ['userTasks']),
         ...mapGetters('persist', ['currentWorkspaceId', 'currentFileId', 'authUser', 'currentTask']),
         loading () {
-            return (this.products != null && !this.loadingFile && !this.loadingTasks && this.actionsProcessed) ? false : true
+            return (this.products != null && !this.loadingFile && !this.loadingTasks && this.actionsProcessed && this.commentsProcessed) ? false : true
         },
         actionsReady() {
             if (!this.loadingProducts && !this.loadingTasks && !this.loadingActions && this.currentTask) {
+                return true
+            } else return false
+        },
+        commentsReady() {
+            if (!this.loadingProducts && !this.loadingTasks && !this.loadingComments && this.currentTask && !this.loadingUsers && !this.loadingCommentVotes) {
                 return true
             } else return false
         }
@@ -46,27 +55,42 @@ export default {
         actionsReady: async function(newVal, oldVal) {
             // If the actions are ready, instantiate our products actions
             if (newVal == true) {
-                await this.procesActions()
+                await this.processActions()
                 this.actionsProcessed = true
+            }
+        },
+        commentsReady: async function(newVal, oldVal) {
+            // If the comments are ready, instantiate our products comments
+            if (newVal == true) {
+                await this.processComments()
+                this.commentsProcessed = true
             }
         }
     },
     methods: {
         ...mapActions('entities/collections', ['fetchCollections']),
         ...mapMutations('entities/collections', ['setFilesUpdated']),
-        ...mapActions('entities/products', ['fetchProducts', 'updateActions']),
+        ...mapActions('entities/products', ['fetchProducts', 'updateActions', 'updateComments']),
         ...mapActions('entities/actions', ['fetchActions']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/comments', ['fetchComments']),
         ...mapActions('entities/actions', ['updateAction']),
         ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
         ...mapActions('persist', ['setCurrentFileId', 'setCurrentTaskId']),
-        procesActions() {
+        processActions() {
             // Instantiate our products actions
             const products = this.productsStatic
             // Loop through our products
             products.forEach(product => {
                 this.updateActions(product.id, product)
+            })
+        },
+        processComments() {
+            // Instantiate our products comments
+            const products = this.productsStatic
+            // Loop through our products
+            products.forEach(product => {
+                this.updateComments(product.id, product)
             })
         },
         async initRequiresWorkspace() {

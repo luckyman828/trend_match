@@ -1127,30 +1127,41 @@ export default {
             // Save the products to our state
             state.productsStatic = products
         },
+        instantiateProductNDs({ state, rootGetters }) {},
         markNewComments({ state, rootGetters }, { product, productToUpdate }) {
             const currentTask = rootGetters['persist/currentTask']
+            const userPermissionLevel = rootGetters['persist/userPermissionLevel']
+
+            const allComments = productToUpdate.commentsScoped
+                .concat(productToUpdate.requests)
+                .concat(productToUpdate.commentsInherited)
 
             // START NEW Comment (Find products with unread / new comments)
-            if (product.comments.length > 0) {
-                if (currentTask.type == 'approval' && product.currentAction == null && product.requests.length > 0) {
+            if (allComments.length > 0) {
+                if (
+                    currentTask.type == 'approval' &&
+                    productToUpdate.currentAction == null &&
+                    productToUpdate.requests.length > 0
+                ) {
                     if (userPermissionLevel == 3) {
-                        product.newComment =
-                            product.comments[product.comments.length - 1].user.role_id != 3 ||
-                            product.comments.length < 1
+                        productToUpdate.newComment =
+                            allComments[allComments.length - 1].user.role_id != 3 || allComments.length < 1
                     } else {
-                        product.newComment = product.comments[product.comments.length - 1].user.role_id == 3
+                        productToUpdate.newComment = allComments[allComments.length - 1].user.role_id == 3
                     }
                 }
             }
             // END NEW Comment
         },
-        markCommentsAsFocus({ state, rootGetters }, { productToUpdate }) {
+        markCommentsAsFocus({ state, rootGetters }, { productId, productToUpdate }) {
             const currentTask = rootGetters['persist/currentTask']
             console.log('Marking comments as focus!')
             const allComments = productToUpdate.commentsScoped
                 .concat(productToUpdate.requests)
                 .concat(productToUpdate.commentsInherited)
-            console.log(allComments)
+            const product = Product.query()
+                .with(['actions'])
+                .find(productId)
             // START Mark comments as FOCUS if the users action was IN for the product
             if (allComments.length > 0) {
                 allComments.forEach(comment => {
@@ -1177,8 +1188,6 @@ export default {
             const productToUpdate = staticProduct ? staticProduct : state.productsStatic.find(x => x.id == productId)
 
             const currentTask = rootGetters['persist/currentTask']
-            const authUser = rootGetters['persist/authUser']
-            const userId = authUser.id
             const inheritFromTask = currentTask.inheritFromTask
 
             // Reset product comment related properties
@@ -1253,7 +1262,7 @@ export default {
 
             // START Comment votes
             // Handle comment votes - group them by team
-            product.commentsScoped.forEach(comment => {
+            productToUpdate.commentsScoped.forEach(comment => {
                 comment.teamVotes = []
                 let noTeamExists = false
                 comment.votes.forEach(vote => {
@@ -1289,7 +1298,7 @@ export default {
             dispatch('markNewComments', { product: product, productToUpdate: productToUpdate })
 
             // Marks comments as focus
-            dispatch('markCommentsAsFocus', { product: product, productToUpdate: productToUpdate })
+            dispatch('markCommentsAsFocus', { productId: product.id, productToUpdate: productToUpdate })
         },
         updateActions({ commit, state, rootGetters, dispatch }, productId, staticProduct) {
             console.log('I will update the ACTIONS of: ' + productId)
@@ -1404,7 +1413,7 @@ export default {
             dispatch('markNewComments', { product: product, productToUpdate: productToUpdate })
 
             // Marks comments as focus
-            dispatch('markCommentsAsFocus', { productToUpdate: productToUpdate })
+            dispatch('markCommentsAsFocus', { productId: product.id, productToUpdate: productToUpdate })
         },
     },
 

@@ -29,7 +29,6 @@ export default {
                 try {
                     const response = await axios.get(`${apiUrl}`)
                     Action.create({ data: response.data })
-                    commit('entities/products/setActionsCreated', null, { root: true })
                     commit('setLoading', false)
                     succes = true
                 } catch (err) {
