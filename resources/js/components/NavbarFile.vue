@@ -95,7 +95,12 @@
                             </div>
                         </template>
                         <template v-else>
-                            <div v-for="request in product.requests" :key="request.id" style="border-radius: 6px; background: #3B86FF; color: white; padding: 8px 12px; margin-bottom: 16px; max-width: calc(100% - 120px);">
+                            <div v-for="request in product.requests.filter(x => x.task_id == currentTask.id)" :key="request.id" style="border-radius: 6px; background: #f3e959; color: black; padding: 8px 12px; margin-bottom: 16px; max-width: calc(100% - 120px);">
+                                <p style="font-size: 12px; font-weight: 700; margin: 0;">{{request.task.title}} | {{request.user ? request.user.name : 'Unknown user'}}</p>
+                                <p style="white-space: pre-wrap; word-wrap: break-word;">{{request.comment}}</p>
+                                <p style="font-size: 10px; font-weight: 500; margin: 0;">Request ID: {{request.id}}</p>
+                            </div>
+                            <div v-for="request in product.requests.filter(x => x.task_id != currentTask.id)" :key="request.id" style="border-radius: 6px; background: #3B86FF; color: white; padding: 8px 12px; margin-bottom: 16px; max-width: calc(100% - 120px);">
                                 <p style="font-size: 12px; font-weight: 700; margin: 0;">{{request.task.title}} | {{request.user ? request.user.name : 'Unknown user'}}</p>
                                 <p style="white-space: pre-wrap; word-wrap: break-word;">{{request.comment}}</p>
                                 <p style="font-size: 10px; font-weight: 500; margin: 0;">Request ID: {{request.id}}</p>
