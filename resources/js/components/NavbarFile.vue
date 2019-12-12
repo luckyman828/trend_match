@@ -85,7 +85,7 @@
                         <h2>Requests & Comments</h2>
                         <template v-if="currentTaskOnly">
                             <div v-for="request in product.requests.filter(x => x.task_id == currentTask.id)" :key="request.id" style="border-radius: 6px; background: #3B86FF; color: white; padding: 8px 12px; margin-bottom: 16px; max-width: calc(100% - 120px);">
-                                <p style="font-size: 12px; font-weight: 700; margin: 0;">{{request.user ? request.user.name : 'Unknown user'}}</p>
+                                <p style="font-size: 12px; font-weight: 700; margin: 0;">{{request.task.title}} | {{request.user ? request.user.name : 'Unknown user'}}</p>
                                 <p style="white-space: pre-wrap; word-wrap: break-word;">{{request.comment}}</p>
                                 <p style="font-size: 10px; font-weight: 500; margin: 0;">Request ID: {{request.id}}</p>
                             </div>
@@ -96,7 +96,7 @@
                         </template>
                         <template v-else>
                             <div v-for="request in product.requests" :key="request.id" style="border-radius: 6px; background: #3B86FF; color: white; padding: 8px 12px; margin-bottom: 16px; max-width: calc(100% - 120px);">
-                                <p style="font-size: 12px; font-weight: 700; margin: 0;">{{request.user ? request.user.name : 'Unknown user'}}</p>
+                                <p style="font-size: 12px; font-weight: 700; margin: 0;">{{request.task.title}} | {{request.user ? request.user.name : 'Unknown user'}}</p>
                                 <p style="white-space: pre-wrap; word-wrap: break-word;">{{request.comment}}</p>
                                 <p style="font-size: 10px; font-weight: 500; margin: 0;">Request ID: {{request.id}}</p>
                             </div>
@@ -110,7 +110,7 @@
                     <div class="distribution-wrapper" v-if="includeDistribution">
                         <h2>Distribution</h2>
                         <h3>IN ({{product.ins.length + product.focus.length}})</h3>
-                        <div v-for="action in product.focus" :key="action.user_id" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
+                        <div v-for="(action, index) in product.focus" :key="index" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
                             <span class="impact" v-if="action.user && action.user.impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
                                 Impact ({{action.user.impact}}) 
                                 <span v-if="action.user.impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
@@ -120,7 +120,7 @@
                             <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{action.task ? action.task.title : 'Uknown task'}} | {{action.user ? action.user.name : 'Unknown user'}} {{action.user ? '('+action.user.email+')' : ''}}</p>
                             <span style="margin-left: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #3b86ff;" v-if="action.action == 2">Focus</span>
                         </div>
-                        <div v-for="action in product.ins" :key="action.user_id" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
+                        <div v-for="(action, index) in product.ins" :key="index" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
                             <span class="impact" v-if="action.user && action.user.impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
                                 Impact ({{action.user.impact}}) 
                                 <span v-if="action.user.impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
@@ -131,7 +131,7 @@
                             <span style="margin-left: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #3b86ff;" v-if="action.action == 2">Focus</span>
                         </div>
                         <h3>OUT ({{product.outs.length}})</h3>
-                        <div v-for="action in product.outs" :key="action.user_id" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
+                        <div v-for="(action, index) in product.outs" :key="index" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
                             <span class="impact" v-if="action.user && action.user.impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
                                 Impact ({{action.user.impact}}) 
                                 <span v-if="action.user.impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
