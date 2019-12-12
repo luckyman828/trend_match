@@ -205,7 +205,7 @@
                             </div>
                         </div>
                     </div>
-                    <ProductSingleComments :comments="product.commentsScoped" :requests="product.requests" :authUser="authUser" :product="product"/>
+                    <ProductSingleComments :authUser="authUser" :product="product"/>
                 </div>
             </template>
             <template v-else>

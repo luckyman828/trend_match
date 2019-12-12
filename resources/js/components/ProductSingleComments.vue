@@ -153,8 +153,6 @@ import TempAlert from './TempAlert'
 export default {
     name: 'productSingleComments',
     props: [
-        'comments',
-        'requests',
         'authUser',
         'product',
     ],
@@ -192,6 +190,12 @@ export default {
     },
     computed: {
         ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']),
+        comments() {
+            return this.product.commentsScoped
+        },
+        requests() {
+            return this.product.requests
+        },
         submitDisabled () {
             if (this.writeScope == 'comment') {
                 if(this.newComment.comment.length < 1 || this.submittingComment)

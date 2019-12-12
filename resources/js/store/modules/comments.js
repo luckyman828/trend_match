@@ -35,20 +35,20 @@ export default {
                     succes = true
                 } catch (err) {
                     console.log('API error in comments.js :')
-                    console.log(err)
+                    console.log(err.response)
                     console.log(`Trying to fetch again. TryCount = ${tryCount}`)
                     if (tryCount <= 0) throw err
                 }
             }
         },
-        async createComment({ commit }, { comment }) {
+        async createComment({ commit, dispatch }, { comment }) {
             commit('setSubmitting', true)
 
             let team_id = '0'
             if (comment.team_id) team_id = comment.team_id
 
             let success
-            const response = await axios
+            await axios
                 .post(`/api/comment`, {
                     id: comment.id,
                     user_id: comment.user_id,
@@ -60,13 +60,16 @@ export default {
                     important: comment.important,
                     is_request: comment.is_request,
                 })
-                .then(response => {
+                .then(async response => {
                     success = true
                     // Get and set the comment id equal to the id given by the database
                     comment.id = response.data.id
-                    commit('setComment', { comment: comment })
+                    await commit('setComment', { comment: comment })
+                    // Dispatch an action to update this product
+                    dispatch('entities/products/updateComments', comment.product_id, { root: true })
                 })
                 .catch(err => {
+                    console.log(err.response)
                     success = false
                     commit('alertError')
                 })
@@ -79,10 +82,10 @@ export default {
                 .put(`/api/comment/${comment.id}`, {
                     comment: comment,
                 })
-                .then(response => {
+                .then(async response => {
                     console.log(response.data)
                     // Commit to store
-                    Comment.insert({ data: response.data })
+                    await Comment.insert({ data: response.data })
                     // Dispatch an action to update this product
                     dispatch('entities/products/updateComments', comment.product_id, { root: true })
                 })
@@ -92,8 +95,12 @@ export default {
         },
         async deleteComment({ commit, dispatch }, id) {
             console.log('delete comment in store')
-            commit('deleteComment', id)
-            dispatch('entities/products/updateComments', Comment.find(id).product_id, { root: true })
+            // Find the comment so we can know what product it belongs to
+            const productId = await Comment.find(id).product_id
+            await commit('deleteComment', id)
+
+            // Dispatch an action to update this product
+            dispatch('entities/products/updateComments', productId, { root: true })
 
             await axios
                 .delete(`/api/comment/${id}`, {

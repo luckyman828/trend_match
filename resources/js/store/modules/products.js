@@ -1214,6 +1214,9 @@ export default {
                 .find(productId)
             const productToUpdate = staticProduct ? staticProduct : state.productsStatic.find(x => x.id == productId)
 
+            console.log('Updating comments')
+            console.log(product)
+
             const currentTask = rootGetters['persist/currentTask']
             const inheritFromTask = currentTask.inheritFromTask
 
