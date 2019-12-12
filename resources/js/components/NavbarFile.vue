@@ -83,15 +83,28 @@
 
                     <div class="comments-wrapper" v-if="exportComments && (product.requests.length > 0 || product.commentsScoped.length > 0)">
                         <h2>Requests & Comments</h2>
-                        <div v-for="request in product.requests" :key="request.id" style="border-radius: 6px; background: #3B86FF; color: white; padding: 8px 12px; margin-bottom: 16px; max-width: calc(100% - 120px);">
-                            <p style="font-size: 12px; font-weight: 700; margin: 0;">{{request.user ? request.user.name : 'Unknown user'}}</p>
-                            <p style="white-space: pre-wrap; word-wrap: break-word;">{{request.comment}}</p>
-                            <p style="font-size: 10px; font-weight: 500; margin: 0;">Request ID: {{request.id}}</p>
-                        </div>
-                        <div v-for="comment in product.commentsScoped" :key="comment.id">
-                            <p style="border-radius: 6px; background: #DFDFDF; color: #1B1C1D; padding: 8px 12px; display: inline-block; white-space: pre-wrap; word-wrap: break-word; margin-bottom: 0; max-width: calc(100% - 120px);">{{comment.comment}}</p>
-                            <p style="font-size: 12px; font-weight: 500; color: #A8A8A8; margin-bottom: 16px; margin-top: 0">{{comment.task.title}} | {{comment.user ? comment.user.name : 'Unknown user'}}</p>
-                        </div>
+                        <template v-if="currentTaskOnly">
+                            <div v-for="request in product.requests.filter(x => x.task_id == currentTask.id)" :key="request.id" style="border-radius: 6px; background: #3B86FF; color: white; padding: 8px 12px; margin-bottom: 16px; max-width: calc(100% - 120px);">
+                                <p style="font-size: 12px; font-weight: 700; margin: 0;">{{request.user ? request.user.name : 'Unknown user'}}</p>
+                                <p style="white-space: pre-wrap; word-wrap: break-word;">{{request.comment}}</p>
+                                <p style="font-size: 10px; font-weight: 500; margin: 0;">Request ID: {{request.id}}</p>
+                            </div>
+                            <div v-for="comment in product.commentsScoped.filter(x => x.task_id == currentTask.id)" :key="comment.id">
+                                <p style="border-radius: 6px; background: #DFDFDF; color: #1B1C1D; padding: 8px 12px; display: inline-block; white-space: pre-wrap; word-wrap: break-word; margin-bottom: 0; max-width: calc(100% - 120px);">{{comment.comment}}</p>
+                                <p style="font-size: 12px; font-weight: 500; color: #A8A8A8; margin-bottom: 16px; margin-top: 0">{{comment.task.title}} | {{comment.user ? comment.user.name : 'Unknown user'}}</p>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <div v-for="request in product.requests" :key="request.id" style="border-radius: 6px; background: #3B86FF; color: white; padding: 8px 12px; margin-bottom: 16px; max-width: calc(100% - 120px);">
+                                <p style="font-size: 12px; font-weight: 700; margin: 0;">{{request.user ? request.user.name : 'Unknown user'}}</p>
+                                <p style="white-space: pre-wrap; word-wrap: break-word;">{{request.comment}}</p>
+                                <p style="font-size: 10px; font-weight: 500; margin: 0;">Request ID: {{request.id}}</p>
+                            </div>
+                            <div v-for="comment in product.commentsScoped" :key="comment.id">
+                                <p style="border-radius: 6px; background: #DFDFDF; color: #1B1C1D; padding: 8px 12px; display: inline-block; white-space: pre-wrap; word-wrap: break-word; margin-bottom: 0; max-width: calc(100% - 120px);">{{comment.comment}}</p>
+                                <p style="font-size: 12px; font-weight: 500; color: #A8A8A8; margin-bottom: 16px; margin-top: 0">{{comment.task.title}} | {{comment.user ? comment.user.name : 'Unknown user'}}</p>
+                            </div>
+                        </template>
                     </div>
 
                     <div class="distribution-wrapper" v-if="includeDistribution">
@@ -158,6 +171,15 @@
                                 <span class="checkmark solid"><i class="fas fa-check"></i></span>
                             </div>
                             <span>Include Requests and comments</span>
+                        </label>
+                    </div>
+                    <div class="form-element" v-if="exportComments">
+                        <label class="input-wrapper check-button">
+                            <div class="checkbox">
+                                <input type="checkbox" v-model="currentTaskOnly">
+                                <span class="checkmark solid"><i class="fas fa-check"></i></span>
+                            </div>
+                            <span>Only include requests/comments from the current task</span>
                         </label>
                     </div>
                     <div class="form-element">
@@ -232,6 +254,7 @@ export default {
         onlyWithRequests: false,
         includeDistribution: false,
         includeNotDecided: false,
+        currentTaskOnly: false,
     }},
     computed: {
         ...mapGetters('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']),
