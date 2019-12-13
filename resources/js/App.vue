@@ -124,10 +124,11 @@ export default{
                 }
             }
         },
-        currentWorkspaceId(newVal, oldVal) {
+        currentWorkspaceId: async function(newVal, oldVal) {
             console.log('There was a change in workspace!')
             if (oldVal && oldVal != newVal) {
-                this.initRequiresWorkspace()
+                await this.initRequiresWorkspace()
+                this.fetchUsers(this.currentWorkspaceId)
             }
         }
     },
