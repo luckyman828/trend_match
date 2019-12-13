@@ -94,7 +94,6 @@ export default {
                 })
         },
         async deleteComment({ commit, dispatch }, id) {
-            console.log('delete comment in store')
             // Find the comment so we can know what product it belongs to
             const productId = await Comment.find(id).product_id
             await commit('deleteComment', id)

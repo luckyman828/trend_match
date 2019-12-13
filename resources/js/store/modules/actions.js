@@ -1,6 +1,5 @@
 import axios from 'axios'
 import Action from '../models/Action'
-import Product from '../models/Product'
 
 export default {
     namespaced: true,
@@ -43,7 +42,6 @@ export default {
         // Update the action of for a product for a user
         async updateAction({ commit, dispatch }, { user_id, task_id, productToUpdate, action_code, is_task_action }) {
             // Save a reference to the existing action so we can revert to it in case of an error
-            console.log('Updating actions aciton in vuex')
             const existingAction = Action.query()
                 .where('user_id', user_id)
                 .where('task_id', task_id)
@@ -211,8 +209,6 @@ export default {
             { commit, dispatch },
             { productIds, task_id, user_id, action_code, is_task_action }
         ) {
-            console.log('updating actions')
-
             await axios
                 .put(`/api/many-task-actions`, {
                     product_ids: productIds,
@@ -240,8 +236,6 @@ export default {
             { commit, dispatch, rootGetters },
             { productIds, task_id, user_id, action_code, is_task_action }
         ) {
-            console.log('creating actions')
-
             await axios
                 .post(`/api/many-actions`, {
                     product_ids: productIds,
@@ -348,9 +342,6 @@ export default {
             state.loading = bool
         },
         setAction: (state, { productToUpdate, task_id, user_id, action_code, is_task_action }) => {
-            console.log('setting action! Action code: ' + action_code)
-            // Find the product in question
-            // Set a flag to say that it's actions have changed
             Action.insert({
                 data: {
                     action: action_code,
@@ -376,19 +367,11 @@ export default {
             })
         },
         destroyAction: (state, { productToUpdate, task_id, user_id }) => {
-            console.log(
-                'deleting action, product: ' + productToUpdate + ', task id: ' + task_id + ', user id: ' + user_id
-            )
-
-            const deleted = Action.delete(record => {
+            Action.delete(record => {
                 return record.product_id == productToUpdate && record.user_id == user_id && record.task_id == task_id
             })
-            console.log('action is deleted!')
-            console.log(deleted)
         },
         destroyTaskAction: (state, { productToUpdate, task_id }) => {
-            console.log('deleting action')
-
             Action.delete(record => {
                 return record.product_id == productToUpdate && record.task_id == task_id
             })
