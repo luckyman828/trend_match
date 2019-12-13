@@ -40,12 +40,17 @@ export default class Product extends Model {
             buyer_group: this.attr(''),
 
             // Custom features added
-            isNew: this.attr(true),
-            actionsUpdated: this.attr(false),
-            commentsUpdated: this.attr(false),
-
-            actionLength: this.attr(0),
             ins: this.attr([]),
+            outs: this.attr([]),
+            focus: this.attr([]),
+            nds: this.attr([]),
+            ndsTotal: this.attr(0),
+            commentsScoped: this.attr([]),
+            commentsInherited: this.attr([]),
+            requests: this.attr([]),
+            outInFilter: this.attr(false),
+            currentAction: this.attr(null),
+            inheritedAction: this.attr(null),
         }
         return data
     }

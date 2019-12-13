@@ -800,8 +800,8 @@ export default {
             return state.availableProductIds
         },
         currentProduct: (state, getters, rootState, rootGetters) => {
-            return state.currentProductId != null && getters.products != null
-                ? getters.products.find(x => x.id == state.currentProductId)
+            return state.currentProductId != null && state.productsStatic != null
+                ? state.productsStatic.find(x => x.id == state.currentProductId)
                 : null
         },
         currentProductv1: (state, getters, rootState, rootGetters) => {
@@ -1213,9 +1213,6 @@ export default {
                 .with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team|task'])
                 .find(productId)
             const productToUpdate = staticProduct ? staticProduct : state.productsStatic.find(x => x.id == productId)
-
-            console.log('Updating comments')
-            console.log(product)
 
             const currentTask = rootGetters['persist/currentTask']
             const inheritFromTask = currentTask.inheritFromTask

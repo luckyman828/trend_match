@@ -66,6 +66,9 @@
                     </div>
                 </template>
 
+                <p>{{product.commentsScoped.length}}</p>
+                <p>{{product.ins.length}}</p>
+
             </div>
         </div>
 
@@ -155,6 +158,7 @@ export default {
     props: [
         'authUser',
         'product',
+        'testArr'
     ],
     components: {
         TooltipAlt2,
@@ -178,10 +182,12 @@ export default {
         writeScope: 'comment',
         writeActive: false,
         submittingComment: false,
-        currentTaskId: null
+        currentTaskId: null,
     }},
     watch: {
-        product(newVal, oldVal) {
+        product: function(newVal, oldVal) {
+            console.log('Product updated in comments. New product:')
+            console.log(newVal)
             if (this.currentTaskId != this.currentTask.id)
                 this.setDefaultScope()
             if (newVal.id != oldVal.id || this.currentTaskId != this.currentTask.id)
@@ -190,8 +196,12 @@ export default {
     },
     computed: {
         ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']),
+        ...mapGetters('entities/products', ['currentProduct']),
         comments() {
             return this.product.commentsScoped
+        },
+        commentsAlt() {
+            return this.currentProduct.commentsScoped
         },
         requests() {
             return this.product.requests
