@@ -1131,6 +1131,9 @@ export default {
             const products = state.productsStatic
             // Loop through the products and calculate their NDs
             products.forEach(product => {
+                // Reset the products nds
+                product.nds = []
+
                 // START Find Not decideds NDs
                 if (currentTask.type == 'feedback') {
                     // If type: Feedback -> Find all users with access to the task

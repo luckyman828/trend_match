@@ -256,12 +256,6 @@ export default {
             return products
         }
     },
-    watch: {
-        productsStatic: function(newVal, oldVal) {
-            console.log('Watching productsstaic!')
-            console.log(newVal)
-        }
-    },
     methods: {
         ...mapActions('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction']),
         ...mapActions('entities/products', ['setCurrentProductId', 'setAvailableProductIds']),

@@ -78,7 +78,16 @@ export default {
                 await this.instantiateProductNDs()
                 this.ndsProcessed = true
             }
-        }
+        },
+        currentTask: async function(newVal, oldVal) {
+            if (oldVal && oldVal != newVal) {
+                // If we have a new value, and we had an old value, recalculate our products
+                await this.instantiateProductNDs()
+                await this.processActions()
+                await this.processComments()
+            }
+        },
+
     },
     methods: {
         ...mapActions('entities/collections', ['fetchCollections']),
