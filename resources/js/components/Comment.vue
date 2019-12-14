@@ -10,7 +10,9 @@
             <span v-else class="body"><EditableTextarea ref="editCommentInput" :hideEditButton="true" @activate="setEditActive" :value="commentToEdit.comment" v-model="commentToEdit.comment" @submit="updateComment(commentToEdit)"/></span>
             <div class="controls">
                 <template v-if="comment.failed">
-                    <span class="failed clickable" v-tooltip.top="'Retry'" @click="retrySubmitComment">
+                    <span v-if="typeof comment.id != 'number'" class="failed clickable" v-tooltip.top="'Retry submit'" @click="retrySubmitComment">
+                        <i class="far fa-exclamation-circle"></i> Failed</span>
+                    <span v-else class="failed clickable" v-tooltip.top="'Retry edit'" @click="updateComment(commentToEdit)">
                         <i class="far fa-exclamation-circle"></i> Failed</span>
                 </template>
                 <template v-else-if="typeof comment.id == 'number'">
@@ -143,6 +145,7 @@ export default {
             }
         }
         .controls {
+            white-space: nowrap;
             transition: .3s;
             opacity: 0;
             position: absolute;

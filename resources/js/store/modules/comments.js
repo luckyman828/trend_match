@@ -100,6 +100,9 @@ export default {
             return success
         },
         async updateComment({ commit, dispatch }, comment) {
+            // Set our comment as not failed as default
+            comment.failed = false
+
             await axios
                 .put(`/api/comment/${comment.id}`, {
                     comment: comment,
@@ -108,11 +111,13 @@ export default {
                     console.log(response.data)
                     // Commit to store
                     await Comment.insert({ data: response.data })
+
                     // Dispatch an action to update this product
                     dispatch('entities/products/updateComments', comment.product_id, { root: true })
                 })
                 .catch(err => {
                     console.log(err.response)
+                    comment.failed = true
                 })
         },
         async deleteComment({ commit, dispatch }, id) {
