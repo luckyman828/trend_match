@@ -6,11 +6,13 @@ use App\Collection;
 use App\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
+use App\Events\TaskCompleted;
+use App\Events\TaskUncompleted;
 
 use App\FileTask;
+use App\Http\Resources\FileTask as FileTaskResource;
 use App\UserTeam;
 use App\Task;
-use App\TaskTeam;
 use App\User;
 
 class TaskController extends Controller
@@ -34,8 +36,8 @@ class TaskController extends Controller
         if($fileTask->save()) {
 
             // Fire event
-            // $actionToReturn = new ActionResource($action);
-            // broadcast(new ActionUpdated($actionToReturn))->toOthers();
+            $fileTaskToBroadcast = new FileTaskResource($fileTask);
+            broadcast(new TaskCompleted($fileTaskToBroadcast))->toOthers();
             return $fileTask;
         }
     }
@@ -47,9 +49,9 @@ class TaskController extends Controller
 
         if( $existing->delete() ) {
 
-             // Fire event
-            // $actionToReturn = new ActionResource($existingAction);
-            // broadcast(new ActionDeleted($actionToReturn))->toOthers();
+            // Fire event
+            $fileTaskToBroadcast = new FileTaskResource($existing);
+            broadcast(new TaskUncompleted($fileTaskToBroadcast))->toOthers();
             return $existing;
 
         } else {

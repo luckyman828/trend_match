@@ -266,7 +266,7 @@ export default {
         ...mapActions('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction']),
         ...mapActions('entities/products', ['setCurrentProductId', 'setAvailableProductIds']),
         ...mapMutations('entities/products', ['setSingleVisisble']),
-        // ...mapMutations('entities/actions', ['setAction', 'setTaskAction', 'destroyAction', 'destroyTaskAction', 'setManyActions', 'setManyTaskActions']),
+        ...mapMutations('entities/tasks', ['setTaskComplete', 'setTaskIncomplete']),
         ...mapActions('entities/actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions']),
         ...mapActions('entities/comments', ['setComment', 'destroyComment']),
         loadMore() {
@@ -447,6 +447,18 @@ export default {
             // console.log('%cPusher: Comment deleted', 'font-weight: 900')
             // console.log(comment)
             this.destroyComment(comment)
+        })
+        .listen('.task.completed', (e) => {
+            const fileTask = e.fileTask
+            console.log('%cPusher: Task completed', 'font-weight: 900')
+            console.log(e)
+            this.setTaskComplete({file_id: fileTask.file_id, task_id: fileTask.task_id})
+        })
+        .listen('.task.uncompleted', (e) => {
+            const fileTask = e.fileTask
+            console.log('%cPusher: Task uncompleted', 'font-weight: 900')
+            console.log(e)
+            this.setTaskIncomplete({file_id: fileTask.file_id, task_id: fileTask.task_id})
         })
     },
     destroyed () {

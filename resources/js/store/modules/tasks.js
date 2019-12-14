@@ -153,7 +153,7 @@ export default {
                 })
                 .catch(err => {
                     succes = false
-                    console.log(err)
+                    console.log(err.response)
                     commit('alertError')
                 })
 
@@ -175,7 +175,7 @@ export default {
                 })
                 .catch(err => {
                     succes = false
-                    console.log(err)
+                    console.log(err.response)
                 })
             return succes
         },
