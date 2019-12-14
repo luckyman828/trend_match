@@ -415,7 +415,7 @@ export default {
         })
         .listen('.actions.many.updated', (e) => {
             const request = e.request
-            console.log('%cPusher: Action Many Updated', 'font-weight: 900')
+            // console.log('%cPusher: Action Many Updated', 'font-weight: 900')
             this.setManyActions({ 
                 productIds: request.product_ids, 
                 task_id: request.task_id,
@@ -427,7 +427,6 @@ export default {
         .listen('.actions.many.created', (e) => {
             const actions = e.actions
             // console.log('%cPusher: Action Many Created', 'font-weight: 900')
-            // console.log(e.actions)
             this.setManyActions({
                 productIds: actions.map(x => x.product_id),
                 task_id: actions[0].task_id,
@@ -439,25 +438,21 @@ export default {
         .listen('.comment.updated', (e) => {
             const comment = e.comment
             // console.log('%cPusher: Comment Updated', 'font-weight: 900')
-            // console.log(comment)
             this.setComment(comment)
         })
         .listen('.comment.deleted', (e) => {
             const comment = e.comment
             // console.log('%cPusher: Comment deleted', 'font-weight: 900')
-            // console.log(comment)
             this.destroyComment(comment)
         })
         .listen('.task.completed', (e) => {
             const fileTask = e.fileTask
-            console.log('%cPusher: Task completed', 'font-weight: 900')
-            console.log(e)
+            // console.log('%cPusher: Task completed', 'font-weight: 900')
             this.setTaskComplete({file_id: fileTask.file_id, task_id: fileTask.task_id})
         })
         .listen('.task.uncompleted', (e) => {
             const fileTask = e.fileTask
-            console.log('%cPusher: Task uncompleted', 'font-weight: 900')
-            console.log(e)
+            // console.log('%cPusher: Task uncompleted', 'font-weight: 900')
             this.setTaskIncomplete({file_id: fileTask.file_id, task_id: fileTask.task_id})
         })
     },

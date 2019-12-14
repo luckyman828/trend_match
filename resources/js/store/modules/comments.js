@@ -51,6 +51,8 @@ export default {
             // Save a reference to the temporary id generated for the comment
             const tempId = comment.id
 
+            // Set our comment to not failed as default
+            comment.failed = false
             // Insert the comment in our store with the temp id
             await Comment.insert({ data: comment })
 
@@ -80,7 +82,7 @@ export default {
                     // Update the ID on the comment
                     await Comment.update({
                         where: tempId,
-                        data: { id: response.data.id },
+                        data: { id: response.data.id, failed: false },
                     })
                     // Delete the temp comment
                     await Comment.delete(tempId)
@@ -115,8 +117,10 @@ export default {
         },
         async deleteComment({ commit, dispatch }, id) {
             // Find the comment so we can know what product it belongs to
-            const productId = await Comment.find(id).product_id
+            const comment = Comment.find(id)
+            const productId = comment.product_id
             await commit('deleteComment', id)
+            console.log(comment)
 
             // Dispatch an action to update this product
             dispatch('entities/products/updateComments', productId, { root: true })
@@ -132,6 +136,9 @@ export default {
                 })
                 .catch(err => {
                     console.log(err.response)
+                    // On a failure, alert the user and recreate the comment
+                    commit('alertError')
+                    dispatch('setComment', comment)
                 })
         },
         async setComment({ dispatch }, comment) {
