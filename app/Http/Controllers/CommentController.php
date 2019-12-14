@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Comment;
+use App\Events\CommentDeleted;
 use App\Events\CommentUpdated;
 use App\http\resources\Comment as CommentResource;
 
@@ -38,7 +39,7 @@ class CommentController extends Controller
 
             $commentToReturn = new CommentUpdated($comment);
             // Fire dynamic update event
-            broadcast(new CommentUpdated($commentToReturn))->toOthers();
+            broadcast($commentToReturn)->toOthers();
 
             // Return new comment
             return $comment;
@@ -56,9 +57,12 @@ class CommentController extends Controller
         if($comment->save()) {
 
             // Fire event
-            $dataToReturn = new CommentResource($comment);
+            $commentToReturn = new CommentUpdated($comment);
+            // Fire dynamic update event
+            broadcast($commentToReturn)->toOthers();
 
-            // return $dataToReturn;
+            // Return the comment
+            $dataToReturn = new CommentResource($comment);
             return json_decode( json_encode($dataToReturn), true);
         }
     }
@@ -69,6 +73,12 @@ class CommentController extends Controller
 
         $comment_id = $id;
         $comment = Comment::find($comment_id);
+
+        // Fire event
+        $commentToReturn = new CommentDeleted($comment);
+        // Fire dynamic update event
+        broadcast($commentToReturn)->toOthers();
+
         $comment->delete();
 
         return 'Deleted comment with id: ' . $comment_id;

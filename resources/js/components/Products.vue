@@ -267,7 +267,7 @@ export default {
         ...mapActions('entities/products', ['setCurrentProductId', 'setAvailableProductIds']),
         ...mapMutations('entities/products', ['setSingleVisisble']),
         ...mapMutations('entities/actions', ['setAction', 'setTaskAction', 'destroyAction', 'destroyTaskAction', 'setManyActions', 'setManyTaskActions']),
-        ...mapMutations('entities/comments', ['setComment']),
+        ...mapActions('entities/comments', ['setComment', 'destroyComment']),
         loadMore() {
             this.pageLimit += this.itemsPerPage
         },
@@ -476,16 +476,15 @@ export default {
         .listen('.comment.updated', (e) => {
             const comment = e.comment
             console.log('%cPusher: Comment Updated', 'font-weight: 900')
-            console.log(comment.comment)
-            this.setComment({
-                comment: comment.comment
-            })
+            console.log(comment)
+            this.setComment(comment)
         })
-        // .listen('.comment.deleted', (e) => {
-        //     const comment = e.comment
-        //     // console.log('%cPusher: Comment deleted', 'font-weight: 900')
-        //     // console.log(e)
-        // })
+        .listen('.comment.deleted', (e) => {
+            const comment = e.comment
+            console.log('%cPusher: Comment deleted', 'font-weight: 900')
+            console.log(comment)
+            this.destroyComment(comment)
+        })
     },
     destroyed () {
         document.getElementById('main').removeEventListener('scroll', this.handleScroll);

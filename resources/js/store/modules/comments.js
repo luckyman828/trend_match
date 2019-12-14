@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Comment from '../models/Comment'
+import { uuid } from 'vue-uuid'
 
 export default {
     namespaced: true,
@@ -47,6 +48,17 @@ export default {
             let team_id = '0'
             if (comment.team_id) team_id = comment.team_id
 
+            // Save a reference to the temporary id generated for the comment
+            const tempId = comment.id
+
+            // Insert the comment in our store with the temp id
+            await Comment.insert({ data: comment })
+
+            // Set the comments id to null so we can generate one in the database instead
+            comment.id = null
+            dispatch('entities/products/updateComments', comment.product_id, { root: true })
+            commit('setSubmitting', false)
+
             let success
             await axios
                 .post(`/api/comment`, {
@@ -63,18 +75,26 @@ export default {
                 .then(async response => {
                     success = true
                     // Get and set the comment id equal to the id given by the database
-                    comment.id = response.data.id
-                    await commit('setComment', { comment: comment })
-                    // Dispatch an action to update this product
+
+                    // Find our comment by its temporary id
+                    // Update the ID on the comment
+                    await Comment.update({
+                        where: tempId,
+                        data: { id: response.data.id },
+                    })
+                    // Delete the temp comment
+                    await Comment.delete(tempId)
                     dispatch('entities/products/updateComments', comment.product_id, { root: true })
                 })
                 .catch(err => {
                     console.log(err.response)
                     success = false
                     commit('alertError')
+                    Comment.find(tempId).failed = true
+                    dispatch('entities/products/updateComments', comment.product_id, { root: true })
                 })
 
-            commit('setSubmitting', false)
+            // commit('setSubmitting', false)
             return success
         },
         async updateComment({ commit, dispatch }, comment) {
@@ -113,6 +133,16 @@ export default {
                 .catch(err => {
                     console.log(err.response)
                 })
+        },
+        async setComment({ dispatch }, comment) {
+            await Comment.insert({ data: comment })
+            // Dispatch an action to update this product
+            dispatch('entities/products/updateComments', comment.product_id, { root: true })
+        },
+        async destroyComment({ dispatch }, comment) {
+            await Comment.delete(comment.id)
+            // Dispatch an action to update this product
+            dispatch('entities/products/updateComments', comment.product_id, { root: true })
         },
     },
 

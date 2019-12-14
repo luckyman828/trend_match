@@ -182,9 +182,6 @@
                         </div>
 
                         <div class="tabs-wrapper">
-
-                            <button class="button dark" @click="product.commentsScoped.push({id: Math.ceil(Math.random()*100000), comment: 'synthetic comment', votes: [], user_id: 123, user: {name: 'Tester', id: '123'}, task: {title: 'Synthetic', id: 22}})">Increase</button>
-
                             <strong>Distribution</strong>
                             <div class="tab-headers">
                                 <span :class="{active: currentTab == 'ins'}" class="tab" @click="setCurrentTab('ins')"><span class="count">{{product.ins.length + product.focus.length}}</span>In</span>
