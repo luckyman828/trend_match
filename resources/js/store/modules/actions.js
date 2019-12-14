@@ -334,6 +334,30 @@ export default {
                     dispatch('entities/products/updateActions', productToUpdate, { root: true })
                 })
         },
+        async setAction({ dispatch }, action) {
+            await Action.insert({
+                data: action,
+            })
+            // Dispatch an action to update the products actions
+            dispatch('entities/products/updateActions', action.product_id, { root: true })
+        },
+        async destroyAction({ dispatch }, action) {
+            if (!action.is_task_action) {
+                Action.delete(record => {
+                    return (
+                        record.product_id == action.product_id &&
+                        record.user_id == action.user_id &&
+                        record.task_id == action.task_id
+                    )
+                })
+            } else {
+                Action.delete(record => {
+                    return record.product_id == action.product_id && record.task_id == action.task_id
+                })
+            }
+            // Dispatch an action to update the products actions
+            dispatch('entities/products/updateActions', action.product_id, { root: true })
+        },
     },
 
     mutations: {

@@ -1188,7 +1188,7 @@ export default {
                 .concat(productToUpdate.requests)
                 .concat(productToUpdate.commentsInherited)
             const product = Product.query()
-                .with(['actions'])
+                .with(['actions.task'])
                 .find(productId)
             // START Mark comments as FOCUS if the users action was IN for the product
             if (allComments.length > 0) {
@@ -1412,7 +1412,7 @@ export default {
                     if (currentTask.type == 'feedback') {
                         if (action.task_id == currentTask.id) {
                             let NDUserIndex = productToUpdate.nds.findIndex(user => user.id == action.user_id)
-                            if (NDUserIndex) productToUpdate.nds.splice(NDUserIndex, 1)
+                            if (NDUserIndex >= 0) productToUpdate.nds.splice(NDUserIndex, 1)
                         }
                     } else {
                         // If type is alignment
@@ -1421,13 +1421,13 @@ export default {
                                 // If the parent is type feedback
                                 if (action.task_id == parentTask.id) {
                                     let NDUserIndex = productToUpdate.nds.findIndex(user => user.id == action.user_id)
-                                    if (NDUserIndex) productToUpdate.nds.splice(NDUserIndex, 1)
+                                    if (NDUserIndex >= 0) productToUpdate.nds.splice(NDUserIndex, 1)
                                 }
                             } else {
                                 // If the parent is type alignment
                                 if (action.task_id == parentTask.id) {
                                     let NDTaskIndex = productToUpdate.nds.findIndex(task => task.id == action.task_id)
-                                    if (NDTaskIndex) productToUpdate.nds.splice(NDTaskIndex, 1)
+                                    if (NDTaskIndex >= 0) productToUpdate.nds.splice(NDTaskIndex, 1)
                                 }
                             }
                         })

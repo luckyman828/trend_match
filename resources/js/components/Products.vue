@@ -266,7 +266,8 @@ export default {
         ...mapActions('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction']),
         ...mapActions('entities/products', ['setCurrentProductId', 'setAvailableProductIds']),
         ...mapMutations('entities/products', ['setSingleVisisble']),
-        ...mapMutations('entities/actions', ['setAction', 'setTaskAction', 'destroyAction', 'destroyTaskAction', 'setManyActions', 'setManyTaskActions']),
+        // ...mapMutations('entities/actions', ['setAction', 'setTaskAction', 'destroyAction', 'destroyTaskAction', 'setManyActions', 'setManyTaskActions']),
+        ...mapActions('entities/actions', ['setAction', 'setTaskAction', 'destroyAction', 'destroyTaskAction', 'setManyActions', 'setManyTaskActions']),
         ...mapActions('entities/comments', ['setComment', 'destroyComment']),
         loadMore() {
             this.pageLimit += this.itemsPerPage
@@ -404,30 +405,24 @@ export default {
         Echo.private(`workspace.${this.currentWorkspaceId}`)
         .listen('.action.updated', (e) => {
             const action = e.action
-            console.log('%cPusher: Action Updated', 'font-weight: 900')
-            this.setAction({ 
-                productToUpdate: action.product_id, 
-                task_id: action.task_id, 
-                user_id: action.user_id, 
-                action_code: action.action, 
-                is_task_action: action.is_task_action 
-            })
+            this.setAction(action)
         })
         .listen('.action.deleted', (e) => {
             const action = e.action
             // console.log('%cPusher: Action Deleted', 'font-weight: 900')
-            if (action.is_task_action) {
-                this.destroyTaskAction({ 
-                    productToUpdate: action.product_id, 
-                    task_id: action.task_id, 
-                })
-            } else {
-                this.destroyAction({ 
-                    productToUpdate: action.product_id, 
-                    task_id: action.task_id, 
-                    user_id: action.user_id, 
-                })
-            }
+            this.destroyAction(action)
+            // if (action.is_task_action) {
+            //     this.destroyTaskAction({ 
+            //         productToUpdate: action.product_id, 
+            //         task_id: action.task_id, 
+            //     })
+            // } else {
+            //     this.destroyAction({ 
+            //         productToUpdate: action.product_id, 
+            //         task_id: action.task_id, 
+            //         user_id: action.user_id, 
+            //     })
+            // }
         })
         .listen('.actions.many.updated', (e) => {
             const request = e.request
