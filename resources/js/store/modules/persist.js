@@ -358,9 +358,6 @@ export default {
             commit('setTeamFilter', id)
         },
         async setCurrentWorkspace({ commit }, { workspace_id, user_id }) {
-            console.log('setting current workspace')
-            console.log(workspace_id)
-            console.log(user_id)
             commit('setCurrentWorkspace', workspace_id)
 
             // Cache the curent workspace id
@@ -381,7 +378,6 @@ export default {
                 })
         },
         setCurrentTaskId({ commit }, id) {
-            console.log('Setting current task ID!')
             commit('setCurrentTaskId', id)
         },
         setCurrentFileId({ commit }, id) {

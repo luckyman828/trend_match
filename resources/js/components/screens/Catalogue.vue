@@ -205,21 +205,23 @@ export default{
         //     }
         // },
         tasks: function(newValue, oldValue) {
-            console.log('Tasks recalculated')
+            // console.log('Tasks recalculated')
         },
         userTasks: function(newValue, oldValue) {
-            console.log('User Tasks recalculated')
+            // console.log('User Tasks recalculated')
         },
         currentTask: function(newValue, oldValue) {
-            console.log('current task changed!')
+            // console.log('current task changed!')
             if (newValue.id != oldValue.id) {
                 // If we have a new task set the default filter
-                this.setDefaultFilter()
+                // this.setDefaultFilter()
 
-                // Reset sort to default
-                this.sortBy = 'datasource_id'
-                this.sortAsc = true
-                this.sortProducts()
+                // Reset sort to default if we don't have the default sort selected
+                if (!this.sortBy == 'datasource_id' || !this.sortAsc) {
+                    this.sortBy = 'datasource_id'
+                    this.sortAsc = true
+                    this.sortProducts()
+                }
             }
         }
     },
@@ -363,14 +365,6 @@ export default{
             })
             return unique
         },
-        // teamsForFilter() {
-        //     if (this.userPermissionLevel >= 3) {
-        //         const teamsToReturn = JSON.parse(JSON.stringify(this.teams))
-        //         teamsToReturn.unshift({title: 'Global', id: 0})
-        //         return teamsToReturn
-        //     }
-        //     else return this.teams
-        // },
         productsNoIn() {
             const products = this.productsScopedFiltered
             let productMatches = []
@@ -393,14 +387,8 @@ export default{
         },
     },
     methods: {
-        ...mapActions('entities/collections', ['fetchCollections']),
-        ...mapActions('entities/products', ['fetchProducts']),
         ...mapMutations('entities/products', ['updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter', 'updateSelectedBuyerGroups']),
         ...mapActions('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']),
-        ...mapActions('entities/users', ['fetchUsers']),
-        ...mapActions('entities/comments', ['fetchComments']),
-        ...mapActions('entities/actions', ['updateAction']),
-        ...mapActions('entities/commentVotes', ['fetchCommentVotes']),
         ...mapActions('persist', ['setTeamFilter', 'setCurrentTaskId']),
         InNoOutNoCommentStyles() {
             this.setHideQuickIn()
@@ -738,7 +726,7 @@ export default{
         // this.hideQuickOut = this.$cookies.get(`quick_out_${this.currentFile.id}_${this.currentTask.id}`)
         // this.hideQuickIn = this.$cookies.get(`quick_in_${this.currentFile.id}_${this.currentTask.id}`)
         // Initially sort the products
-        // this.sortProducts()
+        this.sortProducts()
     },
     async mounted() {
         this.setDefaultFilter()
