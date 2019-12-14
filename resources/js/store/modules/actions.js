@@ -358,6 +358,31 @@ export default {
             // Dispatch an action to update the products actions
             dispatch('entities/products/updateActions', action.product_id, { root: true })
         },
+        async setManyActions({ dispatch }, { productIds, task_id, user_id, action_code, is_task_action }) {
+            // Prepare the data
+            let data = []
+
+            productIds.forEach(product => {
+                const productData = {
+                    product_id: product,
+                    task_id: task_id,
+                    user_id: user_id,
+                    action: action_code,
+                    is_task_action: is_task_action,
+                }
+                data.push(productData)
+            })
+
+            Action.insert({
+                data: data,
+            })
+
+            // Loop through the product ids and dispatch an action to update each product
+            productIds.forEach(productId => {
+                // Dispatch an action to update the products actions
+                dispatch('entities/products/updateActions', productId, { root: true })
+            })
+        },
     },
 
     mutations: {
