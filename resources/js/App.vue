@@ -49,7 +49,6 @@ export default{
     },
     methods: {
         ...mapActions('entities/authUser', ['getAuthUser']),
-        // ...mapActions('entities/collections', ['fetchCollections']),
         ...mapActions('entities/teams', ['fetchTeams']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/userTeams', ['fetchUserTeams']),

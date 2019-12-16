@@ -144,6 +144,11 @@ class ActionController extends Controller
                 $dataIndex = 0;
             }
         }
+        // When done looping through the products to broadcast, broadcast the remaining if we have any
+        if ($dataIndex > 0) {
+            // Fire event
+            broadcast(new ManyActionsCreated($dataToBroadcast))->toOthers();
+        }
 
         return 'Inserted ' . $count . ' records. Time elapsed: ' . $timediff;
     }
@@ -173,12 +178,16 @@ class ActionController extends Controller
             // Check if we have reaced the broadcast limit
             if ($dataIndex > $broadcastLimit) {
                 // Fire event
-                // return $dataToBroadcast;
                 broadcast(new ManyActionsUpdated($dataToBroadcast))->toOthers();
                 // Reset data to broadcast and index
                 $dataToBroadcast['product_ids'] = [];
                 $dataIndex = 0;
             }
+        }
+        // When done looping through the products to broadcast, broadcast the remaining if we have any
+        if ($dataIndex > 0) {
+            // Fire event
+            broadcast(new ManyActionsUpdated($dataToBroadcast))->toOthers();
         }
 
         $endtime = microtime(true);
@@ -216,6 +225,11 @@ class ActionController extends Controller
                 $dataToBroadcast['product_ids'] = [];
                 $dataIndex = 0;
             }
+        }
+        // When done looping through the products to broadcast, broadcast the remaining if we have any
+        if ($dataIndex > 0) {
+            // Fire event
+            broadcast(new ManyActionsUpdated($dataToBroadcast))->toOthers();
         }
 
         $endtime = microtime(true);

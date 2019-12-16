@@ -19,9 +19,9 @@
                         <div class="requests-wrapper" v-if="requests.length > 0">
                             <request :request="request" v-for="request in requests" :key="request.id"/>
                         </div>
-                        <div class="sender-wrapper" v-for="comment in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
+                        <div class="sender-wrapper" v-for="comment in comments" :key="comment.id" :class="{own: comment.user_id == authUser.id}">
                             <comment :comment="comment"/>
-                            <div class="sender">{{comment.task.title}} | {{(comment.user.id == authUser.id) ? 'You' : comment.user.name}}</div>
+                            <div class="sender">{{comment.task.title}} | {{(comment.user_id == authUser.id) ? 'You' : comment.user.name}}</div>
                         </div>
                         <div class="break-line" v-if="(product.currentAction)"><span class="pill" :class="product.currentAction.action == 1 ? 'green' : 'red'">Marked as {{product.currentAction.action == 1 ? 'IN' : 'OUT'}} by {{(product.currentAction.user_id == authUser.id) ? 'You' : product.currentAction.user.name}}</span></div>
                         <div class="break-line" v-else-if="(product.requests.length < 1)"><span class="pill" :class="product.inheritedAction.action == 1 ? 'green' : 'red'">Marked as {{product.inheritedAction.action == 1 ? 'IN' : 'OUT'}} by {{(product.inheritedAction.user_id == authUser.id) ? 'You' : product.inheritedAction.user.name}} in {{currentTask.inheritFromTask.title}}</span></div>
@@ -35,14 +35,14 @@
                         <div class="requests-wrapper" v-if="requests.length > 0">
                             <request :request="request" v-for="request in requests.filter(x => x.user_id != authUser.id)" :key="request.id"/>
                         </div>
-                        <div class="sender-wrapper" v-for="(comment, index) in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
+                        <div class="sender-wrapper" v-for="(comment, index) in comments" :key="comment.id" :class="{own: comment.user_id == authUser.id}">
                             <comment :comment="comment"/>
                             <div class="sender" v-if="comments[index+1] ? comments[index+1].user_id != comment.user_id : true">{{comment.task.title}} {{(comment.user_id == authUser.id) ? '| You' : userPermissionLevel > 1 ? '| ' + comment.user.name : ''}}</div>
                         </div>
                         <div class="break-line" v-if="product.outInFilter"><span class="pill red">Marked as OUT by {{(product.outInFilter.user_id == authUser.id) ? 'You' : product.outInFilter.user.name}} in {{product.outInFilter.task.title}}</span></div>
                         <template v-if="product.commentsInherited.length > 0">
                             <div class="break-line">Comments from prev. task(s)</div>
-                            <div class="sender-wrapper" v-for="(comment, index) in product.commentsInherited" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
+                            <div class="sender-wrapper" v-for="(comment, index) in product.commentsInherited" :key="comment.id" :class="{own: comment.user_id == authUser.id}">
                                 <comment :comment="comment"/>
                                 <div class="sender" v-if="comments[index+1] ? comments[index+1].user_id != comment.user_id : true">{{comment.task.title}} {{(comment.user_id == authUser.id) ? '| You' : userPermissionLevel > 1 ? '| ' + comment.user.name : ''}}</div>
                             </div>
@@ -50,7 +50,7 @@
 
                     </template>
 
-                    <div v-else class="sender-wrapper" v-for="(comment, index) in comments" :key="comment.id" :class="{own: comment.user.id == authUser.id}">
+                    <div v-else class="sender-wrapper" v-for="(comment, index) in comments" :key="comment.id" :class="{own: comment.user_id == authUser.id}">
                         <comment :comment="comment"/>
                         <div class="sender" v-if="comments[index+1] ? comments[index+1].user_id != comment.user_id : true">{{comment.task.title}} {{(comment.user_id == authUser.id) ? '| You' : userPermissionLevel > 1 ? '| ' + comment.user.name : ''}}</div>
                     </div>
@@ -144,7 +144,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import TooltipAlt2 from './TooltipAlt2'
 import Comment from './Comment'
 import Request from './Request'
@@ -153,8 +153,6 @@ import TempAlert from './TempAlert'
 export default {
     name: 'productSingleComments',
     props: [
-        'comments',
-        'requests',
         'authUser',
         'product',
     ],
@@ -179,11 +177,11 @@ export default {
         commentScope: 'comments',
         writeScope: 'comment',
         writeActive: false,
-        submittingComment: false,
-        currentTaskId: null
+        // submittingComment: false,
+        currentTaskId: null,
     }},
     watch: {
-        product(newVal, oldVal) {
+        product: function(newVal, oldVal) {
             if (this.currentTaskId != this.currentTask.id)
                 this.setDefaultScope()
             if (newVal.id != oldVal.id || this.currentTaskId != this.currentTask.id)
@@ -192,6 +190,13 @@ export default {
     },
     computed: {
         ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'currentTask']),
+        ...mapGetters('entities/comments', ['submittingComment']),
+        comments() {
+            return this.product.commentsScoped
+        },
+        requests() {
+            return this.product.requests
+        },
         submitDisabled () {
             if (this.writeScope == 'comment') {
                 if(this.newComment.comment.length < 1 || this.submittingComment)
@@ -213,7 +218,7 @@ export default {
         commentToPost () {
             if (this.writeScope == 'comment') {
                 return {
-                    id: this.newComment.id,
+                    id: this.$uuid.v4(),
                     user_id: this.authUser.id,
                     product_id: this.product.id,
                     task_id: this.currentTask.id,
@@ -223,7 +228,7 @@ export default {
                 }
             } else {
                 return {
-                    id: this.newRequest.id,
+                    id: this.$uuid.v4(),
                     user_id: this.authUser.id,
                     product_id: this.product.id,
                     task_id: this.currentTask.id,
@@ -255,6 +260,7 @@ export default {
     },
     methods: {
         ...mapActions('entities/comments', ['createComment', 'markAsTeamFinal', 'markAsPhaseFinal']),
+        ...mapMutations('entities/comments', ['setSubmitting']),
         activateWrite() {
             if (this.writeScope == 'request') {
                 this.newRequest.id = (this.taskRequest) ? this.taskRequest.id : null
@@ -277,33 +283,41 @@ export default {
         async onSubmitComment(e) {
             if (e) e.preventDefault()
 
+
             if (!this.submitDisabled) {
-                this.submittingComment = true
+                // this.setSubmitting = true
                     // Succes
-                    await this.createComment({comment: this.commentToPost})
+                    this.createComment({comment: this.commentToPost})
                     .then(success => {
                         if (success) {
-                            this.$refs.requestSucces.show()
-                            this.writeActive = false
-                            // Unset the focus
-                            document.activeElement.blur()
-                            
-                            // Reset comment
-                            if (this.writeScope == 'comment') {
-                                this.newComment.comment = ''
-                                this.newComment.important = false
-                                // Reset textarea height
-                                this.$refs.commentField.style.height = ''
-                            } else {
-                                this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
-                                this.newRequest.important = false
-                                // Reset textarea height
-                                // this.$refs.requestField.style.height = ''
-                            }
+                            console.log('succes')
+                            // On succes
+                        } else {
+                            console.log('error')
+                            // On error
                         }
                     })
                 // In any case
-                this.submittingComment = false
+                // this.setSubmitting = false
+
+                // Reset comment
+                this.$refs.requestSucces.show()
+                this.writeActive = false
+                // Unset the focus
+                document.activeElement.blur()
+                
+                // Reset comment
+                if (this.writeScope == 'comment') {
+                    this.newComment.comment = ''
+                    this.newComment.important = false
+                    // Reset textarea height
+                    this.$refs.commentField.style.height = ''
+                } else {
+                    this.newRequest.comment = (this.taskRequest) ? this.taskRequest.comment : ''
+                    this.newRequest.important = false
+                    // Reset textarea height
+                    // this.$refs.requestField.style.height = ''
+                }
 
             }
         },
@@ -469,6 +483,7 @@ export default {
         padding: 16px 4px 16px 0;
         height: 100%;
         width: 100%;
+        overflow: hidden;
         .inner {
             padding: 0 16px;
             height: 100%;

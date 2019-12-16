@@ -2,9 +2,6 @@
 import { Model } from '@vuex-orm/core'
 import Comment from './Comment'
 import Action from './Action'
-import ProductFinalAction from './ProductFinalAction'
-import TeamProduct from './TeamProduct'
-import PhaseProduct from './PhaseProduct'
 import TaskAction from './TaskAction'
 
 export default class Product extends Model {
@@ -41,8 +38,20 @@ export default class Product extends Model {
             updated_at: this.attr(''),
             created_at: this.attr(''),
             buyer_group: this.attr(''),
-        }
 
+            // Custom features added
+            ins: this.attr([]),
+            outs: this.attr([]),
+            focus: this.attr([]),
+            nds: this.attr([]),
+            ndsTotal: this.attr(0),
+            commentsScoped: this.attr([]),
+            commentsInherited: this.attr([]),
+            requests: this.attr([]),
+            outInFilter: this.attr(false),
+            currentAction: this.attr(null),
+            inheritedAction: this.attr(null),
+        }
         return data
     }
 }

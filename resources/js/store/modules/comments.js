@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Comment from '../models/Comment'
+import { uuid } from 'vue-uuid'
 
 export default {
     namespaced: true,
@@ -35,20 +36,33 @@ export default {
                     succes = true
                 } catch (err) {
                     console.log('API error in comments.js :')
-                    console.log(err)
+                    console.log(err.response)
                     console.log(`Trying to fetch again. TryCount = ${tryCount}`)
                     if (tryCount <= 0) throw err
                 }
             }
         },
-        async createComment({ commit }, { comment }) {
+        async createComment({ commit, dispatch }, { comment }) {
             commit('setSubmitting', true)
 
             let team_id = '0'
             if (comment.team_id) team_id = comment.team_id
 
+            // Save a reference to the temporary id generated for the comment
+            const tempId = comment.id
+
+            // Set our comment to not failed as default
+            comment.failed = false
+            // Insert the comment in our store with the temp id
+            await Comment.insert({ data: comment })
+
+            // Set the comments id to null so we can generate one in the database instead
+            comment.id = null
+            dispatch('entities/products/updateComments', comment.product_id, { root: true })
+            commit('setSubmitting', false)
+
             let success
-            const response = await axios
+            await axios
                 .post(`/api/comment`, {
                     id: comment.id,
                     user_id: comment.user_id,
@@ -60,37 +74,61 @@ export default {
                     important: comment.important,
                     is_request: comment.is_request,
                 })
-                .then(response => {
+                .then(async response => {
                     success = true
                     // Get and set the comment id equal to the id given by the database
-                    comment.id = response.data.id
-                    commit('setComment', { comment: comment })
+
+                    // Find our comment by its temporary id
+                    // Update the ID on the comment
+                    await Comment.update({
+                        where: tempId,
+                        data: { id: response.data.id, failed: false },
+                    })
+                    // Delete the temp comment
+                    await Comment.delete(tempId)
+                    dispatch('entities/products/updateComments', comment.product_id, { root: true })
                 })
                 .catch(err => {
+                    console.log(err.response)
                     success = false
                     commit('alertError')
+                    Comment.find(tempId).failed = true
+                    dispatch('entities/products/updateComments', comment.product_id, { root: true })
                 })
 
-            commit('setSubmitting', false)
+            // commit('setSubmitting', false)
             return success
         },
-        async updateComment({ commit }, comment) {
+        async updateComment({ commit, dispatch }, comment) {
+            // Set our comment as not failed as default
+            comment.failed = false
+
             await axios
                 .put(`/api/comment/${comment.id}`, {
                     comment: comment,
                 })
-                .then(response => {
+                .then(async response => {
                     console.log(response.data)
                     // Commit to store
-                    Comment.insert({ data: response.data })
+                    await Comment.insert({ data: response.data })
+
+                    // Dispatch an action to update this product
+                    dispatch('entities/products/updateComments', comment.product_id, { root: true })
                 })
                 .catch(err => {
                     console.log(err.response)
+                    comment.failed = true
                 })
         },
-        async deleteComment({ commit }, id) {
-            console.log('delete comment in store')
-            commit('deleteComment', id)
+        async deleteComment({ commit, dispatch }, id) {
+            // Find the comment so we can know what product it belongs to
+            const comment = Comment.find(id)
+            const productId = comment.product_id
+            await commit('deleteComment', id)
+            console.log(comment)
+
+            // Dispatch an action to update this product
+            dispatch('entities/products/updateComments', productId, { root: true })
 
             await axios
                 .delete(`/api/comment/${id}`, {
@@ -103,7 +141,20 @@ export default {
                 })
                 .catch(err => {
                     console.log(err.response)
+                    // On a failure, alert the user and recreate the comment
+                    commit('alertError')
+                    dispatch('setComment', comment)
                 })
+        },
+        async setComment({ dispatch }, comment) {
+            await Comment.insert({ data: comment })
+            // Dispatch an action to update this product
+            dispatch('entities/products/updateComments', comment.product_id, { root: true })
+        },
+        async destroyComment({ dispatch }, comment) {
+            await Comment.delete(comment.id)
+            // Dispatch an action to update this product
+            dispatch('entities/products/updateComments', comment.product_id, { root: true })
         },
     },
 

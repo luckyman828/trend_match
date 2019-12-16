@@ -197,6 +197,7 @@ import Dropdown from './Dropdown'
 import FlyIn from './FlyIn'
 
 import products from '../store/modules/products';
+import Product from '../store/models/Product';
 
 export default {
     name: 'products',
@@ -235,6 +236,8 @@ export default {
     }},
     computed: {
         // ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
+        ...mapGetters('entities/products', ['productsStatic']),
+
         ...mapGetters('entities/collections', ['currentFile', 'actionScope']),
         ...mapGetters('entities/products', ['singleVisible', 'currentProduct']),
         ...mapGetters('persist', ['currentTask', 'currentTaskPermissions', 'userPermissionLevel', 'currentWorkspaceId']),
@@ -247,14 +250,19 @@ export default {
         },
         productsToShow() {
             return this.products
+        },
+        productsTest() {
+            const products = Product.query().with('actions').get()
+            return products
         }
     },
     methods: {
         ...mapActions('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction']),
         ...mapActions('entities/products', ['setCurrentProductId', 'setAvailableProductIds']),
         ...mapMutations('entities/products', ['setSingleVisisble']),
-        ...mapMutations('entities/actions', ['setAction', 'setTaskAction', 'destroyAction', 'destroyTaskAction', 'setManyActions', 'setManyTaskActions']),
-        ...mapMutations('entities/comments', ['setComment']),
+        ...mapMutations('entities/tasks', ['setTaskComplete', 'setTaskIncomplete']),
+        ...mapActions('entities/actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions']),
+        ...mapActions('entities/comments', ['setComment', 'destroyComment']),
         loadMore() {
             this.pageLimit += this.itemsPerPage
         },
@@ -391,88 +399,56 @@ export default {
         Echo.private(`workspace.${this.currentWorkspaceId}`)
         .listen('.action.updated', (e) => {
             const action = e.action
-            console.log('%cPusher: Action Updated', 'font-weight: 900')
-            this.setAction({ 
-                productToUpdate: action.product_id, 
-                task_id: action.task_id, 
-                user_id: action.user_id, 
-                action_code: action.action, 
-                is_task_action: action.is_task_action 
-            })
+            // console.log('%cPusher: Action Set', 'font-weight: 900')
+            this.setAction(action)
         })
         .listen('.action.deleted', (e) => {
             const action = e.action
             // console.log('%cPusher: Action Deleted', 'font-weight: 900')
-            if (action.is_task_action) {
-                this.destroyTaskAction({ 
-                    productToUpdate: action.product_id, 
-                    task_id: action.task_id, 
-                })
-            } else {
-                this.destroyAction({ 
-                    productToUpdate: action.product_id, 
-                    task_id: action.task_id, 
-                    user_id: action.user_id, 
-                })
-            }
+            this.destroyAction(action)
         })
         .listen('.actions.many.updated', (e) => {
             const request = e.request
             // console.log('%cPusher: Action Many Updated', 'font-weight: 900')
-            // console.log(e)
-            if (request.is_task_action) {
-                this.setManyTaskActions({ 
-                    productIds: request.product_ids, 
-                    task_id: request.task_id,
-                    user_id: request.user_id,
-                    action_code: request.action_code,
-                    is_task_action: request.is_task_action,
-                })
-            } else {
-                this.setManyActions({ 
-                    productIds: request.product_ids, 
-                    task_id: request.task_id,
-                    user_id: request.user_id,
-                    action_code: request.action_code,
-                    is_task_action: request.is_task_action, 
-                })
-            }
+            this.setManyActions({ 
+                productIds: request.product_ids, 
+                task_id: request.task_id,
+                user_id: request.user_id,
+                action_code: request.action_code,
+                is_task_action: request.is_task_action,
+            })
         })
         .listen('.actions.many.created', (e) => {
             const actions = e.actions
-            console.log('%cPusher: Action Many Created', 'font-weight: 900')
-            console.log(e)
-            if (actions[0].is_task_action) {
-                this.setManyTaskActions({ 
-                    productIds: actions.map(x => x.product_id), 
-                    task_id: actions[0].task_id,
-                    user_id: actions[0].user_id,
-                    action_code: actions[0].action,
-                    is_task_action: actions[0].is_task_action,
-                })
-            } else {
-                this.setManyActions({
-                    productIds: actions.map(x => x.product_id),
-                    task_id: actions[0].task_id,
-                    user_id: actions[0].user_id,
-                    action_code: actions[0].action,
-                    is_task_action: actions[0].is_task_action, 
-                })
-            }
+            // console.log('%cPusher: Action Many Created', 'font-weight: 900')
+            this.setManyActions({
+                productIds: actions.map(x => x.product_id),
+                task_id: actions[0].task_id,
+                user_id: actions[0].user_id,
+                action_code: actions[0].action,
+                is_task_action: actions[0].is_task_action, 
+            })
         })
         .listen('.comment.updated', (e) => {
             const comment = e.comment
-            console.log('%cPusher: Comment Updated', 'font-weight: 900')
-            console.log(comment.comment)
-            this.setComment({
-                comment: comment.comment
-            })
+            // console.log('%cPusher: Comment Updated', 'font-weight: 900')
+            this.setComment(comment)
         })
-        // .listen('.comment.deleted', (e) => {
-        //     const comment = e.comment
-        //     // console.log('%cPusher: Comment deleted', 'font-weight: 900')
-        //     // console.log(e)
-        // })
+        .listen('.comment.deleted', (e) => {
+            const comment = e.comment
+            // console.log('%cPusher: Comment deleted', 'font-weight: 900')
+            this.destroyComment(comment)
+        })
+        .listen('.task.completed', (e) => {
+            const fileTask = e.fileTask
+            // console.log('%cPusher: Task completed', 'font-weight: 900')
+            this.setTaskComplete({file_id: fileTask.file_id, task_id: fileTask.task_id})
+        })
+        .listen('.task.uncompleted', (e) => {
+            const fileTask = e.fileTask
+            // console.log('%cPusher: Task uncompleted', 'font-weight: 900')
+            this.setTaskIncomplete({file_id: fileTask.file_id, task_id: fileTask.task_id})
+        })
     },
     destroyed () {
         document.getElementById('main').removeEventListener('scroll', this.handleScroll);

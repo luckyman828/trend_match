@@ -1,5 +1,5 @@
 <template>
-        <span ref="original" class="editableTextarea" v-if="!editActive" @click="activate">{{value ? value : placeholder}} <span v-tooltip.top="'Edit'" class="edit square true-square light-2-hover"><i class="far fa-pen"></i></span></span>
+        <span ref="original" class="editableTextarea" v-if="!editActive" @click="activate">{{value ? value : placeholder}} <span v-if="!hideEditButton" v-tooltip.top="'Edit'" class="edit square true-square light-2-hover"><i class="far fa-pen"></i></span></span>
         <textarea v-else ref="input" :id="id" class="input-wrapper active" :value="value" :placeholder="placeholder"
         @input="resizeTextarea($event.target)" @keydown.enter.exact.prevent @keyup.enter.exact="submit" 
         @keydown.esc.stop @keyup.esc="cancel" @blur="submit"></textarea>
@@ -11,7 +11,8 @@ export default {
     props: [
         'value',
         'id',
-        'placeholder'
+        'placeholder',
+        'hideEditButton'
     ],
     data: function () { return {
         editActive: false,

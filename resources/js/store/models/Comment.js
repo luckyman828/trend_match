@@ -4,6 +4,7 @@ import User from './User'
 import CommentVote from './CommentVote'
 import Team from './Team'
 import Task from './Task'
+import { uuid } from 'vue-uuid'
 
 export default class Comment extends Model {
     // This is the name used as module name of the Vuex Store.
@@ -13,7 +14,7 @@ export default class Comment extends Model {
     // for the generic field type. The argument is the default value.
     static fields() {
         const data = {
-            id: this.attr(null),
+            id: this.attr(''),
             product_id: this.attr(''),
             task_id: this.attr(''),
             team_id: this.attr(''),
@@ -25,6 +26,9 @@ export default class Comment extends Model {
             team: this.belongsTo(Team, 'team_id'),
             task: this.belongsTo(Task, 'task_id'),
             votes: this.hasMany(CommentVote, 'comment_id'),
+
+            // Custom added
+            failed: this.attr(false),
         }
 
         return data

@@ -5,14 +5,27 @@
             <span v-if="comment.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
             <span v-if="comment.votes.length > 0" class="pill small primary"> <i class="fas fa-plus"></i> {{comment.votes.length}}</span>
         </div>
-        <div class="comment" :class="{important: comment.important}">
-            <span v-if="!own" class="body">{{comment.comment}}</span>
-            <span v-else class="body"><EditableTextarea @activate="setEditActive" :value="commentToEdit.comment" v-model="commentToEdit.comment" @submit="updateComment(commentToEdit)"/></span>
-            
+        <div class="comment" :class="[{important: comment.important}, {failed: comment.failed}]">
+            <span v-if="!own || typeof comment.id != 'number'" class="body">{{comment.comment}}</span>
+            <span v-else class="body"><EditableTextarea ref="editCommentInput" :hideEditButton="true" @activate="setEditActive" :value="commentToEdit.comment" v-model="commentToEdit.comment" @submit="updateComment(commentToEdit)"/></span>
             <div class="controls">
-                <button v-tooltip.top="'Delete'" class="button true-square invisible ghost dark-hover"
-                @click="onDeleteComment">
-                    <i class="far fa-trash-alt"></i></button>
+                <template v-if="comment.failed">
+                    <span v-if="typeof comment.id != 'number'" class="failed clickable" v-tooltip.top="'Retry submit'" @click="retrySubmitComment">
+                        <i class="far fa-exclamation-circle"></i> Failed</span>
+                    <span v-else class="failed clickable" v-tooltip.top="'Retry edit'" @click="updateComment(commentToEdit)">
+                        <i class="far fa-exclamation-circle"></i> Failed</span>
+                </template>
+                <template v-else-if="typeof comment.id == 'number'">
+                    <button v-tooltip.top="'Delete'" class="button true-square invisible ghost dark-hover"
+                    @click="onDeleteComment">
+                        <i class="far fa-trash-alt"></i></button>
+                    <button v-tooltip.top="'Edit'" class="button true-square invisible ghost dark-hover"
+                    @click="$refs.editCommentInput.activate()">
+                        <i class="far fa-pen"></i></button>
+                </template>
+                <template v-else>
+                    <Loader :message="'posting..'"/>
+                </template>
             </div>
         </div>
     </div>
@@ -49,7 +62,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('entities/comments', ['updateComment', 'deleteComment']),
+        ...mapActions('entities/comments', ['updateComment', 'deleteComment', 'createComment']),
         onDeleteComment() {
             window.confirm(
                 'Are you sure you want to delete this comment?'
@@ -59,6 +72,9 @@ export default {
         },
         setEditActive(boolean) {
             this.editActive = boolean
+        },
+        retrySubmitComment() {
+            this.createComment({comment: this.comment})
         }
     }
 }
@@ -104,6 +120,9 @@ export default {
         border-radius: 6px;
         width: 100%;
         z-index: 1;
+        .failed {
+            color: $red;
+        }
         .own & {
             background: $primary;
             color: white;
@@ -120,21 +139,28 @@ export default {
             background: $yellow;
             color: $dark;
         }
-        &:hover {
+        &:hover, &.failed {
             .controls {
                 opacity: 1;
             }
         }
         .controls {
+            white-space: nowrap;
             transition: .3s;
             opacity: 0;
             position: absolute;
-            left: -36px;
+            left: calc(-100% - 4px);
+            width: 100%;
             top: 50%;
             transform: translateY(-50%);
             display: none;
+            justify-content: flex-end;
+            .loader {
+                height: 24px;
+                flex-direction: row;
+            }
             .own & {
-                display: block;
+                display: flex;
             }
         }
     }
