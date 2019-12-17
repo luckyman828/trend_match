@@ -62,14 +62,20 @@
 
             </div>
             <template v-if="!loading">
-                <div class="product-row flex-table-row"
-                v-for="(product, index) in productsToShow.slice(0, pageLimit)" :key="product.id">
+                <template v-for="(product, index) in productsToShow.slice(0, pageLimit)" >
+                    <ProductsRow class="product-row flex-table-row"
+                    :key="product.id"
+                    :product="product" :index="index"
+                    @onViewSingle="onViewSingle" @onSelect="onSelect" @toggleInOut="toggleInOut"/>
+                </template>
+                <!-- <div class="product-row flex-table-row"
+                v-for="(product, index) in productsToShow.slice(0, pageLimit)" :key="product.id"> -->
 
                     <!-- New comment Bullet  -->
-                    <span v-if="product.newComment" class="circle tiny primary"></span>
+                    <!-- <span v-if="product.newComment" class="circle tiny primary"></span> -->
                     <!-- END New comment Bullet  -->
                     
-                    <td class="select" v-if="currentTaskPermissions.select">
+                    <!-- <td class="select" v-if="currentTaskPermissions.select">
                         <label class="checkbox">
                             <input type="checkbox" @change="onSelect(index)" :ref="'checkbox-for-' + index"/>
                             <span class="checkmark"></span>
@@ -168,9 +174,9 @@
                         <td class="action">
                             <span class="view-single button invisible" @click="onViewSingle(product.id)">View</span>
                         </td>
-                    </template>
+                    </template> -->
 
-                </div>
+                <!-- </div> -->
                 <div v-if="products.length <= 0">
                     <p style="padding: 60px 0 100px; text-align: center;">No products to show. Try changing your filters.</p>
                 </div>
@@ -195,6 +201,7 @@ import SelectDropdown from './SelectDropdown'
 import RadioButtons from './RadioButtons'
 import Dropdown from './Dropdown'
 import FlyIn from './FlyIn'
+import ProductsRow from './ProductsRow'
 
 import products from '../store/modules/products';
 import Product from '../store/models/Product';
@@ -221,6 +228,7 @@ export default {
         Dropdown,
         RadioButtons,
         FlyIn,
+        ProductsRow,
     },
     data: function() { return {
         tooltip: {
