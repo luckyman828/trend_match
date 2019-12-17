@@ -3,7 +3,7 @@
         <h1>Welcome to the Test page</h1>
         <p>Products: {{productsStatic.length}}</p>
         <input type="number" v-model.number="currentTaskId">
-        <div class="products-wrapper">
+        <!-- <div class="products-wrapper">
             <h3>Products Static</h3>
             <p v-for="product in productsStatic.slice(0,5)" :key="product.id">
                 <span>{{product.title}}, Ins: {{product.ins.length}}, Outs: {{product.outs.length}}</span>
@@ -12,7 +12,58 @@
                 >
                 (+ Add action)</span>
             </p>
+        </div> -->
+        <h3>Random item {{new Date}}</h3>
+        <h3>Test components</h3>
+        <TestComponent :item="testArr[0]"/>
+        <TestComponent :item="testArr[1]"/>
+        <h3>Test components v-for</h3>
+        <div v-for="item in testArr" :key="item.id">
+            <h4>{{item.name}} | id: {{item.id}} | date: {{new Date}}</h4>
+            <TestComponent :item="item"/>
         </div>
+        <h3>Test Arr 1</h3>
+        <div class="test">
+            <p>{{testArr[0].name}} | {{new Date}}<button class="primary" 
+            @click="testArr.find(x => x.id == testArr[0].id).name = 'Amazing new animal!'">Set animal</button></p>
+            <p>{{testArr[1].name}} | {{new Date}}<button class="primary" 
+            @click="testArr.find(x => x.id == testArr[1].id).name = 'Amazing new animal!'">Set animal</button></p>
+            <p>{{testArr[2].name}} | {{new Date}}<button class="primary" 
+            @click="testArr.find(x => x.id == testArr[2].id).name = 'Amazing new animal!'">Set animal</button></p>
+            <p>{{testArr[3].name}} | {{new Date}}<button class="primary" 
+            @click="testArr.find(x => x.id == testArr[3].id).name = 'Amazing new animal!'">Set animal</button></p>
+            <p>{{testArr[4].name}} | {{new Date}}<button class="primary" 
+            @click="testArr.find(x => x.id == testArr[4].id).name = 'Amazing new animal!'">Set animal</button></p>
+            <p>{{testArr[5].name}} | {{new Date}}<button class="primary" 
+            @click="testArr.find(x => x.id == testArr[5].id).name = 'Amazing new animal!'">Set animal</button></p>
+            <p>{{testArr[6].name}} | {{new Date}}<button class="primary" 
+            @click="testArr.find(x => x.id == testArr[6].id).name = 'Amazing new animal!'">Set animal</button></p>
+        </div>
+        <h3>Test Arr 2</h3>
+        <div class="test">
+            <p>{{testArr2[0].name}} | {{new Date}}<button class="primary" 
+            @click="testArr2.find(x => x.id == testArr2[0].id).name = 'Amazing new animal!'">Set animal</button></p>
+            <p>{{testArr2[1].name}} | {{new Date}}<button class="primary" 
+            @click="testArr2.find(x => x.id == testArr2[1].id).name = 'Amazing new animal!'">Set animal</button></p>
+            <p>{{testArr2[2].name}} | {{new Date}}<button class="primary" 
+            @click="testArr2.find(x => x.id == testArr2[2].id).name = 'Amazing new animal!'">Set animal</button></p>
+            <p>{{testArr2[3].name}} | {{new Date}}<button class="primary" 
+            @click="testArr2.find(x => x.id == testArr2[3].id).name = 'Amazing new animal!'">Set animal</button></p>
+            <p>{{testArr2[4].name}} | {{new Date}}<button class="primary" 
+            @click="testArr2.find(x => x.id == testArr2[4].id).name = 'Amazing new animal!'">Set animal</button></p>
+            <p>{{testArr2[5].name}} | {{new Date}}<button class="primary" 
+            @click="testArr2.find(x => x.id == testArr2[5].id).name = 'Amazing new animal!'">Set animal</button></p>
+            <p>{{testArr2[6].name}} | {{new Date}}<button class="primary" 
+            @click="testArr2.find(x => x.id == testArr2[6].id).name = 'Amazing new animal!'">Set animal</button></p>
+        </div>
+
+        <h3>V-for</h3>
+        <!-- <div class="test">
+            <p v-for="item in testArr" :key="item.id">
+                {{item.name}} | 
+                {{new Date}}<button class="primary" 
+            @click="testArr.find(x => x.id == item.id).name = 'Amazing new animal!'">Set animal</button></p>
+        </div> -->
         <!-- <div class="products-wrapper">
             <h3>Products Test</h3>
             <p v-for="product in productsTest.slice(0,5)" :key="product.id">
@@ -50,11 +101,33 @@
 import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 import Product from '../../store/models/Product'
 import Action from '../../store/models/Action'
+import TestComponent from '../TestComponent'
 export default {
     name: 'test',
+    components: {
+        TestComponent
+    },
     data: function () { return {
         currentFileId: null,
         currentTaskId: 2,
+        testArr: [
+            {id: 1, name: 'hest'},
+            {id: 2, name: 'flamingo'},
+            {id: 3, name: 'elefant'},
+            {id: 4, name: 'zebra'},
+            {id: 5, name: 'donkey'},
+            {id: 6, name: 'mule'},
+            {id: 7, name: 'cow'},
+        ],
+        testArr2: [
+            {id: 1, name: 'hest'},
+            {id: 2, name: 'flamingo'},
+            {id: 3, name: 'elefant'},
+            {id: 4, name: 'zebra'},
+            {id: 5, name: 'donkey'},
+            {id: 6, name: 'mule'},
+            {id: 7, name: 'cow'},
+        ],
         productsStatic: []
     }},
     computed: {
