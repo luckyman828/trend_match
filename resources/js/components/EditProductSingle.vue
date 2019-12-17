@@ -131,19 +131,21 @@
                     <div class="details">
                         <div class="currencies">
                             <label for="currencySelector">Currencies</label>
-                            <select name="currencySelector" class="input-wrapper" v-model="currencyIndex">
+                            <select v-if="currencyIndex != product.prices.length-1" name="currencySelector" class="input-wrapper" v-model="currencyIndex">
                                 <option v-for="(currency, index) in product.prices" :key="index" :value="index">{{currency.currency}}</option>
                             </select>
+                            <EditInputWrapper v-else :id="'currencySelector'" :type="'text'" 
+                            :value="currentCurrency.currency" v-model="currentCurrency.currency" @submit="submitNewCurrency()"/>
                             <label for="wholesale">WHS ({{currentCurrency.currency}})</label>
                             <EditInputWrapper :id="'recommended-retail'" :type="'number'" 
                             :value="currentCurrency.wholesale_price" 
-                            :oldValue="originalProduct.prices[currencyIndex].wholesale_price" 
+                            :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].wholesale_price : null" 
                             v-model.number="currentCurrency.wholesale_price" @submit="savedMarkup = currentCurrency.markup"
                             @change="calculateMarkup($event, 'wholesale_price')" @cancel="resetMarkup" @revert="revertMarkup"/>
                             <label for="recommended-retail">RPP ({{currentCurrency.currency}})</label>
                             <EditInputWrapper :id="'recommended-retail'" :type="'number'" 
                             :value="currentCurrency.recommended_retail_price" 
-                            :oldValue="originalProduct.prices[currencyIndex].recommended_retail_price" 
+                            :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].recommended_retail_price : null" 
                             v-model.number="currentCurrency.recommended_retail_price" @submit="savedMarkup = currentCurrency.markup"
                             @change="calculateMarkup($event, 'recommended_retail_price')" @cancel="resetMarkup" @revert="revertMarkup"/>
                             <label>Mark Up</label>
@@ -202,6 +204,12 @@ export default {
         dragCounter: 0,
         URLActiveIndex: null,
         gettingImagesFromURL: 0,
+        defaultPriceObject: {
+            currency: 'Add new',
+            markup: 0,
+            wholesale_price: 0,
+            recommended_retail_price: 0
+        }
     }},
     watch: {
         currentProductv1(newVal, oldVal) {
@@ -209,6 +217,12 @@ export default {
             // This can mean: A new product is shown. The product in the store has been updated
             this.productToEdit = JSON.parse(JSON.stringify(newVal))
             this.productToEdit.delivery_date = new Date(this.productToEdit.delivery_date).toLocaleDateString("en-GB", {month: "long",year: "numeric"})
+            // Check if the current currency is available. Else set it to the first available
+            if (!this.productToEdit.prices[this.currencyIndex]) this.currencyIndex = 0
+
+            // Add the option to add a new currency to the product
+            this.productToEdit.prices.push(JSON.parse(JSON.stringify(this.defaultPriceObject)))
+
             // Reset the value of all file input fields
             this.$nextTick(() => {
                 this.$refs.editPDP.querySelectorAll('input[type=file]').forEach(input => {
@@ -291,6 +305,9 @@ export default {
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
             else return variant.image
         },
+        submitNewCurrency() {
+            this.productToEdit.prices.push(JSON.parse(JSON.stringify(this.defaultPriceObject)))
+        },
         onCloseSingle() {
             // Emit event to parent
             this.$emit('closeSingle')
@@ -329,6 +346,10 @@ export default {
             // Prepare the file to fit the database schema
             const vm = this
             this.updatingProduct = true
+
+            // Remove the add price option from the prices
+            this.product.prices.splice(this.product.prices.length-1)
+
             const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
 
             // Check if we have any files (images) we need to upload
