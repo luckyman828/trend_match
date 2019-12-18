@@ -245,9 +245,10 @@ export default{
                 return this.$store.state.entities.products.currentProductFilter
             },
             set (value) {
-                this.setCurrentProductFilter(value)
-                // Reset the products page limit
+                // First reset the products page limit. This helps performance as only 25 new products have to be shown
                 this.$refs.productsComponent.resetPageLimit()
+                // Set the new page filter
+                this.setCurrentProductFilter(value)
             }
         },
         selectedCategories: {
@@ -407,10 +408,11 @@ export default{
             // this.$cookies.set(`quick_in_${this.currentFile.id}_${this.currentTask.id}`, true, Infinity)
         },
         setProductFilter(filter) {
-            this.setCurrentProductFilter(filter)
-            this.clearSelectedProducts()
-            // Reset the products page limit
+            // First reset the products page limit. This helps performance as only 25 new products have to be shown
             this.$refs.productsComponent.resetPageLimit()
+
+            this.clearSelectedProducts()
+            this.setCurrentProductFilter(filter)
         },
         setSelectedProduct(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
