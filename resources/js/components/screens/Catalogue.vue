@@ -227,8 +227,7 @@ export default{
     },
     computed: {
         ...mapGetters('entities/products', ['loadingProducts', 'productsScoped', 'productsScopedFilteredByCategory', 'productsScopedFiltered', 'productsScopedFilteredTotals', 'productsRaw']),
-        ...mapState('entities/products', ['selectedCategories', 'selectedDeliveryDates']),
-        ...mapGetters('entities/products', {allProducts: 'products'}),
+        ...mapState('entities/products', ['selectedCategories', 'selectedDeliveryDates', 'productsStatic']),
         ...mapGetters('entities/actions', ['loadingActions']),
         ...mapGetters('entities/comments', ['loadingComments']),
         ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
@@ -501,7 +500,7 @@ export default{
         sortProducts(keyOverwrite) {
             console.log('sorting products')
 
-            const products = this.productsScopedFiltered
+            const products = this.productsStatic
             // let key = this.sortBy
             let key = (keyOverwrite) ? keyOverwrite : this.sortBy
             let sortAsc = (keyOverwrite) ? true : this.sortAsc

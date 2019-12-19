@@ -1,14 +1,11 @@
 <template>
     <div class="product-row flex-table-row">
 
-            <!-- New comment Bullet  -->
             <span v-if="product.newComment" class="circle tiny primary"></span>
-            <!-- END New comment Bullet  -->
             
             <td class="select" v-if="currentTaskPermissions.select">
                 <label class="checkbox">
                     <input type="checkbox" @change="onSelect(index)" :ref="'checkbox-for-' + index"/>
-                    <!-- <input type="checkbox" :ref="'checkbox-for-' + product.id"/> -->
                     <span class="checkmark"></span>
                 </label>
             </td>

@@ -4,7 +4,7 @@
         <div class="overlay" v-else-if="!currentTask.isActive">Task not started yet</div>
         <div class="scroll-bg"></div>
         <FlyIn ref="singleFlyIn" :visibleOverwrite="singleVisible" @close="onCloseSingle">
-            <product-single v-if="currentProduct" :loading="loadingSingle" :authUser="authUser" :visible="singleVisible" @closeSingle="onCloseSingle" @onToggleInOut="toggleInOut" @nextProduct="nextSingle"/>
+            <product-single v-if="currentProduct" :loading="loadingSingle" :authUser="authUser" :visible="singleVisible" @closeSingle="onCloseSingle" @onToggleInOut="toggleInOut"/>
         </FlyIn>
         <div class="flex-table">
             <div class="header-row flex-table-row">
@@ -75,6 +75,12 @@
                     :product="item" :index="index"
                     @onViewSingle="onViewSingle" @onSelect="onSelect" @toggleInOut="toggleInOut"/>
                 </RecycleScroller>
+
+                <!-- <template v-for="(product, index) in products">
+                    <ProductsRow class="product-row flex-table-row" :key="product.id"
+                    :product="product" :index="index"
+                    @onViewSingle="onViewSingle" @onSelect="onSelect" @toggleInOut="toggleInOut"/>
+                </template> -->
 
                 <div v-if="products.length <= 0">
                     <p style="padding: 60px 0 100px; text-align: center;">No products to show. Try changing your filters.</p>
