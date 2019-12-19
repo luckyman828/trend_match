@@ -245,6 +245,7 @@ export default{
                 return this.$store.state.entities.products.currentProductFilter
             },
             set (value) {
+                // Set the new page filter
                 this.setCurrentProductFilter(value)
             }
         },
