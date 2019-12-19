@@ -3,7 +3,6 @@
 
             <!-- New comment Bullet  -->
             <span v-if="product.newComment" class="circle tiny primary"></span>
-            <span class="circle tiny primary">{{index}}</span>
             <!-- END New comment Bullet  -->
             
             <td class="select" v-if="currentTaskPermissions.select">
