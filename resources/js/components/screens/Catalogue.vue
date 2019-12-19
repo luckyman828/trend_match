@@ -246,8 +246,6 @@ export default{
             },
             set (value) {
                 this.setCurrentProductFilter(value)
-                // Reset the products page limit
-                this.$refs.productsComponent.resetPageLimit()
             }
         },
         selectedCategories: {
@@ -256,8 +254,6 @@ export default{
             },
             set (value) {
                 this.updateSelectedCategories(value)
-                // Reset the products page limit
-                this.$refs.productsComponent.resetPageLimit()
             }
         },
         selectedDeliveryDates: {
@@ -266,8 +262,6 @@ export default{
             },
             set (value) {
                 this.updateSelectedDeliveryDates(value)
-                // Reset the products page limit
-                this.$refs.productsComponent.resetPageLimit()
             }
         },
         selectedBuyerGroups: {
@@ -276,8 +270,6 @@ export default{
             },
             set (value) {
                 this.updateSelectedBuyerGroups(value)
-                // Reset the products page limit
-                this.$refs.productsComponent.resetPageLimit()
             }
         },
         unreadOnly: {
@@ -409,8 +401,6 @@ export default{
         setProductFilter(filter) {
             this.setCurrentProductFilter(filter)
             this.clearSelectedProducts()
-            // Reset the products page limit
-            this.$refs.productsComponent.resetPageLimit()
         },
         setSelectedProduct(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array

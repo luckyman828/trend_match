@@ -3,11 +3,13 @@
 
             <!-- New comment Bullet  -->
             <span v-if="product.newComment" class="circle tiny primary"></span>
+            <span class="circle tiny primary">{{index}}</span>
             <!-- END New comment Bullet  -->
             
             <td class="select" v-if="currentTaskPermissions.select">
                 <label class="checkbox">
                     <input type="checkbox" @change="onSelect(index)" :ref="'checkbox-for-' + index"/>
+                    <!-- <input type="checkbox" :ref="'checkbox-for-' + product.id"/> -->
                     <span class="checkmark"></span>
                 </label>
             </td>
@@ -142,80 +144,6 @@ export default {
 
 <style scoped lang="scss">
     @import '~@/_variables.scss';
-
-    .overlay {
-        display: block;
-        position: absolute;
-        color: white;
-        justify-content: center;
-        text-align: center;
-        padding-top: 100px;
-        font-size: 20px;
-        z-index: 1;
-    }
-
-    .dropdown-parent {
-        position: relative;
-        cursor: pointer;
-        &:hover {
-            color: $dark;
-        }
-    }
-    .products {
-        margin-top: 0;
-        position: relative;
-        padding: 0;
-        .circle.tiny {
-            position: absolute;
-            left: -26px;
-        }
-        &.sticky {
-            margin-top: 90px;
-            .scroll-bg {
-                display: block;
-                z-index: 8;
-                position: fixed;
-                right: 20px;
-                top: 70px;
-                right: 0;
-                background: $light;
-                width: 100%;
-                height: 60px;
-                box-shadow: 0 3px 5px rgba(0,0,0,.05) inset;
-            }
-            .header-row {
-                position: fixed;
-                top: $navbarHeight + 20px + 40px - 2px;
-                z-index: 9;
-                background: white;
-                // width: calc(100% - 120px - 200px - 16px);
-                margin-left: 1px;
-                border-radius: 0 6px 0 0;
-                box-shadow: 0 6px 3px -2px rgba(0,0,0, .05);
-            }
-        }
-    }
-    .scroll-bg {
-        display: none;
-    }
-    .clickable {
-        cursor: pointer;
-    }
-    .products {
-        padding-top: 0;
-    }
-    .flex-table {
-        .card > & {
-            margin-left: 0;
-            margin-right: 0;
-            width: 100%;
-        }
-        &.disabled {
-            .product-row {
-                opacity: .5;
-            }
-        }
-    }
     .flex-table-row {
         display: flex;
         justify-content: flex-start;
@@ -237,7 +165,6 @@ export default {
                 width: 300px;
                 min-width: 120px;
                 margin-left: 16px;
-                // padding-right: 16px;
             }
             &.focus {
                 margin-left: auto;
@@ -252,9 +179,6 @@ export default {
                     padding: 0 4px;
                 }
             }
-            // &.nds {
-            //     min-width: 100px;
-            // }
             &.comments {
                 min-width: 82px;
             }
@@ -270,14 +194,9 @@ export default {
             }
         }
     }
-    .header-row {
-        font-weight: 700;
-        font-size: 12px;
-        height: 45px;
-        border-bottom: solid 2px $light1;
-    }
     .product-row {
         border-bottom: solid 1px $light1;
+        height: 92px;
         &.in {
             box-shadow: 4px 0 $green inset
         }
@@ -301,90 +220,20 @@ export default {
             }
         }
     }
-    th {
-        text-transform: uppercase;
-        font-size: 12px;
-        font-weight: 600;
-        color: $dark2;
-        white-space: nowrap;
-        &.id {
-            padding-left: 20px;
-        }
-        i {
-            color: $light2;
-            margin: 0;
-            margin-left: 4px;
-        }
-        &.active {
-            i {
-                color: $primary
-            }
-        }
-        &.action {
-            text-align: right;
-        }
-    }
     td {
         &.title {
             font-size: 13px;
             color: $dark;
         }
     }
-    .show-more {
-        width: 100%;
-        margin: 16px auto 0;
-        text-align: center;
-        display: inline-block;
-    }
-    .loading {
-        animation: loading 2s;
-        animation-iteration-count: infinite;
-    }
-    @keyframes loading {
-        0% {opacity: 0;}
-        50% {opacity: 1;}
-        100% {opacity: 0;}
-    }
-    .checkbox {
-      display: block;
-      position: relative;
-      cursor: pointer;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      margin-bottom: 0;
-      padding-top: 5px;
-      padding-bottom: 5px;
-      display: flex;
-      align-items: center;
-      &:hover {
-          background: $light;
-      }
-    }
-
-    .checkbox input {
-      position: absolute;
-      opacity: 0;
-      cursor: pointer;
-      height: 0;
-      width: 0;
-    }
-
     .square {
-        // background: $light1;
         color: $dark;
-        // // padding: 7px 10px;
-        // border-radius: 4px;
-        // font-size: 14px;
         &:not(.true-square) {
             min-width: 58px;
         }
         font-weight: 600;
         i {
             color: $dark2;
-            // margin-right: 12px;
-            // font-size: 16px;
         }
         &.focus-action.active {
             i {
@@ -397,48 +246,6 @@ export default {
         min-width: 72px;
         &:nth-child(1n+2) {
             margin-left: 12px;
-        }
-    }
-    .load-more {
-        position: absolute;
-        width: 100%;
-        margin-top: 12px;
-        .button {
-            width: 100%;
-            margin-left: 0;
-            margin: 12px 0;
-            height: 44px;
-        }
-    }
-    .view-single {
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-    }
-    // Table totals
-    .product-totals {
-        position: absolute;
-        right: 0;
-        top: -40px;
-        height: 40px;
-        line-height: 40px;
-        span {
-            font-weight: 500;
-            font-size: 14px;
-            &:not(:last-child) {
-                margin-right: 20px;
-            }
-        }
-    }
-
-    // SMALL SCREENS AND HIGH DPI
-    @media screen and (max-width: $screenSmall) {
-
-        @media	only screen and (-webkit-min-device-pixel-ratio: 1.3),
-        only screen and (-o-min-device-pixel-ratio: 13/10),
-        only screen and (min-resolution: 120dpi)
-        {
-            
         }
     }
 </style>

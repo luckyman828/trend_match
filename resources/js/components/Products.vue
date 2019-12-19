@@ -62,129 +62,24 @@
 
             </div>
             <template v-if="!loading">
-                <template v-for="(product, index) in productsToShow.slice(0, pageLimit)" >
+
+                <RecycleScroller
+                    class="products-scroller"
+                    :items="products"
+                    :item-size="92"
+                    page-mode
+                    key-field="id"
+                    v-slot="{ item, index }"
+                >
                     <ProductsRow class="product-row flex-table-row"
-                    :key="product.id"
-                    :product="product" :index="index"
+                    :product="item" :index="index"
                     @onViewSingle="onViewSingle" @onSelect="onSelect" @toggleInOut="toggleInOut"/>
-                </template>
-                <!-- <div class="product-row flex-table-row"
-                v-for="(product, index) in productsToShow.slice(0, pageLimit)" :key="product.id"> -->
+                </RecycleScroller>
 
-                    <!-- New comment Bullet  -->
-                    <!-- <span v-if="product.newComment" class="circle tiny primary"></span> -->
-                    <!-- END New comment Bullet  -->
-                    
-                    <!-- <td class="select" v-if="currentTaskPermissions.select">
-                        <label class="checkbox">
-                            <input type="checkbox" @change="onSelect(index)" :ref="'checkbox-for-' + index"/>
-                            <span class="checkmark"></span>
-                        </label>
-                    </td>
-                    <td class="id clickable bind-view-single" @click="onViewSingle(product.id)">{{product.datasource_id}}</td>
-                    <td class="image clickable" @click="onViewSingle(product.id)"><img v-if="product.color_variants[0] != null" :src="productImg(product.color_variants[0])"></td>
-                    <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
-                    
-                    <template v-if="currentTaskPermissions.feedback">
-                        <tooltipAlt2 class="square-wrapper" :disabled="product.focus.length <= 0 || userPermissionLevel <= 1" :header="'focus'" :array="product.focus.map(x => (x.task) ? (x.task.type != 'feedback') ? x.task.title : (x.user && x.user.name != null) ? x.user.name : x.title : (x.user && x.user.name != null) ? x.user.name : x.title )">
-                            <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
-                        </tooltipAlt2>
-                        <tooltipAlt2 class="square-wrapper" :disabled="(product.ins.length <= 0 && product.focus.length <= 0) || userPermissionLevel <= 1" :header="'in'" :array="product.ins.map(x => (x.task) ? (x.task.type != 'feedback') ? x.task.title : (x.user && x.user.name != null) ? x.user.name : x.title : (x.user && x.user.name != null) ? x.user.name : x.title ).concat(product.focus.map(x => (x.task) ? (x.task.type != 'feedback') ? x.task.title : (x.user && x.user.name != null) ? x.user.name : x.title : (x.user && x.user.name != null) ? x.user.name : x.title ))">
-                            <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
-                        </tooltipAlt2>
-                        <tooltipAlt2 class="square-wrapper" :disabled="product.outs.length <= 0 || userPermissionLevel <= 1" :header="'out'" :array="product.outs.map(x => (x.task) ? (x.task.type != 'feedback') ? x.task.title : (x.user && x.user.name != null) ? x.user.name : x.title : (x.user && x.user.name != null) ? x.user.name : x.title )">
-                            <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
-                        </tooltipAlt2>
-                        <tooltipAlt2 v-if="currentTask.type != 'decision'" class="square-wrapper" :disabled="product.nds.length <= 0 || userPermissionLevel <= 1" :header="'not decided'" :array="product.nds.map(x => (x.name != null) ? x.name : x.title)">
-                            <td class="square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{product.ndsTotal}}</span></td>
-                        </tooltipAlt2>
-                    </template>
-                    <template v-else-if="currentTaskPermissions.focus">
-                        <tooltipAlt2 class="square-wrapper" :disabled="product.focus.length <= 0 || userPermissionLevel <= 1" :header="'focus'" :array="product.focus.map(x => (x.task) ? (x.task.type != 'feedback') ? x.task.title : (x.user && x.user.name != null) ? x.user.name : x.title : (x.user && x.user.name != null) ? x.user.name : x.title )">
-                            <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
-                        </tooltipAlt2>
-                    </template>
-
-                    <td v-if="currentTask.type == 'decision'" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.commentsInherited.length}}</span></td>
-                    <td v-else-if="currentTaskPermissions.comments && !currentTask.parentTasks.find(x => x.type == 'alignment')" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.commentsScoped.length}}</span></td>
-                    <td v-if="currentTaskPermissions.requests" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-clipboard-check"></i>{{product.requests.length}}</span></td>
-
-                    <template v-if="currentTaskPermissions.actions">
-                        <td class="action">
-                            <span v-if="currentTaskPermissions.focus && currentTask.type != 'approval' && currentTask.type != 'decision'" class="square light-2 true-square clickable focus-action" :class="[(product.currentAction) ? (product.currentAction.action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover']" @click="toggleInOut(product, 2)">
-                            <i class="far fa-star"></i>
-                            </span>
-
-                            <template v-if="product.outInFilter">
-                                <TooltipAlt2 :body="'Out by ' + product.outInFilter.user.name + ' in ' + product.outInFilter.task.title">
-                                    <span class="button icon-right ghost disabled">
-                                        In  <i class="far fa-heart"></i>
-                                    </span>
-                                    <span class="button icon-right active red disabled">
-                                        Out  <i class="far fa-times-circle"></i>
-                                    </span>
-                                </TooltipAlt2>
-                            </template>
-                            <template v-else-if="currentTask.type == 'approval' && product.requests.length < 1">
-                                <span class="button icon-right disabled" :class="[(product.inheritedAction && product.inheritedAction.action >= 1) || (product.currentAction && prouct.currentAction.action >= 1) ? 'active green' : 'ghost']">
-                                    In  <i class="far fa-heart"></i>
-                                </span>
-                                <span class="button icon-right disabled" :class="[(product.inheritedAction && product.inheritedAction.action < 1) || (product.currentAction && prouct.currentAction.action < 1) ? 'active red' : 'ghost']">
-                                    Out  <i class="far fa-times-circle"></i>
-                                </span>
-                            </template>
-                            <template v-else>
-                                <template v-if="currentTask.type == 'decision'">
-
-                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'ghost green-hover' : 'active green' : (product.inheritedAction) ? (product.inheritedAction.action == 0) ? 'ghost green-hover' : 'active green' : 'active green']" @click="toggleInOut(product, 1)">
-                                    In  <i class="far fa-heart"></i>
-                                    </span>
-                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : (product.inheritedAction) ? (product.inheritedAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
-                                    Out  <i class="far fa-times-circle"></i>
-                                    </span>
-
-                                </template>
-                                <template v-else-if="userPermissionLevel != 3">
-                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id == 3 : false}]" @click="toggleInOut(product, 1)">
-                                    In  <i class="far fa-heart"></i>
-                                    </span>
-                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id == 3 : false}]"  @click="toggleInOut(product, 0)">
-                                    Out  <i class="far fa-times-circle"></i>
-                                    </span>
-
-                                </template>
-                                <template v-else>
-                                    <TooltipAlt2 :body="'Open product to accept request'">
-            
-                                        <span class="button icon-right disabled" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id != 3 : false}]">
-                                        In  <i class="far fa-heart"></i>
-                                        </span>
-                                        <span class="button icon-right disabled" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id != 3 : false}]">
-                                        Out  <i class="far fa-times-circle"></i>
-                                        </span>
-
-                                    </TooltipAlt2>
-                                </template>
-
-                            </template>
-                            <span class="view-single button invisible" @click="onViewSingle(product.id)">View</span>
-                        </td>
-                    </template>
-                    <template v-else>
-                        <td class="action">
-                            <span class="view-single button invisible" @click="onViewSingle(product.id)">View</span>
-                        </td>
-                    </template> -->
-
-                <!-- </div> -->
                 <div v-if="products.length <= 0">
                     <p style="padding: 60px 0 100px; text-align: center;">No products to show. Try changing your filters.</p>
                 </div>
             </template>
-        </div>
-        <div class="load-more" v-if="pageLimit && products.length > pageLimit">
-            <span class="button primary wide" @click="loadMore">Load {{itemsPerPage}} more products</span>
-            <span class="button dark wide" @click="pageLimit = products.length">Show all (may cause slowdown)</span>
         </div>
         <template v-if="loading">
             <Loader/>
@@ -239,8 +134,6 @@ export default {
             data: {},
         },
         sticky: false,
-        itemsPerPage: 25,
-        pageLimit: 25,
     }},
     computed: {
         // ...mapGetters('entities/productFinalActions', ['loadingFinalActions']),
@@ -256,13 +149,6 @@ export default {
         hasAccess() {
             return (this.currentTask != null) ? true : false
         },
-        productsToShow() {
-            return this.products
-        },
-        productsTest() {
-            const products = Product.query().with('actions').get()
-            return products
-        }
     },
     methods: {
         ...mapActions('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction']),
@@ -271,12 +157,6 @@ export default {
         ...mapMutations('entities/tasks', ['setTaskComplete', 'setTaskIncomplete']),
         ...mapActions('entities/actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions']),
         ...mapActions('entities/comments', ['setComment', 'destroyComment']),
-        loadMore() {
-            this.pageLimit += this.itemsPerPage
-        },
-        resetPageLimit() {
-            this.pageLimit = this.itemsPerPage
-        },
         productImg(variant) {
             if (variant.blob_id != null)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
@@ -363,20 +243,22 @@ export default {
             const theWindow = document.getElementById('main')
             let scrollDist = theWindow.scrollTop
             const stickyThis = document.querySelector('.product-tabs')
-            const scrollBg = document.querySelector('.scroll-bg')
-            const tableHeader = document.querySelector('.flex-table .header-row')
-            const headerParent = tableHeader.parentElement
-            // console.log(stickyThis.parentElement)
-            const stickyThisTop = stickyThis.getBoundingClientRect().top - 70
-            // console.log(this.getPosition(headerParent).x)
             if (scrollDist >= 130) {
+                // Set width of sticky elements
+                if (this.sticky == false) {
+                    const scrollBg = document.querySelector('.scroll-bg')
+                    const tableHeader = document.querySelector('.flex-table .header-row')
+                    const headerParent = tableHeader.parentElement
+                    const headerParentX = this.getPosition(headerParent).x
+                    stickyThis.classList.add('sticky')
+                    scrollBg.style.width = `${theWindow.scrollWidth}px`
+                    tableHeader.style.width = `${headerParent.scrollWidth}px`
+                    tableHeader.style.left = `${headerParentX - 1}px`
+                    // scrollBg.style.cssText = `width: ${theWindow.scrollWidth}px;`
+                    // tableHeader.style.cssText = `width: ${headerParent.scrollWidth}px; left: ${this.getPosition(headerParent).x - 1}px`
+                }
                 this.sticky = true
-                stickyThis.classList.add('sticky')
-
-                // scrollBg.style.cssText = `width: ${theWindow.scrollWidth}px; left: ${theWindow.offsetLeft}px`
-                scrollBg.style.cssText = `width: ${theWindow.scrollWidth}px;`
-                tableHeader.style.cssText = `width: ${headerParent.scrollWidth}px; left: ${this.getPosition(headerParent).x - 1}px`
-            } else {
+            } else if (this.sticky == true) {
                 this.sticky = false
                 stickyThis.classList.remove('sticky')
             }
@@ -394,10 +276,6 @@ export default {
                 dropdown.classList.toggle('show')
             }
         },
-        nextSingle() {
-            // console.log('next product')
-            // this.$refs.singleFlyIn.reset()
-        }
     },
     created () {
         document.getElementById('main').addEventListener('scroll', this.handleScroll);
@@ -488,6 +366,9 @@ export default {
             color: $dark;
         }
     }
+    // .products-scroller {
+    //     height: 500px;
+    // }
     .products {
         margin-top: 0;
         position: relative;

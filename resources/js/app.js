@@ -20,6 +20,10 @@ Vue.use(directive)
 import dragscrollDirective from './dragscrollDirective'
 Vue.use(dragscrollDirective)
 
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+import VueVirtualScroller from 'vue-virtual-scroller'
+Vue.use(VueVirtualScroller)
+
 Vue.component('app', require('./App.vue').default)
 
 // Global components
