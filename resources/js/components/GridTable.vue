@@ -1,12 +1,20 @@
 <template>
     <div class="grid-table" ref="table">
         <table>
-            <tr class="header">
-                <slot name="header" :sort="sort">
+            <thead>
+                <tr class="header">
+                    <slot name="header" :sort="sort">
+                    </slot>
+                </tr>
+            </thead>
+            <tbody>
+                <slot name="body" :sort="sort">
                 </slot>
-            </tr>
-            <slot name="body" :sort="sort">
-            </slot>
+            </tbody>
+            <tfoot>
+                <slot name="footer" :sort="sort">
+                </slot>
+            </tfoot>
         </table>
     </div>
 </template>
@@ -90,7 +98,7 @@ export default {
         th, td {
             overflow: hidden;
             background: white;
-            padding: 12px 12px;
+            padding: 4px 12px;
             // &:not(:first-child) {
             //     padding-left: 12px;
             // }

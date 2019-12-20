@@ -236,7 +236,7 @@ button,
 .bubble,
 .circle {
     line-height: 1;
-    transition: 0.2s;
+    // transition: 0.2s;
     text-align: center;
     display: inline-flex;
     justify-content: center;
@@ -311,7 +311,7 @@ button,
     }
     &.primary,
     &.primary-hover:hover,
-    &.role-1 {
+    &.invisible:hover &.role-1 {
         border-color: $primary;
         background: $primary;
         color: white;
@@ -319,6 +319,14 @@ button,
         &.ghost {
             color: $primary;
             background: transparent;
+            &:hover {
+                border-color: $primary;
+                background: $primary;
+                color: white;
+                i.context {
+                    background: $primaryDark;
+                }
+            }
         }
     }
     &.white,
@@ -400,15 +408,42 @@ button,
     &.icon-right {
         padding-right: 8px;
         text-align: right;
-        i {
+        i:last-child {
             margin-left: 12px;
         }
     }
     &.icon-left {
         padding-left: 8px;
         text-align: left;
-        i {
+        i:first-child {
             margin-right: 8px;
+        }
+    }
+    &.context-right,
+    &.context-left {
+        position: relative;
+        overflow: hidden;
+    }
+    &.context-right i:last-child,
+    &.context-left i:first-child {
+        position: absolute;
+        width: 32px;
+        text-align: center;
+        display: flex;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+    }
+    &.context-right {
+        padding-right: 40px;
+        i.context {
+            right: 0;
+        }
+    }
+    &.context-left {
+        padding-left: 40px;
+        i.context {
+            left: 0;
         }
     }
     // -- SIZES --

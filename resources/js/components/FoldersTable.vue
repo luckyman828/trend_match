@@ -49,7 +49,16 @@
                     </td>
                 </tr>
             </template>
+            <template v-slot:footer="slotProps">
+                <td></td>
+                <td><button class="primary invisible icon-left context-right"><i class="far fa-plus"></i>Add new: Folder <i class="fas fa-caret-down context"></i></button></td>
+                <td></td><td></td><td></td><td></td><td></td><td></td>
+            </template>
         </GridTable>
+
+        <button class="primary">Default</button>
+        <button class="primary invisible ghost">Invisible</button>
+        <button class="primary ghost">Ghost</button>
 
         <!-- <div class="flex-table">
             <div class="header-row flex-table-row">
@@ -331,7 +340,7 @@
         </ContextMenu>
         <ContextMenu ref="contextMenuFile" class="context-file">
             <div class="item-group">
-                <div class="item" @click="viewSingle(file.id)">
+                <div class="item" @click="viewSingle(contextMenuItem.id)">
                     <div class="icon-wrapper">
                         <i class="far fa-file"></i>
                     </div>

@@ -9491,6 +9491,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 
@@ -9682,14 +9683,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -16168,8 +16161,7 @@ function toByteArray (b64) {
     ? validLen - 4
     : validLen
 
-  var i
-  for (i = 0; i < len; i += 4) {
+  for (var i = 0; i < len; i += 4) {
     tmp =
       (revLookup[b64.charCodeAt(i)] << 18) |
       (revLookup[b64.charCodeAt(i + 1)] << 12) |
@@ -16268,7 +16260,7 @@ function fromByteArray (uint8) {
 /* WEBPACK VAR INJECTION */(function(global) {/*!
  * The buffer module from node.js, for the browser.
  *
- * @author   Feross Aboukhadijeh <http://feross.org>
+ * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
  * @license  MIT
  */
 /* eslint-disable no-proto */
@@ -18356,7 +18348,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".grid-table table[data-v-10f7324d] {\n  white-space: nowrap;\n  border-spacing: 0 2px;\n}\n.grid-table table tr:hover td[data-v-10f7324d] {\n  background: #f3f3f3;\n}\n.grid-table table tr:hover td i[data-v-10f7324d] {\n  color: #3c3b54;\n  -webkit-transition: 0;\n  transition: 0;\n}\n.grid-table table tr[data-v-10f7324d] > :first-child {\n  border-radius: 2px 0 0 2px;\n}\n.grid-table table tr[data-v-10f7324d] > :last-child {\n  border-radius: 0 2px 2px 0;\n}\n.grid-table table tr.header[data-v-10f7324d] > :first-child {\n  border-radius: 4px 0 0 4px;\n}\n.grid-table table tr.header[data-v-10f7324d] > :last-child {\n  border-radius: 0 4px 4px 0;\n}\n.grid-table table tr.header th[data-v-10f7324d] {\n  padding: 6px 12px;\n  color: #707070;\n}\n.grid-table table th[data-v-10f7324d], .grid-table table td[data-v-10f7324d] {\n  overflow: hidden;\n  background: white;\n  padding: 4px 12px;\n}\n.grid-table table th.action[data-v-10f7324d], .grid-table table td.action[data-v-10f7324d] {\n  width: 100%;\n  text-align: right;\n}", ""]);
+exports.push([module.i, ".grid-table table[data-v-10f7324d] {\n  white-space: nowrap;\n  border-spacing: 0 2px;\n}\n.grid-table table tr:hover td[data-v-10f7324d] {\n  background: #f3f3f3;\n}\n.grid-table table tr:hover td > i[data-v-10f7324d] {\n  color: #3c3b54;\n  -webkit-transition: 0;\n  transition: 0;\n}\n.grid-table table tr[data-v-10f7324d] > :first-child {\n  border-radius: 2px 0 0 2px;\n}\n.grid-table table tr[data-v-10f7324d] > :last-child {\n  border-radius: 0 2px 2px 0;\n}\n.grid-table table tr.header[data-v-10f7324d] > :first-child {\n  border-radius: 4px 0 0 4px;\n}\n.grid-table table tr.header[data-v-10f7324d] > :last-child {\n  border-radius: 0 4px 4px 0;\n}\n.grid-table table tr.header th[data-v-10f7324d] {\n  padding: 6px 12px;\n  color: #707070;\n}\n.grid-table table th[data-v-10f7324d], .grid-table table td[data-v-10f7324d] {\n  overflow: hidden;\n  background: white;\n  padding: 4px 12px;\n}\n.grid-table table th.action[data-v-10f7324d], .grid-table table td.action[data-v-10f7324d] {\n  width: 100%;\n  text-align: right;\n}", ""]);
 
 // exports
 
@@ -36484,50 +36476,38 @@ var render = function() {
                       ])
                     ]
                   )
-                })
+                }),
+                _vm._v(" "),
+                _c("tr", [
+                  _c("td"),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "invisible primary primary-hover icon-left"
+                      },
+                      [
+                        _c("i", { staticClass: "far fa-plus" }),
+                        _vm._v(" "),
+                        _c("span", [_vm._v("Add new folder")])
+                      ]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("td"),
+                  _c("td"),
+                  _c("td"),
+                  _c("td"),
+                  _c("td"),
+                  _c("td")
+                ])
               ]
             },
             proxy: true
-          },
-          {
-            key: "footer",
-            fn: function(slotProps) {
-              return [
-                _c("td"),
-                _vm._v(" "),
-                _c("td", [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "primary invisible icon-left context-right"
-                    },
-                    [
-                      _c("i", { staticClass: "far fa-plus" }),
-                      _vm._v("Add new: Folder "),
-                      _c("i", { staticClass: "fas fa-caret-down context" })
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td"),
-                _c("td"),
-                _c("td"),
-                _c("td"),
-                _c("td"),
-                _c("td")
-              ]
-            }
           }
         ])
       }),
-      _vm._v(" "),
-      _c("button", { staticClass: "primary" }, [_vm._v("Default")]),
-      _vm._v(" "),
-      _c("button", { staticClass: "primary invisible ghost" }, [
-        _vm._v("Invisible")
-      ]),
-      _vm._v(" "),
-      _c("button", { staticClass: "primary ghost" }, [_vm._v("Ghost")]),
       _vm._v(" "),
       _c("Modal", {
         ref: "editFileModal",
@@ -36721,7 +36701,7 @@ var render = function() {
                 staticClass: "item",
                 on: {
                   click: function($event) {
-                    return _vm.viewSingle(_vm.contextMenuItem.id)
+                    return _vm.viewSingle(_vm.file.id)
                   }
                 }
               },
@@ -36808,20 +36788,20 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { ref: "table", staticClass: "grid-table" }, [
-    _c("table", [
-      _c("thead", [
+    _c(
+      "table",
+      [
         _c(
           "tr",
           { staticClass: "header" },
           [_vm._t("header", null, { sort: _vm.sort })],
           2
-        )
-      ]),
-      _vm._v(" "),
-      _c("tbody", [_vm._t("body", null, { sort: _vm.sort })], 2),
-      _vm._v(" "),
-      _c("tfoot", [_vm._t("footer", null, { sort: _vm.sort })], 2)
-    ])
+        ),
+        _vm._v(" "),
+        _vm._t("body", null, { sort: _vm.sort })
+      ],
+      2
+    )
   ])
 }
 var staticRenderFns = []
