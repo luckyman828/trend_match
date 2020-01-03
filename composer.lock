@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dbca3f989008f314fe81c776cf989dac",
+    "content-hash": "e2b8cc21481f21084837a22eaab35574",
     "packages": [
         {
             "name": "defuse/php-encryption",
@@ -3021,6 +3021,96 @@
             "time": "2019-09-05T21:16:12+00:00"
         },
         {
+            "name": "staudenmeir/laravel-adjacency-list",
+            "version": "v1.1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/staudenmeir/laravel-adjacency-list.git",
+                "reference": "83b70dcb2c9db67a531bbe48b85664d6045e4560"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/staudenmeir/laravel-adjacency-list/zipball/83b70dcb2c9db67a531bbe48b85664d6045e4560",
+                "reference": "83b70dcb2c9db67a531bbe48b85664d6045e4560",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "5.8.*",
+                "php": "^7.1.3",
+                "staudenmeir/laravel-cte": "^1.1.3"
+            },
+            "require-dev": {
+                "laravel/homestead": "^8.0",
+                "phpunit/phpunit": "^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Staudenmeir\\LaravelAdjacencyList\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jonas Staudenmeir",
+                    "email": "mail@jonas-staudenmeir.de"
+                }
+            ],
+            "description": "Recursive Laravel Eloquent relationships with CTEs",
+            "time": "2019-12-25T15:54:01+00:00"
+        },
+        {
+            "name": "staudenmeir/laravel-cte",
+            "version": "v1.1.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/staudenmeir/laravel-cte.git",
+                "reference": "68a8fa448fa5c5ee2d09b8d7121a805d9b8fec99"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/staudenmeir/laravel-cte/zipball/68a8fa448fa5c5ee2d09b8d7121a805d9b8fec99",
+                "reference": "68a8fa448fa5c5ee2d09b8d7121a805d9b8fec99",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "5.8.*",
+                "php": "^7.1.3"
+            },
+            "require-dev": {
+                "laravel/homestead": "^8.0",
+                "orchestra/testbench": "3.8.*"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Staudenmeir\\LaravelCte\\DatabaseServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Staudenmeir\\LaravelCte\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jonas Staudenmeir",
+                    "email": "mail@jonas-staudenmeir.de"
+                }
+            ],
+            "description": "Laravel queries with common table expressions",
+            "time": "2019-07-17T22:21:41+00:00"
+        },
+        {
             "name": "swiftmailer/swiftmailer",
             "version": "v6.2.1",
             "source": {
@@ -4620,6 +4710,7 @@
                 "psr",
                 "psr-7"
             ],
+            "abandoned": "laminas/laminas-diactoros",
             "time": "2019-07-10T16:13:25+00:00"
         }
     ],

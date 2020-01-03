@@ -18,6 +18,7 @@ export default class Folder extends Model {
             parent_id: this.attr(''),
             files: this.hasMany(File, 'folder_id'),
             folders: this.hasMany(Folder, 'parent_id'),
+            parent: this.belongsTo(Folder, 'parent_id'),
         }
 
         return data

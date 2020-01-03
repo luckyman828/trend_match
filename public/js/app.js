@@ -9313,184 +9313,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -9521,17 +9343,46 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       filesToAdd: [],
       uploadingToFile: false,
       contextMenuItem: null,
-      toEdit: null
+      toEdit: null,
+      toMove: null,
+      folderToMoveToId: this.folder.id
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['userPermissionLevel', 'authUser']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['userPermissionLevel', 'authUser', 'currentWorkspaceId', 'currentWorkspace', 'currentFolderId']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/collections', ['loadingCollections', 'files']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('entities/folders', ['loadingFolders', 'folders']), {
     selectedCount: function selectedCount() {
       return this.selected.length;
+    },
+    folderToMoveTo: function folderToMoveTo() {
+      var _this = this;
+
+      // If we have no folder id we are the ROOT folder
+      if (this.folderToMoveToId == null) {
+        // Find all folders and files of the root folder
+        // Find folders in root
+        var rootFolders = this.folders.filter(function (x) {
+          return !x.parent_id;
+        }); // Find files in root
+
+        var rootFiles = this.files.filter(function (x) {
+          return !x.folder_id;
+        }); // Instantioate a rootfolder object
+
+        var rootFolder = {
+          files: rootFiles,
+          folders: rootFolders
+        };
+        return rootFolder;
+      } else {
+        return this.folders.find(function (x) {
+          return x.id == _this.folderToMoveToId;
+        });
+      }
     }
   }),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/collections', ['deleteFile', 'updateFile', 'uploadToExistingFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/folders', ['deleteFolder', 'updateFolder']), {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/collections', ['deleteFile', 'updateFile', 'uploadToExistingFile']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/folders', ['deleteFolder', 'updateFolder']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])('persist', ['setCurrentFolderId']), {
     setCurrentFolder: function setCurrentFolder(folder) {
       this.$emit('setCurrentFolder', folder);
+      this.setCurrentFolderId(folder.id);
     },
     showContextMenu: function showContextMenu(e, item, type) {
       var folderMenu = this.$refs.contextMenuFolder;
@@ -9553,7 +9404,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       contextMenu.show(e);
     },
+    onMoveTo: function onMoveTo(item) {
+      this.toMove = item;
+      this.toEdit = {
+        item: item
+      };
+      this.folderToMoveToId = this.folder.id;
+      this.$refs.moveItemModal.toggle();
+    },
     onEditField: function onEditField(item, type, field) {
+      // If the new item to edit has an ID, remove all unsaved folders, to avoid confusion as to whether they are saved or not
+      if (item.id) this.removeUnsavedFolders(); // Set the item to edit
+
       this.toEdit = {
         item: item,
         type: type,
@@ -9562,6 +9424,46 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     clearToEdit: function clearToEdit() {
       this.toEdit = null;
+    },
+    removeUnsavedFolders: function removeUnsavedFolders() {
+      this.folder.folders = this.folder.folders.filter(function (x) {
+        return x.id != null;
+      });
+    },
+    onDeleteFolder: function onDeleteFolder(folderId) {
+      window.confirm('Are you sure you want to delete this folder?\nThe folder and all of its contents will be permanently deleted.') ? this.deleteFolder(folderId) : false;
+    },
+    onNewFolder: function onNewFolder() {
+      var _this2 = this;
+
+      var currentFolder = this.folder; // Check if we already have added a new folder
+
+      var existingNewFolder = currentFolder.folders.find(function (x) {
+        return x.id == null;
+      }); // If we already have a new folder, foxus the edit title field
+
+      if (existingNewFolder) {
+        this.onEditField(existingNewFolder, 'folder', 'title'); // Focus the edit field
+
+        this.$refs['editTitleInput-null'][0].setActive();
+      } // Else create a new folder
+      else {
+          var newFolder = {
+            id: null,
+            title: 'New folder',
+            parent_id: currentFolder.id ? currentFolder.id : null,
+            workspace_id: this.currentWorkspaceId,
+            folders: [],
+            files: [] // Push new folder to the current folder
+
+          };
+          currentFolder.folders.push(newFolder); // Activate title edit of new folder
+
+          this.onEditField(newFolder, 'folder', 'title');
+          this.$nextTick(function () {
+            _this2.$forceUpdate();
+          });
+        }
     },
     // onSelect(index) {
     //     this.$emit('onSelect', index)
@@ -9623,14 +9525,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$refs.editFileModal.toggle();
     },
     addToFile: function addToFile() {
-      var _this = this;
+      var _this3 = this;
 
       this.fileToEdit.files = this.filesToAdd;
       this.uploadingToFile = true;
       this.uploadToExistingFile(this.fileToEdit).then(function (success) {
-        _this.uploadingToFile = false;
+        _this3.uploadingToFile = false;
 
-        _this.$refs.editFileModal.toggle();
+        _this3.$refs.editFileModal.toggle();
       });
     },
     onEdit: function onEdit(file) {
@@ -9641,7 +9543,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fileToEdit = this.defaultFileToEdit;
     },
     filesChange: function filesChange(e) {
-      var _this2 = this;
+      var _this4 = this;
 
       var files = e.target.files;
 
@@ -9650,10 +9552,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         var extension = file.name.split('.').pop(); // Check that the file is a csv
 
         if (extension == 'csv') {
-          if (!_this2.filesToAdd.find(function (x) {
+          if (!_this4.filesToAdd.find(function (x) {
             return x.name == file.name;
           })) {
-            _this2.filesToAdd.push(file);
+            _this4.filesToAdd.push(file);
           }
         } else {
           // Throw error
@@ -10896,7 +10798,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentWorkspaceId'])),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('persist', ['currentWorkspaceId', 'currentFolderId'])),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('entities/collections', ['uploadFile']), {
     filesChange: function filesChange(e) {
       var _this = this;
@@ -10932,7 +10834,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // Set new file data
       var newFile = this.newFile;
       newFile.phase = _store_models_Phase__WEBPACK_IMPORTED_MODULE_3__["default"].query().first().id;
-      newFile.folderId = _store_models_Collection__WEBPACK_IMPORTED_MODULE_4__["default"].query().first().catalog_id;
+      newFile.folderId = this.currentFolderId;
       newFile.workspace_id = this.currentWorkspaceId; // Create collection from name
 
       this.uploadingFile = true;
@@ -14844,6 +14746,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _RadioButtons__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../RadioButtons */ "./resources/js/components/RadioButtons.vue");
 /* harmony import */ var _input_CheckboxButtons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../input/CheckboxButtons */ "./resources/js/components/input/CheckboxButtons.vue");
 /* harmony import */ var _Dropdown__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../Dropdown */ "./resources/js/components/Dropdown.vue");
+/* harmony import */ var _store_models_Folder__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../store/models/Folder */ "./resources/js/store/models/Folder.js");
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { if (i % 2) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } else { Object.defineProperties(target, Object.getOwnPropertyDescriptors(arguments[i])); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -14931,6 +14834,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+
 
 
 
@@ -18071,7 +17975,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\nhtml, body, #app {\n  color: #1b1c1d;\n}\n.app {\n  scroll-behavior: smooth;\n  display: grid;\n  min-height: 100vh;\n  min-width: 100vw;\n  grid-template-columns: 260px auto;\n  grid-template-rows: 70px auto;\n  grid-template-areas: \"logo navbar\" \"sidebar main\";\n}\n@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-webkit-min-device-pixel-ratio: 1.25), only screen and (min-resolution: 120dpi) {\n.app .app {\n    grid-template-columns: 200px auto;\n}\n}\n@media screen and (max-width: 1600px) {\n.app {\n    grid-template-columns: 80px auto;\n}\n}\n.main {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05) inset, 5px 0 6px rgba(0, 0, 0, 0.02) inset;\n  padding: 20px 60px;\n  overflow-y: scroll;\n  overflow-x: auto;\n  background: #f9f9f9;\n}\nh1 {\n  margin-bottom: 30px;\n}\n.grid-2, .grid-3 {\n  display: grid;\n  grid-gap: 17px;\n}\n.grid-2.small-gap, .grid-3.small-gap {\n  grid-gap: 12px;\n}\n.grid-3 {\n  grid-template-columns: repeat(3, 1fr);\n}\n.grid-2 {\n  grid-template-columns: repeat(2, 1fr);\n}\n.card {\n  padding: 1em;\n  border-radius: 6px;\n  margin: 30px 0;\n  border: none;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n}\n.tabs {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.tabs .tab {\n  display: inline-block;\n  font-size: 18px;\n  opacity: 0.5;\n  padding: 10px 25px;\n  border-bottom: solid 3px transparent;\n  margin-bottom: 8px;\n}\n.tabs .tab.active {\n  opacity: 1;\n  border-color: #3b86ff;\n}\n.tabs .tab:not(.active):hover {\n  border-color: rgba(59, 134, 255, 0.5);\n  cursor: pointer;\n}\n.vdp-datepicker {\n  display: grid;\n  justify-items: end;\n}\n.vdp-datepicker.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.vdp-datepicker > div::after {\n  content: \"\\F078\";\n  font-size: 11px;\n  color: #a8a8a8;\n  display: block;\n  position: absolute;\n  z-index: 1;\n  right: 12px;\n  height: 32px;\n  top: 0;\n  line-height: 32px;\n  font-weight: 900;\n  font-family: \"Font Awesome 5 Pro\";\n}\n.vdp-datepicker input {\n  border: solid 1px #dfdfdf;\n  border-radius: 4px;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  padding-left: 12px;\n  height: 32px;\n  width: 150px;\n  font-size: 14px;\n  cursor: pointer;\n}\n.loading {\n  -webkit-animation: loading 2s;\n          animation: loading 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.card > .flex-table {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled .flex-table-row:not(.header-row) {\n  opacity: 0.5;\n}\n.flex-table .flex-table-row {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n  min-height: 45px;\n}\n.flex-table .flex-table-row > *.select {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table .header-row {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #f3f3f3;\n}\n.flex-table .item-row {\n  border-bottom: solid 1px #f3f3f3;\n}\n.flex-table .item-row:hover {\n  background: #f9f9f9;\n}\n.flex-table th {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #a8a8a8;\n}\n.flex-table th i {\n  color: #dfdfdf;\n  margin: 0;\n  margin-left: 4px;\n}\n.flex-table th.active i {\n  color: #3b86ff;\n}\n.clickable {\n  cursor: pointer;\n}\nbody::after {\n  content: \"\";\n  display: none;\n  position: fixed;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(27, 28, 29, 0.7);\n  z-index: 110;\n}\nbody.disabled::after {\n  display: block;\n}\n*:not(.app) {\n  /* width */\n  /* Track */\n  /* Handle */\n}\n*:not(.app)::-webkit-scrollbar {\n  width: 3px;\n  height: 7px;\n}\n*:not(.app)::-webkit-scrollbar-track {\n  background: #dfdfdf;\n}\n*:not(.app)::-webkit-scrollbar-thumb {\n  background: #a8a8a8;\n  border-radius: 2px;\n}\n*:not(.app)::-webkit-scrollbar-thumb:hover {\n  background: #888;\n}\n*:not(.app) .dark > *, *:not(.app) .dark {\n  /* width */\n  /* Track */\n  /* Handle */\n}\n*:not(.app) .dark > *::-webkit-scrollbar, *:not(.app) .dark::-webkit-scrollbar {\n  width: 5px;\n  height: 7px;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-track, *:not(.app) .dark::-webkit-scrollbar-track {\n  background: transparent;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-thumb, *:not(.app) .dark::-webkit-scrollbar-thumb {\n  background: white;\n  box-shadow: -2px 0 #333 inset;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-thumb:hover, *:not(.app) .dark::-webkit-scrollbar-thumb:hover {\n  background: #3b86ff;\n}", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\nhtml, body, #app {\n  color: #1b1c1d;\n}\n.app {\n  scroll-behavior: smooth;\n  display: grid;\n  min-height: 100vh;\n  min-width: 100vw;\n  grid-template-columns: 260px auto;\n  grid-template-rows: 70px auto;\n  grid-template-areas: \"logo navbar\" \"sidebar main\";\n}\n@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-webkit-min-device-pixel-ratio: 1.25), only screen and (min-resolution: 120dpi) {\n.app .app {\n    grid-template-columns: 200px auto;\n}\n}\n@media screen and (max-width: 1600px) {\n.app {\n    grid-template-columns: 80px auto;\n}\n}\n.main {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05) inset, 5px 0 6px rgba(0, 0, 0, 0.02) inset;\n  padding: 20px 60px;\n  overflow-y: scroll;\n  overflow-x: auto;\n  background: #e4e4e4;\n}\nh1 {\n  margin-bottom: 30px;\n}\n.grid-2, .grid-3 {\n  display: grid;\n  grid-gap: 17px;\n}\n.grid-2.small-gap, .grid-3.small-gap {\n  grid-gap: 12px;\n}\n.grid-3 {\n  grid-template-columns: repeat(3, 1fr);\n}\n.grid-2 {\n  grid-template-columns: repeat(2, 1fr);\n}\n.card {\n  padding: 1em;\n  border-radius: 6px;\n  margin: 30px 0;\n  border: none;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  background: white;\n}\n.tabs {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.tabs .tab {\n  display: inline-block;\n  font-size: 18px;\n  opacity: 0.5;\n  padding: 10px 25px;\n  border-bottom: solid 3px transparent;\n  margin-bottom: 8px;\n}\n.tabs .tab.active {\n  opacity: 1;\n  border-color: #3b86ff;\n}\n.tabs .tab:not(.active):hover {\n  border-color: rgba(59, 134, 255, 0.5);\n  cursor: pointer;\n}\n.vdp-datepicker {\n  display: grid;\n  justify-items: end;\n}\n.vdp-datepicker.disabled {\n  pointer-events: none;\n  opacity: 0.5;\n}\n.vdp-datepicker > div::after {\n  content: \"\\F078\";\n  font-size: 11px;\n  color: #a8a8a8;\n  display: block;\n  position: absolute;\n  z-index: 1;\n  right: 12px;\n  height: 32px;\n  top: 0;\n  line-height: 32px;\n  font-weight: 900;\n  font-family: \"Font Awesome 5 Pro\";\n}\n.vdp-datepicker input {\n  border: solid 1px #dfdfdf;\n  border-radius: 4px;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);\n  padding-left: 12px;\n  height: 32px;\n  width: 150px;\n  font-size: 14px;\n  cursor: pointer;\n}\n.loading {\n  -webkit-animation: loading 2s;\n          animation: loading 2s;\n  -webkit-animation-iteration-count: infinite;\n          animation-iteration-count: infinite;\n}\n@-webkit-keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n@keyframes loading {\n0% {\n    opacity: 0;\n}\n50% {\n    opacity: 1;\n}\n100% {\n    opacity: 0;\n}\n}\n.card > .flex-table {\n  margin-left: -16px;\n  margin-right: -16px;\n  width: calc(100% + 32px);\n}\n.flex-table.disabled .flex-table-row:not(.header-row) {\n  opacity: 0.5;\n}\n.flex-table .flex-table-row {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: center;\n          align-items: center;\n  min-height: 45px;\n}\n.flex-table .flex-table-row > *.select {\n  margin-left: 16px;\n  min-width: 80px;\n}\n.flex-table .header-row {\n  font-weight: 700;\n  font-size: 12px;\n  height: 45px;\n  border-bottom: solid 2px #f3f3f3;\n}\n.flex-table .item-row {\n  border-bottom: solid 1px #f3f3f3;\n}\n.flex-table .item-row:hover {\n  background: #f9f9f9;\n}\n.flex-table th {\n  text-transform: uppercase;\n  font-size: 12px;\n  font-weight: 600;\n  color: #a8a8a8;\n}\n.flex-table th i {\n  color: #dfdfdf;\n  margin: 0;\n  margin-left: 4px;\n}\n.flex-table th.active i {\n  color: #3b86ff;\n}\n.clickable {\n  cursor: pointer;\n}\nbody::after {\n  content: \"\";\n  display: none;\n  position: fixed;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(27, 28, 29, 0.7);\n  z-index: 110;\n}\nbody.disabled::after {\n  display: block;\n}\n*:not(.app) {\n  /* width */\n  /* Track */\n  /* Handle */\n}\n*:not(.app)::-webkit-scrollbar {\n  width: 3px;\n  height: 7px;\n}\n*:not(.app)::-webkit-scrollbar-track {\n  background: #dfdfdf;\n}\n*:not(.app)::-webkit-scrollbar-thumb {\n  background: #a8a8a8;\n  border-radius: 2px;\n}\n*:not(.app)::-webkit-scrollbar-thumb:hover {\n  background: #888;\n}\n*:not(.app) .dark > *, *:not(.app) .dark {\n  /* width */\n  /* Track */\n  /* Handle */\n}\n*:not(.app) .dark > *::-webkit-scrollbar, *:not(.app) .dark::-webkit-scrollbar {\n  width: 5px;\n  height: 7px;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-track, *:not(.app) .dark::-webkit-scrollbar-track {\n  background: transparent;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-thumb, *:not(.app) .dark::-webkit-scrollbar-thumb {\n  background: white;\n  box-shadow: -2px 0 #333 inset;\n}\n*:not(.app) .dark > *::-webkit-scrollbar-thumb:hover, *:not(.app) .dark::-webkit-scrollbar-thumb:hover {\n  background: #3b86ff;\n}", ""]);
 
 // exports
 
@@ -36318,9 +36222,17 @@ var render = function() {
                             "td",
                             { staticClass: "title" },
                             [
-                              _c("i", { staticClass: "fas fa-folder dark15" }),
+                              folder.id
+                                ? _c("i", {
+                                    staticClass: "fas fa-folder dark15"
+                                  })
+                                : _c("i", {
+                                    staticClass: "far fa-folder dark15"
+                                  }),
                               _vm._v(" "),
                               _c("EditInputWrapper", {
+                                ref: "editTitleInput-" + _vm.toEdit.item.id,
+                                refInFor: true,
                                 attrs: {
                                   activateOnMount: true,
                                   type: "text",
@@ -36333,7 +36245,8 @@ var render = function() {
                                     _vm.clearToEdit()
                                   },
                                   cancel: function($event) {
-                                    return _vm.clearToEdit()
+                                    _vm.clearToEdit()
+                                    _vm.removeUnsavedFolders()
                                   }
                                 },
                                 model: {
@@ -36347,6 +36260,11 @@ var render = function() {
                             ],
                             1
                           )
+                        : !folder.id
+                        ? _c("td", { staticClass: "title" }, [
+                            _c("i", { staticClass: "far fa-folder dark15" }),
+                            _vm._v(" " + _vm._s(folder.title))
+                          ])
                         : _c(
                             "td",
                             {
@@ -36499,12 +36417,12 @@ var render = function() {
                   _c(
                     "button",
                     {
-                      staticClass: "primary invisible icon-left context-right"
+                      staticClass: "primary invisible icon-left",
+                      on: { click: _vm.onNewFolder }
                     },
                     [
                       _c("i", { staticClass: "far fa-plus" }),
-                      _vm._v("Add new: Folder "),
-                      _c("i", { staticClass: "fas fa-caret-down context" })
+                      _vm._v("Add new: Folder")
                     ]
                   )
                 ]),
@@ -36520,14 +36438,6 @@ var render = function() {
           }
         ])
       }),
-      _vm._v(" "),
-      _c("button", { staticClass: "primary" }, [_vm._v("Default")]),
-      _vm._v(" "),
-      _c("button", { staticClass: "primary invisible ghost" }, [
-        _vm._v("Invisible")
-      ]),
-      _vm._v(" "),
-      _c("button", { staticClass: "primary ghost" }, [_vm._v("Ghost")]),
       _vm._v(" "),
       _c("Modal", {
         ref: "editFileModal",
@@ -36634,6 +36544,165 @@ var render = function() {
         ])
       }),
       _vm._v(" "),
+      _c("Modal", {
+        ref: "moveItemModal",
+        staticClass: "move-item-modal",
+        attrs: {
+          header: "Move item to..",
+          subHeader: "Select a place to move the current item to"
+        },
+        scopedSlots: _vm._u([
+          {
+            key: "body",
+            fn: function() {
+              return [
+                _vm.toMove != null
+                  ? _c("div", { staticClass: "inner" }, [
+                      _c("div", { staticStyle: { "margin-bottom": "12px" } }, [
+                        _vm.folderToMoveToId != null
+                          ? _c(
+                              "button",
+                              {
+                                staticClass:
+                                  "invisible ghost-hover true-square",
+                                on: {
+                                  click: function($event) {
+                                    _vm.folderToMoveToId =
+                                      _vm.folderToMoveTo.parent_id
+                                  }
+                                }
+                              },
+                              [_c("i", { staticClass: "fas fa-arrow-left" })]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.folderToMoveToId != null
+                          ? _c("span", [
+                              _vm._v(_vm._s(_vm.folderToMoveTo.title))
+                            ])
+                          : _c("span", [
+                              _c(
+                                "span",
+                                { staticClass: "square true-square" },
+                                [_c("i", { staticClass: "far fa-building" })]
+                              ),
+                              _vm._v(" " + _vm._s(_vm.currentWorkspace.name))
+                            ])
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        { staticClass: "input-wrapper multiline" },
+                        [
+                          _vm._l(_vm.folderToMoveTo.folders, function(
+                            thisFolder
+                          ) {
+                            return [
+                              _c(
+                                "div",
+                                {
+                                  key: thisFolder.id,
+                                  staticClass: "folder",
+                                  staticStyle: { "margin-bottom": "8px" }
+                                },
+                                [
+                                  thisFolder.id != _vm.toMove.id
+                                    ? _c(
+                                        "p",
+                                        {
+                                          staticClass: "clickable",
+                                          on: {
+                                            click: function($event) {
+                                              _vm.folderToMoveToId =
+                                                thisFolder.id
+                                            }
+                                          }
+                                        },
+                                        [
+                                          _c("i", {
+                                            staticClass: "fas fa-folder dark15"
+                                          }),
+                                          _vm._v(
+                                            " " +
+                                              _vm._s(thisFolder.title) +
+                                              "\n                            "
+                                          )
+                                        ]
+                                      )
+                                    : _c(
+                                        "p",
+                                        {
+                                          key: thisFolder.id,
+                                          staticClass: "disabled",
+                                          staticStyle: { opacity: ".5" }
+                                        },
+                                        [
+                                          _c("i", {
+                                            staticClass: "fas fa-folder dark15"
+                                          }),
+                                          _vm._v(
+                                            " " +
+                                              _vm._s(thisFolder.title) +
+                                              "\n                            "
+                                          )
+                                        ]
+                                      )
+                                ]
+                              )
+                            ]
+                          })
+                        ],
+                        2
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        {
+                          staticClass: "controls",
+                          staticStyle: {
+                            display: "flex",
+                            "justify-content": "flex-end",
+                            "margin-top": "12px"
+                          }
+                        },
+                        [
+                          _c(
+                            "button",
+                            {
+                              staticClass: "invisible dark",
+                              on: {
+                                click: function($event) {
+                                  _vm.$refs.moveItemModal.toggle()
+                                  _vm.toMove = null
+                                }
+                              }
+                            },
+                            [_vm._v("Cancel")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "button",
+                            {
+                              staticClass: "primary",
+                              class: {
+                                disabled:
+                                  _vm.folderToMoveToId == _vm.toMove.id ||
+                                  _vm.folderToMoveToId == _vm.folder.id
+                              }
+                            },
+                            [_vm._v("Move here")]
+                          )
+                        ]
+                      )
+                    ])
+                  : _vm._e()
+              ]
+            },
+            proxy: true
+          }
+        ])
+      }),
+      _vm._v(" "),
       _c(
         "ContextMenu",
         { ref: "contextMenuFolder", staticClass: "context-folder" },
@@ -36685,27 +36754,49 @@ var render = function() {
               ]
             ),
             _vm._v(" "),
-            _c("div", { staticClass: "item" }, [
-              _c("div", { staticClass: "icon-wrapper" }, [
-                _c("i", { staticClass: "far fa-folder" }, [
-                  _c("i", { staticClass: "fas fa-long-arrow-alt-right" })
-                ])
-              ]),
-              _vm._v(" "),
-              _c("u", [_vm._v("M")]),
-              _vm._v("ove to\n            ")
-            ])
+            _c(
+              "div",
+              {
+                staticClass: "item",
+                on: {
+                  click: function($event) {
+                    return _vm.onMoveTo(_vm.contextMenuItem)
+                  }
+                }
+              },
+              [
+                _c("div", { staticClass: "icon-wrapper" }, [
+                  _c("i", { staticClass: "far fa-folder" }, [
+                    _c("i", { staticClass: "fas fa-long-arrow-alt-right" })
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("u", [_vm._v("M")]),
+                _vm._v("ove to\n            ")
+              ]
+            )
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "item-group" }, [
-            _c("div", { staticClass: "item" }, [
-              _c("div", { staticClass: "icon-wrapper" }, [
-                _c("i", { staticClass: "far fa-trash-alt" })
-              ]),
-              _vm._v(" "),
-              _c("u", [_vm._v("D")]),
-              _vm._v("elete folder\n            ")
-            ])
+            _c(
+              "div",
+              {
+                staticClass: "item",
+                on: {
+                  click: function($event) {
+                    return _vm.onDeleteFolder(_vm.contextMenuItem.id)
+                  }
+                }
+              },
+              [
+                _c("div", { staticClass: "icon-wrapper" }, [
+                  _c("i", { staticClass: "far fa-trash-alt" })
+                ]),
+                _vm._v(" "),
+                _c("u", [_vm._v("D")]),
+                _vm._v("elete folder\n            ")
+              ]
+            )
           ])
         ]
       ),
@@ -67615,7 +67706,8 @@ function (_Model) {
         updated_at: this.attr(''),
         parent_id: this.attr(''),
         files: this.hasMany(_Collection__WEBPACK_IMPORTED_MODULE_1__["default"], 'folder_id'),
-        folders: this.hasMany(Folder, 'parent_id')
+        folders: this.hasMany(Folder, 'parent_id'),
+        parent: this.belongsTo(Folder, 'parent_id')
       };
       return data;
     }
@@ -70805,7 +70897,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     folders: function folders(state) {
       var folders = _models_Folder__WEBPACK_IMPORTED_MODULE_2__["default"].query()["with"]('folders.folders|files') // Get the folders and files of the the first level of subfolders
-      ["with"]('files').all();
+      ["with"]('files|parent').all();
       return folders;
     }
   },
@@ -70882,24 +70974,40 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _updateFolder = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(_ref2, folderToUpdate) {
-        var commit;
+        var commit, apiURL, requestMethod;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 commit = _ref2.commit;
-                _context2.next = 3;
-                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.put("/api/folder/".concat(folderToUpdate.id), {
-                  folder: folderToUpdate
-                }).then(function (response) {
-                  console.log(response.data); // Commit to store
+                // If the folder has an ID, send a PUT request to update the existing record.
+                // Else send POST request to create a new folder.
+                apiURL = "/api/folder";
+                requestMethod = 'post';
 
+                if (folderToUpdate.id) {
+                  apiURL = "/api/folder/".concat(folderToUpdate.id);
+                  requestMethod = 'put';
+                }
+
+                _context2.next = 6;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default()({
+                  method: requestMethod,
+                  url: apiURL,
+                  data: {
+                    folder: folderToUpdate
+                  }
+                }).then(function (response) {
+                  console.log(response.data); // If the folder had no idea, set it's idea to the one returned from the API
+
+                  if (!folderToUpdate.id) folderToUpdate.id = response.data.id;
+                  console.log(folderToUpdate);
                   commit('updateFolder', folderToUpdate);
                 })["catch"](function (err) {
                   console.log(err.response);
                 });
 
-              case 3:
+              case 6:
               case "end":
                 return _context2.stop();
             }
@@ -70925,7 +71033,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 commit = _ref3.commit;
                 commit('deleteFolder', folderId);
                 _context3.next = 4;
-                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/folder/".concat(id)).then(function (response) {
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/api/folder/".concat(folderId)).then(function (response) {
                   console.log(response.data);
                 })["catch"](function (err) {
                   console.log(err.response);
@@ -70983,11 +71091,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vuex_orm_core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @vuex-orm/core */ "./node_modules/@vuex-orm/core/dist/vuex-orm.esm.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var _models_Folder__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../models/Folder */ "./resources/js/store/models/Folder.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -71009,11 +71119,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     loadingInit: true,
     viewAdminPermissionLevel: 3,
     adminPermissionLevel: 4,
-    availableCurrencies: ['AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF', 'BMD', 'BND', 'BOB', 'BRL', 'BSD', 'BTC', 'BTN', 'BWP', 'BYN', 'BZD', 'CAD', 'CDF', 'CHF', 'CLF', 'CLP', 'CNH', 'CNY', 'COP', 'CRC', 'CUC', 'CUP', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EGP', 'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP', 'GEL', 'GGP', 'GHS', 'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HRK', 'HTG', 'HUF', 'IDR', 'ILS', 'IMP', 'INR', 'IQD', 'IRR', 'ISK', 'JEP', 'JMD', 'JOD', 'JPY', 'KES', 'KGS', 'KHR', 'KMF', 'KPW', 'KRW', 'KWD', 'KYD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MNT', 'MOP', 'MRO', 'MRU', 'MUR', 'MVR', 'MWK', 'MXN', 'MYR', 'MZN', 'NAD', 'NGN', 'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PGK', 'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR', 'SBD', 'SCR', 'SDG', 'SEK', 'SGD', 'SHP', 'SLL', 'SOS', 'SRD', 'SSP', 'STD', 'STN', 'SVC', 'SYP', 'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP', 'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'UYU', 'UZS', 'VEF', 'VES', 'VND', 'VUV', 'WST', 'XAF', 'XAG', 'XAU', 'XCD', 'XDR', 'XOF', 'XPD', 'XPF', 'XPT', 'YER', 'ZAR', 'ZMW', 'ZWL']
+    availableCurrencies: ['AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF', 'BMD', 'BND', 'BOB', 'BRL', 'BSD', 'BTC', 'BTN', 'BWP', 'BYN', 'BZD', 'CAD', 'CDF', 'CHF', 'CLF', 'CLP', 'CNH', 'CNY', 'COP', 'CRC', 'CUC', 'CUP', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EGP', 'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP', 'GEL', 'GGP', 'GHS', 'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HRK', 'HTG', 'HUF', 'IDR', 'ILS', 'IMP', 'INR', 'IQD', 'IRR', 'ISK', 'JEP', 'JMD', 'JOD', 'JPY', 'KES', 'KGS', 'KHR', 'KMF', 'KPW', 'KRW', 'KWD', 'KYD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MNT', 'MOP', 'MRO', 'MRU', 'MUR', 'MVR', 'MWK', 'MXN', 'MYR', 'MZN', 'NAD', 'NGN', 'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PGK', 'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR', 'SBD', 'SCR', 'SDG', 'SEK', 'SGD', 'SHP', 'SLL', 'SOS', 'SRD', 'SSP', 'STD', 'STN', 'SVC', 'SYP', 'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP', 'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'UYU', 'UZS', 'VEF', 'VES', 'VND', 'VUV', 'WST', 'XAF', 'XAG', 'XAU', 'XCD', 'XDR', 'XOF', 'XPD', 'XPF', 'XPT', 'YER', 'ZAR', 'ZMW', 'ZWL'],
+    currentFolderId: null
   },
   getters: {
     currentTeamId: function currentTeamId(state) {
       return state.currentTeamId;
+    },
+    currentFolderId: function currentFolderId(state) {
+      return state.currentFolderId;
+    },
+    currentFolder: function currentFolder(state) {
+      return state.currentFolderId ? _models_Folder__WEBPACK_IMPORTED_MODULE_8__["default"].query()["with"]('folders|files').find(state.currentFolderId) : null;
     },
     // editFile: state => {
     //     return state.editFile
@@ -71193,6 +71310,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   mutations: {
     setCurrentTeam: function setCurrentTeam(state, id) {
       state.currentTeamId = id;
+    },
+    setCurrentFolderId: function setCurrentFolderId(state, id) {
+      state.currentFolderId = id;
     },
     setTeamFilter: function setTeamFilter(state, id) {
       state.teamFilterId = id;

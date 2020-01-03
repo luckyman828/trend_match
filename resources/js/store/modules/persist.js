@@ -5,6 +5,7 @@ import Action from '../../store/models/Action'
 import AuthUser from '../../store/models/AuthUser'
 import { RootGetters } from '@vuex-orm/core'
 import axios from 'axios'
+import Folder from '../models/Folder'
 
 export default {
     namespaced: true,
@@ -193,11 +194,22 @@ export default {
             'ZMW',
             'ZWL',
         ],
+        currentFolderId: null,
     },
 
     getters: {
         currentTeamId: state => {
             return state.currentTeamId
+        },
+        currentFolderId: state => {
+            return state.currentFolderId
+        },
+        currentFolder: state => {
+            return state.currentFolderId
+                ? Folder.query()
+                      .with('folders|files')
+                      .find(state.currentFolderId)
+                : null
         },
         // editFile: state => {
         //     return state.editFile
@@ -399,6 +411,9 @@ export default {
     mutations: {
         setCurrentTeam(state, id) {
             state.currentTeamId = id
+        },
+        setCurrentFolderId(state, id) {
+            state.currentFolderId = id
         },
         setTeamFilter(state, id) {
             state.teamFilterId = id

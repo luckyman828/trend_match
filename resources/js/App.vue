@@ -167,7 +167,7 @@ export default{
         padding: 20px 60px;
         overflow-y: scroll;
         overflow-x: auto;
-        background: $light;
+        background: $grey;
     }
     h1 {
         margin-bottom: 30px;

@@ -15,7 +15,7 @@ export default {
         folders: state => {
             const folders = Folder.query()
                 .with('folders.folders|files') // Get the folders and files of the the first level of subfolders
-                .with('files')
+                .with('files|parent')
                 .all()
             return folders
         },
@@ -45,13 +45,27 @@ export default {
             }
         },
         async updateFolder({ commit }, folderToUpdate) {
-            await axios
-                .put(`/api/folder/${folderToUpdate.id}`, {
+            // If the folder has an ID, send a PUT request to update the existing record.
+            // Else send POST request to create a new folder.
+            let apiURL = `/api/folder`
+            let requestMethod = 'post'
+            if (folderToUpdate.id) {
+                apiURL = `/api/folder/${folderToUpdate.id}`
+                requestMethod = 'put'
+            }
+
+            await axios({
+                method: requestMethod,
+                url: apiURL,
+                data: {
                     folder: folderToUpdate,
-                })
+                },
+            })
                 .then(response => {
                     console.log(response.data)
-                    // Commit to store
+                    // If the folder had no idea, set it's idea to the one returned from the API
+                    if (!folderToUpdate.id) folderToUpdate.id = response.data.id
+                    console.log(folderToUpdate)
                     commit('updateFolder', folderToUpdate)
                 })
                 .catch(err => {
@@ -62,7 +76,7 @@ export default {
             commit('deleteFolder', folderId)
 
             await axios
-                .delete(`/api/folder/${id}`)
+                .delete(`/api/folder/${folderId}`)
                 .then(response => {
                     console.log(response.data)
                 })

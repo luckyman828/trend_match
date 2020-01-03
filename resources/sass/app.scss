@@ -244,7 +244,8 @@ button,
     color: $dark2;
     border: none;
     text-decoration: none;
-    &.ghost {
+    &.ghost,
+    &.ghost-hover {
         border: solid 1px $dark2;
         background: transparent;
         &:hover {
@@ -254,14 +255,30 @@ button,
     &.dark,
     &.dark-hover:hover,
     &.role-2 {
+        border-color: $dark;
+        background: $dark;
         color: white;
-        border-color: $dark05;
-        background: $dark05;
         &.invisible,
         &.ghost {
             color: $dark;
             background: transparent;
+            &:not(.ghost-hover):hover {
+                border-color: $dark;
+                background: $dark;
+                color: white;
+                i.context {
+                    background: $dark;
+                }
+            }
         }
+        &.ghost-hover:hover {
+            background: transparent;
+            color: $dark;
+            border-color: $dark;
+        }
+    }
+    &.dark:hover {
+        background: $darkAlt;
     }
     &.green,
     &.green-hover:hover,
@@ -311,7 +328,7 @@ button,
     }
     &.primary,
     &.primary-hover:hover,
-    &.invisible:hover &.role-1 {
+    &.role-1 {
         border-color: $primary;
         background: $primary;
         color: white;
@@ -319,7 +336,7 @@ button,
         &.ghost {
             color: $primary;
             background: transparent;
-            &:hover {
+            &:not(.ghost-hover):hover {
                 border-color: $primary;
                 background: $primary;
                 color: white;
@@ -328,6 +345,14 @@ button,
                 }
             }
         }
+        &.ghost-hover:hover {
+            background: transparent;
+            color: $primary;
+            border-color: $primary;
+        }
+    }
+    &.primary:hover {
+        background: $primaryDark;
     }
     &.white,
     &.white-hover:hover {

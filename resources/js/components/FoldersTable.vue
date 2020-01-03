@@ -15,13 +15,14 @@
                 <tr v-for="(folder) in folder.folders" :key="folder.id" class="folder" @contextmenu.prevent="showContextMenu($event, folder, 'folder')">
                     <td class="select"><Checkbox/></td>
                     <td v-if="toEdit && toEdit.item.id == folder.id && toEdit.type == 'folder' && toEdit.field == 'title'" class="title">
-                        <i class="fas fa-folder dark15"></i> 
-                        <EditInputWrapper :activateOnMount="true" :type="'text'" 
+                        <i v-if="folder.id" class="fas fa-folder dark15"></i>
+                        <i v-else class="far fa-folder dark15"></i>
+                        <EditInputWrapper :activateOnMount="true" :type="'text'" :ref="'editTitleInput-' + toEdit.item.id"
                             :value="toEdit.item.title" :oldValue="folder.title" v-model="toEdit.item.title"
-                            @submit="updateFolder(toEdit.item); clearToEdit()" @cancel="clearToEdit()"/>
+                            @submit="updateFolder(toEdit.item); clearToEdit()" @cancel="clearToEdit(); removeUnsavedFolders()"/>
                         </td>
+                    <td v-else-if="!folder.id" class="title"><i class="far fa-folder dark15"></i> {{folder.title}}</td>
                     <td v-else class="title clickable" @click="setCurrentFolder(folder)"><i class="fas fa-folder dark15"></i> {{folder.title}}</td>
-                    <!-- <td class="title" @click="setCurrentFolder(folder)"><i class="fas fa-folder dark15"></i> <Editable :value="folder.title"/></td> -->
                     <td class="modified">-</td>
                     <td class="deadline">-</td>
                     <td class="items">{{folder.folders.length + folder.files.length}}</td>
@@ -34,7 +35,7 @@
                 <tr v-for="(file) in folder.files" :key="file.id" class="file" @contextmenu.prevent="showContextMenu($event, file, 'file')">
                     <td class="select"><Checkbox/></td>
                     <td v-if="toEdit && toEdit.item.id == file.id && toEdit.type == 'file' && toEdit.field == 'title'" class="title">
-                        <EditInputWrapper :activateOnMount="true" :type="'text'" 
+                        <EditInputWrapper :activateOnMount="true" :type="'text'"
                             :value="toEdit.item.title" :oldValue="file.title" v-model="toEdit.item.title"
                             @submit="updateFile(toEdit.item); clearToEdit()" @cancel="clearToEdit()"/>
                         </td>
@@ -51,226 +52,11 @@
             </template>
             <template v-slot:footer="slotProps">
                 <td></td>
-                <td><button class="primary invisible icon-left context-right"><i class="far fa-plus"></i>Add new: Folder <i class="fas fa-caret-down context"></i></button></td>
+                <!-- <td><button class="primary invisible icon-left context-right" @click="onNewFolder"><i class="far fa-plus"></i>Add new: Folder <i class="fas fa-caret-down context"></i></button></td> -->
+                <td><button class="primary invisible icon-left" @click="onNewFolder"><i class="far fa-plus"></i>Add new: Folder</button></td>
                 <td></td><td></td><td></td><td></td><td></td><td></td>
             </template>
         </GridTable>
-
-        <button class="primary">Default</button>
-        <button class="primary invisible ghost">Invisible</button>
-        <button class="primary ghost">Ghost</button>
-
-        <!-- <div class="flex-table">
-            <div class="header-row flex-table-row">
-                <div class="flex-group">
-                    <th v-if="authUser.role_id >= 3" class="select">Select <i class="fas fa-chevron-down"></i></th>
-                    <th class="clickable id" :class="{ active: this.sortBy == 'id' }" @click="onSortBy('id', true)">
-                        ID
-                        <i
-                            class="fas"
-                            :class="[
-                                this.sortBy == 'id' && !sortAsc ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down',
-                            ]"
-                        ></i>
-                    </th>
-                    <th
-                        :class="{ active: this.sortBy == 'title' }"
-                        class="clickable title"
-                        @click="onSortBy('title', true)"
-                    >
-                        File name
-                        <i
-                            class="fas"
-                            :class="[
-                                this.sortBy == 'title' && !sortAsc ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down',
-                            ]"
-                        ></i>
-                    </th>
-                </div>
-                <div class="flex-group">
-                    <th
-                        :class="{ active: this.sortBy == 'start_time' }"
-                        class="clickable"
-                        @click="onSortBy('start_time', false)"
-                    >
-                        Created
-                        <i
-                            class="fas"
-                            :class="[
-                                this.sortBy == 'start_time' && !sortAsc
-                                    ? 'fa-long-arrow-alt-up'
-                                    : 'fa-long-arrow-alt-down',
-                            ]"
-                        ></i>
-                    </th>
-                    <th
-                        :class="{ active: this.sortBy == 'end_time' }"
-                        class="clickable"
-                        @click="onSortBy('end_time', false)"
-                    >
-                        Deadline
-                        <i
-                            class="fas"
-                            :class="[
-                                this.sortBy == 'end_time' && !sortAsc
-                                    ? 'fa-long-arrow-alt-up'
-                                    : 'fa-long-arrow-alt-down',
-                            ]"
-                        ></i>
-                    </th>
-                    <th :class="{ active: this.sortBy == 'phase' }" class="clickable" @click="onSortBy('phase', false)">
-                        Status
-                        <i
-                            class="fas"
-                            :class="[
-                                this.sortBy == 'phase' && !sortAsc ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down',
-                            ]"
-                        ></i>
-                    </th>
-                </div>
-                <div class="flex-group">
-                    <th class="action">Action</th>
-                </div>
-            </div>
-
-            <div v-if="files.length <= 0" class="catalogue-row flex-table-row item-row">
-                <span style="text-align: center">You don't have access to any files</span>
-            </div>
-
-            <div class="catalogue-row flex-table-row item-row" v-for="(catalogue, index) in files" :key="catalogue.id">
-                <div class="flex-group">
-                    <td v-if="authUser.role_id >= 3" class="select">
-                        <label class="checkbox">
-                            <input type="checkbox" @change="onSelect(index)" />
-                            <span class="checkmark"></span>
-                        </label>
-                    </td>
-                    <td class="id clickable" @click="viewSingle(catalogue.id, catalogue.title)">
-                        <span :title="catalogue.id">{{ catalogue.id | truncate(10) }}</span>
-                    </td>
-                    <td class="title clickable">
-                        <span
-                            v-if="fileToEdit.id != catalogue.id || editingFile == false"
-                            @click="viewSingle(catalogue.id, catalogue.title)"
-                            >{{ catalogue.title }}</span
-                        >
-                        <div
-                            :class="{ hidden: fileToEdit.id != catalogue.id || editingFile == false }"
-                            class="edit-title input-parent controls-right"
-                        >
-                            <input
-                                type="text"
-                                :ref="'editTitleField-' + catalogue.id"
-                                class="input-wrapper"
-                                v-model="fileToEdit.title"
-                                @keyup.enter="
-                                    updateFile(fileToEdit)
-                                    resetFileToEdit()
-                                "
-                                @keyup.esc="resetFileToEdit()"
-                            />
-                            <div class="controls">
-                                <span
-                                    class="button green true-square"
-                                    @click="
-                                        updateFile(fileToEdit)
-                                        resetFileToEdit()
-                                    "
-                                    ><i class="fas fa-check"></i
-                                ></span>
-                                <span class="button red true-square" @click="resetFileToEdit()"
-                                    ><i class="fas fa-times"></i
-                                ></span>
-                            </div>
-                        </div>
-                    </td>
-                </div>
-                <div class="flex-group">
-                    <td class="created">
-                        <span class="square light">{{
-                            catalogue.start_date != null
-                                ? new Date(catalogue.start_date).toLocaleDateString('en-GB', {
-                                      day: '2-digit',
-                                      month: '2-digit',
-                                      year: 'numeric',
-                                  })
-                                : 'Unset'
-                        }}</span>
-                    </td>
-                    <td class="deadline">
-                        <span class="square light">{{
-                            catalogue.end_date != null
-                                ? new Date(catalogue.end_date).toLocaleDateString('en-GB', {
-                                      day: '2-digit',
-                                      month: '2-digit',
-                                      year: 'numeric',
-                                  })
-                                : 'Unset'
-                        }}</span>
-                    </td>
-
-                    <td class="stage">
-                        <span class="square light stage">STAGE {{ catalogue.phase }}</span>
-                        <span class="square light status">tbd%</span>
-                    </td>
-                </div>
-                <div class="flex-group">
-                    <td class="action">
-                        <span
-                            class="button invisible ghost dark-hover "
-                            @click="viewSingle(catalogue.id, catalogue.title)"
-                            >View</span
-                        >
-                        <Dropdown v-if="userPermissionLevel >= 3" :ref="'moreOptions-' + catalogue.id">
-                            <template v-slot:button>
-                                <span class="button invisible ghost light-1-hover true-square" @click="testCon(catalogue.id)">{{key}}</span>
-                                <span
-                                    class="button invisible ghost dark-hover true-square"
-                                    @click="$refs['moreOptions-' + catalogue.id][0].toggle()"
-                                    ><i class="fas fa-ellipsis-v"></i
-                                ></span>
-                            </template>
-                            <template v-slot:body>
-                                <div class="option-buttons">
-                                    <span
-                                        class="option icon-left"
-                                        @click="
-                                            onRenameFile(catalogue, index)
-                                            $refs['moreOptions-' + catalogue.id][0].toggle()
-                                        "
-                                        ><i class="fas fa-pencil primary"></i> Rename</span
-                                    >
-                                    <span
-                                        class="option icon-left"
-                                        @click="
-                                            onAddToFile(catalogue)
-                                            $refs['moreOptions-' + catalogue.id][0].toggle()
-                                        "
-                                        ><i class="fas fa-plus green"></i> Add to file</span
-                                    >
-                                    <span
-                                        class="option icon-left"
-                                        @click="
-                                            onEdit(catalogue)
-                                            $refs['moreOptions-' + catalogue.id][0].toggle()
-                                        "
-                                        ><i class="fas fa-pencil primary"></i> Edit products</span
-                                    >
-                                    <span
-                                        class="option icon-left"
-                                        @click="
-                                            onDeleteFile(catalogue.id)
-                                            $refs['moreOptions-' + catalogue.id][0].toggle()
-                                        "
-                                        ><i class="fas fa-trash-alt red"></i> Delete</span
-                                    >
-                                </div>
-                            </template>
-                        </Dropdown>
-                    </td>
-                </div>
-            </div>
-        </div> -->
 
         <Modal
             ref="editFileModal"
@@ -306,6 +92,42 @@
             </template>
         </Modal>
 
+        <Modal
+            ref="moveItemModal"
+            :header="'Move item to..'"
+            :subHeader="'Select a place to move the current item to'"
+            class="move-item-modal"
+        >
+            <template v-slot:body>
+                <div class="inner" v-if="toMove != null">
+                    <div style="margin-bottom: 12px">
+                        <button v-if="folderToMoveToId != null" class="invisible ghost-hover true-square" @click="folderToMoveToId = folderToMoveTo.parent_id">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <span v-if="folderToMoveToId != null">{{folderToMoveTo.title}}</span>
+                        <span v-else><span class="square true-square"><i class="far fa-building"></i></span> {{currentWorkspace.name}}</span>
+                    </div>
+                    <div class="input-wrapper multiline">
+                        <template v-for="thisFolder in folderToMoveTo.folders">
+                            <div class="folder" :key="thisFolder.id" style="margin-bottom: 8px;">
+                                <p v-if="thisFolder.id != toMove.id" class="clickable"
+                                @click="folderToMoveToId = thisFolder.id">
+                                    <i class="fas fa-folder dark15"></i> {{thisFolder.title}}
+                                </p>
+                                <p v-else :key="thisFolder.id" class="disabled" style="opacity: .5;">
+                                    <i class="fas fa-folder dark15"></i> {{thisFolder.title}}
+                                </p>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="controls" style="display: flex; justify-content: flex-end; margin-top: 12px;">
+                        <button class="invisible dark" @click="$refs.moveItemModal.toggle(); toMove = null">Cancel</button>
+                        <button class="primary" :class="{disabled: folderToMoveToId == toMove.id || folderToMoveToId == folder.id}">Move here</button>
+                    </div>
+                </div>
+            </template>
+        </Modal>
+
         <ContextMenu ref="contextMenuFolder" class="context-folder">
             <div class="item-group">
                 <div class="item" @click="setCurrentFolder(contextMenuItem)">
@@ -322,7 +144,7 @@
                     </div>
                     <u>R</u>ename
                 </div>
-                <div class="item">
+                <div class="item" @click="onMoveTo(contextMenuItem)">
                     <div class="icon-wrapper">
                         <i class="far fa-folder"><i class="fas fa-long-arrow-alt-right"></i></i>
                     </div>
@@ -330,7 +152,7 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item">
+                <div class="item" @click="onDeleteFolder(contextMenuItem.id)">
                     <div class="icon-wrapper">
                         <i class="far fa-trash-alt"></i>
                     </div>
@@ -408,14 +230,36 @@ export default {
             filesToAdd: [],
             uploadingToFile: false,
             contextMenuItem: null,
-            toEdit: null
+            toEdit: null,
+            toMove: null,
+            folderToMoveToId: this.folder.id
         }
     },
     computed: {
-        ...mapGetters('persist', ['userPermissionLevel', 'authUser']),
+        ...mapGetters('persist', ['userPermissionLevel', 'authUser', 'currentWorkspaceId', 'currentWorkspace', 'currentFolderId']),
+        ...mapGetters('entities/collections', ['loadingCollections', 'files']),
+        ...mapGetters('entities/folders', ['loadingFolders', 'folders']),
         selectedCount() {
             return this.selected.length
         },
+        folderToMoveTo() {
+            // If we have no folder id we are the ROOT folder
+            if(this.folderToMoveToId == null) {
+                // Find all folders and files of the root folder
+                // Find folders in root
+                const rootFolders = this.folders.filter(x => !x.parent_id)
+                // Find files in root
+                const rootFiles = this.files.filter(x => !x.folder_id)
+                // Instantioate a rootfolder object
+                const rootFolder = {files: rootFiles, folders: rootFolders}
+                return rootFolder
+            } else {
+                return this.folders.find(x => x.id == this.folderToMoveToId)
+            }
+        },
+        // folder() {
+        //     this.currentFolder
+        // }
         // filesSorted() {
         //     const files = this.files
         //     let key = this.sortBy
@@ -439,8 +283,10 @@ export default {
     methods: {
         ...mapActions('entities/collections', ['deleteFile', 'updateFile', 'uploadToExistingFile']),
         ...mapActions('entities/folders', ['deleteFolder', 'updateFolder']),
+        ...mapMutations('persist', ['setCurrentFolderId']),
         setCurrentFolder(folder) {
             this.$emit('setCurrentFolder', folder)
+            this.setCurrentFolderId(folder.id)
         },
         showContextMenu(e, item, type) {
             const folderMenu = this.$refs.contextMenuFolder
@@ -460,11 +306,60 @@ export default {
             // Position the contextual menu
             contextMenu.show(e)
         },
+        onMoveTo(item) {
+            this.toMove = item
+            this.toEdit = {item: item}
+            this.folderToMoveToId = this.folder.id
+            this.$refs.moveItemModal.toggle()
+        },
         onEditField(item, type, field) {
+            // If the new item to edit has an ID, remove all unsaved folders, to avoid confusion as to whether they are saved or not
+            if(item.id) this.removeUnsavedFolders()
+            // Set the item to edit
             this.toEdit = {item: item, type: type, field: field}
         },
         clearToEdit() {
             this.toEdit = null
+        },
+        removeUnsavedFolders() {
+            this.folder.folders = this.folder.folders.filter(x => x.id != null)
+        },
+        onDeleteFolder(folderId) {
+            window.confirm(
+                'Are you sure you want to delete this folder?\nThe folder and all of its contents will be permanently deleted.'
+            )
+                ? this.deleteFolder(folderId)
+                : false
+        },
+        onNewFolder() {
+            const currentFolder = this.folder
+            // Check if we already have added a new folder
+            const existingNewFolder = currentFolder.folders.find(x => x.id == null)
+            // If we already have a new folder, foxus the edit title field
+            if (existingNewFolder) {
+                this.onEditField(existingNewFolder, 'folder', 'title')
+                // Focus the edit field
+                this.$refs['editTitleInput-null'][0].setActive()
+            }
+            // Else create a new folder
+            else {
+                const newFolder = {
+                    id: null,
+                    title: 'New folder',
+                    parent_id: currentFolder.id ? currentFolder.id : null,
+                    workspace_id: this.currentWorkspaceId,
+                    folders: [],
+                    files: []
+                }
+                // Push new folder to the current folder
+                currentFolder.folders.push(newFolder)
+                // Activate title edit of new folder
+                this.onEditField(newFolder, 'folder', 'title')
+                this.$nextTick(() => {
+                    this.$forceUpdate()
+                })
+            }
+            
         },
         // onSelect(index) {
         //     this.$emit('onSelect', index)

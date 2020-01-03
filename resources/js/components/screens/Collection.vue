@@ -90,6 +90,7 @@ import FoldersTable from '../FoldersTable'
 import RadioButtons from '../RadioButtons'
 import CheckboxButtons from '../input/CheckboxButtons'
 import Dropdown from '../Dropdown'
+import Folder from '../../store/models/Folder'
 
 // import Team from '../../store/models/Team'
 // import User from '../../store/models/User'
