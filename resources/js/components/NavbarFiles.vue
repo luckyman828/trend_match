@@ -148,7 +148,7 @@ export default {
         // ]
     }},
     computed: {
-        ...mapGetters('persist', ['currentWorkspaceId']),
+        ...mapGetters('persist', ['currentWorkspaceId', 'currentFolderId']),
     },
     methods: {
         ...mapActions('entities/collections', ['uploadFile']),
@@ -176,7 +176,7 @@ export default {
             // Set new file data
             const newFile = this.newFile
             newFile.phase = Phase.query().first().id
-            newFile.folderId = (File.query().first()) ? (File.query().first().catalog_id) : 9999 
+            newFile.folderId = this.currentFolderId
             newFile.workspace_id = this.currentWorkspaceId
 
 

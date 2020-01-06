@@ -24,6 +24,8 @@ Route::middleware('auth:api')->group( function(){
     Route::get('workspace-users', 'WorkspaceController@workspaceUsers');
     // List workspace teams
     Route::get('workspace/{workspace_id}/teams', 'WorkspaceController@teams');
+    // List workspace folders
+    Route::get('workspace/{workspace_id}/folders', 'WorkspaceController@folders');
     // List workspace files
     Route::get('workspace/{workspace_id}/files', 'WorkspaceController@files');
     // List workspace team files
@@ -64,10 +66,16 @@ Route::middleware('auth:api')->group( function(){
     Route::get('file/{file_id}/task-actions', 'FileController@taskActions');
     Route::get('file/{file_id}/requests', 'FileController@requests');
     
+    // xxx FILES CRUD xxx
     Route::post('file', 'FileController@upload');
     Route::put('file', 'FileController@insertOrUpdate');
     Route::delete('file', 'FileController@destroy');
     Route::post('file/reset', 'FileController@reset');
+
+    // xxx FOLDERS CRUD xxx
+    Route::post('folder', 'FolderController@insertOrUpdate');
+    Route::put('folder/{folder_id}', 'FolderController@insertOrUpdate');
+    Route::delete('folder/{folder_id}', 'FolderController@destroy');
 
     // xxx PRODUCTS xxx
     Route::put('product', 'ProductController@insertOrUpdate');

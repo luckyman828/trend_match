@@ -34,10 +34,12 @@ export default {
 
         },
         submit() {
-            this.$emit('input', this.$refs.input.value)
-            this.$emit('submit')
-            this.editActive = false
-            document.activeElement.blur()
+            if (this.editActive) {
+                this.$emit('input', this.$refs.input.value)
+                this.$emit('submit', this.$refs.input.value)
+                this.editActive = false
+                document.activeElement.blur()
+            }
         },
         cancel() {
             this.$emit('cancel')

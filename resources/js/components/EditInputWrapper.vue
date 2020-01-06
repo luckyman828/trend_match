@@ -30,6 +30,7 @@ export default {
         'id',
         'maxlength',
         'pattern',
+        'activateOnMount'
     ],
     data: function () { return {
         editActive: false,
@@ -73,6 +74,10 @@ export default {
                     e.preventDefault()
             }
         }
+    },
+    mounted() {
+        // Set default active state
+        if (this.activateOnMount) this.setActive()
     }
 }
 </script>
@@ -81,6 +86,7 @@ export default {
 @import '~@/_variables.scss';
 
     .edit-input-wrapper {
+        line-height: 1.6;
         &:not(.active) {
             cursor: pointer;
             .input-wrapper {

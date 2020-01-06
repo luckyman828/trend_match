@@ -53,6 +53,7 @@ export default{
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/userTeams', ['fetchUserTeams']),
         ...mapActions('entities/workspaces', ['fetchWorkspaces']),
+        ...mapActions('entities/folders', ['fetchFolders']),
         ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
         ...mapActions('entities/teamFiles', ['fetchTeamFiles']),
         ...mapActions('entities/roles', ['fetchRoles']),
@@ -82,6 +83,7 @@ export default{
             this.setLoadingInit(true)
             if (this.authUser) {
                 await (
+                    this.fetchFolders(this.currentWorkspaceId),
                     this.fetchTeams(this.currentWorkspaceId),
                     this.fetchUserTeams(this.currentWorkspaceId),
                     this.fetchTeamFiles(this.currentWorkspaceId),
@@ -174,7 +176,7 @@ export default{
         padding: 20px 60px;
         overflow-y: scroll;
         overflow-x: auto;
-        background: $light;
+        background: $grey;
     }
     h1 {
         margin-bottom: 30px;
@@ -341,21 +343,21 @@ export default{
         }
     }
 
-    // Icons
-    i {
-        &.green {
-            color: $green;
-        }
-        &.red {
-            color: $red;
-        }
-        &.dark {
-            color: $dark;
-        }
-        &.primary {
-            color: $primary;
-        }
-    }
+    // // Icons
+    // i {
+    //     &.green {
+    //         color: $green;
+    //     }
+    //     &.red {
+    //         color: $red;
+    //     }
+    //     &.dark {
+    //         color: $dark;
+    //     }
+    //     &.primary {
+    //         color: $primary;
+    //     }
+    // }
 
     // Scrollbar
     *:not(.app) {

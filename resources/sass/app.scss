@@ -229,13 +229,14 @@ textarea {
         }
     }
 }
+button,
 .button,
 .square,
 .pill,
 .bubble,
 .circle {
     line-height: 1;
-    transition: 0.2s;
+    // transition: 0.2s;
     text-align: center;
     display: inline-flex;
     justify-content: center;
@@ -243,24 +244,41 @@ textarea {
     color: $dark2;
     border: none;
     text-decoration: none;
-    &.ghost {
+    &.ghost,
+    &.ghost-hover {
         border: solid 1px $dark2;
         background: transparent;
         &:hover {
-            background: $light2;
+            // background: $light2;
         }
     }
     &.dark,
     &.dark-hover:hover,
     &.role-2 {
+        border-color: $dark;
+        background: $dark;
         color: white;
-        border-color: $dark05;
-        background: $dark05;
         &.invisible,
         &.ghost {
             color: $dark;
             background: transparent;
+            &:not(.ghost-hover):hover {
+                border-color: $dark;
+                background: $dark;
+                color: white;
+                i.context {
+                    background: $dark;
+                }
+            }
         }
+        &.ghost-hover:hover {
+            background: transparent;
+            color: $dark;
+            border-color: $dark;
+        }
+    }
+    &.dark:hover {
+        background: $darkAlt;
     }
     &.green,
     &.green-hover:hover,
@@ -318,14 +336,30 @@ textarea {
         &.ghost {
             color: $primary;
             background: transparent;
+            &:not(.ghost-hover):hover {
+                border-color: $primary;
+                background: $primary;
+                color: white;
+                i.context {
+                    background: $primaryDark;
+                }
+            }
         }
+        &.ghost-hover:hover {
+            background: transparent;
+            color: $primary;
+            border-color: $primary;
+        }
+    }
+    &.primary:hover {
+        background: $primaryDark;
     }
     &.white,
     &.white-hover:hover {
         border-color: white;
         background: white;
         color: $dark;
-        &.invisible,
+        // &.invisible,
         &.ghost {
             color: white;
             background: transparent;
@@ -371,6 +405,7 @@ textarea {
         opacity: 0.5;
     }
 }
+button,
 .button,
 .square {
     height: 32px;
@@ -398,15 +433,42 @@ textarea {
     &.icon-right {
         padding-right: 8px;
         text-align: right;
-        i {
+        i:last-child {
             margin-left: 12px;
         }
     }
     &.icon-left {
         padding-left: 8px;
         text-align: left;
-        i {
+        i:first-child {
             margin-right: 8px;
+        }
+    }
+    &.context-right,
+    &.context-left {
+        position: relative;
+        overflow: hidden;
+    }
+    &.context-right i:last-child,
+    &.context-left i:first-child {
+        position: absolute;
+        width: 32px;
+        text-align: center;
+        display: flex;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+    }
+    &.context-right {
+        padding-right: 40px;
+        i.context {
+            right: 0;
+        }
+    }
+    &.context-left {
+        padding-left: 40px;
+        i.context {
+            left: 0;
         }
     }
     // -- SIZES --
@@ -431,6 +493,7 @@ textarea {
         font-size: 14px;
     }
 }
+button,
 .button {
     min-width: 92px;
     font-weight: 700;
@@ -489,6 +552,39 @@ textarea {
     }
     .fa-chevron-left {
         margin-right: 2px;
+    }
+}
+
+// ICONS
+i {
+    position: relative;
+    &.primary,
+    &.primary-hover:hover {
+        color: $primary;
+    }
+    &.dark15,
+    &.dark15-hover:hover {
+        color: $dark15;
+    }
+    &.green,
+    &.green-hover:hover {
+        color: $green;
+    }
+    &.red,
+    &.red-hover:hover {
+        color: $red;
+    }
+    &.dark,
+    &.dark-hover:hover {
+        color: $dark;
+    }
+    // Icons in icons
+    i {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        font-size: 9px;
+        transform: translate(-50%, -50%);
     }
 }
 

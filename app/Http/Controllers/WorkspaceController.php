@@ -13,6 +13,8 @@ use App\Http\Resources\Team as TeamResource;
 use App\Collection;
 use App\FileTask;
 Use App\Http\Resources\Collection as CollectionResource;
+use App\Catalogue as Folder;
+Use App\Http\Resources\Catalogue as FolderResource;
 use App\User;
 use App\Http\Resources\User as UserResource;
 use App\TeamFile;
@@ -62,6 +64,15 @@ class WorkspaceController extends Controller
 
         // Return collection of users as a resource
         return TeamResource::collection($teams);
+    }
+
+    // Return all folders of the workspace
+    public function folders($workspace_id)
+    {
+        $folders = Folder::where('workspace_id', $workspace_id)->get();
+
+        // Return collection of products as a resource
+        return FolderResource::collection($folders);
     }
 
     // Return all collections of the workspace
