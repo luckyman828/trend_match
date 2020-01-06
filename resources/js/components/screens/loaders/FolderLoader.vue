@@ -23,9 +23,10 @@ export default {
     }},
     computed: {
         ...mapGetters('entities/collections', ['loadingCollections', 'files']),
+        ...mapGetters('entities/subfiles', ['loadingSubfiles']),
         ...mapGetters('persist', ['currentWorkspaceId']),
         loading () {
-            return (this.loadingCollections || this.files == null || this.loadingInit) ? true : false
+            return (this.loadingCollections || this.files == null || this.loadingInit || this.loadingSubfiles) ? true : false
         }
     },
     methods: {

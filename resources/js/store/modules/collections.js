@@ -23,6 +23,7 @@ export default {
                 const files = Collection.query()
                     .with('teams.actions')
                     .with('teamFiles')
+                    .with('subfiles')
                     .all()
                 const users = User.query()
                     .with('teams.teamFiles')

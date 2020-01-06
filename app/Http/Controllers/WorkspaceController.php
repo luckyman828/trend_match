@@ -21,6 +21,7 @@ use App\TeamFile;
 use App\Http\Resources\TeamFile as TeamFileResource;
 use App\Phase;
 use App\PhaseTeam;
+use App\Subfile;
 use App\Task;
 use App\TaskParent;
 use App\TaskTeam;
@@ -162,6 +163,15 @@ class WorkspaceController extends Controller
        })->get();
 
        return $result;
+  }
+
+  public function subfiles($workspace_id)
+  {
+      $response = Subfile::whereHas('file', function (Builder $query) use($workspace_id) {
+          $query->where('workspace_id', $workspace_id);
+      })->get();
+
+      return $response;
   }
 
 }
