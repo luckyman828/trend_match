@@ -28,8 +28,31 @@ export default {
                 // Save a reference to the contextual menu
                 const contextMenu = this.$refs.contextMenu
                 // Position the contextual menu
-                contextMenu.style.left=mouseX+'px'
-                contextMenu.style.top=mouseY+'px'
+                // Make sure the entire contextual menu is always visible
+                // Define a minimum offset the context menu should keep from the windows edges
+                const offset = 20
+                // menuRect = contextMenu.getBoundingClientRect()
+                const menuHeight = contextMenu.scrollHeight
+                const menuWidth = contextMenu.scrollWidth
+                const windowWidth = window.innerWidth
+                const windowHeight = window.innerHeight
+                if (mouseX + menuWidth > windowWidth) {
+                    contextMenu.style.right=offset+'px'
+                    contextMenu.style.left='auto'
+                } else {
+                    contextMenu.style.left=mouseX+'px'
+                    contextMenu.style.right='auto'
+                }
+
+                if (mouseY + menuHeight > windowHeight) {
+                    contextMenu.style.bottom=offset+'px'
+                    contextMenu.style.top='auto'
+                } else {
+                    contextMenu.style.top=mouseY+'px'
+                    contextMenu.style.bottom='auto'
+                }
+
+                // contextMenu.style.top=mouseY+'px'
             })
         },
         hide() {

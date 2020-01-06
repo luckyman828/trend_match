@@ -29,7 +29,7 @@
                     <td class="teams">-</td>
                     <td class="status">-</td>
                     <td class="action">
-                        <span class="button invisible ghost dark-hover true-square"><i class="fas fa-ellipsis-h"></i></span>
+                        <span class="button invisible ghost-hover true-square" @click.stop="showContextMenu($event, folder, 'folder')"><i class="fas fa-ellipsis-h"></i></span>
                     </td>
                 </tr>
                 <tr v-for="(file) in folder.files" :key="file.id" class="file" @contextmenu.prevent="showContextMenu($event, file, 'file')">
@@ -46,7 +46,7 @@
                     <td class="teams">-</td>
                     <td class="status">Stage {{file.phase.id}}</td>
                     <td class="action">
-                        <span class="button invisible ghost dark-hover true-square"><i class="fas fa-ellipsis-h"></i></span>
+                        <span class="button invisible ghost-hover true-square" @click.stop="showContextMenu($event, file, 'file')"><i class="fas fa-ellipsis-h"></i></span>
                     </td>
                 </tr>
             </template>
@@ -186,7 +186,7 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item">
+                <div class="item" @click="onDeleteFile(contextMenuItem.id)">
                     <div class="icon-wrapper">
                         <i class="far fa-trash-alt"></i>
                     </div>
@@ -269,6 +269,7 @@ export default {
             this.setCurrentFolderId(folder.id)
         },
         showContextMenu(e, item, type) {
+            console.log('show context menu')
             const folderMenu = this.$refs.contextMenuFolder
             const fileMenu = this.$refs.contextMenuFile
             // Hide any current contextMenus

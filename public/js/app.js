@@ -7506,9 +7506,32 @@ __webpack_require__.r(__webpack_exports__);
       this.$nextTick(function () {
         // Save a reference to the contextual menu
         var contextMenu = _this.$refs.contextMenu; // Position the contextual menu
+        // Make sure the entire contextual menu is always visible
+        // Define a minimum offset the context menu should keep from the windows edges
 
-        contextMenu.style.left = mouseX + 'px';
-        contextMenu.style.top = mouseY + 'px';
+        var offset = 20; // menuRect = contextMenu.getBoundingClientRect()
+
+        var menuHeight = contextMenu.scrollHeight;
+        var menuWidth = contextMenu.scrollWidth;
+        var windowWidth = window.innerWidth;
+        var windowHeight = window.innerHeight;
+
+        if (mouseX + menuWidth > windowWidth) {
+          contextMenu.style.right = offset + 'px';
+          contextMenu.style.left = 'auto';
+        } else {
+          contextMenu.style.left = mouseX + 'px';
+          contextMenu.style.right = 'auto';
+        }
+
+        if (mouseY + menuHeight > windowHeight) {
+          contextMenu.style.bottom = offset + 'px';
+          contextMenu.style.top = 'auto';
+        } else {
+          contextMenu.style.top = mouseY + 'px';
+          contextMenu.style.bottom = 'auto';
+        } // contextMenu.style.top=mouseY+'px'
+
       });
     },
     hide: function hide() {
@@ -9387,6 +9410,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.setCurrentFolderId(folder.id);
     },
     showContextMenu: function showContextMenu(e, item, type) {
+      console.log('show context menu');
       var folderMenu = this.$refs.contextMenuFolder;
       var fileMenu = this.$refs.contextMenuFile; // Hide any current contextMenus
 
@@ -36335,7 +36359,17 @@ var render = function() {
                           "span",
                           {
                             staticClass:
-                              "button invisible ghost dark-hover true-square"
+                              "button invisible ghost-hover true-square",
+                            on: {
+                              click: function($event) {
+                                $event.stopPropagation()
+                                return _vm.showContextMenu(
+                                  $event,
+                                  folder,
+                                  "folder"
+                                )
+                              }
+                            }
                           },
                           [_c("i", { staticClass: "fas fa-ellipsis-h" })]
                         )
@@ -36430,7 +36464,13 @@ var render = function() {
                           "span",
                           {
                             staticClass:
-                              "button invisible ghost dark-hover true-square"
+                              "button invisible ghost-hover true-square",
+                            on: {
+                              click: function($event) {
+                                $event.stopPropagation()
+                                return _vm.showContextMenu($event, file, "file")
+                              }
+                            }
                           },
                           [_c("i", { staticClass: "fas fa-ellipsis-h" })]
                         )
@@ -36912,14 +36952,25 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "item-group" }, [
-            _c("div", { staticClass: "item" }, [
-              _c("div", { staticClass: "icon-wrapper" }, [
-                _c("i", { staticClass: "far fa-trash-alt" })
-              ]),
-              _vm._v(" "),
-              _c("u", [_vm._v("D")]),
-              _vm._v("elete file\n            ")
-            ])
+            _c(
+              "div",
+              {
+                staticClass: "item",
+                on: {
+                  click: function($event) {
+                    return _vm.onDeleteFile(_vm.contextMenuItem.id)
+                  }
+                }
+              },
+              [
+                _c("div", { staticClass: "icon-wrapper" }, [
+                  _c("i", { staticClass: "far fa-trash-alt" })
+                ]),
+                _vm._v(" "),
+                _c("u", [_vm._v("D")]),
+                _vm._v("elete file\n            ")
+              ]
+            )
           ])
         ]
       )
