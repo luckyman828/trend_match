@@ -39,7 +39,8 @@
                             :value="toEdit.item.title" :oldValue="file.title" v-model="toEdit.item.title"
                             @submit="updateFile(toEdit.item); clearToEdit()" @cancel="clearToEdit()"/>
                         </td>
-                    <td v-else class="title clickable" @click="viewSingle(file.id)"><i class="fas fa-file dark15"></i> {{file.title}}</td>
+                    <!-- <td v-else class="title clickable" @click="viewSingle(file.id)"><i class="fas fa-file dark15"></i> {{file.title}}</td> -->
+                    <td v-else class="title clickable" @click="showSingleFile(file.id)"><i class="fas fa-file dark15"></i> {{file.title}}</td>
                     <td class="modified">-</td>
                     <td class="deadline">{{file.end_date}}</td>
                     <td class="items">-</td>
@@ -286,6 +287,9 @@ export default {
             }
             // Position the contextual menu
             contextMenu.show(e)
+        },
+        showSingleFile(fileId) {
+            this.$emit('showSingleFile', fileId)
         },
         onMoveTo(item, type) {
             this.toMove = item

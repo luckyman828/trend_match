@@ -76,7 +76,10 @@
             </div>
         </div>
         <FoldersTable v-if="currentFolder" :folder="currentFolder" :selected="selected" 
-        @setCurrentFolder="setCurrentFolder" @onSelect="onSelect"/>
+        @setCurrentFolder="setCurrentFolder" @onSelect="onSelect" @showSingleFile="showSingleFile"/>
+        <FlyIn ref="fileSingleFlyin">
+            <FileSingle :file="currentFile" v-if="currentFile != null"/>
+        </FlyIn>
         <!-- <FilesTable :authUser="authUser" :files="userFiles" :selected="selected" @onSelect="onSelect"/> -->
     </div>
 </template>
@@ -90,6 +93,8 @@ import FoldersTable from '../FoldersTable'
 import RadioButtons from '../RadioButtons'
 import CheckboxButtons from '../input/CheckboxButtons'
 import Dropdown from '../Dropdown'
+import FlyIn from '../FlyIn'
+import FileSingle from '../FileSingle'
 import Folder from '../../store/models/Folder'
 
 export default {
@@ -102,6 +107,8 @@ export default {
         CheckboxButtons,
         RadioButtons,
         FoldersTable,
+        FlyIn,
+        FileSingle,
     },
     data: function() { return {
         selected: [],
@@ -125,7 +132,7 @@ export default {
         // }
     },
     computed: {
-        ...mapGetters('entities/collections', ['loadingCollections', 'files']),
+        ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
         ...mapGetters('entities/folders', ['loadingFolders', 'folders']),
         ...mapGetters('persist', ['teamFilterId', 'currentTeam', 'currentWorkspace', 'currentWorkspaceId', 'userPermissionLevel', 'authUser']),
         defaultTeam() {
@@ -192,12 +199,16 @@ export default {
         }
     },
     methods: {
-        ...mapActions('persist', ['setTeamFilter']),
+        ...mapActions('persist', ['setTeamFilter', 'setCurrentFileId']),
         onSelect(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
             const selected = this.selected
             const found = selected.findIndex(el => el == index)
             const result = (found >= 0) ? selected.splice(found, 1) : selected.push(index)
+        },
+        showSingleFile(fileId) {
+            this.setCurrentFileId(fileId)
+            this.$refs.fileSingleFlyin.toggle()
         },
         onViewSingle(collectionID) {
             this.$router.push({name: 'catalogue', params: {catalogueId: collectionID}})

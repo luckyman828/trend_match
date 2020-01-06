@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar" style="height: 70px;">
+    <nav class="navbar">
         <!-- <div class="logo-wrapper">
             <router-link to="/collection" class="navbar-brand">
                 <img src="/images/kollekt-logo-color-1.svg" />
