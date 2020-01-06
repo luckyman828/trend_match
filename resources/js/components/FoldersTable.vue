@@ -122,7 +122,9 @@
                     </div>
                     <div class="controls" style="display: flex; justify-content: flex-end; margin-top: 12px;">
                         <button class="invisible dark" @click="$refs.moveItemModal.toggle(); toMove = null">Cancel</button>
-                        <button class="primary" :class="{disabled: folderToMoveToId == toMove.id || folderToMoveToId == folder.id}">Move here</button>
+                        <button class="primary" :class="{disabled: folderToMoveToId == toMove.id || folderToMoveToId == folder.id}" @click="submitMoveItem()"
+                        >Move here
+                        </button>
                     </div>
                 </div>
             </template>
@@ -144,7 +146,7 @@
                     </div>
                     <u>R</u>ename
                 </div>
-                <div class="item" @click="onMoveTo(contextMenuItem)">
+                <div class="item" @click="onMoveTo(contextMenuItem, 'folder')">
                     <div class="icon-wrapper">
                         <i class="far fa-folder"><i class="fas fa-long-arrow-alt-right"></i></i>
                     </div>
@@ -176,7 +178,7 @@
                     </div>
                     <u>R</u>ename
                 </div>
-                <div class="item">
+                <div class="item" @click="onMoveTo(contextMenuItem, 'file')">
                     <div class="icon-wrapper">
                         <i class="far fa-folder"><i class="fas fa-long-arrow-alt-right"></i></i>
                     </div>
@@ -257,28 +259,6 @@ export default {
                 return this.folders.find(x => x.id == this.folderToMoveToId)
             }
         },
-        // folder() {
-        //     this.currentFolder
-        // }
-        // filesSorted() {
-        //     const files = this.files
-        //     let key = this.sortBy
-        //     let sortAsc = this.sortAsc
-        //     const dataSorted = files.sort((a, b) => {
-        //         console.log('sorting')
-        //         // If the keys don't have length - sort by the key
-        //         if (!files[0][key].length) {
-        //             if (sortAsc) return a[key] > b[key] ? 1 : -1
-        //             else return a[key] < b[key] ? 1 : -1
-
-        //             // If the keys have lengths - sort by their length
-        //         } else {
-        //             if (sortAsc) return a[key].length > b[key].length ? 1 : -1
-        //             else return a[key].length < b[key].length ? 1 : -1
-        //         }
-        //     })
-        //     return dataSorted
-        // },
     },
     methods: {
         ...mapActions('entities/collections', ['deleteFile', 'updateFile', 'uploadToExistingFile']),
@@ -306,10 +286,36 @@ export default {
             // Position the contextual menu
             contextMenu.show(e)
         },
-        onMoveTo(item) {
+        onMoveTo(item, type) {
             this.toMove = item
-            this.toEdit = {item: item}
+            this.toEdit = {item: item, type: type}
             this.folderToMoveToId = this.folder.id
+            this.$refs.moveItemModal.toggle()
+        },
+        submitMoveItem() {
+            const item = this.toEdit.item
+            // Check the type of the item to move
+            if (this.toEdit.type == 'folder') {
+                // Set the new parent_id
+                item.parent_id = this.folderToMoveToId
+                this.updateFolder(item)
+
+                // Remove the moved item from the current array
+                const currentItemIndex = this.folder.folders.findIndex(x => x.id == item.id)
+                this.folder.folders.splice(currentItemIndex, 1)
+            } else {
+                // Set the folder id
+                item.folder_id = this.folderToMoveToId
+                item.catalog_id = this.folderToMoveToId
+                this.updateFile(item)
+
+                // Remove the moved item from the current array
+                const currentItemIndex = this.folder.files.findIndex(x => x.id == item.id)
+                this.folder.files.splice(currentItemIndex, 1)
+            }
+            // Reset the item to edit
+            this.toMove = null
+            this.toEdit = null
             this.$refs.moveItemModal.toggle()
         },
         onEditField(item, type, field) {
@@ -325,11 +331,14 @@ export default {
             this.folder.folders = this.folder.folders.filter(x => x.id != null)
         },
         onDeleteFolder(folderId) {
-            window.confirm(
+            if (window.confirm(
                 'Are you sure you want to delete this folder?\nThe folder and all of its contents will be permanently deleted.'
-            )
-                ? this.deleteFolder(folderId)
-                : false
+            )) {
+                this.deleteFolder(folderId)
+                // Remove the moved item from the current array
+                const currentItemIndex = this.folder.folders.findIndex(x => x.id == folderId)
+                this.folder.folders.splice(currentItemIndex, 1)
+            }
         },
         onNewFolder() {
             const currentFolder = this.folder
@@ -355,9 +364,6 @@ export default {
                 currentFolder.folders.push(newFolder)
                 // Activate title edit of new folder
                 this.onEditField(newFolder, 'folder', 'title')
-                this.$nextTick(() => {
-                    this.$forceUpdate()
-                })
             }
             
         },

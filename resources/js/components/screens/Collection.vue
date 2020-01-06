@@ -92,11 +92,6 @@ import CheckboxButtons from '../input/CheckboxButtons'
 import Dropdown from '../Dropdown'
 import Folder from '../../store/models/Folder'
 
-// import Team from '../../store/models/Team'
-// import User from '../../store/models/User'
-// import UserTeam from '../../store/models/UserTeam';
-// import AuthUser from '../../store/models/AuthUser';
-
 export default {
     name: 'collection',
     store,
@@ -115,8 +110,20 @@ export default {
         loadingOverwrite: false,
         unsub: '',
         currentFolderId: null,
-        path: []
+        path: [],
+        currentFolder: {id: null, title: null, folders: [], files: []}
     }},
+    watch: {
+        // folders(oldVal, newVal) {
+        //     console.log('folders changed')
+        //     console.log(newVal)
+        //     if (this.currentFolderId) {
+        //         this.currentFolder = this.folders.find(x => x.id == this.currentFolderId)
+        //     } else {
+        //         this.currentFolder = this.rootFolder
+        //     }
+        // }
+    },
     computed: {
         ...mapGetters('entities/collections', ['loadingCollections', 'files']),
         ...mapGetters('entities/folders', ['loadingFolders', 'folders']),
@@ -125,21 +132,6 @@ export default {
             if (this.userPermissionLevel >= 3)
                 return {id: 0, title: 'Global'}
             else return null
-        },
-        currentFolder() {
-            // If we have no folder id we are the ROOT folder
-            if(this.currentFolderId == null) {
-                // Find all folders and files of the root folder
-                // Find folders in root
-                const rootFolders = this.folders.filter(x => !x.parent_id)
-                // Find files in root
-                const rootFiles = this.files.filter(x => !x.folder_id)
-                // Instantioate a rootfolder object
-                const rootFolder = {files: rootFiles, folders: rootFolders}
-                return rootFolder
-            } else {
-                return this.folders.find(x => x.id == this.currentFolderId)
-            }
         },
         userFolders() {
             return this.folders
@@ -189,6 +181,15 @@ export default {
             }
             else return this.teams
         },
+        rootFolder() {
+            // Find all folders and files of the root folder
+            // Find folders in root
+            const rootFolders = this.folders.filter(x => !x.parent_id)
+            // Find files in root
+            const rootFiles = this.files.filter(x => !x.folder_id)
+            // Instantioate a rootfolder object
+            return {files: rootFiles, folders: rootFolders}
+        }
     },
     methods: {
         ...mapActions('persist', ['setTeamFilter']),
@@ -211,34 +212,23 @@ export default {
                 this.path.push(folder)
                 // Set the current folder to the new id
                 this.currentFolderId = folder.id
+                this.currentFolder = this.folders.find(x => x.id == this.currentFolderId)
             } else {
                 // Reset the folder and path
                 this.path = []
                 this.currentFolderId = null
+                this.currentFolder = this.rootFolder
             }
-            
-        }
-        // initRequiresWorkspace() {
-        //     if (Collection.all().length <= 0)
-        //         this.fetchCollections(this.currentWorkspaceId)
-        //     if (User.all().length <= 0)
-        //         this.fetchUsers(this.currentWorkspaceId)
-        // }
+        },
     },
-    // created() {
-    //     // If we already have a workspace id, fetch the data we are missing
-    //     if (this.currentWorkspaceId != null)
-    //         this.initRequiresWorkspace()
-    //     // Else, wait till a workspace id is set, and then fetch the data
-    //     this.unsub = this.$store.subscribe((mutation, state) => {
-    //         if(mutation.type == 'persist/setCurrentWorkspace') {
-    //             this.initRequiresWorkspace()
-    //         } 
-    //     })
-    // },
-    // destroyed() {
-    //     this.unsub()
-    // }
+    created() {
+        // If we have no folder id we are the ROOT folder
+        if(this.currentFolderId == null) {
+            this.currentFolder = this.rootFolder
+        } else {
+            this.currentFolder = this.folders.find(x => x.id == this.currentFolderId)
+        }
+    },
 
 }
 </script>

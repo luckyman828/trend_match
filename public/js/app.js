@@ -9313,6 +9313,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 
@@ -9404,12 +9406,43 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       contextMenu.show(e);
     },
-    onMoveTo: function onMoveTo(item) {
+    onMoveTo: function onMoveTo(item, type) {
       this.toMove = item;
       this.toEdit = {
-        item: item
+        item: item,
+        type: type
       };
       this.folderToMoveToId = this.folder.id;
+      this.$refs.moveItemModal.toggle();
+    },
+    submitMoveItem: function submitMoveItem() {
+      var item = this.toEdit.item; // Check the type of the item to move
+
+      if (this.toEdit.type == 'folder') {
+        // Set the new parent_id
+        item.parent_id = this.folderToMoveToId;
+        this.updateFolder(item); // Remove the moved item from the current array
+
+        var currentItemIndex = this.folder.folders.findIndex(function (x) {
+          return x.id == item.id;
+        });
+        this.folder.folders.splice(currentItemIndex, 1);
+      } else {
+        // Set the folder id
+        item.folder_id = this.folderToMoveToId;
+        item.catalog_id = this.folderToMoveToId;
+        this.updateFile(item); // Remove the moved item from the current array
+
+        var _currentItemIndex = this.folder.files.findIndex(function (x) {
+          return x.id == item.id;
+        });
+
+        this.folder.files.splice(_currentItemIndex, 1);
+      } // Reset the item to edit
+
+
+      this.toMove = null;
+      this.toEdit = null;
       this.$refs.moveItemModal.toggle();
     },
     onEditField: function onEditField(item, type, field) {
@@ -9431,11 +9464,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     onDeleteFolder: function onDeleteFolder(folderId) {
-      window.confirm('Are you sure you want to delete this folder?\nThe folder and all of its contents will be permanently deleted.') ? this.deleteFolder(folderId) : false;
+      if (window.confirm('Are you sure you want to delete this folder?\nThe folder and all of its contents will be permanently deleted.')) {
+        this.deleteFolder(folderId); // Remove the moved item from the current array
+
+        var currentItemIndex = this.folder.folders.findIndex(function (x) {
+          return x.id == folderId;
+        });
+        this.folder.folders.splice(currentItemIndex, 1);
+      }
     },
     onNewFolder: function onNewFolder() {
-      var _this2 = this;
-
       var currentFolder = this.folder; // Check if we already have added a new folder
 
       var existingNewFolder = currentFolder.folders.find(function (x) {
@@ -9460,9 +9498,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           currentFolder.folders.push(newFolder); // Activate title edit of new folder
 
           this.onEditField(newFolder, 'folder', 'title');
-          this.$nextTick(function () {
-            _this2.$forceUpdate();
-          });
         }
     },
     // onSelect(index) {
@@ -9525,14 +9560,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$refs.editFileModal.toggle();
     },
     addToFile: function addToFile() {
-      var _this3 = this;
+      var _this2 = this;
 
       this.fileToEdit.files = this.filesToAdd;
       this.uploadingToFile = true;
       this.uploadToExistingFile(this.fileToEdit).then(function (success) {
-        _this3.uploadingToFile = false;
+        _this2.uploadingToFile = false;
 
-        _this3.$refs.editFileModal.toggle();
+        _this2.$refs.editFileModal.toggle();
       });
     },
     onEdit: function onEdit(file) {
@@ -9543,7 +9578,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.fileToEdit = this.defaultFileToEdit;
     },
     filesChange: function filesChange(e) {
-      var _this4 = this;
+      var _this3 = this;
 
       var files = e.target.files;
 
@@ -9552,10 +9587,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         var extension = file.name.split('.').pop(); // Check that the file is a csv
 
         if (extension == 'csv') {
-          if (!_this4.filesToAdd.find(function (x) {
+          if (!_this3.filesToAdd.find(function (x) {
             return x.name == file.name;
           })) {
-            _this4.filesToAdd.push(file);
+            _this3.filesToAdd.push(file);
           }
         } else {
           // Throw error
@@ -14842,10 +14877,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
- // import Team from '../../store/models/Team'
-// import User from '../../store/models/User'
-// import UserTeam from '../../store/models/UserTeam';
-// import AuthUser from '../../store/models/AuthUser';
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'collection',
@@ -14866,8 +14897,24 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       loadingOverwrite: false,
       unsub: '',
       currentFolderId: null,
-      path: []
+      path: [],
+      currentFolder: {
+        id: null,
+        title: null,
+        folders: [],
+        files: []
+      }
     };
+  },
+  watch: {// folders(oldVal, newVal) {
+    //     console.log('folders changed')
+    //     console.log(newVal)
+    //     if (this.currentFolderId) {
+    //         this.currentFolder = this.folders.find(x => x.id == this.currentFolderId)
+    //     } else {
+    //         this.currentFolder = this.rootFolder
+    //     }
+    // }
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/collections', ['loadingCollections', 'files']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('entities/folders', ['loadingFolders', 'folders']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('persist', ['teamFilterId', 'currentTeam', 'currentWorkspace', 'currentWorkspaceId', 'userPermissionLevel', 'authUser']), {
     defaultTeam: function defaultTeam() {
@@ -14876,37 +14923,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         title: 'Global'
       };else return null;
     },
-    currentFolder: function currentFolder() {
-      var _this = this;
-
-      // If we have no folder id we are the ROOT folder
-      if (this.currentFolderId == null) {
-        // Find all folders and files of the root folder
-        // Find folders in root
-        var rootFolders = this.folders.filter(function (x) {
-          return !x.parent_id;
-        }); // Find files in root
-
-        var rootFiles = this.files.filter(function (x) {
-          return !x.folder_id;
-        }); // Instantioate a rootfolder object
-
-        var rootFolder = {
-          files: rootFiles,
-          folders: rootFolders
-        };
-        return rootFolder;
-      } else {
-        return this.folders.find(function (x) {
-          return x.id == _this.currentFolderId;
-        });
-      }
-    },
     userFolders: function userFolders() {
       return this.folders;
     },
     userFiles: function userFiles() {
-      var _this2 = this;
+      var _this = this;
 
       var files = this.files;
       var filesToReturn = []; // Get the files the user has access to
@@ -14914,7 +14935,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (this.userPermissionLevel <= 2) {
         this.authUser.teams.forEach(function (team) {
           team.teamFiles.forEach(function (teamFile) {
-            if (teamFile.role_level <= _this2.userPermissionLevel) {
+            if (teamFile.role_level <= _this.userPermissionLevel) {
               if (files.find(function (x) {
                 return x.id == teamFile.file_id;
               })) {
@@ -14955,6 +14976,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
         return teamsToReturn;
       } else return this.teams;
+    },
+    rootFolder: function rootFolder() {
+      // Find all folders and files of the root folder
+      // Find folders in root
+      var rootFolders = this.folders.filter(function (x) {
+        return !x.parent_id;
+      }); // Find files in root
+
+      var rootFiles = this.files.filter(function (x) {
+        return !x.folder_id;
+      }); // Instantioate a rootfolder object
+
+      return {
+        files: rootFiles,
+        folders: rootFolders
+      };
     }
   }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])('persist', ['setTeamFilter']), {
@@ -14975,6 +15012,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     setCurrentFolder: function setCurrentFolder(folder, pathIndex) {
+      var _this2 = this;
+
       if (folder != null) {
         // Remove folders after the new folder from the current path
         if (pathIndex != null) {
@@ -14985,33 +15024,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.path.push(folder); // Set the current folder to the new id
 
         this.currentFolderId = folder.id;
+        this.currentFolder = this.folders.find(function (x) {
+          return x.id == _this2.currentFolderId;
+        });
       } else {
         // Reset the folder and path
         this.path = [];
         this.currentFolderId = null;
+        this.currentFolder = this.rootFolder;
       }
-    } // initRequiresWorkspace() {
-    //     if (Collection.all().length <= 0)
-    //         this.fetchCollections(this.currentWorkspaceId)
-    //     if (User.all().length <= 0)
-    //         this.fetchUsers(this.currentWorkspaceId)
-    // }
+    }
+  }),
+  created: function created() {
+    var _this3 = this;
 
-  }) // created() {
-  //     // If we already have a workspace id, fetch the data we are missing
-  //     if (this.currentWorkspaceId != null)
-  //         this.initRequiresWorkspace()
-  //     // Else, wait till a workspace id is set, and then fetch the data
-  //     this.unsub = this.$store.subscribe((mutation, state) => {
-  //         if(mutation.type == 'persist/setCurrentWorkspace') {
-  //             this.initRequiresWorkspace()
-  //         } 
-  //     })
-  // },
-  // destroyed() {
-  //     this.unsub()
-  // }
-
+    // If we have no folder id we are the ROOT folder
+    if (this.currentFolderId == null) {
+      this.currentFolder = this.rootFolder;
+    } else {
+      this.currentFolder = this.folders.find(function (x) {
+        return x.id == _this3.currentFolderId;
+      });
+    }
+  }
 });
 
 /***/ }),
@@ -36688,9 +36723,14 @@ var render = function() {
                                 disabled:
                                   _vm.folderToMoveToId == _vm.toMove.id ||
                                   _vm.folderToMoveToId == _vm.folder.id
+                              },
+                              on: {
+                                click: function($event) {
+                                  return _vm.submitMoveItem()
+                                }
                               }
                             },
-                            [_vm._v("Move here")]
+                            [_vm._v("Move here\n                    ")]
                           )
                         ]
                       )
@@ -36760,7 +36800,7 @@ var render = function() {
                 staticClass: "item",
                 on: {
                   click: function($event) {
-                    return _vm.onMoveTo(_vm.contextMenuItem)
+                    return _vm.onMoveTo(_vm.contextMenuItem, "folder")
                   }
                 }
               },
@@ -36848,16 +36888,27 @@ var render = function() {
               ]
             ),
             _vm._v(" "),
-            _c("div", { staticClass: "item" }, [
-              _c("div", { staticClass: "icon-wrapper" }, [
-                _c("i", { staticClass: "far fa-folder" }, [
-                  _c("i", { staticClass: "fas fa-long-arrow-alt-right" })
-                ])
-              ]),
-              _vm._v(" "),
-              _c("u", [_vm._v("M")]),
-              _vm._v("ove to\n            ")
-            ])
+            _c(
+              "div",
+              {
+                staticClass: "item",
+                on: {
+                  click: function($event) {
+                    return _vm.onMoveTo(_vm.contextMenuItem, "file")
+                  }
+                }
+              },
+              [
+                _c("div", { staticClass: "icon-wrapper" }, [
+                  _c("i", { staticClass: "far fa-folder" }, [
+                    _c("i", { staticClass: "fas fa-long-arrow-alt-right" })
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("u", [_vm._v("M")]),
+                _vm._v("ove to\n            ")
+              ]
+            )
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "item-group" }, [
