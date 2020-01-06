@@ -107,9 +107,9 @@
                         <span v-if="folderToMoveToId != null">{{folderToMoveTo.title}}</span>
                         <span v-else><span class="square true-square"><i class="far fa-building"></i></span> {{currentWorkspace.name}}</span>
                     </div>
-                    <div class="input-wrapper multiline">
+                    <div class="folders-wrapper">
                         <template v-for="thisFolder in folderToMoveTo.folders">
-                            <div class="folder" :key="thisFolder.id" style="margin-bottom: 8px;">
+                            <div class="folder" :key="thisFolder.id">
                                 <p v-if="thisFolder.id != toMove.id" class="clickable"
                                 @click="folderToMoveToId = thisFolder.id">
                                     <i class="fas fa-folder dark15"></i> {{thisFolder.title}}
@@ -119,9 +119,10 @@
                                 </p>
                             </div>
                         </template>
+                        <p v-if="folderToMoveTo.folders.length <= 0">No folders..</p>
                     </div>
                     <div class="controls" style="display: flex; justify-content: flex-end; margin-top: 12px;">
-                        <button class="invisible dark" @click="$refs.moveItemModal.toggle(); toMove = null">Cancel</button>
+                        <button class="invisible dark ghost-hover" @click="$refs.moveItemModal.toggle(); toMove = null">Cancel</button>
                         <button class="primary" :class="{disabled: folderToMoveToId == toMove.id || folderToMoveToId == folder.id}" @click="submitMoveItem()"
                         >Move here
                         </button>
@@ -269,7 +270,6 @@ export default {
             this.setCurrentFolderId(folder.id)
         },
         showContextMenu(e, item, type) {
-            console.log('show context menu')
             const folderMenu = this.$refs.contextMenuFolder
             const fileMenu = this.$refs.contextMenuFile
             // Hide any current contextMenus
@@ -408,11 +408,14 @@ export default {
             this.$router.push({ name: 'file', params: { fileId: fileId } })
         },
         onDeleteFile(fileId) {
-            window.confirm(
+            if (window.confirm(
                 'Are you sure you want to delete this file?\nAll comments, requests and actions will be permanently deleted.'
-            )
-                ? this.deleteFile(fileId)
-                : false
+            )) {
+                this.deleteFile(fileId)
+                // Remove the deleted item from the current array
+                const currentItemIndex = this.folder.files.findIndex(x => x.id == fileId)
+                this.folder.files.splice(currentItemIndex, 1)
+            }
         },
         onRenameFile(file, index) {
             this.editingFile = true
@@ -604,6 +607,34 @@ export default {
         cursor: pointer;
         &:hover {
             color: $red;
+        }
+    }
+}
+.move-item-modal {
+    .folders-wrapper {
+        display: block;
+        min-height: 40px;
+        border: solid 1px #f3f3f3;
+        color: #3c3b54;
+        border-radius: 4px;
+        padding: 8px 12px;
+        background: white;
+        width: 100%;
+    }
+    .folder {
+        &:not(:last-child) {
+            margin-bottom: 8px;
+        }
+        &:hover i {
+            color: $darkAlt;
+        }
+        .disabled {
+            cursor: default;
+        }
+    }
+    .controls {
+        button {
+            margin-left: 8px;
         }
     }
 }

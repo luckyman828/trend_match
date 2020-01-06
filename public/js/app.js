@@ -9338,6 +9338,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 
@@ -9410,7 +9411,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.setCurrentFolderId(folder.id);
     },
     showContextMenu: function showContextMenu(e, item, type) {
-      console.log('show context menu');
       var folderMenu = this.$refs.contextMenuFolder;
       var fileMenu = this.$refs.contextMenuFile; // Hide any current contextMenus
 
@@ -9566,7 +9566,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     onDeleteFile: function onDeleteFile(fileId) {
-      window.confirm('Are you sure you want to delete this file?\nAll comments, requests and actions will be permanently deleted.') ? this.deleteFile(fileId) : false;
+      if (window.confirm('Are you sure you want to delete this file?\nAll comments, requests and actions will be permanently deleted.')) {
+        this.deleteFile(fileId); // Remove the deleted item from the current array
+
+        var currentItemIndex = this.folder.files.findIndex(function (x) {
+          return x.id == fileId;
+        });
+        this.folder.files.splice(currentItemIndex, 1);
+      }
     },
     onRenameFile: function onRenameFile(file, index) {
       this.editingFile = true;
@@ -18300,7 +18307,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".folders-table[data-v-6ab81718] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.folders-table td[data-v-6ab81718] {\n  vertical-align: top;\n  line-height: 40px;\n}\n.folders-table td.title[data-v-6ab81718] {\n  display: -webkit-box;\n  display: flex;\n}\n.folders-table td.title i[data-v-6ab81718] {\n  width: 24px;\n  line-height: 40px;\n  font-size: 16px;\n  margin-right: 8px;\n}\n.clickable[data-v-6ab81718] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-6ab81718] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-6ab81718]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-6ab81718]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n}\n.flex-table .flex-group:nth-child(2) > *[data-v-6ab81718] {\n  -webkit-box-flex: 0;\n          flex: none;\n  flex-basis: 100px;\n}\n.flex-table .flex-group:nth-child(2) > *.stage[data-v-6ab81718] {\n  flex-basis: 132px;\n}\n.flex-table .flex-group[data-v-6ab81718]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-6ab81718] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-6ab81718] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-6ab81718] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-6ab81718] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table .flex-group > *.action > *[data-v-6ab81718]:not(:last-child) {\n  margin-right: 8px;\n}\n.flex-table .flex-group > td.action[data-v-6ab81718] {\n  text-align: right;\n}\n.flex-table .flex-table-row[data-v-6ab81718] {\n  height: 82px;\n}\n.flex-table .flex-table-row > *[data-v-6ab81718] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-6ab81718]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-6ab81718]:last-child {\n  margin-right: 16px;\n}\n.flex-table .flex-table-row th.action[data-v-6ab81718] {\n  text-align: right;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.show-more[data-v-6ab81718] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.view-single[data-v-6ab81718] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-6ab81718] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-6ab81718] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.edit-title.hidden[data-v-6ab81718] {\n  display: none;\n}\n.file-list p[data-v-6ab81718] {\n  position: relative;\n}\n.file-list p:hover .remove[data-v-6ab81718] {\n  opacity: 1;\n}\n.file-list .remove[data-v-6ab81718] {\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  margin-left: 4px;\n  cursor: pointer;\n}\n.file-list .remove[data-v-6ab81718]:hover {\n  color: #ff6565;\n}", ""]);
+exports.push([module.i, ".folders-table[data-v-6ab81718] {\n  margin-top: 52px;\n  padding-top: 0;\n  position: relative;\n}\n.folders-table td[data-v-6ab81718] {\n  vertical-align: top;\n  line-height: 40px;\n}\n.folders-table td.title[data-v-6ab81718] {\n  display: -webkit-box;\n  display: flex;\n}\n.folders-table td.title i[data-v-6ab81718] {\n  width: 24px;\n  line-height: 40px;\n  font-size: 16px;\n  margin-right: 8px;\n}\n.clickable[data-v-6ab81718] {\n  cursor: pointer;\n}\n.flex-table .flex-group[data-v-6ab81718] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 16px;\n  -webkit-box-align: center;\n          align-items: center;\n}\n.flex-table .flex-group[data-v-6ab81718]:nth-child(1) {\n  -webkit-box-flex: 3;\n          flex: 3;\n}\n.flex-table .flex-group[data-v-6ab81718]:nth-child(2) {\n  -webkit-box-flex: 3;\n          flex: 3;\n  -webkit-box-pack: start;\n          justify-content: flex-start;\n}\n.flex-table .flex-group:nth-child(2) > *[data-v-6ab81718] {\n  -webkit-box-flex: 0;\n          flex: none;\n  flex-basis: 100px;\n}\n.flex-table .flex-group:nth-child(2) > *.stage[data-v-6ab81718] {\n  flex-basis: 132px;\n}\n.flex-table .flex-group[data-v-6ab81718]:nth-child(3) {\n  -webkit-box-flex: 2;\n          flex: 2;\n  max-width: 300px;\n  min-width: 300px;\n}\n.flex-table .flex-group > *[data-v-6ab81718] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-group > *.select[data-v-6ab81718] {\n  max-width: 80px;\n}\n.flex-table .flex-group > *.id[data-v-6ab81718] {\n  white-space: nowrap;\n  overflow: hidden;\n  max-width: 75px;\n}\n.flex-table .flex-group > *.action[data-v-6ab81718] {\n  display: -webkit-box;\n  display: flex;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.flex-table .flex-group > *.action > *[data-v-6ab81718]:not(:last-child) {\n  margin-right: 8px;\n}\n.flex-table .flex-group > td.action[data-v-6ab81718] {\n  text-align: right;\n}\n.flex-table .flex-table-row[data-v-6ab81718] {\n  height: 82px;\n}\n.flex-table .flex-table-row > *[data-v-6ab81718] {\n  -webkit-box-flex: 1;\n          flex: 1;\n  margin: 0 8px;\n}\n.flex-table .flex-table-row > *[data-v-6ab81718]:first-child {\n  margin-left: 16px;\n}\n.flex-table .flex-table-row > *[data-v-6ab81718]:last-child {\n  margin-right: 16px;\n}\n.flex-table .flex-table-row th.action[data-v-6ab81718] {\n  text-align: right;\n  -webkit-box-pack: end;\n          justify-content: flex-end;\n}\n.show-more[data-v-6ab81718] {\n  width: 100%;\n  margin: 16px auto 0;\n  text-align: center;\n  display: inline-block;\n}\n.view-single[data-v-6ab81718] {\n  font-size: 12px;\n  font-weight: 700;\n  cursor: pointer;\n}\n.catalogue-totals[data-v-6ab81718] {\n  position: absolute;\n  right: 0;\n  top: -40px;\n  height: 40px;\n  line-height: 40px;\n}\n.catalogue-totals span[data-v-6ab81718] {\n  font-weight: 500;\n  font-size: 14px;\n  margin-right: 20px;\n}\n.edit-title.hidden[data-v-6ab81718] {\n  display: none;\n}\n.file-list p[data-v-6ab81718] {\n  position: relative;\n}\n.file-list p:hover .remove[data-v-6ab81718] {\n  opacity: 1;\n}\n.file-list .remove[data-v-6ab81718] {\n  opacity: 0;\n  -webkit-transition: 0.3s;\n  transition: 0.3s;\n  margin-left: 4px;\n  cursor: pointer;\n}\n.file-list .remove[data-v-6ab81718]:hover {\n  color: #ff6565;\n}\n.move-item-modal .folders-wrapper[data-v-6ab81718] {\n  display: block;\n  min-height: 40px;\n  border: solid 1px #f3f3f3;\n  color: #3c3b54;\n  border-radius: 4px;\n  padding: 8px 12px;\n  background: white;\n  width: 100%;\n}\n.move-item-modal .folder[data-v-6ab81718]:not(:last-child) {\n  margin-bottom: 8px;\n}\n.move-item-modal .folder:hover i[data-v-6ab81718] {\n  color: #43425d;\n}\n.move-item-modal .folder .disabled[data-v-6ab81718] {\n  cursor: default;\n}\n.move-item-modal .controls button[data-v-6ab81718] {\n  margin-left: 8px;\n}", ""]);
 
 // exports
 
@@ -36667,7 +36674,7 @@ var render = function() {
                       _vm._v(" "),
                       _c(
                         "div",
-                        { staticClass: "input-wrapper multiline" },
+                        { staticClass: "folders-wrapper" },
                         [
                           _vm._l(_vm.folderToMoveTo.folders, function(
                             thisFolder
@@ -36675,11 +36682,7 @@ var render = function() {
                             return [
                               _c(
                                 "div",
-                                {
-                                  key: thisFolder.id,
-                                  staticClass: "folder",
-                                  staticStyle: { "margin-bottom": "8px" }
-                                },
+                                { key: thisFolder.id, staticClass: "folder" },
                                 [
                                   thisFolder.id != _vm.toMove.id
                                     ? _c(
@@ -36725,7 +36728,11 @@ var render = function() {
                                 ]
                               )
                             ]
-                          })
+                          }),
+                          _vm._v(" "),
+                          _vm.folderToMoveTo.folders.length <= 0
+                            ? _c("p", [_vm._v("No folders..")])
+                            : _vm._e()
                         ],
                         2
                       ),
@@ -36744,7 +36751,7 @@ var render = function() {
                           _c(
                             "button",
                             {
-                              staticClass: "invisible dark",
+                              staticClass: "invisible dark ghost-hover",
                               on: {
                                 click: function($event) {
                                   _vm.$refs.moveItemModal.toggle()

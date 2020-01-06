@@ -8920,21 +8920,6 @@ button.ghost-hover,
   background: transparent;
 }
 
-button.ghost:hover,
-button.ghost-hover:hover,
-.button.ghost:hover,
-.button.ghost-hover:hover,
-.square.ghost:hover,
-.square.ghost-hover:hover,
-.pill.ghost:hover,
-.pill.ghost-hover:hover,
-.bubble.ghost:hover,
-.bubble.ghost-hover:hover,
-.circle.ghost:hover,
-.circle.ghost-hover:hover {
-  background: #dfdfdf;
-}
-
 button.dark,
 button.dark-hover:hover,
 button.role-2,
