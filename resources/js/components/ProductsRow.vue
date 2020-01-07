@@ -14,23 +14,28 @@
             <td class="title clickable" @click="onViewSingle(product.id)"><span>{{product.title}}</span></td>
             
             <template v-if="currentTaskPermissions.feedback">
-                <tooltipAlt2 class="square-wrapper" :disabled="product.focus.length <= 0 || userPermissionLevel <= 1" :header="'focus'" :array="product.focus.map(x => (x.task) ? (x.task.type != 'feedback') ? x.task.title : (x.user && x.user.name != null) ? x.user.name : x.title : (x.user && x.user.name != null) ? x.user.name : x.title )">
-                    <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
-                </tooltipAlt2>
-                <tooltipAlt2 class="square-wrapper" :disabled="(product.ins.length <= 0 && product.focus.length <= 0) || userPermissionLevel <= 1" :header="'in'" :array="product.ins.map(x => (x.task) ? (x.task.type != 'feedback') ? x.task.title : (x.user && x.user.name != null) ? x.user.name : x.title : (x.user && x.user.name != null) ? x.user.name : x.title ).concat(product.focus.map(x => (x.task) ? (x.task.type != 'feedback') ? x.task.title : (x.user && x.user.name != null) ? x.user.name : x.title : (x.user && x.user.name != null) ? x.user.name : x.title ))">
-                    <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
-                </tooltipAlt2>
-                <tooltipAlt2 class="square-wrapper" :disabled="product.outs.length <= 0 || userPermissionLevel <= 1" :header="'out'" :array="product.outs.map(x => (x.task) ? (x.task.type != 'feedback') ? x.task.title : (x.user && x.user.name != null) ? x.user.name : x.title : (x.user && x.user.name != null) ? x.user.name : x.title )">
-                    <td class="square-wrapper"><span class="square light icon-left"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
-                </tooltipAlt2>
-                <tooltipAlt2 v-if="currentTask.type != 'decision'" class="square-wrapper" :disabled="product.nds.length <= 0 || userPermissionLevel <= 1" :header="'not decided'" :array="product.nds.map(x => (x.name != null) ? x.name : x.title)">
-                    <td class="square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{product.ndsTotal}}</span></td>
-                </tooltipAlt2>
+                <v-popover class="square-wrapper" :disabled="product.focus.length <= 0 || userPermissionLevel <= 1">
+                    <td class="tooltip-target square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
+                    <TooltipList slot="popover" :header="'focus'" :array="product.focus.map(x => (x.task) ? (x.task.type != 'feedback') ? x.task.title : (x.user && x.user.name != null) ? x.user.name : x.title : (x.user && x.user.name != null) ? x.user.name : x.title )"/>
+                </v-popover>
+                <v-popover class="square-wrapper" :disabled="(product.ins.length <= 0 && product.focus.length <= 0) || userPermissionLevel <= 1">
+                    <td class="tooltip-target square-wrapper"><span class="square light icon-left"><i class="far fa-heart hide-screen-sm"></i>{{product.ins.length + product.focus.length}}</span></td>
+                    <TooltipList slot="popover" :header="'in'" :array="product.ins.map(x => (x.task) ? (x.task.type != 'feedback') ? x.task.title : (x.user && x.user.name != null) ? x.user.name : x.title : (x.user && x.user.name != null) ? x.user.name : x.title ).concat(product.focus.map(x => (x.task) ? (x.task.type != 'feedback') ? x.task.title : (x.user && x.user.name != null) ? x.user.name : x.title : (x.user && x.user.name != null) ? x.user.name : x.title ))"/>
+                </v-popover>
+                <v-popover class="square-wrapper" :disabled="product.outs.length <= 0 || userPermissionLevel <= 1">
+                    <td class="tooltip-target square-wrapper"><span class="square light icon-left"><i class="far fa-times-circle hide-screen-sm"></i>{{product.outs.length}}</span></td>
+                    <TooltipList slot="popover" :header="'out'" :array="product.outs.map(x => (x.task) ? (x.task.type != 'feedback') ? x.task.title : (x.user && x.user.name != null) ? x.user.name : x.title : (x.user && x.user.name != null) ? x.user.name : x.title )"/>
+                </v-popover>
+                <v-popover class="square-wrapper" v-if="currentTask.type != 'decision'" :disabled="product.nds.length <= 0 || userPermissionLevel <= 1">
+                    <td class="tooltip-target square-wrapper nds"><span class="square light icon-left"><i class="far fa-question-circle hide-screen-sm"></i>{{product.nds.length}} /{{product.ndsTotal}}</span></td>
+                    <TooltipList slot="popover" :header="'not decided'" :array="product.nds.map(x => (x.name != null) ? x.name : x.title)"/>
+                </v-popover>
             </template>
             <template v-else-if="currentTaskPermissions.focus">
-                <tooltipAlt2 class="square-wrapper" :disabled="product.focus.length <= 0 || userPermissionLevel <= 1" :header="'focus'" :array="product.focus.map(x => (x.task) ? (x.task.type != 'feedback') ? x.task.title : (x.user && x.user.name != null) ? x.user.name : x.title : (x.user && x.user.name != null) ? x.user.name : x.title )">
-                    <td class="square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
-                </tooltipAlt2>
+                <v-popover class="square-wrapper" :disabled="product.focus.length <= 0 || userPermissionLevel <= 1">
+                    <td class="tooltip-target square-wrapper focus"><span class="square light icon-left"><i class="far fa-star hide-screen-sm"></i>{{product.focus.length}}</span></td>
+                    <TooltipList slot="popover" :header="'focus'" :array="product.focus.map(x => (x.task) ? (x.task.type != 'feedback') ? x.task.title : (x.user && x.user.name != null) ? x.user.name : x.title : (x.user && x.user.name != null) ? x.user.name : x.title )"/>
+                </v-popover>
             </template>
 
             <td v-if="currentTask.type == 'decision'" class="square-wrapper comments"><span class="square light icon-left clickable bind-view-single" @click="onViewSingle(product.id)"><i class="far fa-comment"></i>{{product.commentsInherited.length}}</span></td>
@@ -44,14 +49,14 @@
                     </span>
 
                     <template v-if="product.outInFilter">
-                        <TooltipAlt2 :body="'Out by ' + product.outInFilter.user.name + ' in ' + product.outInFilter.task.title">
+                        <div v-tooltip="'Out by ' + product.outInFilter.user.name + ' in ' + product.outInFilter.task.title">
                             <span class="button icon-right ghost disabled">
                                 In  <i class="far fa-heart"></i>
                             </span>
                             <span class="button icon-right active red disabled">
                                 Out  <i class="far fa-times-circle"></i>
                             </span>
-                        </TooltipAlt2>
+                        </div>
                     </template>
                     <template v-else-if="currentTask.type == 'approval' && product.requests.length < 1">
                         <span class="button icon-right disabled" :class="[(product.inheritedAction && product.inheritedAction.action >= 1) || (product.currentAction && prouct.currentAction.action >= 1) ? 'active green' : 'ghost']">
@@ -82,16 +87,14 @@
 
                         </template>
                         <template v-else>
-                            <TooltipAlt2 :body="'Open product to accept request'">
-    
+                            <div v-tooltip="'Open product to accept request'">
                                 <span class="button icon-right disabled" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id != 3 : false}]">
                                 In  <i class="far fa-heart"></i>
                                 </span>
                                 <span class="button icon-right disabled" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id != 3 : false}]">
                                 Out  <i class="far fa-times-circle"></i>
                                 </span>
-
-                            </TooltipAlt2>
+                            </div>
                         </template>
 
                     </template>
