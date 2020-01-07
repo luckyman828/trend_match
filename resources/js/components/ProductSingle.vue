@@ -44,14 +44,14 @@
 
 
                             <template v-if="product.outInFilter">
-                                <TooltipAlt2 :body="'Out by ' + product.outInFilter.user.name + ' in ' + product.outInFilter.task.title">
+                                <div v-tooltip="'Out by ' + product.outInFilter.user.name + ' in ' + product.outInFilter.task.title">
                                     <span class="button icon-right ghost disabled" ref="inButton">
                                         In  <i class="far fa-heart"></i>
                                     </span>
                                     <span class="button icon-right active red disabled" ref="outButton">
                                         Out  <i class="far fa-times-circle"></i>
                                     </span>
-                                </TooltipAlt2>
+                                </div>
                             </template>
                             <template v-else-if="currentTask.type == 'approval' && product.requests.length < 1">
                                 <span class="button icon-right disabled" ref="inButton" :class="[(product.inheritedAction && product.inheritedAction.action >= 1) || (product.currentAction && prouct.currentAction.action >= 1) ? 'active green' : 'ghost']">
@@ -108,44 +108,29 @@
                                     <span>{{product.quantity}}</span>
                                 </div>
 
-                                <TooltipAlt2 v-if="userPermissionLevel >= 4" :header="'Wholesale price'" :array="product.prices" :arrayValueKey="'wholesale_price'" :arrayLabelKey="'currency'">
-                                    <div class="stat">
-                                        <p><strong>WHS ({{product.userPrices.currency}})</strong></p>
-                                        <p>{{product.userPrices.wholesale_price}} <i class="far fa-info-circle"></i></p>
-                                    </div>
-                                </TooltipAlt2>
-                                <template v-else>
-                                    <div class="stat">
-                                        <p><strong>WHS ({{product.userPrices.currency}})</strong></p>
-                                        <p>{{product.userPrices.wholesale_price}}</p>
-                                    </div>
-                                </template>
+                                <div class="stat">
+                                    <p><strong>WHS ({{product.userPrices.currency}})</strong></p>
+                                    <v-popover :disabled="userPermissionLevel < 4">
+                                        <p class="tooltip-target">{{product.userPrices.wholesale_price}} <i class="far fa-info-circle"></i></p>
+                                        <TooltipList slot="popover" :header="'Wholesale price'" :array="product.prices" :arrayValueKey="'wholesale_price'" :arrayLabelKey="'currency'"/>
+                                    </v-popover>
+                                </div>
 
-                                <TooltipAlt2 v-if="userPermissionLevel >= 4" :header="'Recommended retail price'" :array="product.prices" :arrayValueKey="'recommended_retail_price'" :arrayLabelKey="'currency'">
-                                    <div class="stat">
-                                        <p><strong>RRP ({{product.userPrices.currency}})</strong></p>
-                                        <p>{{product.userPrices.recommended_retail_price}} <i class="far fa-info-circle"></i></p>
-                                    </div>
-                                </TooltipAlt2>
-                                <template v-else>
-                                    <div class="stat">
-                                        <p><strong>RRP ({{product.userPrices.currency}})</strong></p>
-                                        <p>{{product.userPrices.recommended_retail_price}}</p>
-                                    </div>
-                                </template>
+                                <div class="stat">
+                                    <p><strong>RRP ({{product.userPrices.currency}})</strong></p>
+                                    <v-popover :disabled="userPermissionLevel < 4">
+                                        <p class="tooltip-target">{{product.userPrices.recommended_retail_price}} <i class="far fa-info-circle"></i></p>
+                                        <TooltipList slot="popover" :header="'Recommended retail price'" :array="product.prices" :arrayValueKey="'recommended_retail_price'" :arrayLabelKey="'currency'"/>
+                                    </v-popover>
+                                </div>
 
-                                <TooltipAlt2 v-if="userPermissionLevel >= 4" :header="'Mark up'" :array="product.prices" :arrayValueKey="'markup'" :arrayLabelKey="'currency'">
-                                    <div class="stat">
-                                        <p><strong>MU</strong></p>
-                                        <p>{{product.userPrices.markup}} <i class="far fa-info-circle"></i></p>
-                                    </div>
-                                </TooltipAlt2>
-                                <template v-else>
-                                    <div class="stat">
-                                        <p><strong>MU</strong></p>
-                                        <p>{{product.userPrices.markup}}</p>
-                                    </div>
-                                </template>
+                                <div class="stat">
+                                    <p><strong>MU</strong></p>
+                                    <v-popover :disabled="userPermissionLevel < 4">
+                                        <p class="tooltip-target">{{product.userPrices.markup}} <i class="far fa-info-circle"></i></p>
+                                        <TooltipList slot="popover" :header="'Mark up'" :array="product.prices" :arrayValueKey="'markup'" :arrayLabelKey="'currency'"/>
+                                    </v-popover>
+                                </div>
 
                             </div>
                         </div>
@@ -220,8 +205,6 @@ import { mapActions, mapGetters } from 'vuex'
 import ProductSingleComments from './ProductSingleComments'
 import Loader from './Loader'
 import Dropdown from './Dropdown'
-import TooltipAlt from './TooltipAlt'
-import TooltipAlt2 from './TooltipAlt2'
 
 export default {
     name: 'productSingle',
@@ -235,8 +218,6 @@ export default {
         ProductSingleComments,
         Loader,
         Dropdown,
-        TooltipAlt,
-        TooltipAlt2,
     },
     data: function () { return {
             currentTab: 'ins',

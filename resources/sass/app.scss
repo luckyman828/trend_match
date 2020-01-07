@@ -742,8 +742,7 @@ i {
         right: 12px;
     }
 }
-.dropdown,
-.tooltip {
+.dropdown {
     position: fixed;
     top: 0;
     z-index: 120;
@@ -878,33 +877,6 @@ i {
     }
 }
 // Tooltip specific
-.tooltip {
-    padding-top: 10px;
-    &.above {
-        padding-top: 0;
-        padding-bottom: 16px;
-        .arrow {
-            top: auto;
-            bottom: 10px;
-        }
-    }
-    .arrow {
-        top: 12px;
-    }
-    .inner {
-        position: relative;
-        z-index: 2;
-        // margin-top: 0;
-    }
-    .body {
-        max-height: none;
-        overflow: visible;
-    }
-    &::before {
-        // arrow
-        content: none;
-    }
-}
 .tooltip-parent {
     &:hover {
         i.fa-info-circle {
@@ -948,6 +920,116 @@ i {
             margin-left: 8px;
         }
     }
+}
+
+// V-TOOLTIP
+.tooltip {
+    max-width: 200px;
+    border-radius: 4px;
+    border: 1px solid $dark;
+    font-size: 12px;
+
+    background-color: $darkAlt;
+    color: white;
+    box-shadow: 0 10px 10px -5px rgba($dark, 10%);
+    z-index: 99999999;
+
+    &-inner:not(.popover-inner) {
+        padding: 8px 12px;
+    }
+
+    &-arrow {
+        position: absolute;
+        content: '';
+        width: 0;
+        height: 0;
+        border: 5px solid transparent;
+
+        &::after {
+            content: '';
+            display: block;
+            position: absolute;
+            border: 5px solid transparent;
+        }
+    }
+
+    &[x-placement^='top'] {
+        margin-bottom: 5px;
+
+        .tooltip-arrow {
+            border-bottom-width: 0;
+            border-top-color: $dark;
+            bottom: -5px;
+            left: 0;
+
+            &::after {
+                border-bottom-width: 0;
+                border-top-color: $darkAlt;
+                bottom: 1px;
+                left: -5px;
+            }
+        }
+    }
+
+    &[x-placement^='bottom'] {
+        margin-top: 5px;
+
+        .tooltip-arrow {
+            border-top-width: 0;
+            border-bottom-color: $dark;
+            top: -5px;
+            // left: 50%;
+            // 实战bug3： x-arrow自动会计算
+            // transform: translateX(-50%);
+            left: 0;
+
+            &::after {
+                border-top-width: 0;
+                border-bottom-color: $darkAlt;
+                top: 1px;
+                left: -5px;
+            }
+        }
+    }
+
+    &[x-placement^='right'] {
+        margin-left: 5px;
+
+        .tooltip-arrow {
+            border-left-width: 0;
+            border-right-color: $dark;
+            top: 0;
+            left: -5px;
+
+            &::after {
+                border-left-width: 0;
+                border-right-color: $darkAlt;
+                top: -5px;
+                left: 1px;
+            }
+        }
+    }
+
+    &[x-placement^='left'] {
+        margin-right: 5px;
+
+        .tooltip-arrow {
+            border-right-width: 0;
+            border-left-color: $dark;
+            top: 0;
+            right: -5px;
+
+            &::after {
+                border-right-width: 0;
+                border-left-color: $darkAlt;
+                top: -5px;
+                right: 1px;
+            }
+        }
+    }
+}
+.tooltip-target:hover i {
+    font-weight: 900;
 }
 
 // CUSTOM RADIO AND CHECKBOX BUTTONS

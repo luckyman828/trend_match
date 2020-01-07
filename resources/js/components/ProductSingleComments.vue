@@ -145,7 +145,6 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import TooltipAlt2 from './TooltipAlt2'
 import Comment from './Comment'
 import Request from './Request'
 import TempAlert from './TempAlert'
@@ -157,7 +156,6 @@ export default {
         'product',
     ],
     components: {
-        TooltipAlt2,
         Comment,
         Request,
         TempAlert
