@@ -392,6 +392,9 @@ export default {
                     margin-top: 8px;
                     display: block;
                 }
+                .v-popover {
+                    display: inline-block;
+                }
             }
         }
         .details {

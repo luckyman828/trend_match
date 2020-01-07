@@ -935,6 +935,9 @@ textarea {
 .tooltip-target:hover i {
     font-weight: 900;
 }
+.v-popover > .trigger {
+    display: inherit !important;
+}
 
 // CUSTOM RADIO AND CHECKBOX BUTTONS
 .checkbox,
