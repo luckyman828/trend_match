@@ -167,9 +167,16 @@ class WorkspaceController extends Controller
 
   public function subfiles($workspace_id)
   {
-      $response = Subfile::whereHas('file', function (Builder $query) use($workspace_id) {
-          $query->where('workspace_id', $workspace_id);
-      })->get();
+    //   $response = Subfile::whereHas('file', function (Builder $query) use($workspace_id) {
+    //       $query->where('workspace_id', $workspace_id);
+    //   })->descendants()->depthFirst()->get();
+
+      $response = Subfile::tree()->breadthFirst()->get();
+    //   $response = Subfile::tree()->depthFirst()->get();
+
+    //   $response = Subfile::whereHas('file', function (Builder $query) use($workspace_id) {
+    //       $query->where('workspace_id', $workspace_id);
+    //   })->where('parent_id', null)->with('descendants')->depthFirst()->get();
 
       return $response;
   }

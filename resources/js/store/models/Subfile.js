@@ -7,11 +7,12 @@ export default class Subfile extends Model {
 
     // List of all fields (schema) of the product model. `this.attr` is used
     // for the generic field type. The argument is the default value.
-    // static primaryKey = 'id'
+    static primaryKey = 'myId'
 
     static fields() {
         const data = {
             id: this.attr(null),
+            myId: this.uid(),
             file_id: this.attr(null),
             name: this.attr(null),
             parent_id: this.attr(null),
@@ -37,6 +38,15 @@ export default class Subfile extends Model {
             view_sibling_comments: this.attr(false),
             view_sibling_actions: this.attr(false),
             completed: this.attr(false),
+            descendants: this.attr(false),
+            depth: this.attr(),
+
+            // Relationships
+            children: this.hasMany(Subfile, 'parent_id'),
+            parent: this.belongsTo(Subfile, 'parent_id'),
+
+            // Custom attributes
+            expanded: this.attr(true),
         }
 
         return data

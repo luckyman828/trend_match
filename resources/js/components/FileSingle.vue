@@ -1,14 +1,8 @@
 <template>
     <div class="file-single">
-        <div class="flyin-header">
-            <div class="left">
-                <span class="circle light-2"><i class="far fa-times"></i></span>
-                <h3>{{file.title}}</h3>
-            </div>
-            <div class="right">
-
-            </div>
-        </div>
+        <FlyinHeader :title="file.title" @closeFlyin="onClose">
+            <p>I am a flyin header</p>
+        </FlyinHeader>
         <div class="body">
             <SubfilesTable :subfiles="file.subfiles"/>
         </div>
@@ -17,6 +11,7 @@
 
 <script>
 import SubfilesTable from './SubfilesTable'
+import FlyinHeader from './FlyinHeader'
 
 export default {
     name: 'fileSingle',
@@ -25,6 +20,12 @@ export default {
     ],
     components: {
         SubfilesTable,
+        FlyinHeader,
+    },
+    methods: {
+        onClose() {
+            this.$emit('closeFlyin')
+        }
     }
 }
 </script>
@@ -37,17 +38,6 @@ export default {
         background: $grey;
         .body {
             padding: 16px;
-        }
-    }
-    .flyin-header {
-        height: 72px;
-        background: $light1;
-        display: flex;
-        width: 100%;
-        justify-content: space-between;
-        box-shadow: 0px 2px 10px #0000001A;
-        .left, .right {
-            display: flex;
         }
     }
 </style>

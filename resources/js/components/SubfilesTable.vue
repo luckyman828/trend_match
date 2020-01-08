@@ -12,9 +12,18 @@
                 <th class="action">Action</th>
             </template>
             <template v-slot:body>
-                <tr v-for="subfile in subfiles" :key="subfile.id" class="subfile">
+                <template v-for="subfile in subfiles">
+                    <SubfilesTableRow :key="subfile.id" class="subfile" :class="`depth-${subfile.depth}`"
+                    v-if="!subfile.parent || (subfile.parent && subfile.parent.expanded)" :subfile="subfile" @toggleExpanded="toggleExpanded"/>
+                    <!-- <template v-for="subfileChild in subfile.descendants">
+                        <SubfilesTableRow :key="subfileChild.id" class="subfile" :class="`depth-${subfileChild.depth}`" 
+                        :subfile="subfileChild" v-if="expandedIds.includes(subfileChild.parent_id)" @toggleExpanded="toggleExpanded"/>
+                    </template> -->
+                </template>
+                <!-- <tr v-for="subfile in subfiles" :key="subfile.id" class="subfile">
                     <td class="title clickable">
-                        <i class="fad fa-file-certificate master"></i> 
+                        <i v-if="subfile.master" class="fad fa-file-certificate master"></i> 
+                        <i v-else class="fas fa-file light-2"></i> 
                         {{subfile.name}}
                     </td>
                     <td class="items">-</td>
@@ -29,7 +38,7 @@
                     <td class="actions">
                         <span class="button invisible ghost-hover true-square"><i class="fas fa-ellipsis-h"></i></span>
                     </td>
-                </tr>
+                </tr> -->
             </template>
             <!-- <template v-slot:footer="slotProps">
             </template> -->
@@ -39,6 +48,7 @@
 
 <script>
 import GridTable from './GridTable'
+import SubfilesTableRow from './SubfilesTableRow'
 
 export default {
     name: 'subfilesTable',
@@ -47,21 +57,46 @@ export default {
     ],
     components: {
         GridTable,
+        SubfilesTableRow,
+    },
+    data: function() { return {
+        expandedIds: []
+    }},
+    methods: {
+        toggleExpanded(id) {
+            console.log('toggling expanded')
+            const idIndex = this.expandedIds.findIndex(x => x == id)
+            if (idIndex) {
+                this.expandedIds.splice(idIndex, 1)
+            } else {
+                expandedIds.push(id)
+            }
+        }
     }
 }
 </script>
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
+    $paddingLeftBase: 12px;
+    $paddingLeft: 20px;
 
     .subfile {
-        .title {
-            i {
-                font-size: 20px;
-                &.master {
-                    --fa-primary-color: #3b86ff;
-                }
+        &.depth {
+            &-1 > :first-child {
+                padding-left: $paddingLeftBase + $paddingLeft * 1;
             }
+            &-2 > :first-child {
+                padding-left: $paddingLeftBase + $paddingLeft * 2;
+            }
+            &-3 > :first-child {
+                padding-left: $paddingLeftBase + $paddingLeft * 3;
+            }
+        }
+    }
+    td {
+        &.actions {
+            text-align: right;
         }
     }
     

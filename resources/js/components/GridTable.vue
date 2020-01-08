@@ -7,10 +7,12 @@
                     </slot>
                 </tr>
             </thead>
-            <tbody>
+            <slot name="body" :sort="sort">
+                </slot>
+            <!-- <tbody>
                 <slot name="body" :sort="sort">
                 </slot>
-            </tbody>
+            </tbody> -->
             <tfoot>
                 <slot name="footer" :sort="sort">
                 </slot>
@@ -58,7 +60,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
     @import '~@/_variables.scss';
     $rowRadius: 2px;
     $headerRadius: 4px;
@@ -70,9 +72,11 @@ export default {
             &:hover {
                 td {
                     background: $light1;
-                    i {
-                        color: $dark05;
-                        transition: 0;
+                    &.title {
+                        i {
+                            color: $dark05;
+                            transition: 0;
+                        }
                     }
                 }
             }
@@ -109,6 +113,9 @@ export default {
                 width: 100%;
                 text-align: right;
             }
+        }
+        td {
+            height: 48px;
         }
     }
 </style>

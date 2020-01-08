@@ -78,7 +78,7 @@
         <FoldersTable v-if="currentFolder" :folder="currentFolder" :selected="selected" 
         @setCurrentFolder="setCurrentFolder" @onSelect="onSelect" @showSingleFile="showSingleFile"/>
         <FlyIn ref="fileSingleFlyin">
-            <FileSingle :file="currentFile" v-if="currentFile != null"/>
+            <FileSingle :file="currentFile" v-if="currentFile != null" @closeFlyin="$refs.fileSingleFlyin.close()"/>
         </FlyIn>
         <!-- <FilesTable :authUser="authUser" :files="userFiles" :selected="selected" @onSelect="onSelect"/> -->
     </div>

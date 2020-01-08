@@ -26,12 +26,14 @@ export default {
             while (tryCount-- > 0 && !succes) {
                 try {
                     const response = await axios.get(`${apiUrl}`)
+                    console.log('subfiles data:')
+                    console.log(response.data)
                     Subfile.create({ data: response.data })
                     commit('setLoading', false)
                     succes = true
                 } catch (err) {
                     console.log('API error in Subfile.js :')
-                    console.log(err)
+                    console.log(err.response)
                     console.log(`Trying to fetch again. TryCount = ${tryCount}`)
                     if (tryCount <= 0) throw err
                 }

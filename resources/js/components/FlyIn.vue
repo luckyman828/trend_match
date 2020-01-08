@@ -74,16 +74,17 @@ export default {
         height: 100vh;
         overflow: hidden;
         width: 100%;
-        transition-timing-function: ease-out;
-        transition: .3s;
-        &.animate {
-            animation-name: fly-in;
-            animation-duration: .3s;
-            animation-iteration-count: 1;
-        }
+        // transition-timing-function: ease-out;
+        transition-timing-function: cubic-bezier(0.060, 0.975, 0.195, 0.985);;
+        transition: .2s;
+        // &.animate {
+        //     animation-name: fly-in;
+        //     animation-duration: .2s;
+        //     animation-iteration-count: 1;
+        // }
     }
-    @keyframes fly-in {
-        from {right: -100%;}
-        to {right: 0;}
-    }
+    // @keyframes fly-in {
+    //     from {right: -100%;}
+    //     to {right: 0;}
+    // }
 </style>
