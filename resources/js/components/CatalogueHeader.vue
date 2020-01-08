@@ -33,17 +33,7 @@
             </div>
 
             <template v-if="currentTask">
-                <TooltipAlt2 v-if="currentTask.type == 'feedback' && userPermissionLevel > 1" :header="'Progress'" :array="currentTask.input" :arrayLabelKey="'name'" :arrayValueKey="'progress'" :arrayValueUnit="'%'">
-                    <div class="stat progress">
-                        <span class="title">Progress</span>
-                        <svg height="4">
-                            <rect class="background" v-if="currentTaskProgress > 0" width="100%" height="4"/>
-                            <rect class="value" v-if="currentTaskProgress > 0" :width="currentTaskProgress + '%'" height="4"/>
-                        </svg>
-                        <span class="value">{{currentTaskProgress}}%</span>
-                    </div>
-                </TooltipAlt2>
-                <div class="stat progress" v-else>
+                <div class="stat progress">
                     <span class="title">Progress</span>
                     <svg height="4">
                         <rect class="background" v-if="currentTaskProgress > 0" width="100%" height="4"/>

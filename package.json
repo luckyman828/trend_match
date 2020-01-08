@@ -29,6 +29,7 @@
         "kuduscript": "^1.0.17",
         "laravel-echo": "^1.6.1",
         "pusher-js": "^5.0.2",
+        "v-tooltip": "^2.0.2",
         "vue-cookies": "^1.5.13",
         "vue-echo-laravel": "0.0.6",
         "vue-popperjs": "^2.2.0",

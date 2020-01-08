@@ -15,8 +15,8 @@ Vue.use(VueCookies)
 import UUID from 'vue-uuid'
 Vue.use(UUID)
 
-import directive from './directive'
-Vue.use(directive)
+// import directive from './directive'
+// Vue.use(directive)
 import dragscrollDirective from './dragscrollDirective'
 Vue.use(dragscrollDirective)
 import clickOutsideDirective from './clickOutsideDirective'
@@ -26,11 +26,16 @@ import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import VueVirtualScroller from 'vue-virtual-scroller'
 Vue.use(VueVirtualScroller)
 
+import VTooltip from 'v-tooltip'
+Vue.use(VTooltip)
+VTooltip.options.popover.defaultTrigger = 'hover focus'
+
 Vue.component('app', require('./App.vue').default)
 
 // Global components
 Vue.component('TooltipAlt2', require('./components/TooltipAlt2.vue').default)
 Vue.component('Tooltip', require('./components/TooltipAlt2.vue').default)
+Vue.component('TooltipList', require('./components/TooltipList.vue').default)
 Vue.component('Toggle', require('./components/Toggle.vue').default)
 Vue.component('Loader', require('./components/Loader.vue').default)
 Vue.component('Modal', require('./components/Modal.vue').default)

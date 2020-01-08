@@ -171,7 +171,6 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import Dropdown from './Dropdown'
-import TooltipAlt2 from './TooltipAlt2'
 import EditInputWrapper from './EditInputWrapper'
 import Editable from './Editable'
 import Product from './../store/models/Product'
@@ -187,7 +186,6 @@ export default {
     ],
     components: {
         Dropdown,
-        TooltipAlt2,
         EditInputWrapper,
         Editable,
         Draggable

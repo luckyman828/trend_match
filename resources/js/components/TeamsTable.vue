@@ -53,10 +53,10 @@
                         <td class="assigned">{{team.expanded}}</td>
                         <td class="members clickable" @click="expandUsers(team)"><span>{{team.users.length}}<template v-if="team.invites.length > 0"> ({{team.invites.length}})</template></span></td>
                         <td class="files">
-                            <TooltipAlt2 v-if="team.files.length > 0" :header="'Team files'" :array="team.files" :arrayValueKey="'title'">
-                                <span>{{team.files.length}} <i class="far fa-info-circle"/></span>
-                            </TooltipAlt2>
-                            <span v-else>{{team.files.length}}</span>
+                            <v-popover :aria-disabled="team.files.length <= 0">
+                                <span class="tooltip-target">{{team.files.length}} <i class="far fa-info-circle"/></span>
+                                <tooltip-list slot="popover" :header="'Team files'" :array="team.files" :arrayValueKey="'title'"/>
+                            </v-popover>
                         </td>
                         <td class="currency">
                             <div v-if="editCurrency && teamToEdit.id == team.id" class="edit-title input-parent controls-right">
