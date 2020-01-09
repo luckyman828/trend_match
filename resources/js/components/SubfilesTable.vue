@@ -22,7 +22,6 @@
 </template>
 
 <script>
-import GridTable from './GridTable'
 import FlexTable from './FlexTable'
 import SubfilesTableRow from './SubfilesTableRow'
 import SubfileRow from './SubfileRow'
@@ -33,7 +32,6 @@ export default {
         'subfiles'
     ],
     components: {
-        GridTable,
         SubfilesTableRow,
         SubfileRow,
         FlexTable,

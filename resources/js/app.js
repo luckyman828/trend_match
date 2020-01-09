@@ -40,7 +40,9 @@ Vue.component('Toggle', require('./components/Toggle.vue').default)
 Vue.component('Loader', require('./components/Loader.vue').default)
 Vue.component('Modal', require('./components/Modal.vue').default)
 Vue.component('Dropdown', require('./components/Dropdown.vue').default)
-Vue.component('GridTable', require('./components/GridTable.vue').default)
+Vue.component('AutoWidthTable', require('./components/AutoWidthTable.vue').default)
+Vue.component('FlexTable', require('./components/FlexTable.vue').default)
+Vue.component('TableHeader', require('./components/TableHeader.vue').default)
 Vue.component('Checkbox', require('./components/Checkbox.vue').default)
 
 // Define global filters
@@ -78,14 +80,14 @@ import TeamsLoader from './components/screens/loaders/TeamsLoader'
 import FileLoader from './components/screens/loaders/FileLoader'
 import FolderLoader from './components/screens/loaders/FolderLoader'
 import EditFileLoader from './components/screens/loaders/EditFileLoader'
-import Test from './components/screens/Test'
+import Subfileloader from './components/screens/loaders/Subfileloader'
 
 const routes = [
     { path: '/file/:fileId', name: 'file', component: FileLoader },
     { path: '/file/:fileId/edit', name: 'editFile', component: EditFileLoader },
     { path: '/files', name: 'files', component: FolderLoader },
     { path: '/teams', name: 'teams', component: TeamsLoader },
-    { path: '/test/:fileId', name: 'test', component: Test },
+    { path: '/file/:fileId/:subfileId', name: 'subfile', component: Subfileloader },
     { path: '*', redirect: '/files' },
 ]
 

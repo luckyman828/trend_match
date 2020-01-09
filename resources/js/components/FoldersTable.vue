@@ -1,6 +1,6 @@
 <template>
     <div class="folders-table">
-        <GridTable>
+        <AutoWidthTable>
             <template v-slot:header="slotProps">
                 <th class="select"><Checkbox/></th>
                 <th>Name <i class="fas fa-sort"></i></th>
@@ -57,7 +57,7 @@
                 <td><button class="primary invisible icon-left" @click="onNewFolder"><i class="far fa-plus"></i>Add new: Folder</button></td>
                 <td></td><td></td><td></td><td></td><td></td><td></td>
             </template>
-        </GridTable>
+        </AutoWidthTable>
 
         <Modal
             ref="editFileModal"

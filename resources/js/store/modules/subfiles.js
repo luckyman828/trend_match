@@ -6,11 +6,15 @@ export default {
 
     state: {
         loading: true,
+        currentSubfileId: null,
     },
 
     getters: {
         loadingSubfiles: state => {
             return state.loading
+        },
+        currentSubfileId: state => {
+            return state.currentSubfileId
         },
     },
 
@@ -44,6 +48,9 @@ export default {
     mutations: {
         setLoading(state, bool) {
             state.loading = bool
+        },
+        setCurrentSubfileId(state, id) {
+            state.currentSubfileId = id
         },
     },
 }

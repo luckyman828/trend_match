@@ -1,5 +1,29 @@
 <template>
-    <div class="teams-table card">
+    <div class="teams-table">
+
+        <Tabs/>
+        <FlexTable>
+            <template v-slot:header>
+                <!-- <th class="select"><Checkbox/></th> -->
+                <TableHeader class="select"><Checkbox/></TableHeader>
+                <TableHeader :sortKey="'title'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="onSortBy">Name</TableHeader>
+                <TableHeader :sortKey="'owner'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="onSortBy">Owner</TableHeader>
+                <TableHeader :sortKey="'members'" :currentSortKey="sortBy" :sortAsc="sortAsc" :descDefault="true" @sort="onSortBy">Members</TableHeader>
+                <TableHeader :sortKey="'files'" :currentSortKey="sortBy" :sortAsc="sortAsc" :descDefault="true" @sort="onSortBy">Files</TableHeader>
+                <TableHeader :sortKey="'currency'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="onSortBy">Team Currency</TableHeader>
+                <TableHeader class="action">Action</TableHeader>
+            </template>
+            <template v-slot:body>
+                <TeamsTableRow v-for="(team, index) in teamsSorted" :key="team.id" :team="team" :index="index"/>
+            </template>
+            <!-- <template v-slot:footer>
+
+            </template> -->
+        </FlexTable>
+
+
+
+
         <div class="team-totals">
             <span>{{selectedCount}} selected</span>
             <span>{{teams.length}} records</span>
@@ -7,23 +31,22 @@
         <div class="flex-table">
             <div class="header-row flex-table-row">
                 <th class="select">Select <i class="fas fa-chevron-down"></i></th>
-                <th class="clickable title" :class="{active: this.sortBy == 'title'}" @click="onSortBy('title', true)">
-                    Team <i class="fas" :class="[(this.sortBy == 'title' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                <th class="clickable title" :class="{active: sortBy == 'title'}" @click="onSortBy('title', true)">
+                    Team <i class="fas" :class="[(sortBy == 'title' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'assigned'}" class="clickable assigned" @click="onSortBy('assigned', true)">
-                   Assigned <i class="fas" :class="[(this.sortBy == 'assigned' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                <th :class="{active: sortBy == 'assigned'}" class="clickable assigned" @click="onSortBy('assigned', true)">
+                   Assigned <i class="fas" :class="[(sortBy == 'assigned' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'users'}" class="clickable members" @click="onSortBy('users', false)">
-                    Members <i class="fas" :class="[(this.sortBy == 'users' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                <th :class="{active: sortBy == 'users'}" class="clickable members" @click="onSortBy('users', false)">
+                    Members <i class="fas" :class="[(sortBy == 'users' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'files'}" class="clickable files" @click="onSortBy('files', false)">
-                    files <i class="fas" :class="[(this.sortBy == 'files' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                <th :class="{active: sortBy == 'files'}" class="clickable files" @click="onSortBy('files', false)">
+                    files <i class="fas" :class="[(sortBy == 'files' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
-                <th :class="{active: this.sortBy == 'currency'}" class="clickable currency" @click="onSortBy('currency', false)">
-                    Currency <i class="fas" :class="[(this.sortBy == 'currency' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
+                <th :class="{active: sortBy == 'currency'}" class="clickable currency" @click="onSortBy('currency', false)">
+                    Currency <i class="fas" :class="[(sortBy == 'currency' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
                 </th>
                 <th class="action">Action</th>
-                <th></th>
             </div>
             <template v-if="!loading">
 
@@ -168,6 +191,8 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Loader from './Loader'
 import Dropdown from './Dropdown'
 import RadioButtons from './RadioButtons'
+import TeamsTableRow from './TeamsTableRow'
+import Tabs from './Tabs'
 import Role from '../store/models/Role'
 
 export default {
@@ -185,6 +210,8 @@ export default {
         Loader,
         Dropdown,
         RadioButtons,
+        Tabs,
+        TeamsTableRow,
     },
     data: function() { return {
         sortBy: 'id',
@@ -461,8 +488,8 @@ export default {
       -ms-user-select: none;
       user-select: none;
       margin-bottom: 0;
-      padding-top: 5px;
-      padding-bottom: 5px;
+    //   padding-top: 5px;
+    //   padding-bottom: 5px;
     }
 
     .checkbox input {

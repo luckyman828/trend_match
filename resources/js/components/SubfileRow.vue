@@ -6,7 +6,7 @@
                     <i class="fas fa-caret-down"></i>
                 </span>
             </td>
-            <td class="title clickable">
+            <td class="title clickable" @click="$router.push({name: 'subfile', params: {fieId: subfile.file_id, subfileId: subfile.id}})">
                 <i v-if="subfile.master" class="fad fa-file-certificate master"></i> 
                 <i v-else class="fas fa-file light-2"></i> 
                 <span :title="subfile.name">{{subfile.name}}</span>

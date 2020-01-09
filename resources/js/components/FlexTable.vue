@@ -70,7 +70,9 @@ export default {
                 flex: 1;
             }
             &:hover {
-                background: $light1;
+                &:not(.header):not(.footer) {
+                    background: $light1;
+                }
                 td {
                     &.title {
                         i {
@@ -99,6 +101,11 @@ export default {
             &.action {
                 flex: 1;
                 text-align: right;
+            }
+            &.select {
+                flex: 0 1 auto;
+                min-width: 40px;
+                max-width: 40px;
             }
         }
     }

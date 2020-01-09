@@ -18,6 +18,7 @@ export default {
 @import '~@/_variables.scss';
     .checkbox {
         position: relative;
+        line-height: 0;
         input[type=checkbox] {
             position: absolute;
             display: block;
