@@ -78,7 +78,8 @@
         <FoldersTable v-if="currentFolder" :folder="currentFolder" :selected="selected" 
         @setCurrentFolder="setCurrentFolder" @onSelect="onSelect" @showSingleFile="showSingleFile"/>
         <FlyIn ref="fileSingleFlyin">
-            <FileSingle :file="currentFile" v-if="currentFile != null" @closeFlyin="$refs.fileSingleFlyin.close()"/>
+            <FileSingle :file="currentFile" v-if="currentFile != null" 
+            @closeFlyin="$refs.fileSingleFlyin.close()"/>
         </FlyIn>
         <!-- <FilesTable :authUser="authUser" :files="userFiles" :selected="selected" @onSelect="onSelect"/> -->
     </div>
@@ -86,7 +87,7 @@
 
 <script>
 import store from '../../store'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Loader from '../Loader'
 import FilesTable from '../FilesTable'
 import FoldersTable from '../FoldersTable'
@@ -200,6 +201,7 @@ export default {
     },
     methods: {
         ...mapActions('persist', ['setTeamFilter', 'setCurrentFileId']),
+        ...mapMutations('entities/collections', ['setAvailableFileIds']),
         onSelect(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
             const selected = this.selected
@@ -207,7 +209,11 @@ export default {
             const result = (found >= 0) ? selected.splice(found, 1) : selected.push(index)
         },
         showSingleFile(fileId) {
+            // Set the current file id
             this.setCurrentFileId(fileId)
+            // Set available files (for navigation) to the currently visible files
+            this.setAvailableFileIds(this.currentFolder.files.map(x => x.id))
+            // Show the flyin
             this.$refs.fileSingleFlyin.toggle()
         },
         onViewSingle(collectionID) {

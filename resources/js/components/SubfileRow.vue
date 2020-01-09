@@ -1,7 +1,12 @@
 <template>
     <div class="subfile-row">
         <tr class="subfile">
-            <td class="title clickable" :style="indent">
+            <td class="expand" :class="{active: childrenExpanded}" @click="toggleExpanded" :style="indent">
+                <span class="square invisible" v-if="subfile.children.length > 0">
+                    <i class="fas fa-caret-down"></i>
+                </span>
+            </td>
+            <td class="title clickable">
                 <i v-if="subfile.master" class="fad fa-file-certificate master"></i> 
                 <i v-else class="fas fa-file light-2"></i> 
                 <span :title="subfile.name">{{subfile.name}}</span>
@@ -19,7 +24,9 @@
                 <span class="button invisible ghost-hover true-square" @click="toggleExpanded(subfile.id)"><i class="fas fa-ellipsis-h"></i></span>
             </td>
         </tr>
-        <subfileRow v-for="subfile in subfile.children" :subfile="subfile" :key="subfile.id" :depth="depth+1"/>
+        <template v-if="childrenExpanded">
+            <subfileRow v-for="subfile in subfile.children" :subfile="subfile" :key="subfile.id" :depth="depth+1"/>
+        </template>
     </div>
 </template>
 
@@ -35,16 +42,19 @@ export default {
         'subfile',
         'depth'
     ],
+    data: function() { return {
+        childrenExpanded: false
+    }},
     computed: {
         indent() {
-            const baseIndent = 12
+            const baseIndent = 48
             const indentAmount = 20
-            return {paddingLeft: `${this.depth * indentAmount + baseIndent}px` }
+            return {maxWidth: `${this.depth * indentAmount + baseIndent}px`, minWidth: `${this.depth * indentAmount + baseIndent}px` }
         }
     },
     methods: {
-        toggleExpanded(id) {
-            this.$emit('toggleExpanded', id)
+        toggleExpanded() {
+            this.childrenExpanded = !this.childrenExpanded
         }
     }
 }
@@ -55,7 +65,6 @@ export default {
 
     .title {
         i {
-            font-size: 20px;
             margin-right: 8px;
             width: 24px;
             font-size: 16px;
@@ -65,6 +74,24 @@ export default {
                 &::after {
                     opacity: 1;
                 }
+            }
+        }
+    }
+    .expand {
+        i {
+            font-size: 16px;
+            color: $dark2;
+        }
+        &.active {
+            i {
+                transform: rotate(180deg);
+                color: $dark15;
+            }
+        }
+        &:hover {
+            cursor: pointer;
+            i {
+                color: $primary;
             }
         }
     }

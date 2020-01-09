@@ -65,7 +65,7 @@ export default {
             height: 48px;
             display: flex;
             align-items: center;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             > * {
                 flex: 1;
             }

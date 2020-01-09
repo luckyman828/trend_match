@@ -2,13 +2,14 @@
     <div class="subfiles-table">
         <FlexTable class="flex-table-root">
             <template v-slot:header="slotProps">
-                <th>Name <i class="fas fa-sort"></i></th>
-                <th>Items <i class="fas fa-sort"></i></th>
-                <th>In <i class="fas fa-sort"></i></th>
-                <th>Out <i class="fas fa-sort"></i></th>
-                <th>ND <i class="fas fa-sort"></i></th>
-                <th>Users <i class="fas fa-sort"></i></th>
-                <th>Status <i class="fas fa-sort"></i></th>
+                <th class="expand"></th>
+                <th class="title">Name <i class="fas fa-sort"></i></th>
+                <th class="items">Items <i class="fas fa-sort"></i></th>
+                <th class="in">In <i class="fas fa-sort"></i></th>
+                <th class="out">Out <i class="fas fa-sort"></i></th>
+                <th class="nd">ND <i class="fas fa-sort"></i></th>
+                <th class="users">Users <i class="fas fa-sort"></i></th>
+                <th class="status">Status <i class="fas fa-sort"></i></th>
                 <th class="action">Action</th>
             </template>
             <template v-slot:body>
@@ -37,20 +38,7 @@ export default {
         SubfileRow,
         FlexTable,
     },
-    data: function() { return {
-        expandedIds: []
-    }},
     methods: {
-        toggleExpanded(id) {
-            console.log('toggling expanded. Id: '+id)
-            const idIndex = this.expandedIds.findIndex(x => x == id)
-            if (idIndex >= 0) {
-                this.expandedIds.splice(idIndex, 1)
-            } else {
-                console.log('pushing the id')
-                this.expandedIds.push(id)
-            }
-        }
     }
 }
 </script>
@@ -62,11 +50,17 @@ export default {
         // Target child style
         ::v-deep tr {
             > * {
-                &:nth-child(1) { // Title
-                    min-width: 240px;
+                &.expand { // Title
+                    min-width: 48px;
+                    max-width: 48px
                 }
-                &:nth-child(7) { // Status
+                &.title { // Title
+                    min-width: 240px;
+                    max-width: 240px;
+                }
+                &.status { // Status
                     min-width: 202px;
+                    max-width: 202px;
                 }
                 &:last-child { // Actions
                     min-width: 72px;

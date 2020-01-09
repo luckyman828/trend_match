@@ -9,6 +9,7 @@ export default {
     state: {
         loading: true,
         filesUpdated: false,
+        availableFileIds: [],
     },
 
     getters: {
@@ -17,6 +18,9 @@ export default {
         },
         filesUpdated: state => {
             return state.filesUpdated
+        },
+        availableFileIds: state => {
+            return state.availableFileIds
         },
         files: (state, getters, rootState, rootGetters) => {
             if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
@@ -91,6 +95,28 @@ export default {
                 return files != null ? files.find(x => x.id == currentFileId) : null
             }
         },
+        nextFileId: (state, getters, rootState, rootGetters) => {
+            const availableIds = getters.availableFileIds
+            const currentId = rootGetters['persist/currentFileId']
+            // return currentId
+            if (currentId && availableIds.length > 0) {
+                const currentIndex = availableIds.findIndex(x => x == currentId)
+                if (currentIndex < availableIds.length - 1) {
+                    return availableIds[currentIndex + 1]
+                }
+            }
+        },
+        prevFileId: (state, getters, rootState, rootGetters) => {
+            const availableIds = getters.availableFileIds
+            const currentId = rootGetters['persist/currentFileId']
+            // return currentId
+            if (currentId && availableIds.length > 0) {
+                const currentIndex = availableIds.findIndex(x => x == currentId)
+                if (currentIndex != 0) {
+                    return availableIds[currentIndex - 1]
+                }
+            }
+        },
         currentTeamUsers(state, getters, rootState, rootGetters) {
             if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
                 const currentTeamId = rootGetters['persist/teamFilterId']
@@ -111,14 +137,6 @@ export default {
                     }
                     return usersToReturn
                 }
-            }
-        },
-        actionScope(state, getters, rootState, rootGetters) {
-            if (getters.currentTask != null) {
-                const type = getters.currentTask.type
-                if (type == 'feedback') {
-                    return 'user'
-                } else return 'task'
             }
         },
     },
@@ -285,6 +303,12 @@ export default {
                     console.log(err.response)
                 })
         },
+        async setNextFileAsCurrent({ dispatch, getters }) {
+            if (getters.nextFileId) dispatch('persist/setCurrentFileId', getters.nextFileId, { root: true })
+        },
+        async setPrevFileAsCurrent({ dispatch, getters }) {
+            if (getters.prevFileId) dispatch('persist/setCurrentFileId', getters.prevFileId, { root: true })
+        },
     },
 
     mutations: {
@@ -297,6 +321,9 @@ export default {
         },
         deleteFile(state, fileId) {
             Collection.delete(fileId)
+        },
+        setAvailableFileIds(state, fileIds) {
+            state.availableFileIds = fileIds
         },
     },
 }

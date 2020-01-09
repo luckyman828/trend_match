@@ -46,7 +46,6 @@ export default class Subfile extends Model {
             path: this.attr(),
 
             children: this.attr(),
-            // all_subfile_children: this.attr(),
 
             // Relationships
             // children: this.hasMany(Subfile, 'parent_id', 'id'),
