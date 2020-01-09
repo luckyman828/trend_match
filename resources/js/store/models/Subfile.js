@@ -11,8 +11,9 @@ export default class Subfile extends Model {
 
     static fields() {
         const data = {
-            id: this.attr(null),
             myId: this.uid(),
+
+            id: this.attr(null),
             file_id: this.attr(null),
             name: this.attr(null),
             parent_id: this.attr(null),
@@ -38,17 +39,25 @@ export default class Subfile extends Model {
             view_sibling_comments: this.attr(false),
             view_sibling_actions: this.attr(false),
             completed: this.attr(false),
+
+            // Staudemeir attributes
             descendants: this.attr(false),
             depth: this.attr(),
+            path: this.attr(),
+
+            children: this.attr(),
+            // all_subfile_children: this.attr(),
 
             // Relationships
-            children: this.hasMany(Subfile, 'parent_id'),
-            parent: this.belongsTo(Subfile, 'parent_id'),
-
-            // Custom attributes
-            expanded: this.attr(true),
+            // children: this.hasMany(Subfile, 'parent_id', 'id'),
+            // parent: this.belongsTo(Subfile, 'parent_id', 'id'),
         }
 
         return data
+    }
+    get splitPath() {
+        const arr = this.path.split('.')
+        arr.pop()
+        return arr
     }
 }

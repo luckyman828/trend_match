@@ -171,8 +171,14 @@ class WorkspaceController extends Controller
     //       $query->where('workspace_id', $workspace_id);
     //   })->descendants()->depthFirst()->get();
 
-      $response = Subfile::tree()->breadthFirst()->get();
-    //   $response = Subfile::tree()->depthFirst()->get();
+    //   $response = Subfile::tree()->breadthFirst()->get();
+    //   $response = Subfile::with('children')->tree()->depthFirst()->get();
+
+
+        $response = Subfile::whereHas('file', function (Builder $query) use($workspace_id) {
+          $query->where('workspace_id', $workspace_id);
+      })->with('children')->get();
+
 
     //   $response = Subfile::whereHas('file', function (Builder $query) use($workspace_id) {
     //       $query->where('workspace_id', $workspace_id);

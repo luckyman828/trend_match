@@ -1,6 +1,6 @@
 <template>
     <div class="subfiles-table">
-        <GridTable>
+        <FlexTable class="flex-table-root">
             <template v-slot:header="slotProps">
                 <th>Name <i class="fas fa-sort"></i></th>
                 <th>Items <i class="fas fa-sort"></i></th>
@@ -12,43 +12,19 @@
                 <th class="action">Action</th>
             </template>
             <template v-slot:body>
-                <template v-for="subfile in subfiles">
-                    <SubfilesTableRow :key="subfile.id" class="subfile" :class="`depth-${subfile.depth}`"
-                    v-if="!subfile.parent || (subfile.parent && subfile.parent.expanded)" :subfile="subfile" @toggleExpanded="toggleExpanded"/>
-                    <!-- <template v-for="subfileChild in subfile.descendants">
-                        <SubfilesTableRow :key="subfileChild.id" class="subfile" :class="`depth-${subfileChild.depth}`" 
-                        :subfile="subfileChild" v-if="expandedIds.includes(subfileChild.parent_id)" @toggleExpanded="toggleExpanded"/>
-                    </template> -->
-                </template>
-                <!-- <tr v-for="subfile in subfiles" :key="subfile.id" class="subfile">
-                    <td class="title clickable">
-                        <i v-if="subfile.master" class="fad fa-file-certificate master"></i> 
-                        <i v-else class="fas fa-file light-2"></i> 
-                        {{subfile.name}}
-                    </td>
-                    <td class="items">-</td>
-                    <td class="in">-</td>
-                    <td class="out">-</td>
-                    <td class="nd">-</td>
-                    <td class="users">-</td>
-                    <td class="status">
-                        <span class="square ghost icon-right">Locked <i class="far fa-lock"></i></span>
-                        <span class="square ghost icon-right">Hidden <i class="far fa-eye"></i></span>
-                    </td>
-                    <td class="actions">
-                        <span class="button invisible ghost-hover true-square"><i class="fas fa-ellipsis-h"></i></span>
-                    </td>
-                </tr> -->
+                <div class="body">
+                    <SubfileRow v-for="subfile in subfiles.filter(x => !x.parent_id)" :subfile="subfile" :key="subfile.id" :depth="0"/>
+                </div>
             </template>
-            <!-- <template v-slot:footer="slotProps">
-            </template> -->
-        </GridTable>
+        </FlexTable>
     </div>
 </template>
 
 <script>
 import GridTable from './GridTable'
+import FlexTable from './FlexTable'
 import SubfilesTableRow from './SubfilesTableRow'
+import SubfileRow from './SubfileRow'
 
 export default {
     name: 'subfilesTable',
@@ -58,18 +34,21 @@ export default {
     components: {
         GridTable,
         SubfilesTableRow,
+        SubfileRow,
+        FlexTable,
     },
     data: function() { return {
         expandedIds: []
     }},
     methods: {
         toggleExpanded(id) {
-            console.log('toggling expanded')
+            console.log('toggling expanded. Id: '+id)
             const idIndex = this.expandedIds.findIndex(x => x == id)
-            if (idIndex) {
+            if (idIndex >= 0) {
                 this.expandedIds.splice(idIndex, 1)
             } else {
-                expandedIds.push(id)
+                console.log('pushing the id')
+                this.expandedIds.push(id)
             }
         }
     }
@@ -78,25 +57,21 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
-    $paddingLeftBase: 12px;
-    $paddingLeft: 20px;
-
-    .subfile {
-        &.depth {
-            &-1 > :first-child {
-                padding-left: $paddingLeftBase + $paddingLeft * 1;
+    
+    .subfiles-table {
+        // Target child style
+        ::v-deep tr {
+            > * {
+                &:nth-child(1) { // Title
+                    min-width: 240px;
+                }
+                &:nth-child(7) { // Status
+                    min-width: 202px;
+                }
+                &:last-child { // Actions
+                    min-width: 72px;
+                }
             }
-            &-2 > :first-child {
-                padding-left: $paddingLeftBase + $paddingLeft * 2;
-            }
-            &-3 > :first-child {
-                padding-left: $paddingLeftBase + $paddingLeft * 3;
-            }
-        }
-    }
-    td {
-        &.actions {
-            text-align: right;
         }
     }
     
