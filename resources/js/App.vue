@@ -204,27 +204,27 @@ export default{
         box-shadow: 0 2px 6px rgba(0,0,0,.1);
         background: white;
     }
-    .tabs {
-        margin-left: -16px;
-        margin-right: -16px;
-        width: calc(100% + 32px);
-        .tab {
-            display: inline-block;
-            font-size: 18px;
-            opacity: .5;
-            padding: 10px 25px;
-            border-bottom: solid 3px transparent;
-            margin-bottom: 8px;
-            &.active {
-                opacity: 1;
-                border-color: $primary;
-            }
-            &:not(.active):hover {
-                border-color: rgba($primary, .5);
-                cursor: pointer;
-            }
-        }
-    }
+    // .tabs {
+    //     margin-left: -16px;
+    //     margin-right: -16px;
+    //     width: calc(100% + 32px);
+    //     .tab {
+    //         display: inline-block;
+    //         font-size: 18px;
+    //         opacity: .5;
+    //         padding: 10px 25px;
+    //         border-bottom: solid 3px transparent;
+    //         margin-bottom: 8px;
+    //         &.active {
+    //             opacity: 1;
+    //             border-color: $primary;
+    //         }
+    //         &:not(.active):hover {
+    //             border-color: rgba($primary, .5);
+    //             cursor: pointer;
+    //         }
+    //     }
+    // }
     .vdp-datepicker {
         display: grid;
         justify-items: end;

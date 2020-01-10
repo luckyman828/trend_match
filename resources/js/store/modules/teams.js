@@ -8,11 +8,19 @@ export default {
 
     state: {
         loading: true,
+        currentTeamId: null,
+        availableTeamIds: [],
     },
 
     getters: {
         loadingTeams: state => {
             return state.loading
+        },
+        currentTeamId: state => {
+            return state.currentTeamId
+        },
+        availableTeamIds: state => {
+            return state.availableTeamIds
         },
         teams: (state, getters, rootState, rootGetters) => {
             if (!rootGetters['persist/loadingInit']) {
@@ -36,6 +44,33 @@ export default {
                         if (authUser.teams.find(x => x.id == team.id)) userTeams.push(team)
                     })
                     return userTeams
+                }
+            }
+        },
+        currentTeam: (state, getters) => {
+            const teamId = getters.currentTeamId
+            const teams = getters.teams
+            if (teamId && teams.length) {
+                return teams.find(x => x.id == teamId)
+            }
+        },
+        nextTeamId: (state, getters) => {
+            const availableIds = getters.availableTeamIds
+            const currentId = getters.currentTeamId
+            if (currentId && availableIds.length > 0) {
+                const currentIndex = availableIds.findIndex(x => x == currentId)
+                if (currentIndex < availableIds.length - 1) {
+                    return availableIds[currentIndex + 1]
+                }
+            }
+        },
+        prevTeamId: (state, getters) => {
+            const availableIds = getters.availableTeamIds
+            const currentId = getters.currentTeamId
+            if (currentId && availableIds.length > 0) {
+                const currentIndex = availableIds.findIndex(x => x == currentId)
+                if (currentIndex != 0) {
+                    return availableIds[currentIndex - 1]
                 }
             }
         },
@@ -132,6 +167,12 @@ export default {
         //Set the loading status of the app
         setLoading(state, bool) {
             state.loading = bool
+        },
+        setCurrentTeamId(state, id) {
+            state.currentTeamId = id
+        },
+        setAvailableTeamIds(state, ids) {
+            state.availableTeamIds = ids
         },
         updateTeam(state, team) {
             Team.insert({

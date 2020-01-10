@@ -37,7 +37,21 @@ export default {
         },
         reset() {
             // this.$refs.flyIn.webkitAnimationPlayState = 'running'
+        },
+        hotkeyHandler(event) {
+            const key = event.code
+            // Only do these if the current target is not the comment box
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
+                if (key == 'Escape')
+                    this.close()
+            }
         }
+    },
+    created() {
+        document.body.addEventListener('keydown', this.hotkeyHandler)
+    },
+    destroyed() {
+        document.body.removeEventListener('keydown', this.hotkeyHandler)
     }
 }
 </script>
@@ -74,6 +88,7 @@ export default {
         height: 100vh;
         overflow: hidden;
         width: 100%;
+        background: $grey;
         // transition-timing-function: ease-out;
         transition-timing-function: cubic-bezier(0.060, 0.975, 0.195, 0.985);;
         transition: .2s;

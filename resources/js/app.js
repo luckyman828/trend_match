@@ -44,6 +44,10 @@ Vue.component('AutoWidthTable', require('./components/AutoWidthTable.vue').defau
 Vue.component('FlexTable', require('./components/FlexTable.vue').default)
 Vue.component('TableHeader', require('./components/TableHeader.vue').default)
 Vue.component('Checkbox', require('./components/Checkbox.vue').default)
+Vue.component('TableTopBar', require('./components/TableTopBar.vue').default)
+Vue.component('FlyIn', require('./components/FlyIn.vue').default)
+Vue.component('FlyinHeader', require('./components/FlyinHeader.vue').default)
+Vue.component('FlyinHeaderNavigation', require('./components/FlyinHeaderNavigation.vue').default)
 
 // Define global filters
 Vue.filter('truncate', function(value, limit) {
@@ -56,20 +60,6 @@ Vue.filter('truncate', function(value, limit) {
 Vue.filter('formatDate', function(value) {
     return new Date(value).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
 })
-
-// Define global mixins
-// Vue.mixin({
-//   methods: {
-//     groupBy(prop) {
-//       return this.reduce(function(groups, item) {
-//         const val = item[prop]
-//         groups[val] = groups[val] || []
-//         groups[val].push(item)
-//         return groups
-//       }, {})
-//     }
-//   }
-// })
 
 // 1. Define route components.
 // These can be imported from other files

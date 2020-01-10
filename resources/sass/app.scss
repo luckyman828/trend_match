@@ -552,7 +552,6 @@ button,
 }
 .square {
     font-weight: 700;
-    border-radius: 2px;
 }
 .pill {
     height: 32px;
@@ -600,6 +599,9 @@ button,
 // ICONS
 i {
     position: relative;
+    &.medium {
+        font-size: 18px;
+    }
     &.primary,
     &.primary-hover:hover {
         color: $primary;

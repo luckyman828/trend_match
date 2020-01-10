@@ -30,8 +30,6 @@ export default {
             while (tryCount-- > 0 && !succes) {
                 try {
                     const response = await axios.get(`${apiUrl}`)
-                    console.log('subfiles data:')
-                    console.log(response.data)
                     Subfile.create({ data: response.data })
                     commit('setLoading', false)
                     succes = true

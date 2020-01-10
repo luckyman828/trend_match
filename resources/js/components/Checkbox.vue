@@ -43,6 +43,23 @@ export default {
             height: 18px;
             width: 18px;
             border: solid $dark2 1px;
+            i {
+                color: white;
+            }
+        }
+        &:hover {
+            .checkmark {
+                border: solid 2px $primary;
+            }
+            input[type=checkbox] {
+                &:checked + .checkmark {
+                    i {
+                        &::before {
+                            content: '\f068'
+                        }
+                    }
+                }
+            }
         }
     }
 

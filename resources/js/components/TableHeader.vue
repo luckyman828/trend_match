@@ -31,7 +31,7 @@ export default {
     methods: {
         sort() {
             const sortAsc = this.descDefault ? false : true
-            this.$emit('sort', this.sortKey, sortAsc)
+            this.$emit('sort', sortAsc, this.sortKey)
         }
     }
 }

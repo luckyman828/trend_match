@@ -90,23 +90,6 @@
                             </template>
                         </Dropdown>
 
-                        <!-- <Dropdown class="dropdown-parent right" ref="countryDropdown">
-                            <template v-slot:button="slotProps">
-                                <div class="dropdown-button" @click="slotProps.toggle">
-                                    <img src="/assets/Path5699.svg">
-                                    <span v-if="teamFilterId > 0">{{teams.find(x => x.id == teamFilterId).title}}</span>
-                                    <span v-else-if="teamFilterId == 0">Global</span>
-                                    <span v-else>No team available</span>
-                                    <i class="far fa-chevron-down"></i>
-                                </div>
-                            </template>
-                            <template v-slot:header="slotProps">
-                                <span>Switch team</span>
-                            </template>
-                            <template v-slot:body>
-                                <RadioButtons :options="teamsForFilter" :currentOptionId="teamFilterId" :optionNameKey="'title'" :optionValueKey="'id'" @change="setTeamFilter($event); $refs.countryDropdown.toggle()"/>
-                            </template>
-                        </Dropdown> -->
                     </div>
                 </div>
                 <productTabs :productTotals="productsScopedFilteredTotals" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>

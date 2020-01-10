@@ -1,30 +1,66 @@
 <template>
     <div class="teams-table">
 
-        <Tabs/>
-        <FlexTable>
+        <Tabs :tabs="['Teams','Members']" v-model="currentTab" :activeTab="currentTab"/>
+        <FlexTable v-if="currentTab == 'Teams'">
+            <template v-slot:topBar>
+                <TableTopBar>
+                    <template v-slot:left>
+                        <button class="primary">Example</button>
+                    </template>
+                    <template v-slot:right>
+                        <span>{{selectedCount}} selected</span>
+                        <span>{{teams.length}} records</span>
+                    </template>
+                </TableTopBar>
+            </template>
             <template v-slot:header>
-                <!-- <th class="select"><Checkbox/></th> -->
                 <TableHeader class="select"><Checkbox/></TableHeader>
-                <TableHeader :sortKey="'title'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="onSortBy">Name</TableHeader>
-                <TableHeader :sortKey="'owner'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="onSortBy">Owner</TableHeader>
-                <TableHeader :sortKey="'members'" :currentSortKey="sortBy" :sortAsc="sortAsc" :descDefault="true" @sort="onSortBy">Members</TableHeader>
-                <TableHeader :sortKey="'files'" :currentSortKey="sortBy" :sortAsc="sortAsc" :descDefault="true" @sort="onSortBy">Files</TableHeader>
-                <TableHeader :sortKey="'currency'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="onSortBy">Team Currency</TableHeader>
+                <TableHeader :sortKey="'title'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortTeams">Name</TableHeader>
+                <TableHeader :sortKey="'owner'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortTeams">Owner</TableHeader>
+                <TableHeader :sortKey="'users'" :currentSortKey="sortBy" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Members</TableHeader>
+                <TableHeader :sortKey="'files'" :currentSortKey="sortBy" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Files</TableHeader>
+                <TableHeader :sortKey="'currency'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortTeams">Team Currency</TableHeader>
                 <TableHeader class="action">Action</TableHeader>
             </template>
             <template v-slot:body>
-                <TeamsTableRow v-for="(team, index) in teamsSorted" :key="team.id" :team="team" :index="index"/>
+                <TeamsTableRow v-for="(team, index) in teams" :key="team.id" :team="team" :index="index" @showSingle="showSingleTeam"/>
             </template>
-            <!-- <template v-slot:footer>
-
-            </template> -->
         </FlexTable>
 
+        <FlexTable v-if="currentTab == 'Members'">
+            <template v-slot:topBar>
+                <TableTopBar>
+                    <template v-slot:left>
+                        <button class="primary">Example</button>
+                    </template>
+                    <template v-slot:right>
+                        <span>{{selectedCount}} selected</span>
+                        <span>{{teams.length}} records</span>
+                    </template>
+                </TableTopBar>
+            </template>
+            <template v-slot:header>
+                <TableHeader class="select"><Checkbox/></TableHeader>
+                <TableHeader :sortKey="'title'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">Name</TableHeader>
+                <TableHeader :sortKey="'email'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">E-mail</TableHeader>
+                <TableHeader :sortKey="'role_id'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">Role</TableHeader>
+                <TableHeader :sortKey="'currency'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">Currency</TableHeader>
+                <TableHeader class="action">Action</TableHeader>
+            </template>
+            <template v-slot:body>
+                <UsersTableRow v-for="(user, index) in users" :key="user.id" :user="user" :index="index"/>
+            </template>
+        </FlexTable>
+
+        <FlyIn ref="teamSingleFlyin">
+            <TeamSingleFlyin :team="currentTeam" v-if="currentTeam"
+            @closeFlyin="$refs.teamSingleFlyin.close()"/>
+        </FlyIn>
 
 
 
-        <div class="team-totals">
+        <!-- <div class="team-totals">
             <span>{{selectedCount}} selected</span>
             <span>{{teams.length}} records</span>
         </div>
@@ -127,7 +163,7 @@
                             <td class="files">-</td>
                             <td class="role dropdown-parent">
                                 <span class="square" :class="'role-' + user.role_id">{{user.role.title}}</span>
-                                <!-- <template v-if="userPermissionLevel < user.role_id">
+                                <template v-if="userPermissionLevel < user.role_id">
                                     <span class="square" :class="'role-' + user.role_id">{{user.role.title}}</span>
                                 </template>
                                 <template v-else>
@@ -150,7 +186,7 @@
                                             </div>
                                         </template>
                                     </Dropdown>
-                                </template> -->
+                                </template>
                             </td>
                             <td></td>
                             <td class="action">
@@ -179,10 +215,7 @@
 
                 </div>
             </template>
-        </div>
-        <template v-if="loading">
-            <Loader/>
-        </template>
+        </div> -->
     </div>
 </template>
 
@@ -192,6 +225,8 @@ import Loader from './Loader'
 import Dropdown from './Dropdown'
 import RadioButtons from './RadioButtons'
 import TeamsTableRow from './TeamsTableRow'
+import UsersTableRow from './UsersTableRow'
+import TeamSingleFlyin from './TeamSingleFlyin'
 import Tabs from './Tabs'
 import Role from '../store/models/Role'
 
@@ -212,6 +247,8 @@ export default {
         RadioButtons,
         Tabs,
         TeamsTableRow,
+        UsersTableRow,
+        TeamSingleFlyin,
     },
     data: function() { return {
         sortBy: 'id',
@@ -230,76 +267,67 @@ export default {
         },
         editTitle: false,
         editCurrency: false,
+        currentTab: 'Teams',
     }},
     computed: {
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel', 'availableCurrencies']),
+        ...mapGetters('persist', ['currentWorkspaceId', 'userPermissionLevel', 'availableCurrencies']),
+        ...mapGetters('entities/teams', ['currentTeam']),
         roles () {
             return Role.all().filter(role => role.id <= this.userPermissionLevel)
         },
-        teamsSorted() {
-            const teams = this.teams
-            teams.forEach(team => {
-                team.active = false
-            });
-            let key = this.sortBy
-            let sortAsc = this.sortAsc
-            const dataSorted = teams.sort((a, b) => {
+        // teamsSorted() {
+        //     const teams = this.teams
+        //     teams.forEach(team => {
+        //         team.active = false
+        //     });
+        //     let key = this.sortBy
+        //     let sortAsc = this.sortAsc
+        //     const dataSorted = teams.sort((a, b) => {
 
-                // If the keys don't have length - sort by the key
-                if (!teams[0][key].length) {
+        //         // If the keys don't have length - sort by the key
+        //         if (!teams[0][key].length) {
 
-                    if (sortAsc)
-                        return (a[key] > b[key]) ? 1 : -1
-                        else return (a[key] < b[key]) ? 1 : -1
+        //             if (sortAsc)
+        //                 return (a[key] > b[key]) ? 1 : -1
+        //                 else return (a[key] < b[key]) ? 1 : -1
 
-                // If the keys have lengths - sort by their length
-                } else {
+        //         // If the keys have lengths - sort by their length
+        //         } else {
 
-                    if (sortAsc)
-                        return (a[key].length > b[key].length) ? 1 : -1
-                        else return (a[key].length < b[key].length) ? 1 : -1
+        //             if (sortAsc)
+        //                 return (a[key].length > b[key].length) ? 1 : -1
+        //                 else return (a[key].length < b[key].length) ? 1 : -1
 
-                }
-            })
-            return dataSorted
-        }
+        //         }
+        //     })
+        //     return dataSorted
+        // }
     },
     methods: {
         ...mapActions('entities/teamInvites', ['deleteInvite', 'resend']),
         ...mapActions('entities/userTeams', ['removeUserFromTeam']),
         ...mapActions('entities/users', ['changeRole']),
         ...mapActions('entities/teams', ['updateTeam', 'deleteTeam']),
+        ...mapMutations('entities/teams', ['setCurrentTeamId', 'setAvailableTeamIds']),
         onSelect(index) {
             this.$emit('onSelect', index)
         },
-            
-        hideTooltip() {
-            this.tooltip.active = false;
+        showSingleTeam(id) {
+            this.setAvailableTeamIds(this.teams.map(x => x.id))
+            this.setCurrentTeamId(id)
+            this.$refs.teamSingleFlyin.toggle()
         },
-        onSortBy(key, method) {      
-            // Check if the sorting key we are setting is already the key we are sorting by
-            // If this is the case, toggle the sorting method (asc|desc)
-            if (this.sortBy !== key) {
-                this.sortAsc = method
-                this.sortBy = key
-            } else {
-                this.sortAsc = !this.sortAsc
-            }
+        // onSortBy(key, method) {      
+        //     // Check if the sorting key we are setting is already the key we are sorting by
+        //     // If this is the case, toggle the sorting method (asc|desc)
+        //     if (this.sortBy !== key) {
+        //         this.sortAsc = method
+        //         this.sortBy = key
+        //     } else {
+        //         this.sortAsc = !this.sortAsc
+        //     }
 
-        },
-        expandUsers(team) {
-            const expanded = this.expandedIds
-            const found = expanded.findIndex(el => el == team.id)
-            const result = (found >= 0) ? expanded.splice(found, 1) : expanded.push(team.id)
-            this.setHeights()
-        },
-        setHeights() {
-            const elements = document.querySelectorAll('.team-users')
-            if (elements.length > 0)
-                elements.forEach(el => {
-                    el.style['max-height'] = el.scrollHeight + "px"
-                })
-        },
+        // },
         openInviteToTeam(team) {
             this.$emit('onOpenInviteToTeam', team)
         },
@@ -351,11 +379,59 @@ export default {
             this.updateTeam(team)
             console.log('updating team')
             // this.updateTeam({name: team.title, workspace_id: team.workspace_id, team_id: team.id})
+        },
+        sortTeams(method, key) {
+            this.sortArray(this.teams, method, key)
+        },
+        sortUsers(method, key) {
+            this.sortArray(this.users, method, key)
+        },
+        sortArray(array, method, key) {
+
+            // If if we are already sorting by the given key, flip the sort order
+            if (this.sortBy == key) {
+                this.sortAsc = !this.sortAsc
+            }
+            else {
+                this.sortBy = key
+                this.sortAsc = method
+            }
+            let sortAsc = this.sortAsc
+
+            const dataSorted = array.sort((a, b) => {
+
+                // If a has a key
+                if (a[key]) {
+                    // If the keys have lengths - sort by their length
+                    if (array[0][key].length) {
+    
+                        if (sortAsc)
+                            return (a[key].length > b[key].length) ? 1 : -1
+                            else return (a[key].length < b[key].length) ? 1 : -1
+    
+                    }
+    
+                    // If the keys don't have length - sort by the key
+                    else {
+                        if (sortAsc)
+                            return (a[key] > b[key]) ? 1 : -1
+                            else return (a[key] < b[key]) ? 1 : -1
+                    }
+                } else {
+                    if (!a[key] && !b[key]) {
+                        // If neither A nor B has the key, don't sort them.
+                        return 0
+                    } else {
+                        // If a has no key, but it in the back
+                        return sortAsc ? -1 : 1
+                    }
+                }
+
+                
+            })
+            return dataSorted
         }
     },
-    updated() {
-        this.setHeights()
-    }
 }
 </script>
 
