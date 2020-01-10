@@ -1,9 +1,9 @@
 <template>
-    <div class="folders-table">
-        <AutoWidthTable>
+    <div class="folders-table-wrapper">
+        <FlexTable class="folders-table">
             <template v-slot:header="slotProps">
                 <th class="select"><Checkbox/></th>
-                <th>Name <i class="fas fa-sort"></i></th>
+                <th class="title">Name <i class="fas fa-sort"></i></th>
                 <th>Modified <i class="fas fa-sort"></i></th>
                 <th>Deadline <i class="fas fa-sort"></i></th>
                 <th>Items <i class="fas fa-sort"></i></th>
@@ -52,12 +52,10 @@
                 </tr>
             </template>
             <template v-slot:footer="slotProps">
-                <td></td>
                 <!-- <td><button class="primary invisible icon-left context-right" @click="onNewFolder"><i class="far fa-plus"></i>Add new: Folder <i class="fas fa-caret-down context"></i></button></td> -->
                 <td><button class="primary invisible icon-left" @click="onNewFolder"><i class="far fa-plus"></i>Add new: Folder</button></td>
-                <td></td><td></td><td></td><td></td><td></td><td></td>
             </template>
-        </AutoWidthTable>
+        </FlexTable>
 
         <Modal
             ref="editFileModal"
@@ -479,96 +477,104 @@ export default {
     margin-top: 52px;
     padding-top: 0;
     position: relative;
-    td {
-        vertical-align: top;
-        line-height: 40px;
+    th, td {
         &.title {
+            min-width: 244px;
+            max-width: 244px;
             display: flex;
-            i {
-                width: 24px;
-                line-height: 40px;
-                font-size: 16px;
-                margin-right: 8px;
-            }
+            align-items: center;
         }
     }
+    // td {
+    //     vertical-align: top;
+    //     line-height: 40px;
+    //     &.title {
+    //         display: flex;
+    //         i {
+    //             width: 24px;
+    //             line-height: 40px;
+    //             font-size: 16px;
+    //             margin-right: 8px;
+    //         }
+    //     }
+    // }
 }
 .clickable {
     cursor: pointer;
 }
 // Table
-.flex-table {
-    .flex-group {
-        display: flex;
-        flex: 1;
-        margin: 0 16px;
-        align-items: center;
-        &:nth-child(1) {
-            flex: 3;
-        }
-        &:nth-child(2) {
-            flex: 3;
-            justify-content: flex-start;
-            > * {
-                flex: none;
-                flex-basis: 100px;
-                &.stage {
-                    flex-basis: 132px;
-                }
-            }
-        }
-        &:nth-child(3) {
-            flex: 2;
-            max-width: 300px;
-            min-width: 300px;
-        }
-        > * {
-            flex: 1;
-            margin: 0 8px;
-            &.select {
-                max-width: 80px;
-            }
-            &.id {
-                white-space: nowrap;
-                overflow: hidden;
-                max-width: 75px;
-            }
-            &.action {
-                display: flex;
-                justify-content: flex-end;
-                > * {
-                    &:not(:last-child) {
-                        margin-right: 8px;
-                    }
-                }
-            }
-        }
-        > td {
-            &.action {
-                text-align: right;
-            }
-        }
-    }
-    .flex-table-row {
-        height: 82px;
-        > * {
-            flex: 1;
-            margin: 0 8px;
-            &:first-child {
-                margin-left: 16px;
-            }
-            &:last-child {
-                margin-right: 16px;
-            }
-        }
-        th {
-            &.action {
-                text-align: right;
-                justify-content: flex-end;
-            }
-        }
-    }
-}
+// .flex-table {
+//     .flex-group {
+//         display: flex;
+//         flex: 1;
+//         margin: 0 16px;
+//         align-items: center;
+//         &:nth-child(1) {
+//             flex: 3;
+//         }
+//         &:nth-child(2) {
+//             flex: 3;
+//             justify-content: flex-start;
+//             > * {
+//                 flex: none;
+//                 flex-basis: 100px;
+//                 &.stage {
+//                     flex-basis: 132px;
+//                 }
+//             }
+//         }
+//         &:nth-child(3) {
+//             flex: 2;
+//             max-width: 300px;
+//             min-width: 300px;
+//         }
+//         > * {
+//             flex: 1;
+//             margin: 0 8px;
+//             &.select {
+//                 max-width: 80px;
+//             }
+//             &.id {
+//                 white-space: nowrap;
+//                 overflow: hidden;
+//                 max-width: 75px;
+//             }
+//             &.action {
+//                 display: flex;
+//                 justify-content: flex-end;
+//                 > * {
+//                     &:not(:last-child) {
+//                         margin-right: 8px;
+//                     }
+//                 }
+//             }
+//         }
+//         > td {
+//             &.action {
+//                 text-align: right;
+//             }
+//         }
+//     }
+//     .flex-table-row {
+//         height: 82px;
+//         > * {
+//             flex: 1;
+//             margin: 0 8px;
+//             &:first-child {
+//                 margin-left: 16px;
+//             }
+//             &:last-child {
+//                 margin-right: 16px;
+//             }
+//         }
+//         th {
+//             &.action {
+//                 text-align: right;
+//                 justify-content: flex-end;
+//             }
+//         }
+//     }
+// }
 .show-more {
     width: 100%;
     margin: 16px auto 0;

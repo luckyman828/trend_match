@@ -47,15 +47,5 @@ export default {
         .close {
             margin-right: 32px;
         }
-        .navigation {
-            margin-left: 32px;
-            display: flex;
-            > *:first-child {
-                margin-right: 8px;
-            }
-            i {
-                font-size: 16px;
-            }
-        }
     }
 </style>

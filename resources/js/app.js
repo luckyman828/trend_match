@@ -48,6 +48,7 @@ Vue.component('TableTopBar', require('./components/TableTopBar.vue').default)
 Vue.component('FlyIn', require('./components/FlyIn.vue').default)
 Vue.component('FlyinHeader', require('./components/FlyinHeader.vue').default)
 Vue.component('FlyinHeaderNavigation', require('./components/FlyinHeaderNavigation.vue').default)
+Vue.component('ContextMenu', require('./components/ContextMenu.vue').default)
 
 // Define global filters
 Vue.filter('truncate', function(value, limit) {

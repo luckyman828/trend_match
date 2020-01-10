@@ -6,6 +6,7 @@
         </tr>
         <slot name="body"/>
         <tr class="footer">
+            <td class="select"></td>
             <slot name="footer"/>
         </tr>
     </table>
@@ -31,7 +32,7 @@ export default {
         }
         tr {
             background: white;
-            height: 48px;
+            min-height: 48px;
             display: flex;
             align-items: center;
             padding: 8px 0;
@@ -55,13 +56,16 @@ export default {
                 }
             }
             &.header, &.footer {
-                height: 32px;
                 color: #707070;
+            }
+            &.header {
+                height: 32px;
             }
             &.footer {
                 border-radius: 0 0 $rowRadius $rowRadius;
                 margin-bottom: 0;
-                height: 16px;
+                min-height: 16px;
+                height: auto;
             }
         }
         th, td {
