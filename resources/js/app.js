@@ -33,14 +33,14 @@ VTooltip.options.popover.defaultTrigger = 'hover focus'
 Vue.component('app', require('./App.vue').default)
 
 // Global components
-Vue.component('TooltipAlt2', require('./components/TooltipAlt2.vue').default)
-Vue.component('Tooltip', require('./components/TooltipAlt2.vue').default)
+// Vue.component('TooltipAlt2', require('./components/TooltipAlt2.vue').default)
+// Vue.component('Tooltip', require('./components/TooltipAlt2.vue').default)
 Vue.component('TooltipList', require('./components/TooltipList.vue').default)
 Vue.component('Toggle', require('./components/Toggle.vue').default)
 Vue.component('Loader', require('./components/Loader.vue').default)
 Vue.component('Modal', require('./components/Modal.vue').default)
 Vue.component('Dropdown', require('./components/Dropdown.vue').default)
-Vue.component('AutoWidthTable', require('./components/AutoWidthTable.vue').default)
+// Vue.component('AutoWidthTable', require('./components/AutoWidthTable.vue').default)
 Vue.component('FlexTable', require('./components/FlexTable.vue').default)
 Vue.component('TableHeader', require('./components/TableHeader.vue').default)
 Vue.component('Checkbox', require('./components/Checkbox.vue').default)
@@ -49,6 +49,7 @@ Vue.component('FlyIn', require('./components/FlyIn.vue').default)
 Vue.component('FlyinHeader', require('./components/FlyinHeader.vue').default)
 Vue.component('FlyinHeaderNavigation', require('./components/FlyinHeaderNavigation.vue').default)
 Vue.component('ContextMenu', require('./components/ContextMenu.vue').default)
+Vue.component('EditInputWrapper', require('./components/EditInputWrapper.vue').default)
 
 // Define global filters
 Vue.filter('truncate', function(value, limit) {

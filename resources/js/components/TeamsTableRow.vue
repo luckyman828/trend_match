@@ -1,7 +1,13 @@
 <template>
-    <tr class="team-row table-row" ref="teamRow">
+    <tr class="team-row table-row" ref="teamRow" @contextmenu.prevent="$emit('showContextMenu', $event, team)">
         <td class="select"><Checkbox/></td>
-        <td class="title clickable" @click="showSingle(team.id)">
+        <td v-if="editTitle" class="title">
+            <i class="fas fa-users"></i>
+            <EditInputWrapper :activateOnMount="true" :type="'text'"
+                :value="teamToEdit.title" :oldValue="team.title" v-model="teamToEdit.title"
+                @submit="updateTeam(teamToEdit); editTitle = false" @cancel="editTitle = false"/>
+        </td>
+        <td v-else class="title clickable" @click="showSingle(team.id)">
             <i class="fas fa-users"></i>
             <span>{{team.title}}</span>
         </td>
@@ -24,20 +30,31 @@
 </template>
 
 <script>
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+
 export default {
     name: 'teamsTableRow',
     props: [
         'team',
         'index'
     ],
+    data: function() { return {
+        editTitle: false,
+        teamToEdit: {
+            id: this.team.id,
+            title: this.team.title,
+        },
+    }},
     methods: {
+        ...mapActions('entities/teams', ['updateTeam']),
         showSingle(id) {
             this.$emit('showSingle', id)
-        }
-    }
+        },
+    },
 }
 </script>
 
-<style>
+<style scoped lang="scss">
+    @import '~@/_variables.scss';
 
 </style>

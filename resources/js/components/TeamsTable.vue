@@ -24,7 +24,8 @@
                 <TableHeader class="action">Action</TableHeader>
             </template>
             <template v-slot:body>
-                <TeamsTableRow v-for="(team, index) in teams" :key="team.id" :team="team" :index="index" @showSingle="showSingleTeam"/>
+                <TeamsTableRow :ref="'teamRow-'+team.id" v-for="(team, index) in teams" :key="team.id" :team="team" :index="index" 
+                @showContextMenu="showTeamContext($event, team)" @showSingle="showSingleTeam"/>
             </template>
         </FlexTable>
 
@@ -57,6 +58,29 @@
             <TeamSingleFlyin :team="currentTeam" v-if="currentTeam"
             @closeFlyin="$refs.teamSingleFlyin.close()"/>
         </FlyIn>
+
+        <ContextMenu ref="contextMenuTeam" class="context-team" v-slot="slotProps">
+            <div class="item-group">
+                <div class="item" @click="showSingleTeam(slotProps.item.id)">
+                    <div class="icon-wrapper">
+                        <i class="far fa-users"></i>
+                    </div>
+                    <u>V</u>iew team
+                </div>
+            </div>
+            <div class="item-group">
+                <div class="item" @click="$refs['teamRow-'+slotProps.item.id][0].editTitle = true">
+                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+                    <u>R</u>ename
+                </div>
+            </div>
+            <div class="item-group">
+                <div class="item" @click="onDeleteTeam(slotProps.item)">
+                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                    <u>D</u>elete team
+                </div>
+            </div>
+        </ContextMenu>
 
 
 
@@ -275,33 +299,6 @@ export default {
         roles () {
             return Role.all().filter(role => role.id <= this.userPermissionLevel)
         },
-        // teamsSorted() {
-        //     const teams = this.teams
-        //     teams.forEach(team => {
-        //         team.active = false
-        //     });
-        //     let key = this.sortBy
-        //     let sortAsc = this.sortAsc
-        //     const dataSorted = teams.sort((a, b) => {
-
-        //         // If the keys don't have length - sort by the key
-        //         if (!teams[0][key].length) {
-
-        //             if (sortAsc)
-        //                 return (a[key] > b[key]) ? 1 : -1
-        //                 else return (a[key] < b[key]) ? 1 : -1
-
-        //         // If the keys have lengths - sort by their length
-        //         } else {
-
-        //             if (sortAsc)
-        //                 return (a[key].length > b[key].length) ? 1 : -1
-        //                 else return (a[key].length < b[key].length) ? 1 : -1
-
-        //         }
-        //     })
-        //     return dataSorted
-        // }
     },
     methods: {
         ...mapActions('entities/teamInvites', ['deleteInvite', 'resend']),
@@ -317,17 +314,16 @@ export default {
             this.setCurrentTeamId(id)
             this.$refs.teamSingleFlyin.toggle()
         },
-        // onSortBy(key, method) {      
-        //     // Check if the sorting key we are setting is already the key we are sorting by
-        //     // If this is the case, toggle the sorting method (asc|desc)
-        //     if (this.sortBy !== key) {
-        //         this.sortAsc = method
-        //         this.sortBy = key
-        //     } else {
-        //         this.sortAsc = !this.sortAsc
-        //     }
-
-        // },
+        showTeamContext(e, team) {
+            const contextMenu = this.$refs.contextMenuTeam
+            contextMenu.item = team
+            contextMenu.show(e)
+        },
+        showUserContext(e, user) {
+            const contextMenu = this.$refs.contextMenuUser
+            contextMenu.item = user
+            contextMenu.show(e)
+        },
         openInviteToTeam(team) {
             this.$emit('onOpenInviteToTeam', team)
         },
@@ -441,228 +437,15 @@ export default {
     .teams-table {
         margin-top: 52px;
         padding-top: 0;
-        .team-row {
-            .view-single {
-                border-color: transparent;
-            }
-            &.expanded {
-                background: $light1;
-                .view-single {
-                    color: $dark;
-                    background: white;
+        ::v-deep {
+            td, th {
+                &.title {
+                    min-width: 248px;
+                    max-width: 248px;
+                    display: flex;
+                    align-items: center;
                 }
             }
-        }
-    }
-    .flex-table-row {
-        padding: 12px 0;
-        > * {
-            &.select, &:nth-child(1) {
-                padding-left: 16px;
-                min-width: 80px;
-            }
-            &:nth-child(2) {
-                padding-left: 32px;
-                min-width: 220px;
-            }
-            &:nth-child(3) {
-                min-width: 220px;
-            }
-            &:nth-child(4) {
-                min-width: 112px;
-                padding-left: 16px;
-            }
-            &:nth-child(5) {
-                min-width: 132px;
-                padding-left: 16px;
-            }
-            &:nth-child(6) {
-                min-width: 80px;
-                padding-left: 16px;
-            }
-            &:nth-child(7) {
-                margin-left: auto;
-                min-width: 80px;
-                padding-left: 16px;
-                padding-right: 32px;
-                display: flex;
-                justify-content: flex-end;
-            }
-            &.action {
-                > *:not(:last-child) {
-                    margin-right: 8px;
-                }
-            }
-        }
-        td {
-            &.title {
-                font-size: 13px;
-                color: $dark;
-                .square {
-                    margin-left: -32px;
-                    color: $dark;
-                    background: none;
-                    i {
-                        transition: .3s;
-                        font-size: 12px;
-                    }
-                }
-            }
-        }
-        &.invited-row {
-            .name, .email, .role {
-                opacity: .5;
-            }
-            &.add-member {
-                justify-content: center;
-                cursor: pointer;
-                &:hover {
-                    td {
-                        border-bottom: solid 1px $dark;
-                    }
-                }
-                td {
-                    color: $dark05;
-                    font-weight: 500;
-                    font-size: 12px;
-                    padding: 0;
-                    border-bottom: solid 1px transparent;
-                    i {
-                        font-size: 13px;
-                    }
-                }
-            }
-        }
-        i {
-            // margin-right: 8px;
-        }
-    }
-    i {
-        font-size: 11px;
-    }
-    .show-more {
-        width: 100%;
-        margin: 16px auto 0;
-        text-align: center;
-        display: inline-block;
-    }
-    .loading {
-        animation: loading 2s;
-        animation-iteration-count: infinite;
-    }
-    @keyframes loading {
-        0% {opacity: 0;}
-        50% {opacity: 1;}
-        100% {opacity: 0;}
-    }
-    .checkbox {
-      display: block;
-      position: relative;
-      cursor: pointer;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      margin-bottom: 0;
-    //   padding-top: 5px;
-    //   padding-bottom: 5px;
-    }
-
-    .checkbox input {
-      position: absolute;
-      opacity: 0;
-      cursor: pointer;
-      height: 0;
-      width: 0;
-    }
-
-    .checkmark {
-      content: "";
-      display: inline-block;
-      vertical-align: text-top;
-      width: 24px;
-      height: 24px;
-      background: white;
-      border: 1px solid #dfdfdf;
-    }
-
-    .checkbox input:checked ~ .checkmark {
-      background: linear-gradient(#3b86ff, #3b86ff) no-repeat;
-      background-position: center;
-      background-size: 16px 16px;
-    }
-
-    .checkmark::after {
-      content: "";
-      position: absolute;
-      display: none;
-    }
-
-    .checkbox input:checked ~ .checkmark:after {
-      display: block;
-    }
-    .view-single {
-        font-size: 12px;
-        font-weight: 700;
-        color: $dark2;
-        cursor: pointer;
-    }
-    .team-totals {
-        position: absolute;
-        right: 0;
-        top: -40px;
-        height: 40px;
-        line-height: 40px;
-        span {
-            font-weight: 500;
-            font-size: 14px;
-            margin-right: 20px;
-        }
-    }
-    .user-row {
-        background: $light;
-        &:not(:last-child) {
-            border-bottom: solid 2px white;
-        }
-        td {
-            font-size: 14px;
-            &.index {
-                text-align: right;
-                padding-right: 20px;
-            }
-        }
-    }
-    .team-users {
-        overflow: hidden;
-        transition: .2s;
-        &.collapsed {
-            max-height: 0 !important;
-        }
-        &.expanded {
-            + .team-row-wrapper {
-                box-shadow: 0 1px 0 $light2 inset;
-            }
-        }
-    }
-    .team-row {
-        td.title {
-            .button {
-                min-width: 0;
-            }
-        }
-        &.expanded {
-            td.title {
-                > .button {
-                    i {
-                        transform: rotateZ(90deg);
-                    }
-                }
-            }
-        }
-    }
-    .edit-title {
-        &.hidden {
-            display: none;
         }
     }
 </style>

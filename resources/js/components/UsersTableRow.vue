@@ -1,7 +1,7 @@
 <template>
     <tr class="user-row table-row" ref="userRow">
         <td class="select"><Checkbox/></td>
-        <td class="name">
+        <td class="title">
             <i class="fas fa-user"></i>
             <span>{{user.name}}</span>
         </td>

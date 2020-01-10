@@ -23,6 +23,7 @@ export default {
             return state.availableTeamIds
         },
         teams: (state, getters, rootState, rootGetters) => {
+            console.log('team recalculating')
             if (!rootGetters['persist/loadingInit']) {
                 const adminPermissionLevel = rootGetters['persist/adminPermissionLevel']
                 const teams = Team.query()
@@ -175,9 +176,8 @@ export default {
             state.availableTeamIds = ids
         },
         updateTeam(state, team) {
-            Team.insert({
-                data: team,
-            })
+            console.log(JSON.parse(JSON.stringify(team)))
+            Team.insert({ data: team })
         },
         deleteTeam(state, team_id) {
             Team.delete(team_id)

@@ -1,6 +1,6 @@
 <template>
     <div v-if="visible" v-click-outside="hide" class="context-menu" ref="contextMenu" @click.capture="hide">
-        <slot/>
+        <slot :item="item"/>
     </div>
 </template>
 
@@ -12,7 +12,8 @@ export default {
     ],
     data: function() {
         return {
-            visible: false
+            visible: false,
+            item: 0,
         }
     },
     methods: {
