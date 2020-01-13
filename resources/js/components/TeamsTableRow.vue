@@ -20,11 +20,11 @@
             </v-popover>
         </td>
         <td class="currency">
-            <span>{{team.currency}}</span>
+            <button class="ghost"><span>{{team.currency}}</span></button>
         </td>
         <td class="action">
-            <button class="invisible ghost-hover primary" @click="showSingle(team.id)">View</button>
-            <button class="square true-square invisible ghost-hover more"><i class="far fa-ellipsis-h medium"></i></button>
+            <button class="invisible ghost-hover primary" @click="showSingle(team.id)"><span>View</span></button>
+            <button class="invisible ghost-hover"><i class="far fa-ellipsis-h medium"></i></button>
         </td>
     </tr>
 </template>
@@ -56,5 +56,14 @@ export default {
 
 <style scoped lang="scss">
     @import '~@/_variables.scss';
+
+    .currency .button {
+        min-width: 64px;
+        font-weight: 400;
+        font-size: 14px;
+        &:hover {
+            border: solid 2px $primary;
+        }
+    }
 
 </style>

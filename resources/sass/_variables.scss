@@ -10,6 +10,13 @@ $line-height-base: 1.6;
 $primary: #3b86ff;
 $primaryDark: mix(black, $primary, 10%);
 
+$blue: #3b86ff;
+$red: #ff6565;
+$orange: #f6993f;
+$yellow: #f3e959;
+$green: #5ee2a0;
+$yellowGreen: #b5cc18;
+
 $secondary: #69e4a6;
 $secondaryLight: rgba($secondary, 0.35);
 
@@ -31,12 +38,28 @@ $light2: #dfdfdf;
 $grey: #e4e4e4;
 $grey2: #cfcfcf;
 
-$blue: #3b86ff;
-$red: #ff6565;
-$orange: #f6993f;
-$yellow: #f3e959;
-$green: #5ee2a0;
-$yellowGreen: #b5cc18;
+$font: $dark05;
+$fontBody: $dark;
+$fontIcon: $dark2;
+$tableHeader: $dark2;
+
+$succes: $green;
+$fail: $red;
+$warming: $yellow;
+
+$bg: #e4e4e4;
+$bgContent: white;
+$bgContentActive: $light1;
+
+$divider: $grey2;
+
+// BRAND COLORS ($name, $color, $hoverstate, $text)
+$brand-colors: ('primary', $primary, $primaryDark, white), ('dark', $dark05, $dark, white),
+    ('green', $green, $green, white), ('red', $red, $red, white), ('yellow', $yellow, $yellow, $dark05);
+
+// BUTTON SIZES ($name, $height, $font-size, $padding)
+$button-sizes: ('xs', 20px, 12px, 4px), ('sm', 24px, 12px, 8px), ('md', 40px, 14px, 16px), ('lg', 48px, 16px, 20px),
+    ('xl', 60px, 18px, 24px);
 
 // Sidebar
 $sidebarWidth: 260px;

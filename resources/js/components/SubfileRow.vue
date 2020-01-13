@@ -17,8 +17,8 @@
             <td class="nd">-</td>
             <td class="users">-</td>
             <td class="status">
-                <span class="square ghost icon-right">Locked <i class="far fa-lock"></i></span>
-                <span class="square ghost icon-right">Hidden <i class="far fa-eye"></i></span>
+                <button class="square ghost icon-right"><i class="far fa-lock"></i><span>Locked</span></button>
+                <button class="square ghost icon-right"><i class="far fa-eye"></i><span>Hidden</span></button>
             </td>
             <td class="action">
                 <span class="button invisible ghost-hover true-square" @click="toggleExpanded(subfile.id)"><i class="fas fa-ellipsis-h"></i></span>

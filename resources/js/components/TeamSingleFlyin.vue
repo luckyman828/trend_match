@@ -100,4 +100,8 @@ export default {
 
 <style scoped lang="scss">
 
+    .body {
+        padding: 16px;
+    }
+
 </style>

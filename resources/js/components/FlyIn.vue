@@ -2,7 +2,9 @@
     <div class="fly-in-wrapper" :class="[{visible: isVisible}]">
         <div class="overlay" @click="close"></div>
         <div class="fly-in" ref="flyIn">
-            <slot :toggle="toggle"/>
+            <!-- <div class="body"> -->
+                <slot :toggle="toggle"/>
+            <!-- </div> -->
         </div>
     </div>
 </template>
@@ -88,7 +90,7 @@ export default {
         height: 100vh;
         overflow: hidden;
         width: 100%;
-        background: $grey;
+        background: $bg;
         // transition-timing-function: ease-out;
         transition-timing-function: cubic-bezier(0.060, 0.975, 0.195, 0.985);;
         transition: .2s;
@@ -97,6 +99,9 @@ export default {
         //     animation-duration: .2s;
         //     animation-iteration-count: 1;
         // }
+        .body {
+            padding: 16px;
+        }
     }
     // @keyframes fly-in {
     //     from {right: -100%;}

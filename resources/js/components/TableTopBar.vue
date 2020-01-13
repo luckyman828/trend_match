@@ -16,6 +16,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~@/_variables.scss';
 
     .table-top-bar {
         height: 48px;
@@ -24,6 +25,7 @@ export default {
         justify-content: space-between;
         align-items: center;
         margin-bottom: 0;
+        font-weight: 700;
         .left, .right {
             display: flex;
             align-items: center;

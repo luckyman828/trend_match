@@ -1,8 +1,8 @@
 <template>
     <th class="table-header" :class="sortKey">
         <template v-if="sortKey">
-            <button class="icon-right small invisible light-hover sort" :class="{active: active}" @click="sort">
-                <slot></slot>
+            <button class="invisible sm sort" :class="{active: active}" @click="sort">
+                <span><slot></slot></span>
                 <i class="fas fa-sort" v-if="!active"></i>
                 <i class="fas fa-sort-down" v-else-if="active && sortAsc"></i>
                 <i class="fas fa-sort-up" v-else-if="active && !sortAsc"></i>
@@ -42,7 +42,7 @@ export default {
 
     th {
         font-size: 12px;
-        color: $dark15;
+        color: $tableHeader;
         .sort {
             &.active {
                 background: $light1;

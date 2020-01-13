@@ -56,7 +56,7 @@ export default {
                 }
             }
             &.header, &.footer {
-                color: #707070;
+                color: $tableHeader;
             }
             &.header {
                 height: 32px;
@@ -68,11 +68,12 @@ export default {
                 height: auto;
             }
         }
+        td {
+            overflow: hidden;
+        }
         th, td {
             padding: 0 12px;
-            overflow: hidden;
             > i {
-                color: $dark15;
                 &:last-child {
                     margin-left: 12px;
                 }
@@ -83,6 +84,12 @@ export default {
             &.action {
                 flex: 1;
                 text-align: right;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                >*:not(:last-child) {
+                    margin-right: 8px;
+                }
             }
             &.select {
                 flex: 0 1 auto;

@@ -28,7 +28,7 @@ export default {
 
     .flyin-header {
         height: 74px;
-        background: $light1;
+        background: $bgContent;
         display: flex;
         width: 100%;
         justify-content: space-between;
