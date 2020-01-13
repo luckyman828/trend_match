@@ -234,6 +234,8 @@ export default {
             Team.insert({ data: team })
         },
         deleteTeam(state, team_id) {
+            const index = state.teams.findIndex(x => x.id == team_id)
+            state.teams.splice(index, 1)
             Team.delete(team_id)
         },
     },
