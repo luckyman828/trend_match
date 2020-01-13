@@ -27,8 +27,9 @@ export default {
         ...mapGetters('entities/userTeams', ['loadingUserTeams']),
         ...mapGetters('entities/teamInvites', ['loadingTeamInvites']),
         ...mapGetters('entities/users', ['loadingUsers']),
+        ...mapGetters('entities/workspaceUsers', ['loadingWorkspaceUsers']),
         loading () {
-            return (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.loadingTeamInvites || this.loadingInit) ? true : false
+            return (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.loadingTeamInvites || this.loadingInit || this.loadingWorkspaceUsers) ? true : false
         },
     },
     watch: {
@@ -62,6 +63,11 @@ export default {
                 this.initRequiresWorkspace()
             } 
         })
+    },
+    mounted() {
+        if (!this.loading) {
+            this.instantiateTeams()
+        }
     },
     destroyed () {
         this.unsub()

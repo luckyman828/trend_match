@@ -192,7 +192,6 @@ export default {
                 .with('invites')
                 .with('teamFiles')
                 .with('files')
-                .with('phases')
                 .all()
             const authUser = AuthUser.query()
                 .with('teams')

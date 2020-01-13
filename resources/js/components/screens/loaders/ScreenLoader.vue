@@ -24,8 +24,11 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
     .screen-loader {
         height: 500px;
+        > * {
+            padding-bottom: 100px;
+        }
     }
 </style>

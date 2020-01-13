@@ -53,7 +53,7 @@ export default {
             return UserTeam.query().with('team').with('user').all()
         },
         users () {
-            return User.query().with('teams').with('role').all()
+            return User.query().with('teams|role|workspaceUsers').all()
         },
         isLoading () {
             let loading = false

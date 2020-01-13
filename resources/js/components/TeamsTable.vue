@@ -52,9 +52,9 @@
             </template>
             <template v-slot:header>
                 <TableHeader class="select"><Checkbox/></TableHeader>
-                <TableHeader :sortKey="'title'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">Name</TableHeader>
+                <TableHeader class="title" :sortKey="'name'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">Name</TableHeader>
                 <TableHeader :sortKey="'email'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">E-mail</TableHeader>
-                <TableHeader :sortKey="'role_id'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">Role</TableHeader>
+                <TableHeader :sortKey="'role_id'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">Workspace Role</TableHeader>
                 <TableHeader :sortKey="'currency'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">Currency</TableHeader>
                 <TableHeader class="action">Action</TableHeader>
             </template>
@@ -74,7 +74,7 @@
                     <div class="icon-wrapper">
                         <i class="far fa-users"></i>
                     </div>
-                    <u>V</u>iew team
+                    <u>V</u>iew / <u>E</u>dit team
                 </div>
             </div>
             <div class="item-group">

@@ -5,9 +5,7 @@
             <div ref="stickyInner" class="inner">
                 <slot name="tabs"/>
                 <div class="rounded-top">
-                    <tr class="table-top-bar">
-                        <slot name="topBar"/>
-                    </tr>
+                    <slot name="topBar"/>
                     <tr class="header">
                         <slot name="header"/>
                     </tr>
@@ -33,16 +31,28 @@ export default {
         distToTop: null
     }},
     methods: {
+        getYPos(element) {
+            var yPosition = 0;
+
+            while(element) {
+                yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
+                element = element.offsetParent;
+            }
+
+            return yPosition;
+        },
         handleScroll (event) {
             // Fix table header to screen
             const theWindow = document.getElementById('main')
             const stickyThis = this.$refs.stickyHeader
             let scrollDist = theWindow.scrollTop
-            const offset = 120
-            if (scrollDist >= offset) {
+            const desiredOffset = 20
+            const navHeight = 72
+            const threshold = this.distToTop - navHeight - desiredOffset
+            if (scrollDist >= threshold) {
                 // // Set width of sticky elements
                 if (this.sticky == false) {
-                    stickyThis.style.top = `${this.distToTop - offset}px`
+                    stickyThis.style.top = `${desiredOffset + navHeight}px`
                     stickyThis.style.width = `${this.$refs.table.scrollWidth}px`
                     this.$refs.stickyBg.style.width = `${this.$refs.table.scrollWidth}px`
                     this.$refs.stickyPlaceholder.style.height = `${this.$refs.stickyInner.scrollHeight}px`
@@ -60,7 +70,7 @@ export default {
         document.getElementById('main').removeEventListener('scroll', this.handleScroll)
     },
     mounted() {
-        this.distToTop =  window.pageYOffset + this.$refs.stickyHeader.getBoundingClientRect().top
+        this.distToTop =  this.getYPos(this.$refs.stickyHeader)
     }
 }
 </script>

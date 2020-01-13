@@ -26,6 +26,7 @@ use App\Task;
 use App\TaskParent;
 use App\TaskTeam;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -34,7 +35,9 @@ class WorkspaceController extends Controller
     // Return all workspaces available to the logged in user
     public function workspaces()
     {
-        $workspaces = Workspace::get();
+        $workspaces = Workspace::whereHas('workspace_users', function (Builder $query) {
+            $query->where('user_id', Auth::id());
+        })->get();
         // Return collection of products as a resource
         return WorkspaceResource::collection($workspaces);
     }
@@ -42,6 +45,7 @@ class WorkspaceController extends Controller
     // Return all workspaceUsers available to the logged in user
     public function workspaceUsers()
     {
+        // $workspaceUsers = WorkspaceUser::where('currentW', Auth::id())->get();
         $workspaceUsers = WorkspaceUser::get();
         // Return collection of products as a resource
         return WorkspaceUserResource::collection($workspaceUsers);

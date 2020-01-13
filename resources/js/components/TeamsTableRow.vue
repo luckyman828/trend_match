@@ -23,7 +23,7 @@
             <button class="ghost editable sm" @click.stop="$emit('editCurrency', $event, team)"><span>{{team.currency}}</span></button>
         </td>
         <td class="action">
-            <button class="invisible ghost-hover primary" @click="showSingle(team.id)"><span>View</span></button>
+            <button class="invisible ghost-hover primary" @click="showSingle(team.id)"><span>View / Edit</span></button>
             <button class="invisible ghost-hover" @click.stop="$emit('showContextMenu', $event, team)"><i class="far fa-ellipsis-h medium"></i></button>
         </td>
     </tr>

@@ -23,6 +23,7 @@ import AuthUser from './store/models/AuthUser';
 import TeamFile from './store/models/TeamFile';
 import Team from './store/models/Team';
 import { Query } from '@vuex-orm/core';
+import Workspace from './store/models/Workspace'
 
 export default{
     name: 'app',
@@ -39,6 +40,9 @@ export default{
         ...mapGetters('persist', ['userPermissionLevel', 'currentWorkspaceId']),
         authUser() {
             return AuthUser.query().with('teams').with('workspaces').first()
+        },
+        workspaces() {
+            return Workspace.all()
         },
         teamFiles() {
             return TeamFile.all()
@@ -71,12 +75,12 @@ export default{
             console.log('App: Getting initial data')
             await Promise.all([
                 this.getAuthUser(),
-                this.fetchWorkspaceUsers(),
                 this.fetchWorkspaces(),
             ])
             this.setUserPermissionLevel(this.authUser.role_id)
             if (this.authUser.workspaces.length > 1) console.log('multiple workspaces!');
-            this.setCurrentWorkspace({workspace_id: this.authUser.workspaces[0].id, user_id: this.authUser.id})
+            this.setCurrentWorkspace({workspace_id: this.workspaces[0].id, user_id: this.authUser.id})
+            // this.setCurrentWorkspace({workspace_id: this.authUser.workspaces[0].id, user_id: this.authUser.id})
         },
         async initRequiresWorkspace() {
             // Only get data for the current workspace
@@ -84,6 +88,7 @@ export default{
             this.setLoadingInit(true)
             if (this.authUser) {
                 await (
+                    this.fetchWorkspaceUsers(this.currentWorkspaceId),
                     this.fetchFolders(this.currentWorkspaceId),
                     this.fetchTeams(this.currentWorkspaceId),
                     this.fetchUserTeams(this.currentWorkspaceId),
