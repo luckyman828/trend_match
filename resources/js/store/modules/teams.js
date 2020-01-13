@@ -10,6 +10,7 @@ export default {
         loading: true,
         currentTeamId: null,
         availableTeamIds: [],
+        teams: [],
     },
 
     getters: {
@@ -22,32 +23,33 @@ export default {
         availableTeamIds: state => {
             return state.availableTeamIds
         },
-        teams: (state, getters, rootState, rootGetters) => {
-            console.log('team recalculating')
-            if (!rootGetters['persist/loadingInit']) {
-                const adminPermissionLevel = rootGetters['persist/adminPermissionLevel']
-                const teams = Team.query()
-                    .with('users.role')
-                    .with('invites')
-                    .with('teamFiles')
-                    .with('files')
-                    .with('phases')
-                    .all()
-                const authUser = AuthUser.query()
-                    .with('teams')
-                    .first()
-
-                if (authUser.role_id >= adminPermissionLevel) return teams
-                else {
-                    // Get the users teams
-                    let userTeams = []
-                    teams.forEach(team => {
-                        if (authUser.teams.find(x => x.id == team.id)) userTeams.push(team)
-                    })
-                    return userTeams
-                }
-            }
+        teams: state => {
+            return state.teams
         },
+        // teams: (state, getters, rootState, rootGetters) => {
+        //     if (!rootGetters['persist/loadingInit']) {
+        //         const adminPermissionLevel = rootGetters['persist/adminPermissionLevel']
+        //         const teams = Team.query()
+        //             .with('users.role')
+        //             .with('invites')
+        //             .with('teamFiles')
+        //             .with('files')
+        //             .all()
+        //         const authUser = AuthUser.query()
+        //             .with('teams')
+        //             .first()
+
+        //         if (authUser.role_id >= adminPermissionLevel) return teams
+        //         else {
+        //             // Get the users teams
+        //             let userTeams = []
+        //             teams.forEach(team => {
+        //                 if (authUser.teams.find(x => x.id == team.id)) userTeams.push(team)
+        //             })
+        //             return userTeams
+        //         }
+        //     }
+        // },
         currentTeam: (state, getters) => {
             const teamId = getters.currentTeamId
             const teams = getters.teams
@@ -78,7 +80,7 @@ export default {
     },
 
     actions: {
-        async fetchTeams({ commit }, workspace_id) {
+        async fetchTeams({ commit, dispatch }, workspace_id) {
             // Set the state to loading
             if (workspace_id) {
                 commit('setLoading', true)
@@ -92,6 +94,7 @@ export default {
                         const response = await axios.get(`${apiUrl}`)
                         Team.create({ data: response.data })
                         commit('setLoading', false)
+                        dispatch('instantiateTeams')
                         succes = true
                     } catch (err) {
                         console.log('API error in teams.js :')
@@ -127,14 +130,34 @@ export default {
             return succes
         },
         async updateTeam({ commit }, team) {
-            const apiUrl = `/api/team`
             let succes
-            commit('updateTeam', team)
-            await axios
-                .put(apiUrl, team)
+
+            let apiURL = `/api/team`
+            let requestMethod = 'post'
+            if (team.id) {
+                apiURL = `/api/team/${team.id}`
+                requestMethod = 'put'
+            }
+
+            let teamToPush = {
+                id: team.id,
+                title: team.title,
+                currency: team.currency,
+                category_scope: team.category_scope,
+                workspace_id: team.workspace_id,
+            }
+            await axios({
+                method: requestMethod,
+                url: apiURL,
+                data: {
+                    team: teamToPush,
+                },
+            })
                 .then(response => {
                     console.log(response.data)
+                    if (!team.id) team.id = response.data.id
                     succes = true
+                    commit('updateTeam', teamToPush)
                 })
                 .catch(err => {
                     console.log(err.response)
@@ -162,6 +185,39 @@ export default {
                 })
             return succes
         },
+        async instantiateTeams({ state, rootGetters }) {
+            const adminPermissionLevel = rootGetters['persist/adminPermissionLevel']
+            const teams = Team.query()
+                .with('users.role')
+                .with('invites')
+                .with('teamFiles')
+                .with('files')
+                .with('phases')
+                .all()
+            const authUser = AuthUser.query()
+                .with('teams')
+                .first()
+
+            if (authUser.role_id >= adminPermissionLevel) {
+                state.teams = teams
+            } else {
+                // Get the users teams
+                let userTeams = []
+                teams.forEach(team => {
+                    if (authUser.teams.find(x => x.id == team.id)) userTeams.push(team)
+                })
+                state.teams = userTeams
+            }
+        },
+        async recalcTeam({ state, rootGetters }, team) {
+            team = Team.query()
+                .with('users.role')
+                .with('invites')
+                .with('teamFiles')
+                .with('files')
+                .with('phases')
+                .find(team.id)
+        },
     },
 
     mutations: {
@@ -176,7 +232,6 @@ export default {
             state.availableTeamIds = ids
         },
         updateTeam(state, team) {
-            console.log(JSON.parse(JSON.stringify(team)))
             Team.insert({ data: team })
         },
         deleteTeam(state, team_id) {

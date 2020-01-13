@@ -46,6 +46,7 @@ export default {
         .sort {
             &.active {
                 background: $light1;
+                color: $font;
                 i {
                     color: $primary;
                 }

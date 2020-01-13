@@ -11,10 +11,10 @@
         </div>
         <div class="buttons">
             <div class="hotkey-wrapper">
-                <span class="button green" @click="submit">Save</span>
+                <button class="green" @click="submit"><span>Save</span></button>
                 <span class="hotkey"><span class="key">Enter</span> Enter</span>
             </div>
-            <span class="button ghost" @click="cancel">Cancel</span>
+            <button class="button ghost" @click="cancel"><span>Cancel</span></button>
         </div>
     </div>
 </template>
@@ -117,9 +117,14 @@ export default {
         }
         .buttons {
             margin-top: 8px;
+            display: flex;
+
             > *:not(:last-child) {
                 margin-right: 16px;
             }
+        }
+        button {
+            min-width: 80px;
         }
     }
 </style>

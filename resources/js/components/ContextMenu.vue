@@ -1,6 +1,13 @@
 <template>
-    <div v-if="visible" v-click-outside="hide" class="context-menu" ref="contextMenu" @click.capture="hide">
-        <slot :item="item"/>
+    <div v-if="visible" v-click-outside="hide" class="context-menu" ref="contextMenu">
+        <div class="item-group header" v-if="hasHeader">
+            <strong>
+                <slot name="header" :item="item" :mouseEvent="mouseEvent"/>
+            </strong>
+            <button class="circle close" @click="hide"><i class="fal fa-times"></i></button>
+        </div>
+        
+        <slot :item="item" :mouseEvent="mouseEvent" :hide="hide"/>
     </div>
 </template>
 
@@ -8,17 +15,25 @@
 export default {
     name: 'contextMenu',
     props: [
-
     ],
     data: function() {
         return {
             visible: false,
-            item: 0,
+            item: null,
+            mouseEvent: null
+        }
+    },
+    computed: {
+        hasHeader() {
+            // Check if the header slot has any content
+            return !!this.$slots.header || !!this.$scopedSlots.header
         }
     },
     methods: {
         show(e) {
             // e is expected to be a mouseclick event
+            // Save a reference to the mouseClick event
+            this.mouseEvent = e
             // Set the current context menu item
             const mouseX = e.clientX
             const mouseY = e.clientY
@@ -58,6 +73,9 @@ export default {
         },
         hide() {
             this.visible = false
+            this.$nextTick(() => {
+                this.$emit('hide')
+            })
         },
     },
 
@@ -73,7 +91,7 @@ export default {
         box-shadow: 0 3px 30px rgba(black, .3);
         z-index: 1;
         position: fixed;
-        min-width: 200px;
+        min-width: 260px;
         .item-group {
             padding: 8px 0;
             &:not(:first-child) {
@@ -99,6 +117,13 @@ export default {
                     }
                 }
             }
+        }
+        .header {
+            padding-left: 16px;
+            padding-right: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
     }
 </style>

@@ -79,6 +79,34 @@ class TeamController extends Controller
             return new TeamResource($team);
         }
     }
+    public function insertOrUpdate(Request $request, $id = null)
+    {
+        if ($id) {
+            $existingTeam = Team::find($id);
+            $team = $existingTeam;
+            $team->id = $id;
+        } else {
+            $team = new Team;
+        }
+
+        $team->workspace_id = $request->team['workspace_id'];
+        $team->title = $request->team['title'];
+        $team->currency = $request->team['currency'];
+
+        // return $action;
+
+        if($team->save()) {
+
+            return $team;
+            // Fire event
+            $dataToReturn = new TeamResource($team);
+            // broadcast(new ActionUpdated($actionToReturn))->toOthers();
+            // broadcast(new ActionUpdated($actionToReturn))->toOthers();
+
+            // return $dataToReturn;
+            return json_decode( json_encode($dataToReturn), true);
+        }
+    }
     public function destroyTeam(Request $request)
     {
         // Find all team specific records

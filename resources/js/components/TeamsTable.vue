@@ -1,8 +1,10 @@
 <template>
     <div class="teams-table">
 
-        <Tabs :tabs="['Teams','Members']" v-model="currentTab" :activeTab="currentTab"/>
         <FlexTable v-if="currentTab == 'Teams'">
+            <template v-slot:tabs>
+                <Tabs :tabs="['Teams','Members']" v-model="currentTab" :activeTab="currentTab"/>
+            </template>
             <template v-slot:topBar>
                 <TableTopBar>
                     <template v-slot:left>
@@ -25,11 +27,18 @@
             </template>
             <template v-slot:body>
                 <TeamsTableRow :ref="'teamRow-'+team.id" v-for="(team, index) in teams" :key="team.id" :team="team" :index="index" 
-                @showContextMenu="showTeamContext($event, team)" @showSingle="showSingleTeam"/>
+                @showContextMenu="showTeamContext($event, team)" @showSingle="showSingleTeam" @editCurrency="onEditCurrency($event, team)"
+                @cancelEditTitle="removeUnsavedTeam"/>
+            </template>
+            <template v-slot:footer="slotProps">
+                <td><button class="primary invisible" @click="onNewTeam"><i class="far fa-plus"></i><span>Add new: Team</span></button></td>
             </template>
         </FlexTable>
 
         <FlexTable v-if="currentTab == 'Members'">
+            <template v-slot:tabs>
+                <Tabs :tabs="['Teams','Members']" v-model="currentTab" :activeTab="currentTab"/>
+            </template>
             <template v-slot:topBar>
                 <TableTopBar>
                     <template v-slot:left>
@@ -61,7 +70,7 @@
 
         <ContextMenu ref="contextMenuTeam" class="context-team" v-slot="slotProps">
             <div class="item-group">
-                <div class="item" @click="showSingleTeam(slotProps.item.id)">
+                <div class="item" @click="showSingleTeam(slotProps.item.id); slotProps.hide()">
                     <div class="icon-wrapper">
                         <i class="far fa-users"></i>
                     </div>
@@ -69,17 +78,33 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="$refs['teamRow-'+slotProps.item.id][0].editTitle = true">
+                <div class="item" @click="$refs['teamRow-'+slotProps.item.id][0].editTitle = true; slotProps.hide()">
                     <div class="icon-wrapper"><i class="far fa-pen"></i></div>
                     <u>R</u>ename
                 </div>
+                <div class="item" @click.stop="onEditCurrency(slotProps.mouseEvent, slotProps.item)">
+                    <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
+                    <u>C</u>hange currency
+                </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="onDeleteTeam(slotProps.item)">
+                <div class="item" @click="onDeleteTeam(slotProps.item); slotProps.hide()">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
                     <u>D</u>elete team
                 </div>
             </div>
+        </ContextMenu>
+
+        <ContextMenu ref="contextMenuCurrency" class="context-currency" @hide="teamToEdit.currency != originalTeam.currency && onUpdateTeam(teamToEdit)">
+            <template v-slot:header="slotProps">
+                Change Team Currency
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <RadioButtons ref="currencySelector" :options="availableCurrencies" :search="true" v-model="teamToEdit.currency" :submitOnChange="true"/>
+                </div>
+            </template>
+            
         </ContextMenu>
 
 
@@ -289,12 +314,13 @@ export default {
             id: '',
             title: ''
         },
+        originalTeam: null,
         editTitle: false,
         editCurrency: false,
         currentTab: 'Teams',
     }},
     computed: {
-        ...mapGetters('persist', ['currentWorkspaceId', 'userPermissionLevel', 'availableCurrencies']),
+        ...mapGetters('persist', ['currentWorkspaceId', 'currentWorkspace', 'userPermissionLevel', 'availableCurrencies']),
         ...mapGetters('entities/teams', ['currentTeam']),
         roles () {
             return Role.all().filter(role => role.id <= this.userPermissionLevel)
@@ -308,6 +334,57 @@ export default {
         ...mapMutations('entities/teams', ['setCurrentTeamId', 'setAvailableTeamIds']),
         onSelect(index) {
             this.$emit('onSelect', index)
+        },
+        onEditCurrency(mouseEvent, team) {
+            const contextMenu = this.$refs.contextMenuCurrency
+            contextMenu.item = team;
+            this.teamToEdit = team;
+            this.originalTeam = JSON.parse(JSON.stringify(team));
+            contextMenu.show(mouseEvent)
+        },
+        removeUnsavedTeam() {
+            // Check that we have a new team
+            const existingNewTeam = this.teams.find(x => x.id == null)
+            if (existingNewTeam) {
+                this.teams.pop()
+            }
+        },
+        onNewTeam() {
+            // Check if we already have added a new team
+            const existingNewTeam = this.teams.find(x => x.id == null)
+            // If we already have a new folder, foxus the edit title field
+            if (existingNewTeam) {
+                // Focus the edit field
+                this.$nextTick(() => {
+                    if (this.$refs['teamRow-null'][0].editTitle = true) {
+                        this.$refs['teamRow-null'][0].$refs['editTitle'].setActive()
+                    } else {
+                        this.$refs['teamRow-null'][0].editTitle = true
+                    }
+                })
+            }
+            // Else create a new folder
+            else {
+                const newTeam = {
+                    id: null,
+                    title: 'New team',
+                    workspace_id: this.currentWorkspaceId,
+                    owner: null,
+                    users: [],
+                    files: [],
+                    currency: this.currentWorkspace.currency,
+                    invites: [],
+                }
+                // Push new new to the current teams array
+                this.teams.push(newTeam)
+
+                // wait for the new team to be rendered
+                this.$nextTick(() => {
+                    // Activate title edit of new folder
+                    this.$refs['teamRow-null'][0].editTitle = true
+                })
+            }
+            
         },
         showSingleTeam(id) {
             this.setAvailableTeamIds(this.teams.map(x => x.id))

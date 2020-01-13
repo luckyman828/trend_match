@@ -2,22 +2,25 @@
 
     <div class="radio-buttons">
         <div class="search" v-if="search">
-            <input class="input-wrapper small" placeholder="Search.." type="search" v-model="searchString" ref="searchField">
+            <input class="input-wrapper small" placeholder="Search.." type="search" v-model="searchString" ref="searchField"
+            @click.stop>
             <span v-if="searchString.length > 0" class="close" @click="searchString = ''">
                 <i class="fas fa-times"></i>
             </span>
         </div>
-        <label v-for="(option, index) in optionsFiltered" :key="index" class="radiobox">
-            <input v-if="optionValueKey" type="radio" name="radio-option" :ref="'radio-option-' + option.id" :id="'radio-option-' + option.id" :value="option[optionValueKey]" v-model="selection" @change="change()" @click="click">
-            <input v-else type="radio" name="radio-option" :ref="'radio-option-' + option.id" :id="'radio-option-' + option.id" :value="option" v-model="selection" @change="change()" @click="click">
-            <span class="radiomark"></span>
-            <template v-if="optionNameKey">
-                {{option[optionNameKey]}}
-            </template>
-            <template v-else>
-                {{option}}
-            </template>
-        </label>
+        <div class="wrapper">
+            <label v-for="(option, index) in optionsFiltered" :key="index" class="radiobox">
+                <input v-if="optionValueKey" type="radio" name="radio-option" :ref="'radio-option-' + option.id" :id="'radio-option-' + option.id" :value="option[optionValueKey]" v-model="selection" @change="change()" @click="click">
+                <input v-else type="radio" name="radio-option" :ref="'radio-option-' + option.id" :id="'radio-option-' + option.id" :value="option" v-model="selection" @change="change()" @click="click">
+                <span class="radiomark"></span>
+                <template v-if="optionNameKey">
+                    {{option[optionNameKey]}}
+                </template>
+                <template v-else>
+                    {{option}}
+                </template>
+            </label>
+        </div>
     </div>
 
 </template>
@@ -131,6 +134,28 @@ export default {
 <style scopes lang="scss">
 @import '~@/_variables.scss';
 
+    .radio-buttons .wrapper {
+        max-height: 200px;
+        overflow: auto;
+    }
+    .radiobox {
+        font-weight: 500;
+        &:hover {
+            background: $bgContentActive;
+            .radiomark {
+                border-color: $primary;
+            }
+        }
+        .radiomark {
+            border: solid 2px $fontIcon
+        }
+        input:checked + .radiomark {
+            border: solid 6px $primary;
+            &::after {
+                content: none;
+            }
+        }
+    }
     .search {
         padding: 8px;
         position: relative;

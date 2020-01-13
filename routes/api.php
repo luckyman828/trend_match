@@ -53,9 +53,9 @@ Route::middleware('auth:api')->group( function(){
     // List current workspace team invites
     Route::get('workspace/{workspace_id}/team-invites', 'TeamController@invites');
     // Create team
-    Route::post('workspace/{workspace_id}/team', 'TeamController@store');
+    Route::post('team', 'TeamController@insertOrUpdate');
     // Update team
-    Route::put('team', 'TeamController@update');
+    Route::put('team/{id}', 'TeamController@insertOrUpdate');
     // Delete team
     Route::delete('team', 'TeamController@destroyTeam');
 

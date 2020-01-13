@@ -1,12 +1,12 @@
 <template>
-    <tr class="table-top-bar">
+    <div class="table-top-bar-inner">
         <div class="left">
             <slot name="left"></slot>
         </div>
         <div class="right">
             <slot name="right"></slot>
         </div>
-    </tr>
+    </div>
 </template>
 
 <script>
@@ -18,7 +18,7 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 
-    .table-top-bar {
+    .table-top-bar-inner {
         height: 48px;
         padding: 8px 12px;
         display: flex;

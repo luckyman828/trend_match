@@ -50,6 +50,7 @@ Vue.component('FlyinHeader', require('./components/FlyinHeader.vue').default)
 Vue.component('FlyinHeaderNavigation', require('./components/FlyinHeaderNavigation.vue').default)
 Vue.component('ContextMenu', require('./components/ContextMenu.vue').default)
 Vue.component('EditInputWrapper', require('./components/EditInputWrapper.vue').default)
+Vue.component('RadioButtons', require('./components/RadioButtons.vue').default)
 
 // Define global filters
 Vue.filter('truncate', function(value, limit) {

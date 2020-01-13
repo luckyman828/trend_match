@@ -24,6 +24,7 @@
     "dependencies": {
         "@vuex-orm/core": "^0.34.1",
         "@vuex-orm/plugin-change-flags": "^1.2.0",
+        "focus-visible": "^5.0.2",
         "fuse.js": "^3.4.5",
         "jspdf": "^1.5.3",
         "kuduscript": "^1.0.17",

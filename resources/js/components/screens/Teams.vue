@@ -36,7 +36,7 @@ export default {
         // unsub: '',
     }},
     computed: {
-        ...mapGetters('entities/teams', ['loadingTeams']),
+        ...mapGetters('entities/teams', ['loadingTeams', 'teams']),
         ...mapGetters('entities/userTeams', ['loadingUserTeams']),
         ...mapGetters('entities/users', ['loadingUsers']),
         ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId']),
@@ -54,9 +54,6 @@ export default {
         },
         users () {
             return User.query().with('teams').with('role').all()
-        },
-        teams () {
-            return this.$store.getters['entities/teams/teams']
         },
         isLoading () {
             let loading = false

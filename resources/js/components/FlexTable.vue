@@ -1,10 +1,23 @@
 <template>
-    <table class="flex-table" ref="table">
-        <slot name="topBar"/>
-        <tr class="header">
-            <slot name="header"/>
-        </tr>
-        <slot name="body"/>
+    <table class="flex-table" ref="table" :class="{'sticky': sticky}">
+        <div ref="stickyHeader" class="sticky-header">
+            <div ref="stickyBg" class="sticky-bg"></div>
+            <div ref="stickyInner" class="inner">
+                <slot name="tabs"/>
+                <div class="rounded-top">
+                    <tr class="table-top-bar">
+                        <slot name="topBar"/>
+                    </tr>
+                    <tr class="header">
+                        <slot name="header"/>
+                    </tr>
+                </div>
+            </div>
+        </div>
+        <div ref="stickyPlaceholder" class="sticky-placeholder"></div>
+        <div class="body">
+            <slot name="body"/>
+        </div>
         <tr class="footer">
             <td class="select"></td>
             <slot name="footer"/>
@@ -15,6 +28,40 @@
 <script>
 export default {
     name: 'flexTable',
+    data: function() { return {
+        sticky: false,
+        distToTop: null
+    }},
+    methods: {
+        handleScroll (event) {
+            // Fix table header to screen
+            const theWindow = document.getElementById('main')
+            const stickyThis = this.$refs.stickyHeader
+            let scrollDist = theWindow.scrollTop
+            const offset = 120
+            if (scrollDist >= offset) {
+                // // Set width of sticky elements
+                if (this.sticky == false) {
+                    stickyThis.style.top = `${this.distToTop - offset}px`
+                    stickyThis.style.width = `${this.$refs.table.scrollWidth}px`
+                    this.$refs.stickyBg.style.width = `${this.$refs.table.scrollWidth}px`
+                    this.$refs.stickyPlaceholder.style.height = `${this.$refs.stickyInner.scrollHeight}px`
+                }
+                this.sticky = true
+            } else if (this.sticky == true) {
+                this.sticky = false
+            }
+        },
+    },
+    created () {
+        document.getElementById('main').addEventListener('scroll', this.handleScroll)
+    },
+    destroyed () {
+        document.getElementById('main').removeEventListener('scroll', this.handleScroll)
+    },
+    mounted() {
+        this.distToTop =  window.pageYOffset + this.$refs.stickyHeader.getBoundingClientRect().top
+    }
 }
 </script>
 
@@ -27,8 +74,35 @@ export default {
         border-spacing: 0 2px;
         display: flex;
         flex-direction: column;
-        > tr:first-child {
-            border-radius: $rowRadius $rowRadius 0 0;
+        &.sticky {
+            .sticky-bg {
+                background: $bg;
+                box-shadow: 0 10px 7px -6px rgba(0, 0, 0, 0.05) inset;
+                top: 72px;
+                height: 120px;
+                position: fixed;
+                z-index: -1;
+            }
+            .sticky-header {
+                position: fixed;
+                z-index: 1;
+                .header {
+                    box-shadow: 0px 2px 10px #0000001A;
+                    border-bottom: solid 2px $divider;
+                    position: static;
+                }
+            }
+            .sticky-placeholder {
+                display: block;
+            }
+        }
+        .sticky-placeholder {
+            display: none;
+        }
+        .rounded-top {
+            > :first-child {
+                border-radius: $rowRadius $rowRadius 0 0;
+            }
         }
         tr {
             background: white;
@@ -36,6 +110,7 @@ export default {
             display: flex;
             align-items: center;
             padding: 8px 0;
+            position: relative;
             &:not(.table-top-bar) {
                 margin-bottom: 2px;
                 > * {

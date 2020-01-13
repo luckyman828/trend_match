@@ -17,6 +17,15 @@
 @import '~@fortawesome/fontawesome-pro/scss/brands';
 @import '~@fortawesome/fontawesome-pro/scss/duotone';
 
+/*
+  This will hide the focus indicator if the element receives focus via the mouse,
+  but it will still show up on keyboard focus.
+*/
+.js-focus-visible :focus:not(.focus-visible) {
+    outline: none;
+    box-shadow: none;
+}
+
 *,
 *::before,
 *::after {
@@ -56,7 +65,8 @@ h4,
 h5,
 button,
 a,
-th {
+th,
+strong {
     color: $font;
 }
 h2 {
@@ -222,6 +232,7 @@ textarea {
     display: inline-flex;
     align-items: center;
     flex-direction: column;
+    justify-content: flex-start;
     .hotkey {
         font-size: 10px;
         color: $dark2;
@@ -253,6 +264,10 @@ button,
     user-select: none;
     border: solid 1px transparent;
 
+    &.editable {
+        font-weight: 400;
+    }
+
     &.icon-right span,
     &.icon-left span {
         flex: 1;
@@ -279,6 +294,7 @@ button,
             width: 32px - 2px;
             text-align: center;
             font-size: 14px;
+            color: inherit;
         }
     }
     &.ghost i {
@@ -441,29 +457,6 @@ i {
         top: 50%;
         font-size: 9px;
         transform: translate(-50%, -50%);
-    }
-}
-
-// CLOSE BUTTONS / ICONS
-.close {
-    transition: 0.3s;
-    &.circle {
-        height: 40px;
-        width: 40px;
-        display: block;
-        text-align: center;
-        background: $light2;
-        border-radius: 20px;
-        cursor: pointer;
-        color: $dark05;
-        i {
-            font-size: 21px;
-            line-height: 40px;
-        }
-        &:hover {
-            color: $red;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-        }
     }
 }
 
@@ -1132,7 +1125,7 @@ form {
 .input-wrapper {
     display: block;
     min-height: 40px;
-    border: solid 1px $light1;
+    border: solid 1px $dark2;
     color: $dark05;
     border-radius: 4px;
     padding: 8px 12px;
@@ -1158,6 +1151,8 @@ form {
     &:focus,
     &.active {
         border: solid 2px $primary;
+        box-shadow: none;
+        outline: none;
     }
     &.small {
         min-height: 30px;

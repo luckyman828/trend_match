@@ -2,10 +2,10 @@
     <tr class="team-row table-row" ref="teamRow" @contextmenu.prevent="$emit('showContextMenu', $event, team)">
         <td class="select"><Checkbox/></td>
         <td v-if="editTitle" class="title">
-            <i class="fas fa-users"></i>
-            <EditInputWrapper :activateOnMount="true" :type="'text'"
+            <i class="fa-users" :class="team.id ? 'fas' : 'far'"></i>
+            <EditInputWrapper ref="editTitle" :activateOnMount="true" :type="'text'"
                 :value="teamToEdit.title" :oldValue="team.title" v-model="teamToEdit.title"
-                @submit="updateTeam(teamToEdit); editTitle = false" @cancel="editTitle = false"/>
+                @submit="updateTeam(teamToEdit); editTitle = false" @cancel="$emit('cancelEditTitle'); editTitle = false;"/>
         </td>
         <td v-else class="title clickable" @click="showSingle(team.id)">
             <i class="fas fa-users"></i>
@@ -20,11 +20,11 @@
             </v-popover>
         </td>
         <td class="currency">
-            <button class="ghost"><span>{{team.currency}}</span></button>
+            <button class="ghost editable sm" @click.stop="$emit('editCurrency', $event, team)"><span>{{team.currency}}</span></button>
         </td>
         <td class="action">
             <button class="invisible ghost-hover primary" @click="showSingle(team.id)"><span>View</span></button>
-            <button class="invisible ghost-hover"><i class="far fa-ellipsis-h medium"></i></button>
+            <button class="invisible ghost-hover" @click.stop="$emit('showContextMenu', $event, team)"><i class="far fa-ellipsis-h medium"></i></button>
         </td>
     </tr>
 </template>
@@ -40,10 +40,11 @@ export default {
     ],
     data: function() { return {
         editTitle: false,
-        teamToEdit: {
-            id: this.team.id,
-            title: this.team.title,
-        },
+        // teamToEdit: {
+        //     id: this.team.id,
+        //     title: this.team.title,
+        // },
+        teamToEdit: this.team,
     }},
     methods: {
         ...mapActions('entities/teams', ['updateTeam']),
