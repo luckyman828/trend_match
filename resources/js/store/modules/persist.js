@@ -194,6 +194,29 @@ export default {
             'ZMW',
             'ZWL',
         ],
+        availableWorkspaceRoles: [
+            {
+                id: 1,
+                name: 'User',
+                description: 'A basic user with no special rights',
+            },
+            {
+                id: 2,
+                name: 'Observer',
+                description: 'Like a ghost. Can go anywhere, but cannot change anything.',
+            },
+            {
+                id: 3,
+                name: 'Admin',
+                description: 'Can do some special move and rewoke powers.',
+            },
+            {
+                id: 4,
+                name: 'Owner',
+                description:
+                    'All the powers of the Admin, with the added security of only being able to be kicked by other Owners.',
+            },
+        ],
         currentFolderId: null,
     },
 
@@ -216,6 +239,9 @@ export default {
         // },
         availableCurrencies: state => {
             return state.availableCurrencies
+        },
+        availableWorkspaceRoles: state => {
+            return state.availableWorkspaceRoles
         },
         teamFilterId: state => {
             return state.teamFilterIdx

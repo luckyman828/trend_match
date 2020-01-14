@@ -9,6 +9,7 @@ use App\Http\Resources\Country as CountryResource;
 use App\User;
 use App\Http\Resources\User as UserResource;
 use App\Country;
+use App\WorkspaceUser;
 
 class UserController extends Controller
 {
@@ -64,6 +65,29 @@ class UserController extends Controller
 
             // return $dataToReturn;
             return json_decode( json_encode($dataToReturn), true);
+        }
+    }
+
+    public function insertOrUpdateWorkspaceUser(Request $request)
+    {
+        $existingWorkspaceUser = WorkspaceUser::where('user_id', $request->user_id)->where('workspace_id', $request->workspace_id)->first();
+        $workspaceUser = $existingWorkspaceUser ? $existingWorkspaceUser : new WorkspaceUser;
+
+        $workspaceUser->user_id = $request->user_id;
+        $workspaceUser->workspace_id = $request->workspace_id;
+        $workspaceUser->permission_level = $request->permission_level;
+
+
+        if($workspaceUser->save()) {
+
+            return $workspaceUser;
+            // Fire event
+            // $dataToReturn = new UserResource($user);
+            // // broadcast(new ActionUpdated($actionToReturn))->toOthers();
+            // // broadcast(new ActionUpdated($actionToReturn))->toOthers();
+
+            // // return $dataToReturn;
+            // return json_decode( json_encode($dataToReturn), true);
         }
     }
 

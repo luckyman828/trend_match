@@ -34,7 +34,29 @@ export default class User extends Model {
             teamUser: this.hasMany(UserTeam, 'user_id'),
             // assigned_room_id: this.attr(''),
         }
-
         return data
+    }
+
+    get workspaceUser() {
+        return this.workspaceUsers[0]
+    }
+    get workspaceRoleId() {
+        return this.workspaceUser.permission_level
+    }
+    get workspaceRole() {
+        switch (this.workspaceUser.permission_level) {
+            case 1:
+                return 'User'
+                break
+            case 2:
+                return 'Observer'
+                break
+            case 3:
+                return 'Admin'
+                break
+            case 4:
+                return 'Owner'
+                break
+        }
     }
 }

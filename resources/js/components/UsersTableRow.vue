@@ -12,13 +12,14 @@
             <span>{{user.name}}</span>
         </td>
         <td class="email">{{user.email}}</td>
-        <td class="role">{{user.workspaceUsers[0].workspaceRole}}</td>
+        <td class="role">
+            <button class="ghost editable sm" @click.stop="$emit('editRole', $event, user)"><span>{{user.workspaceRole}}</span></button>
+        </td>
         <td class="currency">
             <button class="ghost editable sm" @click.stop="$emit('editCurrency', $event, user)"><span>{{user.currency ? user.currency : 'Set currency'}}</span></button>
         </td>
         <td class="action">
-            <button class="invisible ghost-hover primary">View</button>
-            <button class="square true-square invisible ghost-hover more"><i class="far fa-ellipsis-h medium"></i></button>
+            <button class="invisible ghost-hover" @click.stop="$emit('showContextMenu', $event, user)"><i class="far fa-ellipsis-h medium"></i></button>
         </td>
     </tr>
 </template>
@@ -34,7 +35,7 @@ export default {
     ],
     data: function() { return {
         editName: false,
-        userToEdit: JSON.parse(JSON.stringify(this.user)),
+        userToEdit: this.user,
     }},
     methods: {
         ...mapActions('entities/users', ['updateUser']),

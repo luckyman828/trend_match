@@ -54,13 +54,14 @@
                 <TableHeader class="select"><Checkbox/></TableHeader>
                 <TableHeader class="title" :sortKey="'name'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">Name</TableHeader>
                 <TableHeader :sortKey="'email'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">E-mail</TableHeader>
-                <TableHeader :sortKey="'role_id'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">Workspace Role</TableHeader>
+                <TableHeader :sortKey="'workspaceRoleId'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">Workspace Role</TableHeader>
                 <TableHeader :sortKey="'currency'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">Currency</TableHeader>
                 <TableHeader class="action">Action</TableHeader>
             </template>
             <template v-slot:body>
                 <UsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in users" :key="user.id" :user="user" :index="index"
-                @showContextMenu="showUserContext($event, user)" @editCurrency="onEditUserCurrency($event, user)"/>
+                @showContextMenu="showUserContext($event, user)" @editCurrency="onEditUserCurrency($event, user)"
+                @editRole="onEditUserRole($event, user)"/>
             </template>
         </FlexTable>
 
@@ -102,9 +103,15 @@
                     <div class="icon-wrapper"><i class="far fa-pen"></i></div>
                     <u>R</u>ename User
                 </div>
+            </div>
+            <div class="item-group">
                 <div class="item" @click.stop="onEditUserCurrency(slotProps.mouseEvent, slotProps.item)">
                     <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
-                    <u>C</u>hange currency
+                    <u>C</u>hange Currency
+                </div>
+                <div class="item" @click.stop="onEditUserRole(slotProps.mouseEvent, slotProps.item)">
+                    <div class="icon-wrapper"><i class="far fa-key"></i></div>
+                    Change Workspace <u>R</u>ole
                 </div>
             </div>
             <div class="item-group">
@@ -121,10 +128,10 @@
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
-                    <RadioButtons ref="teamCurrencySelector" :options="availableCurrencies" :search="true" v-model="teamToEdit.currency" :submitOnChange="true"/>
+                    <RadioButtons ref="teamCurrencySelector" :options="availableCurrencies" 
+                    :currentOptionId="originalTeam.currency" :search="true" v-model="teamToEdit.currency" :submitOnChange="true"/>
                 </div>
             </template>
-            
         </ContextMenu>
 
         <ContextMenu ref="contextMenuUserCurrency" class="context-currency" @hide="userToEdit.currency != originalUser.currency && updateUser(userToEdit)">
@@ -133,12 +140,25 @@
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
-                    <RadioButtons ref="userCurrencySelector" :options="availableCurrencies" :search="true" v-model="userToEdit.currency" :submitOnChange="true"/>
+                    <RadioButtons ref="userCurrencySelector" :options="availableCurrencies" 
+                    :currentOptionId="originalUser.currency" :search="true" v-model="userToEdit.currency" :submitOnChange="true"/>
                 </div>
             </template>
-            
         </ContextMenu>
 
+        <ContextMenu ref="contextMenuWorkspaceRole" class="context-role" 
+        @hide="userToEdit.workspaceUser.permission_level != originalUser.workspaceUsers[0].permission_level && updateWorkspaceUser(userToEdit.workspaceUser)">
+            <template v-slot:header="slotProps">
+                Change Workspace Role
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <RadioButtons ref="userCurrencySelector" :options="availableWorkspaceRoles" :currentOptionId="slotProps.item.workspaceRoleId"
+                    v-model="userToEdit.workspaceUsers[0].permission_level" :submitOnChange="true" :optionDescriptionKey="'description'"
+                    :optionNameKey="'name'" :optionValueKey="'id'"/>
+                </div>
+            </template>
+        </ContextMenu>
 
 
         <!-- <div class="team-totals">
@@ -354,7 +374,7 @@ export default {
         currentTab: 'Teams',
     }},
     computed: {
-        ...mapGetters('persist', ['currentWorkspaceId', 'currentWorkspace', 'userPermissionLevel', 'availableCurrencies']),
+        ...mapGetters('persist', ['currentWorkspaceId', 'currentWorkspace', 'userPermissionLevel', 'availableCurrencies', 'availableWorkspaceRoles']),
         ...mapGetters('entities/teams', ['currentTeam']),
         roles () {
             return Role.all().filter(role => role.id <= this.userPermissionLevel)
@@ -365,6 +385,7 @@ export default {
         ...mapActions('entities/userTeams', ['removeUserFromTeam']),
         ...mapActions('entities/users', ['updateUser']),
         ...mapActions('entities/teams', ['updateTeam', 'deleteTeam']),
+        ...mapActions('entities/workspaceUsers', ['updateWorkspaceUser']),
         ...mapMutations('entities/teams', ['setCurrentTeamId', 'setAvailableTeamIds']),
         onSelect(index) {
             this.$emit('onSelect', index)
@@ -392,6 +413,13 @@ export default {
                 // Set focus to the search field
                 this.$refs.userCurrencySelector.focusSearch()
             })
+        },
+        onEditUserRole(mouseEvent, user) {
+            this.userToEdit = user;
+            this.originalUser = JSON.parse(JSON.stringify(user));
+            const contextMenu = this.$refs.contextMenuWorkspaceRole
+            contextMenu.item = user;
+            contextMenu.show(mouseEvent)
         },
         removeUnsavedTeam() {
             // Check that we have a new team

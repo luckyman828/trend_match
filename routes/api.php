@@ -143,6 +143,7 @@ Route::middleware('auth:api')->group( function(){
     // Create / Update user
     Route::post('user', 'UserController@insertOrUpdate');
     Route::put('user/{id}', 'UserController@insertOrUpdate');
+    Route::put('workspace-user', 'UserController@insertOrUpdateWorkspaceUser');
 
     // xxx Comments xxx
     // create new comment

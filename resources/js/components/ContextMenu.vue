@@ -91,7 +91,7 @@ export default {
         box-shadow: 0 3px 30px rgba(black, .3);
         z-index: 1;
         position: fixed;
-        min-width: 260px;
+        width: 260px;
         .item-group {
             padding: 8px 0;
             &:not(:first-child) {
