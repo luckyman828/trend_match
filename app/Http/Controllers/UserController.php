@@ -37,17 +37,36 @@ class UserController extends Controller
         // Return collection of products as a resource
         return RoleResource::collection($roles);
     }
-    public function changeRole(Request $request)
+
+    public function insertOrUpdate(Request $request, $id = null)
     {
-        // Return collection of products as a resource
-        $user = User::find($request->user_id);
-        $user->role_id = $request->role_id;
-        $user->save();
-        if($user->save()) {
-            return $user;
+        if ($id) {
+            $existingUser = User::find($id);
+            $user = $existingUser;
+            $user->id = $id;
+        } else {
+            $user = new User;
         }
-        // return new UserResource($user);
+
+        $user->name = $request->user['name'];
+        $user->email = $request->user['email'];
+        $user->currency = $request->user['currency'];
+        $user->impact = $request->user['impact'];
+
+
+        if($user->save()) {
+
+            return $user;
+            // Fire event
+            $dataToReturn = new UserResource($user);
+            // broadcast(new ActionUpdated($actionToReturn))->toOthers();
+            // broadcast(new ActionUpdated($actionToReturn))->toOthers();
+
+            // return $dataToReturn;
+            return json_decode( json_encode($dataToReturn), true);
+        }
     }
+
 
 
 }

@@ -33,6 +33,7 @@ export default {
         selected: [],
         singleTeam: null,
         loadingOverwrite: false,
+        users: []
         // unsub: '',
     }},
     computed: {
@@ -52,13 +53,13 @@ export default {
         userTeams() {
             return UserTeam.query().with('team').with('user').all()
         },
-        users () {
-            return User.query().with('teams|role|workspaceUsers').all()
-        },
+        // users () {
+        //     return User.query().with('teams|role|workspaceUsers').all()
+        // },
         isLoading () {
             let loading = false
             if (!this.loadingOverwrite)
-                if (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.users[0].role == null || this.authUser == null)
+                if (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.users == null || this.authUser == null)
                     loading = true
             return loading
         },
@@ -103,6 +104,9 @@ export default {
         //     } 
         // })
         
+    },
+    mounted() {
+        this.users = User.query().with('teams|role|workspaceUsers').all()
     },
     destroyed() {
         // this.unsub()

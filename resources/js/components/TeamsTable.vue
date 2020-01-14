@@ -27,7 +27,7 @@
             </template>
             <template v-slot:body>
                 <TeamsTableRow :ref="'teamRow-'+team.id" v-for="(team, index) in teams" :key="team.id" :team="team" :index="index" 
-                @showContextMenu="showTeamContext($event, team)" @showSingle="showSingleTeam" @editCurrency="onEditCurrency($event, team)"
+                @showContextMenu="showTeamContext($event, team)" @showSingle="showSingleTeam" @editCurrency="onEditTeamCurrency($event, team)"
                 @cancelEditTitle="removeUnsavedTeam"/>
             </template>
             <template v-slot:footer="slotProps">
@@ -59,7 +59,8 @@
                 <TableHeader class="action">Action</TableHeader>
             </template>
             <template v-slot:body>
-                <UsersTableRow v-for="(user, index) in users" :key="user.id" :user="user" :index="index"/>
+                <UsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in users" :key="user.id" :user="user" :index="index"
+                @showContextMenu="showUserContext($event, user)" @editCurrency="onEditUserCurrency($event, user)"/>
             </template>
         </FlexTable>
 
@@ -82,7 +83,7 @@
                     <div class="icon-wrapper"><i class="far fa-pen"></i></div>
                     <u>R</u>ename
                 </div>
-                <div class="item" @click.stop="onEditCurrency(slotProps.mouseEvent, slotProps.item)">
+                <div class="item" @click.stop="onEditTeamCurrency(slotProps.mouseEvent, slotProps.item)">
                     <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
                     <u>C</u>hange currency
                 </div>
@@ -95,13 +96,44 @@
             </div>
         </ContextMenu>
 
-        <ContextMenu ref="contextMenuCurrency" class="context-currency" @hide="teamToEdit.currency != originalTeam.currency && onUpdateTeam(teamToEdit)">
+        <ContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps">
+            <div class="item-group">
+                <div class="item" @click="$refs['userRow-'+slotProps.item.id][0].editName = true; slotProps.hide()">
+                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+                    <u>R</u>ename User
+                </div>
+                <div class="item" @click.stop="onEditUserCurrency(slotProps.mouseEvent, slotProps.item)">
+                    <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
+                    <u>C</u>hange currency
+                </div>
+            </div>
+            <div class="item-group">
+                <div class="item" @click="onDeleteUser(slotProps.item); slotProps.hide()">
+                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                    <u>D</u>elete User from Workspace
+                </div>
+            </div>
+        </ContextMenu>
+
+        <ContextMenu ref="contextMenuTeamCurrency" class="context-currency" @hide="teamToEdit.currency != originalTeam.currency && updateTeam(teamToEdit)">
             <template v-slot:header="slotProps">
                 Change Team Currency
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
-                    <RadioButtons ref="currencySelector" :options="availableCurrencies" :search="true" v-model="teamToEdit.currency" :submitOnChange="true"/>
+                    <RadioButtons ref="teamCurrencySelector" :options="availableCurrencies" :search="true" v-model="teamToEdit.currency" :submitOnChange="true"/>
+                </div>
+            </template>
+            
+        </ContextMenu>
+
+        <ContextMenu ref="contextMenuUserCurrency" class="context-currency" @hide="userToEdit.currency != originalUser.currency && updateUser(userToEdit)">
+            <template v-slot:header="slotProps">
+                Change User Currency
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <RadioButtons ref="userCurrencySelector" :options="availableCurrencies" :search="true" v-model="userToEdit.currency" :submitOnChange="true"/>
                 </div>
             </template>
             
@@ -315,6 +347,8 @@ export default {
             title: ''
         },
         originalTeam: null,
+        userToEdit: null,
+        originalUser: null,
         editTitle: false,
         editCurrency: false,
         currentTab: 'Teams',
@@ -329,18 +363,35 @@ export default {
     methods: {
         ...mapActions('entities/teamInvites', ['deleteInvite', 'resend']),
         ...mapActions('entities/userTeams', ['removeUserFromTeam']),
-        ...mapActions('entities/users', ['changeRole']),
+        ...mapActions('entities/users', ['updateUser']),
         ...mapActions('entities/teams', ['updateTeam', 'deleteTeam']),
         ...mapMutations('entities/teams', ['setCurrentTeamId', 'setAvailableTeamIds']),
         onSelect(index) {
             this.$emit('onSelect', index)
         },
-        onEditCurrency(mouseEvent, team) {
-            const contextMenu = this.$refs.contextMenuCurrency
+        onEditTeamCurrency(mouseEvent, team) {
+            const contextMenu = this.$refs.contextMenuTeamCurrency
             contextMenu.item = team;
             this.teamToEdit = team;
             this.originalTeam = JSON.parse(JSON.stringify(team));
             contextMenu.show(mouseEvent)
+            // Wait for the context menu to show in the DOM
+            this.$nextTick(() => {
+                // Set focus to the search field
+                this.$refs.teamCurrencySelector.focusSearch()
+            })
+        },
+        onEditUserCurrency(mouseEvent, user) {
+            this.userToEdit = user;
+            this.originalUser = JSON.parse(JSON.stringify(user));
+            const contextMenu = this.$refs.contextMenuUserCurrency
+            contextMenu.item = user;
+            contextMenu.show(mouseEvent)
+            // Wait for the context menu to show in the DOM
+            this.$nextTick(() => {
+                // Set focus to the search field
+                this.$refs.userCurrencySelector.focusSearch()
+            })
         },
         removeUnsavedTeam() {
             // Check that we have a new team
@@ -447,11 +498,6 @@ export default {
             this.editTitle = false
             this.editCurrency = false
             this.teamToEdit = this.defaultTeamToEdit
-        },
-        onUpdateTeam(team) {
-            this.updateTeam(team)
-            console.log('updating team')
-            // this.updateTeam({name: team.title, workspace_id: team.workspace_id, team_id: team.id})
         },
         sortTeams(method, key) {
             this.sortArray(this.teams, method, key)

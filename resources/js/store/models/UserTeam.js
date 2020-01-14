@@ -22,4 +22,21 @@ export default class UserTeam extends Model {
 
         return data
     }
+
+    get teamRole() {
+        switch (this.permission_level) {
+            case 1:
+                return 'Member'
+                break
+            case 2:
+                return 'Observer'
+                break
+            case 3:
+                return 'Admin'
+                break
+            case 4:
+                return 'Owner'
+                break
+        }
+    }
 }

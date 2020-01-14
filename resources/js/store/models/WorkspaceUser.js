@@ -20,7 +20,22 @@ export default class WorkspaceUser extends Model {
             workspaces: this.hasMany(Workspace, 'id', 'workspace_id'),
             users: this.hasMany(User, 'id', 'user_id'),
         }
-
         return data
+    }
+    get workspaceRole() {
+        switch (this.permission_level) {
+            case 1:
+                return 'User'
+                break
+            case 2:
+                return 'Observer'
+                break
+            case 3:
+                return 'Admin'
+                break
+            case 4:
+                return 'Owner'
+                break
+        }
     }
 }

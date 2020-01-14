@@ -20,7 +20,7 @@
             </v-popover>
         </td>
         <td class="currency">
-            <button class="ghost editable sm" @click.stop="$emit('editCurrency', $event, team)"><span>{{team.currency}}</span></button>
+            <button class="ghost editable sm" @click.stop="$emit('editCurrency', $event, team)"><span>{{team.currency ? team.currency : 'Set currency'}}</span></button>
         </td>
         <td class="action">
             <button class="invisible ghost-hover primary" @click="showSingle(team.id)"><span>View / Edit</span></button>
