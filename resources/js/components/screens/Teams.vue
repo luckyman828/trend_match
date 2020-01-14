@@ -106,7 +106,7 @@ export default {
         
     },
     mounted() {
-        this.users = User.query().with('teams|role|workspaceUsers').all()
+        this.users = User.query().with('teams|role|workspaceUsers|userTeams').all()
     },
     destroyed() {
         // this.unsub()

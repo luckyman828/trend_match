@@ -59,6 +59,8 @@ Route::middleware('auth:api')->group( function(){
     // Delete team
     Route::delete('team', 'TeamController@destroyTeam');
 
+    Route::put('user-team', 'TeamController@insertOrUpdateUserTeam');
+
     // xxx FILES xxx
     Route::get('file/{file_id}/products', 'FileController@products');
     Route::get('file/{file_id}/user-products', 'FileController@userProducts');

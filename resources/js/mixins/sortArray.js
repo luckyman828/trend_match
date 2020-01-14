@@ -4,8 +4,12 @@ export default {
             const dataSorted = array.sort((a, b) => {
                 // If a has a key
                 if (a[key]) {
+                    if (!b[key]) {
+                        //If B does not have a key
+                        return sortAsc ? 1 : -1
+                    }
                     // If the keys have lengths - sort by their length
-                    if (array[0][key].length) {
+                    if (a[key].length) {
                         if (sortAsc) return a[key].length > b[key].length ? 1 : -1
                         else return a[key].length < b[key].length ? 1 : -1
                     }

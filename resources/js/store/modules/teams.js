@@ -188,7 +188,8 @@ export default {
         async instantiateTeams({ state, rootGetters }) {
             const adminPermissionLevel = rootGetters['persist/adminPermissionLevel']
             const teams = Team.query()
-                .with('users.role')
+                // .with('users.userTeams')
+                .with('userTeams.user')
                 .with('invites')
                 .with('teamFiles')
                 .with('files')
@@ -196,6 +197,15 @@ export default {
             const authUser = AuthUser.query()
                 .with('teams')
                 .first()
+
+            // Create user objects for each team that has all the data we want
+            teams.forEach(team => {
+                team.users = []
+                team.userTeams.forEach(userTeam => {
+                    userTeam.user.teamRoleId = userTeam.permission_level
+                    team.users.push(userTeam.user)
+                })
+            })
 
             if (authUser.role_id >= adminPermissionLevel) {
                 state.teams = teams
@@ -207,15 +217,6 @@ export default {
                 })
                 state.teams = userTeams
             }
-        },
-        async recalcTeam({ state, rootGetters }, team) {
-            team = Team.query()
-                .with('users.role')
-                .with('invites')
-                .with('teamFiles')
-                .with('files')
-                .with('phases')
-                .find(team.id)
         },
     },
 

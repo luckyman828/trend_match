@@ -7,8 +7,8 @@
                 <button class="invisible underline">{{team.users.length}} Users</button>
             </div>
             <div class="item-group">
-                <button class="ghost icon-left light-2"><i class="far fa-pen"></i>Edit</button>
-                <button class="square true-square light-2 more" style="margin-left: 16px"><i class="far fa-ellipsis-h medium"></i></button>
+                <button class="ghost"><i class="far fa-pen"></i><span>Edit</span></button>
+                <button class="" style="margin-left: 16px"><i class="far fa-ellipsis-h medium"></i></button>
             </div>
             <!-- <div class="item-group">
                 <button class="circle primary prev" :disabled="!prevTeamId" @click="showPrev"><i class="far fa-angle-left"></i></button>
@@ -30,24 +30,79 @@
                 </template>
                 <template v-slot:header>
                     <TableHeader class="select"><Checkbox/></TableHeader>
-                    <TableHeader :sortKey="'title'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</TableHeader>
+                    <TableHeader :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</TableHeader>
                     <TableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</TableHeader>
-                    <TableHeader :sortKey="'role_id'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Role</TableHeader>
-                    <TableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Currency</TableHeader>
+                    <TableHeader :sortKey="'teamRoleId'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Team Role</TableHeader>
+                    <TableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">User Currency</TableHeader>
                     <TableHeader class="action">Action</TableHeader>
                 </template>
                 <template v-slot:body>
-                    <TeamSingleFlyinUsersTableRow v-for="(user, index) in team.users" :key="user.id" :user="user" :index="index"/>
+                    <TeamSingleFlyinUsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in team.users" :key="user.id" :user="user" :index="index"
+                    :team="team" @showContextMenu="showUserContext($event, user)" @editRole="onEditUserRole($event, user)"/>
                 </template>
             </FlexTable>
         </div>
+
+        <ContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps">
+            <div class="item-group">
+                <div class="item" @click="$refs['userRow-'+slotProps.item.id][0].editName = true; slotProps.hide()">
+                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+                    <u>R</u>ename User
+                </div>
+            </div>
+            <div class="item-group">
+                <div class="item" @click.stop="onEditUserCurrency(slotProps.mouseEvent, slotProps.item)">
+                    <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
+                    <u>C</u>hange User Currency
+                </div>
+                <div class="item" @click.stop="onEditUserRole(slotProps.mouseEvent, slotProps.item)">
+                    <div class="icon-wrapper"><i class="far fa-key"></i></div>
+                    Change Team <u>R</u>ole
+                </div>
+            </div>
+            <div class="item-group">
+                <div class="item" @click="onRemoveUserFromTeam(slotProps.item); slotProps.hide()">
+                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                    <u>D</u>elete User from Team
+                </div>
+            </div>
+        </ContextMenu>
+
+        <ContextMenu ref="contextMenuUserCurrency" class="context-currency" @hide="userToEdit.currency != originalUser.currency && updateUser(userToEdit)">
+            <template v-slot:header="slotProps">
+                Change User Currency
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <RadioButtons ref="userCurrencySelector" :options="availableCurrencies" 
+                    :currentOptionId="originalUser.currency" :search="true" v-model="userToEdit.currency" :submitOnChange="true"/>
+                </div>
+            </template>
+        </ContextMenu>
+
+        <ContextMenu ref="contextMenuTeamRole" class="context-role" 
+        @hide="userToEdit.teamRoleId != originalUser.teamRoleId && updateUserTeam({user_id: userToEdit.id, team_id: team.id, permission_level: userToEdit.teamRoleId})">
+            <template v-slot:header="slotProps">
+                Change Team Role
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <RadioButtons ref="userTeamRoleSelector" :options="availableTeamRoles" :currentOptionId="slotProps.item.teamRoleId"
+                    v-model="userToEdit.teamRoleId" :submitOnChange="true" :optionDescriptionKey="'description'"
+                    :optionNameKey="'name'" :optionValueKey="'id'"/>
+                </div>
+            </template>
+        </ContextMenu>
+
     </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import TeamSingleFlyinUsersTableRow from './TeamSingleFlyinUsersTableRow'
 import sortArray from '../mixins/sortArray'
+import UserTeam from '../store/models/UserTeam'
+import AuthUser from '../store/models/AuthUser'
 
 export default {
     name: 'teamSingleFlyin',
@@ -64,12 +119,20 @@ export default {
         sortKey: null,
         sortAsc: true,
         selected: [],
+        userToEdit: null,
+        originalUser: null,
     }},
     computed: {
         ...mapGetters('entities/teams', ['nextTeamId', 'prevTeamId']),
+        ...mapGetters('persist', ['authUser', 'availableTeamRoles']),
+        authUserTeam() {
+            return UserTeam.where('user_id', AuthUser.first().id).where('team_id', this.team.id).first()
+        }
     },
     methods: {
         ...mapMutations('entities/teams', ['setCurrentTeamId']),
+        ...mapActions('entities/users', ['updateUser']),
+        ...mapActions('entities/userTeams', ['removeUserFromTeam', 'updateUserTeam']),
         onClose() {
             this.$emit('closeFlyin')
         },
@@ -93,7 +156,35 @@ export default {
             let sortAsc = this.sortAsc
 
             this.sortArray(this.team.users, this.sortAsc, this.sortKey)
-        }
+        },
+        showUserContext(e, user) {
+            const contextMenu = this.$refs.contextMenuUser
+            contextMenu.item = user
+            contextMenu.show(e)
+        },
+        onEditUserCurrency(mouseEvent, user) {
+            this.userToEdit = user;
+            this.originalUser = JSON.parse(JSON.stringify(user));
+            const contextMenu = this.$refs.contextMenuUserCurrency
+            contextMenu.item = user;
+            contextMenu.show(mouseEvent)
+            // Wait for the context menu to show in the DOM
+            this.$nextTick(() => {
+                // Set focus to the search field
+                this.$refs.userCurrencySelector.focusSearch()
+            })
+        },
+        onRemoveUserFromTeam(user) {
+            if ( confirm("Are you sure you want to remove this user from this team?") )
+                this.removeUserFromTeam({user_id: user.id, team_id: this.team.id})
+        },
+        onEditUserRole(mouseEvent, user) {
+            this.userToEdit = user;
+            this.originalUser = JSON.parse(JSON.stringify(user));
+            const contextMenu = this.$refs.contextMenuTeamRole
+            contextMenu.item = user;
+            contextMenu.show(mouseEvent)
+        },
     }
 }
 </script>

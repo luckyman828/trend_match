@@ -131,4 +131,27 @@ class TeamController extends Controller
         return 'Deleted team with id: ' . $team_id;
     }
 
+    public function insertOrUpdateUserTeam(Request $request)
+    {
+        $existingUserTeam = UserTeam::where('user_id', $request->user_id)->where('team_id', $request->team_id)->first();
+        $userTeam = $existingUserTeam ? $existingUserTeam : new UserTeam;
+
+        $userTeam->user_id = $request->user_id;
+        $userTeam->team_id = $request->team_id;
+        $userTeam->permission_level = $request->permission_level;
+
+
+        if($userTeam->save()) {
+
+            return $userTeam;
+            // Fire event
+            // $dataToReturn = new UserResource($user);
+            // // broadcast(new ActionUpdated($actionToReturn))->toOthers();
+            // // broadcast(new ActionUpdated($actionToReturn))->toOthers();
+
+            // // return $dataToReturn;
+            // return json_decode( json_encode($dataToReturn), true);
+        }
+    }
+
 }

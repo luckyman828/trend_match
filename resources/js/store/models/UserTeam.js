@@ -16,6 +16,7 @@ export default class UserTeam extends Model {
         const data = {
             user_id: this.attr(''),
             team_id: this.attr(''),
+            permission_level: this.attr(''),
             team: this.belongsTo(Team, 'team_id', 'id'),
             user: this.belongsTo(User, 'user_id', 'id'),
         }

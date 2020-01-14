@@ -31,12 +31,29 @@ export default class User extends Model {
             teams: this.belongsToMany(Team, UserTeam, 'user_id', 'team_id'),
             actions: this.hasMany(Action, 'user_id'),
             workspaceUsers: this.hasMany(WorkspaceUser, 'user_id', 'id'),
-            teamUser: this.hasMany(UserTeam, 'user_id'),
+            userTeams: this.hasMany(UserTeam, 'user_id'),
             // assigned_room_id: this.attr(''),
+            teamRoleId: this.attr(''),
         }
         return data
     }
 
+    teamRole(roleId) {
+        switch (roleId) {
+            case 1:
+                return 'Member'
+                break
+            case 2:
+                return 'Observer'
+                break
+            case 3:
+                return 'Admin'
+                break
+            case 4:
+                return 'Owner'
+                break
+        }
+    }
     get workspaceUser() {
         return this.workspaceUsers[0]
     }

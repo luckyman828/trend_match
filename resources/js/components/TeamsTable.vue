@@ -18,11 +18,11 @@
             </template>
             <template v-slot:header>
                 <TableHeader class="select"><Checkbox/></TableHeader>
-                <TableHeader :sortKey="'title'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortTeams">Name</TableHeader>
-                <TableHeader :sortKey="'owner'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortTeams">Owner</TableHeader>
-                <TableHeader :sortKey="'users'" :currentSortKey="sortBy" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Members</TableHeader>
-                <TableHeader :sortKey="'files'" :currentSortKey="sortBy" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Files</TableHeader>
-                <TableHeader :sortKey="'currency'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortTeams">Team Currency</TableHeader>
+                <TableHeader :sortKey="'title'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Name</TableHeader>
+                <TableHeader :sortKey="'owner'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Owner</TableHeader>
+                <TableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Members</TableHeader>
+                <TableHeader :sortKey="'files'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Files</TableHeader>
+                <TableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Team Currency</TableHeader>
                 <TableHeader class="action">Action</TableHeader>
             </template>
             <template v-slot:body>
@@ -52,10 +52,10 @@
             </template>
             <template v-slot:header>
                 <TableHeader class="select"><Checkbox/></TableHeader>
-                <TableHeader class="title" :sortKey="'name'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">Name</TableHeader>
-                <TableHeader :sortKey="'email'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">E-mail</TableHeader>
-                <TableHeader :sortKey="'workspaceRoleId'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">Workspace Role</TableHeader>
-                <TableHeader :sortKey="'currency'" :currentSortKey="sortBy" :sortAsc="sortAsc" @sort="sortUsers">Currency</TableHeader>
+                <TableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</TableHeader>
+                <TableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</TableHeader>
+                <TableHeader :sortKey="'workspaceRoleId'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Workspace Role</TableHeader>
+                <TableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Currency</TableHeader>
                 <TableHeader class="action">Action</TableHeader>
             </template>
             <template v-slot:body>
@@ -330,6 +330,7 @@ import UsersTableRow from './UsersTableRow'
 import TeamSingleFlyin from './TeamSingleFlyin'
 import Tabs from './Tabs'
 import Role from '../store/models/Role'
+import sortArray from '../mixins/sortArray'
 
 export default {
     name: 'teamsTable',
@@ -342,6 +343,9 @@ export default {
         'users',
         'authUser',
     ],
+    mixins: [
+        sortArray
+    ],
     components: {
         Loader,
         Dropdown,
@@ -352,7 +356,7 @@ export default {
         TeamSingleFlyin,
     },
     data: function() { return {
-        sortBy: 'id',
+        sortKey: 'id',
         sortAsc: true,
         expandedIds: [],
         editUser: {
@@ -528,55 +532,23 @@ export default {
             this.teamToEdit = this.defaultTeamToEdit
         },
         sortTeams(method, key) {
-            this.sortArray(this.teams, method, key)
+            this.onSortArray(this.teams, method, key)
         },
         sortUsers(method, key) {
-            this.sortArray(this.users, method, key)
+            this.onSortArray(this.users, method, key)
         },
-        sortArray(array, method, key) {
-
+        onSortArray(array, method, key) {
             // If if we are already sorting by the given key, flip the sort order
-            if (this.sortBy == key) {
+            if (this.sortKey == key) {
                 this.sortAsc = !this.sortAsc
             }
             else {
-                this.sortBy = key
+                this.sortKey = key
                 this.sortAsc = method
             }
             let sortAsc = this.sortAsc
 
-            const dataSorted = array.sort((a, b) => {
-
-                // If a has a key
-                if (a[key]) {
-                    // If the keys have lengths - sort by their length
-                    if (array[0][key].length) {
-    
-                        if (sortAsc)
-                            return (a[key].length > b[key].length) ? 1 : -1
-                            else return (a[key].length < b[key].length) ? 1 : -1
-    
-                    }
-    
-                    // If the keys don't have length - sort by the key
-                    else {
-                        if (sortAsc)
-                            return (a[key] > b[key]) ? 1 : -1
-                            else return (a[key] < b[key]) ? 1 : -1
-                    }
-                } else {
-                    if (!a[key] && !b[key]) {
-                        // If neither A nor B has the key, don't sort them.
-                        return 0
-                    } else {
-                        // If a has no key, but it in the back
-                        return sortAsc ? -1 : 1
-                    }
-                }
-
-                
-            })
-            return dataSorted
+            this.sortArray(array, this.sortAsc, this.sortKey)
         }
     },
 }
