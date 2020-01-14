@@ -29,7 +29,7 @@ export default {
         ...mapGetters('entities/users', ['loadingUsers']),
         ...mapGetters('entities/workspaceUsers', ['loadingWorkspaceUsers']),
         loading () {
-            return (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.loadingTeamInvites || this.loadingInit || this.loadingWorkspaceUsers) ? true : false
+            return (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.loadingTeamInvites || this.loadingInit || this.loadingWorkspaceUsers || this.loadingUsers) ? true : false
         },
     },
     watch: {

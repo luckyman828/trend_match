@@ -202,8 +202,15 @@ export default {
             teams.forEach(team => {
                 team.users = []
                 team.userTeams.forEach(userTeam => {
-                    userTeam.user.teamRoleId = userTeam.permission_level
-                    team.users.push(userTeam.user)
+                    if (userTeam.user) {
+                        userTeam.user.teamRoleId = userTeam.permission_level
+                        team.users.push(userTeam.user)
+                    } else {
+                        console.log('userTeam lags a user!')
+                        console.log(userTeam)
+                    }
+                    // userTeam.user.teamRoleId = userTeam.permission_level
+                    // team.users.push(userTeam.user)
                 })
             })
 

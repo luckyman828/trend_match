@@ -30,7 +30,7 @@
                 </template>
                 <template v-slot:header>
                     <TableHeader class="select"><Checkbox/></TableHeader>
-                    <TableHeader :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</TableHeader>
+                    <TableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</TableHeader>
                     <TableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</TableHeader>
                     <TableHeader :sortKey="'teamRoleId'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Team Role</TableHeader>
                     <TableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">User Currency</TableHeader>
@@ -38,7 +38,11 @@
                 </template>
                 <template v-slot:body>
                     <TeamSingleFlyinUsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in team.users" :key="user.id" :user="user" :index="index"
-                    :team="team" @showContextMenu="showUserContext($event, user)" @editRole="onEditUserRole($event, user)"/>
+                    :team="team" @showContextMenu="showUserContext($event, user)" @editRole="onEditUserRole($event, user)"
+                     @editCurrency="onEditUserCurrency($event, user)"/>
+                </template>
+                <template v-slot:footer="slotProps">
+                    <td><button class="primary invisible" @click="onAddUser($event)"><i class="far fa-plus"></i><span>Add User(s) to Team</span></button></td>
                 </template>
             </FlexTable>
         </div>
@@ -94,6 +98,25 @@
             </template>
         </ContextMenu>
 
+        <ContextMenu ref="contextMenuAddUsers" class="context-add-users">
+            <template v-slot:header="slotProps">
+                Add User(s) to Team
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <SelectButtons :options="availableUsers"
+                    v-model="usersToAdd" :submitOnChange="true"
+                    :optionNameKey="'name'" :optionValueKey="'id'"/>
+                    <!-- <CheckButtons ref="userTeamRoleSelector" :options="availableUsers"
+                    v-model="usersToAdd" :submitOnChange="true"
+                    :optionNameKey="'name'" :optionValueKey="'id'"/> -->
+                </div>
+                <div class="item-group">
+                    <button class="primary"><span>Apply</span></button>
+                </div>
+            </template>
+        </ContextMenu>
+
     </div>
 </template>
 
@@ -110,7 +133,8 @@ export default {
         TeamSingleFlyinUsersTableRow,
     },
     props: [
-        'team'
+        'team',
+        'workspaceUsers'
     ],
     mixins: [
         sortArray
@@ -121,12 +145,18 @@ export default {
         selected: [],
         userToEdit: null,
         originalUser: null,
+        usersToAdd: []
     }},
     computed: {
         ...mapGetters('entities/teams', ['nextTeamId', 'prevTeamId']),
-        ...mapGetters('persist', ['authUser', 'availableTeamRoles']),
+        ...mapGetters('persist', ['authUser', 'availableTeamRoles', 'availableCurrencies']),
         authUserTeam() {
             return UserTeam.where('user_id', AuthUser.first().id).where('team_id', this.team.id).first()
+        },
+        availableUsers() {
+            // Users who are on the workspace and not on the team
+            const allUsers = JSON.parse(JSON.stringify(this.workspaceUsers))
+            return allUsers.filter(workspaceUser => !this.team.users.find(teamUser => teamUser.id == workspaceUser.id))
         }
     },
     methods: {
@@ -160,6 +190,10 @@ export default {
         showUserContext(e, user) {
             const contextMenu = this.$refs.contextMenuUser
             contextMenu.item = user
+            contextMenu.show(e)
+        },
+        onAddUser(e) {
+            const contextMenu = this.$refs.contextMenuAddUsers
             contextMenu.show(e)
         },
         onEditUserCurrency(mouseEvent, user) {

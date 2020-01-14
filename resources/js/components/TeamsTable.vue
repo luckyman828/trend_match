@@ -66,7 +66,7 @@
         </FlexTable>
 
         <FlyIn ref="teamSingleFlyin">
-            <TeamSingleFlyin :team="currentTeam" v-if="currentTeam"
+            <TeamSingleFlyin :team="currentTeam" :workspaceUsers="users" v-if="currentTeam"
             @closeFlyin="$refs.teamSingleFlyin.close()"/>
         </FlyIn>
 

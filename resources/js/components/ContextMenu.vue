@@ -32,6 +32,8 @@ export default {
     methods: {
         show(e) {
             // e is expected to be a mouseclick event
+            // Stop progration to avoid triggering the clickOutside function by the click to show the context menu
+            e.stopPropagation()
             // Save a reference to the mouseClick event
             this.mouseEvent = e
             // Set the current context menu item

@@ -1,7 +1,7 @@
 <template>
     <div class="navigation">
-        <button class="circle primary prev" :disabled="!prev" @click="$emit('prev')"><i class="far fa-angle-left"></i></button>
-        <button class="circle primary next" :disabled="!next" @click="$emit('next')"><i class="far fa-angle-right"></i></button>
+        <button class="circle md primary prev" :disabled="!prev" @click="$emit('prev')"><i class="far fa-angle-left"></i></button>
+        <button class="circle md primary next" :disabled="!next" @click="$emit('next')"><i class="far fa-angle-right"></i></button>
     </div>
 </template>
 

@@ -44,6 +44,7 @@ Vue.component('Dropdown', require('./components/Dropdown.vue').default)
 Vue.component('FlexTable', require('./components/FlexTable.vue').default)
 Vue.component('TableHeader', require('./components/TableHeader.vue').default)
 Vue.component('Checkbox', require('./components/Checkbox.vue').default)
+Vue.component('Radiobox', require('./components/Radiobox.vue').default)
 Vue.component('TableTopBar', require('./components/TableTopBar.vue').default)
 Vue.component('FlyIn', require('./components/FlyIn.vue').default)
 Vue.component('FlyinHeader', require('./components/FlyinHeader.vue').default)
@@ -51,6 +52,8 @@ Vue.component('FlyinHeaderNavigation', require('./components/FlyinHeaderNavigati
 Vue.component('ContextMenu', require('./components/ContextMenu.vue').default)
 Vue.component('EditInputWrapper', require('./components/EditInputWrapper.vue').default)
 Vue.component('RadioButtons', require('./components/RadioButtons.vue').default)
+Vue.component('CheckButtons', require('./components/CheckButtons.vue').default)
+Vue.component('SelectButtons', require('./components/SelectButtons.vue').default)
 
 // Define global filters
 Vue.filter('truncate', function(value, limit) {

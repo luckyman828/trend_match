@@ -1,7 +1,7 @@
 <template>
     <div class="flyin-header">
         <div class="left">
-            <span class="circle light-2 close" @click="$emit('closeFlyin')"><i class="fal fa-times"></i></span>
+            <button class="circle close" @click="$emit('closeFlyin')"><i class="fal fa-times"></i></button>
             <h3>{{title}}</h3>
         </div>
         <div class="right">
