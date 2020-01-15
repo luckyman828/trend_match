@@ -225,6 +225,27 @@ export default {
                 state.teams = userTeams
             }
         },
+        async recalcTeamUsers({ state, rootGetters }, teamToRecalc) {
+            const team = Team.query()
+                // .with('users.userTeams')
+                .with('userTeams.user')
+                .find(teamToRecalc.id)
+
+            // Create user objects for each team that has all the data we want
+            team.users = []
+            team.userTeams.forEach(userTeam => {
+                if (userTeam.user) {
+                    userTeam.user.teamRoleId = userTeam.permission_level
+                    team.users.push(userTeam.user)
+                } else {
+                    console.log('userTeam lags a user!')
+                    console.log(userTeam)
+                }
+            })
+
+            // // Set the team to recalculate to the new team
+            teamToRecalc.users = team.users
+        },
     },
 
     mutations: {

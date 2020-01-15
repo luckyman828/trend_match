@@ -1,6 +1,6 @@
 <template>
     <div class="radiobox">
-        <input type="radio" :value="value" :checked="checked" @change="$emit('emit', $event.target.checked)" @click="click">
+        <input type="radio" :value="value" :checked="shouldBeChecked" @change="updateInput">
         <span class="radiomark"></span>
     </div>
 </template>
@@ -8,10 +8,24 @@
 <script>
 export default {
     name: 'radiobox',
+    model: {
+        prop: 'modelValue',
+        event: 'change'
+    },
     props: [
         'value',
-        'checked',
+        'modelValue'
     ],
+    computed: {
+        shouldBeChecked() {
+            return this.modelValue == this.value
+        }
+    },
+    methods: {
+        updateInput() {
+            this.$emit('change', this.value)
+        }
+    }
 }
 </script>
 

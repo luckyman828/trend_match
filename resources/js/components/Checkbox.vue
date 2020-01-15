@@ -1,6 +1,6 @@
 <template>
     <div class="checkbox">
-        <input type="checkbox" :checked="value" @change="$emit('input', $event.target.checked)">
+        <input type="checkbox" :value="value" :checked="shouldBeChecked" @change="updateInput">
         <span class="checkmark solid"><i class="fas fa-check"></i></span>
     </div>
 </template>
@@ -8,9 +8,46 @@
 <script>
 export default {
     name: 'checkbox',
+    model: {
+        prop: 'modelValue',
+        event: 'change'
+    },
     props: [
-        'value'
+        'value',
+        'modelValue'
     ],
+    computed: {
+        shouldBeChecked() {
+            if (this.value || this.modelValue) {
+                // Check if the modelValue (the value we bind to v-model) is an array
+                if (Array.isArray(this.modelValue)) {
+                    return this.modelValue.includes(this.value)
+                }
+                else return this.modelValue == this.value
+            }
+        }
+    },
+    methods: {
+        updateInput(e) {
+            const isChecked = e.target.checked
+
+            if (Array.isArray(this.modelValue)) {
+                let newValue = [...this.modelValue]
+
+                if (isChecked) {
+                    newValue.push(this.value)
+                } else {
+                    newValue.splice(newValue.indexOf(this.value), 1)
+                }
+
+                this.$emit('change', newValue)
+            }
+            else {
+                this.$emit('change', isChecked)
+            }
+
+        }
+    }
 }
 </script>
 
@@ -19,6 +56,7 @@ export default {
     .checkbox {
         position: relative;
         line-height: 0;
+        cursor: pointer;
         input[type=checkbox] {
             position: absolute;
             display: block;

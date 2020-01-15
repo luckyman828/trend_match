@@ -16,16 +16,8 @@
             : option[optionValueKey] ? selection.includes(option[optionValueKey]) : selection.includes(selection)}]">
 
                 <label>
-                    <template v-if="type == 'radio'">
-                        <Radiobox :value="optionValueKey ? option[optionValueKey] : option" v-model="selection"/>
-                    </template>
-                    <template v-else>
-                        <div class="checkbox">
-                            <!-- <Checkbox :modelValue="optionValueKey ? option[optionValueKey] : option" v-model="selection"/> -->
-                            <input type="checkbox" :value="optionValueKey ? option[optionValueKey] : option" v-model="selection">
-                            <span class="checkmark solid"><i class="fas fa-check"></i></span>
-                        </div>
-                    </template>
+                    <Radiobox v-if="type == 'radio'" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
+                    <Checkbox v-else :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
 
                     <div class="label">
                         <template v-if="optionNameKey">
@@ -62,17 +54,8 @@ export default {
     data: function () { return {
         selection: [],
         searchString: '',
-        // currentOption
     }},
-    watch: {
-        activeOption(newVal, oldVal) {
-            this.update()
-        }
-    },
     computed: {
-        valueChanged() {
-
-        },
         currentOption () {
             if (this.selection != null) {
                 if (this.optionValueKey != null) {
@@ -127,14 +110,8 @@ export default {
                 this.$emit('submit', this.selection)
             }
         },
-        click() {
-            this.$emit('onClick', this.selection)
-        },
         clear () {
             this.selection = []
-            this.$refs.selectButtons.querySelectorAll('input[type=radio]').forEach(input => {
-                input.checked = false
-            })
             this.$emit('input', this.selected)
         },
         focusSearch() {
@@ -142,29 +119,18 @@ export default {
                 this.$refs.searchField.focus()
             }
         },
-        update() {
-            // Preset the selection
-            // if (this.activeOption)
-            //     if (this.optionValueKey) {
-            //         this.selection = this.options.find(x => x.id == this.activeOption)[this.optionValueKey]
-            //     }
-            //     else {
-            //         this.selection = this.options.find(x => x == this.activeOption)
-            //     }
-        }
     },
     mounted() {
-        this.update()
         this.focusSearch()
     },
-    created() {
-        // If the type is checkboxes, set the selection to an array
-        if (this.type != 'radio') this.selection = [] 
-    }
+    // created() {
+    //     // If the type is checkboxes, set the selection to an array
+    //     if (this.type != 'radio') this.selection = [] 
+    // }
 }
 </script>
 
-<style scopes lang="scss">
+<style scoped lang="scss">
 @import '~@/_variables.scss';
 
     .select-buttons .wrapper {

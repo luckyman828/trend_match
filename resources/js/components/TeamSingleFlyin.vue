@@ -104,15 +104,21 @@
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
-                    <SelectButtons :options="availableUsers"
-                    v-model="usersToAdd" :submitOnChange="true"
+                    <SelectButtons :type="'checkbox'" :options="availableUsers"
+                    v-model="userIdsToAdd" :submitOnChange="true"
                     :optionNameKey="'name'" :optionValueKey="'id'"/>
                     <!-- <CheckButtons ref="userTeamRoleSelector" :options="availableUsers"
-                    v-model="usersToAdd" :submitOnChange="true"
+                    v-model="userIdsToAdd" :submitOnChange="true"
                     :optionNameKey="'name'" :optionValueKey="'id'"/> -->
                 </div>
                 <div class="item-group">
-                    <button class="primary"><span>Apply</span></button>
+                    <div class="item">
+                        <button class="primary" :class="{disabled: userIdsToAdd.length < 1}" 
+                        @click="addUsersToTeam({team, userIdsToAdd});userIdsToAdd = [];slotProps.hide()">
+                            <span>Add <template v-if="userIdsToAdd.length > 0">{{userIdsToAdd.length}} 
+                            </template>user<template v-if="userIdsToAdd.length > 1">s</template></span></button>
+                        <button class="invisible ghost-hover" @click="slotProps.hide(); userIdsToAdd = []"><span>Cancel</span></button>
+                    </div>
                 </div>
             </template>
         </ContextMenu>
@@ -145,7 +151,7 @@ export default {
         selected: [],
         userToEdit: null,
         originalUser: null,
-        usersToAdd: []
+        userIdsToAdd: []
     }},
     computed: {
         ...mapGetters('entities/teams', ['nextTeamId', 'prevTeamId']),
@@ -162,7 +168,7 @@ export default {
     methods: {
         ...mapMutations('entities/teams', ['setCurrentTeamId']),
         ...mapActions('entities/users', ['updateUser']),
-        ...mapActions('entities/userTeams', ['removeUserFromTeam', 'updateUserTeam']),
+        ...mapActions('entities/userTeams', ['removeUserFromTeam', 'updateUserTeam', 'addUsersToTeam']),
         onClose() {
             this.$emit('closeFlyin')
         },

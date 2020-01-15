@@ -142,9 +142,45 @@ export default {
                 .then(response => {
                     console.log(response.data)
                     succes = true
-                    commit('updateUserTeam', userToPush)
+                    commit('updateUserTeam', userTeamToUpdate)
                 })
                 .catch(err => {
+                    console.log(err.response)
+                    succes = false
+                })
+            return succes
+        },
+        async addUsersToTeam({ commit, dispatch }, payload) {
+            // payload is expected to have keys: team, and userIdsToAdd
+            const team = payload.team
+            const userIdsToAdd = payload.userIdsToAdd
+
+            let succes
+
+            let apiURL = `/api/team/add-users`
+            let requestMethod = 'post'
+
+            // Update the state
+            await commit('addUsersToTeam', { team, userIdsToAdd })
+            dispatch('entities/teams/recalcTeamUsers', team, { root: true })
+
+            // Instantiate a new eamUser object, to strip away any added/calculated attributes
+            let dataToPush = {
+                team_id: team.id,
+                user_ids: userIdsToAdd,
+            }
+            await axios({
+                method: requestMethod,
+                url: apiURL,
+                data: dataToPush,
+            })
+                .then(async response => {
+                    console.log(response.data)
+                    succes = true
+                })
+                .catch(err => {
+                    console.log('There is an error in userTeams')
+                    console.log(err)
                     console.log(err.response)
                     succes = false
                 })
@@ -175,6 +211,25 @@ export default {
         },
         updateUserTeam(state, userTeam) {
             UserTeam.insert({ data: userTeam })
+        },
+        addUsersToTeam(state, payload) {
+            // payload is expected to have keys: team, and userIdsToAdd
+            const team = payload.team
+            const userIdsToAdd = payload.userIdsToAdd
+            let data = []
+
+            userIdsToAdd.forEach(userId => {
+                const userTeamData = {
+                    team_id: team.id,
+                    user_id: userId,
+                    permission_level: 1,
+                }
+                data.push(userTeamData)
+            })
+
+            UserTeam.insert({
+                data: data,
+            })
         },
     },
 }

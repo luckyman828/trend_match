@@ -1,6 +1,6 @@
 <template>
     <tr class="team-row table-row" ref="teamRow" @contextmenu.prevent="$emit('showContextMenu', $event, team)">
-        <td class="select"><Checkbox/></td>
+        <td class="select"><Checkbox :value="index"/></td>
         <td v-if="editTitle" class="title">
             <i class="fa-users" :class="team.id ? 'fas' : 'far'"></i>
             <EditInputWrapper ref="editTitle" :activateOnMount="true" :type="'text'"

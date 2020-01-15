@@ -154,4 +154,26 @@ class TeamController extends Controller
         }
     }
 
+    public function addUsers(Request $request)
+    {
+        $count = 0;
+        $starttime = microtime(true);
+        $dataToInsert = [];
+
+        foreach($request->user_ids as $user_id){
+            $dataToPush = [
+                'team_id' => $request->team_id,
+                'user_id' => $user_id,
+                'permission_level' => 1,
+            ];
+            array_push($dataToInsert, $dataToPush);
+            $count++;
+        }
+        $endtime = microtime(true);
+        $timediff = $endtime - $starttime;
+        UserTeam::insert($dataToInsert);
+
+        return 'Inserted ' . $count . ' records. Time elapsed: ' . $timediff;
+    }
+
 }
