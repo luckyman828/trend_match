@@ -102,14 +102,14 @@ export default {
                     console.log(err)
                 })
         },
-        async removeUserFromTeam({ commit }, { user_id, team_id }) {
-            // If the user does not exist - add a record to the team_invites store
-            commit('removeUser', { user_id: user_id, team_id: team_id })
+        async removeUserFromTeam({ commit, dispatch }, { user_id, team }) {
+            // Update state
+            const team_id = team.id
+            commit('removeUser', { user_id, team_id })
+            dispatch('entities/teams/recalcTeamUsers', team, { root: true })
 
-            // Handle the invite in the DB via API
-            console.log('Sending request to /api/invite-user')
             await axios
-                .delete(`/api/user-team`, {
+                .delete(`/api/team/user`, {
                     data: {
                         user_id: user_id,
                         team_id: team_id,
@@ -119,13 +119,13 @@ export default {
                     console.log(response.data)
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.log(err.response)
                 })
         },
         async updateUserTeam({ commit }, userTeamToUpdate) {
             let succes
 
-            let apiURL = `/api/user-team`
+            let apiURL = `/api/team/user`
             let requestMethod = 'put'
 
             // Instantiate a new workspaceUser object, to strip away any added/calculated attributes
@@ -157,7 +157,7 @@ export default {
 
             let succes
 
-            let apiURL = `/api/team/add-users`
+            let apiURL = `/api/team/users`
             let requestMethod = 'post'
 
             // Update the state

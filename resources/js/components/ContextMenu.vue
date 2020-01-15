@@ -79,7 +79,21 @@ export default {
                 this.$emit('hide')
             })
         },
+        hotkeyHandler(event) {
+            // Only listen if the contextMenu is visible
+            if(this.visible) {
+                const key = event.code
+                if (key == 'Escape')
+                    this.hide()
+            }
+        }
     },
+    created() {
+        document.body.addEventListener('keydown', this.hotkeyHandler)
+    },
+    destroyed() {
+        document.body.removeEventListener('keydown', this.hotkeyHandler)
+    }
 
 }
 </script>

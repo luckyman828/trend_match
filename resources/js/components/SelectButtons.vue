@@ -1,13 +1,14 @@
 <template>
 
     <div class="select-buttons" ref="selectButtons">
-        <div class="search" v-if="search">
+        <!-- <div class="search" v-if="search">
             <input class="input-wrapper small" placeholder="Search.." type="search" v-model="searchString" ref="searchField"
             @click.stop>
             <span v-if="searchString.length > 0" class="close" @click="searchString = ''">
                 <i class="fas fa-times"></i>
             </span>
-        </div>
+        </div> -->
+        <SearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" v-model="optionsFilteredBySearch"/>
         <div class="wrapper">
 
             <div class="option" v-for="(option, index) in optionsFilteredBySearch" :key="index" 
@@ -47,13 +48,13 @@ export default {
         'optionNameKey',
         'optionValueKey',
         'optionDescriptionKey',
-        'activeOption',
         'search',
         'submitOnChange',
     ],
     data: function () { return {
         selection: [],
         searchString: '',
+        optionsFilteredBySearch: this.options
     }},
     computed: {
         currentOption () {
@@ -79,24 +80,35 @@ export default {
             }
             else return 'nothing'
         },
-        optionsFilteredBySearch() {
-            const options = this.options
-            const searchString = this.searchString.toLowerCase()
-            if (!searchString) {
-                return options
+        searchKey() {
+            const nameKey = this.optionNameKey
+            const valueKey = this.optionValueKey
+            if (nameKey) {
+                return nameKey
             }
-            else {
-                let optionsToReturn = []
-                if (this.optionNameKey) {
-                    optionsToReturn= options.filter(x => x[this.optionNameKey].toLowerCase().search(searchString))
-                } else if (this.optionValueKey) {
-                    optionsToReturn= options.filter(x => x[this.optionValueKey].toLowerCase().search(searchString))
-                } else {
-                    optionsToReturn= options.filter(x => x.toLowerCase().search(searchString))
-                }
-                return optionsToReturn
-            } 
+            else if (valueKey) {
+                return valueKey
+            }
         }
+        // optionsFilteredBySearch() {
+        //     const options = this.options
+        //     // Get the lowercase value to avoid the search being case sensitive
+        //     const searchString = this.searchString.toLowerCase()
+        //     const nameKey = this.optionNameKey
+        //     const valueKey = this.optionValueKey
+        //     // First test that we actually have a search string
+        //     if (!searchString) {
+        //         return options
+        //     }
+        //     // If we have a nameKey, search in that
+        //     if (nameKey)
+        //         return options.filter(x => x[nameKey].toLowerCase().search(searchString) >= 0)
+        //     // Else if we have a value key, search in that
+        //     if (valueKey)
+        //         return options.filter(x => x[valueKey].toLowerCase().search(searchString) >= 0)
+        //     // Else search in the option itself
+        //     return options.filter(x => x.toLowerCase().search(searchString) >= 0)
+        // }
     },
     methods: {
         submit() {
@@ -116,7 +128,7 @@ export default {
         },
         focusSearch() {
             if (this.search) {
-                this.$refs.searchField.focus()
+                this.$refs.searchField.setFocus()
             }
         },
     },
@@ -177,26 +189,6 @@ export default {
                         }
                     }
                 }
-            }
-        }
-    }
-    .search {
-        padding: 8px;
-        position: relative;
-        input.input-wrapper.small {
-            padding-right: 32px;
-            box-sizing: border-box;
-        }
-        .close {
-            position: absolute;
-            right: 8px;
-            top: 11px;
-            font-size: 12px;
-            color: $dark05;
-            cursor: pointer;
-            padding: 4px 12px;
-            &:hover {
-                opacity: .8;
             }
         }
     }

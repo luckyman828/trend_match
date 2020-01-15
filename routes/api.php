@@ -60,7 +60,6 @@ Route::middleware('auth:api')->group( function(){
     Route::delete('team', 'TeamController@destroyTeam');
 
     Route::put('user-team', 'TeamController@insertOrUpdateUserTeam');
-    Route::post('team/add-users', 'TeamController@addUsers');
 
     // xxx FILES xxx
     Route::get('file/{file_id}/products', 'FileController@products');
@@ -166,7 +165,8 @@ Route::middleware('auth:api')->group( function(){
     Route::post('resend-invite', 'MailController@resendInvite');
 
     // xxxx Teams xxx
-    Route::delete('user-team', 'TeamController@destroy');
+    Route::delete('team/user', 'TeamController@removeUser');
+    Route::post('team/users', 'TeamController@addUsers');
 
     // xxxx Cache xxx
     Route::put('cache/workspace', 'WorkspaceController@cacheCurrentWorkspace');

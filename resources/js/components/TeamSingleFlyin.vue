@@ -106,10 +106,7 @@
                 <div class="item-group">
                     <SelectButtons :type="'checkbox'" :options="availableUsers"
                     v-model="userIdsToAdd" :submitOnChange="true"
-                    :optionNameKey="'name'" :optionValueKey="'id'"/>
-                    <!-- <CheckButtons ref="userTeamRoleSelector" :options="availableUsers"
-                    v-model="userIdsToAdd" :submitOnChange="true"
-                    :optionNameKey="'name'" :optionValueKey="'id'"/> -->
+                    :optionNameKey="'name'" :optionValueKey="'id'" :search="true"/>
                 </div>
                 <div class="item-group">
                     <div class="item">
@@ -215,8 +212,8 @@ export default {
             })
         },
         onRemoveUserFromTeam(user) {
-            if ( confirm("Are you sure you want to remove this user from this team?") )
-                this.removeUserFromTeam({user_id: user.id, team_id: this.team.id})
+            // if ( confirm("Are you sure you want to remove this user from this team?") )
+                this.removeUserFromTeam({user_id: user.id, team: this.team})
         },
         onEditUserRole(mouseEvent, user) {
             this.userToEdit = user;
