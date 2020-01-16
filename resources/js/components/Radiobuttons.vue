@@ -143,7 +143,7 @@ export default {
 }
 </script>
 
-<style scopes lang="scss">
+<style scoped lang="scss">
 @import '~@/_variables.scss';
 
     .radio-buttons .wrapper {

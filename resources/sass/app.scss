@@ -250,7 +250,8 @@ button,
 .button,
 .square,
 .pill,
-.circle {
+.circle,
+input[type='submit'] {
     line-height: 1;
     text-align: center;
     display: inline-flex;
@@ -341,6 +342,17 @@ button,
     }
 
     // COLORS
+    border-color: $grey;
+    background: $grey;
+    color: $font;
+    &:hover {
+        background: $grey2;
+        border-color: $grey2;
+    }
+    &:active {
+        background: $grey2;
+        border-color: $grey;
+    }
     @each $color in $brand-colors {
         &.#{nth($color,1)},
         &.#{nth($color,1)}-hover:hover {
@@ -368,6 +380,10 @@ button,
         }
         &.#{nth($color,1)}:hover {
             background: nth($color, 3);
+        }
+        &.#{nth($color,1)}:active,
+        &.#{nth($color,1)}-hover:active {
+            background: nth($color, 5);
         }
     }
 
@@ -407,11 +423,16 @@ button,
 }
 button,
 .button,
-.square {
+.square,
+input[type='submit'] {
     border-radius: 4px;
+    &.full-width {
+        width: 100%;
+    }
 }
 button,
-.button {
+.button,
+input[type='submit'] {
     cursor: pointer;
     &.text-link {
         padding-top: 4px;
@@ -476,65 +497,6 @@ i {
     }
     &.invisible {
         background: transparent;
-    }
-}
-
-// MODALS
-.modal-wrapper {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    z-index: -1;
-    overflow: auto;
-    > .modal {
-        display: none;
-        position: absolute;
-        z-index: 120;
-        left: 50vw;
-        top: 10vh;
-        min-height: 70vh;
-        width: 100%;
-        max-width: 646px;
-        margin: 0;
-        background: $light;
-        margin-bottom: 5vh;
-        padding-bottom: 60px;
-        > .inner {
-            width: 100%;
-            max-width: 400px;
-            margin: auto;
-            > .header {
-                text-align: center;
-                margin-bottom: 40px;
-                .title {
-                    margin-bottom: 8px;
-                }
-                .desc {
-                    font-size: 16px;
-                    color: $dark2;
-                }
-            }
-        }
-    }
-    &.active {
-        z-index: 99;
-        > .modal,
-        > .overlay {
-            display: block;
-        }
-    }
-    &.minimal {
-        .modal {
-            min-height: 0;
-            .close {
-                display: none;
-            }
-            .inner {
-                max-width: none;
-            }
-        }
     }
 }
 // DROPDOWN & TOOLTIP

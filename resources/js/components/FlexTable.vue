@@ -98,7 +98,6 @@ export default {
                 z-index: 1;
                 .header {
                     box-shadow: 0px 2px 10px #0000001A;
-                    border-bottom: solid 2px $divider;
                     position: static;
                 }
             }

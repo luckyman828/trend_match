@@ -20,10 +20,9 @@
                 <template v-slot:topBar>
                     <TableTopBar>
                         <template v-slot:left>
-                            <button class="primary">Example</button>
+                            <SearchField ref="searchField" :searchKey="['name','email']" :arrayToSearch="team.users" v-model="usersFilteredBySearch"/>
                         </template>
                         <template v-slot:right>
-                            <span>{{selected.length}} selected</span>
                             <span>{{team.users.length}} records</span>
                         </template>
                     </TableTopBar>
@@ -37,7 +36,7 @@
                     <TableHeader class="action">Action</TableHeader>
                 </template>
                 <template v-slot:body>
-                    <TeamSingleFlyinUsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in team.users" :key="user.id" :user="user" :index="index"
+                    <TeamSingleFlyinUsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in usersFilteredBySearch" :key="user.id" :user="user" :index="index"
                     :team="team" @showContextMenu="showUserContext($event, user)" @editRole="onEditUserRole($event, user)"
                      @editCurrency="onEditUserCurrency($event, user)"/>
                 </template>
@@ -105,7 +104,7 @@
             <template v-slot="slotProps">
                 <div class="item-group">
                     <SelectButtons :type="'checkbox'" :options="availableUsers"
-                    v-model="userIdsToAdd" :submitOnChange="true"
+                    v-model="userIdsToAdd" :submitOnChange="true" :optionDescriptionKey="'email'"
                     :optionNameKey="'name'" :optionValueKey="'id'" :search="true"/>
                 </div>
                 <div class="item-group">
@@ -148,8 +147,17 @@ export default {
         selected: [],
         userToEdit: null,
         originalUser: null,
-        userIdsToAdd: []
+        userIdsToAdd: [],
+        usersFilteredBySearch: this.team.users
     }},
+    watch: {
+        team: function(newVal, oldVal) {
+            // If we have a new team
+            if (!oldVal || newVal.id != oldVal.id) {
+                this.$refs.searchField.clear()
+            }
+        }
+    },
     computed: {
         ...mapGetters('entities/teams', ['nextTeamId', 'prevTeamId']),
         ...mapGetters('persist', ['authUser', 'availableTeamRoles', 'availableCurrencies']),
@@ -222,6 +230,9 @@ export default {
             contextMenu.item = user;
             contextMenu.show(mouseEvent)
         },
+    },
+    updated() {
+        this.usersFilteredBySearch = this.team.users
     }
 }
 </script>

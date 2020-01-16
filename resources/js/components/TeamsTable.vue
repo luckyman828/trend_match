@@ -8,10 +8,9 @@
             <template v-slot:topBar>
                 <TableTopBar>
                     <template v-slot:left>
-                        <button class="primary">Example</button>
+                        <SearchField :searchKey="['title']" :arrayToSearch="teams" v-model="teamsFilteredBySearch"/>
                     </template>
                     <template v-slot:right>
-                        <span>{{selectedCount}} selected</span>
                         <span>{{teams.length}} records</span>
                     </template>
                 </TableTopBar>
@@ -26,7 +25,7 @@
                 <TableHeader class="action">Action</TableHeader>
             </template>
             <template v-slot:body>
-                <TeamsTableRow :ref="'teamRow-'+team.id" v-for="(team, index) in teams" :key="team.id" :team="team" :index="index" 
+                <TeamsTableRow :ref="'teamRow-'+team.id" v-for="(team, index) in teamsFilteredBySearch" :key="team.id" :team="team" :index="index" 
                 @showContextMenu="showTeamContext($event, team)" @showSingle="showSingleTeam" @editCurrency="onEditTeamCurrency($event, team)"
                 @cancelEditTitle="removeUnsavedTeam"/>
             </template>
@@ -42,10 +41,9 @@
             <template v-slot:topBar>
                 <TableTopBar>
                     <template v-slot:left>
-                        <button class="primary">Example</button>
+                        <SearchField :searchKey="['name','email']" :arrayToSearch="users" v-model="usersFilteredBySearch"/>
                     </template>
                     <template v-slot:right>
-                        <span>{{selectedCount}} selected</span>
                         <span>{{teams.length}} records</span>
                     </template>
                 </TableTopBar>
@@ -59,9 +57,12 @@
                 <TableHeader class="action">Action</TableHeader>
             </template>
             <template v-slot:body>
-                <UsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in users" :key="user.id" :user="user" :index="index"
+                <UsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in usersFilteredBySearch" :key="user.id" :user="user" :index="index"
                 @showContextMenu="showUserContext($event, user)" @editCurrency="onEditUserCurrency($event, user)"
                 @editRole="onEditUserRole($event, user)"/>
+            </template>
+            <template v-slot:footer="slotProps">
+                <td><button class="primary invisible" @click="onNewUser"><i class="far fa-plus"></i><span>Add new: User</span></button></td>
             </template>
         </FlexTable>
 
@@ -376,6 +377,8 @@ export default {
         editTitle: false,
         editCurrency: false,
         currentTab: 'Teams',
+        teamsFilteredBySearch: [],
+        usersFilteredBySearch: []
     }},
     computed: {
         ...mapGetters('persist', ['currentWorkspaceId', 'currentWorkspace', 'userPermissionLevel', 'availableCurrencies', 'availableWorkspaceRoles']),
@@ -446,7 +449,7 @@ export default {
                     }
                 })
             }
-            // Else create a new folder
+            // Else create a new team
             else {
                 const newTeam = {
                     id: null,
@@ -468,6 +471,10 @@ export default {
                 })
             }
             
+        },
+        onNewUser() {
+            // emit open new user modal
+            this.$emit('onNewUser')
         },
         showSingleTeam(id) {
             this.setAvailableTeamIds(this.teams.map(x => x.id))
@@ -551,6 +558,16 @@ export default {
             this.sortArray(array, this.sortAsc, this.sortKey)
         }
     },
+    updated() {
+        // Set the filteredbySearch arrays if we have a change
+        this.teamsFilteredBySearch = this.teams,
+        this.usersFilteredBySearch = this.users
+    },
+    mounted() {
+        // Initially set the filteredbySearch arrays
+        this.teamsFilteredBySearch = this.teams,
+        this.usersFilteredBySearch = this.users
+    }
 }
 </script>
 

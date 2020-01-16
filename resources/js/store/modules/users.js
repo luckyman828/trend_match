@@ -6,11 +6,15 @@ export default {
 
     state: {
         loading: true,
+        addNewUserModalVisible: false,
     },
 
     getters: {
         loadingUsers: state => {
             return state.loading
+        },
+        addNewUserModalVisible: state => {
+            return state.addNewUserModalVisible
         },
     },
 
@@ -83,6 +87,9 @@ export default {
         },
         updateUser(state, user) {
             User.insert({ data: user })
+        },
+        setAddNewUserModalVisible(state, bool) {
+            state.addNewUserModalVisible = bool
         },
     },
 }

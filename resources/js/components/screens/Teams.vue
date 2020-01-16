@@ -3,18 +3,43 @@
         <h1>Teams</h1>
         <div class="underline"></div>
         <!-- <TeamsTopBar :itemsToFilter="teams" :title="'Teams'"/> -->
-        <TeamsTable :teams="teams" :users="users" :loading="isLoading" :authUser="authUser" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/>
+        <TeamsTable :teams="teams" :users="users" :loading="isLoading" :authUser="authUser" 
+        @onNewUser="$refs.addUserModal.show()" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/>
         <!-- <TeamsTableAlt :teams="teams" :users="users" :loading="isLoading" :authUser="authUser" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/> -->
-        <ModalInviteToTeam :teams="teams" :team="singleTeam" :users="users" :authUser="authUser" ref="modal"/>
+        <!-- <ModalInviteToTeam :teams="teams" :team="singleTeam" :users="users" :authUser="authUser" ref="modal"/> -->
+        <AddUserModal ref="addUserModal" :visibilityKey="addNewUserModalVisible" 
+        @hide="setAddNewUserModalVisible(false)" @show="setAddNewUserModalVisible(true)"/>
+        <!-- <Modal ref="newUserModal" :header="'Add new user to workspace'" :subHeader="'I am a subheader'" v-slot="slotProps"
+        @hide="setAddNewUserModalVisible(false)" @show="setAddNewUserModalVisible(true)" :visibilityKey="addNewUserModalVisible">
+            <form>
+                <div class="form-element">
+                    <label for="new-user-email">User Email</label>
+                    <input class="input-wrapper" type="email" id="new-user-email" placeholder="email">
+                </div>
+                <div class="form-element">
+                    <label for="new-user-name"> UserName</label>
+                    <input class="input-wrapper" type="text" id="new-user-name" placeholder="name">
+                </div>
+                <div class="form-element">
+                    <label for="new-user-password">User Password</label>
+                    <input class="input-wrapper" type="password" id="new-user-password">
+                </div>
+                <div class="form">
+                    <button class="md primary full-width"><span>Add user(s)</span></button>
+                </div>
+            </form>
+        </Modal> -->
+        
     </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Team from '../../store/models/Team'
 import TeamsTopBar from '../TeamsTopBar'
 import TeamsTable from '../TeamsTable'
 import TeamsTableAlt from '../TeamsTableAlt'
+import AddUserModal from '../AddUserModal'
 import ModalInviteToTeam from '../ModalInviteToTeam'
 import User from '../../store/models/User'
 import UserTeam from '../../store/models/UserTeam'
@@ -28,6 +53,7 @@ export default {
         TeamsTable,
         TeamsTableAlt,
         ModalInviteToTeam,
+        AddUserModal,
     },
     data: function () { return {
         selected: [],
@@ -39,7 +65,7 @@ export default {
     computed: {
         ...mapGetters('entities/teams', ['loadingTeams', 'teams']),
         ...mapGetters('entities/userTeams', ['loadingUserTeams']),
-        ...mapGetters('entities/users', ['loadingUsers']),
+        ...mapGetters('entities/users', ['loadingUsers', 'addNewUserModalVisible']),
         ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId']),
         test() {
             return this.$store.getters['persist/actionScope']
@@ -65,14 +91,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('entities/authUser', ['getAuthUser']),
-        ...mapActions('entities/teams', ['fetchTeams']),
-        ...mapActions('entities/users', ['fetchUsers']),
-        ...mapActions('entities/userTeams', ['fetchUserTeams']),
-        ...mapActions('entities/teamInvites', ['fetchTeamInvites']),
-        ...mapActions('entities/workspaces', ['fetchWorkspaces']),
-        ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
-        ...mapActions('persist', ['setCurrentTeam']),
+        ...mapMutations('entities/users', ['setAddNewUserModalVisible']),
         setSelected(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
             const selected = this.selected
@@ -84,33 +103,13 @@ export default {
             console.log('Teams: Openeing')
             this.$refs.modal.toggle()
         },
-        // initRequiresWorkspace() {
-        //     if (User.all().length <= 0)
-        //             this.fetchUsers(this.currentWorkspaceId)
-        //     if (TeamInvite.all().length <= 0)
-        //         this.fetchTeamInvites(this.currentWorkspaceId)
-        //     this.singleTeam = this.teams[0]
-        // }
     },
     created () {
         this.singleTeam = this.$store.getters['entities/teams/teams'][0]
-        // If we already have a workspace id, fetch the data we are missing
-        // if (this.currentWorkspaceId != null)
-        //     this.initRequiresWorkspace()
-        // // Else, wait till a workspace id is set, and then fetch the data
-        // this.unsub = this.$store.subscribe((mutation, state) => {
-        //     if(mutation.type == 'persist/setCurrentWorkspace') {
-        //         this.initRequiresWorkspace()
-        //     } 
-        // })
-        
     },
     mounted() {
         this.users = User.query().with('teams|role|workspaceUsers|userTeams').all()
     },
-    destroyed() {
-        // this.unsub()
-    }
 }
 </script>
 

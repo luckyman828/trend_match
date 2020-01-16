@@ -8,7 +8,9 @@
                 <i class="fas fa-times"></i>
             </span>
         </div> -->
-        <SearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" v-model="optionsFilteredBySearch"/>
+        <div class="search-wrapper">
+            <SearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" v-model="optionsFilteredBySearch"/>
+        </div>
         <div class="wrapper">
 
             <div class="option" v-for="(option, index) in optionsFilteredBySearch" :key="index" 
@@ -134,11 +136,7 @@ export default {
     },
     mounted() {
         this.focusSearch()
-    },
-    // created() {
-    //     // If the type is checkboxes, set the selection to an array
-    //     if (this.type != 'radio') this.selection = [] 
-    // }
+    }
 }
 </script>
 
@@ -171,7 +169,7 @@ export default {
             &.has-description {
                 label {
                     align-items: flex-start;
-                    .radiomark {
+                    .radiomark, .checkbox {
                         margin-top: 4px;
                     }
                 }
@@ -224,6 +222,9 @@ export default {
                 color: white;
             }
         }
+    }
+    .search-wrapper {
+        padding: 8px 16px;
     }
 
 </style>

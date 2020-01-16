@@ -1,7 +1,6 @@
 <template>
     <tr class="table-top-bar">
         <div class="left">
-            
             <slot name="left"></slot>
         </div>
         <div class="right">
@@ -13,9 +12,6 @@
 <script>
 export default {
     name: 'tableTopBar',
-    props: [
-        'search'
-    ]
 }
 </script>
 

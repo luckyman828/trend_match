@@ -30,6 +30,9 @@ import VTooltip from 'v-tooltip'
 Vue.use(VTooltip)
 VTooltip.options.popover.defaultTrigger = 'hover focus'
 
+import PortalVue from 'portal-vue'
+Vue.use(PortalVue)
+
 Vue.component('app', require('./App.vue').default)
 
 // Global components
