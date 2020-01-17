@@ -12,8 +12,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Run a one-line script
-      run: echo 'Checkout done!!!'
+    
     - run: echo ${{ secrets.DEV_ENV }} | base64 --decode > .env
     - name: Install php library
       uses: MilesChou/composer-action@v1.0.1
