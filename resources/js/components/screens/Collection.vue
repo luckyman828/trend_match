@@ -91,7 +91,6 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Loader from '../Loader'
 import FilesTable from '../FilesTable'
 import FoldersTable from '../FoldersTable'
-import RadioButtons from '../RadioButtons'
 import CheckboxButtons from '../input/CheckboxButtons'
 import Dropdown from '../Dropdown'
 import FlyIn from '../FlyIn'
@@ -106,7 +105,6 @@ export default {
         FilesTable,
         Dropdown,
         CheckboxButtons,
-        RadioButtons,
         FoldersTable,
         FlyIn,
         FileSingle,
