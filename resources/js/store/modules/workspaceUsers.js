@@ -65,6 +65,34 @@ export default {
                 })
             return succes
         },
+        async addWorkspaceUsers({ commit }, { workspaceId, usersToAdd }) {
+            let succes
+
+            let apiURL = `/api/workspace/users/add`
+            let requestMethod = 'post'
+
+            // Instantiate a new workspaceUser object, to strip away any added/calculated attributes
+            let dataToPush = {
+                user_id: workspaceUserToUpdate.user_id,
+                workspace_id: workspaceUserToUpdate.workspace_id,
+                permission_level: workspaceUserToUpdate.permission_level,
+            }
+            await axios({
+                method: requestMethod,
+                url: apiURL,
+                data: dataToPush,
+            })
+                .then(response => {
+                    console.log(response.data)
+                    succes = true
+                    commit('updateWorkspaceUser', userToPush)
+                })
+                .catch(err => {
+                    console.log(err.response)
+                    succes = false
+                })
+            return succes
+        },
     },
 
     mutations: {
