@@ -392,7 +392,7 @@ export default {
         ...mapActions('entities/userTeams', ['removeUserFromTeam']),
         ...mapActions('entities/users', ['updateUser']),
         ...mapActions('entities/teams', ['updateTeam', 'deleteTeam']),
-        ...mapActions('entities/workspaceUsers', ['updateWorkspaceUser']),
+        ...mapActions('entities/workspaceUsers', ['updateWorkspaceUser', 'deleteWorkspaceUser']),
         ...mapMutations('entities/teams', ['setCurrentTeamId', 'setAvailableTeamIds']),
         onSelect(index) {
             this.$emit('onSelect', index)
@@ -519,6 +519,23 @@ export default {
             (window.confirm(
                 'Are you sure you want to delete this team?\nIt will be permanently deleted.'))
             ? this.deleteTeam(team.id) : false
+        },
+        onDeleteUser(user) {
+            if (window.confirm('Are you sure you want to remove this user from the workspace?')) {
+                // Remove the user from our state
+                const index = this.users.findIndex(x => x.id == user.id)
+                this.users.splice(index, 1)
+                // Find every team the user was a member of and remove the user from their team
+                this.teams.forEach(team => {
+                    const index = team.users.findIndex(x => x.id == user.id)
+                    if (index >= 0) {
+                        team.users.splice(index, 1)
+                    }
+                })
+
+                // Do the actual deleting in the DB
+                this.deleteWorkspaceUser({workspaceId: this.currentWorkspaceId, user: user})
+            }
         },
         onRenameTeam(team, index) {
             this.editTitle = true

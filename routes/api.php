@@ -147,6 +147,11 @@ Route::middleware('auth:api')->group( function(){
     Route::put('user/{id}', 'UserController@insertOrUpdate');
     Route::put('workspace-user', 'UserController@insertOrUpdateWorkspaceUser');
 
+    // Add / Create user on Workspace
+    Route::post('workspace/{workspace_id}/users/add', 'UserController@createOrAddUsersToWorkspace');
+    // remove user from Workspace
+    Route::delete('workspace/{workspace_id}/user', 'UserController@removeUserFromWorkspace');
+
     // xxx Comments xxx
     // create new comment
     Route::post('comment', 'CommentController@store');

@@ -65,18 +65,14 @@ export default {
                 })
             return succes
         },
-        async addWorkspaceUsers({ commit }, { workspaceId, usersToAdd }) {
+        async addUsersToWorkspace({ commit }, { workspaceId, usersToAdd }) {
             let succes
 
-            let apiURL = `/api/workspace/users/add`
+            let apiURL = `/api/workspace/${workspaceId}/users/add`
             let requestMethod = 'post'
 
             // Instantiate a new workspaceUser object, to strip away any added/calculated attributes
-            let dataToPush = {
-                user_id: workspaceUserToUpdate.user_id,
-                workspace_id: workspaceUserToUpdate.workspace_id,
-                permission_level: workspaceUserToUpdate.permission_level,
-            }
+            let dataToPush = { users_to_add: usersToAdd }
             await axios({
                 method: requestMethod,
                 url: apiURL,
@@ -93,6 +89,26 @@ export default {
                 })
             return succes
         },
+        async deleteWorkspaceUser({ commit }, { workspaceId, user }) {
+            commit('deleteWorkspaceUser', { workspaceId, user })
+            const apiUrl = `/api/workspace/${workspaceId}/user`
+            let succes
+            await axios
+                .delete(apiUrl, {
+                    data: {
+                        user_id: user.id,
+                    },
+                })
+                .then(response => {
+                    console.log(response.data)
+                    succes = true
+                })
+                .catch(err => {
+                    console.log(err.response)
+                    succes = false
+                })
+            return succes
+        },
     },
 
     mutations: {
@@ -102,6 +118,11 @@ export default {
         },
         updateWorkspaceUser(state, workspaceUser) {
             WorkspaceUser.insert({ data: workspaceUser })
+        },
+        deleteWorkspaceUser(state, { workspaceId, userId }) {
+            WorkspaceUser.delete(record => {
+                return record.workspace_id == workspaceId && record.user_id == userId
+            })
         },
     },
 }

@@ -100,7 +100,7 @@ export default {
             const inputIsValid = this.validateInput()
             if (!inputIsValid) return
             // Submit form
-            this.addUsersToWorkspace(this.currentWorkspaceId)
+            this.addUsersToWorkspace({workspaceId: this.currentWorkspaceId, usersToAdd: this.usersToAdd})
             
         },
         validateInput() {
@@ -134,9 +134,11 @@ export default {
             const valid = regex.test(email)
             if (valid) {
                 field.classList.remove('error')
+                this.submitDisabled = false
                 return true
             } else {
                 field.classList.add('error')
+                this.submitDisabled = true
                 return false
             }
         },
@@ -145,9 +147,11 @@ export default {
             const valid = password.length >= 8
             if (valid) {
                 field.classList.remove('error')
+                this.submitDisabled = false
                 return true
             } else {
                 field.classList.add('error')
+                this.submitDisabled = true
                 return false
             }
         },
