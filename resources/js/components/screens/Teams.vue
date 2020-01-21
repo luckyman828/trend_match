@@ -8,7 +8,7 @@
         <!-- <TeamsTableAlt :teams="teams" :users="users" :loading="isLoading" :authUser="authUser" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/> -->
         <!-- <ModalInviteToTeam :teams="teams" :team="singleTeam" :users="users" :authUser="authUser" ref="modal"/> -->
         <AddUserModal ref="addUserModal" :visibilityKey="addNewUserModalVisible" 
-        @hide="setAddNewUserModalVisible(false)" @show="setAddNewUserModalVisible(true)"/>
+        @hide="setAddNewUserModalVisible(false)" @show="setAddNewUserModalVisible(true)" :users="users"/>
         <!-- <Modal ref="newUserModal" :header="'Add new user to workspace'" :subHeader="'I am a subheader'" v-slot="slotProps"
         @hide="setAddNewUserModalVisible(false)" @show="setAddNewUserModalVisible(true)" :visibilityKey="addNewUserModalVisible">
             <form>

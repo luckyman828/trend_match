@@ -58,6 +58,7 @@ Vue.component('RadioButtons', require('./components/RadioButtons.vue').default)
 Vue.component('CheckButtons', require('./components/CheckButtons.vue').default)
 Vue.component('SelectButtons', require('./components/SelectButtons.vue').default)
 Vue.component('SearchField', require('./components/SearchField.vue').default)
+Vue.component('InputField', require('./components/InputField.vue').default)
 
 // Define global filters
 Vue.filter('truncate', function(value, limit) {

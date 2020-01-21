@@ -10,12 +10,8 @@
                 </div>
                 <div class="form-element">
                     <label :for="'new-user-email-'+index">Email *</label>
-                    <input ref="emailInput" class="input-wrapper" type="email" :id="'new-user-email-'+index" placeholder="email" autocomplete="off"
-                    v-model="usersToAdd[index].email" @paste="onPaste($event, index)" @blur="validateInput">
-                    <div class="error-msg">
-                        <i class="far fa-exclamation-triangle"></i>
-                        <span>Email must be of form <i>example@email.com</i>, and must not be blank</span>
-                    </div>
+                    <InputField ref="emailInput" type="email" :id="'new-user-email-'+index" placeholder="email" autocomplete="off"
+                    v-model="usersToAdd[index].email" @paste="onPaste($event, index)" @blur="validateInput($event.target)"/>
                 </div>
                 <div class="form-element">
                     <label :for="'new-user-name-'+index"> Name (optional)</label>
@@ -24,19 +20,15 @@
                 </div>
                 <div class="form-element">
                     <label :for="'new-user-password-'+index">Password *</label>
-                    <input ref="passwordInput" class="input-wrapper" type="text" :id="'new-user-password-'+index" autocomplete="new-password" 
-                    v-model="usersToAdd[index].password" @blur="validateInput">
-                    <div class="error-msg">
-                        <i class="far fa-exclamation-triangle"></i>
-                        <span>Password must be at least <strong>8 characters</strong> long</span>
-                    </div>
+                    <InputField ref="passwordInput" type="text" :id="'new-user-password-'+index" autocomplete="new-password"
+                    v-model="usersToAdd[index].password" @blur="validateInput($event.target)"/>
                 </div>
             </div>
             <div class="form-element">
-                <button class="dark" @click="onAddUser"><i class="fas fa-user-plus"></i><span>Add user</span></button>
+                <button type="button" class="dark" @click="onAddUser"><i class="fas fa-user-plus"></i><span>Add user</span></button>
             </div>
             <div class="form-element">
-                <button class="lg primary full-width" :disabled="submitDisabled" @click="onSubmit">
+                <button type="submit" class="lg primary full-width" :disabled="submitDisabled" @click="onSubmit">
                     <span>Add<template v-if="usersToAdd.length > 1"> {{usersToAdd.length}}</template> user<template v-if="usersToAdd.length > 1">(s)</template></span>
                 </button>
             </div>
@@ -64,6 +56,9 @@ export default {
         },
         submitDisabled: true,
     }},
+    props: [
+        'users'
+    ],
     computed: {
         ...mapGetters('persist', ['currentWorkspaceId']),
     },
@@ -102,9 +97,15 @@ export default {
             if (!inputIsValid) return
             // Submit form
             this.addUsersToWorkspace({workspaceId: this.currentWorkspaceId, usersToAdd: this.usersToAdd})
+            this.hide()
             
         },
-        validateInput() {
+        validateInput(inputField) {
+            // inputField is expected to be the inputfield triggering the validation check.
+            // This functions will always check all input fields in the form.
+            // The function will display error messages for all fields, unless the inputfield argument is provided
+            // In this case only the mathcing input field will display an error 
+            
             // Can be used to validate input before submit
             // Validate all input fields
             const emailFields = this.$refs.emailInput
@@ -116,39 +117,50 @@ export default {
 
             // Validate email input
             if (emailFields) emailFields.forEach(field => {
-                const valid = this.validateEmailField(field)
+                const showError = inputField ? field.$refs.inputField == inputField : true
+                const valid = this.validateEmailField(field, showError)
                 if (!valid) inputValid = false
             })
 
             // Validate email input
             if (passwordFields) passwordFields.forEach(field => {
-                const valid = this.validatePasswordField(field)
+                // If an input field is provided, check if the field is the current field being checked. Otherwise always return true
+                const showError = inputField ? field.$refs.inputField == inputField : true
+                const valid = this.validatePasswordField(field, showError)
                 if (!valid) inputValid = false
             })
             this.submitDisabled = !inputValid
             return inputValid
         },
-        validateEmailField(field) {
+        validateEmailField(field, showError) {
             const email = field.value
             // Regular expression to check against:
             var regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-            const valid = regex.test(email)
+            const isValidEmail = regex.test(email)
+            const emailDoesNotExist = this.users.findIndex(x => x.email == email) < 0
+            const valid = isValidEmail && emailDoesNotExist
             if (valid) {
-                field.classList.remove('error')
+                field.error = false
                 return true
             } else {
-                field.classList.add('error')
+                if (showError) {
+                    if (!isValidEmail) {
+                        field.error = 'Email must be of form <i>example@email.com</i>, and must not be blank'
+                    } else {
+                        field.error = 'A user with this email already exists on the workspace'
+                    }
+                }
                 return false
             }
         },
-        validatePasswordField(field) {
+        validatePasswordField(field, showError) {
             const password = field.value
             const valid = password.length >= 8
             if (valid) {
-                field.classList.remove('error')
+                field.error = false
                 return true
             } else {
-                field.classList.add('error')
+                if (showError) field.error = 'Password must be at least <strong>8 characters</strong> long'
                 return false
             }
         },
