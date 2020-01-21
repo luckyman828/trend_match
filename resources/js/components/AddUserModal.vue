@@ -2,7 +2,7 @@
     <Modal ref="addUserModal" :header="'Add new user to workspace'" v-slot="slotProps" 
     :visible="visible" :visibilityKey="visibilityKey" @hide="hide" @show="show">
         <!-- <form @input="validateInput"> -->
-        <form novalidate>
+        <form novalidate @submit="!submitDisabled && onSubmit($event)">
             <div class="user-wrapper" v-for="(user, index) in usersToAdd" :key="index">
                 <div class="controls" v-if="usersToAdd.length > 1">
                     <h3>User {{index+1}}</h3>
@@ -11,7 +11,7 @@
                 <div class="form-element">
                     <label :for="'new-user-email-'+index">Email *</label>
                     <input ref="emailInput" class="input-wrapper" type="email" :id="'new-user-email-'+index" placeholder="email" autocomplete="off"
-                    v-model="usersToAdd[index].email" @paste="onPaste($event, index)" @blur="validateEmailField($event.target)">
+                    v-model="usersToAdd[index].email" @paste="onPaste($event, index)" @blur="validateInput">
                     <div class="error-msg">
                         <i class="far fa-exclamation-triangle"></i>
                         <span>Email must be of form <i>example@email.com</i>, and must not be blank</span>
@@ -25,7 +25,7 @@
                 <div class="form-element">
                     <label :for="'new-user-password-'+index">Password *</label>
                     <input ref="passwordInput" class="input-wrapper" type="text" :id="'new-user-password-'+index" autocomplete="new-password" 
-                    v-model="usersToAdd[index].password" @blur="validatePasswordField($event.target)">
+                    v-model="usersToAdd[index].password" @blur="validateInput">
                     <div class="error-msg">
                         <i class="far fa-exclamation-triangle"></i>
                         <span>Password must be at least <strong>8 characters</strong> long</span>
@@ -95,7 +95,8 @@ export default {
                 }
             })
         },
-        onSubmit() {
+        onSubmit(e) {
+            e.preventDefault()
             // Check that the form fields are valid
             const inputIsValid = this.validateInput()
             if (!inputIsValid) return
@@ -114,15 +115,15 @@ export default {
             let inputValid = true
 
             // Validate email input
-            emailFields.forEach(field => {
+            if (emailFields) emailFields.forEach(field => {
                 const valid = this.validateEmailField(field)
-                inputValid = valid
+                if (!valid) inputValid = false
             })
 
             // Validate email input
-            passwordFields.forEach(field => {
+            if (passwordFields) passwordFields.forEach(field => {
                 const valid = this.validatePasswordField(field)
-                inputValid = valid
+                if (!valid) inputValid = false
             })
             this.submitDisabled = !inputValid
             return inputValid
@@ -134,11 +135,9 @@ export default {
             const valid = regex.test(email)
             if (valid) {
                 field.classList.remove('error')
-                this.submitDisabled = false
                 return true
             } else {
                 field.classList.add('error')
-                this.submitDisabled = true
                 return false
             }
         },
@@ -147,11 +146,9 @@ export default {
             const valid = password.length >= 8
             if (valid) {
                 field.classList.remove('error')
-                this.submitDisabled = false
                 return true
             } else {
                 field.classList.add('error')
-                this.submitDisabled = true
                 return false
             }
         },
