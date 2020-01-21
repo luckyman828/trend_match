@@ -5,18 +5,11 @@
                 <img src="/images/kollekt-logo-color-1.svg" />
             </router-link>
         </div> -->
-        <template v-if="$route.name == 'files'">
-            <NavbarFiles/>
-        </template>
-        <template v-if="$route.name == 'file' && currentTask && !loadingProducts">
-            <NavbarFile/>
-        </template>
-        <template v-if="$route.name == 'editFile'">
-            <NavbarEditFile/>
-        </template>
-        <template v-if="$route.name == 'teams'">
-            <NavbarTeam/>
-        </template>
+        <NavbarFiles v-if="$route.name == 'files'"/>
+        <NavbarFile v-if="$route.name == 'file' && currentTask && !loadingProducts"/>
+        <NavbarEditFile v-if="$route.name == 'editFile'"/>
+        <NavbarTeams v-if="$route.name == 'teams'"/>
+        <NavbarUsers v-if="$route.name == 'users'"/>
   </nav>
 </template>
 
@@ -25,7 +18,8 @@ import { mapActions, mapGetters } from 'vuex'
 import Modal from './Modal'
 import NavbarFile from './NavbarFile'
 import NavbarFiles from './NavbarFiles'
-import NavbarTeam from './NavbarTeam'
+import NavbarTeams from './NavbarTeams'
+import NavbarUsers from './NavbarUsers'
 import NavbarEditFile from './NavbarEditFile'
 import ModalCreateTeam from './ModalCreateTeam'
 import Team from '../store/models/Team'
@@ -37,7 +31,8 @@ export default {
         ModalCreateTeam,
         NavbarFile,
         NavbarFiles,
-        NavbarTeam,
+        NavbarTeams,
+        NavbarUsers,
         NavbarEditFile,
     },
     computed: {

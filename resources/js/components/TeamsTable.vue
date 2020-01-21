@@ -11,7 +11,7 @@
                         <SearchField :searchKey="['title']" :arrayToSearch="teams" v-model="teamsFilteredBySearch"/>
                     </template>
                     <template v-slot:right>
-                        <span>{{teams.length}} records</span>
+                        <span>showing <strong>{{teamsFilteredBySearch.length}}</strong> of <strong>{{teams.length}}</strong> records</span>
                     </template>
                 </TableTopBar>
             </template>
@@ -44,7 +44,7 @@
                         <SearchField :searchKey="['name','email']" :arrayToSearch="users" v-model="usersFilteredBySearch"/>
                     </template>
                     <template v-slot:right>
-                        <span>{{teams.length}} records</span>
+                        <span>showing <strong>{{usersFilteredBySearch.length}}</strong> of <strong>{{users.length}}</strong> records</span>
                     </template>
                 </TableTopBar>
             </template>
@@ -376,7 +376,7 @@ export default {
         originalUser: null,
         editTitle: false,
         editCurrency: false,
-        currentTab: 'Teams',
+        // currentTab: 'Teams',
         teamsFilteredBySearch: [],
         usersFilteredBySearch: []
     }},
@@ -386,6 +386,17 @@ export default {
         roles () {
             return Role.all().filter(role => role.id <= this.userPermissionLevel)
         },
+        currentTab: {
+            get () {
+                const routeName = this.$route.name
+                if (routeName == 'teams') return 'Teams'
+                if (routeName == 'users') return 'Members'
+            },
+            set (newVal) {
+                if (newVal == 'Teams') this.$router.push({name: 'teams'})
+                if (newVal == 'Members') this.$router.push({name: 'users'})
+            }
+        }
     },
     methods: {
         ...mapActions('entities/teamInvites', ['deleteInvite', 'resend']),

@@ -25,7 +25,7 @@ export default {
         justify-content: space-between;
         align-items: center;
         margin-bottom: 0;
-        font-weight: 700;
+        // font-weight: 700;
         width: 100%;
         .left, .right {
             display: flex;

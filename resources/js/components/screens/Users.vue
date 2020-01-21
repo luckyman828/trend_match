@@ -1,35 +1,11 @@
 <template>
     <div class="teams">
-        <h1 v-if="$route.name == 'teams'">Teams</h1>
-        <h1 v-if="$route.name == 'users'">Users</h1>
+        <h1>Users</h1>
         <div class="underline"></div>
-        <!-- <TeamsTopBar :itemsToFilter="teams" :title="'Teams'"/> -->
         <TeamsTable :teams="teams" :users="users" :loading="isLoading" :authUser="authUser" 
         @onNewUser="$refs.addUserModal.show()" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/>
-        <!-- <TeamsTableAlt :teams="teams" :users="users" :loading="isLoading" :authUser="authUser" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/> -->
-        <!-- <ModalInviteToTeam :teams="teams" :team="singleTeam" :users="users" :authUser="authUser" ref="modal"/> -->
         <AddUserModal ref="addUserModal" :visibilityKey="addNewUserModalVisible" 
         @hide="setAddNewUserModalVisible(false)" @show="setAddNewUserModalVisible(true)" :users="users"/>
-        <!-- <Modal ref="newUserModal" :header="'Add new user to workspace'" :subHeader="'I am a subheader'" v-slot="slotProps"
-        @hide="setAddNewUserModalVisible(false)" @show="setAddNewUserModalVisible(true)" :visibilityKey="addNewUserModalVisible">
-            <form>
-                <div class="form-element">
-                    <label for="new-user-email">User Email</label>
-                    <input class="input-wrapper" type="email" id="new-user-email" placeholder="email">
-                </div>
-                <div class="form-element">
-                    <label for="new-user-name"> UserName</label>
-                    <input class="input-wrapper" type="text" id="new-user-name" placeholder="name">
-                </div>
-                <div class="form-element">
-                    <label for="new-user-password">User Password</label>
-                    <input class="input-wrapper" type="password" id="new-user-password">
-                </div>
-                <div class="form">
-                    <button class="md primary full-width"><span>Add user(s)</span></button>
-                </div>
-            </form>
-        </Modal> -->
         
     </div>
 </template>
@@ -48,7 +24,7 @@ import TeamInvite from '../../store/models/TeamInvite'
 import AuthUser from '../../store/models/AuthUser'
 
 export default {
-    name: 'teams',
+    name: 'users',
     components: {
         TeamsTopBar,
         TeamsTable,

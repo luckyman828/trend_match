@@ -10,6 +10,7 @@
         <template v-if="authUser != null">
           <template v-if="authUser.role_id >= 2">
             <router-link to="/teams" class="link"><i class="fas fa-users"></i> Teams</router-link>
+            <router-link to="/users" class="link"><i class="fas fa-user"></i> Users</router-link>
           </template>
         </template>
       </div>

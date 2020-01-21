@@ -1,6 +1,5 @@
 <template>
     <div class="navbar-team">
-        <ModalCreateTeam ref="createTeamModal"/>
 
         <div class="flex-wrapper">
             <div class="items-left">
@@ -10,7 +9,7 @@
             </div>
             <div class="items-right">
 
-                <span v-if="userPermissionLevel >= 4" class="button wide primary" @click="$refs.createTeamModal.toggle()">Add team</span>
+                <button class="primary"><span>Add new: User</span></button>
 
             </div>
         </div>
@@ -20,37 +19,17 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import Modal from './Modal'
-import ModalCreateTeam from './ModalCreateTeam'
-import Team from '../store/models/Team'
 
 export default {
-    name: "navbar",
+    name: "navbarUsers",
     data: function () { return {
-        addTeamName: '',
     }},
     components: {
-        Modal,
-        ModalCreateTeam,
     },
     computed: {
         ...mapGetters('persist', ['userPermissionLevel']),
-        addTeamValid () {
-            if (this.teams.length <= 0)
-                return false
-                else
-                    if (this.teams.find(x => x.title.toLowerCase() == this.addTeamName.toLowerCase()))
-                        return false
-            return true
-        },
-        teams () {
-            return Team.all()
-        }
     },
     methods: {
-        consoleLog(msg) {
-            console.log(msg)
-        }
     }
 };
 </script>
