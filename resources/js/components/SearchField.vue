@@ -18,6 +18,13 @@ export default {
     data: function () { return {
         searchString: '',
     }},
+    watch: {
+        // Watch for changes in the array to search
+        arrayToSearch: function(newVal, oldVal) {
+            // Emit the result when a change to the provided array occours
+            this.$emit('input', this.result)
+        }
+    },
     computed: {
         result() {
             const array = this.arrayToSearch
