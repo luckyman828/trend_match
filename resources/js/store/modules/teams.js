@@ -26,30 +26,6 @@ export default {
         teams: state => {
             return state.teams
         },
-        // teams: (state, getters, rootState, rootGetters) => {
-        //     if (!rootGetters['persist/loadingInit']) {
-        //         const adminPermissionLevel = rootGetters['persist/adminPermissionLevel']
-        //         const teams = Team.query()
-        //             .with('users.role')
-        //             .with('invites')
-        //             .with('teamFiles')
-        //             .with('files')
-        //             .all()
-        //         const authUser = AuthUser.query()
-        //             .with('teams')
-        //             .first()
-
-        //         if (authUser.role_id >= adminPermissionLevel) return teams
-        //         else {
-        //             // Get the users teams
-        //             let userTeams = []
-        //             teams.forEach(team => {
-        //                 if (authUser.teams.find(x => x.id == team.id)) userTeams.push(team)
-        //             })
-        //             return userTeams
-        //         }
-        //     }
-        // },
         currentTeam: (state, getters) => {
             const teamId = getters.currentTeamId
             const teams = getters.teams
@@ -105,28 +81,43 @@ export default {
                 }
             }
         },
-        async createTeam({ commit }, { name, workspace_id }) {
-            const team = {
-                title: name,
-                workspace_id: workspace_id,
-                id: null,
-            }
-            const apiUrl = `/api/workspace/${workspace_id}/team`
+        async createTeam({ commit, dispatch, state }, team) {
             let succes
-            await axios
-                .post(apiUrl, team)
-                .then(response => {
-                    console.log(response.data)
-                    team.id = response.data.id
+
+            let apiURL = `/api/team`
+            let requestMethod = 'post'
+
+            // Instantiate a new team to push to the store
+            const newTeam = {
+                id: null,
+                title: team.title,
+                currency: team.currency,
+                users: [],
+                files: [],
+            }
+            // Update state
+            state.teams.push(newTeam)
+
+            await axios({
+                method: requestMethod,
+                url: apiURL,
+                data: {
+                    team: team,
+                },
+            })
+                .then(async response => {
                     succes = true
+
+                    // Update the new teams id
+                    newTeam.id = response.data.id
+                    // Add team to Vuex ORM
+                    await commit('updateTeam', response.data)
                 })
                 .catch(err => {
                     console.log(err)
+                    console.log(err.response)
                     succes = false
                 })
-
-            commit('updateTeam', team)
-
             return succes
         },
         async updateTeam({ commit }, team) {
@@ -190,7 +181,6 @@ export default {
             const teams = Team.query()
                 // .with('users.userTeams')
                 .with('userTeams.user')
-                .with('invites')
                 .with('teamFiles')
                 .with('files')
                 .all()
@@ -225,6 +215,10 @@ export default {
                 state.teams = userTeams
             }
         },
+        // async instantiateTeam({ state, rootGetters }, team) {
+        //     const newTeam = Team.find(team.id)
+        //     state.teams.push(newTeam)
+        // },
         async recalcTeamUsers({ state, rootGetters }, teamToRecalc) {
             const team = Team.query()
                 // .with('users.userTeams')

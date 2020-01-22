@@ -8,11 +8,11 @@
                 @submit="updateTeam(teamToEdit); editTitle = false" @cancel="$emit('cancelEditTitle'); editTitle = false;"/>
         </td>
         <td v-else class="title clickable" @click="showSingle(team.id)">
-            <i class="fas fa-users"></i>
+            <i class="fa-users" :class="team.id ? 'fas' : 'far'"></i>
             <span>{{team.title}}</span>
         </td>
         <td class="owner">{{team.owner}}</td>
-        <td class="members clickable" @click="showSingle(team.id)"><span>{{team.users.length}}<template v-if="team.invites.length > 0"> ({{team.invites.length}})</template> Members</span></td>
+        <td class="members clickable" @click="showSingle(team.id)"><span>{{team.users.length}} Members</span></td>
         <td class="files">
             <v-popover :aria-disabled="team.files.length <= 0" style="display: inline-block">
                 <span class="tooltip-target">{{team.files.length}} <i class="far fa-info-circle"/></span>

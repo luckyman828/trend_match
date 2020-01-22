@@ -470,7 +470,6 @@ export default {
                     users: [],
                     files: [],
                     currency: this.currentWorkspace.currency,
-                    invites: [],
                 }
                 // Push new new to the current teams array
                 this.teams.push(newTeam)

@@ -4,7 +4,7 @@
         <h1 v-if="$route.name == 'users'">Users</h1>
         <div class="underline"></div>
         <!-- <TeamsTopBar :itemsToFilter="teams" :title="'Teams'"/> -->
-        <TeamsTable :teams="teams" :users="users" :loading="isLoading" :authUser="authUser" 
+        <TeamsTable :teams="teams" :users="users" :loading="isLoading" :authUser="authUser"
         @onNewUser="$refs.addUserModal.show()" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/>
         <!-- <TeamsTableAlt :teams="teams" :users="users" :loading="isLoading" :authUser="authUser" @onSelect="setSelected" @onOpenInviteToTeam="openInviteToTeam"/> -->
         <!-- <ModalInviteToTeam :teams="teams" :team="singleTeam" :users="users" :authUser="authUser" ref="modal"/> -->

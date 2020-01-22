@@ -9,7 +9,7 @@
             </div>
             <div class="items-right">
 
-                <button class="primary"><span>Add new: User</span></button>
+                <button class="primary" @click="setAddNewUserModalVisible(true)"><span>Add new: User</span></button>
 
             </div>
         </div>
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 
 export default {
     name: "navbarUsers",
@@ -30,6 +30,7 @@ export default {
         ...mapGetters('persist', ['userPermissionLevel']),
     },
     methods: {
+        ...mapMutations('entities/users', ['setAddNewUserModalVisible']),
     }
 };
 </script>
