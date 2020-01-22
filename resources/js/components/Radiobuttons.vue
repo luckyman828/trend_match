@@ -128,7 +128,7 @@ export default {
         },
         update() {
             // Preset the selection
-            if (this.currentOptionId)
+            if (this.currentOptionId != null)
                 if (this.optionValueKey) {
                     this.selection = this.options.find(x => x.id == this.currentOptionId)[this.optionValueKey]
                 }

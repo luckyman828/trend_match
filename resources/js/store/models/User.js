@@ -62,6 +62,9 @@ export default class User extends Model {
     }
     get workspaceRole() {
         switch (this.workspaceUser.permission_level) {
+            case 0:
+                return 'External'
+                break
             case 1:
                 return 'User'
                 break

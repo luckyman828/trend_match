@@ -13,7 +13,7 @@
         </td>
         <td class="email">{{user.email}}</td>
         <td class="role">
-            <button class="ghost editable sm" @click.stop="$emit('editRole', $event, user)"><span>{{user.teamRole(user.teamRoleId)}}</span></button>
+            <button class="ghost editable sm" @click.stop="$emit('editRole', $event, user)"><span>{{availableTeamRoles[user.teamRoleId].name}}</span></button>
         </td>
         <td class="currency">
             <button class="ghost editable sm" @click.stop="$emit('editCurrency', $event, user)"><span>{{user.currency ? user.currency : 'Set user currency'}}</span></button>
@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
     name: 'teamSingleFlyinUsersTableRow',
@@ -38,6 +38,9 @@ export default {
         editName: false,
         userToEdit: this.user,
     }},
+    computed: {
+        ...mapGetters('persist', ['availableTeamRoles'])
+    },
     methods: {
         ...mapActions('entities/users', ['updateUser']),
     },

@@ -125,7 +125,8 @@ export default {
         async updateUserTeam({ commit }, userTeamToUpdate) {
             let succes
 
-            let apiURL = `/api/team/user`
+            // let apiURL = `/api/team/user`
+            let apiURL = `/api/user-team`
             let requestMethod = 'put'
 
             // Instantiate a new workspaceUser object, to strip away any added/calculated attributes

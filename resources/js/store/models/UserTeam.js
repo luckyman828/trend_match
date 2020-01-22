@@ -26,6 +26,9 @@ export default class UserTeam extends Model {
 
     get teamRole() {
         switch (this.permission_level) {
+            case 0:
+                return 'External'
+                break
             case 1:
                 return 'Member'
                 break

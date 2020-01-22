@@ -196,6 +196,11 @@ export default {
         ],
         availableWorkspaceRoles: [
             {
+                id: 0,
+                name: 'External',
+                description: 'No rights what so ever',
+            },
+            {
                 id: 1,
                 name: 'User',
                 description: 'A basic user with no special rights',
@@ -218,6 +223,11 @@ export default {
             },
         ],
         availableTeamRoles: [
+            {
+                id: 0,
+                name: 'External',
+                description: 'No rights what so ever',
+            },
             {
                 id: 1,
                 name: 'Member',
