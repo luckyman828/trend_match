@@ -97,7 +97,7 @@
             :subHeader="'Select a place to move the current item to'"
             class="move-item-modal"
         >
-            <template v-slot:body>
+            <template v-slot>
                 <div class="inner" v-if="toMove != null">
                     <div style="margin-bottom: 12px">
                         <button v-if="folderToMoveToId != null" class="invisible ghost-hover true-square" @click="folderToMoveToId = folderToMoveTo.parent_id">

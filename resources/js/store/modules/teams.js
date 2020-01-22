@@ -231,10 +231,11 @@ export default {
                 if (userTeam.user) {
                     userTeam.user.teamRoleId = userTeam.permission_level
                     team.users.push(userTeam.user)
-                } else {
-                    console.log('userTeam lags a user!')
-                    console.log(userTeam)
                 }
+                // else {
+                //     console.log('userTeam lags a user!')
+                //     console.log(userTeam)
+                // }
             })
 
             // // Set the team to recalculate to the new team

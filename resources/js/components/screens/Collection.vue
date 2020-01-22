@@ -120,15 +120,17 @@ export default {
         currentFolder: {id: null, title: null, folders: [], files: []}
     }},
     watch: {
-        // folders(oldVal, newVal) {
-        //     console.log('folders changed')
-        //     console.log(newVal)
-        //     if (this.currentFolderId) {
-        //         this.currentFolder = this.folders.find(x => x.id == this.currentFolderId)
-        //     } else {
-        //         this.currentFolder = this.rootFolder
-        //     }
-        // }
+        folders(newVal, oldVal) {
+            console.log('folders changed')
+            console.log(newVal)
+            // Refresh the current folder if a change is detected
+            if (this.currentFolderId) {
+                this.currentFolder = this.folders.find(x => x.id == this.currentFolderId)
+            } else {
+                this.currentFolder = this.rootFolder
+            }
+        }
+        
     },
     computed: {
         ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
