@@ -1,7 +1,18 @@
 <template>
     <div class="folders-table-wrapper">
         <FlexTable class="folders-table">
-            <template v-slot:header="slotProps">
+            <template v-slot:topBar>
+                <TableTopBar>
+                    <template v-slot:left>
+                        <SearchField :searchKey="['title','name']"/>
+                    </template>
+                    <template v-slot:right>
+                        <span>showing <strong>{{folder.folders.length + folder.files.length}}</strong> of 
+                        <strong>{{folder.folders.length + folder.files.length}}</strong> records</span>
+                    </template>
+                </TableTopBar>
+            </template>
+            <template v-slot:header>
                 <th class="select"><Checkbox/></th>
                 <th class="title">Name <i class="fas fa-sort"></i></th>
                 <th>Modified <i class="fas fa-sort"></i></th>

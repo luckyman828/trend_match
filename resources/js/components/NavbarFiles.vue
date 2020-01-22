@@ -13,7 +13,7 @@
                 <span>2) Proces</span>
                 <span>3) Access</span>
             </div> -->
-            
+
             <!-- <template v-if="currentPage == 1"> -->
                 <form @submit.prevent enctype="multipart/form-data">
                     <div class="form-element" style="text-align: center;">
@@ -24,20 +24,40 @@
 
                         <div class="form-element">
                             <label for="file-name-input">File name* (required)</label>
-                            <input type="text" id="file-name-input" class="input-wrapper" placeholder="example title" v-model="newFile.title">
+                            <input type="text" id="file-name-input" class="input-wrapper" placeholder="unnamed file" v-model="newFile.title">
                         </div>
                         <div class="form-element">
-                            <div class="drop-area input-wrapper">
-                                <input type="file" multiple accept=".csv, text/csv" @change="filesChange($event)">
-                                <!-- <input type="file" multiple accept=".csv" @change="filesChange($event)"> -->
-                                <p>Drop your file(s) here or click to upload</p>
-                                <span class="button dark">Upload files</span>
-                            </div>
+                            <Droparea multiple="true" accept=".csv, text/csv"
+                            @change="filesChange($event)">
+                                <template v-slot="slotProps">
+                                    <template v-if="newFile.files.length < 1">
+                                        <strong>Drop your file(s) here or click to upload</strong>
+                                        <i class="fal fa-file-csv big-icon primary"></i>
+                                        <button type="button" class="dark md" @click="slotProps.activate">
+                                            <i class="far fa-file-csv"></i>
+                                            <span>Browse files</span>
+                                        </button>
+                                    </template>
+                                    <template v-else>
+                                        <strong>Drag and drop files here to upload</strong>
+                                        <div class="file-to-upload" v-for="(file, index) in newFile.files" :key="index">
+                                            <span>{{file.name}}</span>
+                                            <button class="ghost" type="button" @click="removeFile(index)">
+                                                <i class="remove far fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                        <button type="button" class="dark md"><i class="far fa-file-csv"></i><span>Browse files</span></button>
+                                    </template>
+                                </template>
+                                <template v-slot:dragDisplay>
+                                    <i class="big-icon fas fa-smile-beam"></i>
+                                </template>
+                            </Droparea>
                         </div>
                         <div class="form-element file-list" v-if="newFile.files.length > 0">
                             <label>Selected files ({{newFile.files.length}})</label>
                             <p v-for="(file, index) in newFile.files" :key="index">
-                                {{file.name}} 
+                                {{file.name}}
                                 <i class="remove far fa-times-circle" @click="removeFile(index)"></i>
                             </p>
                         </div>
@@ -108,7 +128,7 @@
                     </div> -->
                 <!-- </div>
             </template> -->
-            
+
         </Modal>
     </div>
 </template>
@@ -196,9 +216,9 @@ export default {
             this.uploadFile(newFile)
             .then(success => {
                 this.uploadingFile = false
-                
+
                 // Close modal on succes
-                if (success) 
+                if (success)
                     this.$refs.addFileModal.toggle()
                 else window.alert('Something went wrong. Please try again')
             })
@@ -216,9 +236,9 @@ export default {
             this.uploadFile(newFile)
             .then(success => {
                 this.uploadingFile = false
-                
+
                 // Close modal on succes
-                if (success) 
+                if (success)
                     this.$refs.addFileModal.toggle()
                 else window.alert('Something went wrong. Please try again')
             })
@@ -273,6 +293,23 @@ export default {
                 margin-right: 16px;
             }
         }
+        .big-icon {
+            font-size: 60px;
+            margin: 32px 0 48px;
+        }
+        .file-to-upload {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            align-items: center;
+            height: 40px;
+            padding: 4px;
+            border: solid 1px $divider;
+            border-radius: 4px;
+            span {
+                color: $primary;
+            }
+        }
     }
 
     .flex-wrapper {
@@ -284,27 +321,6 @@ export default {
         > * {
             display: flex;
             align-items: center;
-        }
-    }
-    .drop-area {
-        outline: 2px dashed $light2;
-        outline-offset: -10px;
-        background: white;
-        padding: 12px 12px;
-        height: 200px;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        cursor: pointer;
-        input[type=file] {
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            cursor: pointer;
-            z-index: 1;
         }
     }
     .file-list {
