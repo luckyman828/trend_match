@@ -212,11 +212,13 @@ export default {
         async updateFile({ commit }, fileToUpdate) {
             const startDate = fileToUpdate.start_date ? fileToUpdate.start_date : null
             const endDate = fileToUpdate.end_date ? fileToUpdate.end_date : null
-            const catalog_id = fileToUpdate.folderId
-                ? fileToUpdate.folderId
-                : fileToUpdate.catalog_id
-                ? fileToUpdate.catalog_id
-                : null
+            // Add support for both catalog id and folder id
+            let catalog_id = null
+            if (fileToUpdate.folderId) {
+                catalog_id = fileToUpdate.folderId
+            } else if (fileToUpdate.catalog_id) {
+                catalog_id = fileToUpdate.catalogId
+            }
 
             await axios
                 .put(`/api/file`, {

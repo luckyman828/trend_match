@@ -372,6 +372,9 @@ input[type='submit'] {
                     }
                 }
             }
+            &.ghost {
+                border-color: nth($color, 2);
+            }
             &.ghost-hover:hover {
                 background: transparent;
                 color: nth($color, 2);

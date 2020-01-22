@@ -4,10 +4,10 @@
 
         </div>
         <div class="item-right">
-            <span class="button wide primary" @click="$refs.addFileModal.toggle()">Add file</span>
+            <button class="primary" @click="$refs.addFileModal.toggle()"><span>Add file</span></button>
         </div>
 
-        <Modal ref="addFileModal" :header="'Create new file'" :subHeader="'A file is a collection of products that users will be able to view in the dashboard and/or app<br>Select CSV files to upload to get started.'">
+        <Modal class="add-file-modal" ref="addFileModal" :header="'Create new file'">
             <!-- <div class="overview">
                 <span>1) Upload</span>
                 <span>2) Proces</span>
@@ -15,12 +15,16 @@
             </div> -->
             
             <!-- <template v-if="currentPage == 1"> -->
-                <form enctype="multipart/form-data">
+                <form @submit.prevent enctype="multipart/form-data">
+                    <div class="form-element" style="text-align: center;">
+                        <p>A file is a collection of products that users will be able to view in the dashboard and/or app</p>
+                        <p><strong>Select CSV files to upload to get started, or create empty file</strong></p>
+                    </div>
                     <template v-if="!uploadingFile">
 
                         <div class="form-element">
-                            <label>File name* (required)</label>
-                            <input type="text" class="input-wrapper" placeholder="example title" v-model="newFile.title">
+                            <label for="file-name-input">File name* (required)</label>
+                            <input type="text" id="file-name-input" class="input-wrapper" placeholder="example title" v-model="newFile.title">
                         </div>
                         <div class="form-element">
                             <div class="drop-area input-wrapper">
@@ -39,7 +43,15 @@
                         </div>
                         <!-- <span class="button xl dark" @click="currentPage = 2; uploadFiles()" :class="{disabled: newFile.files.length <= 0}">Continue</span> -->
                         <!-- <input type="submit" class="button xl dark" value="Upload files" :disabled="newFile.files.length <= 0" @click="uploadFiles"> -->
-                        <span class="button xl dark" :disabled="newFile.files.length <= 0 || newFile.title.length <= 0" @click="uploadFiles">Upload files</span>
+                        <div class="form-controls">
+                            <button type="button" class="lg primary ghost" :disabled="newFile.title.length < 1"
+                            @click="createEmpty">
+                                <span>Create Empty</span>
+                            </button>
+                            <button type="button" class="lg primary" :disabled="newFile.files.length <= 0 || newFile.title.length <= 0" @click="uploadFiles">
+                                <span>Next: Map fields</span>
+                            </button>
+                        </div>
 
                     </template>
                     <template v-else>
@@ -172,6 +184,25 @@ export default {
         removeFile(index) {
             this.newFile.files.splice(index, 1)
         },
+        createEmpty() {
+            // Create a copy of the new file object
+            const newFile = JSON.parse(JSON.stringify(this.newFile))
+            newFile.phase = Phase.query().first().id
+            newFile.folderId = this.currentFolderId
+            newFile.workspace_id = this.currentWorkspaceId
+            // Ignore the new files files(csvs)
+            newFile.files = []
+            this.uploadingFile = true
+            this.uploadFile(newFile)
+            .then(success => {
+                this.uploadingFile = false
+                
+                // Close modal on succes
+                if (success) 
+                    this.$refs.addFileModal.toggle()
+                else window.alert('Something went wrong. Please try again')
+            })
+        },
         uploadFiles() {
             // Set new file data
             const newFile = this.newFile
@@ -234,6 +265,16 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
+    .add-file-modal {
+        .form-controls {
+            display: flex;
+            justify-content: flex-end;
+            > :not(:last-child) {
+                margin-right: 16px;
+            }
+        }
+    }
+
     .flex-wrapper {
         width: 100%;
         padding: 8px 60px;
@@ -282,9 +323,6 @@ export default {
                 color: $red;
             }
         }
-    }
-    .button.xl {
-        margin-bottom: 48px;
     }
     .table-wrapper {
         width: 600px;

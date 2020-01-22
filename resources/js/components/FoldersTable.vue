@@ -47,13 +47,13 @@
                     <td class="teams">-</td>
                     <td class="status">Stage {{file.phase.id}}</td>
                     <td class="action">
-                        <span class="button invisible ghost-hover true-square" @click.stop="showContextMenu($event, file, 'file')"><i class="fas fa-ellipsis-h"></i></span>
+                        <button class="invisible ghost-hover" @click.stop="showContextMenu($event, file, 'file')"><i class="fas fa-ellipsis-h"></i></button>
                     </td>
                 </tr>
             </template>
             <template v-slot:footer="slotProps">
                 <!-- <td><button class="primary invisible icon-left context-right" @click="onNewFolder"><i class="far fa-plus"></i>Add new: Folder <i class="fas fa-caret-down context"></i></button></td> -->
-                <td><button class="primary invisible icon-left" @click="onNewFolder"><i class="far fa-plus"></i>Add new: Folder</button></td>
+                <td><button class="primary invisible" @click="onNewFolder"><i class="far fa-plus"></i><span>Add new: Folder</span></button></td>
             </template>
         </FlexTable>
 
@@ -130,9 +130,9 @@
             </template>
         </Modal>
 
-        <ContextMenu ref="contextMenuFolder" class="context-folder">
+        <ContextMenu ref="contextMenuFolder" class="context-folder" v-slot="slotProps">
             <div class="item-group">
-                <div class="item" @click="setCurrentFolder(contextMenuItem)">
+                <div class="item" @click="setCurrentFolder(contextMenuItem); slotProps.hide()">
                     <div class="icon-wrapper">
                         <i class="far fa-folder-open"></i>
                     </div>
@@ -140,13 +140,13 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="onEditField(contextMenuItem, 'folder', 'title')">
+                <div class="item" @click="onEditField(contextMenuItem, 'folder', 'title'); slotProps.hide()">
                     <div class="icon-wrapper">
                         <i class="far fa-pen"></i>
                     </div>
                     <u>R</u>ename
                 </div>
-                <div class="item" @click="onMoveTo(contextMenuItem, 'folder')">
+                <div class="item" @click="onMoveTo(contextMenuItem, 'folder'); slotProps.hide()">
                     <div class="icon-wrapper">
                         <i class="far fa-folder"><i class="fas fa-long-arrow-alt-right"></i></i>
                     </div>
@@ -154,7 +154,7 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="onDeleteFolder(contextMenuItem.id)">
+                <div class="item" @click="onDeleteFolder(contextMenuItem.id); slotProps.hide()">
                     <div class="icon-wrapper">
                         <i class="far fa-trash-alt"></i>
                     </div>
@@ -162,9 +162,9 @@
                 </div>
             </div>
         </ContextMenu>
-        <ContextMenu ref="contextMenuFile" class="context-file">
+        <ContextMenu ref="contextMenuFile" class="context-file" v-slot="slotProps">
             <div class="item-group">
-                <div class="item" @click="viewSingle(contextMenuItem.id)">
+                <div class="item" @click="viewSingle(contextMenuItem.id); slotProps.hide()">
                     <div class="icon-wrapper">
                         <i class="far fa-file"></i>
                     </div>
@@ -172,13 +172,13 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="onEditField(contextMenuItem, 'file', 'title')">
+                <div class="item" @click="onEditField(contextMenuItem, 'file', 'title'); slotProps.hide()">
                     <div class="icon-wrapper">
                         <i class="far fa-pen"></i>
                     </div>
                     <u>R</u>ename
                 </div>
-                <div class="item" @click="onMoveTo(contextMenuItem, 'file')">
+                <div class="item" @click="onMoveTo(contextMenuItem, 'file'); slotProps.hide()">
                     <div class="icon-wrapper">
                         <i class="far fa-folder"><i class="fas fa-long-arrow-alt-right"></i></i>
                     </div>
@@ -186,7 +186,7 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="onDeleteFile(contextMenuItem.id)">
+                <div class="item" @click="onDeleteFile(contextMenuItem.id); slotProps.hide()">
                     <div class="icon-wrapper">
                         <i class="far fa-trash-alt"></i>
                     </div>

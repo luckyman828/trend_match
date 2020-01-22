@@ -1,20 +1,19 @@
 <template>
     <portal to="modals">
-        <div class="modal-wrapper" :class="{active: isVisible}">
+        <div class="modal-wrapper" :class="{active: isVisible}" ref="modalWrapper">
             <div class="inner" v-if="isVisible">
                 <div class="overlay" :class="{active: isVisible}" @click="hide"></div>
 
-                <div class="modal card" ref="modal">
-                    <button class="close circle" @click="hide"><i class="fal fa-times"></i></button>
-                    <div class="inner">
-                        <div class="header" v-if="$slots['header'] || $scopedSlots['header'] || header || subHeader">
-                            <h2 v-if="header" v-html="header"></h2>
-                            <span class="desc" v-if="subHeader" v-html="subHeader"></span>
-                            <slot name="header" :toggle="toggle"></slot>
+                <div class="modal" ref="modal">
+                    <div class="header" v-if="$slots['header'] || $scopedSlots['header'] || header || subHeader">
+                        <h2 v-if="header" v-html="header"></h2>
+                        <slot name="header"/>
+                        <div class="right">
+                            <button class="close md circle" @click="hide"><i class="fal fa-times"></i></button>
                         </div>
-                        <div class="body">
-                            <slot :hide="hide"></slot>
-                        </div>
+                    </div>
+                    <div class="body">
+                        <slot :hide="hide"/>
                     </div>
                 </div>
             </div>
@@ -33,7 +32,6 @@ export default {
     ],
     data: function () { return {
         visible: false,
-        movedToBody: false,
     }},
     computed: {
         isVisible() {
@@ -41,6 +39,15 @@ export default {
                 return this.visibilityKey
             } else {
                 return this.visible
+            }
+        }
+    },
+    watch: {
+        isVisible: function(newVal) {
+            if (newVal == true) {
+                this.$nextTick(() => {
+                    this.copyComponentClasses()
+                })
             }
         }
     },
@@ -68,6 +75,23 @@ export default {
             if (key == 'Escape')
                 this.hide()
         },
+        copyComponentClasses() {
+            // Copy component classes to the modal element
+            // Get component classes
+            const componentClasses = this.$el.classList
+            this.$nextTick(() => {
+                const modal = this.$refs.modal
+                // Loop through the classes
+                componentClasses.forEach(className => {
+                    // Add the classes to the modal
+                    if (className != 'v-portal') {
+                        modal.classList.add(className)
+                    }
+                })
+            })
+        }
+    },
+    mounted() {
     },
     created() {
         // Add an event listener
@@ -92,36 +116,48 @@ export default {
             left: 0;
             top: 0;
             overflow: auto;
-            > .modal {
-                position: absolute;
-                z-index: 120;
-                left: 50%;
-                transform: translateX(-50%);
-                top: 10vh;
-                min-height: 70vh;
-                width: 100%;
-                max-width: 646px;
+        }
+    }
+    .modal {
+        position: absolute;
+        z-index: 120;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 10vh;
+        width: 100%;
+        max-width: 848px;
+        margin: 0;
+        background: $bg;
+        margin-bottom: 5vh;
+        border-radius: 6px;
+        overflow: hidden;
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            height: 72px;
+            border-bottom: solid 2px $divider;
+            background: $bgContent;
+            h2 {
+                text-align: center;
                 margin: 0;
-                background: white;
-                margin-bottom: 5vh;
-                padding-bottom: 60px;
-                > .inner {
-                    width: 100%;
-                    max-width: 400px;
-                    margin: auto;
-                    > .header {
-                        text-align: center;
-                        margin-bottom: 40px;
-                        .title {
-                            margin-bottom: 8px;
-                        }
-                        .desc {
-                            font-size: 16px;
-                            color: $dark2;
-                        }
-                    }
-                }
             }
+            .right {
+                position: absolute;
+                right: 0;
+                top: 0;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                padding-right: 16px;
+            }
+        }
+        .body {
+            width: 100%;
+            max-width: 512px;
+            margin: auto;
+            padding: 20px 32px 40px;
         }
     }
 
