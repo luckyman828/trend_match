@@ -141,9 +141,13 @@
             </template>
         </Modal>
 
-        <ContextMenu ref="contextMenuFolder" class="context-folder" v-slot="slotProps">
+        <ContextMenu ref="contextMenuFolder" class="context-folder" v-slot="slotProps"
+        @keybind-o="setCurrentFolder(contextMenuItem)"
+        @keybind-r="onEditField(contextMenuItem, 'folder', 'title')"
+        @keybind-m="onMoveTo(contextMenuItem, 'folder')"
+        @keybind-d="onDeleteFolder(contextMenuItem.id)">
             <div class="item-group">
-                <div class="item" @click="setCurrentFolder(contextMenuItem); slotProps.hide()">
+                <div class="item" @click="setCurrentFolder(contextMenuItem)">
                     <div class="icon-wrapper">
                         <i class="far fa-folder-open"></i>
                     </div>
@@ -151,13 +155,13 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="onEditField(contextMenuItem, 'folder', 'title'); slotProps.hide()">
+                <div class="item" @click="onEditField(contextMenuItem, 'folder', 'title')">
                     <div class="icon-wrapper">
                         <i class="far fa-pen"></i>
                     </div>
                     <u>R</u>ename
                 </div>
-                <div class="item" @click="onMoveTo(contextMenuItem, 'folder'); slotProps.hide()">
+                <div class="item" @click="onMoveTo(contextMenuItem, 'folder')">
                     <div class="icon-wrapper">
                         <i class="far fa-folder"><i class="fas fa-long-arrow-alt-right"></i></i>
                     </div>
@@ -165,7 +169,7 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="onDeleteFolder(contextMenuItem.id); slotProps.hide()">
+                <div class="item" @click="onDeleteFolder(contextMenuItem.id)">
                     <div class="icon-wrapper">
                         <i class="far fa-trash-alt"></i>
                     </div>
@@ -173,9 +177,15 @@
                 </div>
             </div>
         </ContextMenu>
-        <ContextMenu ref="contextMenuFile" class="context-file" v-slot="slotProps">
+
+        <ContextMenu ref="contextMenuFile" class="context-file" v-slot="slotProps"
+        @keybind-v="viewSingle(contextMenuItem.id)"
+        @keybind-e="viewEditSingle(contextMenuItem.id)"
+        @keybind-r="onEditField(contextMenuItem, 'file', 'title')"
+        @keybind-m="onMoveTo(contextMenuItem, 'file')"
+        @keybind-d="onDeleteFile(contextMenuItem.id)">
             <div class="item-group">
-                <div class="item" @click="viewSingle(contextMenuItem.id); slotProps.hide()">
+                <div class="item" @click="viewSingle(contextMenuItem.id)">
                     <div class="icon-wrapper">
                         <i class="far fa-file"></i>
                     </div>
@@ -183,13 +193,19 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="onEditField(contextMenuItem, 'file', 'title'); slotProps.hide()">
+                <div class="item" @click="viewEditSingle(contextMenuItem.id)">
+                    <div class="icon-wrapper">
+                        <i class="far fa-file-edit"></i>
+                    </div>
+                    <u>E</u>dit file
+                </div>
+                <div class="item" @click="onEditField(contextMenuItem, 'file', 'title')">
                     <div class="icon-wrapper">
                         <i class="far fa-pen"></i>
                     </div>
                     <u>R</u>ename
                 </div>
-                <div class="item" @click="onMoveTo(contextMenuItem, 'file'); slotProps.hide()">
+                <div class="item" @click="onMoveTo(contextMenuItem, 'file')">
                     <div class="icon-wrapper">
                         <i class="far fa-folder"><i class="fas fa-long-arrow-alt-right"></i></i>
                     </div>
@@ -197,7 +213,7 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="onDeleteFile(contextMenuItem.id); slotProps.hide()">
+                <div class="item" @click="onDeleteFile(contextMenuItem.id)">
                     <div class="icon-wrapper">
                         <i class="far fa-trash-alt"></i>
                     </div>
@@ -419,6 +435,9 @@ export default {
         },
         viewSingle(fileId) {
             this.$router.push({ name: 'file', params: { fileId: fileId } })
+        },
+        viewEditSingle(fileId) {
+            this.$router.push({ name: 'editFile', params: { fileId: fileId } })
         },
         onDeleteFile(fileId) {
             if (window.confirm(

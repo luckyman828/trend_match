@@ -40,26 +40,22 @@
                                     </template>
                                     <template v-else>
                                         <strong>Drag and drop files here to upload</strong>
-                                        <div class="file-to-upload" v-for="(file, index) in newFile.files" :key="index">
-                                            <span>{{file.name}}</span>
-                                            <button class="ghost" type="button" @click="removeFile(index)">
-                                                <i class="remove far fa-trash-alt"></i>
-                                            </button>
+                                        <div class="files-wrapper">
+                                            <div class="file-to-upload" v-for="(file, index) in newFile.files" :key="index">
+                                                <span>{{file.name}}</span>
+                                                <button class="ghost" type="button" @click="removeFile(index)">
+                                                    <i class="remove far fa-trash-alt"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                         <button type="button" class="dark md"><i class="far fa-file-csv"></i><span>Browse files</span></button>
                                     </template>
                                 </template>
                                 <template v-slot:dragDisplay>
                                     <i class="big-icon fas fa-smile-beam"></i>
+                                    <span>Drop file(s) here</span>
                                 </template>
                             </Droparea>
-                        </div>
-                        <div class="form-element file-list" v-if="newFile.files.length > 0">
-                            <label>Selected files ({{newFile.files.length}})</label>
-                            <p v-for="(file, index) in newFile.files" :key="index">
-                                {{file.name}}
-                                <i class="remove far fa-times-circle" @click="removeFile(index)"></i>
-                            </p>
                         </div>
                         <!-- <span class="button xl dark" @click="currentPage = 2; uploadFiles()" :class="{disabled: newFile.files.length <= 0}">Continue</span> -->
                         <!-- <input type="submit" class="button xl dark" value="Upload files" :disabled="newFile.files.length <= 0" @click="uploadFiles"> -->
@@ -297,17 +293,24 @@ export default {
             font-size: 60px;
             margin: 32px 0 48px;
         }
-        .file-to-upload {
-            display: flex;
-            justify-content: space-between;
+        .files-wrapper {
+            margin: 32px 0 32px;
             width: 100%;
-            align-items: center;
-            height: 40px;
-            padding: 4px;
-            border: solid 1px $divider;
-            border-radius: 4px;
-            span {
-                color: $primary;
+            .file-to-upload {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+                align-items: center;
+                height: 40px;
+                padding: 4px 4px 4px 8px;
+                border: solid 1px $divider;
+                border-radius: 4px;
+                span {
+                    color: $primary;
+                }
+                &:not(:last-child) {
+                    margin-bottom: 4px;
+                }
             }
         }
     }

@@ -57,20 +57,18 @@ export default {
         // outline-offset: -10px;
         border: 2px dashed $divider;
         background: white;
-        padding: 20px 12px 24px;
+        padding: 20px 16px 24px;
         min-height: 200px;
         position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        cursor: pointer;
         input[type='file'] {
             opacity: 0;
             width: 100%;
             height: 100%;
             position: absolute;
-            cursor: pointer;
             z-index: -1;
         }
         .body {

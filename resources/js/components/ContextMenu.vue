@@ -45,6 +45,9 @@ export default {
             this.$nextTick(() => {
                 // Save a reference to the contextual menu
                 const contextMenu = this.$refs.contextMenu
+                // Set focus on the context menu to allow keybinding
+                // contextMenu.focus()
+
                 // Position the contextual menu
                 // Make sure the entire contextual menu is always visible
                 // Define a minimum offset the context menu should keep from the windows edges
@@ -83,16 +86,30 @@ export default {
             // Only listen if the contextMenu is visible
             if(this.visible) {
                 const key = event.code
-                if (key == 'Escape')
+                // Close on escape key
+                // if (key == 'Escape')
                     this.hide()
+                // Get the key name and emit it
+                this.$emit('keybind-'+event.key,event)
+            }
+        },
+        clickHandler(event) {
+            // Hide the context menu on clicks inside it
+            if (this.visible) {
+                const el = event.target
+                if (el.classList.contains('item') && !el.classList.contains('no-close') && event.target.closest('.context-menu')) {
+                    this.hide()
+                }
             }
         }
     },
     created() {
-        document.body.addEventListener('keydown', this.hotkeyHandler)
+        document.body.addEventListener('keyup', this.hotkeyHandler)
+        document.body.addEventListener('click', this.clickHandler)
     },
     destroyed() {
-        document.body.removeEventListener('keydown', this.hotkeyHandler)
+        document.body.removeEventListener('keyup', this.hotkeyHandler)
+        document.body.removeEventListener('click', this.clickHandler)
     }
 
 }
@@ -101,7 +118,7 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-    .context-menu {
+    .context-menu, .context-menu:focus {
         background: white;
         border-radius: 4px;
         box-shadow: 0 3px 30px rgba(black, .3);
