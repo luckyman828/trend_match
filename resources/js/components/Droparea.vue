@@ -2,7 +2,7 @@
     <div class="drop-area" :class="{'drag-active': dragActive}"
     @dragenter="dragEnter" @dragleave="dragLeave" @drop="dragDrop">
         <input type="file" ref="fileInput" :accept="accept" :multiple="multiple"
-        @change="$emit('change', $event)">
+        @input="onInput">
         <div class="body">
             <slot :activate="activate">
                 <span>Drag files here or click to browse</span>
@@ -45,6 +45,12 @@ export default {
             this.dragActive = false
             this.dragCounter = 0
         },
+        onInput(e) {
+            // Emit the new files
+            this.$emit('input', e.target.files)
+            // Reset the file input, to allow adding the same file multiple times
+            e.target.value = ""
+        }
     }
 }
 </script>
