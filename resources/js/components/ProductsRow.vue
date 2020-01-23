@@ -196,6 +196,9 @@ export default {
     .product-row {
         border-bottom: solid 1px $light1;
         height: 92px;
+        .circle.tiny {
+            margin-left: 8px;
+        }
         &.in {
             box-shadow: 4px 0 $green inset
         }

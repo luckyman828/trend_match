@@ -840,6 +840,14 @@ export default {
                     productToUpdate.currentAction == null &&
                     productToUpdate.requests.length > 0
                 ) {
+                    // Sort array
+                    allComments.sort((a, b) => {
+                        // console.log('The dates:')
+                        // console.log(new Date(b.created_at))
+                        // console.log(new Date(a.created_at))
+                        // console.log(new Date(b.created_at) < new Date(a.created_at))
+                        return new Date(b.created_at) < new Date(a.created_at) ? 1 : -1
+                    })
                     if (userPermissionLevel == 3) {
                         productToUpdate.newComment =
                             allComments[allComments.length - 1].user.role_id != 3 || allComments.length < 1
