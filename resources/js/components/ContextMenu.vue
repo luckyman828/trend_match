@@ -84,7 +84,7 @@ export default {
         },
         hotkeyHandler(event) {
             // Only listen if the contextMenu is visible
-            if(this.visible) {
+            if(this.visible && event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
                 const key = event.code
                 // Close on escape key
                 // if (key == 'Escape')
@@ -128,7 +128,7 @@ export default {
         .item-group {
             padding: 8px 0;
             &:not(:first-child) {
-                border-top: solid 1px $light2;
+                border-top: solid 1px $divider;
             }
         }
         .item {

@@ -4,7 +4,7 @@
             <div class="inner" v-if="isVisible">
                 <div class="overlay" :class="{active: isVisible}" @click="hide"></div>
 
-                <div class="modal" ref="modal">
+                <div class="modal" ref="modal" :class="{'full-width': fullwidth}">
                     <div class="header" v-if="$slots['header'] || $scopedSlots['header'] || header || subHeader">
                         <h2 v-if="header" v-html="header"></h2>
                         <slot name="header"/>
@@ -28,7 +28,8 @@ export default {
     props: [
         'header',
         'subHeader',
-        'visibilityKey'
+        'visibilityKey',
+        'fullwidth'
     ],
     data: function () { return {
         visible: false,
@@ -119,18 +120,19 @@ export default {
         }
     }
     .modal {
-        position: absolute;
+        position: relative;
         z-index: 120;
-        left: 50%;
-        transform: translateX(-50%);
-        top: 10vh;
         width: 100%;
         max-width: 848px;
-        margin: 0;
+        margin: 10vh auto 5vh;
         background: $bg;
-        margin-bottom: 5vh;
         border-radius: 6px;
         overflow: hidden;
+        &.full-width {
+            .body {
+                max-width: none;
+            }
+        }
         .header {
             display: flex;
             justify-content: center;

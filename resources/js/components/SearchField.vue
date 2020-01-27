@@ -13,7 +13,9 @@ export default {
     name: 'searchField',
     props: [
         'arrayToSearch',
-        'searchKey'
+        'searchKey',
+        'searchMultipleArrays',
+        'multipleArrayKey'
     ],
     data: function () { return {
         searchString: '',
@@ -36,22 +38,58 @@ export default {
                 return array
             }
             // If we have a search key, search by that
-            if (searchKey)
-                return array.filter(x => {
-                    // If the search key is an array of keys, search for a result in each of them
-                    if (Array.isArray(searchKey)) {
-                        // Assume no match
-                        let match = false
-                        searchKey.forEach(key => {
-                            // If a match is found for any of the keys, return true
-                            if (x[key].toLowerCase().search(searchString) >= 0) {
-                                match = true
+            if (searchKey) {
+
+                // If we have multiple arrays to search through
+                if (this.searchMultipleArrays) {
+
+                    // Instantiate a copy of the multiple arrays object that we will use as the return object
+                    const arrayToReturn = []
+
+                    array.forEach(arrayObject => {
+                        // Make a copy of the array object that we can filter the options of
+                        const arrayObjectToReturn = JSON.parse(JSON.stringify(arrayObject))
+                        arrayObjectToReturn[this.multipleArrayKey] = arrayObject[this.multipleArrayKey].filter(x => {
+                            // If the search key is an array of keys, search for a result in each of them
+                            if (Array.isArray(searchKey)) {
+                                // Assume no match
+                                let match = false
+                                searchKey.forEach(key => {
+                                    // If a match is found for any of the keys, return true
+                                    if (x[key].toLowerCase().search(searchString) >= 0) {
+                                        match = true
+                                    }
+                                })
+                                return match
                             }
+                            else return x[searchKey].toLowerCase().search(searchString) >= 0
                         })
-                        return match
-                    }
-                    else return x[searchKey].toLowerCase().search(searchString) >= 0
-                })
+                        arrayToReturn.push(arrayObjectToReturn)
+                    })
+                    // Return the resulting arrays
+                    return arrayToReturn
+                }
+
+                // If we don't have multiple arrays 
+                {
+                    return array.filter(x => {
+                        // If the search key is an array of keys, search for a result in each of them
+                        if (Array.isArray(searchKey)) {
+                            // Assume no match
+                            let match = false
+                            searchKey.forEach(key => {
+                                // If a match is found for any of the keys, return true
+                                if (x[key].toLowerCase().search(searchString) >= 0) {
+                                    match = true
+                                }
+                            })
+                            return match
+                        }
+                        else return x[searchKey].toLowerCase().search(searchString) >= 0
+                    })
+                }
+
+            }
             // Else search by the option itself
             return array.filter(x => x.toLowerCase().search(searchString) >= 0)
         }

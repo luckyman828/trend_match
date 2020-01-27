@@ -1,5 +1,5 @@
 <template>
-    <Modal class="create-file-modal" ref="modal" :header="currentScreen.header">
+    <Modal class="create-file-modal" ref="modal" :header="currentScreen.header" :fullwidth="currentScreen.name == 'mapFields'">
         <form @submit.prevent enctype="multipart/form-data">
 
             <template v-if="currentScreen.name == 'chooseFiles'">
@@ -52,7 +52,7 @@
                         <span>Create Empty</span>
                     </button>
                     <button type="button" class="lg primary" :disabled="newFile.files.length <= 0 || newFile.title.length <= 0"
-                    @click="currentScreen={name: 'mapFields', header: 'Map fields'}">
+                    @click="onGoToMapFields">
                         <span>Next: Map fields</span>
                     </button>
                 </div>
@@ -64,13 +64,39 @@
                 </div>
 
                 <div class="map-fields">
-                    <div class="map-fields-table">
-
+                    <div class="table-wrapper">
+                        <table class="map-fields-table">
+                            <tr class="header">
+                                <th></th>
+                                <th><label>Database</label></th>
+                                <th></th>
+                                <th><label>Matched Datasource</label></th>
+                                <th><label>Example</label></th>
+                            </tr>
+                            <tr v-for="(field, index) in fields" :key="index" :class="{disabled: !field.enabled}">
+                                <td><Checkbox :value="field.enabled" v-model="field.enabled"/></td>
+                                <td><InputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
+                                <td><i class="fas fa-equals"></i></td>
+                                <td><InputField class="input-field" disabled=true :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)"/></td>
+                                <td><InputField v-if="filePreviews.length > 0" class="input-field" disabled=true readOnly=true
+                                    :value="previewExampleValue(field.newValue)"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="available-fields">
+                        <label>Not matched ({{availableFields.reduce((result, x) => result+=x.fields.length,0)}})</label>
+                        <div class="fields-wrapper" v-for="(fieldArr, index) in availableFields" :key="index">
+                            <label>{{fieldArr.fileName}}</label>
+                            <div class="field" v-for="(field, index) in fieldArr.fields" :key="index">
+                                <span>{{field.fieldName}}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="form-controls">
-                    <button type="submit" class="lg primary full-width" :disabled="newFile.files.length <= 0 || newFile.title.length <= 0" @click="uploadFiles">
+                    <button type="submit" class="lg primary full-width" :disabled="newFile.files.length <= 0 || newFile.title.length <= 0">
                         <span>Create file</span>
                     </button>
                 </div>
@@ -78,58 +104,20 @@
 
         </form>
 
-
-
-        <!-- </template> -->
-
-        <!-- <template v-else-if="currentPage == 2">
-            <h2>Review your file</h2>
-            <strong>Match your headers</strong>
-            <div v-dragscroll class="table-wrapper" v-if="currentFileLines.length > 0"> -->
-                <!-- <table>
-                    <tr v-for="(line, index) in currentFileLines" :key="index">
-                        <td v-for="(cell, index) in line" :key="index">{{cell}}</td>
-                    </tr>
-                </table> -->
-                <!-- <div v-for="(header, index) in headers" :key="index">
-                    <label>{{header.oldValue}}</label> -->
-                    <!-- <Dropdown class="dark">
-                        <template v-slot:button="slotProps">
-                            <span @click="slotProps.toggle(); $refs.headerSelect[index].focusSearch()" class="dropdown-parent button dark" :class="{active: !slotProps.collapsed}">
-                                {{header.newValue}}
-                            </span>
-                        </template>
-                        <template v-slot:header="slotProps">
-                            <span>Select header</span>
-                            <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
-                        </template>
-                        <template v-slot:body>
-                            <RadioButtons @keyup.esc="$refs.headerSelect[index].toggle();" :options="currentFileLines[0].split(';')" :search="true" ref="headerSelect" v-model="headers[index].newValue"/>
-                        </template>
-                        <template v-slot:footer="slotProps">
-                            <div class="grid-2">
-                                <span class="button green" @click="$refs.headerSelect[index].submit(); slotProps.toggle()">Save</span>
-                                <span class="button invisible" @click="slotProps.toggle">Cancel</span>
-                            </div>
-                        </template>
-                    </Dropdown> -->
-                    <!-- <Dropdown class="dropdown-parent right" ref="taskDropdown">
-                        <template v-slot:button="slotProps">
-                            <span @click="slotProps.toggle(); $refs.headerSelect[index].focusSearch()" class="dropdown-parent button dark" :class="{active: !slotProps.collapsed}">
-                                {{header.newValue}}
-                            </span>
-                        </template>
-                        <template v-slot:header="slotProps">
-                            <span>Select header</span>
-                            <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
-                        </template>
-                        <template v-slot:body>
-                            <RadioButtons @keyup.esc="$refs.headerSelect[index].toggle();" :options="currentFileLines[0].split(';')" :search="true" ref="headerSelect" @change="setHeader($event, index); $refs.taskDropdown[index].toggle()" v-model="headers[index].newValue"/>
-                        </template>
-                    </Dropdown>
-                </div> -->
-            <!-- </div>
-        </template> -->
+        <ContextMenu ref="contextSelectField" class="context-select-field">
+            <template v-slot:header>
+                Select field to match
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <!-- <SelectButtons :type="'radio'" :options="availableFields"
+                    v-model="slotProps.item.newValue" :submitOnChange="true" :search="true"/> -->
+                    <SelectButtons :type="'radio'" :options="availableFields" multipleOptionArrays="true" optionGroupNameKey="fileName" optionGroupOptionsKey="fields"
+                    v-model="slotProps.item.newValue" :submitOnChange="true" :optionDescriptionKey="'fileName'"
+                    :optionNameKey="'fieldName'" :search="true" @submit="slotProps.hide()"/>
+                </div>
+            </template>
+        </ContextMenu>
 
     </Modal>
 </template>
@@ -143,43 +131,57 @@ export default {
     name: 'createFileModal',
     data: function () { return {
         currentScreen: {name: 'chooseFiles', header: 'Create new file'},
+        // currentScreen: {name: 'mapFields', header: 'Map fields'},
         newFile: {
             title: '',
             files: [],
             phase: null,
-            // csvFiles: []
         },
         uploadingFile: false,
-        // filesToProces: 0,
-        // currentPage: 1,
-        // currentFileLines: [],
-        // headers: [
-        //     {oldValue: 'id', newValue: ''},
-        //     {oldValue: 'title', newValue: ''},
-        //     {oldValue: 'description', newValue: ''},
-        //     {oldValue: 'brand', newValue: ''},
-        //     {oldValue: 'category', newValue: ''},
-        //     {oldValue: 'currency', newValue: ''},
-        //     {oldValue: 'wholesale_price', newValue: ''},
-        //     {oldValue: 'recommended_retailPrice', newValue: ''},
-        //     {oldValue: 'markup', newValue: ''},
-        //     {oldValue: 'minimum_quantity', newValue: ''},
-        //     {oldValue: 'composition', newValue: ''},
-        //     {oldValue: 'delivery_date', newValue: ''},
-        //     {oldValue: 'editors_choise', newValue: ''},
-        //     {oldValue: 'box_ean', newValue: ''},
-        //     {oldValue: 'box_size', newValue: ''},
-        //     {oldValue: 'assortment_name', newValue: ''},
-        //     {oldValue: 'variant_name', newValue: ''},
-        //     {oldValue: 'variant_image_url', newValue: ''},
-        //     {oldValue: 'variant_sizes', newValue: ''},
-        // ]
+        csvDelimiter: ';',
+        availableFields: [],
+        filePreviews: [],
+        csvFiles: [],
+        fields: [
+            {name: 'datasource_id', displayName: 'ID', newValue: {fileName: null, fieldName: null, fieldIndex: null, fieldIndex: null}, enabled: true},
+            {name: 'title', displayName: 'Name',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'description', displayName: 'Description',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'brand', displayName: 'Brand',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'category', displayName: 'Category',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'quantity', displayName: 'Minimum Order Quantity',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'variant_min_quantity', displayName: 'Minimum Variant Quantity',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'composition', displayName: 'Composition',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'delivery_date', displayName: 'Delivery (date/month)',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'editors_choice', displayName: 'Editors Choice',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'assortment_name', displayName: 'Assortment Name',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'box_ean', displayName: 'Assortment Box EAN',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'box_size', displayName: 'Assortment Box Size',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'variant_name', displayName: 'Variant Name',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'variant_image_url', displayName: 'Variant Image URL',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'variant_sizes', displayName: 'Variant Sizes',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'eans', displayName: 'EANs',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+        ],
+        currencies: [
+            {name: 'currency', displayName: 'Product ID',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'markup', displayName: 'Product ID',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'wholesale_price', displayName: 'Product ID',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'recommended_retailPrice', displayName: 'Product ID',  newValue: {fileName: null, fieldName: null, fieldIndex: null}, enabled: true},
+        ]
     }},
     computed: {
         ...mapGetters('persist', ['currentWorkspaceId', 'currentFolderId']),
     },
     methods: {
         ...mapActions('entities/collections', ['uploadFile']),
+        previewExampleValue(newValue) {
+            const previews = this.filePreviews
+            // First check that we have any previews available, and that we have a new value defined
+            if (previews.length > 0 && newValue.fileName && newValue.fieldIndex != null) {
+                const csvFile = previews.find(x => x.fileName == newValue.fileName)
+                return csvFile.lines[0][newValue.fieldIndex]
+            }
+            return 'No example'
+        },
         filesChange(fileList) {
             const files = fileList
             for (let i = 0; i < files.length; i++) {
@@ -199,7 +201,6 @@ export default {
         },
         removeFile(index) {
             this.newFile.files.splice(index, 1)
-            // this.$refs.droparea.removeFile(index)
         },
         createEmpty() {
             // Create a copy of the new file object
@@ -220,52 +221,77 @@ export default {
                 else window.alert('Something went wrong. Please try again')
             })
         },
-        uploadFiles() {
-            // Set new file data
-            const newFile = this.newFile
-            newFile.phase = Phase.query().first().id
-            newFile.folderId = this.currentFolderId
-            newFile.workspace_id = this.currentWorkspaceId
-
-
-            // Create collection from name
-            this.uploadingFile = true
-            this.uploadFile(newFile)
-            .then(success => {
-                this.uploadingFile = false
-
-                // Close modal on succes
-                if (success)
-                    this.$refs.modal.hide()
-                else window.alert('Something went wrong. Please try again')
+        onGoToMapFields() {
+            //Change the current screen
+            this.currentScreen={name: 'mapFields', header: 'Map fields'}
+            // Process the uploaded files
+            this.newFile.files.forEach(file => {
+                const fileReader = new FileReader()
+                fileReader.readAsText(file)
+                fileReader.onload = e => this.loadHandler(e, file.name)
             })
-
-
-            // Do some validation with fileReader
-
-            // newFile.files.forEach(file => {
-            //     this.filesToProces++
-            //     const fileReader = new FileReader()
-            //     fileReader.readAsText(file)
-            //     fileReader.onload = this.loadHandler
-            // })
         },
-        // loadHandler(event) {
-        //     const csv = event.target.result
-        //     this.newFile.csvFiles.push(csv)
+        loadHandler(event, fileName) {
+            // console.log(fileName)
+            const csv = event.target.result
+            this.csvFiles.push(csv)
 
-        //     // Check if all the files are processesd
-        //     if (this.newFile.csvFiles.length >= this.filesToProces) {
-        //         this.uploadFile(this.newFile)
-        //     }
-        //     // this.procesFile(csv)
-        // },
+
+            this.readHeaders(csv, fileName)
+            this.readPreview(csv, fileName)
+            // this.procesFile(csv)
+        },
+        readPreview(csv, fileName) {
+            // Split the csv into lines by line breaks
+            const allTextLines = csv.split(/\r\n|\n/)
+            
+            const csvLines = []
+            // Loop thorugh the lines
+            let lineIndex = 0
+            allTextLines.forEach(line => {
+                //Exclude the first line, since we expect it to be the headers
+                if (lineIndex > 0) {
+                    // Split the line by our delimiter
+                    const cells = line.split(this.csvDelimiter)
+                    // Push the cells to our lines array
+                    csvLines.push(cells)
+                }
+                lineIndex++
+            })
+            this.filePreviews.push({fileName: fileName, lines: csvLines})
+        },
+        readHeaders(csv, fileName) {
+            // Split the csv into lines by line breaks
+            const allTextLines = csv.split(/\r\n|\n/)
+                
+            const headerLine = allTextLines[0]
+            // Split the headers by delimiter
+            const headerCells = headerLine.split(this.csvDelimiter)
+            const fieldsToPush = []
+            // Loop through the headerCells and push an object
+            let cellIndex = 0
+            headerCells.forEach(cell => {
+                fieldsToPush.push({fileName: fileName, fieldName: cell, fieldIndex: cellIndex})
+                cellIndex++
+            })
+            // push the results to the available fields array
+            this.availableFields.push({fileName: fileName, fields: fieldsToPush})
+        },
+        showSelectContext(e, field) {
+            console.log('Show select ocntext!')
+            const contextMenu = this.$refs.contextSelectField
+            contextMenu.item = field
+            contextMenu.show(e)
+        }
         // procesFile(file) {
         //     // Split the csv into lines by line breaks
         //     const allTextLines = file.split(/\r\n|\n/)
-        //     // Split the lines into cells by delimiter
-        //     const limit = 100
+                
+
+        //     // Limit the amount of lines to read
+        //     const limit = 10
         //     let i = 0
+        //     // Split the lines into cells by delimiter
         //     allTextLines.forEach(line => {
         //         if (i++ < limit)
         //             this.currentFileLines.push(line.split(';'))
@@ -275,6 +301,36 @@ export default {
         // setHeader(e, index) {
         //     this.headers[index].newValue = e
         // }
+        // uploadFiles() {
+        //     // Set new file data
+        //     const newFile = this.newFile
+        //     newFile.phase = Phase.query().first().id
+        //     newFile.folderId = this.currentFolderId
+        //     newFile.workspace_id = this.currentWorkspaceId
+
+
+        //     // Create collection from name
+        //     this.uploadingFile = true
+        //     this.uploadFile(newFile)
+        //     .then(success => {
+        //         this.uploadingFile = false
+
+        //         // Close modal on succes
+        //         if (success)
+        //             this.$refs.modal.hide()
+        //         else window.alert('Something went wrong. Please try again')
+        //     })
+
+
+        //     // Do some validation with fileReader
+
+        //     // newFile.files.forEach(file => {
+        //     //     this.filesToProces++
+        //     //     const fileReader = new FileReader()
+        //     //     fileReader.readAsText(file)
+        //     //     fileReader.onload = this.loadHandler
+        //     // })
+        // },
     }
 }
 </script>
@@ -311,6 +367,39 @@ export default {
                 }
                 &:not(:last-child) {
                     margin-bottom: 4px;
+                }
+            }
+        }
+    }
+    .map-fields {
+        display: flex;
+        .available-fields {
+            margin-top: 28px;
+            background: $grey2;
+            border-radius: 4px;
+            padding: 12px 8px 8px;
+            margin-left: 12px;
+            .fields-wrapper {
+                margin-top: 12px;
+            }
+            .field {
+                background: white;
+                border-radius: 4px;
+                height: 32px;
+                line-height: 32px;
+                padding: 0 8px;
+                margin-top: 4px;
+            }
+        }
+        table {
+            tr {
+                &.disabled {
+                    .input-field {
+                        opacity: .5;
+                    }
+                }
+                .input-field {
+                    width: 240px;
                 }
             }
         }

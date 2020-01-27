@@ -1,41 +1,69 @@
 <template>
 
     <div class="select-buttons" ref="selectButtons">
-        <!-- <div class="search" v-if="search">
-            <input class="input-wrapper small" placeholder="Search.." type="search" v-model="searchString" ref="searchField"
-            @click.stop>
-            <span v-if="searchString.length > 0" class="close" @click="searchString = ''">
-                <i class="fas fa-times"></i>
-            </span>
-        </div> -->
+
         <div class="search-wrapper">
-            <SearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" v-model="optionsFilteredBySearch"/>
+            <!-- <SearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" v-model="optionsFilteredBySearch"/> -->
+            <SearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" 
+            :searchMultipleArrays="multipleOptionArrays" :multipleArrayKey="optionGroupOptionsKey" v-model="optionsFilteredBySearch"/>
         </div>
         <div class="wrapper">
 
-            <div class="option" v-for="(option, index) in optionsFilteredBySearch" :key="index" 
-            :class="[{'has-description': optionDescriptionKey}, 
-            {'active': type == 'radio' ? (option[optionValueKey] ? option[optionValueKey] == selection : option == selection) 
-            : option[optionValueKey] ? selection.includes(option[optionValueKey]) : selection.includes(selection)}]">
+            <template v-if="multipleOptionArrays">
+                <div class="option-group" v-for="(optionGroup, index) in optionsFilteredBySearch" :key="index">
+                    <h4>{{optionGroupNameKey != null ? optionGroup[optionGroupNameKey] : `group-${index+1}`}}</h4>
+                    <div class="option" v-for="(option, index) in optionGroupOptionsKey ? optionGroup[optionGroupOptionsKey] : optionGroup" :key="index" 
+                    :class="[{'has-description': optionDescriptionKey}, 
+                    {'active': type == 'radio' ? (option[optionValueKey] ? option[optionValueKey] == selection : option == selection) 
+                    : option[optionValueKey] ? selection.includes(option[optionValueKey]) : selection.includes(selection)}]">
 
-                <label>
-                    <Radiobox v-if="type == 'radio'" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
-                    <Checkbox v-else :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
+                        <label>
+                            <Radiobox v-if="type == 'radio'" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
+                            <Checkbox v-else :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
 
-                    <div class="label">
-                        <template v-if="optionNameKey">
-                            {{option[optionNameKey]}}
-                        </template>
-                        <template v-else>
-                            {{option}}
-                        </template>
-                        <p class="description" v-if="optionDescriptionKey">
-                            {{option[optionDescriptionKey]}}
-                        </p>
+                            <div class="label">
+                                <template v-if="optionNameKey">
+                                    {{option[optionNameKey]}}
+                                </template>
+                                <template v-else>
+                                    {{option}}
+                                </template>
+                                <p class="description" v-if="optionDescriptionKey">
+                                    {{option[optionDescriptionKey]}}
+                                </p>
+                            </div>
+                        </label>
+
                     </div>
-                </label>
+                </div>
+            </template>
 
-            </div>
+            <template v-else>
+                <div class="option" v-for="(option, index) in optionsFilteredBySearch" :key="index" 
+                :class="[{'has-description': optionDescriptionKey}, 
+                {'active': type == 'radio' ? (option[optionValueKey] ? option[optionValueKey] == selection : option == selection) 
+                : option[optionValueKey] ? selection.includes(option[optionValueKey]) : selection.includes(selection)}]">
+
+                    <label>
+                        <Radiobox v-if="type == 'radio'" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
+                        <Checkbox v-else :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
+
+                        <div class="label">
+                            <template v-if="optionNameKey">
+                                {{option[optionNameKey]}}
+                            </template>
+                            <template v-else>
+                                {{option}}
+                            </template>
+                            <p class="description" v-if="optionDescriptionKey">
+                                {{option[optionDescriptionKey]}}
+                            </p>
+                        </div>
+                    </label>
+
+                </div>
+            </template>
+
         </div>
     </div>
 
@@ -52,6 +80,9 @@ export default {
         'optionDescriptionKey',
         'search',
         'submitOnChange',
+        'multipleOptionArrays',
+        'optionGroupNameKey',
+        'optionGroupOptionsKey',
     ],
     data: function () { return {
         selection: [],
@@ -92,25 +123,6 @@ export default {
                 return valueKey
             }
         }
-        // optionsFilteredBySearch() {
-        //     const options = this.options
-        //     // Get the lowercase value to avoid the search being case sensitive
-        //     const searchString = this.searchString.toLowerCase()
-        //     const nameKey = this.optionNameKey
-        //     const valueKey = this.optionValueKey
-        //     // First test that we actually have a search string
-        //     if (!searchString) {
-        //         return options
-        //     }
-        //     // If we have a nameKey, search in that
-        //     if (nameKey)
-        //         return options.filter(x => x[nameKey].toLowerCase().search(searchString) >= 0)
-        //     // Else if we have a value key, search in that
-        //     if (valueKey)
-        //         return options.filter(x => x[valueKey].toLowerCase().search(searchString) >= 0)
-        //     // Else search in the option itself
-        //     return options.filter(x => x.toLowerCase().search(searchString) >= 0)
-        // }
     },
     methods: {
         submit() {
@@ -120,8 +132,7 @@ export default {
         change() {
             this.$emit('change', this.selection)
             if (this.submitOnChange) {
-                this.$emit('input', this.selection)
-                this.$emit('submit', this.selection)
+                this.submit()
             }
         },
         clear () {
@@ -146,6 +157,16 @@ export default {
     .select-buttons .wrapper {
         max-height: 260px;
         overflow: auto;
+        border-top: solid 1px $divider;
+        .option-group {
+            padding-top: 16px;
+            margin-top: 8px;
+            h4 {
+                margin: 0;
+                padding: 0 16px;
+                margin-bottom: 8px;
+            }
+        }
         .option {
             font-weight: 400;
             font-size: 12px;
@@ -225,6 +246,7 @@ export default {
     }
     .search-wrapper {
         padding: 8px 16px;
+        margin-bottom: 8px;
     }
 
 </style>

@@ -1,8 +1,12 @@
 <template>
-    <div class="input-field">
-        <input ref="inputField" class="input-wrapper" :type="type" :id="id" :placeholder="placeholder" :autocomplete="autocomplete"
-        :class="{'error': error}"
-        @input="$emit('input', $event.target.value); value = $event.target.value" @blur="$emit('blur', $event)" @paste="$emit('paste', $event)">
+    <div class="input-field" :class="type">
+        <div class="input-wrapper" :class="{'read-only': readOnly}" @click="onClick">
+        <!-- <div class="input-wrapper"> -->
+            <input ref="inputField" :type="type" :id="id" :placeholder="placeholder" :autocomplete="autocomplete"
+            :class="[{'error': error}]" :value="value" :disabled="disabled"
+            @input="$emit('input', $event.target.value)" @blur="$emit('blur', $event)" @paste="$emit('paste', $event)">
+            <i v-if="type == 'select'" class="fas fa-caret-down"></i>
+        </div>
         <div class="error-msg" v-if="error && typeof error == 'string'">
             <i class="far fa-exclamation-triangle"></i>
             <span v-html="error"></span>
@@ -15,18 +19,26 @@ export default {
     name: 'inputField',
     data: function() {return {
         error: null,
-        value: ''
     }},
     props: [
         'type',
+        'value',
         'autocomplete',
         'placeholder',
-        'id'
-
+        'id',
+        'disabled',
+        'readOnly'
     ],
     computed: {
         inputField() {
             return this.$refs.inputField
+        }
+    },
+    methods: {
+        onClick(e) {
+            if (this.type == 'select') {
+                this.$emit('click', e)
+            }
         }
     }
 }
@@ -35,7 +47,30 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 
+    .input-field {
+        &.select {
+            .input-wrapper, input {
+                cursor: pointer;
+            }
+        }
+    }
     .input-wrapper {
+        position: relative;
+        input {
+            border: none;
+            background: inherit;
+            pointer-events: none;
+        }
+            i {
+                position: absolute;
+                right: 0;
+                top: 0;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
         &.error {
             border: solid 2px $fail;
             & + .error-msg {
@@ -52,4 +87,5 @@ export default {
             margin-top: 3px;
         }
     }
+
 </style>
