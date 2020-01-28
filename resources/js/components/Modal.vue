@@ -1,10 +1,10 @@
 <template>
     <portal to="modals">
-        <div class="modal-wrapper" :class="{active: isVisible}" ref="modalWrapper">
+        <div class="modal-wrapper" :class="[{active: isVisible}, classes]" ref="modalWrapper">
             <div class="inner" v-if="isVisible">
                 <div class="overlay" :class="{active: isVisible}" @click="hide"></div>
 
-                <div class="modal" ref="modal" :class="{'full-width': fullwidth}">
+                <div class="modal" ref="modal">
                     <div class="header" v-if="$slots['header'] || $scopedSlots['header'] || header || subHeader">
                         <h2 v-if="header" v-html="header"></h2>
                         <slot name="header"/>
@@ -29,7 +29,7 @@ export default {
         'header',
         'subHeader',
         'visibilityKey',
-        'fullwidth'
+        'classes'
     ],
     data: function () { return {
         visible: false,
@@ -40,15 +40,6 @@ export default {
                 return this.visibilityKey
             } else {
                 return this.visible
-            }
-        }
-    },
-    watch: {
-        isVisible: function(newVal) {
-            if (newVal == true) {
-                this.$nextTick(() => {
-                    this.copyComponentClasses()
-                })
             }
         }
     },
@@ -76,26 +67,8 @@ export default {
             if (key == 'Escape')
                 this.hide()
         },
-        copyComponentClasses() {
-            // Copy component classes to the modal element
-            // Get component classes
-            const componentClasses = this.$el.classList
-            this.$nextTick(() => {
-                const modal = this.$refs.modal
-                // Loop through the classes
-                componentClasses.forEach(className => {
-                    // Add the classes to the modal
-                    if (className != 'v-portal') {
-                        modal.classList.add(className)
-                    }
-                })
-            })
-        }
-    },
-    mounted() {
     },
     created() {
-        // Add an event listener
         document.body.addEventListener('keydown', this.hotkeyHandler)
     },
     destroyed() {
@@ -128,11 +101,6 @@ export default {
         background: $bg;
         border-radius: 6px;
         overflow: hidden;
-        &.full-width {
-            .body {
-                max-width: none;
-            }
-        }
         .header {
             display: flex;
             justify-content: center;
