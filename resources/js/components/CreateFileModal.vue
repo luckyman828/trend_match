@@ -77,7 +77,8 @@
                             <tr v-for="(file, index) in availableFiles" :key="index">
                                 <td><InputField class="input-field" disabled=true :value="file.fileName" readOnly=true /></td>
                                 <td><i class="fas fa-equals"></i></td>
-                                <td><InputField class="input-field" disabled=true :value="file.key.fieldName" type="select" @click="showSelectKeyContext($event, file)"/></td>
+                                <td><InputField class="input-field" disabled=true :class="{'auto-match': file.key.autoMatch}"
+                                :value="file.key.fieldName" type="select" @click="showSelectKeyContext($event, file)"/></td>
                                 <td><InputField class="input-field" disabled=true readOnly=true
                                     :value="previewExampleValue(file.key)"/>
                                 </td>
@@ -88,7 +89,7 @@
 
                 <div class="map-fields">
                     <div class="tables">
-                        <div class="table-wrapper">
+                        <div class="table-wrapper map-main-fields">
                             <h3>Map fields</h3>
                             <table class="map-fields-table">
                                 <tr class="header">
@@ -102,7 +103,10 @@
                                     <td><Checkbox :value="field.enabled" v-model="field.enabled"/></td>
                                     <td><InputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
                                     <td><i class="fas fa-equals"></i></td>
-                                    <td><InputField class="input-field" disabled=true :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)"/></td>
+                                    <td>
+                                        <InputField class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
+                                        :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)"/>
+                                    </td>
                                     <td><InputField class="input-field" disabled=true readOnly=true
                                         :value="previewExampleValue(field.newValue)"/>
                                     </td>
@@ -110,7 +114,7 @@
                             </table>
                         </div>
 
-                        <div class="table-wrapper">
+                        <div class="table-wrapper map-currencies">
                             <h3>Map currencies</h3>
                             <table class="map-fields-table">
                                 <tr class="header">
@@ -120,7 +124,7 @@
                                     <th><label>Matched Datasource</label></th>
                                     <th><label>Example</label></th>
                                 </tr>
-                                <tr v-for="(field, index) in fieldsToMatch" :key="index" :class="{disabled: !field.enabled}">
+                                <!-- <tr v-for="(field, index) in currenciesToMatch" :key="index" :class="{disabled: !field.enabled}">
                                     <td><Checkbox :value="field.enabled" v-model="field.enabled"/></td>
                                     <td><InputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
                                     <td><i class="fas fa-equals"></i></td>
@@ -128,7 +132,7 @@
                                     <td><InputField class="input-field" disabled=true readOnly=true
                                         :value="previewExampleValue(field.newValue)"/>
                                     </td>
-                                </tr>
+                                </tr> -->
                             </table>
                         </div>
                     </div>
@@ -172,8 +176,6 @@
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
-                    <!-- <SelectButtons :type="'radio'" :options="availableFiles"
-                    v-model="slotProps.item.newValue" :submitOnChange="true" :search="true"/> -->
                     <SelectButtons :type="'radio'" :options="availableFiles" multipleOptionArrays="true" optionGroupNameKey="fileName" optionGroupOptionsKey="headers"
                     v-model="slotProps.item.newValue" :submitOnChange="true" :optionDescriptionKey="'fileName'"
                     :optionNameKey="'fieldName'" :search="true" @submit="slotProps.hide()"/>
@@ -205,29 +207,55 @@ export default {
         filePreviews: [],
         csvFiles: [],
         fieldsToMatch: [
-            {name: 'title', displayName: 'Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'description', displayName: 'Description',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'brand', displayName: 'Brand',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'category', displayName: 'Category',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'quantity', displayName: 'Minimum Order Quantity',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'variant_min_quantity', displayName: 'Minimum Variant Quantity',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'composition', displayName: 'Composition',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'delivery_date', displayName: 'Delivery (date/month)',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'editors_choice', displayName: 'Editors Choice',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'assortment_name', displayName: 'Assortment Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'box_ean', displayName: 'Assortment Box EAN',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'box_size', displayName: 'Assortment Box Size',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'color', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'sizes', displayName: 'Variant Sizes',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'eans', displayName: 'EANs',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'buyer_group', displayName: 'Buyer Group',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
+            {name: 'title', displayName: 'Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['title','name','style name','product name']},
+            {name: 'sale_description', displayName: 'Description',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['description','sales description']},
+            {name: 'brand', displayName: 'Brand',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['brand','brand name']},
+            {name: 'category', displayName: 'Category',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['category','style category','product category']},
+            {name: 'quantity', displayName: 'Minimum Order Quantity',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['minimum','minimum quantity','quantity','minimum order quantity','order minimum','order minimum quantity']},
+            {name: 'variant_min_quantity', displayName: 'Minimum Variant Quantity',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['variant minimum','variant minimum quantity','minimum variant','minimum variant quantity','color minimum','colour minimum','minimum per color']},
+            {name: 'composition', displayName: 'Composition',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['composition','materials','quality','material']},
+            {name: 'delivery_date', displayName: 'Delivery (date/month)',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['delivery','delivery date','delivery month','del. date','del. month','del. period','delivery period']},
+            {name: 'editors_choice', displayName: 'Editors Choice',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['editors choice','focus','focus style','focus product']},
+            {name: 'assortment_name', displayName: 'Assortment Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['assortment name','box name']},
+            {name: 'box_ean', displayName: 'Assortment Box EAN',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['box ean','assortment box ean','assortment ean']},
+            {name: 'box_size', displayName: 'Assortment Box Size',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['box size','assortment box size', 'ass.']},
+            {name: 'color', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['color','colour','variant','variant name','color name','colour name','main colour name']},
+            {name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['picture url','image url','img url','picture','image','img']},
+            {name: 'sizes', displayName: 'Variant Sizes',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['sizes','variant sizes','size','variant size']},
+            {name: 'eans', displayName: 'EANs',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['eans','ean','variant ean','style ean']},
+            {name: 'buyer_group', displayName: 'Buyer Group',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+            headersToMatch: ['buyer group','buyer','pricelist']},
         ],
-        currencies: [
-            {name: 'currency', displayName: 'Product ID',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'markup', displayName: 'Product ID',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'wholesale_price', displayName: 'Product ID',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
-            {name: 'recommended_retailPrice', displayName: 'Product ID',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true},
+        currenciesToMatch: [
+            {
+                currencyName: null,
+                fieldsToMatch: [
+                    {name: 'currency', displayName: 'Product ID',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+                    headersToMatch: ['title','name','style name','product name']},
+                    {name: 'markup', displayName: 'Product ID',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+                    headersToMatch: ['title','name','style name','product name']},
+                    {name: 'wholesale_price', displayName: 'Product ID',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+                    headersToMatch: ['title','name','style name','product name']},
+                    {name: 'recommended_retailPrice', displayName: 'Product ID',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+                    headersToMatch: ['title','name','style name','product name']},
+                ]
+            }
         ]
     }},
     computed: {
@@ -313,7 +341,7 @@ export default {
                 const csvFile = files[newValue.fileIndex]
                 return csvFile.lines[0][newValue.fieldIndex]
             }
-            return 'No example'
+            return 'Not matched'
         },
         filesChange(fileList) {
             const files = fileList
@@ -368,10 +396,10 @@ export default {
             const csv = event.target.result
             this.csvFiles.push(csv)
 
-
-            this.readFiles(csv, fileName)
+            // First read the files and process them
+            this.processFile(csv, fileName)
         },
-        readFiles(csv, fileName) {
+        processFile(csv, fileName) {
             // Split the csv into lines by line breaks
             const allTextLines = csv.split(/\r\n|\n/)
             
@@ -399,7 +427,37 @@ export default {
                 }
                 lineIndex++
             })
-            this.availableFiles.push({fileName: fileName, key: {fileIndex: null, fieldName: null, fieldIndex: null}, headers: csvHeaders, lines: csvLines})
+            const fileToPush = {fileName: fileName, key: {fileIndex: null, fieldName: null, fieldIndex: null}, headers: csvHeaders, lines: csvLines}
+            this.availableFiles.push(fileToPush)
+            this.autoMapHeaders(fileToPush, this.availableFiles.length-1)
+        },
+        autoMapHeaders(file, fileIndex) {
+            // Loop through the fields we still need to match to a header
+            this.fieldsToMatch.forEach(field => {
+                if (field.enabled && field.newValue.fileIndex == null && field.newValue.fieldIndex == null) {
+                    // Test if the current header has a file that matches
+                    const autoMatchIndex = file.headers.findIndex(header => {
+                        return field.headersToMatch.includes(header.fieldName.toLowerCase()) 
+                    })
+                    if (autoMatchIndex >= 0) {
+                        const newValueToPush = {fileIndex: fileIndex, fieldName: file.headers[autoMatchIndex].fieldName, fieldIndex: autoMatchIndex, autoMatch: true}
+                        field.newValue = newValueToPush
+                    }
+                }
+            })
+
+            // Step 2: Match Keys (ID)
+            // Check if the file already has a key
+            if (file.key.fieldIndex == null) {
+                console.log('attemp to match key')
+                console.log(file.headers)
+                const keysToMatch = ['id','style number','style no','product id','number']
+                let keyAutoMatchIndex = file.headers.findIndex(header => keysToMatch.includes(header.fieldName.toLowerCase()))
+                if (keyAutoMatchIndex >= 0) {
+                    const keyToPush = {fileIndex: fileIndex, fieldName: file.headers[keyAutoMatchIndex].fieldName, fieldIndex: keyAutoMatchIndex, autoMatch: true}
+                    file.key = keyToPush
+                }
+            }
         },
         showSelectContext(e, field) {
             const contextMenu = this.$refs.contextSelectField
@@ -458,6 +516,13 @@ export default {
                 max-width: 90vw;
                 .body {
                     max-width: none;
+                    .input-field {
+                        &.auto-match {
+                            .input-wrapper {
+                                border-color: $primary
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -554,6 +619,11 @@ export default {
         }
         .form-controls {
             margin-top: 32px;
+        }
+        &.link-ids {
+            .map-fields-table {
+                padding-left: 24px;
+            }
         }
     }
 
