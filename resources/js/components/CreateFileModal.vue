@@ -270,6 +270,9 @@ export default {
                 if (file.key.fieldIndex != null) {
                     // Loop through the files lines and instantiate product
                     file.lines.forEach(line => {
+
+                        // PRODUCTS
+                        // Find the key value that we will use to check for unique products
                         const keyValue = line[file.key.fieldIndex]
                         // Check that the value does not already exists
                         let product = productsToReturn.find(x => x.datasource_id == keyValue)
@@ -278,9 +281,56 @@ export default {
                                 datasource_id: keyValue, 
                                 color_variants: [],
                                 assortments: [],
-                                prices: []
+                                prices: [],
+                                eans: []
                             }
                             productsToReturn.push(product)
+                        }
+
+                        // VARIANTS
+                        // Find / Instantiate this lines variant
+                        let variantKeyField = this.fieldsToMatch.find(x => x.name == 'color')
+                        let variant = null
+                        // Check that the variant key is from this file
+                        if (variantKeyField.newValue.fileIndex == fileIndex && variantKeyField.newValue.fieldIndex != null) {
+                            // Find the variant keys index
+                            let variantKeyIndex = variantKeyField.newValue.fieldIndex
+                            // Find the variant keys value
+                            let variantKeyValue = line[variantKeyIndex]
+                            // Find this lines variant name
+                            variant = product.color_variants.find(x => x.color == variantKeyValue)
+                            // console.log('this is the variant we found:')
+                            // console.log(variant)
+                            if (!variant) {
+                                variant = {
+                                    color: variantKeyValue,
+                                    image: null,
+                                    sizes: []
+                                }
+                                product.color_variants.push(variant)
+                            }
+                        }
+
+                        // Assortments
+                        // Find / Instantiate this lines assortments
+                        let assortmentKeyField = this.fieldsToMatch.find(x => x.name == 'assortment_name')
+                        let assortment = null
+                        // Check that the assortment key is from this file
+                        if (assortmentKeyField.newValue.fileIndex == fileIndex) {
+                            // Find the assortment keys index
+                            let assortmentKeyIndex = assortmentKeyField.newValue.fieldIndex
+                            // Find the assortment keys value
+                            let assortmentKeyValue = line[assortmentKeyIndex]
+                            // Find this lines assortment name
+                            assortment = product.assortments.find(x => x.assortment_name == assortmentKeyValue)
+                            if (!assortment) {
+                                assortment = {
+                                    assortment_name: assortmentKeyValue,
+                                    box_ean: null,
+                                    box_size: null,
+                                }
+                                product.assortments.push(assortment)
+                            }
                         }
 
                         // Loop thorugh our fields to match, and check if they are matched to the current file
@@ -288,32 +338,45 @@ export default {
                             // Check that the field has not been disabled
                             if (field.enabled && field.newValue.fileIndex == fileIndex) {
                                 const fieldValue = line[field.newValue.fieldIndex]
-                                // Check for special case fields that need to be turned into arrays
+                                const fieldName = field.name
 
+                                // Check for special case fields that need to be added to objects in json fields
                                 // Variants
-                                if (field.name in ['color','image','sizes']) {
-                                    let variant = product.color_variants.find(x => x[field.name] == fieldValue)
-                                    if (!variant) {
-                                        product.color_variants.push = {[field.name]: fieldValue}
+                                if (['color','image','sizes'].includes(fieldName)) {
+                                    // Check if we have matched a variant for this line
+                                    if (variant) {
+                                        // If the variant exists, add the field value to it
+                                        // Check if the field is an array, because then it should be added to the sizes array
+                                        if (Array.isArray(variant[fieldName])) {
+                                            variant[fieldName].push(fieldValue)
+                                        } else {
+                                            variant[fieldName] = fieldValue
+                                        }
                                     }
                                 }
-
-                                // Assortments
-                                if (field.name in ['assortment_name','box_ean','box_size']) {
-                                    let assortment = product.assortments.find(x => x[field.name] == fieldValue)
-                                    if (!assortment) {
-                                        product.assortments.push = {[field.name]: fieldValue}
+                                // Variants
+                                else if (['assortment_name','box_ean','box_size'].includes(fieldName)) {
+                                    // Check if we have matched an assortment for this line
+                                    if (assortment) {
+                                        // If the variant exists, add the field value to it
+                                        assortment[fieldName] = fieldValue
                                     }
                                 }
-
-                                // EANs
-                                if (field.name == 'eans') {
-                                    product.eans.push(fieldValue)
-                                }
-
 
                                 // If we don't have a special case, simply write the key value pair to the product
-                                product[field.name] = line[field.newValue.fieldIndex]
+                                else {
+                                    // Check if the field is an array, because then it should be added to the array
+                                    if (Array.isArray(product[fieldName])) {
+                                        // Check that the value does not already exist in the array
+                                        let arrayValueExists = product[fieldName].includes(fieldValue)
+                                        if (!arrayValueExists) {
+                                            product[fieldName].push(fieldValue)
+                                        }
+                                    } else {
+                                        // Else simply write the key value pair to the product
+                                        product[fieldName] = line[field.newValue.fieldIndex]
+                                    }
+                                }
                             }
                         })
 
@@ -449,8 +512,6 @@ export default {
             // Step 2: Match Keys (ID)
             // Check if the file already has a key
             if (file.key.fieldIndex == null) {
-                console.log('attemp to match key')
-                console.log(file.headers)
                 const keysToMatch = ['id','style number','style no','product id','number']
                 let keyAutoMatchIndex = file.headers.findIndex(header => keysToMatch.includes(header.fieldName.toLowerCase()))
                 if (keyAutoMatchIndex >= 0) {
@@ -502,7 +563,7 @@ export default {
         //     //     fileReader.onload = this.loadHandler
         //     // })
         // },
-    }
+    },
 }
 </script>
 
