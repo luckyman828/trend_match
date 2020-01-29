@@ -167,47 +167,37 @@ export default {
             }
         },
         async uploadFile({ commit, dispatch }, newFile) {
-            // Generate uuid for new file
-            newFile.id = this._vm.$uuid.v4()
+            console.log('Uploading file!')
+            console.log(newFile)
+            let uploadSucces = true
+            // Check if we have any products to upload
+            if (newFile.products && newFile.products.length > 0) {
+                // Upload products to DB
+                uploadSucces = false
+                // Check if
+                const uploadApiUrl = `api/file/${newFile.id}/products`
 
-            // Upload products to DB
-            let uploadSucces = false
-
-            const uploadApiUrl = `${process.env.MIX_UPLOAD_API_URL_BASE}/hooks/import-csv?collection_id=${newFile.id}`
-            const axiosConfig = {
-                headers: {
-                    'X-Kollekt-App-Key': process.env.MIX_KOLLEKT_APP_API_KEY,
-                },
+                await axios
+                    .post(uploadApiUrl, {
+                        products: newFile.products,
+                    })
+                    .then(response => {
+                        console.log('succes')
+                        console.log(response.data)
+                        uploadSucces = true
+                    })
+                    .catch(err => {
+                        console.log('error')
+                        console.log(err.response)
+                        uploadSucces = false
+                    })
             }
-            let data = new FormData()
-            // Append the files
-            newFile.files.forEach(file => {
-                data.append('files', file)
-            })
-
-            // console.log(data)
-
-            await axios
-                .post(uploadApiUrl, data, axiosConfig)
-                // .post(proxyUrl + uploadApiUrl, data, axiosConfig)
-                .then(response => {
-                    console.log('succes')
-                    console.log(response.data)
-                    uploadSucces = true
-                })
-                .catch(err => {
-                    console.log('error')
-                    console.log(err)
-                    uploadSucces = false
-                })
 
             // If success create a file (collection) for the products
             if (uploadSucces) {
                 dispatch('updateFile', newFile)
             }
             return uploadSucces
-
-            // Collection.create({ data: response.data })
         },
         async updateFile({ commit }, fileToUpdate) {
             const startDate = fileToUpdate.start_date ? fileToUpdate.start_date : null

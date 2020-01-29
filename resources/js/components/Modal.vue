@@ -6,6 +6,9 @@
 
                 <div class="modal" ref="modal">
                     <div class="header" v-if="$slots['header'] || $scopedSlots['header'] || header || subHeader">
+                        <div class="left" v-if="goBack">
+                            <button class="go-bacl md circle" @click="$emit('goBack')"><i class="far fa-arrow-left"></i></button>
+                        </div>
                         <h2 v-if="header" v-html="header"></h2>
                         <slot name="header"/>
                         <div class="right">
@@ -29,7 +32,8 @@ export default {
         'header',
         'subHeader',
         'visibilityKey',
-        'classes'
+        'classes',
+        'goBack'
     ],
     data: function () { return {
         visible: false,
@@ -121,6 +125,15 @@ export default {
                 display: flex;
                 align-items: center;
                 padding-right: 16px;
+            }
+            .left {
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                padding-left: 16px;
             }
         }
         .body {

@@ -1,6 +1,6 @@
 <template>
     <Modal :classes="['create-file-modal', currentScreen.name == 'mapFields' ? 'map-fields' : '']" 
-    ref="modal" :header="currentScreen.header">
+    ref="modal" :header="currentScreen.header" :goBack="currentScreen.name == 'mapFields'" @goBack="onGoBack">
         <form @submit.prevent enctype="multipart/form-data">
 
             <template v-if="currentScreen.name == 'chooseFiles'">
@@ -64,31 +64,30 @@
                     <p><strong>Select Fields to keep, and match with headers from your file(s).</strong></p>
                 </div>
 
-                <div class="map-fields link-ids">
-                    <div class="table-wrapper">
-                        <h3>Link IDs <i v-tooltip.right="'Select the ID field for each file to link them'" class="far fa-info-circle"></i></h3>
-                        <table class="map-fields-table">
-                            <tr class="header">
-                                <th><label>File</label></th>
-                                <th></th>
-                                <th><label>Key to match</label></th>
-                                <th><label>Example</label></th>
-                            </tr>
-                            <tr v-for="(file, index) in availableFiles" :key="index">
-                                <td><InputField class="input-field" disabled=true :value="file.fileName" readOnly=true /></td>
-                                <td><i class="fas fa-equals"></i></td>
-                                <td><InputField class="input-field" disabled=true :class="{'auto-match': file.key.autoMatch}"
-                                :value="file.key.fieldName" type="select" @click="showSelectKeyContext($event, file)"/></td>
-                                <td><InputField class="input-field" disabled=true readOnly=true
-                                    :value="previewExampleValue(file.key)"/>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-
                 <div class="map-fields">
                     <div class="tables">
+
+                        <div class="table-wrapper link-ids">
+                            <h3>Link IDs <i v-tooltip.right="'Select the ID field for each file to link them'" class="far fa-info-circle"></i></h3>
+                            <table class="map-fields-table">
+                                <tr class="header">
+                                    <th><label>File</label></th>
+                                    <th></th>
+                                    <th><label>Key to match</label></th>
+                                    <th><label>Example</label></th>
+                                </tr>
+                                <tr v-for="(file, index) in availableFiles" :key="index">
+                                    <td><InputField class="input-field" disabled=true :value="file.fileName" readOnly=true /></td>
+                                    <td><i class="fas fa-equals"></i></td>
+                                    <td><InputField class="input-field" disabled=true :class="{'auto-match': file.key.autoMatch}"
+                                    :value="file.key.fieldName" type="select" @click="showSelectKeyContext($event, file)"/></td>
+                                    <td><InputField class="input-field" disabled=true readOnly=true
+                                        :value="previewExampleValue(file.key)"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
                         <div class="table-wrapper map-main-fields">
                             <h3>Map fields</h3>
                             <table class="map-fields-table">
@@ -116,26 +115,63 @@
 
                         <div class="table-wrapper map-currencies">
                             <h3>Map currencies</h3>
-                            <table class="map-fields-table">
-                                <tr class="header">
-                                    <th></th>
-                                    <th><label>Database</label></th>
-                                    <th></th>
-                                    <th><label>Matched Datasource</label></th>
-                                    <th><label>Example</label></th>
+                            <table class="single-currency-file-table">
+                                <tr>
+                                    <td><Checkbox :value="singleCurrencyFile" v-model="singleCurrencyFile"/></td>
+                                    <td><p>One CSV contains all currencies in a single header <span class="small">(i.e. there is a header like "currency" in a csv)</span></p></td>
                                 </tr>
-                                <!-- <tr v-for="(field, index) in currenciesToMatch" :key="index" :class="{disabled: !field.enabled}">
-                                    <td><Checkbox :value="field.enabled" v-model="field.enabled"/></td>
-                                    <td><InputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
-                                    <td><i class="fas fa-equals"></i></td>
-                                    <td><InputField class="input-field" disabled=true :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)"/></td>
-                                    <td><InputField class="input-field" disabled=true readOnly=true
-                                        :value="previewExampleValue(field.newValue)"/>
-                                    </td>
-                                </tr> -->
                             </table>
+                            <div class="currency-wrapper" v-for="(currency, index) in currenciesToMatch" :key="index">
+                                <template v-if="!singleCurrencyFile || index < 1">
+                                    <h4 v-if="!singleCurrencyFile">Currency {{index+1}}</h4>
+                                    <div class="currency-header" v-if="!singleCurrencyFile">
+                                        <div class="left">
+                                            <table class="map-fields-table">
+                                                <tr class="header">
+                                                    <th></th>
+                                                    <th><label :for="'currency-'+index+'-name'">Currency Name (ex. EUR)</label></th>
+                                                </tr>
+                                                <tr>
+                                                    <td></td>
+                                                    <td><InputField :id="'currency-'+index+'-name'" 
+                                                    class="input-field" placeholder="Fx. EUR" v-model="currency.currencyName"/></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <button v-if="index > 0" class="dark" @click="currenciesToMatch.splice(index,1)">
+                                            <i class="fas fa-trash-alt"></i><span>Remove currency</span>
+                                        </button>
+                                    </div>
+                                    <table class="map-fields-table">
+                                        <tr class="header">
+                                            <th></th>
+                                            <th><label>Database</label></th>
+                                            <th></th>
+                                            <th><label>Matched Datasource</label></th>
+                                            <th><label>Example</label></th>
+                                        </tr>
+                                        <tr v-for="(field, index) in currency.fieldsToMatch" :key="index" :class="{disabled: !field.enabled}">
+                                            <template v-if="field.name != 'currency' || singleCurrencyFile">
+                                                <td><Checkbox v-if="field.name != 'currency' || singleCurrencyFile" :value="field.enabled" v-model="field.enabled"/></td>
+                                                <td><InputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
+                                                <td><i class="fas fa-equals"></i></td>
+                                                <td><InputField class="input-field" disabled=true :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)"/></td>
+                                                <td><InputField class="input-field" disabled=true readOnly=true
+                                                    :value="previewExampleValue(field.newValue)"/>
+                                                </td>
+                                            </template>
+                                        </tr>
+                                    </table>
+                                </template>
+                            </div>
+                            <button v-if="!singleCurrencyFile" class="dark" 
+                            @click="currenciesToMatch.push(JSON.parse(JSON.stringify(currencyDefaultObject)))">
+                                <i class="fas fa-plus"></i><span>Add currency</span>
+                            </button>
                         </div>
+
                     </div>
+
                     <div class="available-fields">
                         <label>Available fields ({{availableFiles.reduce((result, x) => result+=x.headers.length,0)}})</label>
                         <div class="inner">
@@ -147,10 +183,12 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
 
                 <div class="form-controls">
-                    <button type="submit" class="lg primary full-width" :disabled="newFile.files.length <= 0 || newFile.title.length <= 0">
+                    <button type="submit" class="lg primary full-width"
+                    @click="submitFiles">
                         <span>Create file</span>
                     </button>
                 </div>
@@ -206,6 +244,7 @@ export default {
         availableFiles: [],
         filePreviews: [],
         csvFiles: [],
+        singleCurrencyFile: true,
         fieldsToMatch: [
             {name: 'title', displayName: 'Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
             headersToMatch: ['title','name','style name','product name']},
@@ -242,158 +281,35 @@ export default {
             {name: 'buyer_group', displayName: 'Buyer Group',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
             headersToMatch: ['buyer group','buyer','pricelist']},
         ],
-        currenciesToMatch: [
-            {
-                currencyName: null,
-                fieldsToMatch: [
-                    {name: 'currency', displayName: 'Product ID',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
-                    headersToMatch: ['title','name','style name','product name']},
-                    {name: 'markup', displayName: 'Product ID',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
-                    headersToMatch: ['title','name','style name','product name']},
-                    {name: 'wholesale_price', displayName: 'Product ID',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
-                    headersToMatch: ['title','name','style name','product name']},
-                    {name: 'recommended_retailPrice', displayName: 'Product ID',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
-                    headersToMatch: ['title','name','style name','product name']},
-                ]
-            }
-        ]
+        currencyDefaultObject: {
+            currencyName: '',
+            fieldsToMatch: [
+                {name: 'currency', displayName: 'Currency Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+                headersToMatch: ['currency','currency name']},
+                {name: 'markup', displayName: 'Mark Up',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+                headersToMatch: ['markup','mark up']},
+                {name: 'wholesale_price', displayName: 'Wholesale Price',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+                headersToMatch: ['whs','wholesale price','whs price']},
+                {name: 'recommended_retail_price', displayName: 'Recommended Retail Price',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+                headersToMatch: ['rrp','recommended retail price','retail price']},
+            ]
+        },
+        currenciesToMatch: [{
+            currencyName: '',
+            fieldsToMatch: [
+                {name: 'currency', displayName: 'Currency Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+                headersToMatch: ['currency','currency name']},
+                {name: 'markup', displayName: 'Mark Up',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+                headersToMatch: ['markup','mark up']},
+                {name: 'wholesale_price', displayName: 'Wholesale Price',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+                headersToMatch: ['whs','wholesale price','whs price']},
+                {name: 'recommended_retail_price', displayName: 'Recommended Retail Price',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, 
+                headersToMatch: ['rrp','recommended retail price','retail price']},
+            ]
+        }]
     }},
     computed: {
         ...mapGetters('persist', ['currentWorkspaceId', 'currentFolderId']),
-        productsToUpload() {
-            const productsToReturn = []
-            
-            // STEP 1) Loop through each of our available files and instantiate our products by key
-            let fileIndex = 0
-            this.availableFiles.forEach(file => {
-                // Check that the file has been linked by id key
-                if (file.key.fieldIndex != null) {
-                    // Loop through the files lines and instantiate product
-                    file.lines.forEach(line => {
-
-                        // PRODUCTS
-                        // Find the key value that we will use to check for unique products
-                        const keyValue = line[file.key.fieldIndex]
-                        // Check that the value does not already exists
-                        let product = productsToReturn.find(x => x.datasource_id == keyValue)
-                        if (!product) {
-                            product = {
-                                datasource_id: keyValue, 
-                                color_variants: [],
-                                assortments: [],
-                                prices: [],
-                                eans: []
-                            }
-                            productsToReturn.push(product)
-                        }
-
-                        // VARIANTS
-                        // Find / Instantiate this lines variant
-                        let variantKeyField = this.fieldsToMatch.find(x => x.name == 'color')
-                        let variant = null
-                        // Check that the variant key is from this file
-                        if (variantKeyField.newValue.fileIndex == fileIndex && variantKeyField.newValue.fieldIndex != null) {
-                            // Find the variant keys index
-                            let variantKeyIndex = variantKeyField.newValue.fieldIndex
-                            // Find the variant keys value
-                            let variantKeyValue = line[variantKeyIndex]
-                            // Find this lines variant name
-                            variant = product.color_variants.find(x => x.color == variantKeyValue)
-                            // console.log('this is the variant we found:')
-                            // console.log(variant)
-                            if (!variant) {
-                                variant = {
-                                    color: variantKeyValue,
-                                    image: null,
-                                    sizes: []
-                                }
-                                product.color_variants.push(variant)
-                            }
-                        }
-
-                        // Assortments
-                        // Find / Instantiate this lines assortments
-                        let assortmentKeyField = this.fieldsToMatch.find(x => x.name == 'assortment_name')
-                        let assortment = null
-                        // Check that the assortment key is from this file
-                        if (assortmentKeyField.newValue.fileIndex == fileIndex) {
-                            // Find the assortment keys index
-                            let assortmentKeyIndex = assortmentKeyField.newValue.fieldIndex
-                            // Find the assortment keys value
-                            let assortmentKeyValue = line[assortmentKeyIndex]
-                            // Find this lines assortment name
-                            assortment = product.assortments.find(x => x.assortment_name == assortmentKeyValue)
-                            if (!assortment) {
-                                assortment = {
-                                    assortment_name: assortmentKeyValue,
-                                    box_ean: null,
-                                    box_size: null,
-                                }
-                                product.assortments.push(assortment)
-                            }
-                        }
-
-                        // Loop thorugh our fields to match, and check if they are matched to the current file
-                        this.fieldsToMatch.forEach(field => {
-                            // Check that the field has not been disabled
-                            if (field.enabled && field.newValue.fileIndex == fileIndex) {
-                                const fieldValue = line[field.newValue.fieldIndex]
-                                const fieldName = field.name
-
-                                // Check for special case fields that need to be added to objects in json fields
-                                // Variants
-                                if (['color','image','sizes'].includes(fieldName)) {
-                                    // Check if we have matched a variant for this line
-                                    if (variant) {
-                                        // If the variant exists, add the field value to it
-                                        // Check if the field is an array, because then it should be added to the sizes array
-                                        if (Array.isArray(variant[fieldName])) {
-                                            variant[fieldName].push(fieldValue)
-                                        } else {
-                                            variant[fieldName] = fieldValue
-                                        }
-                                    }
-                                }
-                                // Variants
-                                else if (['assortment_name','box_ean','box_size'].includes(fieldName)) {
-                                    // Check if we have matched an assortment for this line
-                                    if (assortment) {
-                                        // If the variant exists, add the field value to it
-                                        assortment[fieldName] = fieldValue
-                                    }
-                                }
-
-                                // If we don't have a special case, simply write the key value pair to the product
-                                else {
-                                    // Check if the field is an array, because then it should be added to the array
-                                    if (Array.isArray(product[fieldName])) {
-                                        // Check that the value does not already exist in the array
-                                        let arrayValueExists = product[fieldName].includes(fieldValue)
-                                        if (!arrayValueExists) {
-                                            product[fieldName].push(fieldValue)
-                                        }
-                                    } else {
-                                        // Else simply write the key value pair to the product
-                                        product[fieldName] = line[field.newValue.fieldIndex]
-                                    }
-                                }
-                            }
-                        })
-
-                    })
-                }
-                fileIndex++
-            })
-
-            // Loop through our available files
-            // Check that the file has been linked by id
-            // Loop through the files lines
-            // Find the existing product
-            // Loop thorugh our fields to match, and test that they are matched to this file
-            // If true, find the cell with the provided index and push to our product
-
-            return productsToReturn
-        }
     },
     methods: {
         ...mapActions('entities/collections', ['uploadFile']),
@@ -432,8 +348,7 @@ export default {
             newFile.phase = Phase.query().first().id
             newFile.folderId = this.currentFolderId
             newFile.workspace_id = this.currentWorkspaceId
-            // Ignore the new files files(csvs)
-            newFile.files = []
+            newFile.id = this.$uuid.v4()
             this.uploadingFile = true
             this.uploadFile(newFile)
             .then(success => {
@@ -455,6 +370,10 @@ export default {
                 fileReader.onload = e => this.loadHandler(e, file.name)
             })
         },
+        onGoBack() {
+            //Change the current screen
+            this.currentScreen={name: 'chooseFiles', header: 'Create new file'}
+        },
         loadHandler(event, fileName) {
             const csv = event.target.result
             this.csvFiles.push(csv)
@@ -463,6 +382,7 @@ export default {
             this.processFile(csv, fileName)
         },
         processFile(csv, fileName) {
+
             // Split the csv into lines by line breaks
             const allTextLines = csv.split(/\r\n|\n/)
             
@@ -491,7 +411,13 @@ export default {
                 lineIndex++
             })
             const fileToPush = {fileName: fileName, key: {fileIndex: null, fieldName: null, fieldIndex: null}, headers: csvHeaders, lines: csvLines}
-            this.availableFiles.push(fileToPush)
+            // Check if the file already exists. If so, replace it instead of adding
+            const existingFile = this.availableFiles.find(x => x.fileName == fileName)
+            if (existingFile) {
+                existingFile = fileToPush
+            } else {
+                this.availableFiles.push(fileToPush)
+            }
             this.autoMapHeaders(fileToPush, this.availableFiles.length-1)
         },
         autoMapHeaders(file, fileIndex) {
@@ -529,40 +455,219 @@ export default {
             const contextMenu = this.$refs.contextSelectFileKey
             contextMenu.item = file
             contextMenu.show(e)
-        }
-        // setHeader(e, index) {
-        //     this.headers[index].newValue = e
-        // }
-        // uploadFiles() {
-        //     // Set new file data
-        //     const newFile = this.newFile
-        //     newFile.phase = Phase.query().first().id
-        //     newFile.folderId = this.currentFolderId
-        //     newFile.workspace_id = this.currentWorkspaceId
+        },
+        instantiateProducts(fileId) {
+            const productsToReturn = []
+            
+            // STEP 1) Loop through each of our available files and instantiate our products by key
+            let fileIndex = 0
+            this.availableFiles.forEach(file => {
+                // Check that the file has been linked by id key
+                if (file.key.fieldIndex != null) {
+                    // Loop through the files lines and instantiate product
+                    file.lines.forEach(line => {
 
+                        // PRODUCTS
+                        // Find the key value that we will use to check for unique products
+                        const keyValue = line[file.key.fieldIndex]
+                        // Check that the value does not already exists
+                        let product = productsToReturn.find(x => x.datasource_id == keyValue)
+                        if (!product) {
+                            product = {
+                                datasource_id: keyValue,
+                                id: this.$uuid.v4(),
+                                collection_id: fileId,
+                                color_variants: [],
+                                assortments: [],
+                                prices: [],
+                                eans: []
+                            }
+                            productsToReturn.push(product)
+                        }
 
-        //     // Create collection from name
-        //     this.uploadingFile = true
-        //     this.uploadFile(newFile)
-        //     .then(success => {
-        //         this.uploadingFile = false
+                        // VARIANTS
+                        // Find / Instantiate this lines variant
+                        let variantKeyField = this.fieldsToMatch.find(x => x.name == 'color')
+                        let variant = null
+                        // Check that the variant key is from this file
+                        if (variantKeyField.newValue.fileIndex == fileIndex && variantKeyField.newValue.fieldIndex != null) {
+                            // Find the variant keys index
+                            let variantKeyIndex = variantKeyField.newValue.fieldIndex
+                            // Find the variant keys value
+                            let variantKeyValue = line[variantKeyIndex]
+                            // Find this lines variant name
+                            variant = product.color_variants.find(x => x.color == variantKeyValue)
+                            if (!variant) {
+                                variant = {
+                                    color: variantKeyValue,
+                                    image: null,
+                                    sizes: []
+                                }
+                                product.color_variants.push(variant)
+                            }
+                        }
 
-        //         // Close modal on succes
-        //         if (success)
-        //             this.$refs.modal.hide()
-        //         else window.alert('Something went wrong. Please try again')
-        //     })
+                        // Assortments
+                        // Find / Instantiate this lines assortments
+                        let assortmentKeyField = this.fieldsToMatch.find(x => x.name == 'assortment_name')
+                        let assortment = null
+                        // Check that the assortment key is from this file
+                        if (assortmentKeyField.newValue.fileIndex == fileIndex) {
+                            // Find the assortment keys index
+                            let assortmentKeyIndex = assortmentKeyField.newValue.fieldIndex
+                            // Find the assortment keys value
+                            let assortmentKeyValue = line[assortmentKeyIndex]
+                            // Find this lines assortment name
+                            assortment = product.assortments.find(x => x.assortment_name == assortmentKeyValue)
+                            if (!assortment) {
+                                assortment = {
+                                    assortment_name: assortmentKeyValue,
+                                    box_ean: null,
+                                    box_size: null,
+                                }
+                                product.assortments.push(assortment)
+                            }
+                        }
 
+                        // CURRENCIES
+                        // Find / Instantiate this lines currencies
+                        let currency = null
+                        let currencies = this.currenciesToMatch
+                        
+                        // Check if we have single file containing all currencies
+                        if (this.singleCurrencyFile) {
+                            currencies = [this.currenciesToMatch[0]]
+                            let currencyObject = this.currenciesToMatch[0]
+                            // If so instantiate currencies the same way as we do for variants and assortments
+                            let currencyKeyField = currencyObject.fieldsToMatch.find(x => x.name == 'currency')
+                            // Check if the mapped currency field belongs to this file and is mapped
+                            if (currencyKeyField.newValue.fileIndex == fileIndex && currencyKeyField.newValue.fieldIndex != null) {
+                                // Find the currency keys index
+                                let currencyKeyIndex = currencyKeyField.newValue.fieldIndex
+                                // Find the currency keys value
+                                let currencyKeyValue = line[currencyKeyIndex]
+                                // Find this lines variant name
+                                currency = product.prices.find(x => x.currency == currencyKeyValue)
 
-        //     // Do some validation with fileReader
+                                if (!currency) {
+                                    currency = {
+                                        currency: currencyKeyValue,
+                                        wholesale_price: 0,
+                                        recommended_retail_price: 0,
+                                        markup: 0
+                                    }
+                                    product.prices.push(currency)
+                                }
+                            }
+                        }
 
-        //     // newFile.files.forEach(file => {
-        //     //     this.filesToProces++
-        //     //     const fileReader = new FileReader()
-        //     //     fileReader.readAsText(file)
-        //     //     fileReader.onload = this.loadHandler
-        //     // })
-        // },
+                        // Loop through our currencies to match
+                        currencies.forEach(thisCurrencyObject => {
+                            // Check if we have single file containing all currencies
+                            if (!this.singleCurrencyFile) {
+                                // Instantiate a currency object
+                                currency = product.prices.find(x => x.currency == thisCurrencyObject.currencyName)
+                                // console.log(JSON.parse(JSON.stringify(currency)))
+                                if (!currency) {
+                                    currency = {
+                                        currency: thisCurrencyObject.currencyName,
+                                        wholesale_price: 0,
+                                        recommended_retail_price: 0,
+                                        markup: 0
+                                    }
+                                    product.prices.push(currency)
+                                }
+                            }
+                            // Loop through the currencies fields
+                            thisCurrencyObject.fieldsToMatch.forEach(field => {
+                                if (field.enabled && field.newValue.fileIndex == fileIndex) {
+                                    const currencyFieldValue = line[field.newValue.fieldIndex]
+                                    const currencyFieldName = field.name
+                                    // Check if we have matched a currency for this line
+                                    if (currency && currencyFieldName != 'currency') {
+                                        // If the currency exists, add the field value to it
+                                        currency[currencyFieldName] = currencyFieldValue
+                                    }
+                                }
+                            })
+                        })
+                             
+                        // FIELDS
+                        // Loop thorugh our fields to match, and check if they are matched to the current file
+                        this.fieldsToMatch.forEach(field => {
+                            // Check that the field has not been disabled
+                            if (field.enabled && field.newValue.fileIndex == fileIndex) {
+                                const fieldValue = line[field.newValue.fieldIndex]
+                                const fieldName = field.name
+
+                                // Check for special case fields that need to be added to objects in json fields
+                                // Variants
+                                if (['color','image','sizes'].includes(fieldName)) {
+                                    // Check if we have matched a variant for this line
+                                    if (variant) {
+                                        // If the variant exists, add the field value to it
+                                        // Check if the field is an array, because then it should be added to the sizes array
+                                        if (Array.isArray(variant[fieldName])) {
+                                            variant[fieldName].push(fieldValue)
+                                        } else {
+                                            variant[fieldName] = fieldValue
+                                        }
+                                    }
+                                }
+                                // Assortments
+                                else if (['assortment_name','box_ean','box_size'].includes(fieldName)) {
+                                    // Check if we have matched an assortment for this line
+                                    if (assortment) {
+                                        // If the variant exists, add the field value to it
+                                        assortment[fieldName] = fieldValue
+                                    }
+                                }
+
+                                // If we don't have a special case, simply write the key value pair to the product
+                                else {
+                                    // Check if the field is an array, because then it should be added to the array
+                                    if (Array.isArray(product[fieldName])) {
+                                        // Check that the value does not already exist in the array
+                                        let arrayValueExists = product[fieldName].includes(fieldValue)
+                                        if (!arrayValueExists) {
+                                            product[fieldName].push(fieldValue)
+                                        }
+                                    } else {
+                                        // Else simply write the key value pair to the product
+                                        product[fieldName] = line[field.newValue.fieldIndex]
+                                    }
+                                }
+                            }
+                        })
+
+                    })
+                }
+                fileIndex++
+            })
+
+            return productsToReturn
+        },
+        submitFiles() {
+            // Set new file data
+            const newFile = this.newFile
+            newFile.phase = Phase.query().first().id
+            newFile.folderId = this.currentFolderId
+            newFile.workspace_id = this.currentWorkspaceId
+            newFile.id = this.$uuid.v4()
+            newFile.products = this.instantiateProducts(newFile.id)
+
+            // Create collection from name
+            this.uploadingFile = true
+            this.uploadFile(newFile)
+            .then(success => {
+                this.uploadingFile = false
+
+                // Close modal on succes
+                if (success)
+                    this.$refs.modal.hide()
+                else window.alert('Something went wrong. Please try again')
+            })
+        },
     },
 }
 </script>
@@ -641,6 +746,55 @@ export default {
                 }
             }
         }
+        table {
+            tr {
+                &.disabled {
+                    .input-field {
+                        opacity: .5;
+                    }
+                }
+                .input-field {
+                    width: 240px;
+                }
+            }
+        }
+        .link-ids {
+            .map-fields-table {
+                padding-left: 24px;
+            }
+        }
+        .map-currencies {
+            .single-currency-file-table {
+                margin-bottom: 32px;
+                td {
+                    padding-right: 4px
+                }
+            }
+            .currency-wrapper {
+                margin-bottom: 32px;
+                h4 {
+                    padding-left: 28px;
+                    margin-top: 0;
+                    margin-bottom: 4px;
+                }
+                .currency-header {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 8px;
+                    align-items: flex-end;
+                    padding-left: 20px;
+                     p {
+                        padding-left: 24px;
+                        .small {
+                            font-size: 12px;
+                        }
+                    }
+                }
+                .input-field {
+                    width: 240px;
+                }
+            }
+        }
         .available-fields {
             margin-top: 116px;
             background: $grey2;
@@ -666,25 +820,8 @@ export default {
                 white-space: nowrap;
             }
         }
-        table {
-            tr {
-                &.disabled {
-                    .input-field {
-                        opacity: .5;
-                    }
-                }
-                .input-field {
-                    width: 240px;
-                }
-            }
-        }
         .form-controls {
             margin-top: 32px;
-        }
-        &.link-ids {
-            .map-fields-table {
-                padding-left: 24px;
-            }
         }
     }
 

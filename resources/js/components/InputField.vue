@@ -1,9 +1,8 @@
 <template>
     <div class="input-field" :class="type">
-        <div class="input-wrapper" :class="{'read-only': readOnly}" @click="onClick">
-        <!-- <div class="input-wrapper"> -->
+        <div :class="[{'read-only': readOnly}, {'input-wrapper': type == 'select'}]" @click="onClick">
             <input ref="inputField" :type="type" :id="id" :placeholder="placeholder" :autocomplete="autocomplete"
-            :class="[{'error': error}]" :value="value" :disabled="disabled"
+            :class="[{'read-only': readOnly}, {'error': error}, {'input-wrapper': type != 'select'}]" :value="value" :disabled="disabled"
             @input="$emit('input', $event.target.value)" @blur="$emit('blur', $event)" @paste="$emit('paste', $event)">
             <i v-if="type == 'select'" class="fas fa-caret-down"></i>
         </div>
@@ -59,7 +58,6 @@ export default {
         input {
             border: none;
             background: inherit;
-            pointer-events: none;
         }
             i {
                 position: absolute;
