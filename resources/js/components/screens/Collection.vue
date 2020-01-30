@@ -121,8 +121,6 @@ export default {
     }},
     watch: {
         folders(newVal, oldVal) {
-            console.log('folders changed')
-            console.log(newVal)
             // Refresh the current folder if a change is detected
             if (this.currentFolderId) {
                 this.currentFolder = this.folders.find(x => x.id == this.currentFolderId)

@@ -372,8 +372,10 @@ export default {
             }
 
             // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
-            // Since we are only using months add + ' 3' -> set the date to the 3rd to avoid the month changing when we slice due to timezone differences.
-            productToUpload.delivery_date = new Date (productToUpload.delivery_date + ' 3').toJSON().slice(0,10)
+            // Long code to account for timezone differences.
+            const theDate = new Date (productToUpload.delivery_date)
+            productToUpload.delivery_date = theDate.toJSON(), new Date(theDate.getTime() - (theDate.getTimezoneOffset() * 60000)).toJSON().slice(0,10)
+
 
             await this.updateProduct(productToUpload)
             .then(success => {

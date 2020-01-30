@@ -404,7 +404,9 @@ export default {
                         csvHeaders.push({fileIndex: this.availableFiles.length, fieldName: cell, fieldIndex: cellIndex})
                         cellIndex++
                     })
-                } else {
+                }
+                // Make sure that all lines have the same length as the header
+                else if (cells.length == csvHeaders.length) {
                     // Push the cells to our lines array
                     csvLines.push(cells)
                 }
@@ -466,6 +468,8 @@ export default {
                 if (file.key.fieldIndex != null) {
                     // Loop through the files lines and instantiate product
                     file.lines.forEach(line => {
+                        // console.log('Line length')
+                        // console.log(line.length)
 
                         // PRODUCTS
                         // Find the key value that we will use to check for unique products
@@ -567,7 +571,6 @@ export default {
                             if (!this.singleCurrencyFile) {
                                 // Instantiate a currency object
                                 currency = product.prices.find(x => x.currency == thisCurrencyObject.currencyName)
-                                // console.log(JSON.parse(JSON.stringify(currency)))
                                 if (!currency) {
                                     currency = {
                                         currency: thisCurrencyObject.currencyName,
@@ -647,6 +650,9 @@ export default {
 
             return productsToReturn
         },
+        validateFieldTypes() {
+            // Loop through each field and check that it's valid for every product
+        },
         submitFiles() {
             // Set new file data
             const newFile = this.newFile
@@ -663,8 +669,9 @@ export default {
                 this.uploadingFile = false
 
                 // Close modal on succes
-                if (success)
-                    this.$refs.modal.hide()
+                if (success) {
+                    // this.$refs.modal.hide()
+                }
                 else window.alert('Something went wrong. Please try again')
             })
         },

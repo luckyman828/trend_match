@@ -143,13 +143,9 @@ class ProductController extends Controller
 
     public function insertMany(Request $request, $file_id)
     {
-
-        return $request->products;
         $products = $request->products;
-        // return $action;
 
         Product::insert($products);
         return $request;
-        // return json_decode( json_encode($products), true);
     }
 }

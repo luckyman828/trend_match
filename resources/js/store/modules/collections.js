@@ -167,9 +167,8 @@ export default {
             }
         },
         async uploadFile({ commit, dispatch }, newFile) {
-            console.log('Uploading file!')
-            console.log(newFile)
             let uploadSucces = true
+            console.log(newFile)
             // Check if we have any products to upload
             if (newFile.products && newFile.products.length > 0) {
                 // Upload products to DB
@@ -177,9 +176,42 @@ export default {
                 // Check if
                 const uploadApiUrl = `api/file/${newFile.id}/products`
 
+                // Loop through the products and format their data correctly for the API
+                const productsToUpload = []
+                newFile.products.forEach(product => {
+                    // Stringify their json values
+                    product.prices = JSON.stringify(product.prices)
+                    product.eans = JSON.stringify(product.eans)
+                    product.assortments = JSON.stringify(product.assortments)
+                    product.color_variants = JSON.stringify(product.color_variants)
+
+                    // Correctly format date
+
+                    // Check for special cases where the date is of format mmm-yy ("jan-20") which will be parsed incorrectly by the new Date() function
+                    // Regex that looks for a work with exactly 3 characters between A-z.
+                    const reg = new RegExp('\\b[A-z]{3}\\b')
+                    if (reg.test(product.delivery_date)) {
+                        // If true then add a "1-" to the date to avoid ambiguity
+                        product.delivery_date = '1-' + product.delivery_date
+                    }
+
+                    const theDate = new Date(product.delivery_date)
+
+                    // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
+                    // Long code to account for timezone differences
+                    product.delivery_date = new Date(theDate.getTime() - theDate.getTimezoneOffset() * 60000)
+                        .toJSON()
+                        .slice(0, 10)
+
+                    productsToUpload.push(product)
+                })
+
+                console.log('Products')
+                console.log(productsToUpload)
+
                 await axios
                     .post(uploadApiUrl, {
-                        products: newFile.products,
+                        products: productsToUpload,
                     })
                     .then(response => {
                         console.log('succes')
