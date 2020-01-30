@@ -26,7 +26,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Resource::withoutWrapping();
-
+        if(config('app.env') !== 'local') {
+            \URL::forceScheme('https');
+        }
         // $this->app['events']->listen(Authenticated::class, function ($e) {
         //     Log::info('Authenticated!');
         // });
