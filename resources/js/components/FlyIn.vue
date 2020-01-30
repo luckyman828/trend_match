@@ -2,7 +2,9 @@
     <div class="fly-in-wrapper" :class="[{visible: isVisible}]">
         <div class="overlay" @click="close"></div>
         <div class="fly-in" ref="flyIn">
-            <slot :toggle="toggle"/>
+            <!-- <div class="body"> -->
+                <slot :toggle="toggle"/>
+            <!-- </div> -->
         </div>
     </div>
 </template>
@@ -37,7 +39,21 @@ export default {
         },
         reset() {
             // this.$refs.flyIn.webkitAnimationPlayState = 'running'
+        },
+        hotkeyHandler(event) {
+            const key = event.code
+            // Only do these if the current target is not the comment box
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
+                if (key == 'Escape')
+                    this.close()
+            }
         }
+    },
+    created() {
+        document.body.addEventListener('keydown', this.hotkeyHandler)
+    },
+    destroyed() {
+        document.body.removeEventListener('keydown', this.hotkeyHandler)
     }
 }
 </script>
@@ -74,16 +90,21 @@ export default {
         height: 100vh;
         overflow: hidden;
         width: 100%;
-        transition-timing-function: ease-out;
-        transition: .3s;
-        &.animate {
-            animation-name: fly-in;
-            animation-duration: .3s;
-            animation-iteration-count: 1;
+        background: $bg;
+        // transition-timing-function: ease-out;
+        transition-timing-function: cubic-bezier(0.060, 0.975, 0.195, 0.985);;
+        transition: .2s;
+        // &.animate {
+        //     animation-name: fly-in;
+        //     animation-duration: .2s;
+        //     animation-iteration-count: 1;
+        // }
+        .body {
+            padding: 16px;
         }
     }
-    @keyframes fly-in {
-        from {right: -100%;}
-        to {right: 0;}
-    }
+    // @keyframes fly-in {
+    //     from {right: -100%;}
+    //     to {right: 0;}
+    // }
 </style>

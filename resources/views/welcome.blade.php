@@ -33,6 +33,7 @@
             
             <div id="app">
                 <app></app>
+                <portal-target name="modals" multiple></portal-target>
             </div>
         </div>
 

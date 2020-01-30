@@ -27,13 +27,22 @@ export default {
         ...mapGetters('entities/userTeams', ['loadingUserTeams']),
         ...mapGetters('entities/teamInvites', ['loadingTeamInvites']),
         ...mapGetters('entities/users', ['loadingUsers']),
+        ...mapGetters('entities/workspaceUsers', ['loadingWorkspaceUsers']),
         loading () {
-            return (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.loadingTeamInvites || this.loadingInit) ? true : false
+            return (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.loadingTeamInvites || this.loadingInit || this.loadingWorkspaceUsers || this.loadingUsers) ? true : false
         },
+    },
+    watch: {
+        loading: function(newVal, oldVal) {
+            if (newVal == false) {
+                this.instantiateTeams()
+            }
+        }
     },
     methods: {
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('entities/teamInvites', ['fetchTeamInvites']),
+        ...mapActions('entities/teams', ['instantiateTeams']),
         async initRequiresWorkspace() {
             console.log('init')
             if (User.all().length <= 0)
@@ -54,6 +63,11 @@ export default {
                 this.initRequiresWorkspace()
             } 
         })
+    },
+    mounted() {
+        if (!this.loading) {
+            this.instantiateTeams()
+        }
     },
     destroyed () {
         this.unsub()

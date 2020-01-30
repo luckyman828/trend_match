@@ -6,6 +6,7 @@ import Team from './Team'
 import UserTeam from './UserTeam'
 import Role from './Role'
 import Action from './Action'
+import WorkspaceUser from './WorkspaceUser'
 
 export default class User extends Model {
     // This is the name used as module name of the Vuex Store.
@@ -29,9 +30,53 @@ export default class User extends Model {
             role: this.belongsTo(Role, 'role_id'),
             teams: this.belongsToMany(Team, UserTeam, 'user_id', 'team_id'),
             actions: this.hasMany(Action, 'user_id'),
+            workspaceUsers: this.hasMany(WorkspaceUser, 'user_id', 'id'),
+            userTeams: this.hasMany(UserTeam, 'user_id'),
             // assigned_room_id: this.attr(''),
+            teamRoleId: this.attr(''),
         }
-
         return data
+    }
+
+    teamRole(roleId) {
+        switch (roleId) {
+            case 1:
+                return 'Member'
+                break
+            case 2:
+                return 'Observer'
+                break
+            case 3:
+                return 'Admin'
+                break
+            case 4:
+                return 'Owner'
+                break
+        }
+    }
+    get workspaceUser() {
+        return this.workspaceUsers[0]
+    }
+    get workspaceRoleId() {
+        return this.workspaceUser.permission_level
+    }
+    get workspaceRole() {
+        switch (this.workspaceUser.permission_level) {
+            case 0:
+                return 'External'
+                break
+            case 1:
+                return 'User'
+                break
+            case 2:
+                return 'Observer'
+                break
+            case 3:
+                return 'Admin'
+                break
+            case 4:
+                return 'Owner'
+                break
+        }
     }
 }

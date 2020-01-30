@@ -578,10 +578,14 @@ export default {
             // Product.insert({ data: product })
         },
         async updateProduct({ commit }, product) {
-            console.log('updating product in store')
-            product.prices = JSON.stringify(product.prices)
-            product.color_variants = JSON.stringify(product.color_variants)
-            product.assortments = JSON.stringify(product.assortments)
+            product.prices = product.prices && product.prices.length > 0 ? JSON.stringify(product.prices) : []
+            product.color_variants =
+                product.color_variants && product.color_variants.length > 0
+                    ? JSON.stringify(product.color_variants)
+                    : []
+            product.assortments =
+                product.assortments && product.assortments.length > 0 ? JSON.stringify(product.assortments) : []
+            product.eans = product.eans && product.eans.length > 0 ? JSON.stringify(product.eans) : []
             commit('updateProduct', product)
 
             await axios

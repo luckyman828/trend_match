@@ -1,6 +1,13 @@
 <template>
-    <div v-if="visible" v-click-outside="hide" class="context-menu" ref="contextMenu" @click.capture="hide">
-        <slot/>
+    <div v-if="visible" v-click-outside="hide" class="context-menu" ref="contextMenu">
+        <div class="item-group header" v-if="hasHeader">
+            <strong>
+                <slot name="header" :item="item" :mouseEvent="mouseEvent"/>
+            </strong>
+            <button class="circle close" @click="hide"><i class="fal fa-times"></i></button>
+        </div>
+        
+        <slot :item="item" :mouseEvent="mouseEvent" :hide="hide"/>
     </div>
 </template>
 
@@ -8,16 +15,27 @@
 export default {
     name: 'contextMenu',
     props: [
-
     ],
     data: function() {
         return {
-            visible: false
+            visible: false,
+            item: null,
+            mouseEvent: null
+        }
+    },
+    computed: {
+        hasHeader() {
+            // Check if the header slot has any content
+            return !!this.$slots.header || !!this.$scopedSlots.header
         }
     },
     methods: {
         show(e) {
             // e is expected to be a mouseclick event
+            // Stop progration to avoid triggering the clickOutside function by the click to show the context menu
+            e.stopPropagation()
+            // Save a reference to the mouseClick event
+            this.mouseEvent = e
             // Set the current context menu item
             const mouseX = e.clientX
             const mouseY = e.clientY
@@ -27,6 +45,9 @@ export default {
             this.$nextTick(() => {
                 // Save a reference to the contextual menu
                 const contextMenu = this.$refs.contextMenu
+                // Set focus on the context menu to allow keybinding
+                // contextMenu.focus()
+
                 // Position the contextual menu
                 // Make sure the entire contextual menu is always visible
                 // Define a minimum offset the context menu should keep from the windows edges
@@ -57,8 +78,39 @@ export default {
         },
         hide() {
             this.visible = false
+            this.$nextTick(() => {
+                this.$emit('hide')
+            })
         },
+        hotkeyHandler(event) {
+            // Only listen if the contextMenu is visible
+            if(this.visible && event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
+                const key = event.code
+                // Close on escape key
+                // if (key == 'Escape')
+                    this.hide()
+                // Get the key name and emit it
+                this.$emit('keybind-'+event.key,event)
+            }
+        },
+        clickHandler(event) {
+            // Hide the context menu on clicks inside it
+            if (this.visible) {
+                const el = event.target
+                if (el.classList.contains('item') && !el.classList.contains('no-close') && event.target.closest('.context-menu')) {
+                    this.hide()
+                }
+            }
+        }
     },
+    created() {
+        document.body.addEventListener('keyup', this.hotkeyHandler)
+        document.body.addEventListener('click', this.clickHandler)
+    },
+    destroyed() {
+        document.body.removeEventListener('keyup', this.hotkeyHandler)
+        document.body.removeEventListener('click', this.clickHandler)
+    }
 
 }
 </script>
@@ -66,17 +118,17 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-    .context-menu {
+    .context-menu, .context-menu:focus {
         background: white;
         border-radius: 4px;
         box-shadow: 0 3px 30px rgba(black, .3);
         z-index: 1;
         position: fixed;
-        min-width: 200px;
+        width: 260px;
         .item-group {
             padding: 8px 0;
             &:not(:first-child) {
-                border-top: solid 1px $light2;
+                border-top: solid 1px $divider;
             }
         }
         .item {
@@ -98,6 +150,13 @@ export default {
                     }
                 }
             }
+        }
+        .header {
+            padding-left: 16px;
+            padding-right: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
     }
 </style>

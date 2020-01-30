@@ -1,55 +1,43 @@
 <template>
-  <Modal ref="modal">
-        <template v-slot:header="slotProps">
-            <h2 class="title">Add a new Team</h2>
-            <span class="desc">We will create a new team as per your specifications</span>
-        </template>
-        <template v-slot:body="slotProps">
-            <form @submit.prevent="createTeam({name: addTeamName, workspace_id: currentWorkspaceId}), close()">
-                <div class="form-element">
-                    <label for="new-team-name">Team name</label>
-                    <input class="input-wrapper" id="new-team-name" type="text" placeholder="My new team" ref="addTeamInput" v-model="addTeamName">
-                </div>
-                <input class="button dark xl" :class="{disabled: !addTeamValid}" type="submit" value="Create team">
-            </form>
-        </template>
+  <Modal ref="modal" v-slot="slotProps" header="Add new Team">
+        <form @submit.prevent="onSubmit">
+            <div class="form-element">
+                <label for="new-team-name">Team name</label>
+                <InputField id="new-team-name" type="text" placeholder="New team" ref="addTeamInput" autocomplete="off" v-model="teamToCreate.title"/>
+            </div>
+            <button class="primary lg full-width" :disabled="teamToCreate.title.length < 1" type="submit"><span>Create team</span></button>
+        </form>
     </Modal>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import Modal from './Modal'
 import Team from '../store/models/Team'
 
 export default {
     name: 'modalCreateTeam',
     data: function () { return {
-        addTeamName: '',
+        teamToCreate: {
+            title: '',
+            workspace_id: this.currentWorkspaceId,
+            currency: null
+        },
     }},
-    components: {
-        Modal,
-    },
     computed: {
         ...mapGetters('persist', ['currentWorkspaceId']),
-        addTeamValid () {
-            if (this.teams == null || this.addTeamName.length < 2 || this.currentWorkspaceId == null)
-                return false
-                else
-                    if (this.teams.find(x => x.title.toLowerCase() == this.addTeamName.toLowerCase()))
-                        return false
-            return true
-        },
-        teams () {
-            return Team.all()
-        }
     },
     methods: {
         ...mapActions('entities/teams', ['createTeam']),
-        toggle() {
-            this.$refs.modal.toggle()
+        onSubmit() {
+            this.teamToCreate.workspace_id = this.currentWorkspaceId
+            this.createTeam(this.teamToCreate)
+            this.close()
+        },
+        show() {
+            this.$refs.modal.show()
         },
         close() {
-            this.$refs.modal.close()
+            this.$refs.modal.hide()
         },
     }
 }

@@ -137,7 +137,6 @@ import CatalogueHeader from '../CatalogueHeader'
 import Loader from '../Loader'
 import SelectedController from '../SelectedController'
 import CheckboxButtons from '../input/CheckboxButtons'
-import RadioButtons from '../RadioButtons'
 import Dropdown from '../Dropdown'
 
 import Comment from '../../store/models/Comment'
@@ -168,7 +167,6 @@ export default{
         CatalogueHeader,
         CheckboxButtons,
         Dropdown,
-        RadioButtons,
     },
     data: function () { return {
         // currentProductFilter: 'overview',

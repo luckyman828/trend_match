@@ -1,165 +1,166 @@
 <template>
-    <div class="teams-table card">
-        <div class="team-totals">
-            <span>{{selectedCount}} selected</span>
-            <span>{{teams.length}} records</span>
-        </div>
-        <div class="flex-table">
-            <div class="header-row flex-table-row">
-                <th class="select">Select <i class="fas fa-chevron-down"></i></th>
-                <th class="clickable title" :class="{active: this.sortBy == 'title'}" @click="onSortBy('title', true)">
-                    Team <i class="fas" :class="[(this.sortBy == 'title' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
-                </th>
-                <th :class="{active: this.sortBy == 'assigned'}" class="clickable assigned" @click="onSortBy('assigned', true)">
-                   Assigned <i class="fas" :class="[(this.sortBy == 'assigned' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
-                </th>
-                <th :class="{active: this.sortBy == 'users'}" class="clickable members" @click="onSortBy('users', false)">
-                    Members <i class="fas" :class="[(this.sortBy == 'users' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
-                </th>
-                <th :class="{active: this.sortBy == 'files'}" class="clickable files" @click="onSortBy('files', false)">
-                    files <i class="fas" :class="[(this.sortBy == 'files' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
-                </th>
-                <th :class="{active: this.sortBy == 'currency'}" class="clickable currency" @click="onSortBy('currency', false)">
-                    Currency <i class="fas" :class="[(this.sortBy == 'currency' && !sortAsc) ? 'fa-long-arrow-alt-up' : 'fa-long-arrow-alt-down']"></i>
-                </th>
-                <th class="action">Action</th>
-                <th></th>
-            </div>
-            <template v-if="!loading">
+    <div class="teams-table">
 
-                <div v-if="teamsSorted <= 0" class="team-row item-row flex-table-row">
-                    <span style="display: block; margin: auto; padding: 0;">You dont have access to any teams</span>
+        <FlexTable v-if="currentTab == 'Teams'">
+            <template v-slot:tabs>
+                <Tabs :tabs="['Teams','Members']" v-model="currentTab" :activeTab="currentTab"/>
+            </template>
+            <template v-slot:topBar>
+                <TableTopBar>
+                    <template v-slot:left>
+                        <SearchField :searchKey="['title']" :arrayToSearch="teams" v-model="teamsFilteredBySearch"/>
+                    </template>
+                    <template v-slot:right>
+                        <span>showing <strong>{{teamsFilteredBySearch.length}}</strong> of <strong>{{teams.length}}</strong> records</span>
+                    </template>
+                </TableTopBar>
+            </template>
+            <template v-slot:header>
+                <TableHeader class="select"><Checkbox/></TableHeader>
+                <TableHeader :sortKey="'title'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Name</TableHeader>
+                <TableHeader :sortKey="'owner'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Owner</TableHeader>
+                <TableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Members</TableHeader>
+                <TableHeader :sortKey="'files'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Files</TableHeader>
+                <TableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Team Currency</TableHeader>
+                <TableHeader class="action">Action</TableHeader>
+            </template>
+            <template v-slot:body>
+                <TeamsTableRow :ref="'teamRow-'+team.id" v-for="(team, index) in teamsFilteredBySearch" :key="team.id" :team="team" :index="index" 
+                @showContextMenu="showTeamContext($event, team)" @showSingle="showSingleTeam" @editCurrency="onEditTeamCurrency($event, team)"
+                @cancelEditTitle="removeUnsavedTeam"/>
+            </template>
+            <template v-slot:footer="slotProps">
+                <td><button class="primary invisible" @click="onNewTeam"><i class="far fa-plus"></i><span>Add new: Team</span></button></td>
+            </template>
+        </FlexTable>
+
+        <FlexTable v-if="currentTab == 'Members'">
+            <template v-slot:tabs>
+                <Tabs :tabs="['Teams','Members']" v-model="currentTab" :activeTab="currentTab"/>
+            </template>
+            <template v-slot:topBar>
+                <TableTopBar>
+                    <template v-slot:left>
+                        <SearchField :searchKey="['name','email']" :arrayToSearch="users" v-model="usersFilteredBySearch"/>
+                    </template>
+                    <template v-slot:right>
+                        <span>showing <strong>{{usersFilteredBySearch.length}}</strong> of <strong>{{users.length}}</strong> records</span>
+                    </template>
+                </TableTopBar>
+            </template>
+            <template v-slot:header>
+                <TableHeader class="select"><Checkbox/></TableHeader>
+                <TableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</TableHeader>
+                <TableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</TableHeader>
+                <TableHeader :sortKey="'workspaceRoleId'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Workspace Role</TableHeader>
+                <TableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Currency</TableHeader>
+                <TableHeader class="action">Action</TableHeader>
+            </template>
+            <template v-slot:body>
+                <UsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in usersFilteredBySearch" :key="user.id" :user="user" :index="index"
+                @showContextMenu="showUserContext($event, user)" @editCurrency="onEditUserCurrency($event, user)"
+                @editRole="onEditUserRole($event, user)"/>
+            </template>
+            <template v-slot:footer="slotProps">
+                <td><button class="primary invisible" @click="onNewUser"><i class="far fa-plus"></i><span>Add new: User</span></button></td>
+            </template>
+        </FlexTable>
+
+        <FlyIn ref="teamSingleFlyin">
+            <TeamSingleFlyin :team="currentTeam" :workspaceUsers="users" v-if="currentTeam"
+            @closeFlyin="$refs.teamSingleFlyin.close()"/>
+        </FlyIn>
+
+        <ContextMenu ref="contextMenuTeam" class="context-team" v-slot="slotProps">
+            <div class="item-group">
+                <div class="item" @click="showSingleTeam(slotProps.item.id); slotProps.hide()">
+                    <div class="icon-wrapper">
+                        <i class="far fa-users"></i>
+                    </div>
+                    <u>V</u>iew / <u>E</u>dit team
                 </div>
+            </div>
+            <div class="item-group">
+                <div class="item" @click="$refs['teamRow-'+slotProps.item.id][0].editTitle = true; slotProps.hide()">
+                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+                    <u>R</u>ename
+                </div>
+                <div class="item" @click.stop="onEditTeamCurrency(slotProps.mouseEvent, slotProps.item)">
+                    <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
+                    <u>C</u>hange currency
+                </div>
+            </div>
+            <div class="item-group">
+                <div class="item" @click="onDeleteTeam(slotProps.item); slotProps.hide()">
+                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                    <u>D</u>elete team
+                </div>
+            </div>
+        </ContextMenu>
 
-                <div class="team-row-wrapper" v-for="(team, index) in teamsSorted" :key="team.id">
+        <ContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps">
+            <div class="item-group">
+                <div class="item" @click="$refs['userRow-'+slotProps.item.id][0].editName = true; slotProps.hide()">
+                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+                    <u>R</u>ename User
+                </div>
+            </div>
+            <div class="item-group">
+                <div class="item" @click.stop="onEditUserCurrency(slotProps.mouseEvent, slotProps.item)">
+                    <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
+                    <u>C</u>hange Currency
+                </div>
+                <div class="item" @click.stop="onEditUserRole(slotProps.mouseEvent, slotProps.item)">
+                    <div class="icon-wrapper"><i class="far fa-key"></i></div>
+                    Change Workspace <u>R</u>ole
+                </div>
+            </div>
+            <div class="item-group">
+                <div class="item" @click="onDeleteUser(slotProps.item); slotProps.hide()">
+                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                    <u>D</u>elete User from Workspace
+                </div>
+            </div>
+        </ContextMenu>
 
-                    <div class="team-row item-row flex-table-row" ref="teamRow" :class="[{expanded: expandedIds.includes(team.id)}, {collapsed: !expandedIds.includes(team.id)}]">
-                        <td class="select">
-                            <label class="checkbox">
-                                <input type="checkbox" @change="onSelect(index)" />
-                                <span class="checkmark"></span>
-                            </label>
-                        </td>
-                        <td class="title clickable">
-                            <div v-if="editTitle && teamToEdit.id == team.id" class="edit-title input-parent controls-right">
-                                <input type="text" :ref="'editTitleField-'+team.id" class="input-wrapper" v-model="teamToEdit.title" @keyup.enter="onUpdateTeam(teamToEdit); resetTeamToEdit()" @keyup.esc="resetTeamToEdit()">
-                                <div class="controls">
-                                    <span class="button green true-square" @click="onUpdateTeam(teamToEdit); resetTeamToEdit()"><i class="fas fa-check"></i></span>
-                                    <span class="button red true-square" @click="resetTeamToEdit()"><i class="fas fa-times"></i></span>
-                                </div>
-                            </div>
-                            <span v-else :class="(expandedIds.includes(team.id)) ? 'light-2' : 'invisible'" class="button icon-left" @click="expandUsers(team)"><i class="far fa-chevron-right"></i>{{team.title}}</span>
-                        </td>
-                        <td class="assigned">{{team.expanded}}</td>
-                        <td class="members clickable" @click="expandUsers(team)"><span>{{team.users.length}}<template v-if="team.invites.length > 0"> ({{team.invites.length}})</template></span></td>
-                        <td class="files">
-                            <v-popover :aria-disabled="team.files.length <= 0">
-                                <span class="tooltip-target">{{team.files.length}} <i class="far fa-info-circle"/></span>
-                                <tooltip-list slot="popover" :header="'Team files'" :array="team.files" :arrayValueKey="'title'"/>
-                            </v-popover>
-                        </td>
-                        <td class="currency">
-                            <div v-if="editCurrency && teamToEdit.id == team.id" class="edit-title input-parent controls-right">
-                                <Dropdown class="dark" ref="editCurrencyDropdown">
-                                    <template v-slot:button="slotProps">
-                                        <span @click="slotProps.toggle(); $refs.currencySelect[0].focusSearch()" class="open-dropdown dropdown-parent input-wrapper" :class="{active: !slotProps.collapsed}">
-                                            {{teamToEdit.currency}} <i class="fas fa-chevron-down"></i>
-                                        </span>
-                                    </template>
-                                    <template v-slot:body>
-                                        <RadioButtons :options="availableCurrencies" ref="currencySelect" @change="$refs.editCurrencyDropdown[0].toggle()" :search="true" :submitOnChange="true" v-model="teamToEdit.currency"/>
-                                    </template>
-                                </Dropdown>
-                                <div class="controls">
-                                    <span class="button green true-square" @click="onUpdateTeam(teamToEdit); resetTeamToEdit()"><i class="fas fa-check"></i></span>
-                                    <span class="button red true-square" @click="resetTeamToEdit()"><i class="fas fa-times"></i></span>
-                                </div>
-                            </div>
-                            <span v-else>{{team.currency}}</span>
-                        </td>
-                        <td class="action">
-                            <span v-if="expandedIds.includes(team.id)" class="button green active"  @click="openInviteToTeam(team)">Add to team</span>
-                            <span v-else class="button ghost"  @click="expandUsers(team)">Edit team</span>
-                            <span class="button invisible ghost light-1-hover" @click="expandUsers(team)">View</span>
-                            <Dropdown :ref="'moreOptions-'+team.id">
-                                <template v-slot:button>
-                                    <span class="button invisible ghost light-1-hover true-square" @click="$refs['moreOptions-'+team.id][0].toggle()"><i class="fas fa-ellipsis-v"></i></span>
-                                </template>
-                                <template v-slot:body>
-                                    <div class="option-buttons">
-                                        <span class="option icon-left" @click="onRenameTeam(team, index); $refs['moreOptions-'+team.id][0].toggle()"><i class="fas fa-pencil primary"></i> Rename</span>
-                                        <span class="option icon-left" @click="onChangeTeamCurrency(team); $refs['moreOptions-'+team.id][0].toggle()"><i class="fas fa-pencil primary"></i> Change currency</span>
-                                        <span class="option icon-left" @click="onDeleteTeam(team); $refs['moreOptions-'+team.id][0].toggle()"><i class="fas fa-trash-alt red"></i> Delete</span>
-                                    </div>
-                                </template>
-                            </Dropdown>
-                        </td>
-                    </div>
-
-                    <div class="team-users" :class="[{expanded: expandedIds.includes(team.id)}, {collapsed: !expandedIds.includes(team.id)}]">
-                        <div class="user-row item-row sub-item-row flex-table-row" v-for="(user, index) in team.users" :key="index">
-                            <td class="index">{{index + 1}}</td>
-                            <td class="name">{{ (user.name != null) ? user.name : 'No name set' }}</td>
-                            <td class="email">{{user.email}}</td>
-                            <td class="files">-</td>
-                            <td class="role dropdown-parent">
-                                <span class="square" :class="'role-' + user.role_id">{{user.role.title}}</span>
-                                <!-- <template v-if="userPermissionLevel < user.role_id">
-                                    <span class="square" :class="'role-' + user.role_id">{{user.role.title}}</span>
-                                </template>
-                                <template v-else>
-                                    
-                                    <Dropdown class="dark" ref="roleDropdown">
-                                        <template v-slot:button="slotProps">
-                                            <span class="square clickable dropdown-parent" :class="'role-' + user.role_id" @click="editUser = user, $refs.roleDropdown[index].toggle()">{{user.role.title}}</span>
-                                        </template>
-                                        <template v-slot:header="slotProps">
-                                            <span>Change role</span>
-                                            <span class="close" @click="slotProps.toggle"><i class="fal fa-times"></i></span>
-                                        </template>
-                                        <template v-slot:body>
-                                            <RadioButtons :options="roles" :optionNameKey="'title'" :optionValueKey="'id'" ref="roleRadio" @submit="changeRole({user_id: user.id, role_id: $event})"/>
-                                        </template>
-                                        <template v-slot:footer="slotProps">
-                                            <div class="grid-2">
-                                                <span class="button green" @click="$refs.roleRadio[index].submit(); slotProps.toggle()">Save</span>
-                                                <span class="button invisible" @click="slotProps.toggle">Cancel</span>
-                                            </div>
-                                        </template>
-                                    </Dropdown>
-                                </template> -->
-                            </td>
-                            <td></td>
-                            <td class="action">
-                                <span class="resend"></span>
-                                <span class="remove button ghost icon-left red invisible" @click="removeUser(user.id, team.id)"><i class="far fa-user-minus"></i> Remove</span>
-                            </td>
-                        </div>
-
-                        <div class="user-row item-row sub-item-row flex-table-row invited-row" v-for="(invited, index) in team.invites" :key="index + team.users.length + 1">
-                            <td class="index">{{team.users.length + index + 1}}</td>
-                            <td class="name">No name yet</td>
-                            <td class="email">{{invited.email}}</td>
-                            <td class="files"><span class="square invisible dark icon-left"><i class="far fa-exclamation-triangle"></i> invited</span></td>
-                            <td class="role"></td>
-                            <td></td>
-                            <td class="action">
-                                <span class="resend button ghost icon-left dark invisible" @click="resendInvite($event, invited.email, team)"><i class="far fa-paper-plane"></i> Resend invite</span>
-                                <span class="remove button ghost icon-left red invisible" @click="removeInvite(invited.email, team.id)"><i class="far fa-user-minus"></i> Remove</span>
-                            </td>
-                        </div>
-
-                        <div class="user-row item-row sub-item-row flex-table-row invited-row add-member" @click="openInviteToTeam(team)">
-                            <td><i class="far fa-user-plus"></i>Add Member to team</td>
-                        </div>
-                    </div>
-
+        <ContextMenu ref="contextMenuTeamCurrency" class="context-currency" @hide="teamToEdit.currency != originalTeam.currency && updateTeam(teamToEdit)">
+            <template v-slot:header="slotProps">
+                Change Team Currency
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <RadioButtons ref="teamCurrencySelector" :options="availableCurrencies" 
+                    :currentOptionId="originalTeam.currency" :search="true" v-model="teamToEdit.currency" :submitOnChange="true"/>
                 </div>
             </template>
-        </div>
-        <template v-if="loading">
-            <Loader/>
-        </template>
+        </ContextMenu>
+
+        <ContextMenu ref="contextMenuUserCurrency" class="context-currency" @hide="userToEdit.currency != originalUser.currency && updateUser(userToEdit)">
+            <template v-slot:header="slotProps">
+                Change User Currency
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <RadioButtons ref="userCurrencySelector" :options="availableCurrencies" 
+                    :currentOptionId="originalUser.currency" :search="true" v-model="userToEdit.currency" :submitOnChange="true"/>
+                </div>
+            </template>
+        </ContextMenu>
+
+        <ContextMenu ref="contextMenuWorkspaceRole" class="context-role" 
+        @hide="userToEdit.workspaceUser.permission_level != originalUser.workspaceUsers[0].permission_level && updateWorkspaceUser(userToEdit.workspaceUser)">
+            <template v-slot:header="slotProps">
+                Change Workspace Role
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <RadioButtons ref="userCurrencySelector" :options="availableWorkspaceRoles" :currentOptionId="slotProps.item.workspaceRoleId"
+                    v-model="userToEdit.workspaceUsers[0].permission_level" :submitOnChange="true" :optionDescriptionKey="'description'"
+                    :optionNameKey="'name'" :optionValueKey="'id'"/>
+                </div>
+            </template>
+        </ContextMenu>
+
     </div>
 </template>
 
@@ -168,7 +169,12 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Loader from './Loader'
 import Dropdown from './Dropdown'
 import RadioButtons from './RadioButtons'
+import TeamsTableRow from './TeamsTableRow'
+import UsersTableRow from './UsersTableRow'
+import TeamSingleFlyin from './TeamSingleFlyin'
+import Tabs from './Tabs'
 import Role from '../store/models/Role'
+import sortArray from '../mixins/sortArray'
 
 export default {
     name: 'teamsTable',
@@ -181,13 +187,20 @@ export default {
         'users',
         'authUser',
     ],
+    mixins: [
+        sortArray
+    ],
     components: {
         Loader,
         Dropdown,
         RadioButtons,
+        Tabs,
+        TeamsTableRow,
+        UsersTableRow,
+        TeamSingleFlyin,
     },
     data: function() { return {
-        sortBy: 'id',
+        sortKey: 'id',
         sortAsc: true,
         expandedIds: [],
         editUser: {
@@ -201,77 +214,135 @@ export default {
             id: '',
             title: ''
         },
+        originalTeam: null,
+        userToEdit: null,
+        originalUser: null,
         editTitle: false,
         editCurrency: false,
+        // currentTab: 'Teams',
+        teamsFilteredBySearch: [],
+        usersFilteredBySearch: []
     }},
     computed: {
-        ...mapGetters('persist', ['currentTeamId', 'currentWorkspaceId', 'currentFileId', 'userPermissionLevel', 'actionScope', 'actionScopeName', 'viewAdminPermissionLevel', 'availableCurrencies']),
+        ...mapGetters('persist', ['currentWorkspaceId', 'currentWorkspace', 'userPermissionLevel', 'availableCurrencies', 'availableWorkspaceRoles']),
+        ...mapGetters('entities/teams', ['currentTeam']),
         roles () {
             return Role.all().filter(role => role.id <= this.userPermissionLevel)
         },
-        teamsSorted() {
-            const teams = this.teams
-            teams.forEach(team => {
-                team.active = false
-            });
-            let key = this.sortBy
-            let sortAsc = this.sortAsc
-            const dataSorted = teams.sort((a, b) => {
-
-                // If the keys don't have length - sort by the key
-                if (!teams[0][key].length) {
-
-                    if (sortAsc)
-                        return (a[key] > b[key]) ? 1 : -1
-                        else return (a[key] < b[key]) ? 1 : -1
-
-                // If the keys have lengths - sort by their length
-                } else {
-
-                    if (sortAsc)
-                        return (a[key].length > b[key].length) ? 1 : -1
-                        else return (a[key].length < b[key].length) ? 1 : -1
-
-                }
-            })
-            return dataSorted
+        currentTab: {
+            get () {
+                const routeName = this.$route.name
+                if (routeName == 'teams') return 'Teams'
+                if (routeName == 'users') return 'Members'
+            },
+            set (newVal) {
+                if (newVal == 'Teams') this.$router.push({name: 'teams'})
+                if (newVal == 'Members') this.$router.push({name: 'users'})
+            }
         }
     },
     methods: {
         ...mapActions('entities/teamInvites', ['deleteInvite', 'resend']),
         ...mapActions('entities/userTeams', ['removeUserFromTeam']),
-        ...mapActions('entities/users', ['changeRole']),
+        ...mapActions('entities/users', ['updateUser']),
         ...mapActions('entities/teams', ['updateTeam', 'deleteTeam']),
+        ...mapActions('entities/workspaceUsers', ['updateWorkspaceUser', 'deleteWorkspaceUser']),
+        ...mapMutations('entities/teams', ['setCurrentTeamId', 'setAvailableTeamIds']),
         onSelect(index) {
             this.$emit('onSelect', index)
         },
-            
-        hideTooltip() {
-            this.tooltip.active = false;
+        onEditTeamCurrency(mouseEvent, team) {
+            const contextMenu = this.$refs.contextMenuTeamCurrency
+            contextMenu.item = team;
+            this.teamToEdit = team;
+            this.originalTeam = JSON.parse(JSON.stringify(team));
+            contextMenu.show(mouseEvent)
+            // Wait for the context menu to show in the DOM
+            this.$nextTick(() => {
+                // Set focus to the search field
+                this.$refs.teamCurrencySelector.focusSearch()
+            })
         },
-        onSortBy(key, method) {      
-            // Check if the sorting key we are setting is already the key we are sorting by
-            // If this is the case, toggle the sorting method (asc|desc)
-            if (this.sortBy !== key) {
-                this.sortAsc = method
-                this.sortBy = key
-            } else {
-                this.sortAsc = !this.sortAsc
+        onEditUserCurrency(mouseEvent, user) {
+            this.userToEdit = user;
+            this.originalUser = JSON.parse(JSON.stringify(user));
+            const contextMenu = this.$refs.contextMenuUserCurrency
+            contextMenu.item = user;
+            contextMenu.show(mouseEvent)
+            // Wait for the context menu to show in the DOM
+            this.$nextTick(() => {
+                // Set focus to the search field
+                this.$refs.userCurrencySelector.focusSearch()
+            })
+        },
+        onEditUserRole(mouseEvent, user) {
+            this.userToEdit = user;
+            this.originalUser = JSON.parse(JSON.stringify(user));
+            const contextMenu = this.$refs.contextMenuWorkspaceRole
+            contextMenu.item = user;
+            contextMenu.show(mouseEvent)
+        },
+        removeUnsavedTeam() {
+            // Check that we have a new team
+            const existingNewTeam = this.teams.find(x => x.id == null)
+            if (existingNewTeam) {
+                this.teams.pop()
             }
-
         },
-        expandUsers(team) {
-            const expanded = this.expandedIds
-            const found = expanded.findIndex(el => el == team.id)
-            const result = (found >= 0) ? expanded.splice(found, 1) : expanded.push(team.id)
-            this.setHeights()
-        },
-        setHeights() {
-            const elements = document.querySelectorAll('.team-users')
-            if (elements.length > 0)
-                elements.forEach(el => {
-                    el.style['max-height'] = el.scrollHeight + "px"
+        onNewTeam() {
+            // Check if we already have added a new team
+            const existingNewTeam = this.teams.find(x => x.id == null)
+            // If we already have a new folder, foxus the edit title field
+            if (existingNewTeam) {
+                // Focus the edit field
+                this.$nextTick(() => {
+                    if (this.$refs['teamRow-null'][0].editTitle = true) {
+                        this.$refs['teamRow-null'][0].$refs['editTitle'].setActive()
+                    } else {
+                        this.$refs['teamRow-null'][0].editTitle = true
+                    }
                 })
+            }
+            // Else create a new team
+            else {
+                const newTeam = {
+                    id: null,
+                    title: 'New team',
+                    workspace_id: this.currentWorkspaceId,
+                    owner: null,
+                    users: [],
+                    files: [],
+                    currency: this.currentWorkspace.currency,
+                }
+                // Push new new to the current teams array
+                this.teams.push(newTeam)
+
+                // wait for the new team to be rendered
+                this.$nextTick(() => {
+                    // Activate title edit of new folder
+                    this.$refs['teamRow-null'][0].editTitle = true
+                })
+            }
+            
+        },
+        onNewUser() {
+            // emit open new user modal
+            this.$emit('onNewUser')
+        },
+        showSingleTeam(id) {
+            this.setAvailableTeamIds(this.teams.map(x => x.id))
+            this.setCurrentTeamId(id)
+            this.$refs.teamSingleFlyin.toggle()
+        },
+        showTeamContext(e, team) {
+            const contextMenu = this.$refs.contextMenuTeam
+            contextMenu.item = team
+            contextMenu.show(e)
+        },
+        showUserContext(e, user) {
+            const contextMenu = this.$refs.contextMenuUser
+            contextMenu.item = user
+            contextMenu.show(e)
         },
         openInviteToTeam(team) {
             this.$emit('onOpenInviteToTeam', team)
@@ -302,6 +373,23 @@ export default {
                 'Are you sure you want to delete this team?\nIt will be permanently deleted.'))
             ? this.deleteTeam(team.id) : false
         },
+        onDeleteUser(user) {
+            if (window.confirm('Are you sure you want to remove this user from the workspace?')) {
+                // Remove the user from our state
+                const index = this.users.findIndex(x => x.id == user.id)
+                this.users.splice(index, 1)
+                // Find every team the user was a member of and remove the user from their team
+                this.teams.forEach(team => {
+                    const index = team.users.findIndex(x => x.id == user.id)
+                    if (index >= 0) {
+                        team.users.splice(index, 1)
+                    }
+                })
+
+                // Do the actual deleting in the DB
+                this.deleteWorkspaceUser({workspaceId: this.currentWorkspaceId, user: user})
+            }
+        },
         onRenameTeam(team, index) {
             this.editTitle = true
             this.teamToEdit = JSON.parse(JSON.stringify(team))
@@ -320,14 +408,35 @@ export default {
             this.editCurrency = false
             this.teamToEdit = this.defaultTeamToEdit
         },
-        onUpdateTeam(team) {
-            this.updateTeam(team)
-            console.log('updating team')
-            // this.updateTeam({name: team.title, workspace_id: team.workspace_id, team_id: team.id})
+        sortTeams(method, key) {
+            this.onSortArray(this.teams, method, key)
+        },
+        sortUsers(method, key) {
+            this.onSortArray(this.users, method, key)
+        },
+        onSortArray(array, method, key) {
+            // If if we are already sorting by the given key, flip the sort order
+            if (this.sortKey == key) {
+                this.sortAsc = !this.sortAsc
+            }
+            else {
+                this.sortKey = key
+                this.sortAsc = method
+            }
+            let sortAsc = this.sortAsc
+
+            this.sortArray(array, this.sortAsc, this.sortKey)
         }
     },
     updated() {
-        this.setHeights()
+        // Set the filteredbySearch arrays if we have a change
+        this.teamsFilteredBySearch = this.teams,
+        this.usersFilteredBySearch = this.users
+    },
+    mounted() {
+        // Initially set the filteredbySearch arrays
+        this.teamsFilteredBySearch = this.teams,
+        this.usersFilteredBySearch = this.users
     }
 }
 </script>
@@ -338,228 +447,15 @@ export default {
     .teams-table {
         margin-top: 52px;
         padding-top: 0;
-        .team-row {
-            .view-single {
-                border-color: transparent;
-            }
-            &.expanded {
-                background: $light1;
-                .view-single {
-                    color: $dark;
-                    background: white;
+        ::v-deep {
+            td, th {
+                &.title {
+                    min-width: 248px;
+                    max-width: 248px;
+                    display: flex;
+                    align-items: center;
                 }
             }
-        }
-    }
-    .flex-table-row {
-        padding: 12px 0;
-        > * {
-            &.select, &:nth-child(1) {
-                padding-left: 16px;
-                min-width: 80px;
-            }
-            &:nth-child(2) {
-                padding-left: 32px;
-                min-width: 220px;
-            }
-            &:nth-child(3) {
-                min-width: 220px;
-            }
-            &:nth-child(4) {
-                min-width: 112px;
-                padding-left: 16px;
-            }
-            &:nth-child(5) {
-                min-width: 132px;
-                padding-left: 16px;
-            }
-            &:nth-child(6) {
-                min-width: 80px;
-                padding-left: 16px;
-            }
-            &:nth-child(7) {
-                margin-left: auto;
-                min-width: 80px;
-                padding-left: 16px;
-                padding-right: 32px;
-                display: flex;
-                justify-content: flex-end;
-            }
-            &.action {
-                > *:not(:last-child) {
-                    margin-right: 8px;
-                }
-            }
-        }
-        td {
-            &.title {
-                font-size: 13px;
-                color: $dark;
-                .square {
-                    margin-left: -32px;
-                    color: $dark;
-                    background: none;
-                    i {
-                        transition: .3s;
-                        font-size: 12px;
-                    }
-                }
-            }
-        }
-        &.invited-row {
-            .name, .email, .role {
-                opacity: .5;
-            }
-            &.add-member {
-                justify-content: center;
-                cursor: pointer;
-                &:hover {
-                    td {
-                        border-bottom: solid 1px $dark;
-                    }
-                }
-                td {
-                    color: $dark05;
-                    font-weight: 500;
-                    font-size: 12px;
-                    padding: 0;
-                    border-bottom: solid 1px transparent;
-                    i {
-                        font-size: 13px;
-                    }
-                }
-            }
-        }
-        i {
-            // margin-right: 8px;
-        }
-    }
-    i {
-        font-size: 11px;
-    }
-    .show-more {
-        width: 100%;
-        margin: 16px auto 0;
-        text-align: center;
-        display: inline-block;
-    }
-    .loading {
-        animation: loading 2s;
-        animation-iteration-count: infinite;
-    }
-    @keyframes loading {
-        0% {opacity: 0;}
-        50% {opacity: 1;}
-        100% {opacity: 0;}
-    }
-    .checkbox {
-      display: block;
-      position: relative;
-      cursor: pointer;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      margin-bottom: 0;
-      padding-top: 5px;
-      padding-bottom: 5px;
-    }
-
-    .checkbox input {
-      position: absolute;
-      opacity: 0;
-      cursor: pointer;
-      height: 0;
-      width: 0;
-    }
-
-    .checkmark {
-      content: "";
-      display: inline-block;
-      vertical-align: text-top;
-      width: 24px;
-      height: 24px;
-      background: white;
-      border: 1px solid #dfdfdf;
-    }
-
-    .checkbox input:checked ~ .checkmark {
-      background: linear-gradient(#3b86ff, #3b86ff) no-repeat;
-      background-position: center;
-      background-size: 16px 16px;
-    }
-
-    .checkmark::after {
-      content: "";
-      position: absolute;
-      display: none;
-    }
-
-    .checkbox input:checked ~ .checkmark:after {
-      display: block;
-    }
-    .view-single {
-        font-size: 12px;
-        font-weight: 700;
-        color: $dark2;
-        cursor: pointer;
-    }
-    .team-totals {
-        position: absolute;
-        right: 0;
-        top: -40px;
-        height: 40px;
-        line-height: 40px;
-        span {
-            font-weight: 500;
-            font-size: 14px;
-            margin-right: 20px;
-        }
-    }
-    .user-row {
-        background: $light;
-        &:not(:last-child) {
-            border-bottom: solid 2px white;
-        }
-        td {
-            font-size: 14px;
-            &.index {
-                text-align: right;
-                padding-right: 20px;
-            }
-        }
-    }
-    .team-users {
-        overflow: hidden;
-        transition: .2s;
-        &.collapsed {
-            max-height: 0 !important;
-        }
-        &.expanded {
-            + .team-row-wrapper {
-                box-shadow: 0 1px 0 $light2 inset;
-            }
-        }
-    }
-    .team-row {
-        td.title {
-            .button {
-                min-width: 0;
-            }
-        }
-        &.expanded {
-            td.title {
-                > .button {
-                    i {
-                        transform: rotateZ(90deg);
-                    }
-                }
-            }
-        }
-    }
-    .edit-title {
-        &.hidden {
-            display: none;
         }
     }
 </style>

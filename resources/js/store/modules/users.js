@@ -6,11 +6,15 @@ export default {
 
     state: {
         loading: true,
+        addNewUserModalVisible: false,
     },
 
     getters: {
         loadingUsers: state => {
             return state.loading
+        },
+        addNewUserModalVisible: state => {
+            return state.addNewUserModalVisible
         },
     },
 
@@ -37,23 +41,42 @@ export default {
                 }
             }
         },
-        async changeRole({ commit }, { user_id, role_id }) {
-            console.log(user_id + ', ' + role_id)
+        async updateUser({ commit }, userToUpdate) {
+            let succes
 
-            // commit('updateRole', { user_id, role_id })
-            // // commit('setManyActions', {productIds, user_id, action_code})
+            let apiURL = `/api/user`
+            let requestMethod = 'post'
+            if (userToUpdate.id) {
+                apiURL = `/api/user/${userToUpdate.id}`
+                requestMethod = 'put'
+            }
 
-            // await axios
-            //     .put(`/api/user/role`, {
-            //         user_id: user_id,
-            //         role_id: role_id,
-            //     })
-            //     .then(response => {
-            //         console.log(response.data)
-            //     })
-            //     .catch(err => {
-            //         console.log(err)
-            //     })
+            // Instantiate a new user object, to strip away any added/calculated attributes
+            let userToPush = {
+                id: userToUpdate.id,
+                name: userToUpdate.name,
+                email: userToUpdate.email,
+                currency: userToUpdate.currency,
+                impact: userToUpdate.impact,
+            }
+            await axios({
+                method: requestMethod,
+                url: apiURL,
+                data: {
+                    user: userToPush,
+                },
+            })
+                .then(response => {
+                    console.log(response.data)
+                    if (!userToUpdate.id) userToUpdate.id = response.data.id
+                    succes = true
+                    commit('updateUser', userToPush)
+                })
+                .catch(err => {
+                    console.log(err.response)
+                    succes = false
+                })
+            return succes
         },
     },
 
@@ -62,13 +85,11 @@ export default {
         setLoading(state, bool) {
             state.loading = bool
         },
-        updateRole(state, { user_id, role_id }) {
-            console.log(user_id)
-            console.log(role_id)
-            User.update({
-                where: user_id,
-                data: { role_id: role_id },
-            })
+        updateUser(state, user) {
+            User.insert({ data: user })
+        },
+        setAddNewUserModalVisible(state, bool) {
+            state.addNewUserModalVisible = bool
         },
     },
 }

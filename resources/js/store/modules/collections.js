@@ -9,6 +9,7 @@ export default {
     state: {
         loading: true,
         filesUpdated: false,
+        availableFileIds: [],
     },
 
     getters: {
@@ -18,11 +19,15 @@ export default {
         filesUpdated: state => {
             return state.filesUpdated
         },
+        availableFileIds: state => {
+            return state.availableFileIds
+        },
         files: (state, getters, rootState, rootGetters) => {
             if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
                 const files = Collection.query()
                     .with('teams.actions')
                     .with('teamFiles')
+                    .with('subfiles')
                     .all()
                 const users = User.query()
                     .with('teams.teamFiles')
@@ -90,6 +95,28 @@ export default {
                 return files != null ? files.find(x => x.id == currentFileId) : null
             }
         },
+        nextFileId: (state, getters, rootState, rootGetters) => {
+            const availableIds = getters.availableFileIds
+            const currentId = rootGetters['persist/currentFileId']
+            // return currentId
+            if (currentId && availableIds.length > 0) {
+                const currentIndex = availableIds.findIndex(x => x == currentId)
+                if (currentIndex < availableIds.length - 1) {
+                    return availableIds[currentIndex + 1]
+                }
+            }
+        },
+        prevFileId: (state, getters, rootState, rootGetters) => {
+            const availableIds = getters.availableFileIds
+            const currentId = rootGetters['persist/currentFileId']
+            // return currentId
+            if (currentId && availableIds.length > 0) {
+                const currentIndex = availableIds.findIndex(x => x == currentId)
+                if (currentIndex != 0) {
+                    return availableIds[currentIndex - 1]
+                }
+            }
+        },
         currentTeamUsers(state, getters, rootState, rootGetters) {
             if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
                 const currentTeamId = rootGetters['persist/teamFilterId']
@@ -110,14 +137,6 @@ export default {
                     }
                     return usersToReturn
                 }
-            }
-        },
-        actionScope(state, getters, rootState, rootGetters) {
-            if (getters.currentTask != null) {
-                const type = getters.currentTask.type
-                if (type == 'feedback') {
-                    return 'user'
-                } else return 'task'
             }
         },
     },
@@ -148,56 +167,84 @@ export default {
             }
         },
         async uploadFile({ commit, dispatch }, newFile) {
-            // Generate uuid for new file
-            newFile.id = this._vm.$uuid.v4()
+            let uploadSucces = true
+            console.log(newFile)
+            // Check if we have any products to upload
+            if (newFile.products && newFile.products.length > 0) {
+                // Upload products to DB
+                uploadSucces = false
+                // Check if
+                const uploadApiUrl = `api/file/${newFile.id}/products`
 
-            // Upload products to DB
-            let uploadSucces = false
+                // Loop through the products and format their data correctly for the API
+                const productsToUpload = []
+                newFile.products.forEach(product => {
+                    // Stringify their json values
+                    product.prices = JSON.stringify(product.prices)
+                    product.eans = JSON.stringify(product.eans)
+                    product.assortments = JSON.stringify(product.assortments)
+                    product.color_variants = JSON.stringify(product.color_variants)
 
-            const uploadApiUrl = `${process.env.MIX_UPLOAD_API_URL_BASE}/hooks/import-csv?collection_id=${newFile.id}`
-            const axiosConfig = {
-                headers: {
-                    'X-Kollekt-App-Key': process.env.MIX_KOLLEKT_APP_API_KEY,
-                },
+                    // Correctly format date
+                    // First test that the date has actually been set
+                    if (product.delivery_date) {
+                        console.log('Delivery Date')
+                        console.log(product.delivery_date)
+                        // Check for special cases where the date is of format mmm-yy ("jan-20") which will be parsed incorrectly by the new Date() function
+                        // Regex that looks for a work with exactly 3 characters between A-z.
+                        const reg = new RegExp('\\b[A-z]{3}\\b')
+                        if (reg.test(product.delivery_date)) {
+                            // If true then add a "1-" to the date to avoid ambiguity
+                            product.delivery_date = '1-' + product.delivery_date
+                        }
+
+                        const theDate = new Date(product.delivery_date)
+
+                        // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
+                        // Long code to account for timezone differences
+                        product.delivery_date = new Date(theDate.getTime() - theDate.getTimezoneOffset() * 60000)
+                            .toJSON()
+                            .slice(0, 10)
+                    }
+
+                    productsToUpload.push(product)
+                })
+
+                console.log('Products')
+                console.log(productsToUpload)
+
+                await axios
+                    .post(uploadApiUrl, {
+                        products: productsToUpload,
+                    })
+                    .then(response => {
+                        console.log('succes')
+                        console.log(response.data)
+                        uploadSucces = true
+                    })
+                    .catch(err => {
+                        console.log('error')
+                        console.log(err.response)
+                        uploadSucces = false
+                    })
             }
-            let data = new FormData()
-            // Append the files
-            newFile.files.forEach(file => {
-                data.append('files', file)
-            })
-
-            // console.log(data)
-
-            await axios
-                .post(uploadApiUrl, data, axiosConfig)
-                // .post(proxyUrl + uploadApiUrl, data, axiosConfig)
-                .then(response => {
-                    console.log('succes')
-                    console.log(response.data)
-                    uploadSucces = true
-                })
-                .catch(err => {
-                    console.log('error')
-                    console.log(err)
-                    uploadSucces = false
-                })
 
             // If success create a file (collection) for the products
             if (uploadSucces) {
                 dispatch('updateFile', newFile)
             }
             return uploadSucces
-
-            // Collection.create({ data: response.data })
         },
         async updateFile({ commit }, fileToUpdate) {
             const startDate = fileToUpdate.start_date ? fileToUpdate.start_date : null
             const endDate = fileToUpdate.end_date ? fileToUpdate.end_date : null
-            const catalog_id = fileToUpdate.folderId
-                ? fileToUpdate.folderId
-                : fileToUpdate.catalog_id
-                ? fileToUpdate.catalog_id
-                : null
+            // Add support for both catalog id and folder id
+            let catalog_id = null
+            if (fileToUpdate.folderId) {
+                catalog_id = fileToUpdate.folderId
+            } else if (fileToUpdate.catalog_id) {
+                catalog_id = fileToUpdate.catalogId
+            }
 
             await axios
                 .put(`/api/file`, {
@@ -284,6 +331,12 @@ export default {
                     console.log(err.response)
                 })
         },
+        async setNextFileAsCurrent({ dispatch, getters }) {
+            if (getters.nextFileId) dispatch('persist/setCurrentFileId', getters.nextFileId, { root: true })
+        },
+        async setPrevFileAsCurrent({ dispatch, getters }) {
+            if (getters.prevFileId) dispatch('persist/setCurrentFileId', getters.prevFileId, { root: true })
+        },
     },
 
     mutations: {
@@ -296,6 +349,9 @@ export default {
         },
         deleteFile(state, fileId) {
             Collection.delete(fileId)
+        },
+        setAvailableFileIds(state, fileIds) {
+            state.availableFileIds = fileIds
         },
     },
 }

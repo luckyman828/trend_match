@@ -1,9 +1,20 @@
 <template>
-    <div class="folders-table">
-        <GridTable>
-            <template v-slot:header="slotProps">
+    <div class="folders-table-wrapper">
+        <FlexTable class="folders-table">
+            <template v-slot:topBar>
+                <TableTopBar>
+                    <template v-slot:left>
+                        <SearchField :searchKey="['title','name']"/>
+                    </template>
+                    <template v-slot:right>
+                        <span>showing <strong>{{folder.folders.length + folder.files.length}}</strong> of 
+                        <strong>{{folder.folders.length + folder.files.length}}</strong> records</span>
+                    </template>
+                </TableTopBar>
+            </template>
+            <template v-slot:header>
                 <th class="select"><Checkbox/></th>
-                <th>Name <i class="fas fa-sort"></i></th>
+                <th class="title">Name <i class="fas fa-sort"></i></th>
                 <th>Modified <i class="fas fa-sort"></i></th>
                 <th>Deadline <i class="fas fa-sort"></i></th>
                 <th>Items <i class="fas fa-sort"></i></th>
@@ -39,24 +50,23 @@
                             :value="toEdit.item.title" :oldValue="file.title" v-model="toEdit.item.title"
                             @submit="updateFile(toEdit.item); clearToEdit()" @cancel="clearToEdit()"/>
                         </td>
-                    <td v-else class="title clickable" @click="viewSingle(file.id)"><i class="fas fa-file dark15"></i> {{file.title}}</td>
+                    <!-- <td v-else class="title clickable" @click="viewSingle(file.id)"><i class="fas fa-file dark15"></i> {{file.title}}</td> -->
+                    <td v-else class="title clickable" @click="showSingleFile(file.id)"><i class="fas fa-file dark15"></i> {{file.title}}</td>
                     <td class="modified">-</td>
                     <td class="deadline">{{file.end_date}}</td>
                     <td class="items">-</td>
                     <td class="teams">-</td>
                     <td class="status">Stage {{file.phase.id}}</td>
                     <td class="action">
-                        <span class="button invisible ghost-hover true-square" @click.stop="showContextMenu($event, file, 'file')"><i class="fas fa-ellipsis-h"></i></span>
+                        <button class="invisible ghost-hover" @click.stop="showContextMenu($event, file, 'file')"><i class="fas fa-ellipsis-h"></i></button>
                     </td>
                 </tr>
             </template>
             <template v-slot:footer="slotProps">
-                <td></td>
                 <!-- <td><button class="primary invisible icon-left context-right" @click="onNewFolder"><i class="far fa-plus"></i>Add new: Folder <i class="fas fa-caret-down context"></i></button></td> -->
-                <td><button class="primary invisible icon-left" @click="onNewFolder"><i class="far fa-plus"></i>Add new: Folder</button></td>
-                <td></td><td></td><td></td><td></td><td></td><td></td>
+                <td><button class="primary invisible" @click="onNewFolder"><i class="far fa-plus"></i><span>Add new: Folder</span></button></td>
             </template>
-        </GridTable>
+        </FlexTable>
 
         <Modal
             ref="editFileModal"
@@ -98,7 +108,7 @@
             :subHeader="'Select a place to move the current item to'"
             class="move-item-modal"
         >
-            <template v-slot:body>
+            <template v-slot>
                 <div class="inner" v-if="toMove != null">
                     <div style="margin-bottom: 12px">
                         <button v-if="folderToMoveToId != null" class="invisible ghost-hover true-square" @click="folderToMoveToId = folderToMoveTo.parent_id">
@@ -131,7 +141,11 @@
             </template>
         </Modal>
 
-        <ContextMenu ref="contextMenuFolder" class="context-folder">
+        <ContextMenu ref="contextMenuFolder" class="context-folder" v-slot="slotProps"
+        @keybind-o="setCurrentFolder(contextMenuItem)"
+        @keybind-r="onEditField(contextMenuItem, 'folder', 'title')"
+        @keybind-m="onMoveTo(contextMenuItem, 'folder')"
+        @keybind-d="onDeleteFolder(contextMenuItem.id)">
             <div class="item-group">
                 <div class="item" @click="setCurrentFolder(contextMenuItem)">
                     <div class="icon-wrapper">
@@ -163,7 +177,13 @@
                 </div>
             </div>
         </ContextMenu>
-        <ContextMenu ref="contextMenuFile" class="context-file">
+
+        <ContextMenu ref="contextMenuFile" class="context-file" v-slot="slotProps"
+        @keybind-v="viewSingle(contextMenuItem.id)"
+        @keybind-e="viewEditSingle(contextMenuItem.id)"
+        @keybind-r="onEditField(contextMenuItem, 'file', 'title')"
+        @keybind-m="onMoveTo(contextMenuItem, 'file')"
+        @keybind-d="onDeleteFile(contextMenuItem.id)">
             <div class="item-group">
                 <div class="item" @click="viewSingle(contextMenuItem.id)">
                     <div class="icon-wrapper">
@@ -173,6 +193,12 @@
                 </div>
             </div>
             <div class="item-group">
+                <div class="item" @click="viewEditSingle(contextMenuItem.id)">
+                    <div class="icon-wrapper">
+                        <i class="far fa-file-edit"></i>
+                    </div>
+                    <u>E</u>dit file
+                </div>
                 <div class="item" @click="onEditField(contextMenuItem, 'file', 'title')">
                     <div class="icon-wrapper">
                         <i class="far fa-pen"></i>
@@ -286,6 +312,9 @@ export default {
             }
             // Position the contextual menu
             contextMenu.show(e)
+        },
+        showSingleFile(fileId) {
+            this.$emit('showSingleFile', fileId)
         },
         onMoveTo(item, type) {
             this.toMove = item
@@ -407,6 +436,9 @@ export default {
         viewSingle(fileId) {
             this.$router.push({ name: 'file', params: { fileId: fileId } })
         },
+        viewEditSingle(fileId) {
+            this.$router.push({ name: 'editFile', params: { fileId: fileId } })
+        },
         onDeleteFile(fileId) {
             if (window.confirm(
                 'Are you sure you want to delete this file?\nAll comments, requests and actions will be permanently deleted.'
@@ -475,96 +507,104 @@ export default {
     margin-top: 52px;
     padding-top: 0;
     position: relative;
-    td {
-        vertical-align: top;
-        line-height: 40px;
+    th, td {
         &.title {
+            min-width: 244px;
+            max-width: 244px;
             display: flex;
-            i {
-                width: 24px;
-                line-height: 40px;
-                font-size: 16px;
-                margin-right: 8px;
-            }
+            align-items: center;
         }
     }
+    // td {
+    //     vertical-align: top;
+    //     line-height: 40px;
+    //     &.title {
+    //         display: flex;
+    //         i {
+    //             width: 24px;
+    //             line-height: 40px;
+    //             font-size: 16px;
+    //             margin-right: 8px;
+    //         }
+    //     }
+    // }
 }
 .clickable {
     cursor: pointer;
 }
 // Table
-.flex-table {
-    .flex-group {
-        display: flex;
-        flex: 1;
-        margin: 0 16px;
-        align-items: center;
-        &:nth-child(1) {
-            flex: 3;
-        }
-        &:nth-child(2) {
-            flex: 3;
-            justify-content: flex-start;
-            > * {
-                flex: none;
-                flex-basis: 100px;
-                &.stage {
-                    flex-basis: 132px;
-                }
-            }
-        }
-        &:nth-child(3) {
-            flex: 2;
-            max-width: 300px;
-            min-width: 300px;
-        }
-        > * {
-            flex: 1;
-            margin: 0 8px;
-            &.select {
-                max-width: 80px;
-            }
-            &.id {
-                white-space: nowrap;
-                overflow: hidden;
-                max-width: 75px;
-            }
-            &.action {
-                display: flex;
-                justify-content: flex-end;
-                > * {
-                    &:not(:last-child) {
-                        margin-right: 8px;
-                    }
-                }
-            }
-        }
-        > td {
-            &.action {
-                text-align: right;
-            }
-        }
-    }
-    .flex-table-row {
-        height: 82px;
-        > * {
-            flex: 1;
-            margin: 0 8px;
-            &:first-child {
-                margin-left: 16px;
-            }
-            &:last-child {
-                margin-right: 16px;
-            }
-        }
-        th {
-            &.action {
-                text-align: right;
-                justify-content: flex-end;
-            }
-        }
-    }
-}
+// .flex-table {
+//     .flex-group {
+//         display: flex;
+//         flex: 1;
+//         margin: 0 16px;
+//         align-items: center;
+//         &:nth-child(1) {
+//             flex: 3;
+//         }
+//         &:nth-child(2) {
+//             flex: 3;
+//             justify-content: flex-start;
+//             > * {
+//                 flex: none;
+//                 flex-basis: 100px;
+//                 &.stage {
+//                     flex-basis: 132px;
+//                 }
+//             }
+//         }
+//         &:nth-child(3) {
+//             flex: 2;
+//             max-width: 300px;
+//             min-width: 300px;
+//         }
+//         > * {
+//             flex: 1;
+//             margin: 0 8px;
+//             &.select {
+//                 max-width: 80px;
+//             }
+//             &.id {
+//                 white-space: nowrap;
+//                 overflow: hidden;
+//                 max-width: 75px;
+//             }
+//             &.action {
+//                 display: flex;
+//                 justify-content: flex-end;
+//                 > * {
+//                     &:not(:last-child) {
+//                         margin-right: 8px;
+//                     }
+//                 }
+//             }
+//         }
+//         > td {
+//             &.action {
+//                 text-align: right;
+//             }
+//         }
+//     }
+//     .flex-table-row {
+//         height: 82px;
+//         > * {
+//             flex: 1;
+//             margin: 0 8px;
+//             &:first-child {
+//                 margin-left: 16px;
+//             }
+//             &:last-child {
+//                 margin-right: 16px;
+//             }
+//         }
+//         th {
+//             &.action {
+//                 text-align: right;
+//                 justify-content: flex-end;
+//             }
+//         }
+//     }
+// }
 .show-more {
     width: 100%;
     margin: 16px auto 0;

@@ -10,7 +10,7 @@
             </div>
             <div class="items-right">
 
-                <span v-if="userPermissionLevel >= 4" class="button wide primary" @click="$refs.createTeamModal.toggle()">Add team</span>
+                <button v-if="userPermissionLevel >= 4" class="primary" @click="$refs.createTeamModal.show()"><span>Add new: Team</span></button>
 
             </div>
         </div>
@@ -25,7 +25,7 @@ import ModalCreateTeam from './ModalCreateTeam'
 import Team from '../store/models/Team'
 
 export default {
-    name: "navbar",
+    name: "navbarTeams",
     data: function () { return {
         addTeamName: '',
     }},

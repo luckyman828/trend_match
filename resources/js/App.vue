@@ -10,6 +10,7 @@
                 </transition>
             </div>
         </div>
+        <!-- <portal-target name="modalWrapper" multiple/> -->
     </div>
 </template>
 
@@ -23,6 +24,7 @@ import AuthUser from './store/models/AuthUser';
 import TeamFile from './store/models/TeamFile';
 import Team from './store/models/Team';
 import { Query } from '@vuex-orm/core';
+import Workspace from './store/models/Workspace'
 
 export default{
     name: 'app',
@@ -39,6 +41,9 @@ export default{
         ...mapGetters('persist', ['userPermissionLevel', 'currentWorkspaceId']),
         authUser() {
             return AuthUser.query().with('teams').with('workspaces').first()
+        },
+        workspaces() {
+            return Workspace.all()
         },
         teamFiles() {
             return TeamFile.all()
@@ -64,18 +69,19 @@ export default{
         ...mapActions('entities/taskParents', ['fetchTaskParents']),
         ...mapActions('entities/fileTasks', ['fetchFileTasks']),
         ...mapActions('entities/actions', ['updateAction']),
+        ...mapActions('entities/subfiles', ['fetchSubfiles']),
         ...mapActions('persist', ['setCurrentTeam', 'setTeamFilter', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']),
         async fetchInitialData() {
             // Get user
             console.log('App: Getting initial data')
             await Promise.all([
                 this.getAuthUser(),
-                this.fetchWorkspaceUsers(),
                 this.fetchWorkspaces(),
             ])
             this.setUserPermissionLevel(this.authUser.role_id)
             if (this.authUser.workspaces.length > 1) console.log('multiple workspaces!');
-            this.setCurrentWorkspace({workspace_id: this.authUser.workspaces[0].id, user_id: this.authUser.id})
+            this.setCurrentWorkspace({workspace_id: this.workspaces[0].id, user_id: this.authUser.id})
+            // this.setCurrentWorkspace({workspace_id: this.authUser.workspaces[0].id, user_id: this.authUser.id})
         },
         async initRequiresWorkspace() {
             // Only get data for the current workspace
@@ -83,6 +89,7 @@ export default{
             this.setLoadingInit(true)
             if (this.authUser) {
                 await (
+                    this.fetchWorkspaceUsers(this.currentWorkspaceId),
                     this.fetchFolders(this.currentWorkspaceId),
                     this.fetchTeams(this.currentWorkspaceId),
                     this.fetchUserTeams(this.currentWorkspaceId),
@@ -93,7 +100,8 @@ export default{
                     this.fetchTasks(this.currentWorkspaceId),
                     this.fetchTaskParents(this.currentWorkspaceId),
                     this.fetchFileTasks(this.currentWorkspaceId),
-                    this.fetchRoles()
+                    this.fetchRoles(),
+                    this.fetchSubfiles(this.currentWorkspaceId)
                 )
                 
                 if (this.authUser.role_id >= 5) {
@@ -156,7 +164,7 @@ export default{
         min-height: 100vh;
         min-width: 100vw;
         grid-template-columns: 260px auto;
-        grid-template-rows: 70px auto;
+        grid-template-rows: 72px auto;
         grid-template-areas: 
             "logo navbar" 
             "sidebar main";
@@ -202,27 +210,27 @@ export default{
         box-shadow: 0 2px 6px rgba(0,0,0,.1);
         background: white;
     }
-    .tabs {
-        margin-left: -16px;
-        margin-right: -16px;
-        width: calc(100% + 32px);
-        .tab {
-            display: inline-block;
-            font-size: 18px;
-            opacity: .5;
-            padding: 10px 25px;
-            border-bottom: solid 3px transparent;
-            margin-bottom: 8px;
-            &.active {
-                opacity: 1;
-                border-color: $primary;
-            }
-            &:not(.active):hover {
-                border-color: rgba($primary, .5);
-                cursor: pointer;
-            }
-        }
-    }
+    // .tabs {
+    //     margin-left: -16px;
+    //     margin-right: -16px;
+    //     width: calc(100% + 32px);
+    //     .tab {
+    //         display: inline-block;
+    //         font-size: 18px;
+    //         opacity: .5;
+    //         padding: 10px 25px;
+    //         border-bottom: solid 3px transparent;
+    //         margin-bottom: 8px;
+    //         &.active {
+    //             opacity: 1;
+    //             border-color: $primary;
+    //         }
+    //         &:not(.active):hover {
+    //             border-color: rgba($primary, .5);
+    //             cursor: pointer;
+    //         }
+    //     }
+    // }
     .vdp-datepicker {
         display: grid;
         justify-items: end;
@@ -266,58 +274,58 @@ export default{
     }
 
     // Tables
-    .flex-table {
-        .card > & {
-            margin-left: -16px;
-            margin-right: -16px;
-            width: calc(100% + 32px);
-        }
-        &.disabled {
-            .flex-table-row:not(.header-row) {
-                opacity: .5;
-            }
-        }
-        .flex-table-row {
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            min-height: 45px;
-            > * {
-                &.select {
-                    margin-left: 16px;
-                    min-width: 80px;
-                }
-            }
-        }
-        .header-row {
-            font-weight: 700;
-            font-size: 12px;
-            height: 45px;
-            border-bottom: solid 2px $light1;
-        }
-        .item-row {
-            border-bottom: solid 1px $light1;
-            &:hover {
-                background: $light;
-            }
-        }
-        th {
-            text-transform: uppercase;
-            font-size: 12px;
-            font-weight: 600;
-            color: $dark2;
-            i {
-                color: $light2;
-                margin: 0;
-                margin-left: 4px;
-            }
-            &.active {
-                i {
-                    color: $primary
-                }
-            }
-        }
-    }
+    // .flex-table {
+    //     .card > & {
+    //         margin-left: -16px;
+    //         margin-right: -16px;
+    //         width: calc(100% + 32px);
+    //     }
+    //     &.disabled {
+    //         .flex-table-row:not(.header-row) {
+    //             opacity: .5;
+    //         }
+    //     }
+    //     .flex-table-row {
+    //         display: flex;
+    //         justify-content: flex-start;
+    //         align-items: center;
+    //         min-height: 45px;
+    //         > * {
+    //             &.select {
+    //                 margin-left: 16px;
+    //                 min-width: 80px;
+    //             }
+    //         }
+    //     }
+    //     .header-row {
+    //         font-weight: 700;
+    //         font-size: 12px;
+    //         height: 45px;
+    //         border-bottom: solid 2px $light1;
+    //     }
+    //     .item-row {
+    //         border-bottom: solid 1px $light1;
+    //         &:hover {
+    //             background: $light;
+    //         }
+    //     }
+    //     th {
+    //         text-transform: uppercase;
+    //         font-size: 12px;
+    //         font-weight: 600;
+    //         color: $dark2;
+    //         i {
+    //             color: $light2;
+    //             margin: 0;
+    //             margin-left: 4px;
+    //         }
+    //         &.active {
+    //             i {
+    //                 color: $primary
+    //             }
+    //         }
+    //     }
+    // }
     
     .clickable {
         cursor: pointer;

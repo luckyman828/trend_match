@@ -76,20 +76,25 @@
             </div>
         </div>
         <FoldersTable v-if="currentFolder" :folder="currentFolder" :selected="selected" 
-        @setCurrentFolder="setCurrentFolder" @onSelect="onSelect"/>
+        @setCurrentFolder="setCurrentFolder" @onSelect="onSelect" @showSingleFile="showSingleFile"/>
+        <FlyIn ref="fileSingleFlyin">
+            <FileSingle :file="currentFile" v-if="currentFile != null" 
+            @closeFlyin="$refs.fileSingleFlyin.close()"/>
+        </FlyIn>
         <!-- <FilesTable :authUser="authUser" :files="userFiles" :selected="selected" @onSelect="onSelect"/> -->
     </div>
 </template>
 
 <script>
 import store from '../../store'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Loader from '../Loader'
 import FilesTable from '../FilesTable'
 import FoldersTable from '../FoldersTable'
-import RadioButtons from '../RadioButtons'
 import CheckboxButtons from '../input/CheckboxButtons'
 import Dropdown from '../Dropdown'
+import FlyIn from '../FlyIn'
+import FileSingle from '../FileSingle'
 import Folder from '../../store/models/Folder'
 
 export default {
@@ -100,8 +105,9 @@ export default {
         FilesTable,
         Dropdown,
         CheckboxButtons,
-        RadioButtons,
         FoldersTable,
+        FlyIn,
+        FileSingle,
     },
     data: function() { return {
         selected: [],
@@ -114,18 +120,18 @@ export default {
         currentFolder: {id: null, title: null, folders: [], files: []}
     }},
     watch: {
-        // folders(oldVal, newVal) {
-        //     console.log('folders changed')
-        //     console.log(newVal)
-        //     if (this.currentFolderId) {
-        //         this.currentFolder = this.folders.find(x => x.id == this.currentFolderId)
-        //     } else {
-        //         this.currentFolder = this.rootFolder
-        //     }
-        // }
+        folders(newVal, oldVal) {
+            // Refresh the current folder if a change is detected
+            if (this.currentFolderId) {
+                this.currentFolder = this.folders.find(x => x.id == this.currentFolderId)
+            } else {
+                this.currentFolder = this.rootFolder
+            }
+        }
+        
     },
     computed: {
-        ...mapGetters('entities/collections', ['loadingCollections', 'files']),
+        ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
         ...mapGetters('entities/folders', ['loadingFolders', 'folders']),
         ...mapGetters('persist', ['teamFilterId', 'currentTeam', 'currentWorkspace', 'currentWorkspaceId', 'userPermissionLevel', 'authUser']),
         defaultTeam() {
@@ -192,12 +198,21 @@ export default {
         }
     },
     methods: {
-        ...mapActions('persist', ['setTeamFilter']),
+        ...mapActions('persist', ['setTeamFilter', 'setCurrentFileId']),
+        ...mapMutations('entities/collections', ['setAvailableFileIds']),
         onSelect(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
             const selected = this.selected
             const found = selected.findIndex(el => el == index)
             const result = (found >= 0) ? selected.splice(found, 1) : selected.push(index)
+        },
+        showSingleFile(fileId) {
+            // Set the current file id
+            this.setCurrentFileId(fileId)
+            // Set available files (for navigation) to the currently visible files
+            this.setAvailableFileIds(this.currentFolder.files.map(x => x.id))
+            // Show the flyin
+            this.$refs.fileSingleFlyin.toggle()
         },
         onViewSingle(collectionID) {
             this.$router.push({name: 'catalogue', params: {catalogueId: collectionID}})
