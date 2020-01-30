@@ -205,7 +205,8 @@
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
-                    <SelectButtons :type="'radio'" :options="slotProps.item.headers" :optionNameKey="'fieldName'"
+                    <SelectButtons :type="'radio'" :unsetOption="'Remove mapping'" @unset="slotProps.item.newValue={fileIndex: null, fieldName: null, fieldIndex: null}"
+                    :options="slotProps.item.headers" :optionNameKey="'fieldName'"
                     v-model="slotProps.item.key" :submitOnChange="true" :search="true" @submit="validateKey(slotProps.item);slotProps.hide()"/>
                 </div>
             </template>
@@ -217,7 +218,9 @@
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
-                    <SelectButtons :type="'radio'" :options="availableFiles" multipleOptionArrays="true" optionGroupNameKey="fileName" optionGroupOptionsKey="headers"
+                    <SelectButtons :type="'radio'" :unsetOption="'Remove mapping'" 
+                    @unset="slotProps.item.newValue={fileIndex: null, fieldName: null, fieldIndex: null};slotProps.item.error=false;slotProps.hide()"
+                    :options="availableFiles" multipleOptionArrays="true" optionGroupNameKey="fileName" optionGroupOptionsKey="headers"
                     v-model="slotProps.item.newValue" :submitOnChange="true" :optionDescriptionKey="'fileName'"
                     :optionNameKey="'fieldName'" :search="true" @submit="validateField(slotProps.item);slotProps.hide()"/>
                 </div>

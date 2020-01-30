@@ -9,6 +9,15 @@
         </div>
         <div class="wrapper">
 
+            <div class="option unset-option" v-if="unsetOption" @click="onUnset">
+                <label>
+                    <i class="fas fa-minus"></i>
+                    <div class="label">
+                        {{unsetOption}}
+                    </div>
+                </label>
+            </div>
+
             <template v-if="multipleOptionArrays">
                 <div class="option-group" v-for="(optionGroup, index) in optionsFilteredBySearch" :key="index">
                     <h4>{{optionGroupNameKey != null ? optionGroup[optionGroupNameKey] : `group-${index+1}`}}</h4>
@@ -29,7 +38,7 @@
                                     {{option}}
                                 </template>
                                 <p class="description" v-if="optionDescriptionKey">
-                                    {{option[optionDescriptionKey]}}
+                                    {{optionGroup[optionDescriptionKey]}}
                                 </p>
                             </div>
                         </label>
@@ -83,6 +92,7 @@ export default {
         'multipleOptionArrays',
         'optionGroupNameKey',
         'optionGroupOptionsKey',
+        'unsetOption'
     ],
     data: function () { return {
         selection: [],
@@ -144,6 +154,10 @@ export default {
                 this.$refs.searchField.setFocus()
             }
         },
+        onUnset() {
+            this.$emit('unset')
+            console.log('unset')
+        }
     },
     mounted() {
         this.focusSearch()
@@ -178,11 +192,17 @@ export default {
                 cursor: pointer;
                 font-size: 14px;
                 font-weight: 500;
+                .label {
+                    width: 100%
+                }
             }
             .description {
                 font-size: 12px;
                 font-weight: 400;
                 margin-top: -4px;
+                white-space: nowrap;
+                width: calc(100% - 16px);
+                overflow: hidden;
             }
             &:hover, &.active {
                 background: $bgContentActive;
@@ -247,6 +267,11 @@ export default {
     .search-wrapper {
         padding: 8px 16px;
         margin-bottom: 8px;
+    }
+    .unset-option {
+        i {
+            margin-right: 8px;
+        }
     }
 
 </style>
