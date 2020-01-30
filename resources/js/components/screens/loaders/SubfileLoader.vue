@@ -16,7 +16,7 @@ export default {
     name: 'subfileLoader',
     components: {
         Subfile,
-        ScreenLoader
+        ScreenLoader,
     },
     data: function () { return {
         loadingFile: true,
