@@ -186,22 +186,26 @@ export default {
                     product.color_variants = JSON.stringify(product.color_variants)
 
                     // Correctly format date
+                    // First test that the date has actually been set
+                    if (product.delivery_date) {
+                        console.log('Delivery Date')
+                        console.log(product.delivery_date)
+                        // Check for special cases where the date is of format mmm-yy ("jan-20") which will be parsed incorrectly by the new Date() function
+                        // Regex that looks for a work with exactly 3 characters between A-z.
+                        const reg = new RegExp('\\b[A-z]{3}\\b')
+                        if (reg.test(product.delivery_date)) {
+                            // If true then add a "1-" to the date to avoid ambiguity
+                            product.delivery_date = '1-' + product.delivery_date
+                        }
 
-                    // Check for special cases where the date is of format mmm-yy ("jan-20") which will be parsed incorrectly by the new Date() function
-                    // Regex that looks for a work with exactly 3 characters between A-z.
-                    const reg = new RegExp('\\b[A-z]{3}\\b')
-                    if (reg.test(product.delivery_date)) {
-                        // If true then add a "1-" to the date to avoid ambiguity
-                        product.delivery_date = '1-' + product.delivery_date
+                        const theDate = new Date(product.delivery_date)
+
+                        // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
+                        // Long code to account for timezone differences
+                        product.delivery_date = new Date(theDate.getTime() - theDate.getTimezoneOffset() * 60000)
+                            .toJSON()
+                            .slice(0, 10)
                     }
-
-                    const theDate = new Date(product.delivery_date)
-
-                    // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
-                    // Long code to account for timezone differences
-                    product.delivery_date = new Date(theDate.getTime() - theDate.getTimezoneOffset() * 60000)
-                        .toJSON()
-                        .slice(0, 10)
 
                     productsToUpload.push(product)
                 })

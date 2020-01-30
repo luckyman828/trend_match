@@ -1,8 +1,9 @@
 <template>
     <div class="input-field" :class="type">
-        <div :class="[{'read-only': readOnly}, {'input-wrapper': type == 'select'}]" @click="onClick">
+        <div v-tooltip.top="errorTooltip" :class="[{'read-only': readOnly}, {'input-wrapper': type == 'select'}, {'has-label': label}]" @click="onClick">
+            <span v-if="label" class="label" v-html="label"></span>
             <input ref="inputField" :type="type" :id="id" :placeholder="placeholder" :autocomplete="autocomplete"
-            :class="[{'read-only': readOnly}, {'error': error}, {'input-wrapper': type != 'select'}]" :value="value" :disabled="disabled"
+            :class="[{'read-only': readOnly}, {'error': error || errorTooltip}, {'input-wrapper': type != 'select'}]" :value="value" :disabled="disabled"
             @input="$emit('input', $event.target.value)" @blur="$emit('blur', $event)" @paste="$emit('paste', $event)">
             <i v-if="type == 'select'" class="fas fa-caret-down"></i>
         </div>
@@ -26,7 +27,9 @@ export default {
         'placeholder',
         'id',
         'disabled',
-        'readOnly'
+        'readOnly',
+        'errorTooltip',
+        'label'
     ],
     computed: {
         inputField() {
@@ -48,6 +51,23 @@ export default {
 
     .input-field {
         &.select {
+            .has-label {
+                .label {
+                    color: $primary;
+                    position: absolute;
+                    top: 2px;
+                    z-index: 1;
+                    font-size: 10px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    width: calc(100% - 12px - 32px);
+                }
+                input {
+                    line-height: 0;
+                    position: absolute;
+                    bottom: 4px;
+                }
+            }
             .input-wrapper, input {
                 cursor: pointer;
             }
