@@ -83,7 +83,7 @@ import UsersLoader from './components/screens/loaders/UsersLoader'
 import FileLoader from './components/screens/loaders/FileLoader'
 import FolderLoader from './components/screens/loaders/FolderLoader'
 import EditFileLoader from './components/screens/loaders/EditFileLoader'
-import Subfileloader from './components/screens/loaders/Subfileloader'
+import SubfileLoader from './components/screens/loaders/SubfileLoader'
 
 const routes = [
     { path: '/file/:fileId', name: 'file', component: FileLoader },
@@ -91,7 +91,7 @@ const routes = [
     { path: '/files', name: 'files', component: FolderLoader },
     { path: '/teams', name: 'teams', component: TeamsLoader },
     { path: '/users', name: 'users', component: TeamsLoader },
-    { path: '/file/:fileId/:subfileId', name: 'subfile', component: Subfileloader },
+    { path: '/file/:fileId/:subfileId', name: 'subfile', component: SubfileLoader },
     { path: '*', redirect: '/files' },
 ]
 

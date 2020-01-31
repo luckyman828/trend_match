@@ -21,6 +21,7 @@ export default class Collection extends Model {
             folder_id: this.attr(''),
             start_date: this.attr('unset'),
             end_date: this.attr('unset'),
+            owners: this.attr([]),
             teamFiles: this.hasMany(TeamFile, 'file_id'),
             products: this.attr(''),
             // products: this.hasMany(Product, 'collection_id'),

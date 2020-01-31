@@ -258,12 +258,11 @@ input[type='submit'] {
     justify-content: center;
     align-items: center;
     color: $font;
-    border: none;
     text-decoration: none;
-    padding: 0;
     font-weight: 700;
     user-select: none;
     border: solid 1px transparent;
+    padding: 0 1px;
 
     &.editable {
         font-weight: 400;
@@ -330,7 +329,7 @@ input[type='submit'] {
                 &.fal,
                 &.fad,
                 &.fab {
-                    width: nth($size, 2) - 4px;
+                    width: nth($size, 2) - 2px;
                 }
             }
             > span:first-child {
@@ -413,7 +412,6 @@ input[type='submit'] {
         }
     }
     &.ghost {
-        padding: 0 1px;
         &:hover {
             padding: 0;
             border: solid 2px $primary;

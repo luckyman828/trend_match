@@ -16,6 +16,7 @@ export default class Folder extends Model {
             created_at: this.attr(''),
             updated_at: this.attr(''),
             parent_id: this.attr(''),
+            owners: this.attr([]),
             files: this.hasMany(File, 'folder_id'),
             folders: this.hasMany(Folder, 'parent_id'),
             parent: this.belongsTo(Folder, 'parent_id'),

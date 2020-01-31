@@ -18,7 +18,7 @@
                 <th>Modified <i class="fas fa-sort"></i></th>
                 <th>Deadline <i class="fas fa-sort"></i></th>
                 <th>Items <i class="fas fa-sort"></i></th>
-                <th>Teams <i class="fas fa-sort"></i></th>
+                <th>Owners <i class="fas fa-sort"></i></th>
                 <th>Status <i class="fas fa-sort"></i></th>
                 <th class="action">Action</th>
             </template>
@@ -37,7 +37,11 @@
                     <td class="modified">-</td>
                     <td class="deadline">-</td>
                     <td class="items">{{folder.folders.length + folder.files.length}}</td>
-                    <td class="teams">-</td>
+                    <td class="owners">
+                        <button class="ghost editable sm" @click="showFolderOwnersFlyin(folder)">
+                            <i class="far fa-user"></i><span>{{folder.owners.length}}</span>
+                        </button>
+                    </td>
                     <td class="status">-</td>
                     <td class="action">
                         <span class="button invisible ghost-hover true-square" @click.stop="showContextMenu($event, folder, 'folder')"><i class="fas fa-ellipsis-h"></i></span>
@@ -55,7 +59,11 @@
                     <td class="modified">-</td>
                     <td class="deadline">{{file.end_date}}</td>
                     <td class="items">-</td>
-                    <td class="teams">-</td>
+                    <td class="owners">
+                        <button class="ghost editable sm" @click="showFileOwnersFlyin(file)">
+                            <i class="far fa-user"></i><span>{{file.owners.length}}</span>
+                        </button>
+                    </td>
                     <td class="status">Stage {{file.phase.id}}</td>
                     <td class="action">
                         <button class="invisible ghost-hover" @click.stop="showContextMenu($event, file, 'file')"><i class="fas fa-ellipsis-h"></i></button>
@@ -140,6 +148,20 @@
                 </div>
             </template>
         </Modal>
+
+        <FlyIn ref="folderOwnersFlyin" v-slot="slotProps">
+            <template v-if="flyinFolder">
+                <FlyinHeader :title="flyinFolder.title" disableNavigation=true @closeFlyin="slotProps.toggle"/>
+                <FolderOwnersTable :folder="flyinFolder"/>
+            </template>
+        </FlyIn>
+
+        <FlyIn ref="fileOwnersFlyin">
+            <template v-if="flyinFile" v-slot="slotProps">
+                <FlyinHeader :title="flyinFile.title" disableNavigation=true @closeFlyin="slotProps.toggle"/>
+                <FileOwnersTable :file="flyinFile"/>
+            </template>
+        </FlyIn>
 
         <ContextMenu ref="contextMenuFolder" class="context-folder" v-slot="slotProps"
         @keybind-o="setCurrentFolder(contextMenuItem)"
@@ -228,9 +250,9 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ProductTotals from './ProductTotals'
 import ProductSingle from './ProductSingle'
-import ContextMenu from './ContextMenu'
 import Editable from './Editable'
-import EditInputWrapper from './EditInputWrapper'
+import FolderOwnersTable from './FolderOwnersTable'
+import FileOwnersTable from './FileOwnersTable'
 
 export default {
     name: 'foldersTable',
@@ -239,9 +261,9 @@ export default {
         'folder'
     ],
     components: {
-        ContextMenu,
         Editable,
-        EditInputWrapper,
+        FolderOwnersTable,
+        FileOwnersTable,
     },
     data: function() {
         return {
@@ -261,7 +283,9 @@ export default {
             contextMenuItem: null,
             toEdit: null,
             toMove: null,
-            folderToMoveToId: this.folder.id
+            folderToMoveToId: this.folder.id,
+            flyinFolder: null,
+            flyinFile: null,
         }
     },
     computed: {
@@ -291,6 +315,16 @@ export default {
         ...mapActions('entities/collections', ['deleteFile', 'updateFile', 'uploadToExistingFile']),
         ...mapActions('entities/folders', ['deleteFolder', 'updateFolder']),
         ...mapMutations('persist', ['setCurrentFolderId']),
+        showFileOwnersFlyin(file) {
+            const flyin = this.$refs.fileOwnersFlyin
+            this.flyinFile = file
+            flyin.show()
+        },
+        showFolderOwnersFlyin(folder) {
+            const flyin = this.$refs.folderOwnersFlyin
+            this.flyinFolder = folder
+            flyin.show()
+        },
         setCurrentFolder(folder) {
             this.$emit('setCurrentFolder', folder)
             this.setCurrentFolderId(folder.id)
