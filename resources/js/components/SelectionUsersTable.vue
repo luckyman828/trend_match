@@ -1,10 +1,10 @@
 <template>
-    <div class="file-owners-table">
+    <div class="selection-users-table">
         <FlexTable>
             <template v-slot:topBar>
                 <TableTopBar>
                     <template v-slot:right>
-                        <span>0 records</span>
+                        <span>{{selection.feedbackUsers.length}} records</span>
                     </template>
                 </TableTopBar>
             </template>
@@ -15,7 +15,7 @@
                 <TableHeader class="action">Action</TableHeader>
             </template>
             <template v-slot:body>
-                <tr v-for="user in file.owners" :key="user.id" class="user-row table-row" ref="userRow" @contextmenu.prevent="showUserContext($event, user)">
+                <tr v-for="user in selection.feedbackUsers" :key="user.id" class="user-row table-row" ref="userRow" @contextmenu.prevent="showUserContext($event, user)">
                     <td class="select"><Checkbox/></td>
                     <td class="title clickable">
                         <i class="fas fa-user"></i>
@@ -23,12 +23,12 @@
                     </td>
                     <td class="email">{{user.email}}</td>
                     <td class="action">
-                        <button class="invisible ghost-hover" @click.stop="showUserContext($event, user)"><i class="far fa-ellipsis-h medium"></i></button>
+                        <button class="invisible ghost-hover" @click="showUserContext($event, user)"><i class="far fa-ellipsis-h medium"></i></button>
                     </td>
                 </tr>
             </template>
             <template v-slot:footer="slotProps">
-                <td><button class="primary invisible" @click="onAddUser($event)"><i class="far fa-plus"></i><span>Add Owner(s) to File</span></button></td>
+                <td><button class="primary invisible" @click="onAddUser($event)"><i class="far fa-plus"></i><span>Add Users(s) to Selection</span></button></td>
             </template>
         </FlexTable>
 
@@ -43,7 +43,7 @@
 
         <ContextMenu ref="contextMenuAddUsers" class="context-add-users">
             <template v-slot:header="slotProps">
-                Add Owner(s) to File
+                Add Feedback User(s) to Selection
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
@@ -54,7 +54,7 @@
                 <div class="item-group">
                     <div class="item">
                         <button class="primary" :class="{disabled: usersToAdd.length < 1}" 
-                        @click="onAddUsersToFile();usersToAdd = [];slotProps.hide()">
+                        @click="onAddUsersToSelection();usersToAdd = [];slotProps.hide()">
                             <span>Add <template v-if="usersToAdd.length > 0">{{usersToAdd.length}} 
                             </template>user<template v-if="usersToAdd.length > 1">s</template></span></button>
                         <button class="invisible ghost-hover" @click="slotProps.hide(); usersToAdd = []"><span>Cancel</span></button>
@@ -71,9 +71,9 @@ import sortArray from '../mixins/sortArray'
 import User from '../store/models/User'
 
 export default {
-    name: 'fileOwnersTable',
+    name: 'selectionUsersTable',
     props: [
-        'file'
+        'selection'
     ],
     mixins: [
         sortArray
@@ -88,11 +88,11 @@ export default {
         availableUsers() {
             const allUsers = User.all()
             // Filter the available users to exclude users already added
-            return allUsers.filter(user => !this.file.owners.find(owner => owner.id == user.id))
+            return allUsers.filter(user => !this.selection.feedbackUsers.find(x => x.id == user.id))
         }
     },
     methods: {
-        ...mapActions('entities/collections', ['addUsersToFile','removeUserFromFile']),
+        ...mapActions('entities/subfiles', ['addUsersToSelection','removeUserFromSelection']),
         showUserContext(e, user) {
             const contextMenu = this.$refs.contextMenuUser
             contextMenu.item = user
@@ -102,8 +102,8 @@ export default {
             const contextMenu = this.$refs.contextMenuAddUsers
             contextMenu.show(e)
         },
-        onAddUsersToFile(usersToAdd) {
-            this.addUsersToFile({file: this.file, usersToAdd: this.usersToAdd})
+        onAddUsersToSelection(usersToAdd) {
+            this.addUsersToSelection({selection: this.selection, usersToAdd: this.usersToAdd})
         },
         sortUsers(method, key) {
             // If if we are already sorting by the given key, flip the sort order
@@ -116,19 +116,19 @@ export default {
             }
             let sortAsc = this.sortAsc
 
-            this.sortArray(this.file.owners, this.sortAsc, this.sortKey)
+            this.sortArray(this.selection.feedbackUsers, this.sortAsc, this.sortKey)
         },
         onRemoveUser(user) {
             // If we have a selection, loop through the selection and remove those
             // Else, remove the parsed user
-            this.removeUserFromFile({file: this.file, user: user})
+            this.removeUserFromSelection({selection: this.selection, user: user})
         },
     }
 }
 </script>
 
 <style scoped lang="scss">
-    .file-owners-table {
+    .selection-users-table {
         padding: 16px;
     }
 </style>

@@ -268,12 +268,6 @@ input[type='submit'] {
         font-weight: 400;
     }
 
-    &.icon-right span,
-    &.icon-left span {
-        flex: 1;
-        text-align: center;
-    }
-
     // SIZES
     // Default
     height: 32px;
@@ -291,7 +285,7 @@ input[type='submit'] {
         &.fal,
         &.fad,
         &.fab {
-            width: 32px - 2px;
+            width: 32px - 4px;
             text-align: center;
             font-size: 14px;
             color: inherit;
@@ -318,7 +312,7 @@ input[type='submit'] {
                 &.fal,
                 &.fad,
                 &.fab {
-                    width: nth($size, 2) - 2px;
+                    width: nth($size, 2) - 4px;
                     font-size: nth($size, 3) + 2px;
                 }
             }
@@ -329,7 +323,7 @@ input[type='submit'] {
                 &.fal,
                 &.fad,
                 &.fab {
-                    width: nth($size, 2) - 2px;
+                    width: nth($size, 2) - 4px;
                 }
             }
             > span:first-child {

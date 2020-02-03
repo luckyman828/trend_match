@@ -62,10 +62,10 @@ export default {
 @import '~@/_variables.scss';
     .fly-in-wrapper {
         &.visible {
-            .overlay {
+            > .overlay {
                 display: block;
             }
-            .fly-in {
+            > .fly-in {
                 right: 0%;
             }
         }

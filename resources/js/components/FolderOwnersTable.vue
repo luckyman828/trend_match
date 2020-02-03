@@ -116,7 +116,7 @@ export default {
             }
             let sortAsc = this.sortAsc
 
-            this.sortArray(this.team.users, this.sortAsc, this.sortKey)
+            this.sortArray(this.folder.owners, this.sortAsc, this.sortKey)
         },
         onRemoveUser(user) {
             // If we have a selection, loop through the selection and remove those

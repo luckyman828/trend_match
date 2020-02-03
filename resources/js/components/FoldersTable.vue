@@ -44,7 +44,7 @@
                     </td>
                     <td class="status">-</td>
                     <td class="action">
-                        <span class="button invisible ghost-hover true-square" @click.stop="showContextMenu($event, folder, 'folder')"><i class="fas fa-ellipsis-h"></i></span>
+                        <button class="invisible ghost-hover" @click="showContextMenu($event, folder, 'folder')"><i class="fas fa-ellipsis-h"></i></button>
                     </td>
                 </tr>
                 <tr v-for="(file) in folder.files" :key="file.id" class="file" @contextmenu.prevent="showContextMenu($event, file, 'file')">
@@ -66,7 +66,7 @@
                     </td>
                     <td class="status">Stage {{file.phase.id}}</td>
                     <td class="action">
-                        <button class="invisible ghost-hover" @click.stop="showContextMenu($event, file, 'file')"><i class="fas fa-ellipsis-h"></i></button>
+                        <button class="invisible ghost-hover" @click="showContextMenu($event, file, 'file')"><i class="fas fa-ellipsis-h"></i></button>
                     </td>
                 </tr>
             </template>

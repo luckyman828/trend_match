@@ -9,10 +9,16 @@
         <td class="in">-</td>
         <td class="out">-</td>
         <td class="nd">-</td>
-        <td class="users">-</td>
+        <td class="users">
+            <button class="ghost editable sm" @click="$emit('showSubfileOwnersFlyin', subfile)">
+                <i class="far fa-user"></i><span>{{subfile.users.length}}</span>
+            </button>
+        </td>
         <td class="status">
-            <span class="square ghost icon-right">Locked <i class="far fa-lock"></i></span>
-            <span class="square ghost icon-right">Hidden <i class="far fa-eye"></i></span>
+            <span class="square ghost icon-right" @click="onToggleLocked(subfile)">{{subfile.locked ? 'Locked' : 'Open'}} 
+                <i class="far" :class="subfile.locked ? 'fa-lock' : 'fa-lock-open'"></i></span>
+            <span class="square ghost icon-right" @click="onToggleHidden(subfile)">{{subfile.hidden ? 'Hidden' : 'Visible'}} 
+                <i class="far" :class="subfile.hidden ? 'fa-eye-slash' : 'fa-eye'"></i></span>
         </td>
         <td class="actions">
             <span class="button invisible ghost-hover true-square" @click="toggleExpanded(subfile.id)"><i class="fas fa-ellipsis-h"></i></span>
@@ -29,6 +35,14 @@ export default {
     methods: {
         toggleExpanded(id) {
             this.$emit('toggleExpanded', id)
+        },
+        onToggleLocked(selection) {
+            // Dispatch action in store
+            selection.locked = !selection.locked
+            this.$forceUpdate()
+        },
+        onToggleHidden(selection) {
+            selection.hidden = !selection.hidden
         }
     }
 }

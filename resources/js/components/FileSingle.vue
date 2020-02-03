@@ -15,15 +15,32 @@
             </div>
         </FlyinHeader>
         <div class="body">
-            <SubfilesTable :subfiles="file.subfiles"/>
+            <SubfilesTable :subfiles="file.subfiles" @showSelectionUsersFlyin="showSelectionUsersFlyin"
+            @showSelectionOwnersFlyin="showSelectionOwnersFlyin"/>
         </div>
+
+        <FlyIn ref="selectionUsersFlyin" v-slot="slotProps">
+            <template v-if="currentSelection">
+                <FlyinHeader :title="currentSelection.name + ' Feedback Users'" disableNavigation=true @closeFlyin="slotProps.toggle"/>
+                <SelectionUsersTable :selection="currentSelection"/>
+            </template>
+        </FlyIn>
+
+        <FlyIn ref="selectionOwnersFlyin" v-slot="slotProps">
+            <template v-if="currentSelection">
+                <FlyinHeader :title="currentSelection.name + ' Owners'" disableNavigation=true @closeFlyin="slotProps.toggle"/>
+                <SelectionOwnersTable :selection="currentSelection"/>
+            </template>
+        </FlyIn>
+        
     </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import SubfilesTable from './SubfilesTable'
-import FlyinHeader from './FlyinHeader'
+import SelectionUsersTable from './SelectionUsersTable'
+import SelectionOwnersTable from './SelectionOwnersTable'
 
 export default {
     name: 'fileSingle',
@@ -32,13 +49,27 @@ export default {
     ],
     components: {
         SubfilesTable,
-        FlyinHeader,
+        SelectionUsersTable,
+        SelectionOwnersTable,
     },
+    data: function(){ return {
+        currentSelection: null
+    }},
     computed: {
         ...mapGetters('entities/collections', ['nextFileId', 'prevFileId']),
     },
     methods: {
         ...mapActions('persist', ['setCurrentFileId']),
+        showSelectionUsersFlyin(selection) {
+            const flyin = this.$refs.selectionUsersFlyin
+            this.currentSelection = selection
+            flyin.show()
+        },
+        showSelectionOwnersFlyin(selection) {
+            const flyin = this.$refs.selectionOwnersFlyin
+            this.currentSelection = selection
+            flyin.show()
+        },
         onClose() {
             this.$emit('closeFlyin')
         },
