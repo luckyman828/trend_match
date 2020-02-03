@@ -1,18 +1,7 @@
 <template>
     <div class="file-single">
-        <FlyinHeader :title="file.title" @closeFlyin="onClose" class="flyin-header">
-            <div class="item-group">
-                <button class="invisible underline">{{file.subfiles.length}} Subfiles</button>
-                <button class="invisible underline">{{file.users.length}} Users</button>
-            </div>
-            <div class="item-group">
-                <button class="ghost icon-left light-2"><i class="far fa-file-edit"></i>Edit</button>
-                <button class="square true-square light-2 more" style="margin-left: 16px"><i class="far fa-ellipsis-h"></i></button>
-            </div>
-            <div class="item-group">
-                <button class="circle primary prev" :disabled="!prevFileId" @click="showPrev"><i class="far fa-angle-left"></i></button>
-                <button class="circle primary next" :disabled="!nextFileId" @click="showNext"><i class="far fa-angle-right"></i></button>
-            </div>
+        <FlyinHeader :title="file.title" @closeFlyin="onClose" class="flyin-header" 
+        :next="nextFileId" :prev="prevFileId" @next="showNext" @prev="showPrev">
         </FlyinHeader>
         <div class="body">
             <SubfilesTable :subfiles="file.subfiles" @showSelectionUsersFlyin="showSelectionUsersFlyin"
