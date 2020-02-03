@@ -166,6 +166,7 @@
         <ContextMenu ref="contextMenuFolder" class="context-folder" v-slot="slotProps"
         @keybind-o="setCurrentFolder(contextMenuItem)"
         @keybind-r="onEditField(contextMenuItem, 'folder', 'title')"
+        @keybind-a="showFolderOwnersFlyin(contextMenuItem)"
         @keybind-m="onMoveTo(contextMenuItem, 'folder')"
         @keybind-d="onDeleteFolder(contextMenuItem.id)">
             <div class="item-group">
@@ -182,6 +183,12 @@
                         <i class="far fa-pen"></i>
                     </div>
                     <u>R</u>ename
+                </div>
+                <div class="item" @click="showFolderOwnersFlyin(contextMenuItem)">
+                    <div class="icon-wrapper">
+                        <i class="far fa-user-plus"></i>
+                    </div>
+                    <u>A</u>dd owner(s)
                 </div>
                 <div class="item" @click="onMoveTo(contextMenuItem, 'folder')">
                     <div class="icon-wrapper">
@@ -204,6 +211,7 @@
         @keybind-v="viewSingle(contextMenuItem.id)"
         @keybind-e="viewEditSingle(contextMenuItem.id)"
         @keybind-r="onEditField(contextMenuItem, 'file', 'title')"
+        @keybind-a="showFileOwnersFlyin(contextMenuItem)"
         @keybind-m="onMoveTo(contextMenuItem, 'file')"
         @keybind-d="onDeleteFile(contextMenuItem.id)">
             <div class="item-group">
@@ -213,19 +221,25 @@
                     </div>
                     <u>V</u>iew file
                 </div>
-            </div>
-            <div class="item-group">
                 <div class="item" @click="viewEditSingle(contextMenuItem.id)">
                     <div class="icon-wrapper">
                         <i class="far fa-file-edit"></i>
                     </div>
                     <u>E</u>dit file
                 </div>
+            </div>
+            <div class="item-group">
                 <div class="item" @click="onEditField(contextMenuItem, 'file', 'title')">
                     <div class="icon-wrapper">
                         <i class="far fa-pen"></i>
                     </div>
                     <u>R</u>ename
+                </div>
+                <div class="item" @click="showFileOwnersFlyin(contextMenuItem)">
+                    <div class="icon-wrapper">
+                        <i class="far fa-user-plus"></i>
+                    </div>
+                    <u>A</u>dd owner(s)
                 </div>
                 <div class="item" @click="onMoveTo(contextMenuItem, 'file')">
                     <div class="icon-wrapper">

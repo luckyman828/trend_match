@@ -15,7 +15,7 @@
                 <TableHeader class="action">Action</TableHeader>
             </template>
             <template v-slot:body>
-                <tr v-for="user in folder.owners" :key="user.id" class="user-row table-row" ref="userRow" @contextmenu.prevent="$emit('showContextMenu', $event, user)">
+                <tr v-for="user in folder.owners" :key="user.id" class="user-row table-row" ref="userRow" @contextmenu.prevent="showUserContext($event, user)">
                     <td class="select"><Checkbox/></td>
                     <td class="title clickable">
                         <i class="fas fa-user"></i>
@@ -23,7 +23,7 @@
                     </td>
                     <td class="email">{{user.email}}</td>
                     <td class="action">
-                        <button class="invisible ghost-hover" @click.stop="$emit('showContextMenu', $event, user)"><i class="far fa-ellipsis-h medium"></i></button>
+                        <button class="invisible ghost-hover" @click.stop="showUserContext($event, user)"><i class="far fa-ellipsis-h medium"></i></button>
                     </td>
                 </tr>
             </template>
@@ -35,7 +35,7 @@
         <ContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps">
             <div class="item-group">
                 <div class="item" @click="onRemoveUser(slotProps.item); slotProps.hide()">
-                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
                     <u>R</u>emove User
                 </div>
             </div>
@@ -66,6 +66,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import sortArray from '../mixins/sortArray'
 import User from '../store/models/User'
 
@@ -87,10 +88,11 @@ export default {
         availableUsers() {
             const allUsers = User.all()
             // Filter the available users to exclude users already added
-            return allUsers.filter(user => folder.owners.find(owner => owner.id == user.id))
+            return allUsers.filter(user => !this.folder.owners.find(owner => owner.id == user.id))
         }
     },
     methods: {
+        ...mapActions('entities/folders', ['addUsersToFolder','removeUserFromFolder']),
         showUserContext(e, user) {
             const contextMenu = this.$refs.contextMenuUser
             contextMenu.item = user
@@ -100,8 +102,8 @@ export default {
             const contextMenu = this.$refs.contextMenuAddUsers
             contextMenu.show(e)
         },
-        onAddUsersToFolder() {
-
+        onAddUsersToFolder(usersToAdd) {
+            this.addUsersToFolder({folder: this.folder, usersToAdd: this.usersToAdd})
         },
         sortUsers(method, key) {
             // If if we are already sorting by the given key, flip the sort order
@@ -119,10 +121,8 @@ export default {
         onRemoveUser(user) {
             // If we have a selection, loop through the selection and remove those
             // Else, remove the parsed user
+            this.removeUserFromFolder({folder: this.folder, user: user})
         },
-        removeUser(user) {
-            // code to remove user from folder
-        }
     }
 }
 </script>
