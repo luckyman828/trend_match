@@ -45,14 +45,14 @@ export default {
     extends: Modal,
     data: function() { return {
         usersToAdd: [{
-            email: null,
-            name: null,
-            password: null,
+            email: '',
+            name: '',
+            password: '',
         }],
         userDefaultObject: {
-            email: null,
-            name: null,
-            password: null,
+            email: '',
+            name: '',
+            password: '',
         },
         submitDisabled: true,
     }},
@@ -180,6 +180,7 @@ export default {
         box-shadow: 0px 3px 6px #0000005A;
         border-radius: 4px;
         margin-bottom: 20px;
+        background: $bgContent;
         h3 {
             margin: 0;
         }
