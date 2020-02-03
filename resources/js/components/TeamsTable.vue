@@ -114,6 +114,10 @@
                     <div class="icon-wrapper"><i class="far fa-key"></i></div>
                     Change Workspace <u>R</u>ole
                 </div>
+                <div class="item" @click.stop="onSetUserPassword(slotProps.mouseEvent, slotProps.item);slotProps.hide()">
+                    <div class="icon-wrapper"><i class="far fa-lock"></i></div>
+                    Set <u>P</u>assword
+                </div>
             </div>
             <div class="item-group">
                 <div class="item" @click="onDeleteUser(slotProps.item); slotProps.hide()">
@@ -157,6 +161,27 @@
                     <RadioButtons ref="userCurrencySelector" :options="availableWorkspaceRoles" :currentOptionId="slotProps.item.workspaceRoleId"
                     v-model="userToEdit.workspaceUsers[0].permission_level" :submitOnChange="true" :optionDescriptionKey="'description'"
                     :optionNameKey="'name'" :optionValueKey="'id'"/>
+                </div>
+            </template>
+        </ContextMenu>
+
+        <ContextMenu ref="contextMenuUserPassword" class="context-password">
+            <template v-slot:header="slotProps">
+                Change User's Password
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <div class="item-wrapper">
+                        <InputField type="text" ref="userPasswordInput" placeholder="New password" v-model="newUserPassword"/>
+                    </div>
+                </div>
+                <div class="item-group">
+                    <div class="item-wrapper">
+                        <button class="primary" :class="{disabled: passwordSubmitDisabled}" 
+                        @click="setUserPassword(slotProps.item);slotProps.hide()">
+                            <span>Save</span></button>
+                        <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
+                    </div>
                 </div>
             </template>
         </ContextMenu>
@@ -221,13 +246,17 @@ export default {
         editCurrency: false,
         // currentTab: 'Teams',
         teamsFilteredBySearch: [],
-        usersFilteredBySearch: []
+        usersFilteredBySearch: [],
+        newUserPassword: ''
     }},
     computed: {
         ...mapGetters('persist', ['currentWorkspaceId', 'currentWorkspace', 'userPermissionLevel', 'availableCurrencies', 'availableWorkspaceRoles']),
         ...mapGetters('entities/teams', ['currentTeam']),
         roles () {
             return Role.all().filter(role => role.id <= this.userPermissionLevel)
+        },
+        passwordSubmitDisabled() {
+            return this.newUserPassword.length < 8
         },
         currentTab: {
             get () {
@@ -244,12 +273,30 @@ export default {
     methods: {
         ...mapActions('entities/teamInvites', ['deleteInvite', 'resend']),
         ...mapActions('entities/userTeams', ['removeUserFromTeam']),
-        ...mapActions('entities/users', ['updateUser']),
+        ...mapActions('entities/users', ['updateUser', 'updateUserPassword']),
         ...mapActions('entities/teams', ['updateTeam', 'deleteTeam']),
         ...mapActions('entities/workspaceUsers', ['updateWorkspaceUser', 'deleteWorkspaceUser']),
         ...mapMutations('entities/teams', ['setCurrentTeamId', 'setAvailableTeamIds']),
         onSelect(index) {
             this.$emit('onSelect', index)
+        },
+        onSetUserPassword(mouseEvent, user) {
+            const contextMenu = this.$refs.contextMenuUserPassword
+            contextMenu.item = user;
+            contextMenu.show(mouseEvent)
+            // Wait for the context menu to show in the DOM
+            this.$nextTick(() => {
+                // Set focus to the input field
+                const input = this.$refs.userPasswordInput
+                input.focus()
+                input.select()
+            })
+        },
+        setUserPassword(user) {
+            const password = this.newUserPassword
+            console.log('setting user password to: '+password)
+            console.log(user)
+            this.updateUserPassword({user: user, password: password})
         },
         onEditTeamCurrency(mouseEvent, team) {
             const contextMenu = this.$refs.contextMenuTeamCurrency

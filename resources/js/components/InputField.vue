@@ -41,6 +41,12 @@ export default {
             if (this.type == 'select') {
                 this.$emit('click', e)
             }
+        },
+        focus() {
+            this.$refs.inputField.focus()
+        },
+        select() {
+            this.$refs.inputField.select()
         }
     }
 }
