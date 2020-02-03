@@ -1,23 +1,22 @@
 <template>
     <div class="file-single">
-        <FlyinHeader :title="file.title" @closeFlyin="onClose" class="flyin-header" 
-        :next="nextFileId" :prev="prevFileId" @next="showNext" @prev="showPrev">
-        </FlyinHeader>
-        <div class="body">
-            <SubfilesTable :subfiles="file.subfiles" @showSelectionUsersFlyin="showSelectionUsersFlyin"
-            @showSelectionOwnersFlyin="showSelectionOwnersFlyin"/>
-        </div>
+        <SubfilesTable :subfiles="file.subfiles" @showSelectionUsersFlyin="showSelectionUsersFlyin"
+        @showSelectionOwnersFlyin="showSelectionOwnersFlyin"/>
 
-        <FlyIn ref="selectionUsersFlyin" v-slot="slotProps">
-            <template v-if="currentSelection">
+        <FlyIn ref="selectionUsersFlyin">
+            <template v-if="currentSelection" v-slot:header="slotProps">
                 <FlyinHeader :title="currentSelection.name + ' Feedback Users'" disableNavigation=true @closeFlyin="slotProps.toggle"/>
+            </template>
+            <template v-if="currentSelection" v-slot>
                 <SelectionUsersTable :selection="currentSelection"/>
             </template>
         </FlyIn>
 
-        <FlyIn ref="selectionOwnersFlyin" v-slot="slotProps">
-            <template v-if="currentSelection">
+        <FlyIn ref="selectionOwnersFlyin">
+            <template v-if="currentSelection" v-slot:header="slotProps">
                 <FlyinHeader :title="currentSelection.name + ' Owners'" disableNavigation=true @closeFlyin="slotProps.toggle"/>
+            </template>
+            <template v-if="currentSelection" v-slot>
                 <SelectionOwnersTable :selection="currentSelection"/>
             </template>
         </FlyIn>
@@ -45,10 +44,8 @@ export default {
         currentSelection: null
     }},
     computed: {
-        ...mapGetters('entities/collections', ['nextFileId', 'prevFileId']),
     },
     methods: {
-        ...mapActions('persist', ['setCurrentFileId']),
         showSelectionUsersFlyin(selection) {
             const flyin = this.$refs.selectionUsersFlyin
             this.currentSelection = selection
@@ -59,17 +56,6 @@ export default {
             this.currentSelection = selection
             flyin.show()
         },
-        onClose() {
-            this.$emit('closeFlyin')
-        },
-        showNext() {
-            if (this.nextFileId)
-                this.setCurrentFileId(this.nextFileId)
-        },
-        showPrev() {
-            if (this.prevFileId)
-                this.setCurrentFileId(this.prevFileId)
-        },
     }
 }
 </script>
@@ -77,13 +63,6 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 
-    .file-single {
-        height: 100%;
-        background: $grey;
-        .body {
-            padding: 16px;
-        }
-    }
     .flyin-header {
         .item-group {
             display: flex;

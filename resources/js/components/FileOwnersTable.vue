@@ -128,7 +128,4 @@ export default {
 </script>
 
 <style scoped lang="scss">
-    .file-owners-table {
-        padding: 16px;
-    }
 </style>

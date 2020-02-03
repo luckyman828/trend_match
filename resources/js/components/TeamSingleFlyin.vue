@@ -1,50 +1,33 @@
 <template>
     <div class="team-single">
-        <FlyinHeader :title="team.title" @closeFlyin="onClose" class="flyin-header" :next="nextTeamId" :prev="prevTeamId"
-        @next="showNext" @prev="showPrev">
-            <div class="item-group">
-                <!-- <button class="invisible underline">{{team.subfiles.length}} Subfiles</button> -->
-                <button class="invisible underline">{{team.users.length}} Users</button>
-            </div>
-            <div class="item-group">
-                <button class="ghost"><i class="far fa-pen"></i><span>Edit</span></button>
-                <button class="" style="margin-left: 16px"><i class="far fa-ellipsis-h medium"></i></button>
-            </div>
-            <!-- <div class="item-group">
-                <button class="circle primary prev" :disabled="!prevTeamId" @click="showPrev"><i class="far fa-angle-left"></i></button>
-                <button class="circle primary next" :disabled="!nextTeamId" @click="showNext"><i class="far fa-angle-right"></i></button>
-            </div> -->
-        </FlyinHeader>
-        <div class="body">
-            <FlexTable>
-                <template v-slot:topBar>
-                    <TableTopBar>
-                        <template v-slot:left>
-                            <SearchField ref="searchField" :searchKey="['name','email']" :arrayToSearch="team.users" v-model="usersFilteredBySearch"/>
-                        </template>
-                        <template v-slot:right>
-                            <span>{{team.users.length}} records</span>
-                        </template>
-                    </TableTopBar>
-                </template>
-                <template v-slot:header>
-                    <TableHeader class="select"><Checkbox/></TableHeader>
-                    <TableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</TableHeader>
-                    <TableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</TableHeader>
-                    <TableHeader :sortKey="'teamRoleId'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Team Role</TableHeader>
-                    <TableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">User Currency</TableHeader>
-                    <TableHeader class="action">Action</TableHeader>
-                </template>
-                <template v-slot:body>
-                    <TeamSingleFlyinUsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in usersFilteredBySearch" :key="user.id" :user="user" :index="index"
-                    :team="team" @showContextMenu="showUserContext($event, user)" @editRole="onEditUserRole($event, user)"
-                     @editCurrency="onEditUserCurrency($event, user)"/>
-                </template>
-                <template v-slot:footer="slotProps">
-                    <td><button class="primary invisible" @click="onAddUser($event)"><i class="far fa-plus"></i><span>Add User(s) to Team</span></button></td>
-                </template>
-            </FlexTable>
-        </div>
+        <FlexTable>
+            <template v-slot:topBar>
+                <TableTopBar>
+                    <template v-slot:left>
+                        <SearchField ref="searchField" :searchKey="['name','email']" :arrayToSearch="team.users" v-model="usersFilteredBySearch"/>
+                    </template>
+                    <template v-slot:right>
+                        <span>{{team.users.length}} records</span>
+                    </template>
+                </TableTopBar>
+            </template>
+            <template v-slot:header>
+                <TableHeader class="select"><Checkbox/></TableHeader>
+                <TableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</TableHeader>
+                <TableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</TableHeader>
+                <TableHeader :sortKey="'teamRoleId'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Team Role</TableHeader>
+                <TableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">User Currency</TableHeader>
+                <TableHeader class="action">Action</TableHeader>
+            </template>
+            <template v-slot:body>
+                <TeamSingleFlyinUsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in usersFilteredBySearch" :key="user.id" :user="user" :index="index"
+                :team="team" @showContextMenu="showUserContext($event, user)" @editRole="onEditUserRole($event, user)"
+                    @editCurrency="onEditUserCurrency($event, user)"/>
+            </template>
+            <template v-slot:footer="slotProps">
+                <td><button class="primary invisible" @click="onAddUser($event)"><i class="far fa-plus"></i><span>Add User(s) to Team</span></button></td>
+            </template>
+        </FlexTable>
 
         <ContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps">
             <div class="item-group">
@@ -159,7 +142,6 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('entities/teams', ['nextTeamId', 'prevTeamId']),
         ...mapGetters('persist', ['authUser', 'availableTeamRoles', 'availableCurrencies']),
         authUserTeam() {
             return UserTeam.where('user_id', AuthUser.first().id).where('team_id', this.team.id).first()
@@ -171,20 +153,8 @@ export default {
         }
     },
     methods: {
-        ...mapMutations('entities/teams', ['setCurrentTeamId']),
         ...mapActions('entities/users', ['updateUser']),
         ...mapActions('entities/userTeams', ['removeUserFromTeam', 'updateUserTeam', 'addUsersToTeam']),
-        onClose() {
-            this.$emit('closeFlyin')
-        },
-        showNext() {
-            if (this.nextTeamId)
-                this.setCurrentTeamId(this.nextTeamId)
-        },
-        showPrev() {
-            if (this.prevTeamId)
-                this.setCurrentTeamId(this.prevTeamId)
-        },
         sortUsers(method, key) {
             // If if we are already sorting by the given key, flip the sort order
             if (this.sortKey == key) {

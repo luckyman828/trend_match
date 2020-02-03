@@ -78,8 +78,15 @@
         <FoldersTable v-if="currentFolder" :folder="currentFolder" :selected="selected" 
         @setCurrentFolder="setCurrentFolder" @onSelect="onSelect" @showSingleFile="showSingleFile"/>
         <FlyIn ref="fileSingleFlyin">
-            <FileSingle :file="currentFile" v-if="currentFile != null" 
-            @closeFlyin="$refs.fileSingleFlyin.close()"/>
+            <template v-if="currentFile" v-slot:header="slotProps">
+                <FlyinHeader :title="currentFile.title" @closeFlyin="slotProps.close()" class="flyin-header" 
+                :next="nextFileId" :prev="prevFileId" @next="showNext" @prev="showPrev">
+                </FlyinHeader>
+            </template>
+            <template v-if="currentFile" v-slot>
+                <FileSingle :file="currentFile" 
+                @closeFlyin="$refs.fileSingleFlyin.close()"/>
+            </template>
         </FlyIn>
         <!-- <FilesTable :authUser="authUser" :files="userFiles" :selected="selected" @onSelect="onSelect"/> -->
     </div>
@@ -131,7 +138,7 @@ export default {
         
     },
     computed: {
-        ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
+        ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile', 'nextFileId', 'prevFileId']),
         ...mapGetters('entities/folders', ['loadingFolders', 'folders']),
         ...mapGetters('persist', ['teamFilterId', 'currentTeam', 'currentWorkspace', 'currentWorkspaceId', 'userPermissionLevel', 'authUser']),
         defaultTeam() {
@@ -205,6 +212,14 @@ export default {
             const selected = this.selected
             const found = selected.findIndex(el => el == index)
             const result = (found >= 0) ? selected.splice(found, 1) : selected.push(index)
+        },
+        showNext() {
+            if (this.nextFileId)
+                this.setCurrentFileId(this.nextFileId)
+        },
+        showPrev() {
+            if (this.prevFileId)
+                this.setCurrentFileId(this.prevFileId)
         },
         showSingleFile(fileId) {
             // Set the current file id

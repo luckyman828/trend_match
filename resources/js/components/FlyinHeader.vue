@@ -36,6 +36,8 @@ export default {
         box-shadow: 0px 2px 10px #0000001A;
         padding: 16px;
         border-bottom: solid 2px $grey2;
+        position: relative;
+        z-index: 1;
         .left, .right {
             display: flex;
             align-items: center;

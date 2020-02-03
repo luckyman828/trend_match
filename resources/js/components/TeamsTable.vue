@@ -67,8 +67,15 @@
         </FlexTable>
 
         <FlyIn ref="teamSingleFlyin">
-            <TeamSingleFlyin :team="currentTeam" :workspaceUsers="users" v-if="currentTeam"
-            @closeFlyin="$refs.teamSingleFlyin.close()"/>
+            <template v-slot:header="slotProps" v-if="currentTeam">
+                <FlyinHeader :title="currentTeam.title" @closeFlyin="slotProps.close()" class="flyin-header" :next="nextTeamId" :prev="prevTeamId"
+                @next="showNext" @prev="showPrev">
+                </FlyinHeader>
+            </template>
+            <template v-slot="slotProps" v-if="currentTeam">
+                <TeamSingleFlyin :team="currentTeam" :workspaceUsers="users"
+                @closeFlyin="slotProps.close()"/>
+            </template>
         </FlyIn>
 
         <ContextMenu ref="contextMenuTeam" class="context-team" v-slot="slotProps">
@@ -251,7 +258,7 @@ export default {
     }},
     computed: {
         ...mapGetters('persist', ['currentWorkspaceId', 'currentWorkspace', 'userPermissionLevel', 'availableCurrencies', 'availableWorkspaceRoles']),
-        ...mapGetters('entities/teams', ['currentTeam']),
+        ...mapGetters('entities/teams', ['currentTeam', 'nextTeamId', 'prevTeamId']),
         roles () {
             return Role.all().filter(role => role.id <= this.userPermissionLevel)
         },
@@ -279,6 +286,14 @@ export default {
         ...mapMutations('entities/teams', ['setCurrentTeamId', 'setAvailableTeamIds']),
         onSelect(index) {
             this.$emit('onSelect', index)
+        },
+        showNext() {
+            if (this.nextTeamId)
+                this.setCurrentTeamId(this.nextTeamId)
+        },
+        showPrev() {
+            if (this.prevTeamId)
+                this.setCurrentTeamId(this.prevTeamId)
         },
         onSetUserPassword(mouseEvent, user) {
             const contextMenu = this.$refs.contextMenuUserPassword

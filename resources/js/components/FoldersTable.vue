@@ -149,21 +149,25 @@
             </template>
         </Modal>
 
-        <FlyIn ref="folderOwnersFlyin" v-slot="slotProps">
-            <template v-if="flyinFolder">
-                <FlyinHeader :title="flyinFolder.title" disableNavigation=true @closeFlyin="slotProps.toggle"/>
-                <FolderOwnersTable :folder="flyinFolder"/>
+        <FlyIn ref="folderOwnersFlyin">
+            <template v-slot:header="slotProps">
+                <FlyinHeader v-if="flyinFolder" :title="flyinFolder.title" disableNavigation=true @closeFlyin="slotProps.toggle"/>
+            </template>
+            <template v-slot>
+                <FolderOwnersTable v-if="flyinFolder" :folder="flyinFolder"/>
             </template>
         </FlyIn>
 
         <FlyIn ref="fileOwnersFlyin">
-            <template v-if="flyinFile" v-slot="slotProps">
+            <template v-if="flyinFile" v-slot:header="slotProps">
                 <FlyinHeader :title="flyinFile.title" disableNavigation=true @closeFlyin="slotProps.toggle"/>
+            </template>
+            <template v-if="flyinFile" v-slot>
                 <FileOwnersTable :file="flyinFile"/>
             </template>
         </FlyIn>
 
-        <ContextMenu ref="contextMenuFolder" class="context-folder" v-slot="slotProps"
+        <ContextMenu ref="contextMenuFolder" class="context-folder" v-slot
         @keybind-o="setCurrentFolder(contextMenuItem)"
         @keybind-r="onEditField(contextMenuItem, 'folder', 'title')"
         @keybind-a="showFolderOwnersFlyin(contextMenuItem)"
