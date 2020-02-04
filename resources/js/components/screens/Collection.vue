@@ -207,6 +207,7 @@ export default {
     methods: {
         ...mapActions('persist', ['setTeamFilter', 'setCurrentFileId']),
         ...mapMutations('entities/collections', ['setAvailableFileIds']),
+        ...mapMutations('persist', ['setCurrentFolderId']),
         onSelect(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
             const selected = this.selected
@@ -243,11 +244,16 @@ export default {
                 // Set the current folder to the new id
                 this.currentFolderId = folder.id
                 this.currentFolder = this.folders.find(x => x.id == this.currentFolderId)
+                // Set current folder in store
+                this.setCurrentFolderId(folder.id)
             } else {
                 // Reset the folder and path
                 this.path = []
                 this.currentFolderId = null
                 this.currentFolder = this.rootFolder
+                // Set current folder in store
+                this.setCurrentFolderId(null)
+                
             }
         },
     },
