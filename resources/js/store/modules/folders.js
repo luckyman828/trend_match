@@ -84,6 +84,16 @@ export default {
                     console.log(err.response)
                 })
         },
+        addUsersToFolder({ commit }, { folder, usersToAdd }) {
+            // Commit mutation to state
+            commit('addUsersToFolder', { folder, usersToAdd })
+            // Send request to API
+        },
+        removeUserFromFolder({ commit }, { folder, user }) {
+            // Commit mutation to state
+            commit('removeUserFromFolder', { folder, user })
+            // Send request to API
+        },
     },
 
     mutations: {
@@ -96,6 +106,13 @@ export default {
         },
         updateFolder(state, folder) {
             Folder.insert({ data: folder })
+        },
+        addUsersToFolder(state, { folder, usersToAdd }) {
+            folder.owners = folder.owners.concat(usersToAdd)
+        },
+        removeUserFromFolder(state, { folder, user }) {
+            const userIndex = folder.owners.findIndex(x => x.id == user.id)
+            folder.owners.splice(userIndex, 1)
         },
     },
 }

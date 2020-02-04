@@ -18,7 +18,7 @@
                 <th>Modified <i class="fas fa-sort"></i></th>
                 <th>Deadline <i class="fas fa-sort"></i></th>
                 <th>Items <i class="fas fa-sort"></i></th>
-                <th>Teams <i class="fas fa-sort"></i></th>
+                <th>Owners <i class="fas fa-sort"></i></th>
                 <th>Status <i class="fas fa-sort"></i></th>
                 <th class="action">Action</th>
             </template>
@@ -37,10 +37,14 @@
                     <td class="modified">-</td>
                     <td class="deadline">-</td>
                     <td class="items">{{folder.folders.length + folder.files.length}}</td>
-                    <td class="teams">-</td>
+                    <td class="owners">
+                        <button class="ghost editable sm" @click="showFolderOwnersFlyin(folder)">
+                            <i class="far fa-user"></i><span>{{folder.owners.length}}</span>
+                        </button>
+                    </td>
                     <td class="status">-</td>
                     <td class="action">
-                        <span class="button invisible ghost-hover true-square" @click.stop="showContextMenu($event, folder, 'folder')"><i class="fas fa-ellipsis-h"></i></span>
+                        <button class="invisible ghost-hover" @click="showContextMenu($event, folder, 'folder')"><i class="fas fa-ellipsis-h"></i></button>
                     </td>
                 </tr>
                 <tr v-for="(file) in folder.files" :key="file.id" class="file" @contextmenu.prevent="showContextMenu($event, file, 'file')">
@@ -55,10 +59,14 @@
                     <td class="modified">-</td>
                     <td class="deadline">{{file.end_date}}</td>
                     <td class="items">-</td>
-                    <td class="teams">-</td>
+                    <td class="owners">
+                        <button class="ghost editable sm" @click="showFileOwnersFlyin(file)">
+                            <i class="far fa-user"></i><span>{{file.owners.length}}</span>
+                        </button>
+                    </td>
                     <td class="status">Stage {{file.phase.id}}</td>
                     <td class="action">
-                        <button class="invisible ghost-hover" @click.stop="showContextMenu($event, file, 'file')"><i class="fas fa-ellipsis-h"></i></button>
+                        <button class="invisible ghost-hover" @click="showContextMenu($event, file, 'file')"><i class="fas fa-ellipsis-h"></i></button>
                     </td>
                 </tr>
             </template>
@@ -106,7 +114,7 @@
             ref="moveItemModal"
             :header="'Move item to..'"
             :subHeader="'Select a place to move the current item to'"
-            class="move-item-modal"
+            :classes="'move-item-modal'"
         >
             <template v-slot>
                 <div class="inner" v-if="toMove != null">
@@ -132,18 +140,37 @@
                         <p v-if="folderToMoveTo.folders.length <= 0">No folders..</p>
                     </div>
                     <div class="controls" style="display: flex; justify-content: flex-end; margin-top: 12px;">
-                        <button class="invisible dark ghost-hover" @click="$refs.moveItemModal.toggle(); toMove = null">Cancel</button>
+                        <button class="invisible dark ghost-hover" @click="$refs.moveItemModal.toggle(); toMove = null"><span>Cancel</span></button>
                         <button class="primary" :class="{disabled: folderToMoveToId == toMove.id || folderToMoveToId == folder.id}" @click="submitMoveItem()"
-                        >Move here
+                        ><span>Move here</span>
                         </button>
                     </div>
                 </div>
             </template>
         </Modal>
 
-        <ContextMenu ref="contextMenuFolder" class="context-folder" v-slot="slotProps"
+        <FlyIn ref="folderOwnersFlyin">
+            <template v-slot:header="slotProps">
+                <FlyinHeader v-if="flyinFolder" :title="flyinFolder.title" disableNavigation=true @closeFlyin="slotProps.toggle"/>
+            </template>
+            <template v-slot>
+                <FolderOwnersTable v-if="flyinFolder" :folder="flyinFolder"/>
+            </template>
+        </FlyIn>
+
+        <FlyIn ref="fileOwnersFlyin">
+            <template v-if="flyinFile" v-slot:header="slotProps">
+                <FlyinHeader :title="flyinFile.title" disableNavigation=true @closeFlyin="slotProps.toggle"/>
+            </template>
+            <template v-if="flyinFile" v-slot>
+                <FileOwnersTable :file="flyinFile"/>
+            </template>
+        </FlyIn>
+
+        <ContextMenu ref="contextMenuFolder" class="context-folder" v-slot
         @keybind-o="setCurrentFolder(contextMenuItem)"
         @keybind-r="onEditField(contextMenuItem, 'folder', 'title')"
+        @keybind-a="showFolderOwnersFlyin(contextMenuItem)"
         @keybind-m="onMoveTo(contextMenuItem, 'folder')"
         @keybind-d="onDeleteFolder(contextMenuItem.id)">
             <div class="item-group">
@@ -160,6 +187,12 @@
                         <i class="far fa-pen"></i>
                     </div>
                     <u>R</u>ename
+                </div>
+                <div class="item" @click="showFolderOwnersFlyin(contextMenuItem)">
+                    <div class="icon-wrapper">
+                        <i class="far fa-user-plus"></i>
+                    </div>
+                    <u>A</u>dd owner(s)
                 </div>
                 <div class="item" @click="onMoveTo(contextMenuItem, 'folder')">
                     <div class="icon-wrapper">
@@ -182,6 +215,7 @@
         @keybind-v="viewSingle(contextMenuItem.id)"
         @keybind-e="viewEditSingle(contextMenuItem.id)"
         @keybind-r="onEditField(contextMenuItem, 'file', 'title')"
+        @keybind-a="showFileOwnersFlyin(contextMenuItem)"
         @keybind-m="onMoveTo(contextMenuItem, 'file')"
         @keybind-d="onDeleteFile(contextMenuItem.id)">
             <div class="item-group">
@@ -191,19 +225,25 @@
                     </div>
                     <u>V</u>iew file
                 </div>
-            </div>
-            <div class="item-group">
                 <div class="item" @click="viewEditSingle(contextMenuItem.id)">
                     <div class="icon-wrapper">
                         <i class="far fa-file-edit"></i>
                     </div>
                     <u>E</u>dit file
                 </div>
+            </div>
+            <div class="item-group">
                 <div class="item" @click="onEditField(contextMenuItem, 'file', 'title')">
                     <div class="icon-wrapper">
                         <i class="far fa-pen"></i>
                     </div>
                     <u>R</u>ename
+                </div>
+                <div class="item" @click="showFileOwnersFlyin(contextMenuItem)">
+                    <div class="icon-wrapper">
+                        <i class="far fa-user-plus"></i>
+                    </div>
+                    <u>A</u>dd owner(s)
                 </div>
                 <div class="item" @click="onMoveTo(contextMenuItem, 'file')">
                     <div class="icon-wrapper">
@@ -228,9 +268,9 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ProductTotals from './ProductTotals'
 import ProductSingle from './ProductSingle'
-import ContextMenu from './ContextMenu'
 import Editable from './Editable'
-import EditInputWrapper from './EditInputWrapper'
+import FolderOwnersTable from './FolderOwnersTable'
+import FileOwnersTable from './FileOwnersTable'
 
 export default {
     name: 'foldersTable',
@@ -239,9 +279,9 @@ export default {
         'folder'
     ],
     components: {
-        ContextMenu,
         Editable,
-        EditInputWrapper,
+        FolderOwnersTable,
+        FileOwnersTable,
     },
     data: function() {
         return {
@@ -261,7 +301,9 @@ export default {
             contextMenuItem: null,
             toEdit: null,
             toMove: null,
-            folderToMoveToId: this.folder.id
+            folderToMoveToId: this.folder.id,
+            flyinFolder: null,
+            flyinFile: null,
         }
     },
     computed: {
@@ -291,6 +333,16 @@ export default {
         ...mapActions('entities/collections', ['deleteFile', 'updateFile', 'uploadToExistingFile']),
         ...mapActions('entities/folders', ['deleteFolder', 'updateFolder']),
         ...mapMutations('persist', ['setCurrentFolderId']),
+        showFileOwnersFlyin(file) {
+            const flyin = this.$refs.fileOwnersFlyin
+            this.flyinFile = file
+            flyin.show()
+        },
+        showFolderOwnersFlyin(folder) {
+            const flyin = this.$refs.folderOwnersFlyin
+            this.flyinFolder = folder
+            flyin.show()
+        },
         setCurrentFolder(folder) {
             this.$emit('setCurrentFolder', folder)
             this.setCurrentFolderId(folder.id)
@@ -388,7 +440,8 @@ export default {
                     parent_id: currentFolder.id ? currentFolder.id : null,
                     workspace_id: this.currentWorkspaceId,
                     folders: [],
-                    files: []
+                    files: [],
+                    owners: []
                 }
                 // Push new folder to the current folder
                 currentFolder.folders.push(newFolder)
@@ -515,96 +568,10 @@ export default {
             align-items: center;
         }
     }
-    // td {
-    //     vertical-align: top;
-    //     line-height: 40px;
-    //     &.title {
-    //         display: flex;
-    //         i {
-    //             width: 24px;
-    //             line-height: 40px;
-    //             font-size: 16px;
-    //             margin-right: 8px;
-    //         }
-    //     }
-    // }
 }
 .clickable {
     cursor: pointer;
 }
-// Table
-// .flex-table {
-//     .flex-group {
-//         display: flex;
-//         flex: 1;
-//         margin: 0 16px;
-//         align-items: center;
-//         &:nth-child(1) {
-//             flex: 3;
-//         }
-//         &:nth-child(2) {
-//             flex: 3;
-//             justify-content: flex-start;
-//             > * {
-//                 flex: none;
-//                 flex-basis: 100px;
-//                 &.stage {
-//                     flex-basis: 132px;
-//                 }
-//             }
-//         }
-//         &:nth-child(3) {
-//             flex: 2;
-//             max-width: 300px;
-//             min-width: 300px;
-//         }
-//         > * {
-//             flex: 1;
-//             margin: 0 8px;
-//             &.select {
-//                 max-width: 80px;
-//             }
-//             &.id {
-//                 white-space: nowrap;
-//                 overflow: hidden;
-//                 max-width: 75px;
-//             }
-//             &.action {
-//                 display: flex;
-//                 justify-content: flex-end;
-//                 > * {
-//                     &:not(:last-child) {
-//                         margin-right: 8px;
-//                     }
-//                 }
-//             }
-//         }
-//         > td {
-//             &.action {
-//                 text-align: right;
-//             }
-//         }
-//     }
-//     .flex-table-row {
-//         height: 82px;
-//         > * {
-//             flex: 1;
-//             margin: 0 8px;
-//             &:first-child {
-//                 margin-left: 16px;
-//             }
-//             &:last-child {
-//                 margin-right: 16px;
-//             }
-//         }
-//         th {
-//             &.action {
-//                 text-align: right;
-//                 justify-content: flex-end;
-//             }
-//         }
-//     }
-// }
 .show-more {
     width: 100%;
     margin: 16px auto 0;

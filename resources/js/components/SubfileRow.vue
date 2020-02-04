@@ -15,13 +15,24 @@
             <td class="in">-</td>
             <td class="out">-</td>
             <td class="nd">-</td>
-            <td class="users">-</td>
+            <td class="owner">
+                <button class="ghost editable sm" @click="$emit('showSelectionOwnersFlyin', subfile)">
+                    <i class="far fa-user-shield"></i><span>{{subfile.owners.length}}</span>
+                </button>
+            </td>
+            <td class="users">
+                <button class="ghost editable sm" @click="$emit('showSelectionUsersFlyin', subfile)">
+                    <i class="far fa-user"></i><span>{{subfile.feedbackUsers.length}}</span>
+                </button>
+            </td>
             <td class="status">
-                <button class="square ghost icon-right"><i class="far fa-lock"></i><span>Locked</span></button>
-                <button class="square ghost icon-right"><i class="far fa-eye"></i><span>Hidden</span></button>
+                <button class="editable ghost" @click="onToggleLocked(subfile)"><span>{{subfile.locked ? 'Locked' : 'Open'}}</span>
+                    <i class="far" :class="subfile.locked ? 'fa-lock' : 'fa-lock-open'"></i></button>
+                <button class="editable ghost" @click="onToggleHidden(subfile)"><span>{{subfile.hidden ? 'Hidden' : 'Visible'}}</span>
+                    <i class="far" :class="subfile.hidden ? 'fa-eye-slash' : 'fa-eye'"></i></button>
             </td>
             <td class="action">
-                <span class="button invisible ghost-hover true-square" @click="toggleExpanded(subfile.id)"><i class="fas fa-ellipsis-h"></i></span>
+                <button class="invisible ghost-hover" @click="toggleExpanded(subfile.id)"><i class="fas fa-ellipsis-h"></i></button>
             </td>
         </tr>
         <template v-if="childrenExpanded">
@@ -55,6 +66,18 @@ export default {
     methods: {
         toggleExpanded() {
             this.childrenExpanded = !this.childrenExpanded
+        },
+        onToggleLocked(selection) {
+            // Dispatch action in store
+            selection.locked = !selection.locked
+            // Temp fix to display change
+            this.$forceUpdate() // <-- Remember to remove
+        },
+        onToggleHidden(selection) {
+            // Dispatch action in store
+            selection.hidden = !selection.hidden
+            // Temp fix to display change
+            this.$forceUpdate() // <-- Remember to remove
         }
     }
 }
@@ -93,6 +116,11 @@ export default {
             i {
                 color: $primary;
             }
+        }
+    }
+    .status {
+        button {
+            min-width: 84px;
         }
     }
     

@@ -78,6 +78,9 @@ export default {
                 })
             return succes
         },
+        async updateUserPassword({ commit }, { user, password }) {
+            // Send update request to API
+        },
     },
 
     mutations: {

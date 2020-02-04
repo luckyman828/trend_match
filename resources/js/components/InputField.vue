@@ -1,9 +1,10 @@
 <template>
-    <div class="input-field" :class="type">
-        <div v-tooltip.top="errorTooltip" :class="[{'read-only': readOnly}, {'input-wrapper': type == 'select'}, {'has-label': label}]" @click="onClick">
+    <div class="input-field" :class="[type, {'read-only': readOnly}, {'error': error || errorTooltip}, {'has-label': label}]">
+        <div v-tooltip.top="errorTooltip" :class="{'input-wrapper': type == 'select'}" @click="onClick">
             <span v-if="label" class="label" v-html="label"></span>
             <input ref="inputField" :type="type" :id="id" :placeholder="placeholder" :autocomplete="autocomplete"
-            :class="[{'read-only': readOnly}, {'error': error || errorTooltip}, {'input-wrapper': type != 'select'}]" :value="value" :disabled="disabled"
+            :value="value" :disabled="disabled"
+            :class="{'input-wrapper': type != 'select'}" 
             @input="$emit('input', $event.target.value)" @blur="$emit('blur', $event)" @paste="$emit('paste', $event)">
             <i v-if="type == 'select'" class="fas fa-caret-down"></i>
         </div>
@@ -41,6 +42,12 @@ export default {
             if (this.type == 'select') {
                 this.$emit('click', e)
             }
+        },
+        focus() {
+            this.$refs.inputField.focus()
+        },
+        select() {
+            this.$refs.inputField.select()
         }
     }
 }
@@ -72,6 +79,14 @@ export default {
                 cursor: pointer;
             }
         }
+        &.error {
+            .input-wrapper {
+                border: solid 2px $fail;
+            }
+            .error-msg {
+                display: flex;
+            }
+        }
     }
     .input-wrapper {
         position: relative;
@@ -89,12 +104,6 @@ export default {
                 align-items: center;
                 justify-content: center;
             }
-        &.error {
-            border: solid 2px $fail;
-            & + .error-msg {
-                display: flex;
-            }
-        }
     }
     .error-msg {
         display: none;

@@ -337,6 +337,16 @@ export default {
         async setPrevFileAsCurrent({ dispatch, getters }) {
             if (getters.prevFileId) dispatch('persist/setCurrentFileId', getters.prevFileId, { root: true })
         },
+        addUsersToFile({ commit }, { file, usersToAdd }) {
+            // Commit mutation to state
+            commit('addUsersToFile', { file, usersToAdd })
+            // Send request to API
+        },
+        removeUserFromFile({ commit }, { file, user }) {
+            // Commit mutation to state
+            commit('removeUserFromFile', { file, user })
+            // Send request to API
+        },
     },
 
     mutations: {
@@ -352,6 +362,13 @@ export default {
         },
         setAvailableFileIds(state, fileIds) {
             state.availableFileIds = fileIds
+        },
+        addUsersToFile(state, { file, usersToAdd }) {
+            file.owners = file.owners.concat(usersToAdd)
+        },
+        removeUserFromFile(state, { file, user }) {
+            const userIndex = file.owners.findIndex(x => x.id == user.id)
+            file.owners.splice(userIndex, 1)
         },
     },
 }

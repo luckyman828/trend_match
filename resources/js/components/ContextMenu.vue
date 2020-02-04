@@ -131,13 +131,15 @@ export default {
                 border-top: solid 1px $divider;
             }
         }
-        .item {
+        .item, .item-wrapper {
             padding: 8px 16px;
             line-height: 1;
             color: $dark05;
             &:hover {
                 background: $light1;
-                cursor: pointer;
+                &:not(.item-wrapper) {
+                    cursor: pointer;
+                }
             }
             .icon-wrapper {
                 width: 32px;

@@ -2,9 +2,10 @@
     <div class="fly-in-wrapper" :class="[{visible: isVisible}]">
         <div class="overlay" @click="close"></div>
         <div class="fly-in" ref="flyIn">
-            <!-- <div class="body"> -->
+            <slot name="header" :toggle="toggle"/>
+            <div class="body">
                 <slot :toggle="toggle"/>
-            <!-- </div> -->
+            </div>
         </div>
     </div>
 </template>
@@ -14,7 +15,7 @@
 export default {
     name: 'flyIn',
     props: [
-        'visibleOverwrite'
+        'visibleOverwrite',
     ],
     data: function () { return {
         visible: false,
@@ -62,10 +63,10 @@ export default {
 @import '~@/_variables.scss';
     .fly-in-wrapper {
         &.visible {
-            .overlay {
+            > .overlay {
                 display: block;
             }
-            .fly-in {
+            > .fly-in {
                 right: 0%;
             }
         }
@@ -81,6 +82,8 @@ export default {
         display: none;
     }
     .fly-in {
+        display: flex;
+        flex-direction: column;
         right: -100%;
         margin: 0;
         max-width: 1032px;
@@ -101,6 +104,8 @@ export default {
         // }
         .body {
             padding: 16px;
+            flex: 1;
+            overflow-y: auto;
         }
     }
     // @keyframes fly-in {

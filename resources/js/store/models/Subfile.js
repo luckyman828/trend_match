@@ -17,9 +17,9 @@ export default class Subfile extends Model {
             file_id: this.attr(null),
             name: this.attr(null),
             parent_id: this.attr(null),
-            master: this.attr(false),
-            hidden: this.attr(false),
-            locked: this.attr(false),
+            master: this.boolean(false),
+            hidden: this.boolean(false),
+            locked: this.boolean(false),
             unhide_date: this.attr(null),
             unlock_date: this.attr(null),
             feedback_open: this.attr(false),
@@ -39,6 +39,8 @@ export default class Subfile extends Model {
             view_sibling_comments: this.attr(false),
             view_sibling_actions: this.attr(false),
             completed: this.attr(false),
+            owners: this.attr([]),
+            feedbackUsers: this.attr([]),
 
             // Staudemeir attributes
             descendants: this.attr(false),

@@ -55,6 +55,9 @@ export default {
                 color: $dark05;
             }
         }
+        button {
+            margin-left: -8px;
+        }
     }
 
 </style>

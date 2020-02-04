@@ -118,7 +118,7 @@ export default {
             min-height: 48px;
             display: flex;
             align-items: center;
-            padding: 8px 0;
+            padding: 8px;
             position: relative;
             &:not(.table-top-bar) {
                 margin-bottom: 2px;
@@ -156,7 +156,7 @@ export default {
             overflow: hidden;
         }
         th, td {
-            padding: 0 12px;
+            padding: 0 4px;
             > i {
                 &:last-child {
                     margin-left: 12px;

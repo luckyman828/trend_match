@@ -1,20 +1,29 @@
 <template>
     <div class="subfiles-table">
         <FlexTable class="flex-table-root">
-            <template v-slot:header="slotProps">
-                <th class="expand"></th>
-                <th class="title">Name <i class="fas fa-sort"></i></th>
-                <th class="items">Items <i class="fas fa-sort"></i></th>
-                <th class="in">In <i class="fas fa-sort"></i></th>
-                <th class="out">Out <i class="fas fa-sort"></i></th>
-                <th class="nd">ND <i class="fas fa-sort"></i></th>
-                <th class="users">Users <i class="fas fa-sort"></i></th>
-                <th class="status">Status <i class="fas fa-sort"></i></th>
-                <th class="action">Action</th>
+            <template v-slot:topBar>
+                <TableTopBar>
+                    <template v-slot:right>
+                        <span>{{subfiles.length}} records</span>
+                    </template>
+                </TableTopBar>
+            </template>
+            <template v-slot:header>
+                <TableHeader class="expand"></TableHeader>
+                <TableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc">Name</TableHeader>
+                <TableHeader :sortKey="'items'" :currentSortKey="sortKey" :sortAsc="sortAsc">Items</TableHeader>
+                <TableHeader :sortKey="'in'" :currentSortKey="sortKey" :sortAsc="sortAsc">In</TableHeader>
+                <TableHeader :sortKey="'out'" :currentSortKey="sortKey" :sortAsc="sortAsc">Out</TableHeader>
+                <TableHeader :sortKey="'nd'" :currentSortKey="sortKey" :sortAsc="sortAsc">ND</TableHeader>
+                <TableHeader :sortKey="'owners'" :currentSortKey="sortKey" :sortAsc="sortAsc">Owners</TableHeader>
+                <TableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc">Users</TableHeader>
+                <TableHeader :sortKey="'status'" :currentSortKey="sortKey" :sortAsc="sortAsc">Status</TableHeader>
+                <TableHeader class="action">Action</TableHeader>
             </template>
             <template v-slot:body>
                 <div class="body">
-                    <SubfileRow v-for="subfile in subfiles.filter(x => !x.parent_id)" :subfile="subfile" :key="subfile.id" :depth="0"/>
+                    <SubfileRow v-for="subfile in subfiles.filter(x => !x.parent_id)" :subfile="subfile" :key="subfile.id" :depth="0"
+                    @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showSelectionOwnersFlyin="$emit('showSelectionOwnersFlyin',$event)"/>
                 </div>
             </template>
         </FlexTable>
@@ -36,6 +45,10 @@ export default {
         SubfileRow,
         FlexTable,
     },
+    data: function() { return {
+        sortKey: null,
+        sortAsc: true,
+    }},
     methods: {
     }
 }
@@ -60,8 +73,13 @@ export default {
                     min-width: 202px;
                     max-width: 202px;
                 }
-                &:last-child { // Actions
-                    min-width: 72px;
+                // &.items, &.in, &.out, &.nd {
+                //     min-width: 72px;
+                //     max-width: 72px;
+                // }
+                &.action { // Actions
+                    min-width: 40px;
+                    max-width: 40px;
                 }
             }
         }

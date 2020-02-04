@@ -78,8 +78,15 @@
         <FoldersTable v-if="currentFolder" :folder="currentFolder" :selected="selected" 
         @setCurrentFolder="setCurrentFolder" @onSelect="onSelect" @showSingleFile="showSingleFile"/>
         <FlyIn ref="fileSingleFlyin">
-            <FileSingle :file="currentFile" v-if="currentFile != null" 
-            @closeFlyin="$refs.fileSingleFlyin.close()"/>
+            <template v-if="currentFile" v-slot:header="slotProps">
+                <FlyinHeader :title="currentFile.title" @closeFlyin="slotProps.close()" class="flyin-header" 
+                :next="nextFileId" :prev="prevFileId" @next="showNext" @prev="showPrev">
+                </FlyinHeader>
+            </template>
+            <template v-if="currentFile" v-slot>
+                <FileSingle :file="currentFile" 
+                @closeFlyin="$refs.fileSingleFlyin.close()"/>
+            </template>
         </FlyIn>
         <!-- <FilesTable :authUser="authUser" :files="userFiles" :selected="selected" @onSelect="onSelect"/> -->
     </div>
@@ -131,7 +138,7 @@ export default {
         
     },
     computed: {
-        ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
+        ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile', 'nextFileId', 'prevFileId']),
         ...mapGetters('entities/folders', ['loadingFolders', 'folders']),
         ...mapGetters('persist', ['teamFilterId', 'currentTeam', 'currentWorkspace', 'currentWorkspaceId', 'userPermissionLevel', 'authUser']),
         defaultTeam() {
@@ -200,11 +207,20 @@ export default {
     methods: {
         ...mapActions('persist', ['setTeamFilter', 'setCurrentFileId']),
         ...mapMutations('entities/collections', ['setAvailableFileIds']),
+        ...mapMutations('persist', ['setCurrentFolderId']),
         onSelect(index) {
             // Check if index already exists in array. If it exists remove it, else add it to array
             const selected = this.selected
             const found = selected.findIndex(el => el == index)
             const result = (found >= 0) ? selected.splice(found, 1) : selected.push(index)
+        },
+        showNext() {
+            if (this.nextFileId)
+                this.setCurrentFileId(this.nextFileId)
+        },
+        showPrev() {
+            if (this.prevFileId)
+                this.setCurrentFileId(this.prevFileId)
         },
         showSingleFile(fileId) {
             // Set the current file id
@@ -228,11 +244,16 @@ export default {
                 // Set the current folder to the new id
                 this.currentFolderId = folder.id
                 this.currentFolder = this.folders.find(x => x.id == this.currentFolderId)
+                // Set current folder in store
+                this.setCurrentFolderId(folder.id)
             } else {
                 // Reset the folder and path
                 this.path = []
                 this.currentFolderId = null
                 this.currentFolder = this.rootFolder
+                // Set current folder in store
+                this.setCurrentFolderId(null)
+                
             }
         },
     },

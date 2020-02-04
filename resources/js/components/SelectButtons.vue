@@ -156,7 +156,6 @@ export default {
         },
         onUnset() {
             this.$emit('unset')
-            console.log('unset')
         }
     },
     mounted() {
