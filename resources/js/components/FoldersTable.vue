@@ -114,7 +114,7 @@
             ref="moveItemModal"
             :header="'Move item to..'"
             :subHeader="'Select a place to move the current item to'"
-            class="move-item-modal"
+            :classes="'move-item-modal'"
         >
             <template v-slot>
                 <div class="inner" v-if="toMove != null">
@@ -140,9 +140,9 @@
                         <p v-if="folderToMoveTo.folders.length <= 0">No folders..</p>
                     </div>
                     <div class="controls" style="display: flex; justify-content: flex-end; margin-top: 12px;">
-                        <button class="invisible dark ghost-hover" @click="$refs.moveItemModal.toggle(); toMove = null">Cancel</button>
+                        <button class="invisible dark ghost-hover" @click="$refs.moveItemModal.toggle(); toMove = null"><span>Cancel</span></button>
                         <button class="primary" :class="{disabled: folderToMoveToId == toMove.id || folderToMoveToId == folder.id}" @click="submitMoveItem()"
-                        >Move here
+                        ><span>Move here</span>
                         </button>
                     </div>
                 </div>
@@ -440,7 +440,8 @@ export default {
                     parent_id: currentFolder.id ? currentFolder.id : null,
                     workspace_id: this.currentWorkspaceId,
                     folders: [],
-                    files: []
+                    files: [],
+                    owners: []
                 }
                 // Push new folder to the current folder
                 currentFolder.folders.push(newFolder)
@@ -567,96 +568,10 @@ export default {
             align-items: center;
         }
     }
-    // td {
-    //     vertical-align: top;
-    //     line-height: 40px;
-    //     &.title {
-    //         display: flex;
-    //         i {
-    //             width: 24px;
-    //             line-height: 40px;
-    //             font-size: 16px;
-    //             margin-right: 8px;
-    //         }
-    //     }
-    // }
 }
 .clickable {
     cursor: pointer;
 }
-// Table
-// .flex-table {
-//     .flex-group {
-//         display: flex;
-//         flex: 1;
-//         margin: 0 16px;
-//         align-items: center;
-//         &:nth-child(1) {
-//             flex: 3;
-//         }
-//         &:nth-child(2) {
-//             flex: 3;
-//             justify-content: flex-start;
-//             > * {
-//                 flex: none;
-//                 flex-basis: 100px;
-//                 &.stage {
-//                     flex-basis: 132px;
-//                 }
-//             }
-//         }
-//         &:nth-child(3) {
-//             flex: 2;
-//             max-width: 300px;
-//             min-width: 300px;
-//         }
-//         > * {
-//             flex: 1;
-//             margin: 0 8px;
-//             &.select {
-//                 max-width: 80px;
-//             }
-//             &.id {
-//                 white-space: nowrap;
-//                 overflow: hidden;
-//                 max-width: 75px;
-//             }
-//             &.action {
-//                 display: flex;
-//                 justify-content: flex-end;
-//                 > * {
-//                     &:not(:last-child) {
-//                         margin-right: 8px;
-//                     }
-//                 }
-//             }
-//         }
-//         > td {
-//             &.action {
-//                 text-align: right;
-//             }
-//         }
-//     }
-//     .flex-table-row {
-//         height: 82px;
-//         > * {
-//             flex: 1;
-//             margin: 0 8px;
-//             &:first-child {
-//                 margin-left: 16px;
-//             }
-//             &:last-child {
-//                 margin-right: 16px;
-//             }
-//         }
-//         th {
-//             &.action {
-//                 text-align: right;
-//                 justify-content: flex-end;
-//             }
-//         }
-//     }
-// }
 .show-more {
     width: 100%;
     margin: 16px auto 0;
