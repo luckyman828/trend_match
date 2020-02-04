@@ -259,7 +259,6 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ProductTotals from './ProductTotals'
 import ProductSingle from './ProductSingle'
-import Editable from './Editable'
 import FolderOwnersTable from './FolderOwnersTable'
 
 export default {
@@ -269,7 +268,6 @@ export default {
         'folder'
     ],
     components: {
-        Editable,
         FolderOwnersTable,
     },
     data: function() {

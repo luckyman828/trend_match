@@ -10,6 +10,7 @@ export default {
         loading: true,
         filesUpdated: false,
         availableFileIds: [],
+        currentFile: null,
     },
 
     getters: {
@@ -21,6 +22,9 @@ export default {
         },
         availableFileIds: state => {
             return state.availableFileIds
+        },
+        currentFile: state => {
+            return state.currentFile
         },
         files: (state, getters, rootState, rootGetters) => {
             if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
@@ -88,13 +92,13 @@ export default {
                 return files
             }
         },
-        currentFile: (state, getters, rootState, rootGetters) => {
-            if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
-                const currentFileId = rootGetters['persist/currentFileId']
-                const files = getters.files
-                return files != null ? files.find(x => x.id == currentFileId) : null
-            }
-        },
+        // currentFile: (state, getters, rootState, rootGetters) => {
+        //     if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
+        //         const currentFileId = rootGetters['persist/currentFileId']
+        //         const files = getters.files
+        //         return files != null ? files.find(x => x.id == currentFileId) : null
+        //     }
+        // },
         nextFileId: (state, getters, rootState, rootGetters) => {
             const availableIds = getters.availableFileIds
             const currentId = rootGetters['persist/currentFileId']
@@ -347,6 +351,13 @@ export default {
             commit('removeUserFromFile', { file, user })
             // Send request to API
         },
+        setCurrentFile({ commit }, file) {
+            // Get the current file form store
+            const fileToSet = Collection.query()
+                .with('subfiles')
+                .find(file.id)
+            commit('setCurrentFile', fileToSet)
+        },
     },
 
     mutations: {
@@ -369,6 +380,9 @@ export default {
         removeUserFromFile(state, { file, user }) {
             const userIndex = file.owners.findIndex(x => x.id == user.id)
             file.owners.splice(userIndex, 1)
+        },
+        setCurrentFile(state, file) {
+            state.currentFile = file
         },
     },
 }

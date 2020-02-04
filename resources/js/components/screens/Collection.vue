@@ -119,7 +119,6 @@ export default {
         currentFolderId: null,
         path: [],
         currentFolder: {id: null, title: null, folders: [], files: []},
-        currentFile: null,
         fileSingleVisible: false,
         fileOwnersFlyinVisible: false,
     }},
@@ -136,8 +135,7 @@ export default {
         
     },
     computed: {
-        ...mapGetters('entities/collections', ['loadingCollections', 'files']),
-        // ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
+        ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
         ...mapGetters('entities/folders', ['loadingFolders', 'folders']),
         ...mapGetters('persist', ['teamFilterId', 'currentTeam', 'currentWorkspace', 'currentWorkspaceId', 'userPermissionLevel', 'authUser']),
         defaultTeam() {
@@ -205,6 +203,7 @@ export default {
     },
     methods: {
         ...mapActions('persist', ['setTeamFilter', 'setCurrentFileId']),
+        ...mapActions('entities/collections', ['setCurrentFile']),
         ...mapMutations('entities/collections', ['setAvailableFileIds']),
         ...mapMutations('persist', ['setCurrentFolderId']),
         onSelect(index) {
@@ -215,8 +214,7 @@ export default {
         },
         showSingleFile(file) {
             // Set the current file id
-            // this.setCurrentFileId(fileId)
-            this.currentFile =file
+            this.setCurrentFile(file)
             // Set available files (for navigation) to the currently visible files
             this.setAvailableFileIds(this.currentFolder.files.map(x => x.id))
             // Show the flyin
@@ -224,7 +222,7 @@ export default {
         },
         showFileOwnersFlyin(file) {
             // Set the current file id
-            this.currentFile = file
+            this.setCurrentFile(file)
             this.fileOwnersFlyinVisible = true
         },
         onViewSingle(collectionID) {

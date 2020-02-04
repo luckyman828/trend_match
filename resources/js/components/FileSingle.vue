@@ -8,13 +8,13 @@
                         <i class="far fa-user shield"></i>
                         <span>{{file.owners.length}} File owners</span>
                     </button>
-                    <button class="ghost"><span>Edit products</span></button>
+                    <button class="ghost" @click="goToEditSingle"><span>View / Edit products</span></button>
                 </div>
             </FlyinHeader>
         </template>
         <template v-if="file" v-slot>
             <div class="file-single">
-                <SubfilesTable :subfiles="file.subfiles" @showSelectionUsersFlyin="showSelectionUsersFlyin($event)"
+                <SubfilesTable :subfiles="currentFile.subfiles" @showSelectionUsersFlyin="showSelectionUsersFlyin($event)"
                 @showSelectionOwnersFlyin="showSelectionOwnersFlyin"/>
 
                 <FlyIn ref="selectionUsersFlyin" :visibleOverwrite="SelectionUsersFlyinVisible">
@@ -64,7 +64,7 @@ export default {
         SelectionUsersFlyinVisible: false,
     }},
     computed: {
-        ...mapGetters('entities/collections', ['nextFileId', 'prevFileId']),
+        ...mapGetters('entities/collections', ['nextFileId', 'prevFileId', 'currentFile']),
     },
     methods: {
         ...mapActions('persist', ['setCurrentFileId']),
@@ -83,6 +83,9 @@ export default {
         showPrev() {
             if (this.prevFileId)
                 this.setCurrentFileId(this.prevFileId)
+        },
+        goToEditSingle() {
+            this.$router.push({ name: 'editFile', params: { fileId: this.file.id } })
         },
     }
 }

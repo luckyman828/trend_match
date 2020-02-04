@@ -195,9 +195,6 @@ export default {
                     if (userTeam.user) {
                         userTeam.user.teamRoleId = userTeam.permission_level
                         team.users.push(userTeam.user)
-                    } else {
-                        console.log('userTeam lags a user!')
-                        console.log(userTeam)
                     }
                     // userTeam.user.teamRoleId = userTeam.permission_level
                     // team.users.push(userTeam.user)

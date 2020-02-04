@@ -1,14 +1,21 @@
 <template>
     <div class="subfiles-table-row">
-        <tr class="subfile">
+        <tr class="subfile" @contextmenu.prevent="$emit('showContext', $event, subfile)">
             <td class="expand" :class="{active: childrenExpanded}" @click="toggleExpanded" :style="indent">
                 <span class="square invisible" v-if="subfile.children.length > 0">
                     <i class="fas fa-caret-down"></i>
                 </span>
             </td>
-            <td class="title clickable" @click="$router.push({name: 'subfile', params: {fieId: subfile.file_id, subfileId: subfile.id}})" :style="selectionWidth">
-                <i v-if="subfile.master" class="fad fa-file-certificate master"></i> 
-                <i v-else class="fas fa-file light-2"></i> 
+            <td class="title" v-if="selectionToEdit && selectionToEdit.selection.id == subfile.id && selectionToEdit.field == 'name'" :style="selectionWidth">
+                <i v-if="subfile.master" class="fa-file-certificate master" :class="subfile.id ? 'fad' : 'far'"></i> 
+                <i v-else class="fa-file light-2" :class="subfile.id ? 'fas' : 'far'"></i> 
+                <EditInputWrapper activateOnMount=true type="text"
+                :value="selectionToEdit.selection.name" :oldValue="subfile.name" v-model="selectionToEdit.selection.name"
+                @submit="onUpdateSelection(subfile); $emit('clearToEdit')" @cancel="$emit('clearToEdit')"/>
+            </td>
+            <td v-else class="title clickable" @click="$router.push({name: 'subfile', params: {fieId: subfile.file_id, subfileId: subfile.id}})" :style="selectionWidth">
+                <i v-if="subfile.master" class="fa-file-certificate master" :class="subfile.id ? 'fad' : 'far'"></i> 
+                <i v-else class="fa-file light-2" :class="subfile.id ? 'fas' : 'far'"></i> 
                 <span :title="subfile.name">{{subfile.name}}</span>
             </td>
             <td class="items">-</td>
@@ -42,6 +49,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import SubfilesTableRow from './SubfilesTableRow'
 
 export default {
@@ -51,7 +59,8 @@ export default {
     },
     props: [
         'subfile',
-        'depth'
+        'depth',
+        'selectionToEdit'
     ],
     data: function() { return {
         childrenExpanded: false
@@ -69,6 +78,7 @@ export default {
         }
     },
     methods: {
+        ...mapGetters('entities/subfiles', ['updateSelection']),
         toggleExpanded() {
             this.childrenExpanded = !this.childrenExpanded
         },
@@ -83,6 +93,9 @@ export default {
             selection.hidden = !selection.hidden
             // Temp fix to display change
             this.$forceUpdate() // <-- Remember to remove
+        },
+        onUpdateSelection(selection) {
+            this.updateSelection
         }
     }
 }
@@ -92,6 +105,8 @@ export default {
 @import '~@/_variables.scss';
 
     .title {
+        display: flex;
+        align-items: center;
         i {
             margin-right: 8px;
             width: 24px;
