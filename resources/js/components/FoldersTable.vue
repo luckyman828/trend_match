@@ -158,15 +158,6 @@
             </template>
         </FlyIn>
 
-        <FlyIn ref="fileOwnersFlyin">
-            <template v-if="flyinFile" v-slot:header="slotProps">
-                <FlyinHeader :title="flyinFile.title" disableNavigation=true @closeFlyin="slotProps.toggle"/>
-            </template>
-            <template v-if="flyinFile" v-slot>
-                <FileOwnersTable :file="flyinFile"/>
-            </template>
-        </FlyIn>
-
         <ContextMenu ref="contextMenuFolder" class="context-folder" v-slot
         @keybind-o="setCurrentFolder(contextMenuItem)"
         @keybind-r="onEditField(contextMenuItem, 'folder', 'title')"
@@ -270,7 +261,6 @@ import ProductTotals from './ProductTotals'
 import ProductSingle from './ProductSingle'
 import Editable from './Editable'
 import FolderOwnersTable from './FolderOwnersTable'
-import FileOwnersTable from './FileOwnersTable'
 
 export default {
     name: 'foldersTable',
@@ -281,7 +271,6 @@ export default {
     components: {
         Editable,
         FolderOwnersTable,
-        FileOwnersTable,
     },
     data: function() {
         return {
@@ -303,7 +292,6 @@ export default {
             toMove: null,
             folderToMoveToId: this.folder.id,
             flyinFolder: null,
-            flyinFile: null,
         }
     },
     computed: {
@@ -334,9 +322,7 @@ export default {
         ...mapActions('entities/folders', ['deleteFolder', 'updateFolder']),
         ...mapMutations('persist', ['setCurrentFolderId']),
         showFileOwnersFlyin(file) {
-            const flyin = this.$refs.fileOwnersFlyin
-            this.flyinFile = file
-            flyin.show()
+            this.$emit('showFileOwnersFlyin', file)
         },
         showFolderOwnersFlyin(folder) {
             const flyin = this.$refs.folderOwnersFlyin

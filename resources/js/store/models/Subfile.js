@@ -40,7 +40,7 @@ export default class Subfile extends Model {
             view_sibling_actions: this.attr(false),
             completed: this.attr(false),
             owners: this.attr([]),
-            feedbackUsers: this.attr([]),
+            feedback_users: this.attr([]),
 
             // Staudemeir attributes
             descendants: this.attr(false),

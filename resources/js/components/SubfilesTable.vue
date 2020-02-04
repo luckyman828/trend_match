@@ -22,7 +22,7 @@
             </template>
             <template v-slot:body>
                 <div class="body">
-                    <SubfileRow v-for="subfile in subfiles.filter(x => !x.parent_id)" :subfile="subfile" :key="subfile.id" :depth="0"
+                    <SubfilesTableRow v-for="subfile in subfiles.filter(x => !x.parent_id)" :subfile="subfile" :key="subfile.id" :depth="0"
                     @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showSelectionOwnersFlyin="$emit('showSelectionOwnersFlyin',$event)"/>
                 </div>
             </template>
@@ -33,7 +33,6 @@
 <script>
 import FlexTable from './FlexTable'
 import SubfilesTableRow from './SubfilesTableRow'
-import SubfileRow from './SubfileRow'
 
 export default {
     name: 'subfilesTable',
@@ -42,7 +41,6 @@ export default {
     ],
     components: {
         SubfilesTableRow,
-        SubfileRow,
         FlexTable,
     },
     data: function() { return {

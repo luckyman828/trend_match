@@ -4,7 +4,7 @@
             <template v-slot:topBar>
                 <TableTopBar>
                     <template v-slot:right>
-                        <span>{{selection.feedbackUsers.length}} records</span>
+                        <span>{{selection.feedback_users.length}} records</span>
                     </template>
                 </TableTopBar>
             </template>
@@ -15,7 +15,7 @@
                 <TableHeader class="action">Action</TableHeader>
             </template>
             <template v-slot:body>
-                <tr v-for="user in selection.feedbackUsers" :key="user.id" class="user-row table-row" ref="userRow" @contextmenu.prevent="showUserContext($event, user)">
+                <tr v-for="user in selection.feedback_users" :key="user.id" class="user-row table-row" ref="userRow" @contextmenu.prevent="showUserContext($event, user)">
                     <td class="select"><Checkbox/></td>
                     <td class="title clickable">
                         <i class="fas fa-user"></i>
@@ -88,7 +88,7 @@ export default {
         availableUsers() {
             const allUsers = User.all()
             // Filter the available users to exclude users already added
-            return allUsers.filter(user => !this.selection.feedbackUsers.find(x => x.id == user.id))
+            return allUsers.filter(user => !this.selection.feedback_users.find(x => x.id == user.id))
         }
     },
     methods: {
@@ -116,7 +116,7 @@ export default {
             }
             let sortAsc = this.sortAsc
 
-            this.sortArray(this.selection.feedbackUsers, this.sortAsc, this.sortKey)
+            this.sortArray(this.selection.feedback_users, this.sortAsc, this.sortKey)
         },
         onRemoveUser(user) {
             // If we have a selection, loop through the selection and remove those
