@@ -119,11 +119,13 @@ export default {
         currentFolderId: null,
         path: [],
         currentFolder: {id: null, title: null, folders: [], files: []},
+        currentFile: null,
         fileSingleVisible: false,
         fileOwnersFlyinVisible: false,
     }},
     watch: {
         folders(newVal, oldVal) {
+            console.log('folders changed')
             // Refresh the current folder if a change is detected
             if (this.currentFolderId) {
                 this.currentFolder = this.folders.find(x => x.id == this.currentFolderId)
@@ -134,7 +136,8 @@ export default {
         
     },
     computed: {
-        ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
+        ...mapGetters('entities/collections', ['loadingCollections', 'files']),
+        // ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
         ...mapGetters('entities/folders', ['loadingFolders', 'folders']),
         ...mapGetters('persist', ['teamFilterId', 'currentTeam', 'currentWorkspace', 'currentWorkspaceId', 'userPermissionLevel', 'authUser']),
         defaultTeam() {
@@ -210,9 +213,10 @@ export default {
             const found = selected.findIndex(el => el == index)
             const result = (found >= 0) ? selected.splice(found, 1) : selected.push(index)
         },
-        showSingleFile(fileId) {
+        showSingleFile(file) {
             // Set the current file id
-            this.setCurrentFileId(fileId)
+            // this.setCurrentFileId(fileId)
+            this.currentFile =file
             // Set available files (for navigation) to the currently visible files
             this.setAvailableFileIds(this.currentFolder.files.map(x => x.id))
             // Show the flyin
@@ -220,7 +224,7 @@ export default {
         },
         showFileOwnersFlyin(file) {
             // Set the current file id
-            this.setCurrentFileId(file.id)
+            this.currentFile = file
             this.fileOwnersFlyinVisible = true
         },
         onViewSingle(collectionID) {
