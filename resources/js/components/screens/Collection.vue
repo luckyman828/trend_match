@@ -80,17 +80,25 @@
         @showFileOwnersFlyin="showFileOwnersFlyin"/>
 
         <FileSingle :file="currentFile" :show="fileSingleVisible" @close="fileSingleVisible = false"
-        @showFileOwnersFlyin="showFileOwnersFlyin"/>
+        @showFileOwnersFlyin="showFileOwnersFlyin" @showFileApproversFlyin="showFileApproversFlyin"/>
 
         <FlyIn ref="fileOwnersFlyin" :visibleOverwrite="fileOwnersFlyinVisible" @close="fileOwnersFlyinVisible = false">
             <template v-slot:header>
-                <FlyinHeader v-if="fileOwnersFlyinVisible" :title="currentFile.title" disableNavigation=true @close="fileOwnersFlyinVisible = false"/>
+                <FlyinHeader v-if="fileOwnersFlyinVisible" :title="'File Owners: '+currentFile.title" disableNavigation=true @close="fileOwnersFlyinVisible = false"/>
             </template>
             <template v-slot>
                 <FileOwnersTable v-if="fileOwnersFlyinVisible" :file="currentFile"/>
             </template>
         </FlyIn>
 
+        <FlyIn ref="fileApproversFlyin" :visibleOverwrite="fileApproversFlyinVisible" @close="fileApproversFlyinVisible = false">
+            <template v-slot:header>
+                <FlyinHeader v-if="fileApproversFlyinVisible" :title="'File Approvers: '+currentFile.title" disableNavigation=true @close="fileApproversFlyinVisible = false"/>
+            </template>
+            <template v-slot>
+                <FileApproversTable v-if="fileApproversFlyinVisible" :file="currentFile"/>
+            </template>
+        </FlyIn>
     </div>
 </template>
 
@@ -101,6 +109,7 @@ import FoldersTable from '../FoldersTable'
 import FileSingle from '../FileSingle'
 import Folder from '../../store/models/Folder'
 import FileOwnersTable from '../FileOwnersTable'
+import FileApproversTable from '../FileApproversTable'
 
 export default {
     name: 'collection',
@@ -109,6 +118,7 @@ export default {
         FoldersTable,
         FileSingle,
         FileOwnersTable,
+        FileApproversTable,
     },
     data: function() { return {
         selected: [],
@@ -121,6 +131,7 @@ export default {
         currentFolder: {id: null, title: null, folders: [], files: []},
         fileSingleVisible: false,
         fileOwnersFlyinVisible: false,
+        fileApproversFlyinVisible: false,
     }},
     watch: {
         folders(newVal, oldVal) {
@@ -224,6 +235,11 @@ export default {
             // Set the current file id
             this.setCurrentFile(file)
             this.fileOwnersFlyinVisible = true
+        },
+        showFileApproversFlyin(file) {
+            // Set the current file id
+            this.setCurrentFile(file)
+            this.fileApproversFlyinVisible = true
         },
         onViewSingle(collectionID) {
             this.$router.push({name: 'catalogue', params: {catalogueId: collectionID}})

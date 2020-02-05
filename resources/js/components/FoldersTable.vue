@@ -151,7 +151,7 @@
 
         <FlyIn ref="folderOwnersFlyin">
             <template v-slot:header="slotProps">
-                <FlyinHeader v-if="flyinFolder" :title="flyinFolder.title" disableNavigation=true @closeFlyin="slotProps.toggle"/>
+                <FlyinHeader v-if="flyinFolder" :title="'Folder Owners: '+flyinFolder.title" disableNavigation=true @closeFlyin="slotProps.toggle"/>
             </template>
             <template v-slot>
                 <FolderOwnersTable v-if="flyinFolder" :folder="flyinFolder"/>

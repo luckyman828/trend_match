@@ -351,6 +351,16 @@ export default {
             commit('removeUserFromFile', { file, user })
             // Send request to API
         },
+        addApproversToFile({ commit }, { file, usersToAdd }) {
+            // Commit mutation to state
+            commit('addApproversToFile', { file, usersToAdd })
+            // Send request to API
+        },
+        removeApproversFromFile({ commit }, { file, user }) {
+            // Commit mutation to state
+            commit('removeApproverFromFile', { file, user })
+            // Send request to API
+        },
         setCurrentFile({ commit }, file) {
             // Get the current file form store
             const fileToSet = Collection.query()
@@ -380,6 +390,13 @@ export default {
         removeUserFromFile(state, { file, user }) {
             const userIndex = file.owners.findIndex(x => x.id == user.id)
             file.owners.splice(userIndex, 1)
+        },
+        addApproversToFile(state, { file, usersToAdd }) {
+            file.approvers = file.approvers.concat(usersToAdd)
+        },
+        removeApproverFromFile(state, { file, user }) {
+            const userIndex = file.approvers.findIndex(x => x.id == user.id)
+            file.approvers.splice(userIndex, 1)
         },
         setCurrentFile(state, file) {
             state.currentFile = file

@@ -140,6 +140,15 @@
                         v-model="contextSelection.options.feedback.anonymize"/>
                     </div>
                 </div>
+                <div class="item-group">
+                    <div class="item">
+                        <button class="primary" :class="{disabled: ownersToAdd.length < 1}" 
+                        @click="onAddOwnersToSelection();ownersToAdd = [];slotProps.hide()">
+                            <span>Add <template v-if="ownersToAdd.length > 0">{{ownersToAdd.length}} 
+                            </template>owner<template v-if="ownersToAdd.length > 1">s</template></span></button>
+                        <button class="invisible ghost-hover" @click="slotProps.hide(); ownersToAdd = []"><span>Cancel</span></button>
+                    </div>
+                </div>
             </template>
         </ContextMenu>
 

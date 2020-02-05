@@ -1,12 +1,16 @@
 <template>
     <FlyIn ref="fileSingleFlyin" :visibleOverwrite="show" @close="$emit('close')">
         <template v-slot:header v-if="file && show">
-            <FlyinHeader :title="file.title" :next="nextFileId" :prev="prevFileId"
+            <FlyinHeader :title="'File Overview: '+file.title" :next="nextFileId" :prev="prevFileId"
             @close="$emit('close')" @next="showNext" @prev="showPrev">
                 <div class="item-group">
                     <button class="ghost editable" @click="$emit('showFileOwnersFlyin', file)">
-                        <i class="far fa-user shield"></i>
+                        <i class="far fa-user-shield"></i>
                         <span>{{file.owners.length}} File owners</span>
+                    </button>
+                    <button class="ghost editable" @click="$emit('showFileApproversFlyin', file)">
+                        <i class="far fa-user-cog"></i>
+                        <span>{{file.approvers.length}} File approvers</span>
                     </button>
                     <button class="ghost" @click="goToEditSingle"><span>View / Edit products</span></button>
                 </div>
@@ -19,7 +23,7 @@
 
                 <FlyIn ref="selectionUsersFlyin" :visibleOverwrite="SelectionUsersFlyinVisible">
                     <template v-slot:header>
-                        <FlyinHeader v-if="SelectionUsersFlyinVisible" :title="currentSelection.name + ' Feedback Users'" disableNavigation=true 
+                        <FlyinHeader v-if="SelectionUsersFlyinVisible" :title="'Feedback Users: '+currentSelection.name" disableNavigation=true 
                         @close="SelectionUsersFlyinVisible = false"/>
                     </template>
                     <template v-slot>
@@ -29,7 +33,7 @@
 
                 <FlyIn ref="selectionOwnersFlyin" :visibleOverwrite="SelectionOwnersFlyinVisible">
                     <template v-slot:header>
-                        <FlyinHeader v-if="SelectionOwnersFlyinVisible" :title="currentSelection.name + ' Owners'" disableNavigation=true 
+                        <FlyinHeader v-if="SelectionOwnersFlyinVisible" :title="'Selection Owners: '+currentSelection.name" disableNavigation=true 
                         @close="SelectionOwnersFlyinVisible = false"/>
                     </template>
                     <template v-slot>
