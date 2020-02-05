@@ -11,6 +11,7 @@ use App\Events\ManyActionsCreated;
 use App\Events\ManyActionsUpdated;
 Use App\Http\Resources\Action as ActionResource;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ActionController extends Controller
 {
@@ -111,6 +112,10 @@ class ActionController extends Controller
         $starttime = microtime(true);
         $dataToInsert = [];
 
+        // Save a log entry so we can go back and see what happened
+        Log::info('Mass action applied by');
+        Log::info('Mass action applied by, '.$request->user_id.', for task, '.$request->task_id.', setting '.count($request->product_ids).' products as action: '.$request->action_code);
+
         foreach($request->product_ids as $product_id){
             $dataToPush = [
                 'product_id' => $product_id,
@@ -160,6 +165,10 @@ class ActionController extends Controller
 
         Action::whereIn('product_id', $request->product_ids)->where('task_id', $request->task_id)->where('user_id', $request->user_id)->update(['action' => $request->action_code]);
 
+        // Save a log entry so we can go back and see what happened
+        Log::info('Mass action applied by');
+        Log::info('Mass action applied by, '.$request->user_id.', for task, '.$request->task_id.', setting '.count($request->product_ids).' products as action: '.$request->action_code);
+
         // Loop theouh the data to insert and send a broadcast a chunk at a time
         $broadcastLimit = 150;
         $dataIndex = 0;
@@ -200,6 +209,10 @@ class ActionController extends Controller
         $starttime = microtime(true);
 
         Action::whereIn('product_id', $request->product_ids)->where('task_id', $request->task_id)->update(['action' => $request->action_code]);
+
+        // Save a log entry so we can go back and see what happened
+        Log::info('Mass action applied by');
+        Log::info('Mass action applied by, '.$request->user_id.', for task, '.$request->task_id.', setting '.count($request->product_ids).' products as action: '.$request->action_code);
 
         // Loop theouh the data to insert and send a broadcast a chunk at a time
         $broadcastLimit = 150;
