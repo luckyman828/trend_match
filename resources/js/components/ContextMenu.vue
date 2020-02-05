@@ -135,11 +135,11 @@ export default {
             padding: 8px 16px;
             line-height: 1;
             color: $dark05;
+            &:not(.item-wrapper) {
+                cursor: pointer;
+            }
             &:hover {
                 background: $light1;
-                &:not(.item-wrapper) {
-                    cursor: pointer;
-                }
             }
             .icon-wrapper {
                 width: 32px;
@@ -151,6 +151,10 @@ export default {
                         font-size: 9px;
                     }
                 }
+            }
+            &.disabled {
+                pointer-events: none;
+                opacity: .7;
             }
         }
         .header {

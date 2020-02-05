@@ -22,7 +22,8 @@
             </template>
             <template v-slot:body>
                 <div class="body">
-                    <SubfilesTableRow :ref="'selection-row-'+subfile.id" v-for="subfile in currentFile.subfiles.filter(x => !x.parent_id)" :subfile="subfile" :key="subfile.id" :depth="0"
+                    <SubfilesTableRow :ref="'selection-row-'+subfile.id" v-for="subfile in currentFile.subfiles.filter(x => !x.parent_id)" :key="subfile.id"
+                    :subfile="subfile" :depth="0" :path="[subfile.id]"
                     :selectionToEdit="selectionToEdit" @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
                     @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showSelectionOwnersFlyin="$emit('showSelectionOwnersFlyin',$event)"
                     @showContext="showContextMenuSelection" :moveSelectionActive="moveSelectionActive" 
@@ -75,13 +76,21 @@
         </ContextMenu>
 
         <ContextMenu ref="contextMenuMove" class="context-move">
-            <div class="item-group" v-if="contextSelection && selectionToMove && contextSelection.id != selectionToMove.id"
+            <div class="item-group" v-if="contextSelectionComponent && selectionToMove && !contextSelectionComponent.path.includes(selectionToMove.id)"
             @click="endMoveSelection(contextSelection, contextSelectionComponent)">
                 <div class="item">
                     <div class="icon-wrapper">
                         <i class="far fa-arrow-left"></i>
                     </div>
                     <u>M</u>ove here
+                </div>
+            </div>
+            <div class="item-group" v-else-if="contextSelectionComponent && selectionToMove">
+                <div class="item disabled">
+                    <div class="icon-wrapper">
+                        <i class="far fa-exclamation-circle"></i>
+                    </div>
+                    Cannot place inside self
                 </div>
             </div>
             <div class="item-group" @click="clearMoveSelection">
@@ -156,7 +165,7 @@ export default {
             // Call the event handler to set the initial position
             this.moveSelectionMouseFollowHandler(this.contextMouseEvent)
             // Add event listener to listen for right clicks to show a special context menu
-            document.addEventListener('contextmenu', this.showContextMenuMove)
+            document.addEventListener('contextmenu', this.moveSelectionClickHandler)
         },
         endMoveSelection(selection, component) {
             if (this.moveSelectionActive) {
@@ -179,7 +188,7 @@ export default {
                 // Remove event listener to listen for mousemove
                 document.removeEventListener('mousemove', this.moveSelectionMouseFollowHandler)
                 // Remove event listener to listen for right clicks to show a special context menu
-                document.addEventListener('contextmenu', this.moveSelectionClickHandler)
+                document.removeEventListener('contextmenu', this.moveSelectionClickHandler)
                 
                 // --- Send request to API --- //
 
@@ -202,7 +211,7 @@ export default {
             this.contextSelection = null
             this.contextSelectionParent = null
             this.contextSelectionComponent = null
-            this.showContextMenuMove()
+            this.showContextMenuMove(e)
         },
         showContextMenuMove(e) {
             console.log('show context move')

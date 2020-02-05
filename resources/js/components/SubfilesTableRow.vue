@@ -43,7 +43,7 @@
             </td>
         </tr>
         <template v-if="childrenExpanded">
-            <subfilesTableRow v-for="selection in subfile.children" :parent="subfile" :subfile="selection" 
+            <subfilesTableRow v-for="selection in subfile.children" :parent="subfile" :subfile="selection" :path="path.concat(selection.id)"
             :selectionToEdit="selectionToEdit" :key="selection.id" :depth="depth+1" :moveSelectionActive="moveSelectionActive"
             @submitToEdit="$emit('submitToEdit')" @cancelToEdit="$emit('cancelToEdit', $event)" @showContext="emitEmissionShowContext"/>
         </template>
@@ -64,7 +64,8 @@ export default {
         'depth',
         'selectionToEdit',
         'parent',
-        'moveSelectionActive'
+        'moveSelectionActive',
+        'path'
     ],
     data: function() { return {
         childrenExpanded: false
