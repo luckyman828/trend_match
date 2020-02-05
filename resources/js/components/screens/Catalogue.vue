@@ -381,12 +381,16 @@ export default{
         ...mapActions('entities/actions', ['fetchActions', 'updateManyActions', 'updateManyTaskActions', 'createManyActions']),
         ...mapActions('persist', ['setTeamFilter', 'setCurrentTaskId']),
         InNoOutNoCommentStyles() {
-            this.setHideQuickIn()
-            this.massSubmitAction(this.productsNoOutNoComment, 1)
+            if (window.confirm(`You are about to mark ${this.productsNoOutNoComment.length} products as IN.\nAre you sure you want to do this?`)) {
+                this.setHideQuickIn()
+                this.massSubmitAction(this.productsNoOutNoComment, 1)
+            }
         },
         OutNoInStyles() {
-            this.setHideQuickOut()
-            this.massSubmitAction(this.productsNoIn, 0)
+            if (window.confirm(`You are about to mark ${this.productsNoIn.length} products as OUT.\nAre you sure you want to do this?`)) {
+                this.setHideQuickOut()
+                this.massSubmitAction(this.productsNoIn, 0)
+            }
         },
         setHideQuickOut() {
             this.hideQuickOut = true
