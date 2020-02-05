@@ -22,8 +22,8 @@
             </template>
             <template v-slot:body>
                 <div class="body">
-                    <SubfilesTableRow v-for="subfile in currentFile.subfiles.filter(x => !x.parent_id)" :subfile="subfile" :key="subfile.id" :depth="0"
-                    :selectionToEdit="selectionToEdit" @clearToEdit="clearToEdit"
+                    <SubfilesTableRow :ref="'selection-row-'+subfile.id" v-for="subfile in currentFile.subfiles.filter(x => !x.parent_id)" :subfile="subfile" :key="subfile.id" :depth="0"
+                    :selectionToEdit="selectionToEdit" @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
                     @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showSelectionOwnersFlyin="$emit('showSelectionOwnersFlyin',$event)"
                     @showContext="showContextMenuSelection"/>
                 </div>
@@ -64,7 +64,7 @@
                     <u>M</u>ove selection
                 </div>
             </div>
-            <div class="item-group">
+            <div class="item-group" @click="onDeleteSelection(contextSelection, contextSelectionParent)">
                 <div class="item">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
                     <u>D</u>elete selection
@@ -93,16 +93,20 @@ export default {
         sortKey: null,
         sortAsc: true,
         selectionToEdit: null,
-        contextSelection: null
+        contextSelection: null,
+        contextSelectionComponent: null,
+        contextSelectionParent: null,
     }},
     computed: {
         ...mapGetters('entities/collections', ['currentFile']),
     },
     methods: {
-        showContextMenuSelection(e, selection) {
+        showContextMenuSelection(e, selection, component, parent) {
             const selectionContext = this.$refs.contextMenuSelection
             // Set the current context menu item
             this.contextSelection = selection
+            this.contextSelectionComponent = component
+            this.contextSelectionParent = parent
             // Position the contextual menu
             selectionContext.show(e)
         },
@@ -122,18 +126,53 @@ export default {
             }
             // Push new selection to the parent
             if (parent) {
+                // If we are creating a sbu selection
                 parent.children.push(newSelection)
+                // Expand the selection the new selection is added to
+                // Loop through the children to find the selectionrow in question
+                this.contextSelectionComponent.childrenExpanded = true
             } else {
+                // If no parent, we are creating a new master
                 this.subfiles.push(newSelection)
             }
-            // Activate title edit of new folder
-            this.selectionToEdit = {selection: newSelection, field: 'name'}
+            // Wait for changes to the dom to take effect
+            this.$nextTick(() => {
+                // Activate title edit of new folder
+                this.selectionToEdit = {selection: newSelection, field: 'name'}
+            })
+        },
+        onDeleteSelection(selection, parent) {
+            // Send request to API
+            console.log('Delete selection')
+            console.log(selection)
+
+            // Delete the selection from state
+            // Check if the selection has a parent
+            if (parent) {
+                const unsavedSelectionIndex = parent.children.findIndex(x => x.id == selection.id)
+                parent.children.splice(unsavedSelectionIndex, 1)
+            } else {
+                const unsavedSelectionIndex = this.subfiles.findIndex(x => x.id == selection.id)
+                this.subfiles.splice(unsavedSelectionIndex, 1)
+            }
         },
         clearToEdit() {
-            // Remove unsaved items and clear the current edit
-            const unsavedSelectionIndex = this.subfiles.findIndex(x => x.id == null)
-            this.subfiles.splice(unsavedSelectionIndex, 1)
+            // Clear the current edit
             this.selectionToEdit = null
+        },
+        clearUnsaved(selection) {
+            // Check if the selection is saved
+            if (!selection.id) {
+                // Check if the current selection has a parent
+                if (selection.parent_id) {
+                    const parent = this.subfiles.find(x => x.id == selection.id)
+                    const unsavedSelectionIndex = parent.children.findIndex(x => x.id == null)
+                    parent.children.splice(unsavedSelectionIndex, 1)
+                } else {
+                    const unsavedSelectionIndex = this.subfiles.findIndex(x => x.id == null)
+                    this.subfiles.splice(unsavedSelectionIndex, 1)
+                }
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 <template>
     <div class="subfiles-table-row">
-        <tr class="subfile" @contextmenu.prevent="$emit('showContext', $event, subfile)">
+        <tr class="subfile" @contextmenu.prevent="emitShowContext">
             <td class="expand" :class="{active: childrenExpanded}" @click="toggleExpanded" :style="indent">
                 <span class="square invisible" v-if="subfile.children.length > 0">
                     <i class="fas fa-caret-down"></i>
@@ -11,7 +11,7 @@
                 <i v-else class="fa-file light-2" :class="subfile.id ? 'fas' : 'far'"></i> 
                 <EditInputWrapper activateOnMount=true type="text"
                 :value="selectionToEdit.selection.name" :oldValue="subfile.name" v-model="selectionToEdit.selection.name"
-                @submit="onUpdateSelection(subfile); $emit('clearToEdit')" @cancel="$emit('clearToEdit')"/>
+                @submit="onUpdateSelection(subfile); $emit('submitToEdit')" @cancel="$emit('cancelToEdit', subfile)"/>
             </td>
             <td v-else class="title clickable" @click="$router.push({name: 'subfile', params: {fieId: subfile.file_id, subfileId: subfile.id}})" :style="selectionWidth">
                 <i v-if="subfile.master" class="fa-file-certificate master" :class="subfile.id ? 'fad' : 'far'"></i> 
@@ -43,7 +43,8 @@
             </td>
         </tr>
         <template v-if="childrenExpanded">
-            <subfilesTableRow v-for="subfile in subfile.children" :subfile="subfile" :key="subfile.id" :depth="depth+1"/>
+            <subfilesTableRow v-for="selection in subfile.children" :parent="subfile" :subfile="selection" :selectionToEdit="selectionToEdit" :key="selection.id" :depth="depth+1"
+            @submitToEdit="$emit('submitToEdit')" @cancelToEdit="$emit('cancelToEdit', $event)" @showContext="emitEmissionShowContext"/>
         </template>
     </div>
 </template>
@@ -60,7 +61,8 @@ export default {
     props: [
         'subfile',
         'depth',
-        'selectionToEdit'
+        'selectionToEdit',
+        'parent',
     ],
     data: function() { return {
         childrenExpanded: false
@@ -81,6 +83,12 @@ export default {
         ...mapGetters('entities/subfiles', ['updateSelection']),
         toggleExpanded() {
             this.childrenExpanded = !this.childrenExpanded
+        },
+        emitEmissionShowContext(mouseEvent, selection, component, parent) {
+            this.$emit('showContext', mouseEvent, selection, component, parent)
+        },
+        emitShowContext(mouseEvent) {
+            this.$emit('showContext', mouseEvent, this.subfile, this, this.parent)
         },
         onToggleLocked(selection) {
             // Dispatch action in store
