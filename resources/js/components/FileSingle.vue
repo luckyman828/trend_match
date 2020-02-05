@@ -1,6 +1,6 @@
 <template>
     <FlyIn ref="fileSingleFlyin" :visibleOverwrite="show" @close="$emit('close')">
-        <template v-slot:header v-if="file">
+        <template v-slot:header v-if="file && show">
             <FlyinHeader :title="file.title" :next="nextFileId" :prev="prevFileId"
             @close="$emit('close')" @next="showNext" @prev="showPrev">
                 <div class="item-group">
@@ -12,7 +12,7 @@
                 </div>
             </FlyinHeader>
         </template>
-        <template v-if="file" v-slot>
+        <template v-if="file && show" v-slot>
             <div class="file-single">
                 <SubfilesTable :subfiles="currentFile.subfiles" @showSelectionUsersFlyin="showSelectionUsersFlyin($event)"
                 @showSelectionOwnersFlyin="showSelectionOwnersFlyin"/>

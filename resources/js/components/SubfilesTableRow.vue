@@ -43,7 +43,8 @@
             </td>
         </tr>
         <template v-if="childrenExpanded">
-            <subfilesTableRow v-for="selection in subfile.children" :parent="subfile" :subfile="selection" :selectionToEdit="selectionToEdit" :key="selection.id" :depth="depth+1"
+            <subfilesTableRow v-for="selection in subfile.children" :parent="subfile" :subfile="selection" 
+            :selectionToEdit="selectionToEdit" :key="selection.id" :depth="depth+1" :moveSelectionActive="moveSelectionActive"
             @submitToEdit="$emit('submitToEdit')" @cancelToEdit="$emit('cancelToEdit', $event)" @showContext="emitEmissionShowContext"/>
         </template>
     </div>
@@ -63,6 +64,7 @@ export default {
         'depth',
         'selectionToEdit',
         'parent',
+        'moveSelectionActive'
     ],
     data: function() { return {
         childrenExpanded: false
@@ -84,11 +86,13 @@ export default {
         toggleExpanded() {
             this.childrenExpanded = !this.childrenExpanded
         },
-        emitEmissionShowContext(mouseEvent, selection, component, parent) {
-            this.$emit('showContext', mouseEvent, selection, component, parent)
-        },
         emitShowContext(mouseEvent) {
             this.$emit('showContext', mouseEvent, this.subfile, this, this.parent)
+        },
+        emitEmissionShowContext(mouseEvent, selection, component, parent) {
+            // This is the event that goes to the subfilesTable component
+            this.$emit('showContext', mouseEvent, selection, component, parent)
+
         },
         onToggleLocked(selection) {
             // Dispatch action in store
