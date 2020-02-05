@@ -76,45 +76,49 @@
             </div>
         </div>
         <FoldersTable v-if="currentFolder" :folder="currentFolder" :selected="selected" 
-        @setCurrentFolder="setCurrentFolder" @onSelect="onSelect" @showSingleFile="showSingleFile"/>
-        <FlyIn ref="fileSingleFlyin">
-            <template v-if="currentFile" v-slot:header="slotProps">
-                <FlyinHeader :title="currentFile.title" @closeFlyin="slotProps.close()" class="flyin-header" 
-                :next="nextFileId" :prev="prevFileId" @next="showNext" @prev="showPrev">
-                </FlyinHeader>
+        @setCurrentFolder="setCurrentFolder" @onSelect="onSelect" @showSingleFile="showSingleFile"
+        @showFileOwnersFlyin="showFileOwnersFlyin"/>
+
+        <FileSingle :file="currentFile" :show="fileSingleVisible" @close="fileSingleVisible = false"
+        @showFileOwnersFlyin="showFileOwnersFlyin" @showFileApproversFlyin="showFileApproversFlyin"/>
+
+        <FlyIn ref="fileOwnersFlyin" :visibleOverwrite="fileOwnersFlyinVisible" @close="fileOwnersFlyinVisible = false">
+            <template v-slot:header>
+                <FlyinHeader v-if="fileOwnersFlyinVisible" :title="'File Owners: '+currentFile.title" disableNavigation=true @close="fileOwnersFlyinVisible = false"/>
             </template>
-            <template v-if="currentFile" v-slot>
-                <FileSingle :file="currentFile" 
-                @closeFlyin="$refs.fileSingleFlyin.close()"/>
+            <template v-slot>
+                <FileOwnersTable v-if="fileOwnersFlyinVisible" :file="currentFile"/>
             </template>
         </FlyIn>
-        <!-- <FilesTable :authUser="authUser" :files="userFiles" :selected="selected" @onSelect="onSelect"/> -->
+
+        <FlyIn ref="fileApproversFlyin" :visibleOverwrite="fileApproversFlyinVisible" @close="fileApproversFlyinVisible = false">
+            <template v-slot:header>
+                <FlyinHeader v-if="fileApproversFlyinVisible" :title="'File Approvers: '+currentFile.title" disableNavigation=true @close="fileApproversFlyinVisible = false"/>
+            </template>
+            <template v-slot>
+                <FileApproversTable v-if="fileApproversFlyinVisible" :file="currentFile"/>
+            </template>
+        </FlyIn>
     </div>
 </template>
 
 <script>
 import store from '../../store'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import Loader from '../Loader'
-import FilesTable from '../FilesTable'
 import FoldersTable from '../FoldersTable'
-import CheckboxButtons from '../input/CheckboxButtons'
-import Dropdown from '../Dropdown'
-import FlyIn from '../FlyIn'
 import FileSingle from '../FileSingle'
 import Folder from '../../store/models/Folder'
+import FileOwnersTable from '../FileOwnersTable'
+import FileApproversTable from '../FileApproversTable'
 
 export default {
     name: 'collection',
     store,
     components: {
-        Loader,
-        FilesTable,
-        Dropdown,
-        CheckboxButtons,
         FoldersTable,
-        FlyIn,
         FileSingle,
+        FileOwnersTable,
+        FileApproversTable,
     },
     data: function() { return {
         selected: [],
@@ -124,10 +128,14 @@ export default {
         unsub: '',
         currentFolderId: null,
         path: [],
-        currentFolder: {id: null, title: null, folders: [], files: []}
+        currentFolder: {id: null, title: null, folders: [], files: []},
+        fileSingleVisible: false,
+        fileOwnersFlyinVisible: false,
+        fileApproversFlyinVisible: false,
     }},
     watch: {
         folders(newVal, oldVal) {
+            console.log('folders changed')
             // Refresh the current folder if a change is detected
             if (this.currentFolderId) {
                 this.currentFolder = this.folders.find(x => x.id == this.currentFolderId)
@@ -138,7 +146,7 @@ export default {
         
     },
     computed: {
-        ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile', 'nextFileId', 'prevFileId']),
+        ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
         ...mapGetters('entities/folders', ['loadingFolders', 'folders']),
         ...mapGetters('persist', ['teamFilterId', 'currentTeam', 'currentWorkspace', 'currentWorkspaceId', 'userPermissionLevel', 'authUser']),
         defaultTeam() {
@@ -206,6 +214,7 @@ export default {
     },
     methods: {
         ...mapActions('persist', ['setTeamFilter', 'setCurrentFileId']),
+        ...mapActions('entities/collections', ['setCurrentFile']),
         ...mapMutations('entities/collections', ['setAvailableFileIds']),
         ...mapMutations('persist', ['setCurrentFolderId']),
         onSelect(index) {
@@ -214,21 +223,23 @@ export default {
             const found = selected.findIndex(el => el == index)
             const result = (found >= 0) ? selected.splice(found, 1) : selected.push(index)
         },
-        showNext() {
-            if (this.nextFileId)
-                this.setCurrentFileId(this.nextFileId)
-        },
-        showPrev() {
-            if (this.prevFileId)
-                this.setCurrentFileId(this.prevFileId)
-        },
-        showSingleFile(fileId) {
+        showSingleFile(file) {
             // Set the current file id
-            this.setCurrentFileId(fileId)
+            this.setCurrentFile(file)
             // Set available files (for navigation) to the currently visible files
             this.setAvailableFileIds(this.currentFolder.files.map(x => x.id))
             // Show the flyin
-            this.$refs.fileSingleFlyin.toggle()
+            this.fileSingleVisible = true
+        },
+        showFileOwnersFlyin(file) {
+            // Set the current file id
+            this.setCurrentFile(file)
+            this.fileOwnersFlyinVisible = true
+        },
+        showFileApproversFlyin(file) {
+            // Set the current file id
+            this.setCurrentFile(file)
+            this.fileApproversFlyinVisible = true
         },
         onViewSingle(collectionID) {
             this.$router.push({name: 'catalogue', params: {catalogueId: collectionID}})

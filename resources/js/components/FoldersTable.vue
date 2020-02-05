@@ -55,7 +55,7 @@
                             @submit="updateFile(toEdit.item); clearToEdit()" @cancel="clearToEdit()"/>
                         </td>
                     <!-- <td v-else class="title clickable" @click="viewSingle(file.id)"><i class="fas fa-file dark15"></i> {{file.title}}</td> -->
-                    <td v-else class="title clickable" @click="showSingleFile(file.id)"><i class="fas fa-file dark15"></i> {{file.title}}</td>
+                    <td v-else class="title clickable" @click="showSingleFile(file)"><i class="fas fa-file dark15"></i> {{file.title}}</td>
                     <td class="modified">-</td>
                     <td class="deadline">{{file.end_date}}</td>
                     <td class="items">-</td>
@@ -151,19 +151,10 @@
 
         <FlyIn ref="folderOwnersFlyin">
             <template v-slot:header="slotProps">
-                <FlyinHeader v-if="flyinFolder" :title="flyinFolder.title" disableNavigation=true @closeFlyin="slotProps.toggle"/>
+                <FlyinHeader v-if="flyinFolder" :title="'Folder Owners: '+flyinFolder.title" disableNavigation=true @closeFlyin="slotProps.toggle"/>
             </template>
             <template v-slot>
                 <FolderOwnersTable v-if="flyinFolder" :folder="flyinFolder"/>
-            </template>
-        </FlyIn>
-
-        <FlyIn ref="fileOwnersFlyin">
-            <template v-if="flyinFile" v-slot:header="slotProps">
-                <FlyinHeader :title="flyinFile.title" disableNavigation=true @closeFlyin="slotProps.toggle"/>
-            </template>
-            <template v-if="flyinFile" v-slot>
-                <FileOwnersTable :file="flyinFile"/>
             </template>
         </FlyIn>
 
@@ -268,9 +259,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ProductTotals from './ProductTotals'
 import ProductSingle from './ProductSingle'
-import Editable from './Editable'
 import FolderOwnersTable from './FolderOwnersTable'
-import FileOwnersTable from './FileOwnersTable'
 
 export default {
     name: 'foldersTable',
@@ -279,9 +268,7 @@ export default {
         'folder'
     ],
     components: {
-        Editable,
         FolderOwnersTable,
-        FileOwnersTable,
     },
     data: function() {
         return {
@@ -303,7 +290,6 @@ export default {
             toMove: null,
             folderToMoveToId: this.folder.id,
             flyinFolder: null,
-            flyinFile: null,
         }
     },
     computed: {
@@ -334,9 +320,7 @@ export default {
         ...mapActions('entities/folders', ['deleteFolder', 'updateFolder']),
         ...mapMutations('persist', ['setCurrentFolderId']),
         showFileOwnersFlyin(file) {
-            const flyin = this.$refs.fileOwnersFlyin
-            this.flyinFile = file
-            flyin.show()
+            this.$emit('showFileOwnersFlyin', file)
         },
         showFolderOwnersFlyin(folder) {
             const flyin = this.$refs.folderOwnersFlyin
@@ -365,8 +349,8 @@ export default {
             // Position the contextual menu
             contextMenu.show(e)
         },
-        showSingleFile(fileId) {
-            this.$emit('showSingleFile', fileId)
+        showSingleFile(file) {
+            this.$emit('showSingleFile', file)
         },
         onMoveTo(item, type) {
             this.toMove = item

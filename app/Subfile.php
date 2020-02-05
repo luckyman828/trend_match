@@ -7,13 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 class Subfile extends Model
 {
     protected $table = 'file_subfiles';
+    
+    // Add custom attribute
+    public function getOwnersAttribute()
+    {
+        return [];
+    }
+    public function getFeedbackUsersAttribute()
+    {
+        return [];
+    }
+    protected $appends = ['owners','feedback_users'];
 
-    // use \Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 
-    // public function getParentKeyName()
-    // {
-    //     return 'parent_id';
-    // }
 
     public function file()
     {

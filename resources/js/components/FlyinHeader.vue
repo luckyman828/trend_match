@@ -1,7 +1,7 @@
 <template>
     <div class="flyin-header">
         <div class="left">
-            <button class="circle close" @click="$emit('closeFlyin')"><i class="fal fa-times"></i></button>
+            <button class="circle close" @click="$emit('closeFlyin');$emit('close')"><i class="fal fa-times"></i></button>
             <h3>{{title}}</h3>
         </div>
         <div class="right">
@@ -44,6 +44,12 @@ export default {
             .item-group {
                 display: flex;
                 align-items: center;
+                > *:not(:last-child) {
+                    margin-right: 8px;
+                }
+                &:not(:first-child) {
+                    margin-left: 16px;
+                }
             }
         }
         .close {

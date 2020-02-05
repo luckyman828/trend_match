@@ -89,6 +89,9 @@ export default {
             commit('removeOwnerFromSelection', { selection, owner })
             // Send request to API
         },
+        updateSelection({commit}, selection) {
+            
+        }
     },
 
     mutations: {

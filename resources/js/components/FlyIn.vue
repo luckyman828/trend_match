@@ -72,7 +72,7 @@ export default {
         }
     }
     .overlay {
-        z-index: 10;
+        z-index: 11;
         position: fixed;
         top: 0;
         left: 0;
@@ -91,7 +91,7 @@ export default {
         top: 0;
         position: fixed;
         height: 100vh;
-        overflow: hidden;
+        box-shadow: -2px 0 10px #0000001A;
         width: 100%;
         background: $bg;
         // transition-timing-function: ease-out;
