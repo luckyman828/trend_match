@@ -41,6 +41,27 @@ export default class Subfile extends Model {
             completed: this.attr(false),
             owners: this.attr([]),
             feedback_users: this.attr([]),
+            options: this.attr({
+                comments: {
+                    broadcast: [],
+                    listen: [],
+                    anonymize: false,
+                },
+                requests: {
+                    broadcast: [],
+                    listen: [],
+                },
+                actions: {
+                    broadcast: [],
+                    listen: [],
+                    anonymize: false,
+                },
+                feedback: {
+                    broadcast: [],
+                    listen: [],
+                    anonymize: false,
+                },
+            }),
 
             // Staudemeir attributes
             descendants: this.attr(false),

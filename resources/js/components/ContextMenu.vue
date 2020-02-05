@@ -1,5 +1,5 @@
 <template>
-    <div v-if="visible" v-click-outside="hide" class="context-menu" ref="contextMenu">
+    <div v-if="visible" v-click-outside="hide" class="context-menu" ref="contextMenu" :style="menuWidth">
         <div class="item-group header" v-if="hasHeader">
             <strong>
                 <slot name="header" :item="item" :mouseEvent="mouseEvent"/>
@@ -15,6 +15,7 @@
 export default {
     name: 'contextMenu',
     props: [
+        'columns'
     ],
     data: function() {
         return {
@@ -27,6 +28,11 @@ export default {
         hasHeader() {
             // Check if the header slot has any content
             return !!this.$slots.header || !!this.$scopedSlots.header
+        },
+        menuWidth() {
+            const columnCount = this.columns ? this.columns : 1
+            const baseWidth = 240
+            return {width: `${baseWidth * columnCount}px`}
         }
     },
     methods: {
@@ -124,8 +130,30 @@ export default {
         box-shadow: 0 3px 30px rgba(black, .3);
         z-index: 1;
         position: fixed;
-        width: 260px;
+        .columns {
+            display: flex;
+            border-top: solid 1px $divider;
+            padding: 0 0 20px;
+            > * {
+                width: 240px;
+                border-top: none;
+                &.item-group:not(:first-child) {
+                    border-top: none;
+                }
+            }
+            .item-group {
+                border-top: none;
+                border-left: solid 1px $divider;
+                &:first-child {
+                    border-left: none;
+                }
+            }
+        }
         .item-group {
+            > .header {
+                padding: 8px 16px;
+                line-height: 1;
+            }
             padding: 8px 0;
             &:not(:first-child) {
                 border-top: solid 1px $divider;

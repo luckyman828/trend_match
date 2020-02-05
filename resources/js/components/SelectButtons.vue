@@ -2,12 +2,14 @@
 
     <div class="select-buttons" ref="selectButtons">
 
-        <div class="search-wrapper">
+
+        <div class="search-wrapper" v-if="search">
             <!-- <SearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" v-model="optionsFilteredBySearch"/> -->
             <SearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" 
             :searchMultipleArrays="multipleOptionArrays" :multipleArrayKey="optionGroupOptionsKey" v-model="optionsFilteredBySearch"/>
         </div>
         <div class="wrapper">
+            <span class="header" v-html="header"></span>
 
             <div class="option unset-option" v-if="unsetOption" @click="onUnset">
                 <label>
@@ -82,6 +84,7 @@
 export default {
     name: 'selectButtons',
     props: [
+        'header',
         'type',
         'options',
         'optionNameKey',
@@ -92,7 +95,7 @@ export default {
         'multipleOptionArrays',
         'optionGroupNameKey',
         'optionGroupOptionsKey',
-        'unsetOption'
+        'unsetOption',
     ],
     data: function () { return {
         selection: [],
@@ -167,10 +170,21 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
+    .select-buttons {
+        margin-bottom: 12px;
+    }
+    .search-wrapper + .wrapper {
+        border-top: solid 1px $divider;
+    }
+    .header {
+        font-size: 12px;
+        font-weight: 500;
+        padding: 0 16px;
+        color: $primary;
+    }
     .select-buttons .wrapper {
         max-height: 260px;
         overflow: auto;
-        border-top: solid 1px $divider;
         .option-group {
             padding-top: 16px;
             margin-top: 8px;

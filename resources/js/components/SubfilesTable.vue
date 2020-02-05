@@ -27,7 +27,7 @@
                     :selectionToEdit="selectionToEdit" @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
                     @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showSelectionOwnersFlyin="$emit('showSelectionOwnersFlyin',$event)"
                     @showContext="showContextMenuSelection" :moveSelectionActive="moveSelectionActive" 
-                    @endMoveSelection="endMoveSelection"/>
+                    @endMoveSelection="endMoveSelection" @showOptionsContext="showOptionsContext"/>
                 </div>
             </template>
             <template v-slot:footer>
@@ -37,7 +37,7 @@
 
         <ContextMenu ref="contextMenuSelection" class="context-selection">
             <div class="item-group">
-                <div class="item">
+                <div class="item" @click="$router.push({name: 'subfile', params: {fieId: contextSelection.file_id, subfileId: contextSelection.id}})">
                     <div class="icon-wrapper">
                         <i class="far fa-users"></i>
                     </div>
@@ -51,11 +51,11 @@
                 </div>
                 <div class="item" @click="$emit('showSelectionOwnersFlyin', contextSelection)">
                     <div class="icon-wrapper"><i class="far fa-users"></i></div>
-                    Add <u>f</u>eedback users
+                    Edit <u>F</u>eedback users
                 </div>
                 <div class="item" @click="$emit('showSelectionUsersFlyin', contextSelection)">
                     <div class="icon-wrapper"><i class="far fa-user-shield"></i></div>
-                    Add <u>O</u>wner(s)
+                    Edit <u>O</u>wner(s)
                 </div>
                 <div class="item" @click="onNewSelection(contextSelection)">
                     <div class="icon-wrapper"><i class="far fa-plus"></i></div>
@@ -99,6 +99,48 @@
                     <u>C</u>ancel
                 </div>
             </div>
+        </ContextMenu>
+
+        <ContextMenu ref="contextMenuOptions" class="context-options" columns="4">
+            <template v-slot:header v-if="contextSelection">
+                Settings for {{contextSelection.name}}
+            </template>
+            <template v-slot>
+                <div class="columns">
+                    <div class="item-group">
+                        <strong class="header">Comments</strong>
+                        <SelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','allChildren','parent','siblings']"
+                        v-model="contextSelection.options.comments.broadcast" :submitOnChange="true"/>
+                        <SelectButtons header="Listen" :type="'checkbox'" :options="['all','children','allChildren','parent','siblings']"
+                        v-model="contextSelection.options.comments.listen" :submitOnChange="true"/>
+                        <SelectButton header="Anomyze comments" class="item-wrapper" label="Anonymize" :value="contextSelection.options.comments.anonymize" 
+                        v-model="contextSelection.options.comments.anonymize"/>
+                    </div>
+                    <div class="item-group">
+                        <strong class="header">Requests</strong>
+                        <SelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','allChildren','parent','siblings']"
+                        v-model="contextSelection.options.requests.broadcast" :submitOnChange="true"/>
+                        <SelectButtons header="Listen" :type="'checkbox'" :options="['all','children','allChildren','parent','siblings']"
+                        v-model="contextSelection.options.requests.listen" :submitOnChange="true"/>
+                    </div>
+                    <div class="item-group">
+                        <strong class="header">Actions</strong>
+                        <SelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','allChildren','parent','siblings']"
+                        v-model="contextSelection.options.actions.broadcast" :submitOnChange="true"/>
+                        <SelectButtons header="Listen" :type="'checkbox'" :options="['all','children','allChildren','parent','siblings']"
+                        v-model="contextSelection.options.actions.listen" :submitOnChange="true"/>
+                        <SelectButton header="Anomyze actions" class="item-wrapper" label="Anonymize" :value="contextSelection.options.actions.anonymize" 
+                        v-model="contextSelection.options.actions.anonymize"/>
+                    </div>
+                    <div class="item-group">
+                        <strong class="header">Feedback</strong>
+                        <SelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','allChildren','parent','siblings']"
+                        v-model="contextSelection.options.feedback.broadcast" :submitOnChange="true"/>
+                        <SelectButton header="Anomyze feedback" class="item-wrapper" label="Anonymize" :value="contextSelection.options.feedback.anonymize" 
+                        v-model="contextSelection.options.feedback.anonymize"/>
+                    </div>
+                </div>
+            </template>
         </ContextMenu>
 
         <div ref="moveSelectionIndicator" class="move-selection-indicator" :class="{'active': moveSelectionActive}">
@@ -214,13 +256,18 @@ export default {
             this.showContextMenuMove(e)
         },
         showContextMenuMove(e) {
-            console.log('show context move')
             e.preventDefault()
             e.stopPropagation()
             const moveContext = this.$refs.contextMenuMove
             this.contextMouseEvent = e
             // Position the contextual menu
             moveContext.show(e)
+        },
+        showOptionsContext(e, selection) {
+            const contextMenu = this.$refs.contextMenuOptions
+            this.contextSelection = selection
+            // Position the contextual menu
+            contextMenu.show(e)
         },
         onNewSelection(parent) {
             // First check that we don't already have an unsaved new subfile
@@ -319,8 +366,8 @@ export default {
                 //     max-width: 72px;
                 // }
                 &.action { // Actions
-                    min-width: 40px;
-                    max-width: 40px;
+                    min-width: 76px;
+                    max-width: 76px;
                 }
             }
         }

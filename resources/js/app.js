@@ -57,6 +57,7 @@ Vue.component('EditInputWrapper', require('./components/EditInputWrapper.vue').d
 Vue.component('RadioButtons', require('./components/RadioButtons.vue').default)
 Vue.component('CheckButtons', require('./components/CheckButtons.vue').default)
 Vue.component('SelectButtons', require('./components/SelectButtons.vue').default)
+Vue.component('SelectButton', require('./components/SelectButton.vue').default)
 Vue.component('SearchField', require('./components/SearchField.vue').default)
 Vue.component('InputField', require('./components/InputField.vue').default)
 Vue.component('Droparea', require('./components/Droparea.vue').default)

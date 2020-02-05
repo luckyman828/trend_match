@@ -39,6 +39,7 @@
                     <i class="far" :class="subfile.hidden ? 'fa-eye-slash' : 'fa-eye'"></i></button>
             </td>
             <td class="action">
+                <button class="invisible ghost-hover" @click="$emit('showOptionsContext', $event, subfile)"><i class="fas fa-cog"></i></button>
                 <button class="invisible ghost-hover" @click="toggleExpanded(subfile.id)"><i class="fas fa-ellipsis-h"></i></button>
             </td>
         </tr>
