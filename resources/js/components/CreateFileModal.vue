@@ -239,7 +239,6 @@ export default {
     name: 'createFileModal',
     data: function () { return {
         currentScreen: {name: 'chooseFiles', header: 'Create new file'},
-        // currentScreen: {name: 'mapFields', header: 'Map fields'},
         newFile: {
             title: '',
             files: [],
@@ -249,7 +248,6 @@ export default {
         csvDelimiter: ';',
         availableFiles: [],
         filePreviews: [],
-        csvFiles: [],
         singleCurrencyFile: true,
         fieldsToMatch: [
             {name: 'title', displayName: 'Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
@@ -374,8 +372,11 @@ export default {
             let valid = true
             field.error = false
 
+            // Set the limit to a maximum of the number of lines in the file
+            const linesToValidate = file.lines.length < limit ? file.lines.length : limit
+
             // Test n values
-            for (let i = 0;i<limit;i++) {
+            for (let i = 0;i<linesToValidate;i++) {
                 // Find the field value
                 const fieldValue = file.lines[i][field.newValue.fieldIndex]
 
@@ -454,8 +455,11 @@ export default {
                 this.uploadingFile = false
 
                 // Close modal on succes
-                if (success)
+                if (success) {
                     this.$refs.modal.hide()
+                    // Reset modal
+                    this.reset()
+                }
                 else window.alert('Something went wrong. Please try again')
             })
         },
@@ -475,7 +479,6 @@ export default {
         },
         loadHandler(event, fileName) {
             const csv = event.target.result
-            this.csvFiles.push(csv)
 
             // First read the files and process them
             this.processFile(csv, fileName)
@@ -483,14 +486,14 @@ export default {
         processFile(csv, fileName) {
 
             // Split the csv into lines by line breaks
-            const allTextLines = csv.split(/\r\n|\n/)
+            const allTextLines = csv.split(/\r\n|\r|\n/g)
             
             const csvLines = []
             const csvHeaders = []
             // Loop thorugh the lines
             let lineIndex = 0
             allTextLines.forEach(line => {
-
+                
                 // Split the line by our delimiter
                 const cells = line.split(this.csvDelimiter)
 
@@ -504,8 +507,8 @@ export default {
                         cellIndex++
                     })
                 }
-                // Make sure that all lines have the same length as the header
-                else if (cells.length == csvHeaders.length) {
+                // Make sure that there are not fewer lines than headers
+                else if (cells.length >= csvHeaders.length) {
                     // Push the cells to our lines array
                     csvLines.push(cells)
                 }
@@ -788,12 +791,25 @@ export default {
 
                 // Close modal on succes
                 if (success) {
-                    // this.$refs.modal.hide()
-
+                    this.$refs.modal.hide()
+                    // Reset modal
+                    this.reset()
                 }
                 else window.alert('Something went wrong. Please try again')
             })
         },
+        reset() {
+            this.availableFiles = []
+            this.singleCurrencyFile = true
+            this.currentScreen = {name: 'chooseFiles', header: 'Create new file'}
+            this.currenciesToMatch = [this.JSON.parse(JSON.stringify(this.currencyDefaultObject))]
+            // Reset fields to match
+            this.fieldsToMatch.forEach(field => {
+                field.enabled = true
+                field.error = false
+                field.newValue = {fileIndex: null, fieldName: null, fieldIndex: null}
+            })
+        }
     },
 }
 </script>

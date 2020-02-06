@@ -58,7 +58,7 @@ export default {
 
     .input-field {
         &.select {
-            .has-label {
+            &.has-label {
                 .label {
                     color: $primary;
                     position: absolute;

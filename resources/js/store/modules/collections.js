@@ -243,11 +243,11 @@ export default {
             const startDate = fileToUpdate.start_date ? fileToUpdate.start_date : null
             const endDate = fileToUpdate.end_date ? fileToUpdate.end_date : null
             // Add support for both catalog id and folder id
-            let catalog_id = null
+            let folder_id = null
             if (fileToUpdate.folderId) {
-                catalog_id = fileToUpdate.folderId
+                folder_id = fileToUpdate.folder_id
             } else if (fileToUpdate.catalog_id) {
-                catalog_id = fileToUpdate.catalogId
+                folder_id = fileToUpdate.catalog_id
             }
 
             await axios
@@ -255,8 +255,8 @@ export default {
                     id: fileToUpdate.id,
                     title: fileToUpdate.title,
                     phase: fileToUpdate.phase,
-                    catalog_id: catalog_id,
-                    folder_id: catalog_id,
+                    catalog_id: folder_id,
+                    folder_id: folder_id,
                     workspace_id: fileToUpdate.workspace_id,
                     start_date: startDate,
                     end_date: endDate,

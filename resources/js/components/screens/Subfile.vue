@@ -4,7 +4,10 @@
         <template v-if="true">
 
             <template v-if="!loadingCollections">
-                <catalogueHeader :collection="collection"/>
+                <SelectionScreenHeader :file="file"/>
+                <div class="header">
+                    <h1>{{file.title}}</h1>
+                </div>
                 <div class="quick-actions" v-if="currentTask.type == 'alignment' && currentTask.isActive && !currentTask.completed.find(x => x.file_id == currentFile.id) && !(hideQuickIn && hideQuickOut) && ( (productsNoIn.length > 0 && !hideQuickOut) || (productsNoOutNoComment.length > 0 && !hideQuickIn) )">
                     <p>Quick actions</p>
                     <span v-if="productsNoIn.length > 0 && !hideQuickOut" class="button red wide" @click="OutNoInStyles()">'OUT' styles with no IN ({{productsNoIn.length}})</span>
@@ -116,7 +119,7 @@ import store from '../../store'
 import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 import Products from '../Products'
 import ProductTabs from '../ProductTabs'
-import CatalogueHeader from '../CatalogueHeader'
+import SelectionScreenHeader from '../SelectionScreenHeader'
 import Loader from '../Loader'
 import SelectedController from '../SelectedController'
 import CheckboxButtons from '../input/CheckboxButtons'
@@ -148,7 +151,7 @@ export default{
         ProductTabs,
         SelectedController,
         Loader,
-        CatalogueHeader,
+        SelectionScreenHeader,
         CheckboxButtons,
         Dropdown,
         RadioButtons,
@@ -242,7 +245,7 @@ export default{
         products() {
             return this.productsScoped
         },
-        collection() {
+        file() {
             return this.currentFile
         },
         sortMethod () {
