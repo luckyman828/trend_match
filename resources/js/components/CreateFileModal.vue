@@ -446,7 +446,7 @@ export default {
             // Create a copy of the new file object
             const newFile = JSON.parse(JSON.stringify(this.newFile))
             newFile.phase = Phase.query().first().id
-            newFile.folderId = this.currentFolderId
+            newFile.folder_id = this.currentFolderId
             newFile.workspace_id = this.currentWorkspaceId
             newFile.id = this.$uuid.v4()
             this.uploadingFile = true
@@ -778,7 +778,7 @@ export default {
             // Set new file data
             const newFile = this.newFile
             newFile.phase = Phase.query().first().id
-            newFile.folderId = this.currentFolderId
+            newFile.folder_id = this.currentFolderId
             newFile.workspace_id = this.currentWorkspaceId
             newFile.id = this.$uuid.v4()
             newFile.products = this.instantiateProducts(newFile.id)
@@ -802,7 +802,7 @@ export default {
             this.availableFiles = []
             this.singleCurrencyFile = true
             this.currentScreen = {name: 'chooseFiles', header: 'Create new file'}
-            this.currenciesToMatch = [this.JSON.parse(JSON.stringify(this.currencyDefaultObject))]
+            this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]
             // Reset fields to match
             this.fieldsToMatch.forEach(field => {
                 field.enabled = true

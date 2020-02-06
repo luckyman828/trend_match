@@ -244,9 +244,10 @@ export default {
             const endDate = fileToUpdate.end_date ? fileToUpdate.end_date : null
             // Add support for both catalog id and folder id
             let folder_id = null
-            if (fileToUpdate.folderId) {
+            if (fileToUpdate.folder_id) {
                 folder_id = fileToUpdate.folder_id
-            } else if (fileToUpdate.catalog_id) {
+            }
+            if (fileToUpdate.catalog_id) {
                 folder_id = fileToUpdate.catalog_id
             }
 
