@@ -25,6 +25,7 @@ class User extends JsonResource
             'role_id' => $this->role_id,
             'created_at' => $this->created_at,
             'impact' => $this->impact,
+            'currency' => $this->currency,
             // 'assigned_room_id' => $this->assigned_room_id,
             // 'workspaces' => $this->workspaces
         ];

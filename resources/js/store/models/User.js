@@ -23,7 +23,7 @@ export default class User extends Model {
             country_id: this.attr(''),
             role_id: this.attr(''),
             impact: this.attr(''),
-            currency: this.attr(''),
+            currency: this.attr(null),
             comments: this.hasMany(Comment, 'user_id'),
             country: this.belongsTo(Country, 'country_id'),
             role: this.belongsTo(Role, 'role_id'),
