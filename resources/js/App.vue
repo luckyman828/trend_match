@@ -1,8 +1,8 @@
 <template>
     <div class="app" id="app-component">
-        <NavbarLogo/>
-        <Navbar/>
-        <Sidebar :authUser="authUser"/>
+        <TheNavbarLogo/>
+        <TheNavbar/>
+        <TheSidebar :authUser="authUser"/>
         <div class="main" id="main">
             <div class="container">
                 <transition name="fade">
@@ -15,11 +15,10 @@
 </template>
 
 <script>
-import store from './store'
 import { mapActions, mapGetters } from 'vuex'
-import Sidebar from './components/Sidebar'
-import Navbar from './components/Navbar'
-import NavbarLogo from './components/NavbarLogo'
+import TheSidebar from './components/layout/TheSidebar'
+import TheNavbar from './components/layout/TheNavbar'
+import TheNavbarLogo from './components/layout/TheNavbarLogo'
 import AuthUser from './store/models/AuthUser';
 import TeamFile from './store/models/TeamFile';
 import Team from './store/models/Team';
@@ -28,11 +27,10 @@ import Workspace from './store/models/Workspace'
 
 export default{
     name: 'app',
-    store,
     components: {
-        Sidebar,
-        Navbar,
-        NavbarLogo,
+        TheSidebar,
+        TheNavbar,
+        TheNavbarLogo,
     },
     data: function () { return {
         // currentWorkspaceId: null,
@@ -100,8 +98,8 @@ export default{
                     this.fetchTasks(this.currentWorkspaceId),
                     this.fetchTaskParents(this.currentWorkspaceId),
                     this.fetchFileTasks(this.currentWorkspaceId),
-                    this.fetchRoles()
-                    // this.fetchSubfiles(this.currentWorkspaceId)
+                    this.fetchRoles(),
+                    this.fetchSubfiles(this.currentWorkspaceId)
                 )
                 
                 if (this.authUser.role_id >= 5) {

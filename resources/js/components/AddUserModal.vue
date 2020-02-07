@@ -1,6 +1,6 @@
 <template>
-    <Modal ref="addUserModal" :header="'Add new user to workspace'" v-slot="slotProps" 
-    :visible="visible" :visibilityKey="visibilityKey" @hide="hide" @show="show">
+    <BaseModal ref="addUserModal" :header="'Add new user to workspace'" v-slot 
+    :show="show" @close="$emit('close')">
         <!-- <form @input="validateInput"> -->
         <form novalidate @submit="!submitDisabled && onSubmit($event)">
             <div class="user-wrapper" v-for="(user, index) in usersToAdd" :key="index">
@@ -10,7 +10,7 @@
                 </div>
                 <div class="form-element">
                     <label :for="'new-user-email-'+index">Email *</label>
-                    <InputField ref="emailInput" type="email" :id="'new-user-email-'+index" placeholder="email" autocomplete="off"
+                    <BaseInputField ref="emailInput" type="email" :id="'new-user-email-'+index" placeholder="email" autocomplete="off"
                     v-model="usersToAdd[index].email" @paste="onPaste($event, index)" @blur="validateInput($event.target)"/>
                 </div>
                 <div class="form-element">
@@ -20,7 +20,7 @@
                 </div>
                 <div class="form-element">
                     <label :for="'new-user-password-'+index">Password *</label>
-                    <InputField ref="passwordInput" type="text" :id="'new-user-password-'+index" autocomplete="new-password"
+                    <BaseInputField ref="passwordInput" type="text" :id="'new-user-password-'+index" autocomplete="new-password"
                     v-model="usersToAdd[index].password" @blur="validateInput($event.target)"/>
                 </div>
             </div>
@@ -33,16 +33,14 @@
                 </button>
             </div>
         </form>
-    </Modal>
+    </BaseModal>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import Modal from './Modal'
 
 export default {
     name: 'addUserModal',
-    extends: Modal,
     data: function() { return {
         usersToAdd: [{
             email: '',
@@ -57,7 +55,8 @@ export default {
         submitDisabled: true,
     }},
     props: [
-        'users'
+        'users',
+        'show'
     ],
     computed: {
         ...mapGetters('persist', ['currentWorkspaceId']),
@@ -97,8 +96,7 @@ export default {
             if (!inputIsValid) return
             // Submit form
             this.addUsersToWorkspace({workspaceId: this.currentWorkspaceId, usersToAdd: this.usersToAdd})
-            this.hide()
-            
+            this.$emit('close')
         },
         validateInput(inputField) {
             // inputField is expected to be the inputfield triggering the validation check.
