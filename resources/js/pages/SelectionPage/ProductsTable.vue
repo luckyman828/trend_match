@@ -15,6 +15,68 @@
                 <BaseTableTopBar>
                     <template v-slot:left>
                         <BaseSearchField/>
+
+                        <BaseDropdown class="dropdown-parent left">
+                            <template v-slot:button="slotProps">
+                                <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
+                                    <span>Category </span>
+                                    <i class="far fa-chevron-down"></i>
+                                    <span v-if="selectedCategories.length > 0" class="bubble">
+                                        {{selectedCategories.length}}
+                                    </span>
+                                </div>
+                            </template>
+                            <template v-slot:header>
+                                <span>Filter by category</span>
+                            </template>
+                            <template v-slot:body>
+                                <BaseCheckboxButtons :options="availableCategories" ref="filterSelect" v-model="selectedCategories" @change="$refs.filterSelect.submit()"/>
+                            </template>
+                        </BaseDropdown>
+
+                        <BaseDropdown class="dropdown-parent left">
+                            <template v-slot:button="slotProps">
+                                <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
+                                    <span>Delivery</span>
+                                    <i class="far fa-chevron-down"></i>
+                                    <span v-if="selectedDeliveryDates.length > 0" class="bubble">
+                                        {{selectedDeliveryDates.length}}
+                                    </span>
+                                </div>
+                            </template>
+                            <template v-slot:header>
+                                <span>Filter by delivery date</span>
+                            </template>
+                            <template v-slot:body>
+                                <BaseCheckboxButtons :options="availableDeliveryDates" :optionNameKey="'name'" :optionValueKey="'value'" ref="filterDelivery" v-model="selectedDeliveryDates"/>
+                            </template>
+                        </BaseDropdown>
+
+                        <BaseDropdown class="dropdown-parent left" v-if="userPermissionLevel == 3">
+                            <template v-slot:button="slotProps">
+                                <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
+                                    <span>Buyer group </span>
+                                    <i class="far fa-chevron-down"></i>
+                                    <span v-if="selectedBuyerGroups.length > 0" class="bubble">
+                                        {{selectedBuyerGroups.length}}
+                                    </span>
+                                </div>
+                            </template>
+                            <template v-slot:header>
+                                <span>Filter by buyer group</span>
+                            </template>
+                            <template v-slot:body>
+                                <BaseCheckboxButtons :options="availableBuyerGroups" ref="filterBuyerGroup" v-model="selectedBuyerGroups" @change="$refs.filterBuyerGroup.submit()"/>
+                            </template>
+                        </BaseDropdown>
+
+                        <label class="square checkbutton ghost light-2 checkbox clickable">
+                            <span>Show UNREAD only</span>
+                            <input type="checkbox" v-model="unreadOnly">
+                            <span class="checkmark solid"><i class="fas fa-check"></i></span>
+                        </label>
+
+                <span v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]; $refs.filterDelivery.clear(); selectedDeliveryDates=[]; if ($refs.filterBuyerGroup) $refs.filterBuyerGroup.clear(); selectedBuyerGroups=[]; unreadOnly = false">Clear filter</span>
                     </template>
                     <template v-slot:right>
                         <span>{{selectedProducts.length}} selected</span>
@@ -48,7 +110,7 @@
                 <RecycleScroller
                     class="products-scroller"
                     :items="products"
-                    :item-size="84"
+                    :item-size="78"
                     page-mode
                     key-field="id"
                     v-slot="{ item, index }"
@@ -79,7 +141,9 @@ export default {
         'sortAsc',
         'sortKey',
         'currentProductFilter',
-        'file'
+        'file',
+        'availableCategories',
+        'availableBuyerGroups'
     ],
     components: {
         ProductsTableRow,
@@ -88,8 +152,48 @@ export default {
         selectedProducts: []
     }},
     computed: {
-        ...mapGetters('entities/products', ['productTotals']),
+        ...mapGetters('entities/products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
         ...mapGetters('persist', ['currentWorkspaceId', 'authUser']),
+        currentProductFilter: {
+            get () {
+                return this.$store.getters['entities/products/currentProductFilter']
+            },
+            set (value) {
+                this.setCurrentProductFilter(value)
+            }
+        },
+        selectedCategories: {
+            get () {
+                return this.$store.getters['entities/products/selectedCategories']
+            },
+            set (value) {
+                this.updateSelectedCategories(value)
+            }
+        },
+        selectedDeliveryDates: {
+            get () {
+                return this.$store.getters['entities/products/selectedDeliveryDates']
+            },
+            set (value) {
+                this.updateSelectedDeliveryDates(value)
+            }
+        },
+        selectedBuyerGroups: {
+            get () {
+                return this.$store.getters['entities/products/selectedBuyerGroups']
+            },
+            set (value) {
+                this.updateSelectedBuyerGroups(value)
+            }
+        },
+        unreadOnly: {
+            get () {
+                return this.$store.getters['entities/products/unreadOnly']
+            },
+            set (value) {
+                this.setUnreadOnly(value)
+            }
+        },
     },
     methods: {
         ...mapActions('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction']),

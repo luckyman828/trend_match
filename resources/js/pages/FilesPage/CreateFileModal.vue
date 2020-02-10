@@ -131,11 +131,18 @@
                                                 <tr class="header">
                                                     <th></th>
                                                     <th><label :for="'currency-'+index+'-name'">Currency Name (ex. EUR)</label></th>
+                                                    <th></th>
+                                                    <th><label :for="'currency-'+index+'-file'">Linked File</label></th>
                                                 </tr>
                                                 <tr>
                                                     <td></td>
-                                                    <td><InputField :id="'currency-'+index+'-name'" 
+                                                    <td><BaseInputField :id="'currency-'+index+'-name'" 
                                                     class="input-field" placeholder="Fx. EUR" v-model="currency.currencyName"/></td>
+                                                    <td><i class="fas fa-equals"></i></td>
+                                                    <td><BaseInputField :id="'currency-'+index+'-file'" 
+                                                    class="input-field" disabled=true
+                                                    :value="currency.fileIndex != null ? availableFiles[currency.fileIndex].fileName : null" 
+                                                    type="select" @click="showSelectFileContext($event, currency)"/></td>
                                                 </tr>
                                             </table>
                                         </div>
@@ -174,18 +181,6 @@
                         </div>
 
                     </div>
-
-                    <!-- <div class="available-fields">
-                        <label>Available fields ({{availableFiles.reduce((result, x) => result+=x.headers.length,0)}})</label>
-                        <div class="inner">
-                            <div class="fields-wrapper" v-for="(file, index) in availableFiles" :key="index">
-                                <label>{{file.fileName}}</label>
-                                <div class="field" v-for="(field, index) in file.headers" :key="index">
-                                    <span :title="field.fieldName">{{field.fieldName}}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
 
                 </div>
 
@@ -227,12 +222,28 @@
             </template>
         </BaseContextMenu>
 
+        <BaseContextMenu ref="contextSelectFile" class="context-select-file">
+            <template v-slot:header>
+                Select file to match
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <BaseSelectButtons :type="'radio'" :unsetOption="'Remove mapping'" 
+                    @unset="slotProps.item.fileIndex = null;slotProps.hide()"
+                    :options="availableFiles"
+                    v-model="slotProps.item.fileIndex" :submitOnChange="true" :optionValueKey="'index'"
+                    :optionNameKey="'fileName'" @submit="autoMapCurrency(slotProps.item);slotProps.hide()"/>
+                </div>
+            </template>
+        </BaseContextMenu>
+
     </BaseModal>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import File from '../../store/models/Collection';
+import Phase from '../../store/models/Phase';
 
 export default {
     name: 'createFileModal',
@@ -285,6 +296,7 @@ export default {
         ],
         currencyDefaultObject: {
             currencyName: '',
+            fileIndex: null,
             fieldsToMatch: [
                 {name: 'currency', displayName: 'Currency Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
                 headersToMatch: ['currency','currency name']},
@@ -298,6 +310,7 @@ export default {
         },
         currenciesToMatch: [{
             currencyName: '',
+            fileIndex: null,
             fieldsToMatch: [
                 {name: 'currency', displayName: 'Currency Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
                 headersToMatch: ['currency','currency name']},
@@ -446,6 +459,7 @@ export default {
             newFile.folder_id = this.currentFolderId
             newFile.workspace_id = this.currentWorkspaceId
             newFile.id = this.$uuid.v4()
+            newFile.phase = Phase.query().first().id
             this.uploadingFile = true
             this.uploadFile(newFile)
             .then(success => {
@@ -551,6 +565,24 @@ export default {
                 }
             }
         },
+        autoMapCurrency(currency) {
+            // Loop through the fields we still need to match to a header
+            const file = this.availableFiles[currency.fileIndex]
+            currency.fieldsToMatch.forEach(field => {
+                if (field.enabled && field.newValue.fileIndex == null && field.newValue.fieldIndex == null) {
+                    // Test if the current header has a file that matches
+                    const autoMatchIndex = file.headers.findIndex(header => {
+                        return field.headersToMatch.includes(header.fieldName.toLowerCase()) 
+                    })
+                    if (autoMatchIndex >= 0) {
+                        const newValueToPush = {fileIndex: currency.fileIndex, fieldName: file.headers[autoMatchIndex].fieldName, fieldIndex: autoMatchIndex, autoMatch: true}
+                        field.newValue = newValueToPush
+                        // Validate the value of the new mapping
+                        this.validateField(field)
+                    }
+                }
+            })
+        },
         showSelectContext(e, field) {
             const contextMenu = this.$refs.contextSelectField
             contextMenu.item = field
@@ -559,6 +591,11 @@ export default {
         showSelectKeyContext(e, file) {
             const contextMenu = this.$refs.contextSelectFileKey
             contextMenu.item = file
+            contextMenu.show(e)
+        },
+        showSelectFileContext(e, currency) {
+            const contextMenu = this.$refs.contextSelectFile
+            contextMenu.item = currency
             contextMenu.show(e)
         },
         instantiateProducts(fileId) {
@@ -778,6 +815,7 @@ export default {
             newFile.workspace_id = this.currentWorkspaceId
             newFile.id = this.$uuid.v4()
             newFile.products = this.instantiateProducts(newFile.id)
+            newFile.phase = Phase.query().first().id
 
             // Create collection from name
             this.uploadingFile = true

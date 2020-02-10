@@ -56,8 +56,10 @@
                 : option[optionValueKey] ? selection.includes(option[optionValueKey]) : selection.includes(selection)}]">
 
                     <label>
-                        <BaseRadiobox v-if="type == 'radio'" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
-                        <BaseCheckbox v-else :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
+                        <BaseRadiobox v-if="type == 'radio'" :value="optionValueKey ? optionValueKey == 'index' ? index : option[optionValueKey] : option" 
+                        :modelValue="selection" v-model="selection" @change="change"/>
+                        <BaseCheckbox v-else :value="optionValueKey ? optionValueKey == 'index' ? index : option[optionValueKey] : option" 
+                        :modelValue="selection" v-model="selection" @change="change"/>
 
                         <div class="label">
                             <template v-if="optionNameKey">

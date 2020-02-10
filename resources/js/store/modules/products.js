@@ -56,6 +56,46 @@ export default {
         products: (state, getters, rootState, rootGetters) => {
             return state.products
         },
+        availableCategories(state, getters) {
+            const products = getters.products
+            let uniqueCategories = []
+            products.forEach(product => {
+                if (product.category) {
+                    const found = uniqueCategories.includes(product.category)
+                    if (!found) uniqueCategories.push(product.category)
+                }
+            })
+            return uniqueCategories
+        },
+        availableDeliveryDates(state, getters) {
+            const products = this.products
+            let uniqueDeliveryDates = []
+            products.forEach(product => {
+                if (product.delivery_date) {
+                    const found = uniqueDeliveryDates.find(x => x.value == product.delivery_date)
+                    if (!found)
+                        uniqueDeliveryDates.push({
+                            name: new Date(product.delivery_date).toLocaleDateString('en-GB', {
+                                month: 'long',
+                                year: 'numeric',
+                            }),
+                            value: product.delivery_date,
+                        })
+                }
+            })
+            return uniqueDeliveryDates
+        },
+        availableBuyerGroups(state, getters) {
+            const products = getters.products
+            let unique = []
+            products.forEach(product => {
+                if (product.buyer_group) {
+                    const found = unique.includes(product.buyer_group)
+                    if (!found) unique.push(product.buyer_group)
+                }
+            })
+            return unique
+        },
         productTotals(state, getters, rootState, rootGetters) {
             const products = getters.products
             const totals = {

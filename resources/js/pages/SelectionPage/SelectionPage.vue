@@ -9,64 +9,7 @@
         </div>
         <div class="filters">
             <div class="left">
-                <BaseDropdown class="dropdown-parent left">
-                    <template v-slot:button="slotProps">
-                        <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
-                            <span>Category </span>
-                            <i class="far fa-chevron-down"></i>
-                            <span v-if="selectedCategories.length > 0" class="bubble">
-                                {{selectedCategories.length}}
-                            </span>
-                        </div>
-                    </template>
-                    <template v-slot:header>
-                        <span>Filter by category</span>
-                    </template>
-                    <template v-slot:body>
-                        <BaseCheckboxButtons :options="availableCategories" ref="filterSelect" v-model="selectedCategories" @change="$refs.filterSelect.submit()"/>
-                    </template>
-                </BaseDropdown>
-                <BaseDropdown class="dropdown-parent left">
-                    <template v-slot:button="slotProps">
-                        <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
-                            <span>Delivery</span>
-                            <i class="far fa-chevron-down"></i>
-                            <span v-if="selectedDeliveryDates.length > 0" class="bubble">
-                                {{selectedDeliveryDates.length}}
-                            </span>
-                        </div>
-                    </template>
-                    <template v-slot:header>
-                        <span>Filter by delivery date</span>
-                    </template>
-                    <template v-slot:body>
-                        <BaseCheckboxButtons :options="availableDeliveryDates" :optionNameKey="'name'" :optionValueKey="'value'" ref="filterDelivery" v-model="selectedDeliveryDates" @change="$refs.filterDelivery.submit()"/>
-                    </template>
-                </BaseDropdown>
-                <BaseDropdown class="dropdown-parent left" v-if="userPermissionLevel == 3">
-                    <template v-slot:button="slotProps">
-                        <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
-                            <span>Buyer group </span>
-                            <i class="far fa-chevron-down"></i>
-                            <span v-if="selectedBuyerGroups.length > 0" class="bubble">
-                                {{selectedBuyerGroups.length}}
-                            </span>
-                        </div>
-                    </template>
-                    <template v-slot:header>
-                        <span>Filter by buyer group</span>
-                    </template>
-                    <template v-slot:body>
-                        <BaseCheckboxButtons :options="availableBuyerGroups" ref="filterBuyerGroup" v-model="selectedBuyerGroups" @change="$refs.filterBuyerGroup.submit()"/>
-                    </template>
-                </BaseDropdown>
-                <label class="square checkbutton ghost light-2 checkbox clickable">
-                    <span>Show UNREAD only</span>
-                    <input type="checkbox" v-model="unreadOnly">
-                    <span class="checkmark solid"><i class="fas fa-check"></i></span>
-                </label>
-
-                <span v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]; $refs.filterDelivery.clear(); selectedDeliveryDates=[]; if ($refs.filterBuyerGroup) $refs.filterBuyerGroup.clear(); selectedBuyerGroups=[]; unreadOnly = false">Clear filter</span>
+                
             </div>
         </div>
 
@@ -116,87 +59,8 @@ export default{
                 return {id: 0, title: 'Global'}
             else return null
         },
-        currentProductFilter: {
-            get () {
-                return this.$store.getters['entities/products/currentProductFilter']
-            },
-            set (value) {
-                this.setCurrentProductFilter(value)
-            }
-        },
-        selectedCategories: {
-            get () {
-                return this.$store.getters['entities/products/selectedCategories']
-            },
-            set (value) {
-                this.updateSelectedCategories(value)
-            }
-        },
-        selectedDeliveryDates: {
-            get () {
-                return this.$store.getters['entities/products/selectedDeliveryDates']
-            },
-            set (value) {
-                this.updateSelectedDeliveryDates(value)
-            }
-        },
-        selectedBuyerGroups: {
-            get () {
-                return this.$store.getters['entities/products/selectedBuyerGroups']
-            },
-            set (value) {
-                this.updateSelectedBuyerGroups(value)
-            }
-        },
-        unreadOnly: {
-            get () {
-                return this.$store.getters['entities/products/unreadOnly']
-            },
-            set (value) {
-                this.setUnreadOnly(value)
-            }
-        },
         file() {
             return this.currentFile
-        },
-        availableCategories() {
-            const products = this.products
-            let uniqueCategories = []
-            products.forEach(product => {
-                if (product.category) {
-                    const found = (uniqueCategories.includes(product.category))
-                    if (!found)
-                        uniqueCategories.push(product.category)
-                }
-            })
-            return uniqueCategories
-        },
-        availableDeliveryDates() {
-            const products = this.products
-            let uniqueDeliveryDates = []
-            products.forEach(product => {
-                if (product.delivery_date) {
-                    const found = (uniqueDeliveryDates.find(x => x.value == product.delivery_date))
-                    if (!found)
-                        uniqueDeliveryDates.push({
-                            name: new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'}), 
-                            value: product.delivery_date
-                            })
-                }
-            })
-            return uniqueDeliveryDates
-        },
-        availableBuyerGroups() {
-            const products = this.products
-            let unique = []
-            products.forEach(product => {
-                if (product.buyer_group) {
-                    const found = (unique.includes(product.buyer_group))
-                    if (!found)
-                        unique.push(product.buyer_group)
-                }
-            })
-            return unique
         },
         productsNoIn() {
             const products = this.products

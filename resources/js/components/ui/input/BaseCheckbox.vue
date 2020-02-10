@@ -18,7 +18,7 @@ export default {
     ],
     computed: {
         shouldBeChecked() {
-            if (this.value || this.modelValue) {
+            if (this.value != null || this.modelValue) {
                 // Check if the modelValue (the value we bind to v-model) is an array
                 if (Array.isArray(this.modelValue)) {
                     return this.modelValue.includes(this.value)

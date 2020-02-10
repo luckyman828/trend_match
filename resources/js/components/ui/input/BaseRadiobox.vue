@@ -18,7 +18,14 @@ export default {
     ],
     computed: {
         shouldBeChecked() {
-            return this.modelValue == this.value
+            // return this.modelValue == this.value
+            if (this.value != null || this.modelValue) {
+                // Check if the modelValue (the value we bind to v-model) is an array
+                if (Array.isArray(this.modelValue)) {
+                    return this.modelValue.includes(this.value)
+                }
+                else return this.modelValue == this.value
+            }
         }
     },
     methods: {

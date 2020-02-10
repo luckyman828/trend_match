@@ -67,9 +67,11 @@ export default {
     },
     created () {
         document.getElementById('main').addEventListener('scroll', this.handleScroll)
+        window.addEventListener('resize', this.handleScroll)
     },
     destroyed () {
         document.getElementById('main').removeEventListener('scroll', this.handleScroll)
+        window.removeEventListener('resize', this.handleScroll)
     },
     mounted() {
         this.distToTop =  this.getYPos(this.$refs.stickyHeader)
