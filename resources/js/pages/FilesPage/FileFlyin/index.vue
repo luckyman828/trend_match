@@ -1,5 +1,5 @@
 <template>
-    <BaseFlyin ref="fileSingleFlyin" :visibleOverwrite="show" @close="$emit('close')">
+    <BaseFlyin ref="fileSingleFlyin" :show="show" @close="$emit('close')">
         <template v-slot:header v-if="file && show">
             <BaseFlyinHeader :title="'File Overview: '+file.title" :next="nextFileId" :prev="prevFileId"
             @close="$emit('close')" @next="showNext" @prev="showPrev">
@@ -18,7 +18,7 @@
         </template>
         <template v-if="file && show" v-slot>
             <div class="file-single">
-                <SelectionsTable :subfiles="currentFile.subfiles" @showSelectionUsersFlyin="showSelectionUsersFlyin($event)"
+                <SelectionsTable :selections="currentFile.subfiles" @showSelectionUsersFlyin="showSelectionUsersFlyin($event)"
                 @showSelectionOwnersFlyin="showSelectionOwnersFlyin"/>
 
                 <SelectionUsersFlyin :selection="currentSelection" :show="SelectionUsersFlyinVisible"

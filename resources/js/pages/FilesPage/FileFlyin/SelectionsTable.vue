@@ -1,12 +1,12 @@
 <template>
-    <div class="subfiles-table">
+    <div class="selections-table">
         <BaseFlexTable class="flex-table-root">
             <template v-slot:topBar>
-                <TableTopBar>
+                <BaseTableTopBar>
                     <template v-slot:right>
-                        <span>{{subfiles.length}} records</span>
+                        <span>{{selections.length}} records</span>
                     </template>
-                </TableTopBar>
+                </BaseTableTopBar>
             </template>
             <template v-slot:header>
                 <BaseTableHeader class="expand"></BaseTableHeader>
@@ -22,8 +22,8 @@
             </template>
             <template v-slot:body>
                 <div class="body">
-                    <SelectionsTableRow :ref="'selection-row-'+subfile.id" v-for="subfile in currentFile.subfiles.filter(x => !x.parent_id)" :key="subfile.id"
-                    :subfile="subfile" :depth="0" :path="[subfile.id]"
+                    <SelectionsTableRow :ref="'selection-row-'+selection.id" v-for="selection in selections.filter(x => !x.parent_id)" :key="selection.id"
+                    :selection="selection" :depth="0" :path="[selection.id]"
                     :selectionToEdit="selectionToEdit" @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
                     @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showSelectionOwnersFlyin="$emit('showSelectionOwnersFlyin',$event)"
                     @showContext="showContextMenuSelection" :moveSelectionActive="moveSelectionActive" 
@@ -37,7 +37,7 @@
 
         <BaseContextMenu ref="contextMenuSelection" class="context-selection">
             <div class="item-group">
-                <div class="item" @click="$router.push({name: 'subfile', params: {fileId: contextSelection.file_id, subfileId: contextSelection.id}})">
+                <div class="item" @click="$router.push({name: 'selection', params: {fileId: contextSelection.file_id, selectionId: contextSelection.id}})">
                     <div class="icon-wrapper">
                         <i class="far fa-users"></i>
                     </div>
@@ -109,32 +109,32 @@
                 <div class="columns">
                     <div class="item-group">
                         <strong class="header">Comments</strong>
-                        <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','allChildren','parent','siblings']"
+                        <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors', 'siblings']"
                         v-model="contextSelection.options.comments.broadcast" :submitOnChange="true"/>
-                        <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','allChildren','parent','siblings']"
+                        <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
                         v-model="contextSelection.options.comments.listen" :submitOnChange="true"/>
                         <BaseSelectButtons header="Anomyze comments" class="item-wrapper" label="Anonymize" :value="contextSelection.options.comments.anonymize" 
                         v-model="contextSelection.options.comments.anonymize"/>
                     </div>
                     <div class="item-group">
                         <strong class="header">Requests</strong>
-                        <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','allChildren','parent','siblings']"
+                        <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
                         v-model="contextSelection.options.requests.broadcast" :submitOnChange="true"/>
-                        <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','allChildren','parent','siblings']"
+                        <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
                         v-model="contextSelection.options.requests.listen" :submitOnChange="true"/>
                     </div>
                     <div class="item-group">
                         <strong class="header">Actions</strong>
-                        <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','allChildren','parent','siblings']"
+                        <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
                         v-model="contextSelection.options.actions.broadcast" :submitOnChange="true"/>
-                        <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','allChildren','parent','siblings']"
+                        <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
                         v-model="contextSelection.options.actions.listen" :submitOnChange="true"/>
                         <SelectButton header="Anomyze actions" class="item-wrapper" label="Anonymize" :value="contextSelection.options.actions.anonymize" 
                         v-model="contextSelection.options.actions.anonymize"/>
                     </div>
                     <div class="item-group">
                         <strong class="header">Feedback</strong>
-                        <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','allChildren','parent','siblings']"
+                        <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','descendants', 'ancestors','siblings']"
                         v-model="contextSelection.options.feedback.broadcast" :submitOnChange="true"/>
                         <BaseSelectButtons header="Anomyze feedback" class="item-wrapper" label="Anonymize" :value="contextSelection.options.feedback.anonymize" 
                         v-model="contextSelection.options.feedback.anonymize"/>
@@ -161,9 +161,9 @@ import { mapGetters, mapActions } from 'vuex'
 import SelectionsTableRow from './SelectionsTableRow'
 
 export default {
-    name: 'subfilesTable',
+    name: 'selectionsTable',
     props: [
-        'subfiles',
+        'selections',
     ],
     components: {
         SelectionsTableRow,
@@ -224,8 +224,8 @@ export default {
                     const index = parent.children.findIndex(x => x.id == this.selectionToMove.id)
                     parent.children.splice(index, 1)
                 } else {
-                    const index = this.subfiles.findIndex(x => x.id == this.selectionToMove.id)
-                    this.subfiles.splice(index, 1)
+                    const index = this.selections.findIndex(x => x.id == this.selectionToMove.id)
+                    this.selections.splice(index, 1)
                 }
 
                 // Expand the component
@@ -274,8 +274,8 @@ export default {
             contextMenu.show(e)
         },
         onNewSelection(parent) {
-            // First check that we don't already have an unsaved new subfile
-            if (this.subfiles.find(x => x.id == null)) return
+            // First check that we don't already have an unsaved new selection
+            if (this.selections.find(x => x.id == null)) return
             // Else instantiate a new master object in the table
             const newSelection = {
                 id: null,
@@ -298,7 +298,7 @@ export default {
             } else {
                 // If no parent, we are creating a new master
                 newSelection.name = 'New Master Selection'
-                this.subfiles.push(newSelection)
+                this.selections.push(newSelection)
             }
             // Wait for changes to the dom to take effect
             this.$nextTick(() => {
@@ -317,8 +317,8 @@ export default {
                 const unsavedSelectionIndex = parent.children.findIndex(x => x.id == selection.id)
                 parent.children.splice(unsavedSelectionIndex, 1)
             } else {
-                const unsavedSelectionIndex = this.subfiles.findIndex(x => x.id == selection.id)
-                this.subfiles.splice(unsavedSelectionIndex, 1)
+                const unsavedSelectionIndex = this.selections.findIndex(x => x.id == selection.id)
+                this.selections.splice(unsavedSelectionIndex, 1)
             }
         },
         clearToEdit() {
@@ -330,12 +330,12 @@ export default {
             if (!selection.id) {
                 // Check if the current selection has a parent
                 if (selection.parent_id) {
-                    const parent = this.subfiles.find(x => x.id == selection.id)
+                    const parent = this.selections.find(x => x.id == selection.id)
                     const unsavedSelectionIndex = parent.children.findIndex(x => x.id == null)
                     parent.children.splice(unsavedSelectionIndex, 1)
                 } else {
-                    const unsavedSelectionIndex = this.subfiles.findIndex(x => x.id == null)
-                    this.subfiles.splice(unsavedSelectionIndex, 1)
+                    const unsavedSelectionIndex = this.selections.findIndex(x => x.id == null)
+                    this.selections.splice(unsavedSelectionIndex, 1)
                 }
             }
         }
@@ -349,7 +349,7 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
     
-    .subfiles-table {
+    .selections-table {
         // Target child style
         ::v-deep tr {
             > * {

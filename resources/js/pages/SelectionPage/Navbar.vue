@@ -6,7 +6,7 @@
             <router-link :to="{name: 'files'}" class="back-link"><span class="circle primary"><i class="far fa-arrow-left"></i></span><span>Back to Files</span></router-link>
             <div class="breadcrumbs">
                 <router-link class="text-link" :to="{name: 'files'}">Files</router-link>
-                <span class="current"><strong>{{(currentFile != null) ? currentFile.title : 'Fetching..'}}</strong></span>
+                <span class="current"><strong>{{currentFile.title}}</strong></span>
             </div>
 
         </div>
@@ -21,14 +21,7 @@
 
         <div class="items-right">
 
-            <template v-if="userPermissionLevel >= 2 && userPermissionLevel != 3">
-                <span class="button wide light-2" v-if="submittingTaskComplete"><Loader/></span>
-                <span class="button wide red" v-else-if="currentTask.completed.find(x => x.file_id == currentFile.id)" @click="onUndoCompleteTask(currentFile.id, currentTask.id)">Reopen task</span>
-                <template v-else>
-                    <span class="button wide primary" v-if="currentTask.isActive" @click="onCompleteTask(currentFile.id, currentTask.id)">Complete task</span>
-                </template>
-            </template>
-            <span v-if="userPermissionLevel >= 2" class="button wide primary" @click="$refs.exportModal.toggle(); setPageHeight()">Export to PDF</span>
+            <span class="button wide primary" @click="$refs.exportModal.toggle(); setPageHeight()">Export to PDF</span>
 
         </div>
 
@@ -81,35 +74,17 @@
                         </div>
                     </div>
 
-                    <div class="comments-wrapper" v-if="exportComments && (product.requests.length > 0 || product.commentsScoped.length > 0)">
+                    <div class="comments-wrapper" v-if="exportComments && (product.requests.length > 0 || product.comments.length > 0)">
                         <h2>Requests & Comments</h2>
-                        <template v-if="currentTaskOnly">
-                            <div v-for="request in product.requests.filter(x => x.task_id == currentTask.id)" :key="request.id" style="border-radius: 6px; background: #3B86FF; color: white; padding: 8px 12px; margin-bottom: 16px; max-width: calc(100% - 120px);">
-                                <p style="font-size: 12px; font-weight: 700; margin: 0;">{{request.task.title}} | {{request.user ? request.user.name : 'Unknown user'}}</p>
-                                <p style="white-space: pre-wrap; word-wrap: break-word;">{{request.comment}}</p>
-                                <p style="font-size: 10px; font-weight: 500; margin: 0;">Request ID: {{request.id}}</p>
-                            </div>
-                            <div v-for="comment in product.commentsScoped.filter(x => x.task_id == currentTask.id)" :key="comment.id">
-                                <p style="border-radius: 6px; background: #DFDFDF; color: #1B1C1D; padding: 8px 12px; display: inline-block; white-space: pre-wrap; word-wrap: break-word; margin-bottom: 0; max-width: calc(100% - 120px);">{{comment.comment}}</p>
-                                <p style="font-size: 12px; font-weight: 500; color: #A8A8A8; margin-bottom: 16px; margin-top: 0">{{comment.task.title}} | {{comment.user ? comment.user.name : 'Unknown user'}}</p>
-                            </div>
-                        </template>
-                        <template v-else>
-                            <div v-for="request in product.requests.filter(x => x.task_id == currentTask.id)" :key="request.id" style="border-radius: 6px; background: #f3e959; color: black; padding: 8px 12px; margin-bottom: 16px; max-width: calc(100% - 120px);">
-                                <p style="font-size: 12px; font-weight: 700; margin: 0;">{{request.task.title}} | {{request.user ? request.user.name : 'Unknown user'}}</p>
-                                <p style="white-space: pre-wrap; word-wrap: break-word;">{{request.comment}}</p>
-                                <p style="font-size: 10px; font-weight: 500; margin: 0;">Request ID: {{request.id}}</p>
-                            </div>
-                            <div v-for="request in product.requests.filter(x => x.task_id != currentTask.id)" :key="request.id" style="border-radius: 6px; background: #3B86FF; color: white; padding: 8px 12px; margin-bottom: 16px; max-width: calc(100% - 120px);">
-                                <p style="font-size: 12px; font-weight: 700; margin: 0;">{{request.task.title}} | {{request.user ? request.user.name : 'Unknown user'}}</p>
-                                <p style="white-space: pre-wrap; word-wrap: break-word;">{{request.comment}}</p>
-                                <p style="font-size: 10px; font-weight: 500; margin: 0;">Request ID: {{request.id}}</p>
-                            </div>
-                            <div v-for="comment in product.commentsScoped" :key="comment.id">
-                                <p style="border-radius: 6px; background: #DFDFDF; color: #1B1C1D; padding: 8px 12px; display: inline-block; white-space: pre-wrap; word-wrap: break-word; margin-bottom: 0; max-width: calc(100% - 120px);">{{comment.comment}}</p>
-                                <p style="font-size: 12px; font-weight: 500; color: #A8A8A8; margin-bottom: 16px; margin-top: 0">{{comment.task.title}} | {{comment.user ? comment.user.name : 'Unknown user'}}</p>
-                            </div>
-                        </template>
+                        <div v-for="request in product.requests" :key="request.id" style="border-radius: 6px; background: #3B86FF; color: white; padding: 8px 12px; margin-bottom: 16px; max-width: calc(100% - 120px);">
+                            <p style="font-size: 12px; font-weight: 700; margin: 0;">{{request.selection_name}} | {{request.user_name || 'Unknown user'}}</p>
+                            <p style="white-space: pre-wrap; word-wrap: break-word;">{{request.comment}}</p>
+                            <p style="font-size: 10px; font-weight: 500; margin: 0;">Request ID: {{request.id}}</p>
+                        </div>
+                        <div v-for="comment in product.comments" :key="comment.id">
+                            <p style="border-radius: 6px; background: #DFDFDF; color: #1B1C1D; padding: 8px 12px; display: inline-block; white-space: pre-wrap; word-wrap: break-word; margin-bottom: 0; max-width: calc(100% - 120px);">{{comment.comment}}</p>
+                            <p style="font-size: 12px; font-weight: 500; color: #A8A8A8; margin-bottom: 16px; margin-top: 0">{{comment.selection_name}} | {{comment.user_name || 'Unknown user'}}</p>
+                        </div>
                     </div>
 
                     <div class="distribution-wrapper" v-if="includeDistribution">
@@ -122,39 +97,39 @@
                                 <span v-if="action.user.impact == 2" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #f6993f; margin-left: 4px;"></span>
                                 <span v-if="action.user.impact == 3" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #5ee2a0; margin-left: 4px;"></span>
                             </span>
-                            <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{action.task ? action.task.title : 'Uknown task'}} | {{action.user ? action.user.name : 'Unknown user'}} {{action.user ? '('+action.user.email+')' : ''}}</p>
+                            <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{action.selection_name}} | {{action.user_name || 'Unknown user'}}</p>
                             <span style="margin-left: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #3b86ff;" v-if="action.action == 2">Focus</span>
                         </div>
                         <div v-for="(action, index) in product.ins" :key="index" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
-                            <span class="impact" v-if="action.user && action.user.impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
-                                Impact ({{action.user.impact}}) 
-                                <span v-if="action.user.impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
-                                <span v-if="action.user.impact == 2" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #f6993f; margin-left: 4px;"></span>
-                                <span v-if="action.user.impact == 3" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #5ee2a0; margin-left: 4px;"></span>
+                            <span class="impact" v-if="action.user_impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
+                                Impact ({{action.user_impact}}) 
+                                <span v-if="action.user_impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
+                                <span v-if="action.user_impact == 2" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #f6993f; margin-left: 4px;"></span>
+                                <span v-if="action.user_impact == 3" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #5ee2a0; margin-left: 4px;"></span>
                             </span>
-                            <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{action.task ? action.task.title : 'Uknown task'}} | {{action.user ? action.user.name : 'Unknown user'}} {{action.user ? '('+action.user.email+')' : ''}}</p>
+                            <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{action.selection_name}} | {{action.user_name || 'Unknown user'}}</p>
                             <span style="margin-left: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #3b86ff;" v-if="action.action == 2">Focus</span>
                         </div>
                         <h3>OUT ({{product.outs.length}})</h3>
                         <div v-for="(action, index) in product.outs" :key="index" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
-                            <span class="impact" v-if="action.user && action.user.impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
-                                Impact ({{action.user.impact}}) 
-                                <span v-if="action.user.impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
-                                <span v-if="action.user.impact == 2" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #f6993f; margin-left: 4px;"></span>
-                                <span v-if="action.user.impact == 3" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #5ee2a0; margin-left: 4px;"></span>
+                            <span class="impact" v-if="action.user_impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
+                                Impact ({{action.user_impact}}) 
+                                <span v-if="action.user_impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
+                                <span v-if="action.user_impact == 2" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #f6993f; margin-left: 4px;"></span>
+                                <span v-if="action.user_impact == 3" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #5ee2a0; margin-left: 4px;"></span>
                             </span>
-                            <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{action.task ? action.task.title : 'Uknown task'}} | {{action.user ? action.user.name : 'Unknown user'}} {{action.user ? '('+action.user.email+')' : ''}}</p>
+                            <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{action.selection_name}} | {{action.user_name || 'Unknown user'}}</p>
                         </div>
                         <template v-if="includeNotDecided">
                             <h3>Not decided ({{product.nds.length}})</h3>
-                            <div v-for="(nd, index) in product.nds" :key="index" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
-                                <span class="impact" v-if="nd.impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
-                                    Impact ({{nd.impact}}) 
-                                    <span v-if="nd.impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
-                                    <span v-if="nd.impact == 2" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #f6993f; margin-left: 4px;"></span>
-                                    <span v-if="nd.impact == 3" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #5ee2a0; margin-left: 4px;"></span>
+                            <div v-for="(user, index) in product.nds" :key="index" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
+                                <span class="impact" v-if="user.impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
+                                    Impact ({{user.impact}}) 
+                                    <span v-if="user.impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
+                                    <span v-if="user.impact == 2" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #f6993f; margin-left: 4px;"></span>
+                                    <span v-if="user.impact == 3" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #5ee2a0; margin-left: 4px;"></span>
                                 </span>
-                                <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{nd.task ? nd.task.title : 'Uknown task'}} | {{nd.name != null ? nd.name +' '+ ((nd.email) ? '('+nd.email+')' : '') : nd.title}}</p>
+                                <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{user.selection_name}}</p>
                             </div>
                         </template>
                     </div>
@@ -263,11 +238,10 @@ export default {
     }},
     computed: {
         ...mapGetters('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']),
-        // ...mapGetters('entities/products', ['productsScopedFiltered']),
-        ...mapGetters('entities/products', {products: 'productsScopedFiltered'}),
+        ...mapGetters('entities/products', ['productsFiltered']),
         ...mapGetters('entities/tasks', ['userTasks']),
         productsToExport() {
-            const products = this.products
+            const products = this.productsFiltered
             if (this.onlyWithRequests) {
                 return products.filter(product => product.requests.length > 0)
             } else return products

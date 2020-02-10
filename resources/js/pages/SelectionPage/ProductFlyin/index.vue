@@ -1,203 +1,125 @@
 <template>
-    <div class="product-single">
-        <div class="inner">
-            <template v-if="!loading && product != null">
-                <div class="header">
-                    <div class="left">
-                        <span class="square true-square light close clickable" @click="onCloseSingle()"><i class="fal fa-times"></i></span>
-                        <h3>{{product.title}}</h3>
-                    </div>
-                    <div class="right controls">
-                        <!-- <template v-if="currentTaskPermissions.actions && userPermissionLevel != 3">
-                            <span v-if="currentTaskPermissions.focus && currentTask.type != 'approval'" class="square true-square clickable focus-action" :class="[(product.currentAction != null) ? (product.currentAction.action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover']" @click="toggleInOut(product, 2)">
-                                <i class="far fa-star"></i>
-                            </span>
-                            <span class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
-                            In  <i class="far fa-heart"></i>
-                            </span>
-                            <span class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
-                            Out  <i class="far fa-times-circle"></i>
-                            </span>
-                        </template>
-                        <template v-else-if="userPermissionLevel == 3">
-                            <template v-if="product.currentAction">
-                                <span class="button icon-right disabled" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
-                                In  <i class="far fa-heart"></i>
-                                </span>
-                                <span class="button icon-right disabled" :class="[(product.currentAction != null) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover']"  @click="toggleInOut(product, 0)">
-                                Out  <i class="far fa-times-circle"></i>
-                                </span>
-                            </template>
-                            <template v-else>
-                            <span class="button icon-right" :class="[(product.currentAction != null) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover']" @click="toggleInOut(product, 1)">
-                                In  <i class="far fa-heart"></i>
-                            </span>
-                            <span class="button ghost icon-right disabled">
-                                Out  <i class="far fa-times-circle"></i>
-                            </span>
-                            </template>
-                        </template> -->
-
-                        <span v-if="currentTaskPermissions.focus && currentTask.type != 'approval' && currentTask.type != 'decision'" class="square light-2 true-square clickable focus-action" :class="[(product.currentAction) ? (product.currentAction.action == 2) ? 'active light' : 'ghost primary-hover' : 'ghost primary-hover']" @click="toggleInOut(product, 2)"  ref="focusButton">
-                            <i class="far fa-star"></i>
-                            </span>
-
-
-                            <template v-if="product.outInFilter">
-                                <div v-tooltip="'Out by ' + product.outInFilter.user.name + ' in ' + product.outInFilter.task.title">
-                                    <span class="button icon-right ghost disabled" ref="inButton">
-                                        In  <i class="far fa-heart"></i>
-                                    </span>
-                                    <span class="button icon-right active red disabled" ref="outButton">
-                                        Out  <i class="far fa-times-circle"></i>
-                                    </span>
-                                </div>
-                            </template>
-                            <template v-else-if="currentTask.type == 'approval' && product.requests.length < 1">
-                                <span class="button icon-right disabled" ref="inButton" :class="[(product.inheritedAction && product.inheritedAction.action >= 1) || (product.currentAction && prouct.currentAction.action >= 1) ? 'active green' : 'ghost']">
-                                    In  <i class="far fa-heart"></i>
-                                </span>
-                                <span class="button icon-right disabled"  ref="outButton" :class="[(product.inheritedAction && product.inheritedAction.action < 1) || (product.currentAction && prouct.currentAction.action < 1) ? 'active red' : 'ghost']">
-                                    Out  <i class="far fa-times-circle"></i>
-                                </span>
-                            </template>
-                            <template v-else>
-                                <template v-if="userPermissionLevel != 3">
-                                    
-                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id == 3 : false}]" @click="toggleInOut(product, 1)" ref="inButton">
-                                    In  <i class="far fa-heart"></i>
-                                    </span>
-                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id == 3 : false}]"  @click="toggleInOut(product, 0)" ref="outButton">
-                                    Out  <i class="far fa-times-circle"></i>
-                                    </span>
-
-                                </template>
-                                <template v-else>
-                                    <span class="button icon-right" :class="[(product.currentAction) ? (product.currentAction.action != 0) ? 'active green' : 'ghost green-hover' : 'ghost green-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id != 3 : false}]" @click="toggleInOut(product, 1)" ref="inButton">
-                                    In  <i class="far fa-heart"></i>
-                                    </span>
-                                    <span class="button icon-right disabled" :class="[(product.currentAction) ? (product.currentAction.action == 0) ? 'active red' : 'ghost red-hover' : 'ghost red-hover', {disabled: (product.currentAction) ? product.currentAction.user.role_id != 3 : false}]" ref="outButton">
-                                    Out  <i class="far fa-times-circle"></i>
-                                    </span>
-                                </template>
-
-                            </template>
-                        
-
-                        <span class="button primary active wide" @click="onPrevSingle()" :class="[{ disabled: prevProductId == null}]">Previous style</span>
-                        <span class="button primary active wide" @click="onNextSingle()" :class="[{ disabled: nextProductId == null}]">Next style</span>
-                    </div>
-                </div>
-                <div class="grid-2 grid-border-between body">
-                    <div class="details">
-                        <div class="grid-2">
-                            <div class="image" @click="cycleImage()">
-                                <img v-if="product.color_variants[0] != null" :src="variantImg(product.color_variants[currentImgIndex])" @error="imgError(product.color_variants[currentImgIndex])">
+    <BaseFlyin class="product-single" :show="show" @close="onCloseSingle">
+        <template v-slot:header>
+            <BaseFlyinHeader v-if="show" :title="product.title" :next="nextProductId" :prev="prevProductId"
+            @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
+                <button class="primary" :class="{'ghost': !product.currentAction || product.currentAction.action != 2}" 
+                @click="onUpdateAction(product, 2)">
+                    <i class="far fa-star"></i>
+                </button>
+                <button class="primary" :class="{'ghost': !product.currentAction || product.currentAction.action != 1}" 
+                @click="onUpdateAction(product, 1)">
+                    <i class="far fa-heart"></i>
+                    <span>In</span>
+                </button>
+                <button class="primary" :class="{'ghost': !product.currentAction || product.currentAction.action != 0}" 
+                @click="onUpdateAction(product, 0)">
+                    <i class="far fa-times"></i>
+                    <span>out</span>
+                </button>
+            </BaseFlyinHeader>
+        </template>
+        <template v-slot v-if="show">
+            <div class="grid-2 grid-border-between body">
+                <div class="details">
+                    <div class="grid-2">
+                        <div class="image" @click="cycleImage()">
+                            <img v-if="product.color_variants[0] != null" :src="variantImg(product.color_variants[currentImgIndex])" @error="imgError(product.color_variants[currentImgIndex])">
+                        </div>
+                        <div class="description">
+                            <div class="stat">
+                                <p><strong>Style number</strong></p>
+                                <p><span>{{product.datasource_id}}</span></p>
                             </div>
-                            <div class="description">
-                                <div class="stat">
-                                    <p><strong>Style number</strong></p>
-                                    <p><span>{{product.datasource_id}}</span></p>
-                                </div>
-                                <div class="stat">
-                                    <p><strong>Category</strong></p>
-                                    <span>{{product.category}}</span>
-                                </div>
-                                <div class="stat">
-                                    <strong>Minimum production</strong>
-                                    <span>{{product.quantity}}</span>
-                                </div>
+                            <div class="stat">
+                                <p><strong>Category</strong></p>
+                                <span>{{product.category}}</span>
+                            </div>
+                            <div class="stat">
+                                <strong>Minimum production</strong>
+                                <span>{{product.quantity}}</span>
+                            </div>
 
-                                <div class="stat">
-                                    <p><strong>WHS ({{product.userPrices.currency}})</strong></p>
-                                    <v-popover :disabled="userPermissionLevel < 4">
-                                        <p class="tooltip-target">{{product.userPrices.wholesale_price}} <i class="far fa-info-circle"></i></p>
-                                        <TooltipList slot="popover" :header="'Wholesale price'" :array="product.prices" :arrayValueKey="'wholesale_price'" :arrayLabelKey="'currency'"/>
-                                    </v-popover>
-                                </div>
+                            <div class="stat">
+                                <p><strong>WHS ({{product.userPrices.currency}})</strong></p>
+                                <v-popover :disabled="userPermissionLevel < 4">
+                                    <p class="tooltip-target">{{product.userPrices.wholesale_price}} <i class="far fa-info-circle"></i></p>
+                                    <BaseTooltipList slot="popover" :header="'Wholesale price'" :array="product.prices" :arrayValueKey="'wholesale_price'" :arrayLabelKey="'currency'"/>
+                                </v-popover>
+                            </div>
 
-                                <div class="stat">
-                                    <p><strong>RRP ({{product.userPrices.currency}})</strong></p>
-                                    <v-popover :disabled="userPermissionLevel < 4">
-                                        <p class="tooltip-target">{{product.userPrices.recommended_retail_price}} <i class="far fa-info-circle"></i></p>
-                                        <TooltipList slot="popover" :header="'Recommended retail price'" :array="product.prices" :arrayValueKey="'recommended_retail_price'" :arrayLabelKey="'currency'"/>
-                                    </v-popover>
-                                </div>
+                            <div class="stat">
+                                <p><strong>RRP ({{product.userPrices.currency}})</strong></p>
+                                <v-popover :disabled="userPermissionLevel < 4">
+                                    <p class="tooltip-target">{{product.userPrices.recommended_retail_price}} <i class="far fa-info-circle"></i></p>
+                                    <BaseTooltipList slot="popover" :header="'Recommended retail price'" :array="product.prices" :arrayValueKey="'recommended_retail_price'" :arrayLabelKey="'currency'"/>
+                                </v-popover>
+                            </div>
 
-                                <div class="stat">
-                                    <p><strong>MU</strong></p>
-                                    <v-popover :disabled="userPermissionLevel < 4">
-                                        <p class="tooltip-target">{{product.userPrices.markup}} <i class="far fa-info-circle"></i></p>
-                                        <TooltipList slot="popover" :header="'Mark up'" :array="product.prices" :arrayValueKey="'markup'" :arrayLabelKey="'currency'"/>
-                                    </v-popover>
-                                </div>
+                            <div class="stat">
+                                <p><strong>MU</strong></p>
+                                <v-popover :disabled="userPermissionLevel < 4">
+                                    <p class="tooltip-target">{{product.userPrices.markup}} <i class="far fa-info-circle"></i></p>
+                                    <BaseTooltipList slot="popover" :header="'Mark up'" :array="product.prices" :arrayValueKey="'markup'" :arrayLabelKey="'currency'"/>
+                                </v-popover>
+                            </div>
 
+                        </div>
+                    </div>
+
+                    <div class="stat">
+                        <p><strong>Composition</strong></p>
+                        <p>{{product.composition}}</p>
+                    </div>
+                    <div class="stat">
+                        <p><strong>Delivery date</strong></p>
+                        <p>{{new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})}}</p>
+                    </div>
+                    <div class="stat">
+                        <p><strong>Description</strong></p>
+                        <p>{{product.sale_description}}</p>
+                    </div>
+                    <div class="stat" v-if="product.assortments">
+                        <p><strong>Assortments</strong></p>
+                        <p v-for="(assortment, index) in product.assortments" :key="index">
+                            <span>{{assortment.assortment_name}}</span>
+                        </p>
+                    </div>
+
+                    <div class="product-variants" v-dragscroll>
+                        <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
+                            <div class="img-wrapper">
+                                <img :src="variantImg(variant)" @error="imgError(variant)">
+                            </div>
+                            <div class="color-wrapper">
+                                <div class="circle-img"><img :src="variantImg(variant)" @error="imgError(variant)"></div>
+                                <span>{{variant.color}}</span>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="stat">
-                            <p><strong>Composition</strong></p>
-                            <p>{{product.composition}}</p>
+                    <div class="tabs-wrapper">
+                        <strong>Distribution</strong>
+                        <div class="tab-headers">
+                            <span :class="{active: currentTab == 'ins'}" class="tab" @click="setCurrentTab('ins')"><span class="count">{{product.ins.length + product.focus.length}}</span>In</span>
+                            <span :class="{active: currentTab == 'outs'}" class="tab" @click="setCurrentTab('outs')"><span class="count">{{product.outs.length}}</span>Out</span>
+                            <span :class="{active: currentTab == 'nds'}" class="tab" @click="setCurrentTab('nds')"><span class="count">{{product.nds.length}}</span>Not decided</span>
                         </div>
-                        <div class="stat">
-                            <p><strong>Delivery date</strong></p>
-                            <p>{{new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})}}</p>
-                        </div>
-                        <div class="stat">
-                            <p><strong>Description</strong></p>
-                            <p>{{product.sale_description}}</p>
-                        </div>
-                        <div class="stat" v-if="product.assortments">
-                            <p><strong>Assortments</strong></p>
-                            <p v-for="(assortment, index) in product.assortments" :key="index">
-                                <span>{{assortment.assortment_name}}</span>
+                        <div class="tab-body">
+                            <strong class="tab-title">{{currentTab.substr(0, currentTab.length - 1)}}</strong>
+                            <p v-for="(row, index) in tabBody" :key="index">
+                                <span class="user" v-if="userPermissionLevel > 1">{{(row.name) ? row.name : (row.user) ? row.user.name : row.title}}</span>
+                                <template v-if="row.focus != null">
+                                    <span class="focus" v-if="row.focus">Focus <i class="fas fa-star"></i></span>
+                                </template>
                             </p>
                         </div>
-
-                        <div class="product-variants" v-dragscroll>
-                            <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
-                                <div class="img-wrapper">
-                                    <img :src="variantImg(variant)" @error="imgError(variant)">
-                                </div>
-                                <div class="color-wrapper">
-                                    <div class="circle-img"><img :src="variantImg(variant)" @error="imgError(variant)"></div>
-                                    <span>{{variant.color}}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tabs-wrapper">
-                            <strong>Distribution</strong>
-                            <div class="tab-headers">
-                                <span :class="{active: currentTab == 'ins'}" class="tab" @click="setCurrentTab('ins')"><span class="count">{{product.ins.length + product.focus.length}}</span>In</span>
-                                <span :class="{active: currentTab == 'outs'}" class="tab" @click="setCurrentTab('outs')"><span class="count">{{product.outs.length}}</span>Out</span>
-                                <span v-if="currentTask.type != 'decision'" :class="{active: currentTab == 'nds'}" class="tab" @click="setCurrentTab('nds')"><span class="count">{{product.nds.length}}</span>Not decided</span>
-                            </div>
-                            <div class="tab-body">
-                                <strong class="tab-title">{{currentTab.substr(0, currentTab.length - 1)}}</strong>
-                                <p v-for="(row, index) in tabBody" :key="index">
-                                    <span class="team">{{(row.task) ? row.task.title : row.title}}</span>
-                                    <span class="user" v-if="userPermissionLevel > 1">{{(row.name) ? row.name : (row.user) ? row.user.name : row.title}}</span>
-                                    <template v-if="row.focus != null">
-                                        <span class="focus" v-if="row.focus">Focus <i class="fas fa-star"></i></span>
-                                    </template>
-                                    <template v-if="userPermissionLevel >= 4">
-                                        <span class="impact" v-if="row.user ? row.user.impact : row.impact" :class="[row.user ? 'impact-'+row.user.impact : 'impact-'+row.impact]">
-                                            Impact ({{row.user ? row.user.impact : row.impact}}) <span class="circle tiny"></span>
-                                        </span>
-                                    </template>
-                                </p>
-                            </div>
-                        </div>
                     </div>
-                    <CommentsSection :authUser="authUser" :product="product"/>
                 </div>
-            </template>
-            <template v-else>
-                <BaseLoader/>
-            </template>
-        </div>
-    </div>
+                <CommentsSection :product="product"/>
+            </div>
+        </template>
+    </BaseFlyin>
 </template>
 
 <script>
@@ -207,10 +129,7 @@ import CommentsSection from './CommentsSection'
 export default {
     name: 'productFlyin',
     props: [
-        'authUser',
-        'sticky',
-        'visible',
-        'loading',
+        'show',
     ],
     components: {
         CommentsSection,
@@ -226,7 +145,7 @@ export default {
         },
     },
     computed: {
-        ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope', 'currentTaskPermissions', 'currentTask']),
+        ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope']),
         ...mapGetters('entities/products', ['currentProduct', 'nextProductId', 'prevProductId']),
         product () {
             return this.currentProduct
@@ -253,6 +172,9 @@ export default {
     methods: {
         ...mapActions('entities/comments', ['createComment', 'markAsFinal']),
         ...mapActions('entities/products', ['showNextProduct', 'showPrevProduct']),
+        onUpdateAction(product, actionCode) {
+            this.$emit('updateAction', product, actionCode)
+        },
         variantImg (variant) {
             if (!variant.error && variant.blob_id != null)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
@@ -264,23 +186,7 @@ export default {
         onCloseSingle() {
             this.currentImgIndex = 0
             // Emit event to parent
-            this.$emit('closeSingle')
-        },
-        onNextSingle() {
-            if (this.nextProductId != null) {
-                this.currentImgIndex = 0
-                this.showNextProduct()
-            }
-        },
-        onPrevSingle() {
-            if (this.prevProductId != null) {
-                this.currentImgIndex = 0
-                this.$emit('prevProduct')
-                this.showPrevProduct()
-            }
-        },
-        toggleInOut(product, action) {
-            this.$emit('onToggleInOut', product, action)
+            this.$emit('close')
         },
         setCurrentTab(filter) {
             this.currentTab = filter
@@ -302,30 +208,26 @@ export default {
         hotkeyHandler(event) {
             const key = event.code
             // Only do these if the current target is not the comment box
-            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.visible) {
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
                 const inAvailable = this.$refs.inButton ? !this.$refs.inButton.classList.contains('disabled') : false
                 const outAvailable = this.$refs.outButton ? !this.$refs.outButton.classList.contains('disabled') : false
                 const focusAvailable = this.$refs.focusButton ? !this.$refs.focusButton.classList.contains('disabled') : false
 
                 if (key == 'Escape')
                     this.onCloseSingle()
-                if (key == 'ArrowRight')
-                    this.onNextSingle()
-                if (key == 'ArrowLeft')
-                    this.onPrevSingle()
                 if (key == 'ArrowUp')
                     event.preventDefault(),
                     this.cycleImage()
                 if (key == 'ArrowDown')
                     event.preventDefault(),
                     this.cycleImageReverse()
-                if ( this.currentTaskPermissions.actions ) {
+                if ( true ) {
                     if (key == 'KeyI' && inAvailable)
-                        this.toggleInOut(this.product, 1)
+                        this.onUpdateAction(this.product, 1)
                     if (key == 'KeyO' && outAvailable)
-                        this.toggleInOut(this.product, 0)
+                        this.onUpdateAction(this.product, 0)
                     if (key == 'KeyF' && focusAvailable)
-                        this.toggleInOut(this.product, 2)
+                        this.onUpdateAction(this.product, 2)
                 }
             }
         }
@@ -401,20 +303,6 @@ export default {
     h3 {
         font-size: 16px;
         font-weight: 400;
-    }
-    .close i {
-        font-size: 22px;
-    }
-    .square {
-        i {
-            color: $dark2;
-        }
-        &.active {
-            i {
-                font-weight: 900;
-                color: $primary;
-            }
-        }
     }
     .card > .grid-2 {
         > :first-child {

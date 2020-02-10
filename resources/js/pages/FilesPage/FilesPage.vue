@@ -90,7 +90,6 @@
 </template>
 
 <script>
-import store from '../../store'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import FilesTable from './FilesTable'
 import FileFlyin from './FileFlyin'
@@ -100,7 +99,6 @@ import FileApproversFlyin from '../../components/FileApproversFlyin'
 
 export default {
     name: 'filesPage',
-    store,
     components: {
         FilesTable,
         FileFlyin,

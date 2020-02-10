@@ -1,9 +1,6 @@
 <template>
     <div class="subfile">
         <PageHeader :file="file"/>
-        <div class="header">
-            <h1>{{file.title}}</h1>
-        </div>
         <div class="quick-actions">
             <p>Quick actions</p>
             <span v-if="productsNoIn.length > 0 && !hideQuickOut" class="button red wide" @click="OutNoInStyles()">'OUT' styles with no IN ({{productsNoIn.length}})</span>
@@ -72,12 +69,13 @@
                 <span v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]; $refs.filterDelivery.clear(); selectedDeliveryDates=[]; if ($refs.filterBuyerGroup) $refs.filterBuyerGroup.clear(); selectedBuyerGroups=[]; unreadOnly = false">Clear filter</span>
             </div>
         </div>
-        <ProductTabs :products="productsFiltered" :currentFilter="currentProductFilter" @setProductFilter="setProductFilter"/>
-        <ProductsTable ref="productsComponent" :sortBy="sortBy" :sortAsc="sortAsc" 
-        :teams="file.teams" :file="file" :products="productsFiltered" :authUser="authUser"
-        @onSortBy="onSortBy" v-model="selectedProducts" :selectedProducts="selectedProducts"/>
-        <SelectedController :totalCount="productsFiltered.length" :selected="selectedProducts" 
-        @onSelectedAction="submitSelectedAction" @onClearSelection="selectedProducts = []"/>
+
+        <ProductsTable ref="productsComponent" :sortKey="sortKey" :sortAsc="sortAsc" :currentProductFilter="currentProductFilter"
+        :teams="file.teams" :file="file" :products="productsFiltered"
+        @onSort="onSort" @updateProduct="onUpdateProduct"/>
+
+        <ProductFlyin :show="singleVisible"
+        @close="setSingleVisisble(false)" @updateProduct="onUpdateProduct"/>
 
     </div>
 </template>
@@ -86,9 +84,8 @@
 import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 // Import Components
 import ProductsTable from './ProductsTable'
-import ProductTabs from './ProductTabs'
 import PageHeader from './PageHeader'
-import SelectedController from './SelectedController'
+import ProductFlyin from './ProductFlyin'
 // Mixins
 import sortArray from '../../mixins/sortArray'
 
@@ -96,22 +93,21 @@ export default{
     name: 'selectionPage',
     components: {
         ProductsTable,
-        ProductTabs,
-        SelectedController,
         PageHeader,
+        ProductFlyin
     },
     mixins: [
         sortArray
     ],
     data: function () { return {
         selectedProducts: [],
-        sortBy: 'datasource_id',
+        sortKey: 'datasource_id',
         sortAsc: true,
         hideQuickOut: false,
         hideQuickIn: false,
     }},
     computed: {
-        ...mapGetters('entities/products', ['products', 'productsFiltered']),
+        ...mapGetters('entities/products', ['products', 'productsFiltered', 'singleVisible']),
         ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
         ...mapGetters('entities/teams', ['teams']),
         ...mapGetters('persist', ['currentTeamId', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser']),
@@ -243,12 +239,8 @@ export default{
             this.hideQuickIn = true
             // this.$cookies.set(`quick_in_${this.currentFile.id}_${this.currentTask.id}`, true, Infinity)
         },
-        setProductFilter(filter) {
-            this.setCurrentProductFilter(filter)
-            this.clearSelectedProducts()
-        },
-        clearSelectedCategories() {
-            this.selectedCategoryIDs = []
+        onUpdateProduct() {
+
         },
         submitSelectedAction(method) {
             // Find out whether we should update or delete the products final actions
@@ -324,17 +316,17 @@ export default{
             // Reset the selection
             this.clearSelectedProducts()
         },
-        onSortBy(key, method) {
-            if (this.sortBy !== key) {
+        onSort(key, method) {
+            if (this.sortKey !== key) {
                 this.sortAsc = method
-                this.sortBy = key
+                this.sortKey = key
             } else {
                 this.sortAsc = !this.sortAsc
             }
             this.sortProducts()
         },
         sortProducts() {
-            this.sortArray(this.products, this.sortAsc, this.sortBy)
+            this.sortArray(this.products, this.sortAsc, this.sortKey)
         }
     },
     created() {

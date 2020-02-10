@@ -6,7 +6,7 @@
             </router-link>
         </div> -->
         <NavbarFiles v-if="$route.name == 'files'"/>
-        <NavbarSelection v-if="$route.name == 'selection'"/>
+        <NavbarSelection v-if="$route.name == 'selection' && currentFile"/>
         <NavbarEditFile v-if="$route.name == 'editFile'"/>
         <NavbarTeams v-if="$route.name == 'teams'"/>
         <NavbarUsers v-if="$route.name == 'users'"/>
@@ -31,7 +31,7 @@ export default {
         NavbarEditFile,
     },
     computed: {
-        ...mapGetters('persist', ['currentTask']),
+        ...mapGetters('persist', ['currentFile']),
         ...mapGetters('entities/products', ['products']),
         loadingProducts() {
             if (this.products) {

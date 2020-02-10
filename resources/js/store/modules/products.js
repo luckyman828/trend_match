@@ -59,12 +59,12 @@ export default {
         productTotals(state, getters, rootState, rootGetters) {
             const products = getters.products
             const totals = {
-                products: 0,
+                all: 0,
                 ins: 0,
                 outs: 0,
                 nds: 0,
             }
-            totals.products = products.length
+            totals.all = products.length
             products.forEach(product => {
                 if (product.currentAction == null) {
                     totals.nds++

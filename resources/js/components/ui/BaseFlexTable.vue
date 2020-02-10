@@ -3,7 +3,9 @@
         <div ref="stickyHeader" class="sticky-header">
             <div ref="stickyBg" class="sticky-bg"></div>
             <div ref="stickyInner" class="inner">
-                <slot name="tabs"/>
+                <div class="tabs">
+                    <slot name="tabs"/>
+                </div>
                 <div class="rounded-top">
                     <slot name="topBar"/>
                     <tr class="header">
@@ -84,6 +86,10 @@ export default {
         border-spacing: 0 2px;
         display: flex;
         flex-direction: column;
+        .tabs {
+            display: flex;
+            margin-bottom: -$rowRadius;
+        }
         &.sticky {
             .sticky-bg {
                 background: $bg;

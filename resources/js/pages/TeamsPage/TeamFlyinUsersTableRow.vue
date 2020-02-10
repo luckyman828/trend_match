@@ -3,7 +3,7 @@
         <td class="select"><Checkbox/></td>
         <td v-if="editName" class="title">
             <i class="fa-user" :class="user.id ? 'fas' : 'far'"></i>
-            <EditInputWrapper ref="editName" :activateOnMount="true" :type="'text'"
+            <BaseEditInputWrapper ref="editName" :activateOnMount="true" :type="'text'"
                 :value="userToEdit.name" :oldValue="user.name" v-model="userToEdit.name"
                 @submit="updateUser(userToEdit); editName = false" @cancel="$emit('cancelEditName'); editName = false;"/>
         </td>

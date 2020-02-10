@@ -1,50 +1,50 @@
 <template>
-    <div class="subfiles-table-row">
-        <tr class="subfile" @contextmenu.prevent="emitShowContext">
+    <div class="selections-table-row">
+        <tr class="selection" @contextmenu.prevent="emitShowContext">
             <td class="expand" :class="{active: childrenExpanded}" @click="toggleExpanded" :style="indent">
-                <span class="square invisible" v-if="subfile.children.length > 0">
+                <span class="square invisible" v-if="selection.children.length > 0">
                     <i class="fas fa-caret-down"></i>
                 </span>
             </td>
-            <td class="title" v-if="selectionToEdit && selectionToEdit.selection.id == subfile.id && selectionToEdit.field == 'name'" :style="selectionWidth">
-                <i v-if="subfile.master" class="fa-file-certificate master" :class="subfile.id ? 'fad' : 'far'"></i> 
-                <i v-else class="fa-file light-2" :class="subfile.id ? 'fas' : 'far'"></i> 
+            <td class="title" v-if="selectionToEdit && selectionToEdit.selection.id == selection.id && selectionToEdit.field == 'name'" :style="selectionWidth">
+                <i v-if="selection.master" class="fa-file-certificate master" :class="selection.id ? 'fad' : 'far'"></i> 
+                <i v-else class="fa-file light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <BaseEditInputWrapper activateOnMount=true type="text"
-                :value="selectionToEdit.selection.name" :oldValue="subfile.name" v-model="selectionToEdit.selection.name"
-                @submit="onUpdateSelection(subfile); $emit('submitToEdit')" @cancel="$emit('cancelToEdit', subfile)"/>
+                :value="selectionToEdit.selection.name" :oldValue="selection.name" v-model="selectionToEdit.selection.name"
+                @submit="onUpdateSelection(selection); $emit('submitToEdit')" @cancel="$emit('cancelToEdit', selection)"/>
             </td>
-            <td v-else class="title clickable" @click="$router.push({name: 'subfile', params: {fileId: subfile.file_id, subfileId: subfile.id}})" :style="selectionWidth">
-                <i v-if="subfile.master" class="fa-file-certificate master" :class="subfile.id ? 'fad' : 'far'"></i> 
-                <i v-else class="fa-file light-2" :class="subfile.id ? 'fas' : 'far'"></i> 
-                <span :title="subfile.name">{{subfile.name}}</span>
+            <td v-else class="title clickable" @click="$router.push({name: 'selection', params: {fileId: selection.file_id, selectionId: selection.id}})" :style="selectionWidth">
+                <i v-if="selection.master" class="fa-file-certificate master" :class="selection.id ? 'fad' : 'far'"></i> 
+                <i v-else class="fa-file light-2" :class="selection.id ? 'fas' : 'far'"></i> 
+                <span :title="selection.name">{{selection.name}}</span>
             </td>
             <td class="items">-</td>
             <td class="in">-</td>
             <td class="out">-</td>
             <td class="nd">-</td>
             <td class="owner">
-                <button class="ghost editable sm" @click="$emit('showSelectionOwnersFlyin', subfile)">
-                    <i class="far fa-user-shield"></i><span>{{subfile.owners.length}}</span>
+                <button class="ghost editable sm" @click="$emit('showSelectionOwnersFlyin', selection)">
+                    <i class="far fa-user-shield"></i><span>{{selection.owners.length}}</span>
                 </button>
             </td>
             <td class="users">
-                <button class="ghost editable sm" @click="$emit('showSelectionUsersFlyin', subfile)">
-                    <i class="far fa-user"></i><span>{{subfile.feedback_users.length}}</span>
+                <button class="ghost editable sm" @click="$emit('showSelectionUsersFlyin', selection)">
+                    <i class="far fa-user"></i><span>{{selection.feedback_users.length}}</span>
                 </button>
             </td>
             <td class="status">
-                <button class="editable ghost" @click="onToggleLocked(subfile)"><span>{{subfile.locked ? 'Locked' : 'Open'}}</span>
-                    <i class="far" :class="subfile.locked ? 'fa-lock' : 'fa-lock-open'"></i></button>
-                <button class="editable ghost" @click="onToggleHidden(subfile)"><span>{{subfile.hidden ? 'Hidden' : 'Visible'}}</span>
-                    <i class="far" :class="subfile.hidden ? 'fa-eye-slash' : 'fa-eye'"></i></button>
+                <button class="editable ghost" @click="onToggleLocked(selection)"><span>{{selection.locked ? 'Locked' : 'Open'}}</span>
+                    <i class="far" :class="selection.locked ? 'fa-lock' : 'fa-lock-open'"></i></button>
+                <button class="editable ghost" @click="onToggleHidden(selection)"><span>{{selection.hidden ? 'Hidden' : 'Visible'}}</span>
+                    <i class="far" :class="selection.hidden ? 'fa-eye-slash' : 'fa-eye'"></i></button>
             </td>
             <td class="action">
-                <button class="invisible ghost-hover" @click="$emit('showOptionsContext', $event, subfile)"><i class="fas fa-cog"></i></button>
-                <button class="invisible ghost-hover" @click="toggleExpanded(subfile.id)"><i class="fas fa-ellipsis-h"></i></button>
+                <button class="invisible ghost-hover" @click="$emit('showOptionsContext', $event, selection)"><i class="fas fa-cog"></i></button>
+                <button class="invisible ghost-hover" @click="toggleExpanded(selection.id)"><i class="fas fa-ellipsis-h"></i></button>
             </td>
         </tr>
         <template v-if="childrenExpanded">
-            <selectionsTableRow v-for="selection in subfile.children" :parent="subfile" :subfile="selection" :path="path.concat(selection.id)"
+            <selectionsTableRow v-for="selection in selection.children" :parent="selection" :selection="selection" :path="path.concat(selection.id)"
             :selectionToEdit="selectionToEdit" :key="selection.id" :depth="depth+1" :moveSelectionActive="moveSelectionActive"
             @submitToEdit="$emit('submitToEdit')" @cancelToEdit="$emit('cancelToEdit', $event)" @showContext="emitEmissionShowContext"/>
         </template>
@@ -61,7 +61,7 @@ export default {
         'selectionsTableRow': SelectionsTableRow,
     },
     props: [
-        'subfile',
+        'selection',
         'depth',
         'selectionToEdit',
         'parent',
@@ -89,10 +89,10 @@ export default {
             this.childrenExpanded = !this.childrenExpanded
         },
         emitShowContext(mouseEvent) {
-            this.$emit('showContext', mouseEvent, this.subfile, this, this.parent)
+            this.$emit('showContext', mouseEvent, this.selection, this, this.parent)
         },
         emitEmissionShowContext(mouseEvent, selection, component, parent) {
-            // This is the event that goes to the subfilesTable component
+            // This is the event that goes to the selectionsTable component
             this.$emit('showContext', mouseEvent, selection, component, parent)
 
         },
