@@ -26,7 +26,7 @@ spec:
             - containerPort: 80
           volumeMounts:
             - name: env-file
-              mountPath: /app/.env
+              mountPath: /var/www/html/.env
               subPath: .env
       volumes:
         - name: env-file
