@@ -32,10 +32,10 @@ jobs:
         password: ${{ secrets.REGISTRY_PASSWORD }}
 
     - name: Build the Docker
-      run: docker build . --file Dockerfile --tag reg.trendmatch.dk/kollekt/kollekt-dev-dashboard:${{ github.sha }}
+      run: docker build . --file Dockerfile --tag reg.trendmatch.dk/kollekt/${{ secrets.DEV_CONTAINER_IMAGE }}:${{ github.sha }}
 
     - name: Push docker image
-      run: docker push reg.trendmatch.dk/kollekt/kollekt-dev-dashboard:${{ github.sha }}
+      run: docker push reg.trendmatch.dk/kollekt/${{ secrets.DEV_CONTAINER_IMAGE }}:${{ github.sha }}
   
   deploy:
     needs: build
@@ -70,9 +70,7 @@ jobs:
       env:
         CONTAINER_IMAGE: ${{ secrets.DEV_CONTAINER_IMAGE }}
         IMAGE_TAG: ${{ github.sha }}
-        DB_CONNECTION_STRING: ${{ secrets.DEV_DATABASE }}
         HOST_NAME: ${{ secrets.DEV_HOST_NAME }}
-        APP_INSIGHTS_KEY: ${{ secrets.APP_INSIGHTS_KEY }}
 
     - uses: Azure/k8s-deploy@v1
       with:
