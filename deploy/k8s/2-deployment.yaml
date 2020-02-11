@@ -27,7 +27,7 @@ spec:
           volumeMounts:
             - name: env-file
               mountPath: /var/www/html/.env
-              subPath: .env
+              subPath: env
       volumes:
         - name: env-file
           configMap: 
