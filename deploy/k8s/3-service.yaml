@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${CONTAINER_IMAGE}
+  labels:
+    app: ${CONTAINER_IMAGE}
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+    app: ${CONTAINER_IMAGE}  
