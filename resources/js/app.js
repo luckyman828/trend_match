@@ -35,32 +35,37 @@ Vue.use(PortalVue)
 
 Vue.component('app', require('./App.vue').default)
 
-// Global components
-// Vue.component('TooltipAlt2', require('./components/TooltipAlt2.vue').default)
-// Vue.component('Tooltip', require('./components/TooltipAlt2.vue').default)
-Vue.component('TooltipList', require('./components/TooltipList.vue').default)
-Vue.component('Toggle', require('./components/Toggle.vue').default)
-Vue.component('Loader', require('./components/Loader.vue').default)
-Vue.component('Modal', require('./components/Modal.vue').default)
-Vue.component('Dropdown', require('./components/Dropdown.vue').default)
-// Vue.component('AutoWidthTable', require('./components/AutoWidthTable.vue').default)
-Vue.component('FlexTable', require('./components/FlexTable.vue').default)
-Vue.component('TableHeader', require('./components/TableHeader.vue').default)
-Vue.component('Checkbox', require('./components/Checkbox.vue').default)
-Vue.component('Radiobox', require('./components/Radiobox.vue').default)
-Vue.component('TableTopBar', require('./components/TableTopBar.vue').default)
-Vue.component('FlyIn', require('./components/FlyIn.vue').default)
-Vue.component('FlyinHeader', require('./components/FlyinHeader.vue').default)
-Vue.component('FlyinHeaderNavigation', require('./components/FlyinHeaderNavigation.vue').default)
-Vue.component('ContextMenu', require('./components/ContextMenu.vue').default)
-Vue.component('EditInputWrapper', require('./components/EditInputWrapper.vue').default)
-Vue.component('RadioButtons', require('./components/RadioButtons.vue').default)
-Vue.component('CheckButtons', require('./components/CheckButtons.vue').default)
-Vue.component('SelectButtons', require('./components/SelectButtons.vue').default)
-Vue.component('SelectButton', require('./components/SelectButton.vue').default)
-Vue.component('SearchField', require('./components/SearchField.vue').default)
-Vue.component('InputField', require('./components/InputField.vue').default)
-Vue.component('Droparea', require('./components/Droparea.vue').default)
+// Automatically import base components
+const requireComponent = require.context(
+    // The relative path of the components folder
+    './components',
+    // Whether or not to look in subfolders
+    true,
+    // The regular expression used to match base component filenames
+    /Base[A-Z]\w+\.(vue|js)$/
+)
+
+requireComponent.keys().forEach(fileName => {
+    // Get component config
+    const componentConfig = requireComponent(fileName)
+
+    // Get PascalCase name of component
+    const componentName =
+        // Gets the file name regardless of folder depth
+        fileName
+            .split('/')
+            .pop()
+            .replace(/\.\w+$/, '')
+
+    // Register component globally
+    Vue.component(
+        componentName,
+        // Look for the component options on `.default`, which will
+        // exist if the component was exported with `export default`,
+        // otherwise fall back to module's root.
+        componentConfig.default || componentConfig
+    )
+})
 
 // Define global filters
 Vue.filter('truncate', function(value, limit) {
@@ -74,25 +79,18 @@ Vue.filter('formatDate', function(value) {
     return new Date(value).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
 })
 
-// 1. Define route components.
-// These can be imported from other files
-// import Collection from './components/screens/Collection'
-// import Catalogue from './components/screens/Catalogue'
-// import Teams from './components/screens/Teams'
-import TeamsLoader from './components/screens/loaders/TeamsLoader'
-import UsersLoader from './components/screens/loaders/UsersLoader'
-import FileLoader from './components/screens/loaders/FileLoader'
-import FolderLoader from './components/screens/loaders/FolderLoader'
-import EditFileLoader from './components/screens/loaders/EditFileLoader'
-import SubfileLoader from './components/screens/loaders/SubfileLoader'
+// Define route components
+import TeamsPage from './pages/TeamsPage'
+import SelectionPage from './pages/SelectionPage'
+import FilesPage from './pages/FilesPage'
+import EditFilePage from './pages/EditFilePage'
 
 const routes = [
-    { path: '/file/:fileId', name: 'file', component: FileLoader },
-    { path: '/file/:fileId/edit', name: 'editFile', component: EditFileLoader },
-    { path: '/files', name: 'files', component: FolderLoader },
-    { path: '/teams', name: 'teams', component: TeamsLoader },
-    { path: '/users', name: 'users', component: TeamsLoader },
-    { path: '/file/:fileId/:subfileId', name: 'subfile', component: SubfileLoader },
+    { path: '/file/:fileId/edit', name: 'editFile', component: EditFilePage },
+    { path: '/files', name: 'files', component: FilesPage },
+    { path: '/teams', name: 'teams', component: TeamsPage },
+    { path: '/users', name: 'users', component: TeamsPage },
+    { path: '/file/:fileId/:selectionId', name: 'selection', component: SelectionPage },
     { path: '*', redirect: '/files' },
 ]
 

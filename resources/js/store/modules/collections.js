@@ -172,7 +172,6 @@ export default {
         },
         async uploadFile({ commit, dispatch }, newFile) {
             let uploadSucces = true
-            console.log(newFile)
             // Check if we have any products to upload
             if (newFile.products && newFile.products.length > 0) {
                 // Upload products to DB
@@ -192,8 +191,6 @@ export default {
                     // Correctly format date
                     // First test that the date has actually been set
                     if (product.delivery_date) {
-                        console.log('Delivery Date')
-                        console.log(product.delivery_date)
                         // Check for special cases where the date is of format mmm-yy ("jan-20") which will be parsed incorrectly by the new Date() function
                         // Regex that looks for a work with exactly 3 characters between A-z.
                         const reg = new RegExp('\\b[A-z]{3}\\b')
@@ -213,9 +210,6 @@ export default {
 
                     productsToUpload.push(product)
                 })
-
-                console.log('Products')
-                console.log(productsToUpload)
 
                 await axios
                     .post(uploadApiUrl, {
@@ -243,11 +237,12 @@ export default {
             const startDate = fileToUpdate.start_date ? fileToUpdate.start_date : null
             const endDate = fileToUpdate.end_date ? fileToUpdate.end_date : null
             // Add support for both catalog id and folder id
-            let catalog_id = null
-            if (fileToUpdate.folderId) {
-                catalog_id = fileToUpdate.folderId
-            } else if (fileToUpdate.catalog_id) {
-                catalog_id = fileToUpdate.catalogId
+            let folder_id = null
+            if (fileToUpdate.folder_id) {
+                folder_id = fileToUpdate.folder_id
+            }
+            if (fileToUpdate.catalog_id) {
+                folder_id = fileToUpdate.catalog_id
             }
 
             await axios
@@ -255,8 +250,8 @@ export default {
                     id: fileToUpdate.id,
                     title: fileToUpdate.title,
                     phase: fileToUpdate.phase,
-                    catalog_id: catalog_id,
-                    folder_id: catalog_id,
+                    catalog_id: folder_id,
+                    folder_id: folder_id,
                     workspace_id: fileToUpdate.workspace_id,
                     start_date: startDate,
                     end_date: endDate,

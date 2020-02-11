@@ -30,6 +30,8 @@ export default class AuthUser extends Model {
             workspaces: this.belongsToMany(Workspace, WorkspaceUser, 'user_id', 'workspace_id'),
             workspace_users: this.hasMany(WorkspaceUser, 'user_id'),
             assigned_room_id: this.attr(''),
+            impact: this.attr(null),
+            currency: this.attr(null),
         }
 
         return data

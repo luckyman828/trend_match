@@ -6,7 +6,7 @@ export default {
 
     state: {
         loading: true,
-        currentSingleProductId: -1,
+        currentSingleProductId: null,
         currentProductId: null,
         availableProductIds: [],
         selectedCategories: [],
@@ -15,8 +15,8 @@ export default {
         unreadOnly: false,
         currentProductFilter: 'overview',
         singleVisible: false,
-        productScope: null,
-        productsStatic: null,
+        products: [],
+        productsFiltered: [],
     },
 
     getters: {
@@ -44,9 +44,6 @@ export default {
         singleVisible: state => {
             return state.singleVisible
         },
-        productScope: state => {
-            return state.productScope
-        },
         actionsUpdated: state => {
             return state.actionsUpdated
         },
@@ -56,404 +53,115 @@ export default {
         commentsCreated: state => {
             return state.commentsCreated
         },
-        productsStatic: state => {
-            return state.productsStatic
-        },
-        productsTest: (state, getters, rootState, rootGetters) => {
-            if (!rootGetters['persist/loadingInit']) {
-                const products = Product.query()
-                    .with(['actions'])
-                    .all()
-                console.log('Products in store saying hello')
-
-                products.forEach(product => {
-                    product.ins = []
-                    product.outs = []
-                    product.focus = []
-                    product.nds = []
-                    product.ndsTotal
-                    product.commentsScoped = []
-                    product.commentsInherited = []
-                    product.outInFilter = false
-
-                    let stateProduct = {}
-                    if (product.isNew || product.actionsUpdated || product.commentsUpdated) {
-                        stateProduct = Product.find(product.id)
-                    }
-                    // Test that the JSON objects are valid JSON
-                    if (product.isNew || product.actionsUpdated) {
-                        stateProduct.actionLength = product.actions.length
-                    }
-
-                    if (product.isNew || product.actionsUpdated || product.commentsUpdated) {
-                        stateProduct.isNew = false
-                        stateProduct.actionsUpdated = false
-                    }
-                })
-                console.log('Products in store done saying hello')
-                return products
-            }
-        },
-        productsRaw: (state, getters, rootState, rootGetters) => {
-            if (!rootGetters['persist/loadingInit']) {
-                const products = Product.query().all()
-                products.forEach(product => {
-                    // Test that the JSON objects are valid JSON
-
-                    if (typeof product.color_variants == 'string' && isJSON(product.color_variants))
-                        product.color_variants = JSON.parse(product.color_variants)
-                    if (typeof product.assortments == 'string' && isJSON(product.assortments))
-                        product.assortments = JSON.parse(product.assortments)
-                    if (typeof product.prices == 'string' && isJSON(product.prices))
-                        product.prices = JSON.parse(product.prices)
-
-                    function isJSON(str) {
-                        try {
-                            return JSON.parse(str) && !!str
-                        } catch (e) {
-                            return false
-                        }
-                    }
-                    if (product.isNew) {
-                        product.anArray = 'test'
-                    }
-                })
-                return products
-            }
-        },
         products: (state, getters, rootState, rootGetters) => {
-            if (!rootGetters['persist/loadingInit'] && !state.loading && rootGetters['persist/currentTask'] != null) {
-                const products = state.productsStatic
-                return products
-            }
+            return state.products
         },
-        productsScoped: (state, getters, rootState, rootGetters) => {
+        availableCategories(state, getters) {
             const products = getters.products
-            const currentTask = rootGetters['persist/currentTask']
-            const currentTeam = rootGetters['persist/currentTeam']
-            if (products) {
-                let productsToReturn = []
-                const inheritFromId = currentTask.inherit_from_id
-                productsToReturn = products
-
-                if (currentTeam.category_scope && currentTask.taskTeams.find(x => x.team_id == currentTeam.id)) {
-                    return productsToReturn.filter(product =>
-                        currentTeam.category_scope
-                            .toLowerCase()
-                            .split(',')
-                            .includes(product.category.toLowerCase())
-                    )
-                } else {
-                    return productsToReturn
+            let uniqueCategories = []
+            products.forEach(product => {
+                if (product.category) {
+                    const found = uniqueCategories.includes(product.category)
+                    if (!found) uniqueCategories.push(product.category)
                 }
-            } else {
-                return []
-            }
+            })
+            return uniqueCategories
+        },
+        availableDeliveryDates(state, getters) {
+            const products = getters.products
+            let uniqueDeliveryDates = []
+            products.forEach(product => {
+                if (product.delivery_date) {
+                    const found = uniqueDeliveryDates.find(x => x.value == product.delivery_date)
+                    if (!found)
+                        uniqueDeliveryDates.push({
+                            name: new Date(product.delivery_date).toLocaleDateString('en-GB', {
+                                month: 'long',
+                                year: 'numeric',
+                            }),
+                            value: product.delivery_date,
+                        })
+                }
+            })
+            return uniqueDeliveryDates
+        },
+        availableBuyerGroups(state, getters) {
+            const products = getters.products
+            let unique = []
+            products.forEach(product => {
+                if (product.buyer_group) {
+                    const found = unique.includes(product.buyer_group)
+                    if (!found) unique.push(product.buyer_group)
+                }
+            })
+            return unique
         },
         productTotals(state, getters, rootState, rootGetters) {
             const products = getters.products
-            const currentTask = rootGetters['persist/currentTask']
-            const data = {
-                products: 0,
+            const totals = {
+                all: 0,
                 ins: 0,
                 outs: 0,
                 nds: 0,
-                totalDecisionsToMake: 0,
             }
-            if (products) {
-                data.products = products.length
-                products.forEach(product => {
-                    if (product.outInFilter) {
-                        data.outs++
-                    } else if (product.currentAction == null) {
-                        if (currentTask.type == 'approval') {
-                            if (product.requests.length > 0) {
-                                data.nds++
-                            } else {
-                                if (product.inheritedAction && product.inheritedAction.action == 0) {
-                                    data.outs++
-                                } else {
-                                    data.ins++
-                                }
-                            }
-                        } else {
-                            data.nds++
-                        }
-                    } else {
-                        if (product.currentAction.action == 0) {
-                            data.outs++
-                        } else {
-                            data.ins++
-                        }
-                    }
-
-                    // Calculate how many product decisions have to be made in the task
-                    if (currentTask.type == 'approval' && !product.outInFilter && product.requests.length > 0) {
-                        data.totalDecisionsToMake++
-                    } else if (currentTask.type == 'decision' && !product.outInFilter) {
-                        data.totalDecisionsToMake++
-                    }
-                })
-            }
-            return data
+            totals.all = products.length
+            products.forEach(product => {
+                if (product.currentAction == null) {
+                    totals.nds++
+                } else if (product.currentAction.action > 0) {
+                    totals.ins++
+                } else {
+                    totals.outs++
+                }
+            })
+            return totals
         },
-        productsScopedFilteredTotals(state, getters, rootState, rootGetters) {
-            const products = getters.productsScopedFilteredByCategory
-            const currentTask = rootGetters['persist/currentTask']
-            const data = {
-                products: 0,
-                ins: 0,
-                outs: 0,
-                nds: 0,
-                totalDecisionsToMake: 0,
-            }
-            if (products) {
-                data.products = products.length
-                products.forEach(product => {
-                    if (product.outInFilter) {
-                        data.outs++
-                    } else if (currentTask.type == 'decision') {
-                        if (product.currentAction) {
-                            if (product.currentAction.action == 0) {
-                                data.outs++
-                            } else {
-                                data.ins++
-                            }
-                        } else if (product.inheritedAction) {
-                            if (product.inheritedAction.action == 0) {
-                                data.outs++
-                            } else {
-                                data.ins++
-                            }
-                        }
-                    } else if (product.currentAction == null) {
-                        if (currentTask.type == 'approval') {
-                            if (product.requests.length > 0) {
-                                data.nds++
-                            } else {
-                                if (product.inheritedAction && product.inheritedAction.action == 0) {
-                                    data.outs++
-                                } else {
-                                    data.ins++
-                                }
-                            }
-                        } else {
-                            data.nds++
-                        }
-                    } else {
-                        if (product.currentAction.action == 0) {
-                            data.outs++
-                        } else {
-                            data.ins++
-                        }
-                    }
-
-                    // Calculate how many product decisions have to be made in the task
-                    if (currentTask.type == 'approval' && !product.outInFilter && product.requests.length > 0) {
-                        data.totalDecisionsToMake++
-                    } else if (currentTask.type == 'decision' && !product.outInFilter) {
-                        // data.totalDecisionsToMake++
-                    }
-                })
-            }
-            return data
-        },
-        productsScopedTotals(state, getters, rootState, rootGetters) {
-            const products = getters.productsScoped
-            const currentTask = rootGetters['persist/currentTask']
-            const data = {
-                products: 0,
-                ins: 0,
-                outs: 0,
-                nds: 0,
-                totalDecisionsToMake: 0,
-            }
-            if (products) {
-                data.products = products.length
-                products.forEach(product => {
-                    if (product.outInFilter) {
-                        data.outs++
-                    } else if (product.currentAction == null) {
-                        if (currentTask.type == 'approval') {
-                            if (product.requests.length > 0) {
-                                data.nds++
-                            } else {
-                                data.ins++
-                            }
-                        } else {
-                            data.nds++
-                        }
-                    } else {
-                        if (product.currentAction.action == 0) {
-                            data.outs++
-                        } else {
-                            data.ins++
-                        }
-                    }
-
-                    // Calculate how many product decisions have to be made in the task
-                    if (currentTask.type == 'approval' && !product.outInFilter && product.requests.length > 0) {
-                        data.totalDecisionsToMake++
-                    } else if (currentTask.type == 'decision' && !product.outInFilter) {
-                        data.totalDecisionsToMake++
-                    }
-                })
-            }
-            return data
-        },
-        productsFilteredByCategory(state, getters, rootState, rootGetters) {
+        productsFiltered(state, getters, rootState, rootGetters) {
             const products = getters.products
             const categories = getters.selectedCategories
             const deliveryDates = getters.selectedDeliveryDates
             const buyerGroups = getters.selectedBuyerGroups
             const unreadOnly = getters.unreadOnly
-            let productsToReturn = []
-
-            if (products) {
-                productsToReturn = products
-                // First filter by category
-                if (categories.length > 0) {
-                    const filteredByCategory = productsToReturn.filter(product => {
-                        return Array.from(categories).includes(product.category)
-                    })
-                    productsToReturn = filteredByCategory
-                }
-                // Filter by delivery date
-                if (deliveryDates.length > 0) {
-                    const filteredByDeliveryDate = productsToReturn.filter(product => {
-                        return Array.from(deliveryDates).includes(product.delivery_date)
-                    })
-                    productsToReturn = filteredByDeliveryDate
-                }
-                // Filter by buyer group
-                if (buyerGroups.length > 0) {
-                    const filteredByBuyerGroups = productsToReturn.filter(product => {
-                        return Array.from(buyerGroups).includes(product.buyer_group)
-                    })
-                    productsToReturn = filteredByBuyerGroups
-                }
-
-                // Filer by unread
-                if (unreadOnly) {
-                    const filteredByUnread = productsToReturn.filter(product => product.newComment)
-                    productsToReturn = filteredByUnread
-                }
-            }
-
-            return productsToReturn
-        },
-        productsScopedFilteredByCategory(state, getters, rootState, rootGetters) {
-            const products = getters.productsScoped
-            const categories = getters.selectedCategories
-            const deliveryDates = getters.selectedDeliveryDates
-            const buyerGroups = getters.selectedBuyerGroups
-            const unreadOnly = getters.unreadOnly
-            let productsToReturn = []
-
-            if (products) {
-                productsToReturn = products
-                // First filter by category
-                if (categories.length > 0) {
-                    const filteredByCategory = productsToReturn.filter(product => {
-                        return Array.from(categories).includes(product.category)
-                    })
-                    productsToReturn = filteredByCategory
-                }
-                // Filter by delivery date
-                if (deliveryDates.length > 0) {
-                    const filteredByDeliveryDate = productsToReturn.filter(product => {
-                        return Array.from(deliveryDates).includes(product.delivery_date)
-                    })
-                    productsToReturn = filteredByDeliveryDate
-                }
-                if (buyerGroups.length > 0) {
-                    const filteredByBuyerGroups = productsToReturn.filter(product => {
-                        return Array.from(buyerGroups).includes(product.buyer_group)
-                    })
-                    productsToReturn = filteredByBuyerGroups
-                }
-
-                // Filer by unread
-                if (unreadOnly) {
-                    const filteredByUnread = productsToReturn.filter(product => product.newComment)
-                    productsToReturn = filteredByUnread
-                }
-            }
-
-            return productsToReturn
-        },
-        productsFiltered(state, getters, rootState, rootGetters) {
-            const method = getters.currentProductFilter
-            const products = getters.productsFilteredByCategory
-            const currentTask = rootGetters['persist/currentTask']
+            const actionFilter = getters.currentProductFilter
             let productsToReturn = products
 
-            // filter by in/out
-            if (['ins', 'outs', 'nds'].includes(method)) {
-                const filteredByAction = products.filter(product => {
-                    if (method == 'nds') {
-                        if (currentTask.type == 'approval') {
-                            return product.currentAction == null && product.requests.length > 0
-                        } else return product.currentAction == null && !product.outInFilter
-                    } else if (method == 'ins') {
-                        return (
-                            ((product.inheritedAction && product.inheritedAction.action >= 1) ||
-                                (product.currentAction && product.currentAction.action >= 1)) &&
-                            !product.outInFilter
-                        )
-                    } else if (method == 'outs') {
-                        return (
-                            (product.inheritedAction && product.inheritedAction.action < 1) ||
-                            (product.currentAction && product.currentAction.action < 1) ||
-                            product.outInFilter
-                        )
-                    }
+            // First filter by category
+            if (categories.length > 0) {
+                const filteredByCategory = productsToReturn.filter(product => {
+                    return Array.from(categories).includes(product.category)
                 })
-                productsToReturn = filteredByAction
+                productsToReturn = filteredByCategory
+            }
+            // Filter by delivery date
+            if (deliveryDates.length > 0) {
+                const filteredByDeliveryDate = productsToReturn.filter(product => {
+                    return Array.from(deliveryDates).includes(product.delivery_date)
+                })
+                productsToReturn = filteredByDeliveryDate
+            }
+            // Filter by buyer group
+            if (buyerGroups.length > 0) {
+                const filteredByBuyerGroups = productsToReturn.filter(product => {
+                    return Array.from(buyerGroups).includes(product.buyer_group)
+                })
+                productsToReturn = filteredByBuyerGroups
             }
 
-            return productsToReturn
-        },
-        productsScopedFiltered(state, getters, rootState, rootGetters) {
-            const method = getters.currentProductFilter
-            const products = getters.productsScopedFilteredByCategory
-            const currentTask = rootGetters['persist/currentTask']
-            let productsToReturn = products
+            // Filer by unread
+            if (unreadOnly) {
+                const filteredByUnread = productsToReturn.filter(product => product.newComment)
+                productsToReturn = filteredByUnread
+            }
 
-            // filter by in/out
-            if (['ins', 'outs', 'nds'].includes(method)) {
-                const filteredByAction = products.filter(product => {
-                    if (method == 'nds') {
-                        if (currentTask.type == 'approval') {
-                            return product.currentAction == null && product.requests.length > 0
-                        } else if (currentTask.type == 'decision') {
-                            return false
-                        } else return product.currentAction == null && !product.outInFilter
-                    } else if (method == 'ins') {
-                        if (product.currentAction) return product.currentAction.action >= 1 && !product.outInFilter
-                        else if (currentTask.type == 'decision' && !product.outInFilter) {
-                            if (product.inheritedAction) return product.inheritedAction.action >= 1
-                        } else if (currentTask.type == 'approval') {
-                            return (
-                                ((product.requests.length < 1 &&
-                                    product.inheritedAction &&
-                                    product.inheritedAction.action >= 1) ||
-                                    (product.currentAction && product.currentAction.action >= 1)) &&
-                                !product.outInFilter
-                            )
-                        }
-                    } else if (method == 'outs') {
-                        if (product.outInFilter) return true
-                        else if (product.currentAction) return product.currentAction.action < 1
-                        else if (currentTask.type == 'decision') {
-                            if (product.inheritedAction) return product.inheritedAction.action == 0
-                        } else if (currentTask.type == 'approval') {
-                            return (
-                                (product.inheritedAction && product.inheritedAction.action < 1) ||
-                                (product.currentAction && product.currentAction.action < 1) ||
-                                product.outInFilter
-                            )
-                        }
+            // Filter by actions
+            if (['ins', 'outs', 'nds'].includes(actionFilter)) {
+                const filteredByAction = productsToReturn.filter(product => {
+                    if (actionFilter == 'nds') {
+                        return product.currentAction == null
+                    } else if (actionFilter == 'ins') {
+                        return product.currentAction && product.currentAction.action >= 1
+                    } else if (actionFilter == 'outs') {
+                        return product.currentAction && product.currentAction.action < 1
                     }
                 })
                 productsToReturn = filteredByAction
@@ -465,14 +173,8 @@ export default {
             return state.availableProductIds
         },
         currentProduct: (state, getters, rootState, rootGetters) => {
-            return state.currentProductId != null && state.productsStatic != null
-                ? state.productsStatic.find(x => x.id == state.currentProductId)
-                : null
-        },
-        currentProductv1: (state, getters, rootState, rootGetters) => {
-            const products = getters[getters.productScope]
-            return state.currentProductId != null && products != null
-                ? products.find(x => x.id == state.currentProductId)
+            return state.currentProductId != null && getters.products != null
+                ? getters.products.find(x => x.id == state.currentProductId)
                 : null
         },
         nextProductId: (state, getters, rootState, rootGetters) => {
@@ -495,7 +197,7 @@ export default {
         },
 
         productsFilteredv1(state, getters, rootState, rootGetters) {
-            const products = getters[getters.productScope]
+            const products = getters.products
 
             const categories = getters.selectedCategories
             const deliveryDates = getters.selectedDeliveryDates
@@ -721,17 +423,17 @@ export default {
             // START Loop through each product and instantiate their initial data
             products.forEach(product => {
                 // Instantiate properties
-                product.ins = []
-                product.outs = []
-                product.focus = []
-                product.nds = []
-                product.ndsTotal
-                product.commentsScoped = []
-                product.commentsInherited = []
-                product.requests = []
-                product.outInFilter = false
-                product.currentAction = null
-                product.inheritedAction = null
+                // product.ins = []
+                // product.outs = []
+                // product.focus = []
+                // product.nds = []
+                // product.ndsTotal
+                // product.commentsScoped = []
+                // product.commentsInherited = []
+                // product.requests = []
+                // product.outInFilter = false
+                // product.currentAction = null
+                // product.inheritedAction = null
 
                 // START Parse the json objects to javascript objects
                 // Test that each json object is actually valid json before trying to parse it
@@ -792,12 +494,12 @@ export default {
             // END Loop
 
             // Save the products to our state
-            state.productsStatic = products
+            state.products = products
         },
         instantiateProductNDs({ state, rootGetters }) {
             const currentTask = rootGetters['persist/currentTask']
             // Get the products from our state
-            const products = state.productsStatic
+            const products = getters.products
             // Loop through the products and calculate their NDs
             products.forEach(product => {
                 // Reset the products nds
@@ -892,7 +594,7 @@ export default {
             const product = Product.query()
                 .with(['comments.votes.user.teams', 'comments.user.teams', 'comments.team|task'])
                 .find(productId)
-            const productToUpdate = staticProduct ? staticProduct : state.productsStatic.find(x => x.id == productId)
+            const productToUpdate = staticProduct ? staticProduct : state.products.find(x => x.id == productId)
 
             const currentTask = rootGetters['persist/currentTask']
             const inheritFromTask = currentTask.inheritFromTask
@@ -1011,7 +713,7 @@ export default {
             const product = Product.query()
                 .with(['actions.task|user.teams'])
                 .find(productId)
-            const productToUpdate = staticProduct ? staticProduct : state.productsStatic.find(x => x.id == productId)
+            const productToUpdate = staticProduct ? staticProduct : state.products.find(x => x.id == productId)
 
             const currentTask = rootGetters['persist/currentTask']
             const authUser = rootGetters['persist/authUser']
@@ -1156,9 +858,6 @@ export default {
         },
         setSingleVisisble(state, payload) {
             state.singleVisible = payload
-        },
-        setProductScope(state, productScope) {
-            state.productScope = productScope
         },
         updateProduct(state, product) {
             product.updated_at = new Date()
