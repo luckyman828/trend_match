@@ -98,8 +98,8 @@ export default{
                     this.fetchTasks(this.currentWorkspaceId),
                     this.fetchTaskParents(this.currentWorkspaceId),
                     this.fetchFileTasks(this.currentWorkspaceId),
-                    this.fetchRoles()
-                    // this.fetchSubfiles(this.currentWorkspaceId)
+                    this.fetchRoles(),
+                    this.fetchSubfiles(this.currentWorkspaceId)
                 )
                 
                 if (this.authUser.role_id >= 5) {

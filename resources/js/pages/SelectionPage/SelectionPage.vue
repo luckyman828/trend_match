@@ -13,8 +13,8 @@
             </div>
         </div>
 
-        <ProductsTable ref="productsComponent" :sortKey="sortKey" :sortAsc="sortAsc" :currentProductFilter="currentProductFilter"
-        :teams="file.teams" :file="file" :products="productsFiltered"
+        <ProductsTable ref="productsComponent" :sortKey="sortKey" :sortAsc="sortAsc"
+        :file="file" :products="productsFiltered"
         @onSort="onSort" @updateProduct="onUpdateProduct"/>
 
         <ProductFlyin :show="singleVisible"
@@ -52,13 +52,7 @@ export default{
     computed: {
         ...mapGetters('entities/products', ['products', 'productsFiltered', 'singleVisible']),
         ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
-        ...mapGetters('entities/teams', ['teams']),
-        ...mapGetters('persist', ['currentTeamId', 'teamFilterId', 'currentWorkspaceId', 'userPermissionLevel', 'actionScope', 'viewAdminPermissionLevel', 'currentTeam', 'currentWorkspace', 'authUser']),
-        defaultTeam() {
-            if (this.userPermissionLevel >= 3)
-                return {id: 0, title: 'Global'}
-            else return null
-        },
+        ...mapGetters('persist', ['currentWorkspaceId', 'currentWorkspace', 'authUser']),
         file() {
             return this.currentFile
         },
@@ -84,8 +78,8 @@ export default{
         },
     },
     methods: {
-        ...mapMutations('entities/products', ['updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter', 'updateSelectedBuyerGroups']),
-        ...mapActions('entities/actions', ['fetchActions', 'updateManyActions', 'createManyActions']),
+        ...mapActions('entities/actions', ['fetchActions']),
+        ...mapActions('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction','updateManyActions', 'createManyActions']),
         ...mapActions('persist', ['setTeamFilter']),
         InNoOutNoCommentStyles() {
             this.setHideQuickIn()

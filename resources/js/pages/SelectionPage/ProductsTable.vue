@@ -26,11 +26,9 @@
                                     </span>
                                 </div>
                             </template>
-                            <template v-slot:header>
-                                <span>Filter by category</span>
-                            </template>
                             <template v-slot:body>
-                                <BaseCheckboxButtons :options="availableCategories" ref="filterSelect" v-model="selectedCategories" @change="$refs.filterSelect.submit()"/>
+                                <BaseSelectButtons header="Filter by category" submitOnChange="true" 
+                                :options="availableCategories" v-model="selectedCategories"/>
                             </template>
                         </BaseDropdown>
 
@@ -44,15 +42,14 @@
                                     </span>
                                 </div>
                             </template>
-                            <template v-slot:header>
-                                <span>Filter by delivery date</span>
-                            </template>
                             <template v-slot:body>
-                                <BaseCheckboxButtons :options="availableDeliveryDates" :optionNameKey="'name'" :optionValueKey="'value'" ref="filterDelivery" v-model="selectedDeliveryDates"/>
+                                <BaseSelectButtons header="Filter by delivery date" submitOnChange="true" 
+                                :options="availableDeliveryDates" :optionNameKey="'name'" 
+                                :optionValueKey="'value'" v-model="selectedDeliveryDates"/>
                             </template>
                         </BaseDropdown>
 
-                        <BaseDropdown class="dropdown-parent left" v-if="userPermissionLevel == 3">
+                        <BaseDropdown class="dropdown-parent left">
                             <template v-slot:button="slotProps">
                                 <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
                                     <span>Buyer group </span>
@@ -67,16 +64,20 @@
                             </template>
                             <template v-slot:body>
                                 <BaseCheckboxButtons :options="availableBuyerGroups" ref="filterBuyerGroup" v-model="selectedBuyerGroups" @change="$refs.filterBuyerGroup.submit()"/>
+                                <BaseSelectButtons header="Filter by buyer group" submitOnChange="true" 
+                                :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
                             </template>
                         </BaseDropdown>
 
-                        <label class="square checkbutton ghost light-2 checkbox clickable">
+                        <BaseSelectButton type="checkbox" :value="unreadOnly" v-model="unreadOnly" label="Show UNREAD only"/>
+                        <!-- <label class="square checkbutton ghost light-2 checkbox clickable">
                             <span>Show UNREAD only</span>
                             <input type="checkbox" v-model="unreadOnly">
                             <span class="checkmark solid"><i class="fas fa-check"></i></span>
-                        </label>
+                        </label> -->
 
-                <span v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly" class="clear button invisible primary" @click="$refs.filterSelect.clear(); selectedCategories=[]; $refs.filterDelivery.clear(); selectedDeliveryDates=[]; if ($refs.filterBuyerGroup) $refs.filterBuyerGroup.clear(); selectedBuyerGroups=[]; unreadOnly = false">Clear filter</span>
+                <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly"
+                @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; unreadOnly = false">Clear filter</button>
                     </template>
                     <template v-slot:right>
                         <span>{{selectedProducts.length}} selected</span>
@@ -120,9 +121,10 @@
                     @onViewSingle="onViewSingle" @updateAction="(product, actionCode) => $emit('updateAction', product, actionCode)"/>
                 </RecycleScroller>
 
-                <div v-if="products.length <= 0">
-                    <p style="padding: 60px 0 100px; text-align: center;">No products to show. Try changing your filters.</p>
-                </div>
+                <tr v-if="products.length <= 0">
+                    <p style="padding: 60px 0 100px; text-align: center; width: 100%;">
+                        No products to show. Try changing your filters.</p>
+                </tr>
             </template>
         </BaseFlexTable>
     </div>
@@ -140,10 +142,7 @@ export default {
         'products',
         'sortAsc',
         'sortKey',
-        'currentProductFilter',
         'file',
-        'availableCategories',
-        'availableBuyerGroups'
     ],
     components: {
         ProductsTableRow,
@@ -196,10 +195,8 @@ export default {
         },
     },
     methods: {
-        ...mapActions('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction']),
         ...mapActions('entities/products', ['setCurrentProductId', 'setAvailableProductIds']),
-        ...mapMutations('entities/products', ['setSingleVisisble']),
-        ...mapMutations('entities/tasks', ['setTaskComplete', 'setTaskIncomplete']),
+        ...mapMutations('entities/products', ['setSingleVisisble','updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter', 'updateSelectedBuyerGroups']),
         ...mapActions('entities/actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions']),
         ...mapActions('entities/comments', ['setComment', 'destroyComment']),
         productImg(variant) {

@@ -12,16 +12,11 @@
         </div>
 
         <div class="items-center">
-            <!-- <input type="search" class="input-wrapper"> -->
-            <div class="input-wrapper small clickable" @click="openSearch">
-                <i class="fas fa-search"></i>
-                Search..
-            </div>
         </div>
 
         <div class="items-right">
 
-            <span class="button wide primary" @click="$refs.exportModal.toggle(); setPageHeight()">Export to PDF</span>
+            <button class="button md primary" @click="$refs.exportModal.toggle(); setPageHeight()"><span>Export to PDF</span></button>
 
         </div>
 
@@ -211,21 +206,15 @@
                 <span v-else class="button xl dark" @click="printToPdf">Export as PDF</span>
             </template>
         </BaseModal>
-
-        <SearchModal ref="searchModal"/>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
 import { mapActions, mapGetters } from 'vuex'
-import SearchModal from '../../components/SearchModal'
 
 export default {
     name: "selectionPageNavbar",
-    components: {
-        SearchModal
-    },
     data: function () { return {
         submittingTaskComplete: false,
         exportingPDF: false,
@@ -319,9 +308,6 @@ export default {
                 nextPageIndex++
             })
         },
-        openSearch() {
-            this.$refs.searchModal.toggle()
-        }
     },
 };
 </script>

@@ -1,9 +1,9 @@
 <template>
     <div class="select-button">
-        <span class="header" v-html="header"></span>
+        <span v-if="header" class="header" v-html="header"></span>
         <label class="select-button" :class="{'has-description': $slots.default}">
             <BaseRadiobox v-if="type == 'radio'" :value="value"/>
-            <BaseCheckbox v-else :value="value" @change="$emit('input', $event.target.value)"/>
+            <BaseCheckbox v-else :value="value" @change="$emit('input', $event)"/>
 
             <div class="label">
                 {{label}}

@@ -68,7 +68,7 @@ export default {
             return uniqueCategories
         },
         availableDeliveryDates(state, getters) {
-            const products = this.products
+            const products = getters.products
             let uniqueDeliveryDates = []
             products.forEach(product => {
                 if (product.delivery_date) {
