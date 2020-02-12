@@ -31,7 +31,7 @@ export default {
                 const files = Collection.query()
                     .with('teams.actions')
                     .with('teamFiles')
-                    .with('subfiles')
+                    .with('selections')
                     .all()
                 const users = User.query()
                     .with('teams.teamFiles')
@@ -359,7 +359,7 @@ export default {
         setCurrentFile({ commit }, file) {
             // Get the current file form store
             const fileToSet = Collection.query()
-                .with('subfiles')
+                .with('selections')
                 .find(file.id)
             commit('setCurrentFile', fileToSet)
         },

@@ -53,8 +53,8 @@ import Request from './models/Request'
 import requests from './modules/requests'
 import Folder from './models/Folder'
 import folders from './modules/folders'
-import Subfile from './models/Subfile'
-import subfiles from './modules/subfiles'
+import Selection from './models/Selection'
+import selections from './modules/selections'
 import SubfileTeam from './models/SubfileTeam'
 import subfileTeams from './modules/subfileTeams'
 import SubfileUser from './models/SubfileUser'
@@ -91,7 +91,7 @@ database.register(TaskParent, taskParents)
 database.register(TaskAction, taskActions)
 database.register(Request, requests)
 database.register(Folder, folders)
-database.register(Subfile, subfiles)
+database.register(Selection, selections)
 database.register(SubfileTeam, subfileTeams)
 database.register(SubfileUser, subfileUsers)
 database.register(SubfileCompletedProduct, subfileCompletedProducts)

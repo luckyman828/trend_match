@@ -3,7 +3,7 @@
         <div v-tooltip.top="errorTooltip" :class="{'input-wrapper': type == 'select'}" @click="onClick">
             <span v-if="label" class="label" v-html="label"></span>
             <input ref="inputField" :type="type" :id="id" :placeholder="placeholder" :autocomplete="autocomplete"
-            :value="value" :disabled="disabled"
+            :value="value" :disabled="disabled || readOnly"
             :class="{'input-wrapper': type != 'select'}" 
             @input="$emit('input', $event.target.value)" @blur="$emit('blur', $event)" @paste="$emit('paste', $event)">
             <i v-if="type == 'select'" class="fas fa-caret-down"></i>
@@ -57,6 +57,12 @@ export default {
 @import '~@/_variables.scss';
 
     .input-field {
+        &.read-only {
+            .input-wrapper {
+                cursor: text;
+                background: $grey;
+            }
+        }
         &.select {
             &.has-label {
                 .label {

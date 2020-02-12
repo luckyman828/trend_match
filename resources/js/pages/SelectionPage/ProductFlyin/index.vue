@@ -1,103 +1,124 @@
 <template>
-    <BaseFlyin class="product-single" :show="show" @close="onCloseSingle">
+    <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=3>
         <template v-slot:header>
             <BaseFlyinHeader v-if="show" :title="product.title" :next="nextProductId" :prev="prevProductId"
             @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
-                <button class="primary" :class="{'ghost': !product.currentAction || product.currentAction.action != 2}" 
-                @click="onUpdateAction(product, 2)">
-                    <i class="far fa-star"></i>
-                </button>
-                <button class="primary" :class="{'ghost': !product.currentAction || product.currentAction.action != 1}" 
-                @click="onUpdateAction(product, 1)">
-                    <i class="far fa-heart"></i>
-                    <span>In</span>
-                </button>
-                <button class="primary" :class="{'ghost': !product.currentAction || product.currentAction.action != 0}" 
-                @click="onUpdateAction(product, 0)">
-                    <i class="far fa-times"></i>
-                    <span>out</span>
-                </button>
+                <div class="item-group">
+                    <button class="primary" :class="{'ghost': !product.currentAction || product.currentAction.action != 2}" 
+                    @click="onUpdateAction(product, 2)">
+                        <i class="far fa-star"></i>
+                    </button>
+                    <button class="primary" :class="{'ghost': !product.currentAction || product.currentAction.action != 1}" 
+                    @click="onUpdateAction(product, 1)">
+                        <i class="far fa-heart"></i>
+                        <span>In</span>
+                    </button>
+                    <button class="primary" :class="{'ghost': !product.currentAction || product.currentAction.action != 0}" 
+                    @click="onUpdateAction(product, 0)">
+                        <i class="far fa-times"></i>
+                        <span>out</span>
+                    </button>
+                </div>
             </BaseFlyinHeader>
         </template>
         <template v-slot v-if="show">
-            <div class="grid-2 grid-border-between body">
-                <div class="details">
-                    <div class="grid-2">
-                        <div class="image" @click="cycleImage()">
-                            <img v-if="product.color_variants[0] != null" :src="variantImg(product.color_variants[currentImgIndex])" @error="imgError(product.color_variants[currentImgIndex])">
+            <BaseFlyinColumn class="details">
+                
+                <div class="img-wrapper" @click="cycleImage()">
+                    <img v-if="product.color_variants[0] != null" :src="variantImg(product.color_variants[currentImgIndex])" @error="imgError(product.color_variants[currentImgIndex])">
+                </div>
+
+                <div class="product-variants" v-dragscroll>
+                    <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
+                        <div class="img-wrapper">
+                            <img :src="variantImg(variant)" @error="imgError(variant)">
                         </div>
-                        <div class="description">
-                            <div class="stat">
-                                <p><strong>Style number</strong></p>
-                                <p><span>{{product.datasource_id}}</span></p>
-                            </div>
-                            <div class="stat">
-                                <p><strong>Category</strong></p>
-                                <span>{{product.category}}</span>
-                            </div>
-                            <div class="stat">
-                                <strong>Minimum production</strong>
-                                <span>{{product.quantity}}</span>
-                            </div>
-
-                            <div class="stat">
-                                <p><strong>WHS ({{product.userPrices.currency}})</strong></p>
-                                <v-popover :disabled="userPermissionLevel < 4">
-                                    <p class="tooltip-target">{{product.userPrices.wholesale_price}} <i class="far fa-info-circle"></i></p>
-                                    <BaseTooltipList slot="popover" :header="'Wholesale price'" :array="product.prices" :arrayValueKey="'wholesale_price'" :arrayLabelKey="'currency'"/>
-                                </v-popover>
-                            </div>
-
-                            <div class="stat">
-                                <p><strong>RRP ({{product.userPrices.currency}})</strong></p>
-                                <v-popover :disabled="userPermissionLevel < 4">
-                                    <p class="tooltip-target">{{product.userPrices.recommended_retail_price}} <i class="far fa-info-circle"></i></p>
-                                    <BaseTooltipList slot="popover" :header="'Recommended retail price'" :array="product.prices" :arrayValueKey="'recommended_retail_price'" :arrayLabelKey="'currency'"/>
-                                </v-popover>
-                            </div>
-
-                            <div class="stat">
-                                <p><strong>MU</strong></p>
-                                <v-popover :disabled="userPermissionLevel < 4">
-                                    <p class="tooltip-target">{{product.userPrices.markup}} <i class="far fa-info-circle"></i></p>
-                                    <BaseTooltipList slot="popover" :header="'Mark up'" :array="product.prices" :arrayValueKey="'markup'" :arrayLabelKey="'currency'"/>
-                                </v-popover>
-                            </div>
-
+                        <div class="color-wrapper">
+                            <div class="circle-img"><img :src="variantImg(variant)" @error="imgError(variant)"></div>
+                            <span>{{variant.color}}</span>
                         </div>
+                    </div>
+                </div>
+
+                <label>Style number</label>
+                <BaseInputField readOnly=true :value="product.datasource_id"/>
+
+                <div class="grid-3">
+                    <label>WHS ({{product.userPrices.currency}})</label>
+                    <v-popover>
+                        <label>WHS ({{product.userPrices.wholesale_price}}) <i class="far fa-info-circle"></i></label>
+                        <BaseTooltipList slot="popover" :header="'Wholesale price'" :array="product.prices" :arrayValueKey="'wholesale_price'" :arrayLabelKey="'currency'"/>
+                    </v-popover>
+                    <BaseInputField readOnly=true :value="product.userPrices.wholesale_price"/>
+                </div>
+                
+
+                <div class="description">
+                    <div class="stat">
+                        <p><strong>Style number</strong></p>
+                        <p><span>{{product.datasource_id}}</span></p>
+                    </div>
+                    <div class="stat">
+                        <p><strong>Category</strong></p>
+                        <span>{{product.category}}</span>
+                    </div>
+                    <div class="stat">
+                        <strong>Minimum production</strong>
+                        <span>{{product.quantity}}</span>
                     </div>
 
                     <div class="stat">
-                        <p><strong>Composition</strong></p>
-                        <p>{{product.composition}}</p>
-                    </div>
-                    <div class="stat">
-                        <p><strong>Delivery date</strong></p>
-                        <p>{{new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})}}</p>
-                    </div>
-                    <div class="stat">
-                        <p><strong>Description</strong></p>
-                        <p>{{product.sale_description}}</p>
-                    </div>
-                    <div class="stat" v-if="product.assortments">
-                        <p><strong>Assortments</strong></p>
-                        <p v-for="(assortment, index) in product.assortments" :key="index">
-                            <span>{{assortment.assortment_name}}</span>
-                        </p>
+                        <p><strong>WHS ({{product.userPrices.currency}})</strong></p>
+                        <v-popover :disabled="userPermissionLevel < 4">
+                            <p class="tooltip-target">{{product.userPrices.wholesale_price}} <i class="far fa-info-circle"></i></p>
+                            <BaseTooltipList slot="popover" :header="'Wholesale price'" :array="product.prices" :arrayValueKey="'wholesale_price'" :arrayLabelKey="'currency'"/>
+                        </v-popover>
                     </div>
 
-                    <div class="product-variants" v-dragscroll>
-                        <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
-                            <div class="img-wrapper">
-                                <img :src="variantImg(variant)" @error="imgError(variant)">
-                            </div>
-                            <div class="color-wrapper">
-                                <div class="circle-img"><img :src="variantImg(variant)" @error="imgError(variant)"></div>
-                                <span>{{variant.color}}</span>
-                            </div>
-                        </div>
+                    <div class="stat">
+                        <p><strong>RRP ({{product.userPrices.currency}})</strong></p>
+                        <v-popover :disabled="userPermissionLevel < 4">
+                            <p class="tooltip-target">{{product.userPrices.recommended_retail_price}} <i class="far fa-info-circle"></i></p>
+                            <BaseTooltipList slot="popover" :header="'Recommended retail price'" :array="product.prices" :arrayValueKey="'recommended_retail_price'" :arrayLabelKey="'currency'"/>
+                        </v-popover>
                     </div>
 
+                    <div class="stat">
+                        <p><strong>MU</strong></p>
+                        <v-popover :disabled="userPermissionLevel < 4">
+                            <p class="tooltip-target">{{product.userPrices.markup}} <i class="far fa-info-circle"></i></p>
+                            <BaseTooltipList slot="popover" :header="'Mark up'" :array="product.prices" :arrayValueKey="'markup'" :arrayLabelKey="'currency'"/>
+                        </v-popover>
+                    </div>
+
+                </div>
+
+                <div class="stat">
+                    <p><strong>Composition</strong></p>
+                    <p>{{product.composition}}</p>
+                </div>
+                <div class="stat">
+                    <p><strong>Delivery date</strong></p>
+                    <p>{{new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})}}</p>
+                </div>
+                <div class="stat">
+                    <p><strong>Description</strong></p>
+                    <p>{{product.sale_description}}</p>
+                </div>
+                <div class="stat" v-if="product.assortments">
+                    <p><strong>Assortments</strong></p>
+                    <p v-for="(assortment, index) in product.assortments" :key="index">
+                        <span>{{assortment.assortment_name}}</span>
+                    </p>
+                </div>
+
+            </BaseFlyinColumn>
+
+            <BaseFlyinColumn>
+                <template v-slot:header>
+                    <span>i am a header</span>
+                </template>
+                <template v-slot>
                     <div class="tabs-wrapper">
                         <strong>Distribution</strong>
                         <div class="tab-headers">
@@ -115,9 +136,9 @@
                             </p>
                         </div>
                     </div>
-                </div>
-                <CommentsSection :product="product"/>
-            </div>
+                </template>
+            </BaseFlyinColumn>
+            <CommentsSection :product="product" :selection="currentSelection"/>
         </template>
     </BaseFlyin>
 </template>
@@ -147,6 +168,7 @@ export default {
     computed: {
         ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope']),
         ...mapGetters('entities/products', ['currentProduct', 'nextProductId', 'prevProductId']),
+        ...mapGetters('entities/selections', ['currentSelectionId', 'currentSelection']),
         product () {
             return this.currentProduct
         },
@@ -178,7 +200,8 @@ export default {
         variantImg (variant) {
             if (!variant.error && variant.blob_id != null)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-            else return variant.image
+            else if (variant.image) return variant.image
+            else return `/images/placeholder.JPG`
         },
         imgError (variant) {
              variant.error = true
@@ -244,60 +267,39 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
     .product-single {
-        height: 100%;
-        > .inner {
-            height: 100%;
-            width: 100%;
-            background: $light;
-            display: flex;
-            flex-direction: column;
-            .body {
-                padding: 1em;
-                height: 50%;
-                flex: 1;
-                display: grid;
-                grid-template-rows: 100%;
-                .comments {
-                    display: flex;
-                    flex-direction: column;
-                    overflow: hidden;
-                }
-            }
-        }  
-        .image {
-            cursor: pointer;
-            padding-top: 133.33%; // 4:3 
-            width: 100%;
-            height: 0;
-            position: relative;
-            overflow: hidden;
-            border-radius: 2px;
-            border: solid 1px $light2;
-            img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                object-position: center;
-                position: absolute;
-                top: 0;
-                left: 0;
-            }
-        }
-        .description {
-            .stat {
-                > :first-child {
-                    margin-bottom: -4px;
-                    margin-top: 8px;
-                    display: block;
-                }
-                .v-popover {
-                    display: inline-block;
-                }
-            }
-        }
         .details {
-            overflow-x: hidden;
-            overflow-y: auto;
+            background: $bgContent;
+            .img-wrapper {
+                cursor: pointer;
+                width: 216px;
+                height: 286px;
+                overflow: hidden;
+                border-radius: 4px;
+                border: solid 2px $divider;
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                    object-position: center;
+                }
+            }
+            .description {
+                .stat {
+                    > :first-child {
+                        margin-bottom: -4px;
+                        margin-top: 8px;
+                        display: block;
+                    }
+                    .v-popover {
+                        display: inline-block;
+                    }
+                }
+            }
+            .details {
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+
         }
     }
     h3 {

@@ -52,6 +52,7 @@ export default{
     computed: {
         ...mapGetters('entities/products', ['products', 'productsFiltered', 'singleVisible']),
         ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
+        ...mapGetters('entities/selections', ['currentSelectionId']),
         ...mapGetters('persist', ['currentWorkspaceId', 'currentWorkspace', 'authUser']),
         file() {
             return this.currentFile
@@ -78,7 +79,7 @@ export default{
         },
     },
     methods: {
-        ...mapActions('entities/actions', ['fetchActions']),
+        ...mapMutations('entities/products', ['setSingleVisisble']),
         ...mapActions('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction','updateManyActions', 'createManyActions']),
         ...mapActions('persist', ['setTeamFilter']),
         InNoOutNoCommentStyles() {
