@@ -26,23 +26,23 @@
                     <div class="selection-request" v-if="selectionRequest">
                         <request :request="selectionRequest"/>
                     </div>
-                    <div v-if="product.requests.find(x => x.selection_id != selection.id)" class="break-line">Showing requests from other selections(s)</div>
+                    <div v-if="product.requests.find(x => x.selection_id != currentSelection.id)" class="break-line">Showing requests from other selections(s)</div>
                     <div class="requests-wrapper">
-                        <request :request="request" v-for="request in product.requests.filter(x => x.selection_id != selection.id)" :key="request.id"/>
+                        <request :request="request" v-for="request in product.requests.filter(x => x.selection_id != currentSelection.id)" :key="request.id"/>
                     </div>
 
                 </template>
             </div>
 
 
-            <form @submit="onSubmit">
+            <div class="form-wrapper">
                 <div class="controls">
                     <div class="left">
-                        <button class="invisible" :class="{dark: writeScope == 'request'}" 
+                        <button type="button" class="invisible" :class="{dark: writeScope == 'request'}" 
                         @click="setWriteScope('request')">
                             <span>Request</span>
                         </button>
-                        <button class="invisible" :class="{dark: writeScope == 'comment'}" 
+                        <button type="button" class="invisible" :class="{dark: writeScope == 'comment'}" 
                         @click="setWriteScope('comment')">
                             <span>Comment</span>
                         </button>
@@ -51,20 +51,14 @@
                     </div>
                 </div>
 
-                <div class="form-input" :class="[{active: writeActive}, {hidden: writeScope != 'request'}]">
-                    <!-- <div class="input-wrapper request">
-                        <textarea @click="activateWrite" ref="requestField" @keydown.enter.exact.prevent name="request" id="request-input" placeholder="Write your request here..." v-model="newRequest.body" 
-                        @input="resizeTextarea($event)" @keyup.esc="deactivateWrite"></textarea>
-                        <div class="edit-request" v-if="selectionRequest && !writeActive">
-                            <span>Edit Request <span class="circle small light"><i class="fas fa-pencil"></i></span></span>
-                        </div>
-                    </div> -->
+                <form @submit="onSubmit" :class="[{active: writeActive}]" v-show="writeScope == 'request'">
                     <div class="input-parent request">
-                        <BaseInputTextArea ref="requestField"
+                        <BaseInputTextArea ref="requestField" :disabled="selectionRequest && !writeActive"
                         placeholder="Write your request here..." v-model="newRequest.body" 
-                        @click.native="activateWrite" @keydown.enter.exact.prevent.native  
-                        @keyup.esc.native="deactivateWrite" @keyup.enter.exact.native="onSubmit"></BaseInputTextArea>
-                        <div class="edit-request" v-if="selectionRequest && !writeActive">
+                        @keydown.native.enter.exact.prevent @click.native="activateWrite"
+                        @keyup.native.esc="deactivateWrite(); cancelRequest()" @keyup.native.enter.exact="onSubmit"></BaseInputTextArea>
+                        <div class="edit-request" v-if="selectionRequest && !writeActive"
+                        @click="activateWrite">
                             <span>Edit Request <span class="circle small light"><i class="fas fa-pencil"></i></span></span>
                         </div>
                     </div>
@@ -79,24 +73,20 @@
                         <div class="right">
                             <BaseTempAlert :duration="2000" ref="requestSucces" :hidden="writeActive"><small class="request-succes">Request saved <i class="fas fa-clipboard-check green"></i></small></BaseTempAlert>
                             <template>
-                                <button class="invisible" @click="cancelRequest"><span>Cancel</span></button>
-                                <button class="green" :class="{disabled: submitDisabled}" @click="onSubmit"><span>Save</span></button>
+                                <button type="button" class="invisible" @click="cancelRequest"><span>Cancel</span></button>
+                                <button type="button" class="green" :class="{disabled: submitDisabled}" @click="onSubmit"><span>Save</span></button>
                             </template>
                         </div>
                     </div>
-                </div>
+                </form>
 
-                <div class="form-input" :class="[{active: writeActive}, {hidden: writeScope != 'comment'}]">
+                <form @submit="onSubmit" :class="[{active: writeActive}]" v-show="writeScope == 'comment'">
                     <div class="input-parent comment">
                         <BaseInputTextArea ref="commentField"
                         placeholder="Write your comment here..." v-model="newComment.body" 
-                        @click.native="activateWrite" @keydown.enter.exact.prevent.native  
-                        @keyup.esc.native="deactivateWrite" @keyup.enter.exact.native="onSubmit"></BaseInputTextArea>
+                        @click.native="activateWrite" @keydown.native.enter.exact.prevent  
+                        @keyup.native.esc="deactivateWrite" @keyup.native.enter.exact="onSubmit"></BaseInputTextArea>
                     </div>
-                    <label class="checkbox">
-                        <input type="checkbox" v-model="newComment.important" name="comment-important">
-                        <span v-tooltip.top="'Important comment'" class="checkmark" :class="{active: newComment.important}"><i class="fas fa-exclamation"></i></span>
-                    </label>
                     <div class="flex-wrapper" v-if="writeActive">
                         <div class="left">
                             <div class="hotkey-tip">
@@ -105,13 +95,12 @@
                             </div>
                         </div>
                         <div class="right">
-                            <button class="invisible" @click="writeActive = false"><span>Cancel</span></button>
-                            <button class="green" :class="{disabled: submitDisabled}" @click="onSubmit"><span>Submit</span></button>
+                            <button type="button" class="invisible" @click="writeActive = false"><span>Cancel</span></button>
+                            <button type="button" class="green" :class="{disabled: submitDisabled}" @click="onSubmit"><span>Submit</span></button>
                         </div>
                     </div>
-                </div>
-
-            </form>
+                </form>
+            </div>
         </template>
     </BaseFlyinColumn>
 </template>
@@ -136,17 +125,16 @@ export default {
         newComment: {
             body: '',
             important: false,
-            id: null
         },
         newRequest: {
             body: '',
             important: false,
-            id: null
         },
         commentScope: 'comments',
         writeScope: 'comment',
         writeActive: false,
         submitting: false,
+        selectionRequest: null,
     }},
     watch: {
         product: function(newVal, oldVal) {
@@ -166,31 +154,30 @@ export default {
                 // return this.newRequest.body.length < 1 || this.submitting
             }
         },
-        selectionRequest() {
-            return this.product.requests.find(x => x.selection_id == this.selection.id)
-        }
     },
     methods: {
         ...mapActions('entities/comments', ['insertOrUpdateComment']),
         ...mapActions('entities/requests', ['insertOrUpdateRequest']),
         activateWrite() {
-            // if (this.writeScope == 'request') {
-            //     this.newRequest.id = (this.selectionRequest) ? this.selectionRequest.id : null
-            //     this.$refs.requestField.focus()
-            // } else {
-            //     this.$refs.commentField.focus()
-            //     // If scope is comment set the newComment id equal to the edited comment
-            // }
+            if (this.writeScope == 'request') {
+                this.$refs.requestField.focus()
+                this.$refs.requestField.select()
+            }
+            else {
+                this.$refs.commentField.focus()
+                this.$refs.commentField.select()
+            }
             this.writeActive = true
         },
         deactivateWrite() {
             // Unset the focus
             this.writeActive = false
             document.activeElement.blur()
+            this.resizeTextareas()
         },
         cancelRequest() {
             this.deactivateWrite()
-            this.newRequest.body = (this.selectionRequest) ? this.selectionRequest.comment : ''
+            this.newRequest.body = (this.selectionRequest) ? this.selectionRequest.body : ''
         },
         async onSubmit(e) {
             if (e) e.preventDefault()
@@ -219,7 +206,7 @@ export default {
 
                 // Instantiate the request to post
                 const requestToPost = {
-                    id: this.newRequest.id,
+                    id: this.selectionRequest ? this.selectionRequest.id : null,
                     user_id: this.authUser.id,
                     product_id: this.product.id,
                     selection_id: this.currentSelection.id,
@@ -228,7 +215,10 @@ export default {
                     selection: this.currentSelection
                 }
                 // dispatch action
-                this.insertOrUpdateRequest(this.product, requestToPost)
+                this.insertOrUpdateRequest({product: this.product, request: requestToPost})
+
+                // Update the selection request
+                this.selectionRequest = requestToPost
             }
             // In any case
             this.submitting = false
@@ -242,8 +232,9 @@ export default {
             if (this.writeScope == 'comment') {
                 this.newComment.body = ''
             } else {
-                this.newRequest.body = (this.selectionRequest) ? this.selectionRequest.body : ''
+                this.newRequest.body = this.selectionRequest.body
             }
+            this.resizeTextareas()
 
         },
         setCommentScope(scope) {
@@ -254,8 +245,10 @@ export default {
             this.writeScope = scope
         },
         update() {
+            // Find the existing selection request if any
+            this.selectionRequest = this.product.requests.find(x => x.selection_id == this.currentSelection.id)
             // Set the new request equal to the existing if one exists
-            this.newRequest.body = (this.selectionRequest) ? this.selectionRequest.comment : ''
+            this.newRequest.body = (this.selectionRequest) ? this.selectionRequest.body : ''
             // Set the id of the new request if one exists
             this.newRequest.id = (this.selectionRequest) ? this.selectionRequest.id : null
             // Reset the new comment field
@@ -263,12 +256,18 @@ export default {
             this.writeActive = false
 
             // Preset the height of the request field
-            // Use the nextTick function to make sure all the data has been set
-
-            this.$nextTick(() => {
-                if (this.writeScope == 'request' && this.$refs.requestField)
-                    this.resizeTextarea(this.$refs.requestField)
-            })
+            this.resizeTextareas()
+        },
+        resizeTextareas() {
+            if (this.writeScope == 'comment') {
+                this.$nextTick(() => {
+                    this.$refs.commentField.resize()
+                })
+            } else {
+                this.$nextTick(() => {
+                    this.$refs.requestField.resize()
+                })
+            }
         },
         hotkeyHandler(e) {
             const key = e.code
@@ -277,7 +276,7 @@ export default {
                     this.activateWrite()
                 }
             }
-        }
+        },
     },
     mounted() {
         this.update()
@@ -317,7 +316,7 @@ export default {
             color: $dark2;
         }
     }
-    form {
+    .form-wrapper {
         padding: 20px 16px 28px;
         .controls {
             display: flex;
@@ -332,10 +331,7 @@ export default {
                 // }
             }
         }
-        .form-input {
-            &.hidden {
-                display: none;
-            }
+        form {
             .id {
                 font-size: 12px;
                 color: $dark2;
@@ -350,7 +346,7 @@ export default {
                 font-weight: 500;
                 top: 50%;
                 transform: translateY(-50%);
-                pointer-events: none;
+                cursor: pointer;
                 .circle {
                     height: 24px;
                     width: 24px;

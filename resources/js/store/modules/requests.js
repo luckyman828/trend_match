@@ -41,56 +41,19 @@ export default {
                 }
             }
         },
-        async createRequest({ commit }, { request }) {
-            commit('setSubmitting', true)
-
-            const response = await axios.post(`/api/request`, {
-                product_id: request.product_id,
-                task_id: request.task_id,
-                team_id: request.team_id,
-                user_id: request.user_id,
-                body: request.body,
-            })
-
-            // Get and set the request id equal to the id given by the database
-            request.id = response.data.id
-            commit('addRequest', { request: request })
-            commit('setSubmitting', false)
-        },
-        async updateRequest({ commit }, { request }) {
-            commit('setSubmitting', true)
-
-            await axios.put(`/api/request`, {
-                id: request.id,
-                product_id: request.product_id,
-                task_id: request.task_id,
-                team_id: request.team_id,
-                user_id: request.user_id,
-                body: request.body,
-            })
-
-            commit('updateRequest', { request: request })
-            commit('setSubmitting', false)
-        },
         async insertOrUpdateRequest({ commit }, { product, request }) {
             let requestMethod = 'post'
-            // check if the provided comment should be posted or updates
-            let newRequest
-            if (comment.id != null) {
+            // check if the provided request should be posted or updates
+            if (request.id != null) {
                 requestMethod = 'put'
-                // Update the comment on the product
-                await Request.insert({ data: request }).then(response => {
-                    newRequest = response.requests[0]
-                    request = newRequest
-                })
+                commit('updateRequest', { product, request })
             } else {
                 requestMethod = 'post'
-                // Add the new comment to our product
-                await Request.create({ data: request }).then(response => {
-                    newRequest = response.requests[0]
-                    product.requests.push(newRequest)
-                })
+                // Add the new request to our product
+                commit('insertRequest', { product, request })
             }
+
+            request.id = 15
 
             // Config API endpoint
             const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/request`
@@ -105,22 +68,55 @@ export default {
             //     method: requestMethod,
             //     url: apiUrl,
             //     data: {
-            //         comment,
+            //         request,
             //     },
             //     headers: requestHeaders,
             // })
             //     .then(async response => {
-            //         // Get and set the comment id equal to the id given by the database
-            //         newComment.id = response.data.id
+            //         // Get and set the request id equal to the id given by the database
+            //         newRequest.id = response.data.id
             //     })
             //     .catch(err => {
             //         console.log(err.response)
             //         success = false
             //         commit('alertError')
-            //         newComment.failed = true
+            //         newRequest.failed = true
             //     })
 
             return success
+        },
+        async deleteRequest({ commit }, { product, request }) {
+            // Delete the request from our state
+            commit('deleteRequest', { product, request })
+
+            // Config API endpoint
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/request`
+            const requestHeaders = {
+                'X-Kollekt-App-Key': process.env.MIX_KOLLEKT_API_KEY,
+            }
+            let requestMethod = 'delete'
+
+            // Assume success
+            let success = true
+
+            // await axios({
+            //     method: requestMethod,
+            //     url: apiUrl,
+            //     data: {
+            //         request,
+            //     },
+            //     headers: requestHeaders,
+            // })
+            //     .then(async response => {
+            //         // Get and set the request id equal to the id given by the database
+            //         newRequest.id = response.data.id
+            //     })
+            //     .catch(err => {
+            //         console.log(err.response)
+            //         success = false
+            //         commit('alertError')
+            //         newRequest.failed = true
+            //     })
         },
     },
 
@@ -132,18 +128,30 @@ export default {
         setSubmitting(state, bool) {
             state.submitting = bool
         },
-        addRequest: (state, { request }) => {
-            // Submit new request
-            Request.insert({
-                data: request,
-            })
+        updateRequest: async (state, { product, request }) => {
+            // If a product has been provided. use that, else find the product from our state
+            const requestProduct = product
+                ? product
+                : this.state.entities.products.products.find(x => x.id == request.product_id)
+            // Find the index of the request and replace it
+            const requestIndex = requestProduct.requests.findIndex(x => x.id == request.id)
+            requestProduct.requests[requestIndex] = request
         },
-        updateRequest: (state, { request }) => {
-            // update request
-            Request.update({
-                where: request.id,
-                data: request,
-            })
+        insertRequest: async (state, { product, request }) => {
+            // If a product has been provided. use that, else find the product from our state
+            const requestProduct = product
+                ? product
+                : this.state.entities.products.products.find(x => x.id == request.product_id)
+            requestProduct.requests.push(request)
+        },
+        deleteRequest(state, { product, request }) {
+            // If a product has been provided. use that, else find the product from our state
+            const requestProduct = product
+                ? product
+                : this.state.entities.products.products.find(x => x.id == request.product_id)
+
+            const requestIndex = requestProduct.requests.findIndex(x => x.id == request.id)
+            requestProduct.requests.splice(requestIndex, 1)
         },
     },
 }

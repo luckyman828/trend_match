@@ -54,8 +54,6 @@ export default {
                 commit('insertComment', { product, comment })
             }
 
-            comment.id = 15
-
             // Config API endpoint
             const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/comment`
             const requestHeaders = {

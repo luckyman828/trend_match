@@ -1,6 +1,8 @@
 <template>
-    <textarea class="input-textarea input-wrapper" ref="textarea" :placeholder="placeholder"
-    @input="resizeTextarea($event.target); $emit('input', $event.target.value)" :value="value"/>
+    <div class="input-textarea">
+        <textarea class="input-wrapper focus-visible" ref="textarea" :placeholder="placeholder"
+        @input="resize(); $emit('input', $event.target.value)" :value="value"/>
+    </div>
 </template>
 
 <script>
@@ -11,7 +13,8 @@ export default {
         'value'
     ],
     methods: {
-        resizeTextarea(textarea) {
+        resize() {
+            const textarea = this.$refs.textarea
             // Avoid weird resizing when there is only 1 character in the textarea
             // if (event.target.value.length > 1) {
                 textarea.style.height = ''
@@ -35,7 +38,7 @@ export default {
 
 <style <style lang="scss" scoped>
 @import '~@/_variables.scss';
-.input-textarea {
+textarea {
     resize: none;
     max-height: 400px;
     overflow-y: auto;
