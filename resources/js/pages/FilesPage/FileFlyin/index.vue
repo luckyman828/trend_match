@@ -18,7 +18,7 @@
         </template>
         <template v-if="file && show" v-slot>
             <div class="file-single">
-                <SelectionsTable :selections="currentFile.subfiles" @showSelectionUsersFlyin="showSelectionUsersFlyin($event)"
+                <SelectionsTable :selections="currentFile.selections" @showSelectionUsersFlyin="showSelectionUsersFlyin($event)"
                 @showSelectionOwnersFlyin="showSelectionOwnersFlyin"/>
 
                 <SelectionUsersFlyin :selection="currentSelection" :show="SelectionUsersFlyinVisible"

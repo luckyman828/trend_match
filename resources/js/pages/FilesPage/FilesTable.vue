@@ -213,7 +213,7 @@
                     <div class="icon-wrapper">
                         <i class="far fa-file-edit"></i>
                     </div>
-                    <u>E</u>dit file
+                    View / <u>e</u>dit products
                 </div>
             </div>
             <div class="item-group">

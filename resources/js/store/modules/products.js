@@ -195,41 +195,6 @@ export default {
                 }
             }
         },
-
-        productsFilteredv1(state, getters, rootState, rootGetters) {
-            const products = getters.products
-
-            const categories = getters.selectedCategories
-            const deliveryDates = getters.selectedDeliveryDates
-            const unreadOnly = getters.unreadOnly
-            let productsToReturn = []
-
-            if (products) {
-                productsToReturn = products
-                // First filter by category
-                if (categories.length > 0) {
-                    const filteredByCategory = productsToReturn.filter(product => {
-                        return Array.from(categories).includes(product.category)
-                    })
-                    productsToReturn = filteredByCategory
-                }
-                // Filter by delivery date
-                if (deliveryDates.length > 0) {
-                    const filteredByDeliveryDate = productsToReturn.filter(product => {
-                        return Array.from(deliveryDates).includes(product.delivery_date)
-                    })
-                    productsToReturn = filteredByDeliveryDate
-                }
-
-                // Filer by unread
-                if (unreadOnly) {
-                    const filteredByUnread = productsToReturn.filter(product => product.newComment)
-                    productsToReturn = filteredByUnread
-                }
-            }
-
-            return productsToReturn
-        },
     },
 
     actions: {

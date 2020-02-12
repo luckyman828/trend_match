@@ -1,12 +1,12 @@
 import axios from 'axios'
-import Subfile from '../models/Subfile'
+import Selection from '../models/Selection'
 
 export default {
     namespaced: true,
 
     state: {
         loading: true,
-        currentSubfileId: null,
+        currentSelectionId: null,
         availableSelectionRoles: [
             {
                 id: 0,
@@ -38,31 +38,34 @@ export default {
     },
 
     getters: {
-        loadingSubfiles: state => {
+        loadingSelections: state => {
             return state.loading
         },
-        currentSubfileId: state => {
-            return state.currentSubfileId
+        currentSelectionId: state => {
+            return state.currentSelectionId
+        },
+        currentSelection: state => {
+            return Selection.find(state.currentSelectionId)
         },
     },
 
     actions: {
-        async fetchSubfiles({ commit }, workspace_id) {
+        async fetchSelections({ commit }, workspace_id) {
             // Set the state to loading
             commit('setLoading', true)
 
-            const apiUrl = `/api/workspace/${workspace_id}/subfiles`
+            const apiUrl = `/api/workspace/${workspace_id}/selections`
 
             let tryCount = 3
             let succes = false
             while (tryCount-- > 0 && !succes) {
                 try {
                     const response = await axios.get(`${apiUrl}`)
-                    Subfile.create({ data: response.data })
+                    Selection.create({ data: response.data })
                     commit('setLoading', false)
                     succes = true
                 } catch (err) {
-                    console.log('API error in Subfile.js :')
+                    console.log('API error in Selection.js :')
                     console.log(err.response)
                     console.log(`Trying to fetch again. TryCount = ${tryCount}`)
                     if (tryCount <= 0) throw err
@@ -89,17 +92,15 @@ export default {
             commit('removeOwnerFromSelection', { selection, owner })
             // Send request to API
         },
-        updateSelection({commit}, selection) {
-            
-        }
+        updateSelection({ commit }, selection) {},
     },
 
     mutations: {
         setLoading(state, bool) {
             state.loading = bool
         },
-        setCurrentSubfileId(state, id) {
-            state.currentSubfileId = id
+        setCurrentSelectionId(state, id) {
+            state.currentSelectionId = id
         },
         addUsersToSelection(state, { selection, usersToAdd }) {
             // Make a clone of the user and set their default selection permission level

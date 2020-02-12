@@ -67,7 +67,7 @@ export default{
         ...mapActions('entities/taskParents', ['fetchTaskParents']),
         ...mapActions('entities/fileTasks', ['fetchFileTasks']),
         ...mapActions('entities/actions', ['updateAction']),
-        ...mapActions('entities/subfiles', ['fetchSubfiles']),
+        ...mapActions('entities/selections', ['fetchSelections']),
         ...mapActions('persist', ['setCurrentTeam', 'setTeamFilter', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']),
         async fetchInitialData() {
             // Get user
@@ -99,7 +99,7 @@ export default{
                     this.fetchTaskParents(this.currentWorkspaceId),
                     this.fetchFileTasks(this.currentWorkspaceId),
                     this.fetchRoles(),
-                    this.fetchSubfiles(this.currentWorkspaceId)
+                    this.fetchSelections(this.currentWorkspaceId)
                 )
                 
                 if (this.authUser.role_id >= 5) {

@@ -1,9 +1,9 @@
 <template>
     <div class="fly-in-wrapper" :class="[{visible: isVisible}]">
         <div class="overlay" @click="close"></div>
-        <div class="fly-in" ref="flyIn">
+        <div class="fly-in" ref="flyIn" :class="{'has-columns': columns > 1}">
             <slot name="header" :toggle="toggle"/>
-            <div class="body">
+            <div class="body" :style="columnStyle">
                 <slot :toggle="toggle"/>
             </div>
         </div>
@@ -16,6 +16,7 @@ export default {
     name: 'baseFlyin',
     props: [
         'show',
+        'columns'
     ],
     data: function () { return {
         visible: false,
@@ -23,6 +24,9 @@ export default {
     computed: {
         isVisible () {
             return (this.show) ? this.show : this.visible
+        },
+        columnStyle () {
+            return {gridTemplateColumns: `repeat(${this.columns}, ${100/this.columns}%)`}
         }
     },
     methods: {
@@ -102,6 +106,12 @@ export default {
             padding: 16px;
             flex: 1;
             overflow-y: auto;
+        }
+        &.has-columns {
+            .body {
+                padding: 0;
+                display: grid;
+            }
         }
     }
     // @keyframes fly-in {

@@ -12,7 +12,7 @@ export default class Request extends Model {
         const data = {
             id: this.attr(null),
             product_id: this.attr(''),
-            task_id: this.attr(''),
+            selection_id: this.attr(''),
             team_id: this.attr(''),
             user_id: this.attr(''),
             body: this.attr(''),

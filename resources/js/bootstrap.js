@@ -42,21 +42,21 @@ if (token) {
  * allows your team to easily build robust real-time web applications.
  */
 
-import Echo from 'laravel-echo'
+// import Echo from 'laravel-echo'
 
-window.Pusher = require('pusher-js')
+// window.Pusher = require('pusher-js')
 
-window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: process.env.MIX_PUSHER_APP_KEY,
-    cluster: process.env.MIX_PUSHER_APP_CLUSTER,
-    forceTLS: true,
-    // authEndpoint: '/broadcasting/auth',
-    auth: {
-        headers: {
-            Authorization: 'Bearer ' + process.env.MIX_CLIENT_CREDENTIAL_BEARER_TOKEN,
-            'X-CSRF-Token': token,
-            // user_id: window.auth_user.id,
-        },
-    },
-})
+// window.Echo = new Echo({
+//     broadcaster: 'pusher',
+//     key: process.env.MIX_PUSHER_APP_KEY,
+//     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+//     forceTLS: true,
+//     // authEndpoint: '/broadcasting/auth',
+//     auth: {
+//         headers: {
+//             Authorization: 'Bearer ' + process.env.MIX_CLIENT_CREDENTIAL_BEARER_TOKEN,
+//             'X-CSRF-Token': token,
+//             // user_id: window.auth_user.id,
+//         },
+//     },
+// })

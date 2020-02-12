@@ -198,7 +198,6 @@ export default {
         }
     },
     methods: {
-        ...mapActions('persist', ['setTeamFilter', 'setCurrentFileId']),
         ...mapActions('entities/collections', ['setCurrentFile']),
         ...mapMutations('entities/collections', ['setAvailableFileIds']),
         ...mapMutations('persist', ['setCurrentFolderId']),
