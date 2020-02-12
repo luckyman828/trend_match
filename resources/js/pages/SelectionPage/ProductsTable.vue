@@ -2,14 +2,14 @@
     <div class="products-table-wrapper">
         <BaseFlexTable class="products-table">
             <template v-slot:tabs>
-                <BaseTableTab :label="`Overview ${productTotals.all}`" :active="currentProductFilter == 'overview'"
-                @click="$emit('setCurrentProductFilter', 'overview')"/>
-                <BaseTableTab :label="`In ${productTotals.ins}`" :active="currentProductFilter == 'ins'"
-                @click="$emit('setCurrentProductFilter', 'ins')"/>
-                <BaseTableTab :label="`Out ${productTotals.outs}`" :active="currentProductFilter == 'outs'"
-                @click="$emit('setCurrentProductFilter', 'outs')"/>
-                <BaseTableTab :label="`Nds ${productTotals.nds}`" :active="currentProductFilter == 'nds'"
-                @click="$emit('setCurrentProductFilter', 'nds')"/>
+                <BaseTableTab :label="`Overview ${productTotals.all}`" :modelValue="currentProductFilter"
+                value="overview" @change="setCurrentProductFilter($event)"/>
+                <BaseTableTab :label="`In ${productTotals.ins}`" :modelValue="currentProductFilter"
+                value="ins" @change="setCurrentProductFilter($event)"/>
+                <BaseTableTab :label="`Out ${productTotals.outs}`" :modelValue="currentProductFilter"
+                value="outs" @change="setCurrentProductFilter($event)"/>
+                <BaseTableTab :label="`Nds ${productTotals.nds}`" :modelValue="currentProductFilter"
+                value="nds" @change="setCurrentProductFilter($event)"/>
             </template>
             <template v-slot:topBar>
                 <BaseTableTopBar>
@@ -77,7 +77,7 @@
                         </label> -->
 
                 <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly"
-                @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; unreadOnly = false">Clear filter</button>
+                @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; unreadOnly = false"><span>Clear filter</span></button>
                     </template>
                     <template v-slot:right>
                         <span>{{selectedProducts.length}} selected</span>
@@ -204,20 +204,16 @@ export default {
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
             else return variant.image
         },
-        onViewSingle(id) {
-            this.setCurrentProductId(id)
+        onViewSingle(product) {
+            this.setCurrentProductId(product.id)
             this.setAvailableProductIds(this.products.map(x => x.id)) // Save array of available products
             this.setSingleVisisble(true)
-            // this.$refs.singleFlyIn.toggle()
-        },
-        onSelect(index) {
-            this.$emit('onSelect', index)
         },
     },
     created () {
         // Setup event broadcast listening
 
-        Echo.private(`workspace.${this.currentWorkspaceId}`)
+        // Echo.private(`workspace.${this.currentWorkspaceId}`)
         // .listen('.action.updated', (e) => {
         //     const action = e.action
         //     // console.log('%cPusher: Action Set', 'font-weight: 900')
@@ -273,7 +269,7 @@ export default {
     },
     destroyed () {
         // Unsub from pusher broadcasting
-        Echo.leaveChannel(`workspace.${this.currentWorkspaceId}`);
+        // Echo.leaveChannel(`workspace.${this.currentWorkspaceId}`);
     }
 }
 </script>

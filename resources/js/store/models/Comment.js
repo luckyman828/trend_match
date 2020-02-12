@@ -3,7 +3,6 @@ import { Model } from '@vuex-orm/core'
 import User from './User'
 import CommentVote from './CommentVote'
 import Team from './Team'
-import Task from './Task'
 import { uuid } from 'vue-uuid'
 
 export default class Comment extends Model {
@@ -16,7 +15,7 @@ export default class Comment extends Model {
         const data = {
             id: this.attr(''),
             product_id: this.attr(''),
-            task_id: this.attr(''),
+            selection_id: this.attr(''),
             team_id: this.attr(''),
             user_id: this.attr(''),
             comment: this.attr(''),
@@ -25,7 +24,7 @@ export default class Comment extends Model {
             created_at: this.attr(''),
             user: this.belongsTo(User, 'user_id'),
             team: this.belongsTo(Team, 'team_id'),
-            task: this.belongsTo(Task, 'task_id'),
+            // task: this.belongsTo(Task, 'task_id'),
             votes: this.hasMany(CommentVote, 'comment_id'),
 
             // Custom added

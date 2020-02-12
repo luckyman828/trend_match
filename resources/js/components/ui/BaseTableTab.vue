@@ -1,5 +1,5 @@
 <template>
-    <div class="tab" :class="{'active': active}">
+    <div class="tab" :class="{'active': modelValue == value}" @click="change">
         <span>{{label}}</span>
     </div>
 </template>
@@ -8,12 +8,14 @@
 export default {
     name: 'tabs',
     props: [
-        'active',
+        'modelValue',
+        'value',
         'label'
     ],
     methods: {
-        change(tab) {
-            this.$emit('input', tab)
+        change() {
+            this.$emit('input', this.value)
+            this.$emit('change', this.value)
         }
     }
 }

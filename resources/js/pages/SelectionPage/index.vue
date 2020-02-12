@@ -30,7 +30,7 @@ export default {
     },
     methods: {
         ...mapActions('entities/collections', ['fetchCollections', 'setCurrentFile']),
-        ...mapMutations('entities/subfiles', ['setCurrentSubfileId']),
+        ...mapMutations('entities/selections', ['setCurrentSelectionId']),
         ...mapActions('entities/products', ['fetchProducts']),
         ...mapActions('entities/users', ['fetchUsers']),
         ...mapActions('persist', ['setCurrentFileId']),
@@ -60,8 +60,8 @@ export default {
         } else {
             this.loadingFile = false
         }
-        const routeSubfileId = this.$route.params.subfileId
-        this.setCurrentSubfileId(routeSubfileId)
+        const routeSelectionId = this.$route.params.selectionId
+        this.setCurrentSelectionId(routeSelectionId)
 
         // If we already have a workspace id, fetch the data we are missing
         if (this.currentWorkspaceId != null)
