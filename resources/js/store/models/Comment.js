@@ -22,13 +22,16 @@ export default class Comment extends Model {
             important: this.attr(''),
             is_request: this.attr(''),
             created_at: this.attr(new Date()),
-            user: this.belongsTo(User, 'user_id'),
+            // user: this.belongsTo(User, 'user_id'),
             team: this.belongsTo(Team, 'team_id'),
             // task: this.belongsTo(Task, 'task_id'),
             votes: this.hasMany(CommentVote, 'comment_id'),
 
             selection: this.attr({
                 name: 'unknown selection',
+            }),
+            user: this.attr({
+                name: 'unknown user',
             }),
 
             // Custom added

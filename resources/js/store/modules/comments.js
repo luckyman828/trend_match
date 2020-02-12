@@ -45,24 +45,16 @@ export default {
         async insertOrUpdateComment({ commit }, { product, comment }) {
             let requestMethod = 'post'
             // check if the provided comment should be posted or updates
-            let newComment
             if (comment.id != null) {
                 requestMethod = 'put'
-                // Update the comment on the product
-                await Comment.insert({ data: comment }).then(response => {
-                    newComment = response.comments[0]
-                    comment = newComment
-                })
+                commit('updateComment', { product, comment })
             } else {
                 requestMethod = 'post'
                 // Add the new comment to our product
-                await Comment.create({ data: comment }).then(response => {
-                    newComment = response.comments[0]
-                    product.comments.push(newComment)
-                })
+                commit('insertComment', { product, comment })
             }
 
-            newComment.id = 15
+            comment.id = 15
 
             // Config API endpoint
             const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/comment`
@@ -94,10 +86,9 @@ export default {
 
             return success
         },
-        async deleteComment({ commit, dispatch }, { product, comment }) {
+        async deleteComment({ commit }, { product, comment }) {
             // Delete the comment from our state
-            const commentIndex = product.comments.findIndex(x => x.id == comment.id)
-            product.comments.splice(commentIndex, 1)
+            commit('deleteComment', { product, comment })
 
             // Config API endpoint
             const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/comment`
@@ -128,16 +119,6 @@ export default {
             //         newComment.failed = true
             //     })
         },
-        async setComment({ dispatch }, comment) {
-            await Comment.insert({ data: comment })
-            // Dispatch an action to update this product
-            dispatch('entities/products/updateComments', comment.product_id, { root: true })
-        },
-        async destroyComment({ dispatch }, comment) {
-            await Comment.delete(comment.id)
-            // Dispatch an action to update this product
-            dispatch('entities/products/updateComments', comment.product_id, { root: true })
-        },
     },
 
     mutations: {
@@ -148,17 +129,33 @@ export default {
         setSubmitting(state, bool) {
             state.submitting = bool
         },
-        setComment: (state, { comment }) => {
-            // Submit new comment
-            Comment.insert({
-                data: comment,
-            })
+        updateComment: async (state, { product, comment }) => {
+            // If a product has been provided. use that, else find the product from our state
+            const commentProduct = product
+                ? product
+                : this.state.entities.products.products.find(x => x.id == comment.product_id)
+            // Find the index of the comment and replace it
+            const commentIndex = commentProduct.comments.findIndex(x => x.id == comment.id)
+            commentProduct.comments[commentIndex] = comment
+        },
+        insertComment: async (state, { product, comment }) => {
+            // If a product has been provided. use that, else find the product from our state
+            const commentProduct = product
+                ? product
+                : this.state.entities.products.products.find(x => x.id == comment.product_id)
+            commentProduct.comments.push(comment)
+        },
+        deleteComment(state, { product, comment }) {
+            // If a product has been provided. use that, else find the product from our state
+            const commentProduct = product
+                ? product
+                : this.state.entities.products.products.find(x => x.id == comment.product_id)
+
+            const commentIndex = commentProduct.comments.findIndex(x => x.id == comment.id)
+            commentProduct.comments.splice(commentIndex, 1)
         },
         alertError: state => {
             window.alert('Network error. Please check your connection')
-        },
-        deleteComment(state, commentId) {
-            Comment.delete(commentId)
         },
     },
 }

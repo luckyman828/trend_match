@@ -10,13 +10,13 @@
             <span v-else class="body">
                 <BaseEditableTextarea ref="editCommentInput" :hideEditButton="true" 
                 :value="commentToEdit.body" v-model="commentToEdit.body"
-                @activate="setEditActive" @submit="insertOrUpdateComment({comment: commentToEdit})"/>
+                @activate="setEditActive" @submit="onUpdateProduct"/>
             </span>
             <div class="controls">
                 <template v-if="comment.failed">
                     <span v-if="typeof comment.id != 'number'" class="failed clickable" v-tooltip.top="'Retry submit'" @click="retrySubmitComment">
                         <i class="far fa-exclamation-circle"></i> Failed</span>
-                    <span v-else class="failed clickable" v-tooltip.top="'Retry edit'" @click="insertOrUpdateComment({comment: commentToEdit})">
+                    <span v-else class="failed clickable" v-tooltip.top="'Retry edit'" @click="onUpdateProduct">
                         <i class="far fa-exclamation-circle"></i> Failed</span>
                 </template>
                 <template v-else-if="typeof comment.id == 'number'">
@@ -68,7 +68,10 @@ export default {
             this.editActive = boolean
         },
         retrySubmitComment() {
-            this.insertOrUpdateComment({comment: this.comment})
+            this.insertOrUpdateComment({product: this.product, comment: this.comment})
+        },
+        onUpdateProduct() {
+            this.insertOrUpdateComment({product: this.product, comment: this.commentToEdit})
         }
     }
 }

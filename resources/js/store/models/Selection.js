@@ -7,12 +7,9 @@ export default class Selection extends Model {
 
     // List of all fields (schema) of the product model. `this.attr` is used
     // for the generic field type. The argument is the default value.
-    static primaryKey = 'myId'
 
     static fields() {
         const data = {
-            myId: this.uid(),
-
             id: this.attr(null),
             file_id: this.attr(null),
             name: this.attr(null),

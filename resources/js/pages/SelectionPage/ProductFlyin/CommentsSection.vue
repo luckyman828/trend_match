@@ -16,7 +16,7 @@
                     <!-- <div class="sender-wrapper" v-for="(comment, index) in product.comments" :key="comment.id" :class="{own: comment.user_id == authUser.id}"> -->
                     <div class="sender-wrapper" v-for="(comment, index) in product.comments" :key="index" :class="{own: comment.user_id == authUser.id}">
                         <comment :product="product" :comment="comment"/>
-                        <div class="sender" v-if="product.comments[index+1] ? product.comments[index+1].user_id != comment.user_id : true">{{comment.selection.name}} {{(comment.user_id == authUser.id) ? '| You' : comment.user_name}}</div>
+                        <div class="sender" v-if="product.comments[index+1] ? product.comments[index+1].user_id != comment.user_id : true">{{comment.selection.name}} {{(comment.user_id == authUser.id) ? '| You' : comment.user.name}}</div>
                     </div>
 
                 </template>
@@ -105,8 +105,8 @@
                             </div>
                         </div>
                         <div class="right">
-                            <span class="button invisible" @click="writeActive = false">Cancel</span>
-                            <span class="button green" :class="{disabled: submitDisabled}" @click="onSubmit">Submit</span>
+                            <button class="invisible" @click="writeActive = false"><span>Cancel</span></button>
+                            <button class="green" :class="{disabled: submitDisabled}" @click="onSubmit"><span>Submit</span></button>
                         </div>
                     </div>
                 </div>
@@ -156,7 +156,7 @@ export default {
     },
     computed: {
         ...mapGetters('persist', ['authUser']),
-        ...mapGetters('entities/selections', ['currentSelectionId']),
+        ...mapGetters('entities/selections', ['currentSelection']),
         submitDisabled () {
             if (this.writeScope == 'comment') {
                 return this.newComment.body.length < 1 || this.submitting
@@ -206,8 +206,11 @@ export default {
                     id: this.newComment.id,
                     user_id: this.authUser.id,
                     product_id: this.product.id,
-                    selection_id: this.currentSelectionId,
+                    selection_id: this.currentSelection.id,
                     body: this.newComment.body,
+                    user: this.authUser,
+                    selection: this.currentSelection,
+                    votes: []
                 }
                 // dispatch action
                 this.insertOrUpdateComment({product: this.product, comment: commentToPost})
@@ -219,8 +222,10 @@ export default {
                     id: this.newRequest.id,
                     user_id: this.authUser.id,
                     product_id: this.product.id,
-                    selection_id: this.currentSelectionId,
+                    selection_id: this.currentSelection.id,
                     body: this.newRequest.body,
+                    user: this.authUser,
+                    selection: this.currentSelection
                 }
                 // dispatch action
                 this.insertOrUpdateRequest(this.product, requestToPost)
@@ -240,19 +245,6 @@ export default {
                 this.newRequest.body = (this.selectionRequest) ? this.selectionRequest.body : ''
             }
 
-        },
-        resizeTextarea(textarea) {
-            const commentField = textarea
-            // Avoid weird resizing when there is only 1 character in the textarea
-            // if (event.target.value.length > 1) {
-                commentField.style.height = ''
-
-                // Avoid making the textarea smaller than default
-                const offset = 4
-                if (commentField.scrollHeight + offset > 42) {
-                    commentField.style.height = commentField.scrollHeight + offset + "px"
-                }
-            // }
         },
         setCommentScope(scope) {
             this.commentScope = scope
