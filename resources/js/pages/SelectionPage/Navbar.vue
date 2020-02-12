@@ -16,12 +16,12 @@
 
         <div class="items-right">
 
-            <button class="button md primary" @click="$refs.exportModal.toggle(); setPageHeight()"><span>Export to PDF</span></button>
+            <button class="button md primary" @click="exportModalVisible = true; setPageHeight()"><span>Export to PDF</span></button>
 
         </div>
 
         <!-- PDF FOR EXPORT MARKUP -->
-        <div class="example-pdf" ref="exportToPdf" v-if="userPermissionLevel >= 2 && this.productsToExport.length > 0" 
+        <div class="example-pdf" ref="exportToPdf" v-if="exportModalVisible && userPermissionLevel >= 2 && this.productsToExport.length > 0" 
             style="font-family: arial, helvetica, sans-serif;">
             <div ref="pdfWrapper" style="font-family: 'Roboto', sans-serif, helvetica, arial; position: relative;">
                 <div style="height: 1040px; width: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center;">
@@ -135,8 +135,9 @@
         <!-- PDF ENDS  -->
 
 
-        <BaseModal ref="exportModal" :header="'Export <strong>' + currentFile.title + '</strong> to PDF'" :subHeader="'The products in your current view will be exported'">
-            <template v-slot:body>
+        <BaseModal ref="exportModal" :header="'Export <strong>' + currentFile.title + '</strong> to PDF'" :subHeader="'The products in your current view will be exported'"
+        @close="exportModalVisible=false" :show="exportModalVisible">
+            <template v-slot:body v-if="exportModalVisible">
                 <form>
                     <label>Requests & comments</label>
                     <div class="form-element">
@@ -224,6 +225,7 @@ export default {
         includeDistribution: false,
         includeNotDecided: false,
         currentTaskOnly: false,
+        exportModalVisible: false,
     }},
     computed: {
         ...mapGetters('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']),

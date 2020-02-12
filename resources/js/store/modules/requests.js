@@ -72,6 +72,56 @@ export default {
             commit('updateRequest', { request: request })
             commit('setSubmitting', false)
         },
+        async insertOrUpdateRequest({ commit }, { product, request }) {
+            let requestMethod = 'post'
+            // check if the provided comment should be posted or updates
+            let newRequest
+            if (comment.id != null) {
+                requestMethod = 'put'
+                // Update the comment on the product
+                await Request.insert({ data: request }).then(response => {
+                    newRequest = response.requests[0]
+                    request = newRequest
+                })
+            } else {
+                requestMethod = 'post'
+                // Add the new comment to our product
+                await Request.create({ data: request }).then(response => {
+                    newRequest = response.requests[0]
+                    product.requests.push(newRequest)
+                })
+            }
+
+            // Config API endpoint
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/request`
+            const requestHeaders = {
+                'X-Kollekt-App-Key': process.env.MIX_KOLLEKT_API_KEY,
+            }
+
+            // Assume success
+            let success = true
+
+            // await axios({
+            //     method: requestMethod,
+            //     url: apiUrl,
+            //     data: {
+            //         comment,
+            //     },
+            //     headers: requestHeaders,
+            // })
+            //     .then(async response => {
+            //         // Get and set the comment id equal to the id given by the database
+            //         newComment.id = response.data.id
+            //     })
+            //     .catch(err => {
+            //         console.log(err.response)
+            //         success = false
+            //         commit('alertError')
+            //         newComment.failed = true
+            //     })
+
+            return success
+        },
     },
 
     mutations: {

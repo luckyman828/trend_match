@@ -6,13 +6,17 @@
             <span v-if="comment.votes.length > 0" class="pill small primary"> <i class="fas fa-plus"></i> {{comment.votes.length}}</span>
         </div>
         <div class="comment" :class="[{important: comment.important}, {failed: comment.failed}]">
-            <span v-if="!own || typeof comment.id != 'number'" class="body">{{comment.comment}}</span>
-            <span v-else class="body"><EditableTextarea ref="editCommentInput" :hideEditButton="true" @activate="setEditActive" :value="commentToEdit.comment" v-model="commentToEdit.comment" @submit="updateComment(commentToEdit)"/></span>
+            <span v-if="!own || typeof comment.id != 'number'" class="body">{{comment.body}}</span>
+            <span v-else class="body">
+                <BaseEditableTextarea ref="editCommentInput" :hideEditButton="true" 
+                :value="commentToEdit.body" v-model="commentToEdit.body"
+                @activate="setEditActive" @submit="insertOrUpdateComment({comment: commentToEdit})"/>
+            </span>
             <div class="controls">
                 <template v-if="comment.failed">
                     <span v-if="typeof comment.id != 'number'" class="failed clickable" v-tooltip.top="'Retry submit'" @click="retrySubmitComment">
                         <i class="far fa-exclamation-circle"></i> Failed</span>
-                    <span v-else class="failed clickable" v-tooltip.top="'Retry edit'" @click="updateComment(commentToEdit)">
+                    <span v-else class="failed clickable" v-tooltip.top="'Retry edit'" @click="insertOrUpdateComment({comment: commentToEdit})">
                         <i class="far fa-exclamation-circle"></i> Failed</span>
                 </template>
                 <template v-else-if="typeof comment.id == 'number'">
@@ -24,7 +28,7 @@
                         <i class="far fa-pen"></i></button>
                 </template>
                 <template v-else>
-                    <Loader :message="'posting..'"/>
+                    <BaseLoader :message="'posting..'"/>
                 </template>
             </div>
         </div>
@@ -36,7 +40,8 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'comment',
     props: [
-        'comment'
+        'comment',
+        'product'
     ],
     data: function() {
         return {
@@ -51,19 +56,19 @@ export default {
         }
     },
     methods: {
-        ...mapActions('entities/comments', ['updateComment', 'deleteComment', 'createComment']),
+        ...mapActions('entities/comments', ['insertOrUpdateComment', 'deleteComment']),
         onDeleteComment() {
             window.confirm(
                 'Are you sure you want to delete this comment?'
             )
-                ? this.deleteComment(this.comment.id)
+                ? this.deleteComment({product: this.product, comment: this.comment})
                 : false
         },
         setEditActive(boolean) {
             this.editActive = boolean
         },
         retrySubmitComment() {
-            this.createComment({comment: this.comment})
+            this.insertOrUpdateComment({comment: this.comment})
         }
     }
 }

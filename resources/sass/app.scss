@@ -1013,30 +1013,30 @@ i {
 }
 
 // TABS / TAB HEADERS
-.tab-headers {
-    display: flex;
-    .tab {
-        height: 40px;
-        width: 152px;
-        display: flex;
-        align-items: center;
-        color: $dark2;
-        background: $light2;
-        border-radius: 8px 8px 0 0;
-        cursor: pointer;
-        user-select: none;
-        padding: 0 16px;
-        font-weight: 500;
-        &.active {
-            color: $dark;
-            background: $light1;
-            cursor: auto;
-        }
-        &:not(:last-child) {
-            margin-right: 4px;
-        }
-    }
-}
+// .tab-headers {
+//     display: flex;
+//     .tab {
+//         height: 40px;
+//         width: 152px;
+//         display: flex;
+//         align-items: center;
+//         color: $dark2;
+//         background: $light2;
+//         border-radius: 8px 8px 0 0;
+//         cursor: pointer;
+//         user-select: none;
+//         padding: 0 16px;
+//         font-weight: 500;
+//         &.active {
+//             color: $dark;
+//             background: $light1;
+//             cursor: auto;
+//         }
+//         &:not(:last-child) {
+//             margin-right: 4px;
+//         }
+//     }
+// }
 
 // FORMS & INPUT
 
@@ -1135,8 +1135,8 @@ form {
     // }
     &:focus,
     &.active {
-        border: solid 2px $primary;
-        box-shadow: none;
+        box-shadow: 0 0 0 1px $primary inset;
+        border-color: $primary;
         outline: none;
     }
     &.small {
@@ -1244,6 +1244,13 @@ form {
         cursor: pointer;
         z-index: 1;
     }
+}
+
+// LAYOUT / COLUMNS
+.col-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 8px;
 }
 
 // TRANSITIONS

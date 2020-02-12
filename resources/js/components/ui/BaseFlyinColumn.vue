@@ -1,5 +1,5 @@
 <template>
-    <div class="fly-in-column">
+    <div class="fly-in-column" :class="{'has-header': $slots.header != null}">
         <div class="header" v-if="$slots.header != null">
             <slot name="header"/>
         </div>
@@ -20,17 +20,24 @@ export default {
 @import '~@/_variables.scss';
 
     .fly-in-column {
+        overflow-y: hidden;
         &:not(:last-child) {
             border-right: solid 2px $divider;
         }
-        .header {
-            height: 60px;
-            padding: 8px 16px;
-            border-bottom: solid 2px $divider;
-            background: white;
+        &.has-header {
+            display: grid;
+            grid-template-rows: 60px 1fr;
         }
-        .body {
-            padding: 16px;
-        }
+    }
+    .header {
+        height: 60px;
+        padding: 8px 16px;
+        border-bottom: solid 2px $divider;
+        background: white;
+    }
+    .body {
+        padding: 16px 16px 64px;
+        overflow-y: auto;
+        height: 100%;
     }
 </style>

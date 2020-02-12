@@ -194,9 +194,6 @@ export default{
             grid-gap: 12px;
         }
     }
-    .grid-3 {
-        grid-template-columns: repeat(3, 1fr);
-    }
     .grid-2 {
         grid-template-columns: repeat(2, 1fr);
     }
