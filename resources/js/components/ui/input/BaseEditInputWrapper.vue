@@ -1,8 +1,10 @@
 <template>
     <div class="edit-input-wrapper" :class="{active: editActive}">
         <div class="input-parent controls-right controls-inside control-items-2" @click="setActive">
+
             <input ref="input" :id="id" class="input-wrapper" :type="type" :value="value" :placeholder="placeholder"
             @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" @keyup="change" step="any" @keydown="validateInput" :maxlength="maxlength" :pattern="pattern">
+
             <div class="controls" v-if="!editActive">
                 <button v-tooltip.top="'Edit'" class="edit"><i class="far fa-pen"></i></button>
                 <button v-if="value != oldValue" v-tooltip.top="`Revert to original (${oldValue})`" @click.stop="revert" class="square true-square yellow-green"><span>E</span></button>

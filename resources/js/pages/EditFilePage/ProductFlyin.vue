@@ -119,8 +119,11 @@
                 </div>
                 <div class="form-element">
                     <label for="delivery">Delivery</label>
-                    <BaseEditInputWrapper ref="deliveryInput" :id="'delivery'" :type="'text'"
+                    <BaseDatePicker ref="product.delivery_date" :id="'delivery'" :type="'month'" :format="'MMMM YYYY'"
                     :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"/>
+                    
+                    <!-- <BaseEditInputWrapper ref="product.delivery_date" :id="'delivery'" :type="'date'"
+                    :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"/> -->
                 </div>
                 <div class="form-element">
                     <label for="description">Description</label>
