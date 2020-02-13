@@ -40,7 +40,7 @@
             </td>
             <td class="action">
                 <button class="invisible ghost-hover" @click="$emit('showOptionsContext', $event, selection)"><i class="fas fa-cog"></i></button>
-                <button class="invisible ghost-hover" @click="toggleExpanded(selection.id)"><i class="fas fa-ellipsis-h"></i></button>
+                <button class="invisible ghost-hover" @click="emitShowContext"><i class="fas fa-ellipsis-h"></i></button>
             </td>
         </tr>
         <template v-if="childrenExpanded">
