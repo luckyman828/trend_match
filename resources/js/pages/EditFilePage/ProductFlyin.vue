@@ -119,7 +119,7 @@
                 </div>
                 <div class="form-element">
                     <label for="delivery">Delivery</label>
-                    <BaseEditInputWrapper ref="deliveryInput" :id="'delivery'" :type="'text'" 
+                    <BaseEditInputWrapper ref="deliveryInput" :id="'delivery'" :type="'text'"
                     :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"/>
                 </div>
                 <div class="form-element">
@@ -192,7 +192,7 @@ import Product from '../../store/models/Product'
 import Draggable from 'vuedraggable'
 
 export default {
-    name: 'editProductSingle',
+    name: 'editProductFlyin',
     props: [
         'show',
     ],
@@ -444,12 +444,6 @@ export default {
                 if (key == 'KeyS' && this.saveActive)
                     this.onUpdateProduct()
             }
-        },
-        formatDelivery(e) {
-            let product = this.product
-            let date = this.product.delivery_date
-            let newDate = new Date(date).toLocaleDateString("en-GB", {month: "long",year: "numeric"})
-            product.delivery_date = newDate
         },
         dragActive(e, index) {
             // e.target.querySelector('.drop-area').classList.add('drag')

@@ -205,59 +205,6 @@ export default{
         box-shadow: 0 2px 6px rgba(0,0,0,.1);
         background: white;
     }
-    // .tabs {
-    //     margin-left: -16px;
-    //     margin-right: -16px;
-    //     width: calc(100% + 32px);
-    //     .tab {
-    //         display: inline-block;
-    //         font-size: 18px;
-    //         opacity: .5;
-    //         padding: 10px 25px;
-    //         border-bottom: solid 3px transparent;
-    //         margin-bottom: 8px;
-    //         &.active {
-    //             opacity: 1;
-    //             border-color: $primary;
-    //         }
-    //         &:not(.active):hover {
-    //             border-color: rgba($primary, .5);
-    //             cursor: pointer;
-    //         }
-    //     }
-    // }
-    .vdp-datepicker {
-        display: grid;
-        justify-items: end;
-        &.disabled {
-            pointer-events: none;
-            opacity: .5;
-        }
-        > div::after {
-            content: "";
-            font-size: 11px;
-            color: $dark2;
-            display: block;
-            position: absolute;
-            z-index: 1;
-            right: 12px;
-            height: 32px;
-            top: 0;
-            line-height: 32px;
-            font-weight: 900;
-            font-family: "Font Awesome 5 Pro"
-        }
-        input {
-            border: solid 1px $light2;
-            border-radius: 4px;
-            box-shadow: 0 2px 6px rgba(0,0,0,.1);
-            padding-left: 12px;
-            height: 32px;
-            width: 150px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-    }
     .loading {
         animation: loading 2s;
         animation-iteration-count: infinite;
@@ -267,61 +214,6 @@ export default{
         50% {opacity: 1;}
         100% {opacity: 0;}
     }
-
-    // Tables
-    // .flex-table {
-    //     .card > & {
-    //         margin-left: -16px;
-    //         margin-right: -16px;
-    //         width: calc(100% + 32px);
-    //     }
-    //     &.disabled {
-    //         .flex-table-row:not(.header-row) {
-    //             opacity: .5;
-    //         }
-    //     }
-    //     .flex-table-row {
-    //         display: flex;
-    //         justify-content: flex-start;
-    //         align-items: center;
-    //         min-height: 45px;
-    //         > * {
-    //             &.select {
-    //                 margin-left: 16px;
-    //                 min-width: 80px;
-    //             }
-    //         }
-    //     }
-    //     .header-row {
-    //         font-weight: 700;
-    //         font-size: 12px;
-    //         height: 45px;
-    //         border-bottom: solid 2px $light1;
-    //     }
-    //     .item-row {
-    //         border-bottom: solid 1px $light1;
-    //         &:hover {
-    //             background: $light;
-    //         }
-    //     }
-    //     th {
-    //         text-transform: uppercase;
-    //         font-size: 12px;
-    //         font-weight: 600;
-    //         color: $dark2;
-    //         i {
-    //             color: $light2;
-    //             margin: 0;
-    //             margin-left: 4px;
-    //         }
-    //         &.active {
-    //             i {
-    //                 color: $primary
-    //             }
-    //         }
-    //     }
-    // }
-    
     .clickable {
         cursor: pointer;
     }
@@ -345,23 +237,6 @@ export default{
             }
         }
     }
-
-    // // Icons
-    // i {
-    //     &.green {
-    //         color: $green;
-    //     }
-    //     &.red {
-    //         color: $red;
-    //     }
-    //     &.dark {
-    //         color: $dark;
-    //     }
-    //     &.primary {
-    //         color: $primary;
-    //     }
-    // }
-
     // Scrollbar
     *:not(.app) {
         /* width */
