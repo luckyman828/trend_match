@@ -165,6 +165,9 @@ export default {
         }
         th, td {
             padding: 0 4px;
+            &:first-child:not(.select) {
+                margin-left: 8px;
+            }
             > i {
                 &:last-child {
                     margin-left: 12px;
@@ -187,6 +190,11 @@ export default {
                 flex: 0 1 auto;
                 min-width: 40px;
                 max-width: 40px;
+                display: flex;
+                align-items: center;
+                height: 100%;
+                padding-left: 8px;
+                cursor: pointer;
             }
         }
     }
