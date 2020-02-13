@@ -1,5 +1,5 @@
 <template>
-    <BaseFlyin ref="flyin" :show="show">
+    <BaseFlyin ref="flyin" :show="show" @close="$emit('close')">
         <template v-slot:header>
             <BaseFlyinHeader v-if="show" :title="'Selection Users: '+selection.name" disableNavigation=true 
             @close="$emit('close')"/>

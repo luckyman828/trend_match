@@ -1,5 +1,5 @@
 <template>
-    <BaseFlyin :show="show">
+    <BaseFlyin :show="show" @close="$emit('close')">
         <template v-slot:header>
             <BaseFlyinHeader v-if="show" :title="'Folder Owners: '+folder.title" disableNavigation=true @close="$emit('close')"/>
         </template>
