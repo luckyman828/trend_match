@@ -1,12 +1,12 @@
 <template>
     <div class="subfile">
         <PageHeader :file="file"/>
-        <div class="quick-actions">
+        <!-- <div class="quick-actions">
             <p>Quick actions</p>
             <span v-if="productsNoIn.length > 0 && !hideQuickOut" class="button red wide" @click="OutNoInStyles()">'OUT' styles with no IN ({{productsNoIn.length}})</span>
             <span v-if="productsNoOutNoComment.length > 0 && !hideQuickIn" class="button green wide" @click="InNoOutNoCommentStyles()">'IN' styles with no OUT & no Comments ({{productsNoOutNoComment.length}})</span>
             <span class="button invisible icon-right red-hover" @click="setHideQuickIn(); setHideQuickOut()">Hide quick actions <i class="far fa-times-circle"></i></span>
-        </div>
+        </div> -->
         <div class="filters">
             <div class="left">
                 
@@ -15,10 +15,10 @@
 
         <ProductsTable ref="productsComponent" :sortKey="sortKey" :sortAsc="sortAsc"
         :file="file" :products="productsFiltered"
-        @onSort="onSort" @updateProduct="onUpdateProduct"/>
+        @onSort="onSort" @updateAction="onUpdateAction"/>
 
         <ProductFlyin :show="singleVisible"
-        @close="setSingleVisisble(false)" @updateProduct="onUpdateProduct"/>
+        @close="setSingleVisisble(false)" @updateAction="onUpdateAction"/>
 
     </div>
 </template>
@@ -52,8 +52,11 @@ export default{
     computed: {
         ...mapGetters('entities/products', ['products', 'productsFiltered', 'singleVisible']),
         ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
-        ...mapGetters('entities/selections', ['currentSelectionId']),
+        ...mapGetters('entities/selections', ['currentSelectionId', 'currentSelection']),
         ...mapGetters('persist', ['currentWorkspaceId', 'currentWorkspace', 'authUser']),
+        isFeedback() {
+            return this.$route.name == 'selectionFeedback'
+        },
         file() {
             return this.currentFile
         },
@@ -80,7 +83,7 @@ export default{
     },
     methods: {
         ...mapMutations('entities/products', ['setSingleVisisble']),
-        ...mapActions('entities/actions', ['updateAction', 'updateTaskAction', 'deleteAction', 'deleteTaskAction', 'createTaskAction','updateManyActions', 'createManyActions']),
+        ...mapActions('entities/actions', ['updateAction']),
         ...mapActions('persist', ['setTeamFilter']),
         InNoOutNoCommentStyles() {
             this.setHideQuickIn()
@@ -98,8 +101,18 @@ export default{
             this.hideQuickIn = true
             // this.$cookies.set(`quick_in_${this.currentFile.id}_${this.currentTask.id}`, true, Infinity)
         },
-        onUpdateProduct() {
-
+        onUpdateAction(product, actionCode) {
+            // Instantiate an action object
+            const actionToPost = {
+                action: actionCode,
+                product_id: product.id,
+                user_id: this.authUser.id,
+                selection_id: this.currentSelection.id,
+                selection: this.currentSelection,
+                user: this.authUser,
+            }
+            // Post comment to store
+            this.updateAction({product, action: actionToPost, isFeedback: this.isFeedback})
         },
         submitSelectedAction(method) {
             // Find out whether we should update or delete the products final actions

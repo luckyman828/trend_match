@@ -91,6 +91,7 @@ const routes = [
     { path: '/teams', name: 'teams', component: TeamsPage },
     { path: '/users', name: 'users', component: TeamsPage },
     { path: '/file/:fileId/:selectionId', name: 'selection', component: SelectionPage },
+    { path: '/file/:fileId/:selectionId/feedback', name: 'selectionFeedback', component: SelectionPage },
     { path: '*', redirect: '/files' },
 ]
 
