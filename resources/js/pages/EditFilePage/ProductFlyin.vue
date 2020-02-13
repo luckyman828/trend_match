@@ -21,7 +21,7 @@
         <template v-slot v-if="show">
             <BaseFlyinColumn>
                 <span>Variants ({{product.color_variants.length}})</span>
-                <span class="button light-2 icon-left" @click="onAddVariant"><i class="far fa-plus"></i> Add Variant</span>
+                <button class="invisible" @click="onAddVariant"><i class="far fa-plus"></i><span>Add Variant</span></button>
                 <Draggable v-model="product.color_variants" class="product-variants">
                     
                     <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index">
@@ -97,51 +97,91 @@
                         <BaseEditable :ref="'nameInput-'+index" :placeholder="'Untitled variant'" :value="variant.color" :type="'text'" v-model="variant.color"/>
                     </div>
                 </Draggable>
-                <label for="datasource-id">Product ID</label>
-                <BaseEditInputWrapper id="datasource-id" :type="'text'" :maxlength="9" :pattern="'[0-9]'"
-                :value="product.datasource_id" :oldValue="originalProduct.datasource_id" v-model="product.datasource_id"/>
-                <label for="category">Category</label>
-                <BaseEditInputWrapper id="category" :type="'text'" 
-                :value="product.category" :oldValue="originalProduct.category" v-model="product.category"/>
-                <label for="composition">Composition</label>
-                <BaseEditInputWrapper id="composition" :type="'text'" 
-                :value="product.composition" :oldValue="originalProduct.composition" v-model="product.composition"/>
-                </BaseFlyinColumn>
-                <BaseFlyinColumn>
-                    <div class="currencies">
-                        <label for="currencySelector">Currencies</label>
-                        <select v-if="currencyIndex != product.prices.length-1" name="currencySelector" class="input-wrapper" v-model="currencyIndex">
-                            <option v-for="(currency, index) in product.prices" :key="index" :value="index">{{currency.currency}}</option>
-                        </select>
-                        <BaseEditInputWrapper v-else :id="'currencySelector'" :type="'text'" 
-                        :value="currentCurrency.currency" v-model="currentCurrency.currency" @submit="submitNewCurrency()"/>
-                        <label for="wholesale">WHS ({{currentCurrency.currency}})</label>
-                        <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
-                        :value="currentCurrency.wholesale_price" 
-                        :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].wholesale_price : null" 
-                        v-model.number="currentCurrency.wholesale_price" @submit="savedMarkup = currentCurrency.markup"
-                        @change="calculateMarkup($event, 'wholesale_price')" @cancel="resetMarkup" @revert="revertMarkup"/>
-                        <label for="recommended-retail">RPP ({{currentCurrency.currency}})</label>
-                        <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
-                        :value="currentCurrency.recommended_retail_price" 
-                        :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].recommended_retail_price : null" 
-                        v-model.number="currentCurrency.recommended_retail_price" @submit="savedMarkup = currentCurrency.markup"
-                        @change="calculateMarkup($event, 'recommended_retail_price')" @cancel="resetMarkup" @revert="revertMarkup"/>
-                        <label>Mark Up</label>
-                        <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{currentCurrency.markup}}</span>
+                <div class="form-element">
+                    <label for="datasource-id">Product ID</label>
+                    <BaseEditInputWrapper id="datasource-id" :type="'text'" :maxlength="9" :pattern="'[0-9]'"
+                    :value="product.datasource_id" :oldValue="originalProduct.datasource_id" v-model="product.datasource_id"/>
+                </div>
+                <div class="form-element">
+                    <label for="category">Category</label>
+                    <BaseEditInputWrapper id="category" :type="'text'" 
+                    :value="product.category" :oldValue="originalProduct.category" v-model="product.category"/>
+                </div>
+                <div class="form-element">
+                    <label for="composition">Composition</label>
+                    <BaseEditInputWrapper id="composition" :type="'text'" 
+                    :value="product.composition" :oldValue="originalProduct.composition" v-model="product.composition"/>
+                </div>
+                <div class="form-element">
+                    <label for="min-order">Min. Order</label>
+                    <BaseEditInputWrapper :id="'min-order'" :type="'number'" 
+                    :oldValue="originalProduct.quantity" v-model.number="product.quantity"/>
+                </div>
+                <div class="form-element">
+                    <label for="delivery">Delivery</label>
+                    <BaseEditInputWrapper ref="deliveryInput" :id="'delivery'" :type="'text'" 
+                    :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"/>
+                </div>
+                <div class="form-element">
+                    <label for="description">Description</label>
+                    <BaseEditableTextarea id="description"
+                    :oldValue="originalProduct.sale_description" v-model="product.sale_description"/>
+                </div>
+            </BaseFlyinColumn>
+
+            <BaseFlyinColumn>
+                <div class="form-element">
+                    <label for="currencySelector">Select Currency</label>
+                    <BaseInputField :id="'currencySelector'" disabled=true :value="product.prices[currencyIndex].currency" type="select" 
+                    @click="showCurrencyContext"/>
+                </div>
+                <div class="form-element">
+                    <button class="ghost" @click="addCurrency">
+                        <i class="far fa-plus"></i><span>Add currency</span>
+                    </button>
+                    <button class="ghost" @click="removeCurrency" v-if="product.prices.length > 1">
+                        <i class="far fa-trash-alt"></i><span>Remove currency</span>
+                    </button>
+                </div>
+                <div class="form-element">
+                    <label for="currencyName">Currency name</label>
+                    <BaseEditInputWrapper ref="currencyName" :id="'currencyName'" :type="'text'" 
+                    :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].currency : null" 
+                    v-model="currentCurrency.currency"/>
+                </div>
+                <div class="form-element">
+                    <label for="wholesale">WHS ({{currentCurrency.currency}})</label>
+                    <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
+                    :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].wholesale_price : null" 
+                    v-model.number="currentCurrency.wholesale_price" @submit="savedMarkup = currentCurrency.markup"
+                    @change="calculateMarkup({whs: $event})" @cancel="resetMarkup" @revert="revertMarkup"/>
+                </div>
+                <div class="form-element">
+                    <label for="recommended-retail">RPP ({{currentCurrency.currency}})</label>
+                    <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
+                    :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].recommended_retail_price : null" 
+                    v-model.number="currentCurrency.recommended_retail_price" @submit="savedMarkup = currentCurrency.markup"
+                    @change="calculateMarkup({rrp: $event})" @cancel="resetMarkup" @revert="revertMarkup"/>
+                </div>
+                <div class="form-element">
+                    <label>Mark Up</label>
+                    <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{currentCurrency.markup}}</span>
+                </div>
+            </BaseFlyinColumn>
+
+            <BaseContextMenu ref="contextCurrency" class="context-currency">
+                <template v-slot:header>
+                    Select currency
+                </template>
+                <template v-slot="slotProps">
+                    <div class="item-group">
+                        <BaseSelectButtons :type="'radio'"
+                        :options="product.prices"
+                        v-model.number="currencyIndex" :submitOnChange="true" :optionValueKey="'index'"
+                        :optionNameKey="'currency'" @submit="slotProps.hide()"/>
                     </div>
-                    <div>
-                        <label for="min-order">Min. Order</label>
-                        <BaseEditInputWrapper :id="'min-order'" :type="'number'" 
-                        :oldValue="originalProduct.quantity" v-model.number="product.quantity"/>
-                        <label for="delivery">Delivery</label>
-                        <BaseEditInputWrapper ref="deliveryInput" :id="'delivery'" :type="'text'" 
-                        :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"/>
-                        <label for="description">Description</label>
-                        <BaseEditableTextarea id="description"
-                        :oldValue="originalProduct.sale_description" v-model="product.sale_description"/>
-                    </div>
-                </BaseFlyinColumn>
+                </template>
+            </BaseContextMenu>
         </template>
     </BaseFlyin>
 </template>
@@ -170,7 +210,7 @@ export default {
         URLActiveIndex: null,
         gettingImagesFromURL: 0,
         defaultPriceObject: {
-            currency: 'Add new',
+            currency: 'Unnamed currency',
             markup: 0,
             wholesale_price: 0,
             recommended_retail_price: 0
@@ -183,8 +223,6 @@ export default {
             this.productToEdit = JSON.parse(JSON.stringify(newVal))
             // Check if the current currency is available. Else set it to the first available
             if (!this.productToEdit.prices[this.currencyIndex]) this.currencyIndex = 0
-            // Add the option to add a new currency to the product
-            this.productToEdit.prices.push(JSON.parse(JSON.stringify(this.defaultPriceObject)))
 
             // Create an empty variant if no variants are present
             const variants = this.productToEdit.color_variants
@@ -254,13 +292,26 @@ export default {
     },
     methods: {
         ...mapActions('entities/products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'uploadImages', 'deleteImages', 'rotateImage']),
+        showCurrencyContext(e) {
+            this.$refs.contextCurrency.show(e)
+        },
         variantImg (variant) {
             if (variant.blob_id != null)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
             else return variant.image
         },
-        submitNewCurrency() {
+        addCurrency() {  
             this.productToEdit.prices.push(JSON.parse(JSON.stringify(this.defaultPriceObject)))
+            // Set the new currency as the active one
+            this.currencyIndex = this.productToEdit.prices.length - 1
+            // Focus and Select the new currencies name
+            this.$nextTick(() => {
+                this.$refs.currencyName.setActive()
+            })
+        },
+        removeCurrency() {
+            this.productToEdit.prices.splice(this.currencyIndex,1)
+            this.currencyIndex = 0
         },
         onCloseSingle() {
             // Emit event to parent
@@ -359,14 +410,14 @@ export default {
                 this.updatingProduct = false
             })
         },
-        calculateMarkup(newValue, price) {
-            const el = this.currentCurrency
+        calculateMarkup({whs, rrp} = {}) {
+            const currency = this.currentCurrency
             const decimals = 2
-            if (price == 'wholesale_price')
-                el.markup = Number(Math.round((el.recommended_retail_price / newValue) + 'e' + decimals)+ 'e-' + decimals)
-            else 
-                el.markup = Number(Math.round((newValue / el.wholesale_price) + 'e' + decimals)+ 'e-' + decimals)
-                
+            const wholesale = whs || currency.wholesale_price
+            const recommended = rrp || currency.recommended_retail_price
+            if (wholesale > 0) {
+                currency.markup = Number(Math.round((recommended / wholesale) + 'e' + decimals)+ 'e-' + decimals)
+            } else currency.markup = 0
         },
         resetMarkup() {
             if (this.savedMarkup)
@@ -376,9 +427,7 @@ export default {
             }
         },
         revertMarkup() {
-            const el = this.currentCurrency
-            const decimals = 2
-            el.markup = Number(Math.round((el.recommended_retail_price / el.wholesale_price) + 'e' + decimals)+ 'e-' + decimals)
+            this.calculateMarkup()
         },
         hotkeyHandler(event) {
             const key = event.code
@@ -535,79 +584,6 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
-    .edit-product-single {
-        height: 100%;
-        > .inner {
-            height: 100%;
-            width: 100%;
-            background: $light;
-            display: flex;
-            flex-direction: column;
-            > .header {
-                display: flex;
-                border-bottom: solid 2px $light1;
-                padding: 6px 20px;
-                position: sticky;
-                top: 0;
-                z-index: 2;
-                background: white;
-                height: 72px;
-                align-items: center;
-                h3 {
-                    width: 100%;
-                }
-                > * {
-                    flex: 1;
-                    display: flex;
-                    align-items: center;
-                }
-                .close {
-                    margin-right: 24px;
-                }
-                .controls {
-                    display: flex;
-                    justify-content: flex-end;
-                    width: 100%;
-                    align-items: flex-start;
-                    > *:not(:last-child) {
-                        margin-right: 12px;
-                    }
-                }
-            }
-            .body {
-                padding: 24px;
-                height: 50%;
-                flex: 1;
-                display: grid;
-                grid-template-rows: 100%;
-            }
-        }  
-        .details {
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
-    }
-    h3 {
-        font-size: 16px;
-        font-weight: 400;
-    }
-    .close i {
-        font-size: 22px;
-    }
-    .card > .grid-2 {
-        > :first-child {
-            overflow-x: hidden;
-            overflow-y: auto;
-            height: 100%;
-        }
-    }
-    .grid-2.grid-border-between {
-        grid-template-columns: 1fr 2px 1fr;
-        grid-gap: 17px;
-        > :nth-child(2) {
-            background: $light2;
-        }
-    }
     .product-variants {
         margin-top: 12px;
         white-space: nowrap;
@@ -773,59 +749,12 @@ export default {
         font-weight: 500;
         text-align: right;
     }
-    .details {
-        .currencies {
-            margin-bottom: 32px;
-        }
+    .currencies {
+        margin-bottom: 32px;
     }
-    .dropdown {
-        .header {
-            color: white;
-            font-size: 12px;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 0 0 4px;
-        }
-        .hotkeys {
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            .hotkey {
-                &:not(:last-child) {
-                    margin-bottom: 8px;
-                }
-                > :first-child {
-                    margin-right: 6px;
-                    width: 86px;
-                }
-            }
-        }
-    }
-    .progress-wrapper {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: rgba($dark, .5);
-        z-index: 3;
-        flex-direction: column;
-        color: white;
-        padding: 20px;
-        svg {
-            width: 100%;
-            rect {
-                &.value {
-                    transition: .3s;
-                    fill: $primary;
-                }
-                &.background {
-                    fill: $light2;
-                }
-            }
+    .form-element {
+        &:not(.last-child) {
+            margin-bottom: 16px;
         }
     }
 </style>

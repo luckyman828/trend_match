@@ -83,21 +83,16 @@ export default {
             }
         },
         resize() {
-            console.log('resize')
             const textarea = this.$refs.input
             // Avoid weird resizing when there is only 1 character in the textarea
             // if (event.target.value.length > 1) {
                 textarea.style.height = ''
-                console.log(textarea.style.height)
-                console.log(textarea.scrollHeight)
                 this.$nextTick(() => {
                     // Avoid making the textarea smaller than default
                     const offset = 4
                     if (textarea.scrollHeight + offset > 42) {
                         textarea.style.height = textarea.scrollHeight + offset + "px"
                     }
-                    console.log(textarea.style.height)
-                    console.log(textarea.scrollHeight)
                 })
 
             // }

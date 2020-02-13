@@ -3,7 +3,7 @@
 
         <BaseFlexTable v-if="currentTab == 'Teams'">
             <template v-slot:tabs>
-                <BaseTabs :tabs="['Teams','Members']" v-model="currentTab" :activeTab="currentTab"/>
+                <BaseTableTabs :tabs="['Teams','Members']" v-model="currentTab" :activeTab="currentTab"/>
             </template>
             <template v-slot:topBar>
                 <BaseTableTopBar>
@@ -36,12 +36,12 @@
 
         <BaseFlexTable v-if="currentTab == 'Members'">
             <template v-slot:tabs>
-                <Tabs :tabs="['Teams','Members']" v-model="currentTab" :activeTab="currentTab"/>
+                <BaseTableTabs :tabs="['Teams','Members']" v-model="currentTab" :activeTab="currentTab"/>
             </template>
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>
-                        <SearchField :searchKey="['name','email']" :arrayToSearch="users" v-model="usersFilteredBySearch"/>
+                        <BaseSearchField :searchKey="['name','email']" :arrayToSearch="users" v-model="usersFilteredBySearch"/>
                     </template>
                     <template v-slot:right>
                         <span>showing <strong>{{usersFilteredBySearch.length}}</strong> of <strong>{{users.length}}</strong> records</span>
