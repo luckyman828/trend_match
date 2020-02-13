@@ -59,6 +59,7 @@ export default class Selection extends Model {
                     anonymize: false,
                 },
             }),
+            user_access: this.attr('user'),
 
             // Staudemeir attributes
             descendants: this.attr(false),

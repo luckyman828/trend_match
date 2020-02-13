@@ -70,14 +70,10 @@
                         </BaseDropdown>
 
                         <BaseSelectButton type="checkbox" :value="unreadOnly" v-model="unreadOnly" label="Show UNREAD only"/>
-                        <!-- <label class="square checkbutton ghost light-2 checkbox clickable">
-                            <span>Show UNREAD only</span>
-                            <input type="checkbox" v-model="unreadOnly">
-                            <span class="checkmark solid"><i class="fas fa-check"></i></span>
-                        </label> -->
 
-                <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly"
-                @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; unreadOnly = false"><span>Clear filter</span></button>
+                        <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly"
+                        @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; unreadOnly = false"><span>Clear filter</span></button>
+
                     </template>
                     <template v-slot:right>
                         <span>{{selectedProducts.length}} selected</span>
@@ -325,10 +321,13 @@ export default {
         }
     }
     .product-row {
-        &.in {
+        &.action-2 {
+            box-shadow: 4px 0 $primary inset
+        }
+        &.action-1 {
             box-shadow: 4px 0 $green inset
         }
-        &.out {
+        &.action-0 {
             box-shadow: 4px 0 $red inset
         }
     }

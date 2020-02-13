@@ -1,5 +1,5 @@
 <template>
-    <tr class="products-table-row" :class="'action-'+product.currentAction">
+    <tr class="products-table-row" :class="product.currentAction && 'action-'+ product.currentAction.action">
 
         <span v-if="product.newComment" class="circle tiny primary"></span>
         

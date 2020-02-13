@@ -379,7 +379,7 @@ export default {
         },
         instantiateProducts({ state, rootGetters }) {
             const authUser = rootGetters['persist/authUser']
-            const currentTeam = rootGetters['persist/currentTeam']
+            const currentSelection = rootGetters['entities/selections/currentSelection']
             const workspace = rootGetters['persist/currentWorkspace']
 
             // Get the products
@@ -428,12 +428,12 @@ export default {
                     }
                     // Then check if the team currency is available
                     else if (
-                        currentTeam &&
-                        currentTeam.currency &&
-                        product.prices.find(x => x.currency == currentTeam.currency)
+                        currentSelection &&
+                        currentSelection.currency &&
+                        product.prices.find(x => x.currency == currentSelection.currency)
                     ) {
-                        const teamPrices = product.prices.find(x => x.currency == currentTeam.currency)
-                        product.userPrices = teamPrices
+                        const selectionPrices = product.prices.find(x => x.currency == currentSelection.currency)
+                        product.userPrices = selectionPrices
                     }
                     // Then check if the workspace currency is available
                     else if (workspace.currency && product.prices.find(x => x.currency == workspace.currency)) {

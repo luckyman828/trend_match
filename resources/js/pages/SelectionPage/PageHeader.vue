@@ -1,7 +1,7 @@
 <template>
     <div class="header">
         <div class="left">
-            <h1>{{file.title}}</h1>
+            <h1>{{`${isFeedback ? 'Feedback' : 'Alignment'}: ${file.title} - ${currentSelection.name}`}}</h1>
         </div>
         <div class="right">
             <div class="progress">
@@ -25,6 +25,7 @@ export default {
         'file',
     ],
     computed: {
+        ...mapGetters('entities/selections', ['currentSelectionId', 'currentSelection', 'isFeedback']),
     }
 }
 </script>

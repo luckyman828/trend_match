@@ -3,10 +3,9 @@
         <div class="input-parent controls-right controls-inside control-items-2" @click="setActive">
             <input ref="input" :id="id" class="input-wrapper" :type="type" :value="value" :placeholder="placeholder"
             @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" @keyup="change" step="any" @keydown="validateInput" :maxlength="maxlength" :pattern="pattern">
-            <div class="controls">
-                <span v-if="!editActive" v-tooltip.top="'Edit'" class="edit square true-square light-2-hover"><i class="far fa-pen"></i></span>
-                <span v-if="editActive" class="edit square true-square"><i class="far fa-pen"></i></span>
-                <span v-if="value != oldValue" v-tooltip.top="`Revert to original (${oldValue})`" @click.stop="revert" class="square true-square yellow-green">E</span>
+            <div class="controls" v-if="!editActive">
+                <button v-tooltip.top="'Edit'" class="edit"><i class="far fa-pen"></i></button>
+                <button v-if="value != oldValue" v-tooltip.top="`Revert to original (${oldValue})`" @click.stop="revert" class="square true-square yellow-green"><span>E</span></button>
             </div>
         </div>
         <div class="buttons">
@@ -73,7 +72,7 @@ export default {
                 if(!regex.test(e.key))
                     e.preventDefault()
             }
-        }
+        },
     },
     mounted() {
         // Set default active state
@@ -122,9 +121,9 @@ export default {
             > *:not(:last-child) {
                 margin-right: 16px;
             }
-        }
-        button {
-            min-width: 80px;
+            button {
+                min-width: 80px;
+            }
         }
     }
 </style>
