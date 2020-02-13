@@ -1,5 +1,5 @@
 <template>
-    <BaseFlyin ref="fileApproversFlyin" :show="show">
+    <BaseFlyin ref="fileApproversFlyin" :show="show" @close="$emit('close')">
         <template v-slot:header>
             <BaseFlyinHeader v-if="show" :title="'File Approvers: '+file.title" disableNavigation=true @close="$emit('close')"/>
         </template>
