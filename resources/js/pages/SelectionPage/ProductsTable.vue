@@ -91,16 +91,16 @@
                 @change="(checked) => checked ? selectedProducts = products : selectedProducts = []"/>
                 </BaseTableHeader>
                 <BaseTableHeader class="image"></BaseTableHeader>
-                <BaseTableHeader :sortKey="'id'" :currentSortKey="sortKey" :sortAsc="sortAsc" 
+                <BaseTableHeader class="id" :sortKey="'datasource_id'" :currentSortKey="sortKey" :sortAsc="sortAsc" 
                 @sort="(sortAsc, sortKey) => $emit('onSort', sortAsc, sortKey)">ID</BaseTableHeader>
                 <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey" :sortAsc="sortAsc"
                 @sort="(sortAsc, sortKey) => $emit('onSort', sortAsc, sortKey)">Product Name</BaseTableHeader>
                 <BaseTableHeader class="focus"></BaseTableHeader>
-                <BaseTableHeader :sortKey="'in'" :currentSortKey="sortKey" :sortAsc="sortAsc"
+                <BaseTableHeader :sortKey="'ins'" :currentSortKey="sortKey" :sortAsc="sortAsc"
                 @sort="(sortAsc, sortKey) => $emit('onSort', sortAsc, sortKey)">In</BaseTableHeader>
-                <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" :sortAsc="sortAsc"
+                <BaseTableHeader :sortKey="'outs'" :currentSortKey="sortKey" :sortAsc="sortAsc"
                 @sort="(sortAsc, sortKey) => $emit('onSort', sortAsc, sortKey)">Out</BaseTableHeader>
-                <BaseTableHeader :sortKey="'nd'" :currentSortKey="sortKey" :sortAsc="sortAsc"
+                <BaseTableHeader :sortKey="'nds'" :currentSortKey="sortKey" :sortAsc="sortAsc"
                 @sort="(sortAsc, sortKey) => $emit('onSort', sortAsc, sortKey)">ND</BaseTableHeader>
                 <BaseTableHeader :sortKey="'requests'" :currentSortKey="sortKey" :sortAsc="sortAsc"
                 @sort="(sortAsc, sortKey) => $emit('onSort', sortAsc, sortKey)">Requests</BaseTableHeader>

@@ -188,7 +188,7 @@ export default{
             // Reset the selection
             this.clearSelectedProducts()
         },
-        onSort(key, method) {
+        onSort(method, key) {
             if (this.sortKey !== key) {
                 this.sortAsc = method
                 this.sortKey = key
@@ -198,6 +198,7 @@ export default{
             this.sortProducts()
         },
         sortProducts() {
+            console.log('sort products')
             this.sortArray(this.products, this.sortAsc, this.sortKey)
         }
     },
