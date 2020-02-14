@@ -245,6 +245,7 @@ export default {
             // Product.insert({ data: product })
         },
         async updateProduct({ commit }, product) {
+            commit('updateProduct', product)
             product.prices = product.prices && product.prices.length > 0 ? JSON.stringify(product.prices) : []
             product.color_variants =
                 product.color_variants && product.color_variants.length > 0
@@ -253,29 +254,13 @@ export default {
             product.assortments =
                 product.assortments && product.assortments.length > 0 ? JSON.stringify(product.assortments) : []
             product.eans = product.eans && product.eans.length > 0 ? JSON.stringify(product.eans) : []
-            commit('updateProduct', product)
 
-            await axios
-                .put(`/api/product`, {
-                    id: product.id,
-                    title: product.title,
-                    prices: product.prices,
-                    assortments: product.assortments,
-                    color_variants: product.color_variants,
-                    quantity: product.quantity,
-                    delivery_date: product.delivery_date,
-                    composition: product.composition,
-                    category: product.category,
-                    description: product.sale_description,
-                    collection_id: product.collection_id,
-                    datasource_id: product.datasource_id,
-                })
-                .then(response => {
-                    console.log(response.data)
-                })
-                .catch(err => {
-                    console.log(err.response)
-                })
+            // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
+            // Long code to account for timezone differences.
+            const theDate = new Date(product.delivery_date)
+            ;(product.delivery_date = theDate.toJSON()),
+                new Date(theDate.getTime() - theDate.getTimezoneOffset() * 60000).toJSON().slice(0, 10)
+            return true
         },
         async rotateImage({ commit }, file) {
             // Upload images to Blob storage
@@ -342,7 +327,7 @@ export default {
                     console.log(err.response)
                     uploadSucces = false
                 })
-            return uploadSucces
+            return uploadSuccesupdateProduct
         },
         async deleteImages({ commit }, imagesToDelete) {
             await axios
@@ -491,11 +476,9 @@ export default {
             state.singleVisible = payload
         },
         updateProduct(state, product) {
-            product.updated_at = new Date()
-                .toISOString()
-                .slice(0, 19)
-                .replace('T', ' ')
-            Product.insert({ data: product })
+            // Replace the product with the new
+            let stateProduct = state.products.find(x => x.id == product.id)
+            Object.assign(stateProduct, product)
         },
         alertError: state => {
             window.alert('Network error. Please check your connection')

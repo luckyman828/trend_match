@@ -70,6 +70,11 @@
                 </Draggable>
 
                 <h3>Details</h3>
+                <div class="form-element">
+                    <label for="product-name">Product name</label>
+                    <BaseEditInputWrapper id="product-name" :type="'text'"
+                    :value="product.title" :oldValue="originalProduct.title" v-model="product.title"/>
+                </div>
                 <div class="col-2">
                     <div class="form-element">
                         <label for="datasource-id">Product ID</label>
@@ -393,58 +398,54 @@ export default {
             const vm = this
             this.updatingProduct = true
 
-            // Remove the add price option from the prices
-            this.product.prices.splice(this.product.prices.length-1)
+            this.productToEdit.updated_at = new Date()
+                .toISOString()
+                .slice(0, 19)
+                .replace('T', ' ')
 
             const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
 
             // Check if we have any files (images) we need to upload
-            const variants = productToUpload.color_variants
-            for (let i = 0; i < variants.length; i++) {
-                const variant = variants[i]
-                const editVariant = this.productToEdit.color_variants[i]
-                if (variant.imageToUpload) {
-                    vm.$set(editVariant.imageToUpload, 'progress', 0)
-                }
-            }
-            for (let i = 0; i < variants.length; i++) {
-                const variant = variants[i]
-                const editVariant = this.productToEdit.color_variants[i]
-                if (variant.imageToUpload) {
-                    // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
-                    await this.uploadImages({files: [editVariant.imageToUpload], callback: function(uploadProgress) {
+            // const variants = productToUpload.color_variants
+            // for (let i = 0; i < variants.length; i++) {
+            //     const variant = variants[i]
+            //     const editVariant = this.productToEdit.color_variants[i]
+            //     if (variant.imageToUpload) {
+            //         vm.$set(editVariant.imageToUpload, 'progress', 0)
+            //     }
+            // }
+            // for (let i = 0; i < variants.length; i++) {
+            //     const variant = variants[i]
+            //     const editVariant = this.productToEdit.color_variants[i]
+            //     if (variant.imageToUpload) {
+            //         // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
+            //         await this.uploadImages({files: [editVariant.imageToUpload], callback: function(uploadProgress) {
                     
-                    if (uploadProgress == 100) {
-                        vm.$set(editVariant.imageToUpload, 'progress', 99)
-                    } else {
-                        vm.$set(editVariant.imageToUpload, 'progress', uploadProgress)
-                    }
-                    // editVariant.imageToUpload.progress = uploadProgress
-                    } })
-                    .then(success => {
-                        // When done trying to upload the image
-                        if (success) {
-                            variant.blob_id = variant.imageToUpload.id
-                            delete variant.imageToUpload
-                            variant.image = null
-                        }
-                    })
+            //         if (uploadProgress == 100) {
+            //             vm.$set(editVariant.imageToUpload, 'progress', 99)
+            //         } else {
+            //             vm.$set(editVariant.imageToUpload, 'progress', uploadProgress)
+            //         }
+            //         // editVariant.imageToUpload.progress = uploadProgress
+            //         } })
+            //         .then(success => {
+            //             // When done trying to upload the image
+            //             if (success) {
+            //                 variant.blob_id = variant.imageToUpload.id
+            //                 delete variant.imageToUpload
+            //                 variant.image = null
+            //             }
+            //         })
 
-                }
-            }
+            //     }
+            // }
 
-            // Check if we have any files (images) we need to delete
-            const filesToDelete = this.filesToDelete
-            if (filesToDelete.length > 0) {
-                // Attempt to delete the images
-                this.deleteImages(filesToDelete)
-            }
-
-            // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
-            // Long code to account for timezone differences.
-            const theDate = new Date (productToUpload.delivery_date)
-            productToUpload.delivery_date = theDate.toJSON(), new Date(theDate.getTime() - (theDate.getTimezoneOffset() * 60000)).toJSON().slice(0,10)
-
+            // // Check if we have any files (images) we need to delete
+            // const filesToDelete = this.filesToDelete
+            // if (filesToDelete.length > 0) {
+            //     // Attempt to delete the images
+            //     this.deleteImages(filesToDelete)
+            // }
 
             await this.updateProduct(productToUpload)
             .then(success => {
