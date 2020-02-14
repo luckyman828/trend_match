@@ -24,6 +24,7 @@ export default class Selection extends Model {
             owners: this.attr(null),
             users: this.attr([]),
             teams: this.attr([]),
+            children: this.attr([]),
             options: this.attr({
                 comments: {
                     broadcast: [],
@@ -51,8 +52,6 @@ export default class Selection extends Model {
             descendants: this.attr(false),
             depth: this.attr(),
             path: this.attr(),
-
-            children: this.attr(),
 
             // Relationships
             // children: this.hasMany(Subfile, 'parent_id', 'id'),

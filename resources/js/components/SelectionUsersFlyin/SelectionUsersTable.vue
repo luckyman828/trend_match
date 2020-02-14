@@ -87,7 +87,7 @@
                 <div class="item-group">
                     <BaseSelectButtons type="radio" ref="userCurrencySelector" :options="availableSelectionRoles"
                     v-model="userToEdit.role" :submitOnChange="true" :optionDescriptionKey="'description'"
-                    :optionNameKey="'name'" :optionValueKey="'name'" :currentValue="contextUser.role"
+                    :optionNameKey="'name'" :optionValueKey="'name'"
                     @submit="contextUser.role = userToEdit.role; slotProps.hide()"/>
                 </div>
             </template>

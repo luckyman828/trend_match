@@ -22,11 +22,10 @@
             <template v-slot:body>
                 <div class="body">
                     <SelectionsTableRow :ref="'selection-row-'+selection.id" v-for="selection in selections.filter(x => !x.parent_id)" :key="selection.id"
-                    :selection="selection" :depth="0" :path="[selection.id]"
+                    :selection="selection" :depth="0" :path="[selection.id]" :moveSelectionActive="moveSelectionActive" 
                     :selectionToEdit="selectionToEdit" @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
-                    @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)"
-                    @showContext="showContextMenuSelection" :moveSelectionActive="moveSelectionActive" 
-                    @endMoveSelection="endMoveSelection" @showOptionsContext="showOptionsContext"/>
+                    @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showContext="showContextMenuSelection"
+                    @endMoveSelection="endMoveSelection" @showOptionsContext="showOptionsContext" @onClick="rowClick"/>
                 </div>
             </template>
             <template v-slot:footer>
@@ -151,7 +150,7 @@
         </BaseContextMenu>
 
         <div ref="moveSelectionIndicator" class="move-selection-indicator" :class="{'active': moveSelectionActive}">
-            <span>Right-click selection to move to</span>
+            <span>Click selection to move to</span>
         </div>
         
     </div>
@@ -186,6 +185,12 @@ export default {
         ...mapGetters('entities/collections', ['currentFile']),
     },
     methods: {
+        rowClick(e, component) {
+            if (this.moveSelectionActive) {
+                e.stopPropagation()
+                this.endMoveSelection(component.selection, component)
+            }
+        },
         showContextMenuSelection(e, selection, component, parent) {
             // Set the current context menu item
             this.contextSelection = selection
@@ -275,11 +280,12 @@ export default {
             // Position the contextual menu
             contextMenu.show(e)
         },
-        onNewSelection(parent) {
+        async onNewSelection(parent) {
             // First check that we don't already have an unsaved new selection
             if (this.selections.find(x => x.id == null)) return
             // Else instantiate a new master object in the table
-            const newSelection = Selection.new()
+            const newSelection = await Selection.new()
+            console.log(newSelection)
             // Push new selection to the parent
             if (parent) {
                 // If we are creating a sbu selection

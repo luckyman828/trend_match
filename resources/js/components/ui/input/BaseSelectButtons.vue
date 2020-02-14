@@ -98,7 +98,7 @@ export default {
         'optionGroupNameKey',
         'optionGroupOptionsKey',
         'unsetOption',
-        'currentValue'
+        'value',
     ],
     data: function () { return {
         selection: [],
@@ -143,20 +143,8 @@ export default {
     },
     mounted() {
         this.focusSearch()
-        
         // Preset the selection to the current option
-        if (this.currentValue) {
-            if (this.optionValueKey && this.optionValueKey == 'index') {
-                this.selection = this.currentValue
-            } else {
-                const currentOption = this.options.find(x => {
-                    const optionValue = this.optionValueKey ? x[this.optionValueKey] : x
-                    return optionValue == this.currentValue
-                })
-                this.selection = this.optionValueKey ? currentOption[this.optionValueKey] : currentOption
-
-            }
-        }
+        this.selection = this.value
     }
 }
 </script>
