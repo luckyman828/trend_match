@@ -20,24 +20,11 @@ export default class Selection extends Model {
             unhide_date: this.attr(null),
             unlock_date: this.attr(null),
             feedback_open: this.attr(false),
-            anonymize_feedback: this.attr(false),
-            anonymize_requests: this.attr(false),
-            anonymize_comments: this.attr(false),
-            anonymize_childrens_requests: this.attr(false),
-            anonymize_childrens_comments: this.attr(false),
-            anonymize_childrens_actions: this.attr(false),
-            children_requests_public: this.attr(false),
-            children_comments_public: this.attr(false),
-            children_actions_public: this.attr(false),
-            requests_public: this.attr(false),
-            comments_public: this.attr(false),
-            actions_public: this.attr(false),
-            view_sibling_requests: this.attr(false),
-            view_sibling_comments: this.attr(false),
-            view_sibling_actions: this.attr(false),
             completed: this.attr(false),
-            owners: this.attr([]),
-            feedback_users: this.attr([]),
+            owners: this.attr(null),
+            users: this.attr([]),
+            teams: this.attr([]),
+            children: this.attr([]),
             options: this.attr({
                 comments: {
                     broadcast: [],
@@ -59,14 +46,12 @@ export default class Selection extends Model {
                     anonymize: false,
                 },
             }),
-            user_access: this.attr('user'),
+            user_role: this.attr('Member'),
 
             // Staudemeir attributes
             descendants: this.attr(false),
             depth: this.attr(),
             path: this.attr(),
-
-            children: this.attr(),
 
             // Relationships
             // children: this.hasMany(Subfile, 'parent_id', 'id'),

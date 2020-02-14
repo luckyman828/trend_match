@@ -9,7 +9,7 @@
             :searchMultipleArrays="multipleOptionArrays" :multipleArrayKey="optionGroupOptionsKey" v-model="optionsFilteredBySearch"/>
         </div>
         <div class="wrapper">
-            <span class="header" v-html="header"></span>
+            <span class="header" v-html="header" v-if="header"></span>
 
             <div class="option unset-option" v-if="unsetOption" @click="onUnset">
                 <label>
@@ -57,7 +57,7 @@
 
                     <label>
                         <BaseRadiobox v-if="type == 'radio'" :value="optionValueKey ? optionValueKey == 'index' ? index : option[optionValueKey] : option" 
-                        :modelValue="selection" v-model="selection" @change="change"/>
+                        v-model="selection" @change="change"/>
                         <BaseCheckbox v-else :value="optionValueKey ? optionValueKey == 'index' ? index : option[optionValueKey] : option" 
                         :modelValue="selection" v-model="selection" @change="change"/>
 
@@ -98,6 +98,7 @@ export default {
         'optionGroupNameKey',
         'optionGroupOptionsKey',
         'unsetOption',
+        'value',
     ],
     data: function () { return {
         selection: [],
@@ -105,29 +106,6 @@ export default {
         optionsFilteredBySearch: this.options
     }},
     computed: {
-        currentOption () {
-            if (this.selection != null) {
-                if (this.optionValueKey != null) {
-                    if ( this.options.find(x => x[this.optionValueKey] == this.selection) ) {
-                        if (this.optionNameKey != null) {
-                            return this.options.find(x => x[this.optionValueKey] == this.selection)[this.optionNameKey]
-                        }
-                        else return this.selection
-                    }
-                    else return 'select b'
-                }
-                else {
-                    if ( this.options.find(x => x == this.selection) ) {
-                        if (this.optionNameKey != null) {
-                            return this.options.find(x => x == this.selection)[this.optionNameKey]
-                        }
-                        else return this.selection
-                    }
-                    else return 'select a'
-                }
-            }
-            else return 'nothing'
-        },
         searchKey() {
             const nameKey = this.optionNameKey
             const valueKey = this.optionValueKey
@@ -165,6 +143,8 @@ export default {
     },
     mounted() {
         this.focusSearch()
+        // Preset the selection to the current option
+        this.selection = this.value
     }
 }
 </script>
@@ -186,7 +166,7 @@ export default {
     }
     .select-buttons .wrapper {
         max-height: 500px;
-        overflow: auto;
+        overflow: hidden auto;
         .option-group {
             padding-top: 16px;
             margin-top: 8px;

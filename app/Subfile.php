@@ -13,11 +13,11 @@ class Subfile extends Model
     {
         return [];
     }
-    public function getFeedbackUsersAttribute()
+    public function getUsersAttribute()
     {
         return [];
     }
-    protected $appends = ['owners','feedback_users'];
+    protected $appends = ['owners','users'];
 
 
 

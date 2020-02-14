@@ -15,7 +15,6 @@
                 <BaseTableHeader :sortKey="'in'" :currentSortKey="sortKey" :sortAsc="sortAsc">In</BaseTableHeader>
                 <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" :sortAsc="sortAsc">Out</BaseTableHeader>
                 <BaseTableHeader :sortKey="'nd'" :currentSortKey="sortKey" :sortAsc="sortAsc">ND</BaseTableHeader>
-                <BaseTableHeader :sortKey="'owners'" :currentSortKey="sortKey" :sortAsc="sortAsc">Owners</BaseTableHeader>
                 <BaseTableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc">Users</BaseTableHeader>
                 <BaseTableHeader :sortKey="'status'" :currentSortKey="sortKey" :sortAsc="sortAsc">Status</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
@@ -23,11 +22,10 @@
             <template v-slot:body>
                 <div class="body">
                     <SelectionsTableRow :ref="'selection-row-'+selection.id" v-for="selection in selections.filter(x => !x.parent_id)" :key="selection.id"
-                    :selection="selection" :depth="0" :path="[selection.id]"
+                    :selection="selection" :depth="0" :path="[selection.id]" :moveSelectionActive="moveSelectionActive" 
                     :selectionToEdit="selectionToEdit" @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
-                    @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showSelectionOwnersFlyin="$emit('showSelectionOwnersFlyin',$event)"
-                    @showContext="showContextMenuSelection" :moveSelectionActive="moveSelectionActive" 
-                    @endMoveSelection="endMoveSelection" @showOptionsContext="showOptionsContext"/>
+                    @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showContext="showContextMenuSelection"
+                    @endMoveSelection="endMoveSelection" @showOptionsContext="showOptionsContext" @onClick="rowClick"/>
                 </div>
             </template>
             <template v-slot:footer>
@@ -49,13 +47,9 @@
                     <div class="icon-wrapper"><i class="far fa-pen"></i></div>
                     <u>R</u>ename
                 </div>
-                <div class="item" @click="$emit('showSelectionOwnersFlyin', contextSelection)">
-                    <div class="icon-wrapper"><i class="far fa-users"></i></div>
-                    Edit <u>F</u>eedback users
-                </div>
                 <div class="item" @click="$emit('showSelectionUsersFlyin', contextSelection)">
-                    <div class="icon-wrapper"><i class="far fa-user-shield"></i></div>
-                    Edit <u>O</u>wner(s)
+                    <div class="icon-wrapper"><i class="far fa-user-cog"></i></div>
+                    <u>M</u>embers and Access
                 </div>
                 <div class="item" @click.stop="showOptionsContext(contextMouseEvent, contextSelection)">
                     <div class="icon-wrapper"><i class="far fa-cog"></i></div>
@@ -138,8 +132,10 @@
                     </div>
                     <div class="item-group">
                         <strong class="header">Feedback</strong>
-                        <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','descendants', 'ancestors','siblings']"
+                        <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','descendants', 'parent', 'ancestors','siblings']"
                         v-model="contextSelection.options.feedback.broadcast" :submitOnChange="true"/>
+                        <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','descendants', 'parent', 'ancestors','siblings']"
+                        v-model="contextSelection.options.feedback.listen" :submitOnChange="true"/>
                         <BaseSelectButton header="Anomyze feedback" class="item-wrapper" label="Anonymize" :value="contextSelection.options.feedback.anonymize" 
                         v-model="contextSelection.options.feedback.anonymize"/>
                     </div>
@@ -154,7 +150,7 @@
         </BaseContextMenu>
 
         <div ref="moveSelectionIndicator" class="move-selection-indicator" :class="{'active': moveSelectionActive}">
-            <span>Right-click selection to move to</span>
+            <span>Click selection to move to</span>
         </div>
         
     </div>
@@ -163,6 +159,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import SelectionsTableRow from './SelectionsTableRow'
+import Selection from '../../../store/models/Selection'
 
 export default {
     name: 'selectionsTable',
@@ -188,6 +185,12 @@ export default {
         ...mapGetters('entities/collections', ['currentFile']),
     },
     methods: {
+        rowClick(e, component) {
+            if (this.moveSelectionActive) {
+                e.stopPropagation()
+                this.endMoveSelection(component.selection, component)
+            }
+        },
         showContextMenuSelection(e, selection, component, parent) {
             // Set the current context menu item
             this.contextSelection = selection
@@ -277,20 +280,12 @@ export default {
             // Position the contextual menu
             contextMenu.show(e)
         },
-        onNewSelection(parent) {
+        async onNewSelection(parent) {
             // First check that we don't already have an unsaved new selection
             if (this.selections.find(x => x.id == null)) return
             // Else instantiate a new master object in the table
-            const newSelection = {
-                id: null,
-                name: '',
-                children: [],
-                locked: true,
-                hidden: true,
-                master: !parent,
-                owners: [],
-                feedback_users: []
-            }
+            const newSelection = await Selection.new()
+            console.log(newSelection)
             // Push new selection to the parent
             if (parent) {
                 // If we are creating a sbu selection

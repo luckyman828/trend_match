@@ -5,17 +5,20 @@
             @close="$emit('close')"/>
         </template>
         <template v-slot>
-            <SelectionUsersTable v-if="show" :selection="selection"/>
+            <SelectionTeamsTable v-if="show" :selection="selection"/>
+            <SelectionUsersTable style="margin-top: 40px;" v-if="show" :selection="selection"/>
         </template>
     </BaseFlyin>
 </template>
 
 <script>
 import SelectionUsersTable from './SelectionUsersTable'
+import SelectionTeamsTable from './SelectionTeamsTable'
 export default {
     name: 'selectionUsersFlyin',
     components: {
-        SelectionUsersTable
+        SelectionUsersTable,
+        SelectionTeamsTable,
     },
     props: [
         'show',

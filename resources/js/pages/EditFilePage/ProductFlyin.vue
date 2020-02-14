@@ -20,11 +20,12 @@
         </template>
         <template v-slot v-if="show">
             <BaseFlyinColumn>
-                <span>Variants ({{product.color_variants.length}})</span>
-                <button class="invisible" @click="onAddVariant"><i class="far fa-plus"></i><span>Add Variant</span></button>
+                <span style="margin-right: 8px;">Variants ({{product.color_variants.length}})</span>
+                <button class="invisible ghost-hover" @click="onAddVariant"><i class="far fa-plus"></i><span>Add Variant</span></button>
                 <Draggable v-model="product.color_variants" class="product-variants">
                     
-                    <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index">
+                    <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index"
+                    @contextmenu.prevent="showVariantContext($event, index)">
                         <div class="img-wrapper" @dragenter="dragActive($event, index)" @dragleave="dragLeave" @drop="dragDrop">
                             <div class="drop-area" :class="{drag: dragActiveIndex == index}">
                                 <!-- <input v-if="variant.image || variant.blob_id" type="file" accept="image/*" @change="filesChange($event, index, variant)" @click.prevent> -->
@@ -42,7 +43,7 @@
                                 <template v-else>
                                     <div class="controls">
                                         <span class="button light-2" @click="$refs['fileInput-'+index][0].click()">Choose from file</span>
-                                        <span @click="editURL(index)" class="button light-2">URL</span>
+                                        <span @click="editURL(index)" class="button light-2">Enter image URL</span>
                                     </div>
                                 </template>
                                 <div v-if="URLActiveIndex == index" class="enter-url">
@@ -59,48 +60,27 @@
                                 </div>
                             </div>
                             <div class="controls">
-                                <BaseDropdown class="dropdown-parent dark">
-                                    <template v-slot:button="slotProps">
-                                        <span tabindex="0" class="square true-square light-2 clickable" @click="slotProps.toggle()"
-                                        @keyup.d="removeVariant(index); slotProps.toggle()" 
-                                        @keyup.c="$refs['fileInput-'+index][0].click(); slotProps.toggle()"
-                                        @keyup.u="editURL(index); slotProps.toggle()"
-                                        @keyup.r="$refs['nameInput-'+index][0].$el.click(); slotProps.toggle()">
-                                            <i class="fas fa-ellipsis-h"></i>
-                                        </span>
-                                    </template>
-                                    <template v-slot:header="slotProps">
-                                        <div class="header">
-                                            <span>Edit Variant</span>
-                                            <span class="circle small dark clickable" @click="slotProps.toggle()"><i class="far fa-times"></i></span>
-                                        </div>
-                                    </template>
-                                    <template v-slot:body="slotProps">
-                                        <div class="hotkeys">
-                                            <div class="hotkey">
-                                                <span class="button white" @click="$refs['fileInput-'+index][0].click(); slotProps.toggle()">Choose file</span><span class="square true-square white">C</span>
-                                            </div>
-                                            <div class="hotkey">
-                                                <span class="button white" @click="editURL(index); slotProps.toggle()">URL</span><span class="square true-square white">U</span>
-                                            </div>
-                                            <div class="hotkey">
-                                                <span class="button white" @click="$refs['nameInput-'+index][0].$el.click(); slotProps.toggle()">Rename</span><span class="square true-square white">R</span>
-                                            </div>
-                                            <div class="hotkey">
-                                                <span class="button red" @click="removeVariant(index); slotProps.toggle()">Delete</span><span class="square true-square red">D</span>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </BaseDropdown>
+                                <button @click="showVariantContext($event, index)">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
                             </div>
                         </div>
                         <BaseEditable :ref="'nameInput-'+index" :placeholder="'Untitled variant'" :value="variant.color" :type="'text'" v-model="variant.color"/>
                     </div>
                 </Draggable>
-                <div class="form-element">
-                    <label for="datasource-id">Product ID</label>
-                    <BaseEditInputWrapper id="datasource-id" :type="'text'" :maxlength="9" :pattern="'[0-9]'"
-                    :value="product.datasource_id" :oldValue="originalProduct.datasource_id" v-model="product.datasource_id"/>
+
+                <h3>Details</h3>
+                <div class="col-2">
+                    <div class="form-element">
+                        <label for="datasource-id">Product ID</label>
+                        <BaseEditInputWrapper id="datasource-id" :type="'text'" :maxlength="9" :pattern="'[0-9]'"
+                        :value="product.datasource_id" :oldValue="originalProduct.datasource_id" v-model="product.datasource_id"/>
+                    </div>
+                    <div class="form-element">
+                        <label for="delivery">Delivery</label>
+                        <BaseDatePicker ref="product.delivery_date" :id="'delivery'" :type="'month'" :format="'MMMM YYYY'"
+                        :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"/>
+                    </div>
                 </div>
                 <div class="form-element">
                     <label for="category">Category</label>
@@ -113,19 +93,6 @@
                     :value="product.composition" :oldValue="originalProduct.composition" v-model="product.composition"/>
                 </div>
                 <div class="form-element">
-                    <label for="min-order">Min. Order</label>
-                    <BaseEditInputWrapper :id="'min-order'" :type="'number'" 
-                    :oldValue="originalProduct.quantity" v-model.number="product.quantity"/>
-                </div>
-                <div class="form-element">
-                    <label for="delivery">Delivery</label>
-                    <BaseDatePicker ref="product.delivery_date" :id="'delivery'" :type="'month'" :format="'MMMM YYYY'"
-                    :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"/>
-                    
-                    <!-- <BaseEditInputWrapper ref="product.delivery_date" :id="'delivery'" :type="'date'"
-                    :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"/> -->
-                </div>
-                <div class="form-element">
                     <label for="description">Description</label>
                     <BaseEditableTextarea id="description"
                     :oldValue="originalProduct.sale_description" v-model="product.sale_description"/>
@@ -133,6 +100,7 @@
             </BaseFlyinColumn>
 
             <BaseFlyinColumn>
+                <h3>Currency</h3>
                 <div class="form-element">
                     <label for="currencySelector">Select Currency</label>
                     <BaseInputField :id="'currencySelector'" disabled=true :value="product.prices[currencyIndex].currency" type="select" 
@@ -152,26 +120,91 @@
                     :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].currency : null" 
                     v-model="currentCurrency.currency"/>
                 </div>
-                <div class="form-element">
-                    <label for="wholesale">WHS ({{currentCurrency.currency}})</label>
-                    <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
-                    :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].wholesale_price : null" 
-                    v-model.number="currentCurrency.wholesale_price" @submit="savedMarkup = currentCurrency.markup"
-                    @change="calculateMarkup({whs: $event})" @cancel="resetMarkup" @revert="revertMarkup"/>
+
+                <div class="col-3">
+                    <div class="form-element">
+                        <label for="wholesale">WHS ({{currentCurrency.currency}})</label>
+                        <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
+                        :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].wholesale_price : null" 
+                        v-model.number="currentCurrency.wholesale_price" @submit="savedMarkup = currentCurrency.markup"
+                        @change="calculateMarkup({whs: $event})" @cancel="resetMarkup" @revert="revertMarkup"/>
+                    </div>
+                    <div class="form-element">
+                        <label for="recommended-retail">RPP ({{currentCurrency.currency}})</label>
+                        <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
+                        :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].recommended_retail_price : null" 
+                        v-model.number="currentCurrency.recommended_retail_price" @submit="savedMarkup = currentCurrency.markup"
+                        @change="calculateMarkup({rrp: $event})" @cancel="resetMarkup" @revert="revertMarkup"/>
+                    </div>
+                    <div class="form-element">
+                        <label>Mark Up</label>
+                        <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{currentCurrency.markup}}</span>
+                    </div>
                 </div>
-                <div class="form-element">
-                    <label for="recommended-retail">RPP ({{currentCurrency.currency}})</label>
-                    <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
-                    :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].recommended_retail_price : null" 
-                    v-model.number="currentCurrency.recommended_retail_price" @submit="savedMarkup = currentCurrency.markup"
-                    @change="calculateMarkup({rrp: $event})" @cancel="resetMarkup" @revert="revertMarkup"/>
-                </div>
-                <div class="form-element">
-                    <label>Mark Up</label>
-                    <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{currentCurrency.markup}}</span>
+
+                <h3>Minimum</h3>
+                <div class="col-2 delivery">
+                    <div class="form-element">
+                        <label for="min-order">Order minimum (pcs)</label>
+                        <BaseEditInputWrapper :id="'min-order'" :type="'number'" 
+                        :oldValue="originalProduct.quantity" v-model.number="product.quantity"/>
+                    </div>
+                    <div class="form-element">
+                        <label for="min-order">Variant minimum (pcs)</label>
+                        <BaseEditInputWrapper :id="'min-order'" :type="'number'" 
+                        :oldValue="originalProduct.variant_min_quantity" v-model.number="product.variant_min_quantity"/>
+                    </div>
                 </div>
             </BaseFlyinColumn>
 
+            <BaseContextMenu ref="contextVariant" class="context-variant"
+            @keybind-d="removeVariant(contextVariantIndex)" 
+            @keybind-c="$refs['fileInput-'+contextVariantIndex][0].click()"
+            @keybind-u="editURL(contextVariantIndex)"
+            @keybind-a="onAddVariant()"
+            @keybind-r="$refs['nameInput-'+contextVariantIndex][0].$el.click()">
+                <template v-slot>
+                    <div class="item-group">
+                        <div class="item" @click="onAddVariant">
+                            <div class="icon-wrapper">
+                                <i class="far fa-plus"></i>
+                            </div>
+                            <u>A</u>dd variant
+                        </div>
+                    </div>
+                    <div class="item-group">
+                        <div class="item" @click="$refs['fileInput-'+contextVariantIndex][0].click()">
+                            <div class="icon-wrapper">
+                                <i class="far fa-file"></i>
+                            </div>
+                            <u>C</u>hoose image from file
+                        </div>
+                        <div class="item" @click="editURL(contextVariantIndex)">
+                            <div class="icon-wrapper">
+                                <i class="far fa-link"></i>
+                            </div>
+                            Enter image <u>U</u>RL
+                        </div>
+                    </div>
+                    <div class="item-group">
+                        <div class="item" @click="$refs['nameInput-'+contextVariantIndex][0].$el.click()">
+                            <div class="icon-wrapper">
+                                <i class="far fa-pen"></i>
+                            </div>
+                            <u>R</u>rename
+                        </div>
+                    </div>
+                    <div class="item-group">
+                        <div class="item" @click="removeVariant(contextVariantIndex)">
+                            <div class="icon-wrapper">
+                                <i class="far fa-trash-alt"></i>
+                            </div>
+                            <u>D</u>elete
+                        </div>
+                    </div>
+                </template>
+            </BaseContextMenu>
+            
             <BaseContextMenu ref="contextCurrency" class="context-currency">
                 <template v-slot:header>
                     Select currency
@@ -217,7 +250,8 @@ export default {
             markup: 0,
             wholesale_price: 0,
             recommended_retail_price: 0
-        }
+        },
+        contextVariantIndex: null,
     }},
     watch: {
         currentProduct(newVal, oldVal) {
@@ -297,6 +331,10 @@ export default {
         ...mapActions('entities/products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'uploadImages', 'deleteImages', 'rotateImage']),
         showCurrencyContext(e) {
             this.$refs.contextCurrency.show(e)
+        },
+        showVariantContext(e, index) {
+            this.contextVariantIndex = index
+            this.$refs.contextVariant.show(e)
         },
         variantImg (variant) {
             if (variant.blob_id != null)
@@ -585,7 +623,7 @@ export default {
         margin-top: 12px;
         white-space: nowrap;
         overflow-x: auto;
-        margin-bottom: 40px;
+        margin-bottom: 18px;
     }
     .product-variant {
         width: 180px;

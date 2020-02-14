@@ -74,6 +74,15 @@ h2 {
     font-weight: 400;
     margin: 12px 0 4px;
 }
+h3 {
+    margin-top: 40px;
+    &:first-child {
+        margin-top: 0;
+    }
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
 label:not(.input-wrapper) {
     font-size: 12px;
     font-weight: 500;
@@ -1250,6 +1259,11 @@ form {
 .col-3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    grid-gap: 8px;
+}
+.col-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     grid-gap: 8px;
 }
 

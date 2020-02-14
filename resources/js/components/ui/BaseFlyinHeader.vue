@@ -38,6 +38,9 @@ export default {
         border-bottom: solid 2px $grey2;
         position: relative;
         z-index: 1;
+        h3 {
+            margin: 0;
+        }
         .left, .right {
             display: flex;
             align-items: center;
