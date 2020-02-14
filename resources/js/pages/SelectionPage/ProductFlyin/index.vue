@@ -1,7 +1,7 @@
 <template>
     <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=3>
         <template v-slot:header>
-            <BaseFlyinHeader v-if="show" :title="product.title" :next="nextProductId" :prev="prevProductId"
+            <BaseFlyinHeader v-if="show" :title="`#${product.datasource_id}: ${product.title}`" :next="nextProductId" :prev="prevProductId"
             @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
                 <div class="item-group">
                     <button class="primary" :class="{'ghost': !product.currentAction || product.currentAction.action != 2}" 
@@ -40,8 +40,8 @@
                     </div>
                 </div>
 
-                <label>Style number</label>
-                <BaseInputField readOnly=true :value="product.datasource_id"/>
+                <!-- <label>Style number</label>
+                <BaseInputField readOnly=true :value="product.datasource_id"/> -->
 
                 <div class="col-3 prices">
                     <div>
@@ -82,16 +82,26 @@
                     </div>
                 </div>
 
+                <label>Delivery Date</label>
+                <BaseInputField readOnly=true :value="new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})"/>
+
+                <div class="col-2 minimum">
+                    <div>
+                        <label>Order minimum (pcs)</label>
+                        <BaseInputField readOnly=true :value="product.quantity"/>
+                    </div>
+                    <div>
+                        <label>Variant minimum (pcs)</label>
+                        <BaseInputField readOnly=true :value="product.variant_min_quantity"/>
+                    </div>
+                </div>
+
                 <label>Composition</label>
                 <BaseInputField readOnly=true :value="product.composition"/>
                 <label>Description</label>
                 <BaseInputField readOnly=true :value="product.description"/>
-                <label>Delivery Date</label>
-                <BaseInputField readOnly=true :value="new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})"/>
                 <label>Assortments</label>
                 <BaseInputField readOnly=true />
-                <label>Minimum production (Units)</label>
-                <BaseInputField readOnly=true :value="product.quantity"/>
                 <label>Category</label>
                 <BaseInputField readOnly=true :value="product.category"/>
 
