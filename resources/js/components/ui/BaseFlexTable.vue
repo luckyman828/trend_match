@@ -33,6 +33,9 @@ export default {
         distToTop: null,
         scrollParent: null
     }},
+    props: [
+        'stickyHeader'
+    ],
     methods: {
         getYPos(element) {
             var yPosition = 0;
@@ -89,16 +92,22 @@ export default {
         },
     },
     created () {
-        window.addEventListener('resize', this.handleScroll)
+        if (this.stickyHeader) {
+            window.addEventListener('resize', this.handleScroll)
+        }
     },
     destroyed () {
-        document.getElementById('main').removeEventListener('scroll', this.handleScroll)
-        window.removeEventListener('resize', this.handleScroll)
+        if (this.stickyHeader) {
+            this.scrollParent.removeEventListener('scroll', this.handleScroll)
+            window.removeEventListener('resize', this.handleScroll)
+        }
     },
     mounted() {
-        this.distToTop =  this.getYPos(this.$refs.stickyHeader)
-        this.scrollParent = this.getScrollParent(this.$el, false)
-        this.scrollParent.addEventListener('scroll', this.handleScroll)
+        if (this.stickyHeader) {
+            this.distToTop =  this.getYPos(this.$refs.stickyHeader)
+            this.scrollParent = this.getScrollParent(this.$el, false)
+            this.scrollParent.addEventListener('scroll', this.handleScroll)
+        }
     }
 }
 </script>

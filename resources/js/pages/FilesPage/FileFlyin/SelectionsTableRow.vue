@@ -22,14 +22,9 @@
             <td class="in">-</td>
             <td class="out">-</td>
             <td class="nd">-</td>
-            <td class="owner">
-                <button class="ghost editable sm" @click="$emit('showSelectionOwnersFlyin', selection)">
-                    <i class="far fa-user-shield"></i><span>{{selection.owners.length}}</span>
-                </button>
-            </td>
             <td class="users">
                 <button class="ghost editable sm" @click="$emit('showSelectionUsersFlyin', selection)">
-                    <i class="far fa-user"></i><span>{{selection.feedback_users.length}}</span>
+                    <i class="far fa-user"></i><span>{{selection.users.length}}</span>
                 </button>
             </td>
             <td class="status">

@@ -18,14 +18,10 @@
         </template>
         <template v-if="file && show" v-slot>
             <div class="file-single">
-                <SelectionsTable :selections="currentFile.selections" @showSelectionUsersFlyin="showSelectionUsersFlyin($event)"
-                @showSelectionOwnersFlyin="showSelectionOwnersFlyin"/>
+                <SelectionsTable :selections="currentFile.selections" @showSelectionUsersFlyin="showSelectionUsersFlyin($event)"/>
 
                 <SelectionUsersFlyin :selection="currentSelection" :show="SelectionUsersFlyinVisible"
                 @close="SelectionUsersFlyinVisible = false"/>
-
-                <SelectionOwnersFlyin :selection="currentSelection" :show="SelectionOwnersFlyinVisible"
-                @close="SelectionOwnersFlyinVisible = false"/>
             </div>
         </template>
     </BaseFlyin>
@@ -34,7 +30,6 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import SelectionsTable from './SelectionsTable'
-import SelectionOwnersFlyin from '../../../components/SelectionOwnersFlyin'
 import SelectionUsersFlyin from '../../../components/SelectionUsersFlyin'
 
 export default {
@@ -45,12 +40,10 @@ export default {
     ],
     components: {
         SelectionsTable,
-        SelectionOwnersFlyin,
         SelectionUsersFlyin,
     },
     data: function(){ return {
         currentSelection: null,
-        SelectionOwnersFlyinVisible: false,
         SelectionUsersFlyinVisible: false,
     }},
     computed: {
@@ -61,10 +54,6 @@ export default {
         showSelectionUsersFlyin(selection) {
             this.currentSelection = selection
             this.SelectionUsersFlyinVisible = true
-        },
-        showSelectionOwnersFlyin(selection) {
-            this.currentSelection = selection
-            this.SelectionOwnersFlyinVisible = true
         },
         showNext() {
             if (this.nextFileId)

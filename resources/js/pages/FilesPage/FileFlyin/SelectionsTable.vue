@@ -15,7 +15,6 @@
                 <BaseTableHeader :sortKey="'in'" :currentSortKey="sortKey" :sortAsc="sortAsc">In</BaseTableHeader>
                 <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" :sortAsc="sortAsc">Out</BaseTableHeader>
                 <BaseTableHeader :sortKey="'nd'" :currentSortKey="sortKey" :sortAsc="sortAsc">ND</BaseTableHeader>
-                <BaseTableHeader :sortKey="'owners'" :currentSortKey="sortKey" :sortAsc="sortAsc">Owners</BaseTableHeader>
                 <BaseTableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc">Users</BaseTableHeader>
                 <BaseTableHeader :sortKey="'status'" :currentSortKey="sortKey" :sortAsc="sortAsc">Status</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
@@ -25,7 +24,7 @@
                     <SelectionsTableRow :ref="'selection-row-'+selection.id" v-for="selection in selections.filter(x => !x.parent_id)" :key="selection.id"
                     :selection="selection" :depth="0" :path="[selection.id]"
                     :selectionToEdit="selectionToEdit" @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
-                    @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showSelectionOwnersFlyin="$emit('showSelectionOwnersFlyin',$event)"
+                    @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)"
                     @showContext="showContextMenuSelection" :moveSelectionActive="moveSelectionActive" 
                     @endMoveSelection="endMoveSelection" @showOptionsContext="showOptionsContext"/>
                 </div>
@@ -49,13 +48,9 @@
                     <div class="icon-wrapper"><i class="far fa-pen"></i></div>
                     <u>R</u>ename
                 </div>
-                <div class="item" @click="$emit('showSelectionOwnersFlyin', contextSelection)">
-                    <div class="icon-wrapper"><i class="far fa-users"></i></div>
-                    Edit <u>F</u>eedback users
-                </div>
                 <div class="item" @click="$emit('showSelectionUsersFlyin', contextSelection)">
-                    <div class="icon-wrapper"><i class="far fa-user-shield"></i></div>
-                    Edit <u>O</u>wner(s)
+                    <div class="icon-wrapper"><i class="far fa-user-cog"></i></div>
+                    <u>M</u>embers and Access
                 </div>
                 <div class="item" @click.stop="showOptionsContext(contextMouseEvent, contextSelection)">
                     <div class="icon-wrapper"><i class="far fa-cog"></i></div>
@@ -165,6 +160,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import SelectionsTableRow from './SelectionsTableRow'
+import Selection from '../../../store/models/Selection'
 
 export default {
     name: 'selectionsTable',
@@ -283,16 +279,7 @@ export default {
             // First check that we don't already have an unsaved new selection
             if (this.selections.find(x => x.id == null)) return
             // Else instantiate a new master object in the table
-            const newSelection = {
-                id: null,
-                name: '',
-                children: [],
-                locked: true,
-                hidden: true,
-                master: !parent,
-                owners: [],
-                feedback_users: []
-            }
+            const newSelection = Selection.new()
             // Push new selection to the parent
             if (parent) {
                 // If we are creating a sbu selection
