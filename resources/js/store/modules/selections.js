@@ -47,6 +47,9 @@ export default {
         currentSelection: state => {
             return Selection.find(state.currentSelectionId)
         },
+        isFeedback: (state, getters) => {
+            return getters.currentSelection.user_access == 'user'
+        },
     },
 
     actions: {

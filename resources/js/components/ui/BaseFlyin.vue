@@ -111,6 +111,7 @@ export default {
             .body {
                 padding: 0;
                 display: grid;
+                overflow: hidden;
             }
         }
     }

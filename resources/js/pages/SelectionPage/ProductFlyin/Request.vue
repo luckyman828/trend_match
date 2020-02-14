@@ -5,8 +5,8 @@
             <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
         </div>
         <div class="request">
-            <strong class="sender">{{request.task.title}} | {{(request.user_id == authUser.id) ? 'You' : request.user.name}}</strong>
-            <span class="body">{{request.comment}}</span>
+            <strong class="sender">{{request.selection.name}} | {{(request.user_id == authUser.id) ? 'You' : request.user.name}}</strong>
+            <span class="body">{{request.body}}</span>
             <small class="id">Request ID: {{request.id}}</small>
         </div>        
     </div>

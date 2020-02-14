@@ -17,8 +17,15 @@ export default class Request extends Model {
             user_id: this.attr(''),
             body: this.attr(''),
             status: this.attr(''),
-            user: this.belongsTo(User, 'user_id'),
+            // user: this.belongsTo(User, 'user_id'),
             team: this.belongsTo(Team, 'team_id'),
+
+            selection: this.attr({
+                name: 'unknown selection',
+            }),
+            user: this.attr({
+                name: 'unknown user',
+            }),
         }
 
         return data

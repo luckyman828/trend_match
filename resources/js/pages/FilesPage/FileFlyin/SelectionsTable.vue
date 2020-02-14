@@ -57,6 +57,10 @@
                     <div class="icon-wrapper"><i class="far fa-user-shield"></i></div>
                     Edit <u>O</u>wner(s)
                 </div>
+                <div class="item" @click.stop="showOptionsContext(contextMouseEvent, contextSelection)">
+                    <div class="icon-wrapper"><i class="far fa-cog"></i></div>
+                    <u>S</u>ettings
+                </div>
                 <div class="item" @click="onNewSelection(contextSelection)">
                     <div class="icon-wrapper"><i class="far fa-plus"></i></div>
                     <u>C</u>reate sub-selection
@@ -113,7 +117,7 @@
                         v-model="contextSelection.options.comments.broadcast" :submitOnChange="true"/>
                         <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
                         v-model="contextSelection.options.comments.listen" :submitOnChange="true"/>
-                        <BaseSelectButtons header="Anomyze comments" class="item-wrapper" label="Anonymize" :value="contextSelection.options.comments.anonymize" 
+                        <BaseSelectButton header="Anomyze comments" class="item-wrapper" label="Anonymize" :value="contextSelection.options.comments.anonymize" 
                         v-model="contextSelection.options.comments.anonymize"/>
                     </div>
                     <div class="item-group">
@@ -129,14 +133,14 @@
                         v-model="contextSelection.options.actions.broadcast" :submitOnChange="true"/>
                         <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
                         v-model="contextSelection.options.actions.listen" :submitOnChange="true"/>
-                        <SelectButton header="Anomyze actions" class="item-wrapper" label="Anonymize" :value="contextSelection.options.actions.anonymize" 
+                        <BaseSelectButton header="Anomyze actions" class="item-wrapper" label="Anonymize" :value="contextSelection.options.actions.anonymize" 
                         v-model="contextSelection.options.actions.anonymize"/>
                     </div>
                     <div class="item-group">
                         <strong class="header">Feedback</strong>
                         <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','descendants', 'ancestors','siblings']"
                         v-model="contextSelection.options.feedback.broadcast" :submitOnChange="true"/>
-                        <BaseSelectButtons header="Anomyze feedback" class="item-wrapper" label="Anonymize" :value="contextSelection.options.feedback.anonymize" 
+                        <BaseSelectButton header="Anomyze feedback" class="item-wrapper" label="Anonymize" :value="contextSelection.options.feedback.anonymize" 
                         v-model="contextSelection.options.feedback.anonymize"/>
                     </div>
                 </div>
