@@ -74,6 +74,11 @@ h2 {
     font-weight: 400;
     margin: 12px 0 4px;
 }
+h3 {
+    &:first-child {
+        margin-top: 0;
+    }
+}
 label:not(.input-wrapper) {
     font-size: 12px;
     font-weight: 500;

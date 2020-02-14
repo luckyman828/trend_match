@@ -138,8 +138,10 @@
                     </div>
                     <div class="item-group">
                         <strong class="header">Feedback</strong>
-                        <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','descendants', 'ancestors','siblings']"
+                        <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','descendants', 'parent', 'ancestors','siblings']"
                         v-model="contextSelection.options.feedback.broadcast" :submitOnChange="true"/>
+                        <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','descendants', 'parent', 'ancestors','siblings']"
+                        v-model="contextSelection.options.feedback.listen" :submitOnChange="true"/>
                         <BaseSelectButton header="Anomyze feedback" class="item-wrapper" label="Anonymize" :value="contextSelection.options.feedback.anonymize" 
                         v-model="contextSelection.options.feedback.anonymize"/>
                     </div>
