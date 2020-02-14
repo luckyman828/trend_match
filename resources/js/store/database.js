@@ -55,12 +55,6 @@ import Folder from './models/Folder'
 import folders from './modules/folders'
 import Selection from './models/Selection'
 import selections from './modules/selections'
-import SubfileTeam from './models/SubfileTeam'
-import subfileTeams from './modules/subfileTeams'
-import SubfileUser from './models/SubfileUser'
-import subfileUsers from './modules/subfileUsers'
-import SubfileCompletedProduct from './models/SubfileCompletedProduct'
-import subfileCompletedProducts from './modules/subfileCompletedProducts'
 
 const database = new Database()
 
@@ -92,8 +86,5 @@ database.register(TaskAction, taskActions)
 database.register(Request, requests)
 database.register(Folder, folders)
 database.register(Selection, selections)
-database.register(SubfileTeam, subfileTeams)
-database.register(SubfileUser, subfileUsers)
-database.register(SubfileCompletedProduct, subfileCompletedProducts)
 
 export default database

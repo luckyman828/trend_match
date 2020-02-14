@@ -1,6 +1,6 @@
 <template>
     <tr class="user-row table-row" ref="userRow" @contextmenu.prevent="$emit('showContextMenu', $event, user)">
-        <td class="select"><Checkbox/></td>
+        <td class="select"><BaseCheckbox/></td>
         <td v-if="editName" class="title">
             <i class="fa-user" :class="user.id ? 'fas' : 'far'"></i>
             <BaseEditInputWrapper ref="editName" :activateOnMount="true" :type="'text'"

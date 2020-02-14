@@ -34,6 +34,8 @@ export default class User extends Model {
             userTeams: this.hasMany(UserTeam, 'user_id'),
             // assigned_room_id: this.attr(''),
             teamRoleId: this.attr(''),
+            selection_teams: this.attr([]),
+            added_by_team: this.attr(false),
         }
         return data
     }

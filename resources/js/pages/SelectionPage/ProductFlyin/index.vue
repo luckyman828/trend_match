@@ -1,7 +1,7 @@
 <template>
     <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=3>
         <template v-slot:header>
-            <BaseFlyinHeader v-if="show" :title="product.title" :next="nextProductId" :prev="prevProductId"
+            <BaseFlyinHeader v-if="show" :title="`#${product.datasource_id}: ${product.title}`" :next="nextProductId" :prev="prevProductId"
             @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
                 <div class="item-group">
                     <button class="primary" :class="{'ghost': !product.currentAction || product.currentAction.action != 2}" 
@@ -24,12 +24,12 @@
         <template v-slot v-if="show">
             <BaseFlyinColumn class="details">
                 
-                <div class="img-wrapper" @click="cycleImage()">
+                <div class="main-img" @click="cycleImage()">
                     <img v-if="product.color_variants[0] != null" :src="variantImg(product.color_variants[currentImgIndex])" @error="imgError(product.color_variants[currentImgIndex])">
                 </div>
 
                 <div class="product-variants" v-dragscroll>
-                    <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
+                    <div class="variant" v-for="(variant, index) in product.color_variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
                         <div class="img-wrapper">
                             <img :src="variantImg(variant)" @error="imgError(variant)">
                         </div>
@@ -40,105 +40,106 @@
                     </div>
                 </div>
 
-                <label>Style number</label>
-                <BaseInputField readOnly=true :value="product.datasource_id"/>
+                <!-- <label>Style number</label>
+                <BaseInputField readOnly=true :value="product.datasource_id"/> -->
 
-                <div class="grid-3">
-                    <label>WHS ({{product.userPrices.currency}})</label>
-                    <v-popover>
-                        <label>WHS ({{product.userPrices.wholesale_price}}) <i class="far fa-info-circle"></i></label>
-                        <BaseTooltipList slot="popover" :header="'Wholesale price'" :array="product.prices" :arrayValueKey="'wholesale_price'" :arrayLabelKey="'currency'"/>
-                    </v-popover>
-                    <BaseInputField readOnly=true :value="product.userPrices.wholesale_price"/>
-                </div>
-                
-
-                <div class="description">
-                    <div class="stat">
-                        <p><strong>Style number</strong></p>
-                        <p><span>{{product.datasource_id}}</span></p>
-                    </div>
-                    <div class="stat">
-                        <p><strong>Category</strong></p>
-                        <span>{{product.category}}</span>
-                    </div>
-                    <div class="stat">
-                        <strong>Minimum production</strong>
-                        <span>{{product.quantity}}</span>
-                    </div>
-
-                    <div class="stat">
-                        <p><strong>WHS ({{product.userPrices.currency}})</strong></p>
-                        <v-popover :disabled="userPermissionLevel < 4">
-                            <p class="tooltip-target">{{product.userPrices.wholesale_price}} <i class="far fa-info-circle"></i></p>
-                            <BaseTooltipList slot="popover" :header="'Wholesale price'" :array="product.prices" :arrayValueKey="'wholesale_price'" :arrayLabelKey="'currency'"/>
+                <div class="col-3 prices">
+                    <div>
+                        <v-popover :disabled="product.prices.length < 1">
+                            <label>WHS ({{product.userPrices.currency}}) <i class="far fa-info-circle"></i></label>
+                            <template slot="popover">
+                                <BaseTooltipList header="Wholesale price">
+                                    <BaseTooltipListItem v-for="(price, index) in product.prices" :key="index"
+                                    :label="price.currency" :value="price.wholesale_price"/>
+                                </BaseTooltipList>
+                            </template>
                         </v-popover>
+                        <BaseInputField readOnly=true :value="product.userPrices.wholesale_price"/>
                     </div>
-
-                    <div class="stat">
-                        <p><strong>RRP ({{product.userPrices.currency}})</strong></p>
-                        <v-popover :disabled="userPermissionLevel < 4">
-                            <p class="tooltip-target">{{product.userPrices.recommended_retail_price}} <i class="far fa-info-circle"></i></p>
-                            <BaseTooltipList slot="popover" :header="'Recommended retail price'" :array="product.prices" :arrayValueKey="'recommended_retail_price'" :arrayLabelKey="'currency'"/>
+                    <div>
+                        <v-popover :disabled="product.prices.length < 1">
+                            <label>RRP ({{product.userPrices.currency}}) <i class="far fa-info-circle"></i></label>
+                            <template slot="popover">
+                                <BaseTooltipList header="Recommended retail price">
+                                    <BaseTooltipListItem v-for="(price, index) in product.prices" :key="index"
+                                    :label="price.currency" :value="price.recommended_retail_price"/>
+                                </BaseTooltipList>
+                            </template>
                         </v-popover>
+                        <BaseInputField readOnly=true :value="product.userPrices.recommended_retail_price"/>
                     </div>
-
-                    <div class="stat">
-                        <p><strong>MU</strong></p>
-                        <v-popover :disabled="userPermissionLevel < 4">
-                            <p class="tooltip-target">{{product.userPrices.markup}} <i class="far fa-info-circle"></i></p>
-                            <BaseTooltipList slot="popover" :header="'Mark up'" :array="product.prices" :arrayValueKey="'markup'" :arrayLabelKey="'currency'"/>
+                    <div>
+                        <v-popover :disabled="product.prices.length < 1">
+                            <label>Mark up ({{product.userPrices.currency}}) <i class="far fa-info-circle"></i></label>
+                            <template slot="popover">
+                                <BaseTooltipList header="Mark up">
+                                    <BaseTooltipListItem v-for="(price, index) in product.prices" :key="index"
+                                    :label="price.currency" :value="price.markup"/>
+                                </BaseTooltipList>
+                            </template>
                         </v-popover>
+                        <BaseInputField readOnly=true :value="product.userPrices.markup"/>
                     </div>
-
                 </div>
 
-                <div class="stat">
-                    <p><strong>Composition</strong></p>
-                    <p>{{product.composition}}</p>
+                <label>Delivery Date</label>
+                <BaseInputField readOnly=true :value="new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})"/>
+
+                <div class="col-2 minimum">
+                    <div>
+                        <label>Order minimum (pcs)</label>
+                        <BaseInputField readOnly=true :value="product.quantity"/>
+                    </div>
+                    <div>
+                        <label>Variant minimum (pcs)</label>
+                        <BaseInputField readOnly=true :value="product.variant_min_quantity"/>
+                    </div>
                 </div>
-                <div class="stat">
-                    <p><strong>Delivery date</strong></p>
-                    <p>{{new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})}}</p>
-                </div>
-                <div class="stat">
-                    <p><strong>Description</strong></p>
-                    <p>{{product.sale_description}}</p>
-                </div>
-                <div class="stat" v-if="product.assortments">
-                    <p><strong>Assortments</strong></p>
-                    <p v-for="(assortment, index) in product.assortments" :key="index">
-                        <span>{{assortment.assortment_name}}</span>
-                    </p>
-                </div>
+
+                <label>Composition</label>
+                <BaseInputField readOnly=true :value="product.composition"/>
+                <label>Description</label>
+                <BaseInputField readOnly=true :value="product.description"/>
+                <label>Assortments</label>
+                <BaseInputField readOnly=true />
+                <label>Category</label>
+                <BaseInputField readOnly=true :value="product.category"/>
 
             </BaseFlyinColumn>
 
-            <BaseFlyinColumn>
+            <BaseFlyinColumn class="distribution">
                 <template v-slot:header>
-                    <span>i am a header</span>
+                    <div class="tab-headers">
+                        <span :class="{active: currentTab == 'ins'}" class="tab" 
+                        @click="setCurrentTab('ins')">
+                            IN
+                            <span class="count">{{product.ins.length + product.focus.length}}</span>
+                        </span>
+                        <span :class="{active: currentTab == 'outs'}" class="tab" 
+                        @click="setCurrentTab('outs')">
+                            OUT
+                            <span class="count">{{product.outs.length}}</span>
+                        </span>
+                        <span :class="{active: currentTab == 'nds'}" class="tab" 
+                        @click="setCurrentTab('nds')">
+                            ND
+                            <span class="count">{{product.nds.length}}</span>
+                        </span>
+                    </div>
                 </template>
                 <template v-slot>
-                    <div class="tabs-wrapper">
-                        <strong>Distribution</strong>
-                        <div class="tab-headers">
-                            <span :class="{active: currentTab == 'ins'}" class="tab" @click="setCurrentTab('ins')"><span class="count">{{product.ins.length + product.focus.length}}</span>In</span>
-                            <span :class="{active: currentTab == 'outs'}" class="tab" @click="setCurrentTab('outs')"><span class="count">{{product.outs.length}}</span>Out</span>
-                            <span :class="{active: currentTab == 'nds'}" class="tab" @click="setCurrentTab('nds')"><span class="count">{{product.nds.length}}</span>Not decided</span>
-                        </div>
-                        <div class="tab-body">
-                            <strong class="tab-title">{{currentTab.substr(0, currentTab.length - 1)}}</strong>
-                            <p v-for="(row, index) in tabBody" :key="index">
-                                <span class="user" v-if="userPermissionLevel > 1">{{(row.name) ? row.name : (row.user) ? row.user.name : row.title}}</span>
-                                <template v-if="row.focus != null">
-                                    <span class="focus" v-if="row.focus">Focus <i class="fas fa-star"></i></span>
-                                </template>
-                            </p>
-                        </div>
+                    <div class="tab-body">
+                        <strong class="tab-title">{{currentTab.substr(0, currentTab.length - 1)}}</strong>
+                        <p v-for="(row, index) in tabBody" :key="index">
+                            <span class="user" v-if="userPermissionLevel > 1">{{(row.name) ? row.name : (row.user) ? row.user.name : row.title}}</span>
+                            <template v-if="row.focus != null">
+                                <span class="focus" v-if="row.focus">Focus <i class="fas fa-star"></i></span>
+                            </template>
+                        </p>
                     </div>
                 </template>
             </BaseFlyinColumn>
-            <CommentsSection :product="product" :selection="currentSelection"/>
+            <CommentsSection class="comments" :product="product" :selection="currentSelection"/>
         </template>
     </BaseFlyin>
 </template>
@@ -266,10 +267,16 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
-    .product-single {
-        .details {
-            background: $bgContent;
-            .img-wrapper {
+
+.product-single {
+    .details {
+        background: $bgContent;
+        ::v-deep {
+            .body > *:not(:last-child)
+            {
+                margin-bottom: 16px;
+            }
+            .main-img {
                 cursor: pointer;
                 width: 216px;
                 height: 286px;
@@ -283,266 +290,174 @@ export default {
                     object-position: center;
                 }
             }
-            .description {
-                .stat {
-                    > :first-child {
-                        margin-bottom: -4px;
-                        margin-top: 8px;
-                        display: block;
+            .product-variants {
+                margin-top: 12px;
+                white-space: nowrap;
+                overflow-x: auto;
+                margin-bottom: 8px;
+                .variant {
+                    width: 80px;
+                    display: inline-block;
+                    cursor: pointer;
+                    &:not(:last-child) {
+                        margin-right: 16px;
                     }
-                    .v-popover {
-                        display: inline-block;
+                    .img-wrapper {
+                        height: 108px;
+                        width: 80px;
+                        border-radius: 4px;
+                        border: solid 2px $divider;
+                        overflow: hidden;
+                        img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: contain;
+                            object-position: center;
+                        }
+                    }
+                    .color-wrapper {
+                        overflow: hidden;
+                        margin-right: 4px;
+                        margin-top: 8px;
+                        display: flex;
+                        align-items: center;
+                        span {
+                            font-size: 10px;
+                            font-weight: 500;
+                            color: $dark2;
+                        }
+                        .circle-img {
+                            width: 12px;
+                            height: 12px;
+                            border-radius: 6px;
+                            border: solid 1px $light1;
+                            position: relative;
+                            overflow: hidden;
+                            margin-right: 4px;
+                            img {
+                                left: 50%;
+                                top: 50%;
+                                transform: translate(-50%, -50%);
+                                position: absolute;
+                            }
+                        }
+                    }
+                    &.active {
+                        .img-wrapper {
+                            border-color: $primary;
+                        }
                     }
                 }
             }
-            .details {
-                overflow-x: hidden;
-                overflow-y: auto;
-            }
-
         }
     }
-    h3 {
-        font-size: 16px;
-        font-weight: 400;
-    }
-    .card > .grid-2 {
-        > :first-child {
-            overflow-x: hidden;
-            overflow-y: auto;
+    .distribution {
+        background: $bgContentAlt;
+        .tab-headers {
+            display: flex;
             height: 100%;
         }
-    }
-    .grid-border-between {
-        > :first-child {
-            position: relative;
-            &::after {
-                content: "";
-                position: absolute;
-                // height: calc(100% + 2em);
-                height: 100%;
-                right: calc(-.5rem - 1px);
-                top: 0;
-                background: $light2;
-                width: 2px;
-            }
-        }
-    }
-
-    .button {
-        &:nth-child(1n+2) {
-            margin-left: 8px;
-        }
-    }
-    .header {
-        display: flex;
-        border-bottom: solid 2px $light1;
-        padding: 6px 20px;
-        position: sticky;
-        top: 0;
-        z-index: 2;
-        background: white;
-        height: 72px;
-        align-items: center;
-        > * {
-            flex: 1;
+        .tab {
             display: flex;
+            justify-content: center;
             align-items: center;
-        }
-        .close {
-            margin-right: 24px;
-        }
-    }
-    .controls {
-        display: flex;
-        justify-content: flex-end;
-        width: 100%;
-        :last-child {
-            margin-right: 0;
-        }
-    }
-    .tab-headers {
-        display: flex;
-    }
-    .tab {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        flex: 1;
-        background: white;
-        height: 40px;
-        text-align: center;
-        font-size: 10px;
-        font-weight: 500;
-        color: $dark2;
-        cursor: pointer;
-        border-bottom: solid 2px $light2;
-        line-height: 1.1;
-        &:hover {
-            background: $light;
-        }
-        .count {
-            color: $dark;
-            font-size: 12px;
+            flex: 1;
+            background: $bgContentAlt;
+            height: 100%;
+            text-align: center;
             font-weight: 700;
-        }
-        &.active {
-            background: $light1;
-            color: $dark;
-            border-color: $primary;
-            color: $dark1;
-            .count {
-                color: $dark;
+            color: $dark2;
+            cursor: pointer;
+            border-radius: 4px 4px 0 0;
+            &:not(:last-child) {
+                margin-right: 4px;
             }
-        }
-    }
-    .tab-body {
-        background: $light1;
-        padding: 12px 16px;
-        .tab-title {
-            font-size: 12px;
-            text-transform: capitalize;
-        }
-        p {
-            border-bottom: solid 1px $light2;
-            padding-bottom: 4px;
-            margin-bottom: 12px;
-        }
-        .team {
-            width: 100px;
-            display: inline-block;
-            text-transform: uppercase;
-            font-size: 10px;
-            color: $dark2;
-        }
-        .user {
-            font-weight: 500;
-        }
-        .focus {
-            font-size: 10px;
-            font-weight: 500;
-            color: $dark2;
-            float: right;
-            display: flex;
-            margin-top: 2px;
-            i {
+            &:hover {
                 color: $primary;
-                margin-left: 4px;
-                font-size: 16px;
-                margin-top: -2px;
+            }
+            .count {
+                color: $font;
+                font-size: 12px;
+                font-weight: 500;
+                margin-left: 8px;
+            }
+            &.active {
+                background: white;
+                color: $primary;
             }
         }
-    }
-    .grid-2 {
-        grid-template-columns: repeat( auto-fit, minmax(33.33%, 1fr) );
-    }
-    .product-variants {
-        margin-top: 12px;
-        white-space: nowrap;
-        overflow-x: auto;
-    }
-    .product-variant {
-        width: 85px;
-        display: inline-block;
-        cursor: pointer;
-        &:not(:last-child) {
-            margin-right: 12px;
-        }
-        .color-wrapper {
-            overflow: hidden;
-            margin-right: 5px;
-            span {
+        .tab-body {
+            background: $light1;
+            padding: 12px 16px;
+            .tab-title {
+                font-size: 12px;
+                text-transform: capitalize;
+            }
+            p {
+                border-bottom: solid 1px $light2;
+                padding-bottom: 4px;
+                margin-bottom: 12px;
+            }
+            .team {
+                width: 100px;
+                display: inline-block;
+                text-transform: uppercase;
+                font-size: 10px;
+                color: $dark2;
+            }
+            .user {
+                font-weight: 500;
+            }
+            .focus {
                 font-size: 10px;
                 font-weight: 500;
                 color: $dark2;
-            }
-            .circle-img {
-                width: 12px;
-                height: 12px;
-                border-radius: 6px;
-                border: solid 1px $light1;
-                position: relative;
-                overflow: hidden;
-                display: inline-block;
-                img {
-                    left: 50%;
-                    top: 50%;
-                    transform: translate(-50%, -50%);
-                    position: absolute;
+                float: right;
+                display: flex;
+                margin-top: 2px;
+                i {
+                    color: $primary;
+                    margin-left: 4px;
+                    font-size: 16px;
+                    margin-top: -2px;
                 }
             }
         }
-        .img-wrapper {
-            padding-top: 100%;
-            width: 100%;
-            height: 0;
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-            margin-right: 4px;
-            border-radius: 4px;
-            border: solid 1px $light1;
-            overflow: hidden;
-            img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                object-position: center;
-                position: absolute;
-                top: 0;
-                left: 0;
-            }
+        .focus + .impact {
+            margin-right: 8px;
         }
-        &.active {
-            .img-wrapper {
-                border-color: $dark05;
+        .impact {
+            display: inline-flex;
+            align-items: center;
+            float: right;
+            // margin-right: 8px;
+            font-size: 10px;
+            font-weight: 500;
+            color: $dark2;
+            margin-top: 2px;
+            .circle {
+                margin-bottom: 2px;
+                margin-left: 4px;
             }
-            .color-wrapper {
-                span {
-                    color: $dark;
+            &.impact-1 {
+                .circle {
+                    background: $red;
+                }
+            }
+            &.impact-2 {
+                .circle {
+                    background: $orange;
+                }
+            }
+            &.impact-3 {
+                .circle {
+                    background: $green;
                 }
             }
         }
     }
-    .tabs-wrapper {
-        margin-bottom: 60px;
+    .comments {
+        background: $bg;
     }
-    p {
-        margin: 0;
-    }
-    .details {
-        padding-right: 1px;
-    }
-    .focus + .impact {
-        margin-right: 8px;
-    }
-    .impact {
-        display: inline-flex;
-        align-items: center;
-        float: right;
-        // margin-right: 8px;
-        font-size: 10px;
-        font-weight: 500;
-        color: $dark2;
-        margin-top: 2px;
-        .circle {
-            margin-bottom: 2px;
-            margin-left: 4px;
-        }
-        &.impact-1 {
-            .circle {
-                background: $red;
-            }
-        }
-        &.impact-2 {
-            .circle {
-                background: $orange;
-            }
-        }
-        &.impact-3 {
-            .circle {
-                background: $green;
-            }
-        }
-    }
+}
 </style>

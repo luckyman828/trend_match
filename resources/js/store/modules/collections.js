@@ -29,66 +29,8 @@ export default {
         files: (state, getters, rootState, rootGetters) => {
             if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
                 const files = Collection.query()
-                    .with('teams.actions')
-                    .with('teamFiles')
                     .with('selections')
                     .all()
-                const users = User.query()
-                    .with('teams.teamFiles')
-                    .with('actions')
-                    .all()
-
-                // Get the users that has access to the file
-                files.forEach(file => {
-                    file.users = []
-                    // Create a
-                    // const teamsa = JSON.parse(JSON.stringify(file.teams))
-                    // const teamsCopy = Object.assign([], file.teams)
-                    const teamsCopy = JSON.parse(JSON.stringify(file.teams))
-                    const usersCopy = JSON.parse(JSON.stringify(users))
-                    usersCopy.forEach(user => {
-                        // Determine if the user has access
-                        let hasAccess = false
-                        if (user.role_id <= 2) {
-                            user.teams.forEach(team => {
-                                team.teamFiles.forEach(teamFile => {
-                                    if (teamFile.file_id == file.id && teamFile.role_level <= user.role_id)
-                                        hasAccess = true
-                                })
-                            })
-                        } else hasAccess = true
-                        if (hasAccess) {
-                            file.users.push(user)
-
-                            // Calculate progress for the user
-                            user.products = file.products.length
-                            if (user.actions.length > 0) {
-                                user.progressRaw =
-                                    Math.round((user.actions.length / file.products.length) * 100 * 1) / 1
-                                user.progress = `${user.progressRaw}%`
-                            } else {
-                                user.progressRaw = 0
-                                user.progress = `${user.progressRaw}%`
-                            }
-                        }
-                    })
-
-                    // Calculate progress for every TEAM
-                    teamsCopy.forEach(team => {
-                        team.progressRaw = Math.round((team.actions.length / file.products.length) * 100 * 1) / 1
-                        team.progress = `${team.progressRaw}%`
-                    })
-                    file.teams = teamsCopy
-
-                    // Sort teams by progress
-                    file.teams.sort((a, b) => {
-                        return a.progressRaw < b.progressRaw ? 1 : -1
-                    })
-                    // Sort users by progress
-                    file.users.sort((a, b) => {
-                        return a.progressRaw < b.progressRaw ? 1 : -1
-                    })
-                })
                 return files
             }
         },

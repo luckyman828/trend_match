@@ -33,6 +33,10 @@ VTooltip.options.popover.defaultTrigger = 'hover focus'
 import PortalVue from 'portal-vue'
 Vue.use(PortalVue)
 
+import DatePicker from 'vue2-datepicker'
+import 'vue2-datepicker/index.css'
+Vue.use(DatePicker)
+
 Vue.component('app', require('./App.vue').default)
 
 // Automatically import base components

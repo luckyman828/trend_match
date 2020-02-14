@@ -1,68 +1,107 @@
 <template>
-        <span ref="original" class="editableTextarea" v-if="!editActive" @click="activate">{{value ? value : placeholder}} <span v-if="!hideEditButton" v-tooltip.top="'Edit'" class="edit square true-square light-2-hover"><i class="far fa-pen"></i></span></span>
-        <textarea v-else ref="input" :id="id" class="input-wrapper active" :value="value" :placeholder="placeholder"
-        @input="resizeTextarea($event.target)" @keydown.enter.exact.prevent @keyup.enter.exact="submit" 
-        @keydown.esc.stop @keyup.esc="cancel" @blur="submit"></textarea>
+    <div class="edit-input-wrapper" :class="{active: editActive}">
+        <div class="input-parent controls-right controls-inside control-items-2" @click="setActive">
+            <textarea ref="input" :id="id" class="input-wrapper" :type="type" :value="value"
+            :placeholder="placeholder" step="any" :maxlength="maxlength" :pattern="pattern"
+            @input="resize" @keyup.enter.exact="submit" @keydown.esc.stop 
+            @keyup.esc="cancel" @keyup="change" @keydown="validateInput"/>
+            <div class="controls" v-if="!editActive">
+                <button v-tooltip.top="'Edit'" class="edit"><i class="far fa-pen"></i></button>
+                <button v-if="value != oldValue" v-tooltip.top="`Revert to original (${oldValue})`" @click.stop="revert" class="square true-square yellow-green"><span>E</span></button>
+            </div>
+        </div>
+        <div class="buttons">
+            <div class="hotkey-wrapper">
+                <button class="green" @click="submit"><span>Save</span></button>
+                <span class="hotkey"><span class="key">Enter</span> Enter</span>
+            </div>
+            <button class="button ghost" @click="cancel"><span>Cancel</span></button>
+        </div>
+    </div>
 </template>
 
 <script>
 export default {
-    name: 'editableTextarea',
+    name: 'editInputTextarea',
     props: [
+        'type',
         'value',
-        'id',
+        'oldValue',
         'placeholder',
-        'hideEditButton'
+        'id',
+        'maxlength',
+        'pattern',
+        'activateOnMount'
     ],
     data: function () { return {
         editActive: false,
-        oldValue: null
     }},
     methods: {
-        activate() {
-            this.oldValue = this.value
-            // Get the width of the current value
-            const width = this.$refs.original.getBoundingClientRect().width
-
-            this.editActive = true
-            this.$emit('activate', true)
-            this.$nextTick(() => {
-                this.$refs.input.focus()
-                this.$refs.input.select()
-                // Set the size of the input field
-                const offset = 50
-                this.resizeTextarea(this.$refs.input)
-            })
-
+        change(e) {
+            this.$emit('change', e.target.value)
+        },
+        emit() {
+            this.$emit('input', this.$refs.input.value)
         },
         submit() {
-            this.$emit('input', this.$refs.input.value)
-            this.$emit('submit')
+            this.emit()
+            this.$emit('submit', this.$refs.input.value)
             this.editActive = false
-            this.$emit('activate', false)
             document.activeElement.blur()
+        },
+        setActive() {
+            const el = this.$refs.input
+            el.focus()
+            el.select()
+            this.editActive = true
         },
         cancel() {
-            this.$emit('cancel')
             this.editActive = false
-            this.$emit('activate', false)
             document.activeElement.blur()
-            this.$emit('input', this.oldValue)
+            this.$emit('cancel')
+            this.resize()
+            this.$nextTick(() => {
+                this.resize()
+            })
         },
-        resizeTextarea(textarea) {
-            console.log('resize textarea')
-            const commentField = textarea
+        revert(e) {
+            e.preventDefault()
+            this.$emit('input', this.oldValue)
+            this.$emit('revert')
+            this.$nextTick(() => {
+                this.resize()
+            })
+        },
+        validateInput(e) {
+            // First check if the key presses was Enter or Escape and don't do anything if true
+            if (e.key == "Escape" || e.key == "Enter" || e.key == "Backspace") return
+            // Then check if we have a pattern. If we do, don't allow anything that doesn't match the pattern to be entered
+            if(this.pattern) {
+                const regex = new RegExp(this.pattern)
+                if(!regex.test(e.key))
+                    e.preventDefault()
+            }
+        },
+        resize() {
+            const textarea = this.$refs.input
             // Avoid weird resizing when there is only 1 character in the textarea
             // if (event.target.value.length > 1) {
-                commentField.style.height = ''
+                textarea.style.height = ''
+                this.$nextTick(() => {
+                    // Avoid making the textarea smaller than default
+                    const offset = 4
+                    if (textarea.scrollHeight + offset > 42) {
+                        textarea.style.height = textarea.scrollHeight + offset + "px"
+                    }
+                })
 
-                // Avoid making the textarea smaller than default
-                const offset = 4
-                if (commentField.scrollHeight + offset > 42) {
-                    commentField.style.height = commentField.scrollHeight + offset + "px"
-                }
             // }
         },
+    },
+    mounted() {
+        // Set default active state
+        if (this.activateOnMount) this.setActive()
+        this.resize()
     }
 }
 </script>
@@ -70,22 +109,49 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-    .editableTextarea {
-        cursor: pointer;
-        display: block;
-        .edit {
-            opacity: 0;
-            transition: .3s;
+    textarea {
+        resize: none;
+    }
+    .edit-input-wrapper {
+        line-height: 1.6;
+        &:not(.active) {
+            cursor: pointer;
+            .input-wrapper {
+                transition: .3s;
+                cursor: pointer;
+            }
+            .buttons {
+                display: none;
+            }
         }
-        &:hover {
+        .input-parent {
             .edit {
-                opacity: 1;
+                opacity: 0;
+                transition: .2s;
+            }
+            &:hover {
+                .edit {
+                    opacity: 1;
+                }
+            }
+        }
+        &.active {
+            .input-parent {
+                .edit {
+                    opacity: 1;
+                }
+            }
+        }
+        .buttons {
+            margin-top: 8px;
+            display: flex;
+
+            > *:not(:last-child) {
+                margin-right: 16px;
+            }
+            button {
+                min-width: 80px;
             }
         }
     }
-    textarea {
-        resize: none;
-        line-height: 1.49;
-    }
-
 </style>

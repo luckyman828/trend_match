@@ -3,7 +3,7 @@
         <div ref="stickyHeader" class="sticky-header">
             <div ref="stickyBg" class="sticky-bg"></div>
             <div ref="stickyInner" class="inner">
-                <div class="tabs">
+                <div class="tabs" v-if="$slots.tabs">
                     <slot name="tabs"/>
                 </div>
                 <div class="rounded-top">
@@ -30,8 +30,12 @@ export default {
     name: 'flexTable',
     data: function() { return {
         sticky: false,
-        distToTop: null
+        distToTop: null,
+        scrollParent: null
     }},
+    props: [
+        'stickyHeader'
+    ],
     methods: {
         getYPos(element) {
             var yPosition = 0;
@@ -43,21 +47,43 @@ export default {
 
             return yPosition;
         },
+        getScrollParent(element, includeHidden) {
+            // Helper function to find the nearest parent that can be scrolled
+            var style = getComputedStyle(element);
+            var excludeStaticParent = style.position === "absolute";
+            var overflowRegex = includeHidden ? /(auto|scroll|hidden)/ : /(auto|scroll)/;
+
+            if (style.position === "fixed") return document.body;
+            for (var parent = element; (parent = parent.parentElement);) {
+                style = getComputedStyle(parent);
+                if (excludeStaticParent && style.position === "static") {
+                    continue;
+                }
+                if (overflowRegex.test(style.overflow + style.overflowY + style.overflowX)) return parent;
+            }
+
+            return document.body;
+        },
         handleScroll (event) {
             // Fix table header to screen
-            const theWindow = document.getElementById('main')
             const stickyThis = this.$refs.stickyHeader
-            let scrollDist = theWindow.scrollTop
-            const desiredOffset = 20
-            const navHeight = 72
-            const threshold = this.distToTop - navHeight - desiredOffset
-            if (scrollDist >= threshold) {
+            const desiredOffset = 16
+            // Get scrollparent offset from top
+            const scrollParent = this.scrollParent
+            // const parentTopDist = this.getYPos(scrollParent)
+            const parentTopDist = scrollParent.getBoundingClientRect().top
+            let scrollDist = scrollParent.scrollTop
+            const threshold = this.distToTop - parentTopDist - desiredOffset
+            if (scrollDist > threshold) {
                 // // Set width of sticky elements
                 if (this.sticky == false) {
-                    stickyThis.style.top = `${desiredOffset + navHeight}px`
+                    stickyThis.style.top = `${desiredOffset + parentTopDist}px`
                     stickyThis.style.width = `${this.$refs.table.scrollWidth}px`
-                    this.$refs.stickyBg.style.width = `${this.$refs.table.scrollWidth}px`
                     this.$refs.stickyPlaceholder.style.height = `${this.$refs.stickyInner.scrollHeight}px`
+                    // Set the position and size of the scroll bg
+                    this.$refs.stickyBg.style.width = `${this.$refs.table.scrollWidth}px`
+                    this.$refs.stickyBg.style.height = `${this.$refs.stickyInner.scrollHeight + desiredOffset}px`
+                    this.$refs.stickyBg.style.top = `${parentTopDist}px`
                 }
                 this.sticky = true
             } else if (this.sticky == true) {
@@ -66,15 +92,22 @@ export default {
         },
     },
     created () {
-        document.getElementById('main').addEventListener('scroll', this.handleScroll)
-        window.addEventListener('resize', this.handleScroll)
+        if (this.stickyHeader) {
+            window.addEventListener('resize', this.handleScroll)
+        }
     },
     destroyed () {
-        document.getElementById('main').removeEventListener('scroll', this.handleScroll)
-        window.removeEventListener('resize', this.handleScroll)
+        if (this.stickyHeader) {
+            this.scrollParent.removeEventListener('scroll', this.handleScroll)
+            window.removeEventListener('resize', this.handleScroll)
+        }
     },
     mounted() {
-        this.distToTop =  this.getYPos(this.$refs.stickyHeader)
+        if (this.stickyHeader) {
+            this.distToTop =  this.getYPos(this.$refs.stickyHeader)
+            this.scrollParent = this.getScrollParent(this.$el, false)
+            this.scrollParent.addEventListener('scroll', this.handleScroll)
+        }
     }
 }
 </script>
@@ -92,20 +125,22 @@ export default {
             display: flex;
             margin-bottom: -$rowRadius;
         }
+        .sticky-bg {
+            display: none;
+        }
         &.sticky {
             .sticky-bg {
                 background: $bg;
                 box-shadow: 0 10px 7px -6px rgba(0, 0, 0, 0.05) inset;
-                top: 72px;
-                height: 120px;
                 position: fixed;
                 z-index: -1;
+                display: block;
             }
             .sticky-header {
                 position: fixed;
                 z-index: 1;
                 .header {
-                    box-shadow: 0px 2px 10px #0000001A;
+                    box-shadow: 0px 4px 10px #0000002A;
                     position: static;
                 }
             }
@@ -165,6 +200,9 @@ export default {
         }
         th, td {
             padding: 0 4px;
+            &:first-child:not(.select) {
+                margin-left: 8px;
+            }
             > i {
                 &:last-child {
                     margin-left: 12px;
@@ -187,6 +225,11 @@ export default {
                 flex: 0 1 auto;
                 min-width: 40px;
                 max-width: 40px;
+                display: flex;
+                align-items: center;
+                height: 100%;
+                padding-left: 8px;
+                cursor: pointer;
             }
         }
     }

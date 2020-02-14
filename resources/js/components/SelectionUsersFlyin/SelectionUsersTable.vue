@@ -3,8 +3,11 @@
         <BaseFlexTable>
             <template v-slot:topBar>
                 <BaseTableTopBar>
+                    <template v-slot:left>
+                        <h3>Selection Members</h3>
+                    </template>
                     <template v-slot:right>
-                        <span>{{selection.feedback_users.length}} records</span>
+                        <span>{{selection.users.length}} records</span>
                     </template>
                 </BaseTableTopBar>
             </template>
@@ -12,16 +15,23 @@
                 <BaseTableHeader class="select"><BaseCheckbox/></BaseTableHeader>
                 <BaseTableHeader class="name" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</BaseTableHeader>
+                <BaseTableHeader :sortKey="'role'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Role</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
-                <tr v-for="user in selection.feedback_users" :key="user.id" class="user-row table-row" ref="userRow" @contextmenu.prevent="showUserContext($event, user)">
+                <tr v-for="user in selection.users" :key="user.id" class="user-row table-row" ref="userRow" @contextmenu.prevent="showUserContext($event, user)">
                     <td class="select"><BaseCheckbox/></td>
                     <td class="title clickable">
                         <i class="fas fa-user"></i>
                         <span>{{user.name}}</span>
                     </td>
                     <td class="email">{{user.email}}</td>
+                    <td class="role">
+                        <button class="ghost editable" 
+                        @click="showRoleContext($event, user)">
+                            <span>{{user.role}}</span>
+                        </button>
+                    </td>
                     <td class="action">
                         <button class="invisible ghost-hover" @click="showUserContext($event, user)"><i class="far fa-ellipsis-h medium"></i></button>
                     </td>
@@ -34,7 +44,13 @@
 
         <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps">
             <div class="item-group">
-                <div class="item" @click="onRemoveUser(slotProps.item); slotProps.hide()">
+                <div class="item" @click.stop="showRoleContext(slotProps.mouseEvent, contextUser)">
+                    <div class="icon-wrapper"><i class="far fa-user-shield"></i></div>
+                    Change <u>R</u>ole
+                </div>
+            </div>
+            <div class="item-group">
+                <div class="item" @click="onRemoveUser(contextUser)">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
                     <u>R</u>emove User
                 </div>
@@ -62,11 +78,25 @@
                 </div>
             </template>
         </BaseContextMenu>
+
+        <BaseContextMenu ref="contextMenuRole" class="context-role">
+            <template v-slot:header>
+                Change Selection Role
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <BaseSelectButtons type="radio" ref="userCurrencySelector" :options="availableSelectionRoles"
+                    v-model="userToEdit.role" :submitOnChange="true" :optionDescriptionKey="'description'"
+                    :optionNameKey="'name'" :optionValueKey="'name'"
+                    @submit="contextUser.role = userToEdit.role; slotProps.hide()"/>
+                </div>
+            </template>
+        </BaseContextMenu>
     </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import sortArray from '../../mixins/sortArray'
 import User from '../../store/models/User'
 
@@ -83,19 +113,28 @@ export default {
         sortAsc: true,
         selected: [],
         usersToAdd: [],
+        userToEdit: null,
+        contextUser: null,
     }},
     computed: {
+        ...mapGetters('entities/selections', ['availableSelectionRoles']),
         availableUsers() {
             const allUsers = User.all()
             // Filter the available users to exclude users already added
-            return allUsers.filter(user => !this.selection.feedback_users.find(x => x.id == user.id))
+            return allUsers.filter(user => !this.selection.users.find(x => x.id == user.id))
         }
     },
     methods: {
-        ...mapActions('entities/subfiles', ['addUsersToSelection','removeUserFromSelection']),
+        ...mapActions('entities/selections', ['addUsersToSelection','removeUserFromSelection']),
         showUserContext(e, user) {
             const contextMenu = this.$refs.contextMenuUser
-            contextMenu.item = user
+            this.contextUser = user
+            contextMenu.show(e)
+        },
+        showRoleContext(e, user) {
+            const contextMenu = this.$refs.contextMenuRole
+            this.contextUser = user
+            this.userToEdit = JSON.parse(JSON.stringify(user))
             contextMenu.show(e)
         },
         onAddUser(e) {
@@ -116,7 +155,7 @@ export default {
             }
             let sortAsc = this.sortAsc
 
-            this.sortArray(this.selection.feedback_users, this.sortAsc, this.sortKey)
+            this.sortArray(this.selection.users, this.sortAsc, this.sortKey)
         },
         onRemoveUser(user) {
             // If we have a selection, loop through the selection and remove those
@@ -128,7 +167,4 @@ export default {
 </script>
 
 <style scoped lang="scss">
-    .selection-users-table {
-        padding: 16px;
-    }
 </style>

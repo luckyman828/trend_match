@@ -1,11 +1,9 @@
 <template>
     <div class="tooltip-list-item">
 
-        <p class="row" v-for="(row, index) in array" :key="index">
-            <template v-if="arrayLabelKey != null">
-                <span class="label">{{label}}</span>
-                <strong class="value">{{value}}</strong>
-            </template>
+        <p class="row">
+            <span v-if="label" class="label">{{label}}</span>
+            <strong class="value">{{value}}</strong>
         </p>
 
     </div>

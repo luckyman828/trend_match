@@ -1,7 +1,7 @@
 <template>
     <div class="selections-table-row">
-        <tr class="selection" @contextmenu.prevent="emitShowContext">
-            <td class="expand" :class="{active: childrenExpanded}" @click="toggleExpanded" :style="indent">
+        <tr class="selection" @contextmenu.prevent="emitShowContext" @click="onClick">
+            <td class="expand" :class="{active: childrenExpanded}" @click.stop="toggleExpanded" :style="indent">
                 <span class="square invisible" v-if="selection.children.length > 0">
                     <i class="fas fa-caret-down"></i>
                 </span>
@@ -13,7 +13,7 @@
                 :value="selectionToEdit.selection.name" :oldValue="selection.name" v-model="selectionToEdit.selection.name"
                 @submit="onUpdateSelection(selection); $emit('submitToEdit')" @cancel="$emit('cancelToEdit', selection)"/>
             </td>
-            <td v-else class="title clickable" @click="$router.push({name: 'selection', params: {fileId: selection.file_id, selectionId: selection.id}})" :style="selectionWidth">
+            <td v-else class="title clickable" @click="onGoToSelection" :style="selectionWidth">
                 <i v-if="selection.master" class="fa-file-certificate master" :class="selection.id ? 'fad' : 'far'"></i> 
                 <i v-else class="fa-file light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <span :title="selection.name">{{selection.name}}</span>
@@ -22,14 +22,9 @@
             <td class="in">-</td>
             <td class="out">-</td>
             <td class="nd">-</td>
-            <td class="owner">
-                <button class="ghost editable sm" @click="$emit('showSelectionOwnersFlyin', selection)">
-                    <i class="far fa-user-shield"></i><span>{{selection.owners.length}}</span>
-                </button>
-            </td>
             <td class="users">
                 <button class="ghost editable sm" @click="$emit('showSelectionUsersFlyin', selection)">
-                    <i class="far fa-user"></i><span>{{selection.feedback_users.length}}</span>
+                    <i class="far fa-user"></i><span>{{selection.users.length}}</span>
                 </button>
             </td>
             <td class="status">
@@ -40,13 +35,13 @@
             </td>
             <td class="action">
                 <button class="invisible ghost-hover" @click="$emit('showOptionsContext', $event, selection)"><i class="fas fa-cog"></i></button>
-                <button class="invisible ghost-hover" @click="toggleExpanded(selection.id)"><i class="fas fa-ellipsis-h"></i></button>
+                <button class="invisible ghost-hover" @click="emitShowContext"><i class="fas fa-ellipsis-h"></i></button>
             </td>
         </tr>
         <template v-if="childrenExpanded">
             <selectionsTableRow v-for="selection in selection.children" :parent="selection" :selection="selection" :path="path.concat(selection.id)"
             :selectionToEdit="selectionToEdit" :key="selection.id" :depth="depth+1" :moveSelectionActive="moveSelectionActive"
-            @submitToEdit="$emit('submitToEdit')" @cancelToEdit="$emit('cancelToEdit', $event)" @showContext="emitEmissionShowContext"/>
+            @submitToEdit="$emit('submitToEdit')" @cancelToEdit="$emit('cancelToEdit', $event)" @showContext="emitEmissionShowContext" @emitOnClick="emitOnClick"/>
         </template>
     </div>
 </template>
@@ -87,6 +82,23 @@ export default {
         ...mapGetters('entities/subfiles', ['updateSelection']),
         toggleExpanded() {
             this.childrenExpanded = !this.childrenExpanded
+        },
+        onGoToSelection() {
+            if (!this.moveSelectionActive) {
+                this.$router.push({name: 'selection', params: {fileId: this.selection.file_id, selectionId: this.selection.id}})
+            }
+        },
+        onClick(e) {
+            if (this.path.length <= 1) {
+                this.$emit('onClick', e, this)
+            }
+            this.$emit('emitOnClick', e, this)
+        },
+        emitOnClick(e, component) {
+            if (this.path.length <= 1) {
+                this.$emit('onClick', e, component)
+            }
+            this.$emit('emitOnClick', e, component)
         },
         emitShowContext(mouseEvent) {
             this.$emit('showContext', mouseEvent, this.selection, this, this.parent)

@@ -1,9 +1,12 @@
 <template>
-    <tr class="products-table-row" :class="'action-'+product.currentAction">
+    <tr class="products-table-row" :class="product.currentAction && 'action-'+ product.currentAction.action">
 
         <span v-if="product.newComment" class="circle tiny primary"></span>
         
-        <td class="select"><BaseCheckbox :value="product" :modelValue="localSelectedProducts" v-model="localSelectedProducts"/></td>
+        <td class="select" 
+        @click.self="$refs.selectCheckbox.check()">
+            <BaseCheckbox ref="selectCheckbox" :value="product" :modelValue="localSelectedProducts" v-model="localSelectedProducts"/>
+        </td>
         <td class="image clickable" @click="$emit('onViewSingle',product)">
             <div class="img-wrapper">
                 <img v-if="product.color_variants[0] != null" :src="productImg(product.color_variants[0])">
@@ -120,6 +123,7 @@ export default {
 <style scoped lang="scss">
     @import '~@/_variables.scss';
     .products-table-row {
+        height: 76px;
         .circle.tiny {
             margin-left: 8px;
         }

@@ -1,6 +1,6 @@
 <template>
     <div class="checkbox">
-        <input type="checkbox" :value="value" :checked="shouldBeChecked" @change="updateInput">
+        <input ref="checkbox" type="checkbox" :value="value" :checked="shouldBeChecked" @change="updateInput">
         <span class="checkmark solid"><i class="fas fa-check"></i></span>
     </div>
 </template>
@@ -28,6 +28,9 @@ export default {
         }
     },
     methods: {
+        check() {
+            this.$refs.checkbox.click()
+        },
         updateInput(e) {
             const isChecked = e.target.checked
 

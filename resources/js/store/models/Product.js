@@ -23,6 +23,7 @@ export default class Product extends Model {
             collection_id: this.attr(null),
             is_editor_choice: this.attr(false),
             quantity: this.attr(null),
+            variant_min_quantity: this.attr(null),
             prices: this.attr([]),
             composition: this.attr(null),
             category_id: this.attr(null),
