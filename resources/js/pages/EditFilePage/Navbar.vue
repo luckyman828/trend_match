@@ -12,16 +12,11 @@
         </div>
 
         <div class="items-center">
-            <!-- <input type="search" class="input-wrapper"> -->
-            <div class="input-wrapper small clickable" @click="openSearch">
-                <i class="fas fa-search"></i>
-                Search..
-            </div>
         </div>
 
         <div class="items-right">
 
-            <button class="button primary wide" @click="showNewProduct">Create new product</button>
+            <button class="button primary wide" @click="onCreateNewProduct"><span>Create new product</span></button>
 
         </div>
 
@@ -55,11 +50,11 @@ export default {
         openSearch() {
             this.$refs.searchModal.toggle()
         },
-        showNewProduct() {
+        async onCreateNewProduct() {
             // Generate UUID for new product
             console.log('show new product')
             const newUUID = this.$uuid.v4()
-            this.instantiateNewProduct({id: newUUID, fileId: this.currentFile.id})
+            await this.instantiateNewProduct({id: newUUID, fileId: this.currentFile.id})
             // Show single with the new ID
             this.showSingle(newUUID)
             // Set the available products to only the new id, to disable going to prev/next product.

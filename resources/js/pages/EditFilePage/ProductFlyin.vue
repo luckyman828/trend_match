@@ -131,14 +131,14 @@
                         <label for="wholesale">WHS ({{currentCurrency.currency}})</label>
                         <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
                         :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].wholesale_price : null" 
-                        v-model.number="currentCurrency.wholesale_price" @submit="savedMarkup = currentCurrency.markup"
+                        v-model.number="currentCurrency.wholesale_price" @submit="calculateMarkup({whs: $event}); savedMarkup = currentCurrency.markup"
                         @change="calculateMarkup({whs: $event})" @cancel="resetMarkup" @revert="revertMarkup"/>
                     </div>
                     <div class="form-element">
                         <label for="recommended-retail">RPP ({{currentCurrency.currency}})</label>
                         <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
                         :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].recommended_retail_price : null" 
-                        v-model.number="currentCurrency.recommended_retail_price" @submit="savedMarkup = currentCurrency.markup"
+                        v-model.number="currentCurrency.recommended_retail_price" @submit="calculateMarkup({rrp: $event}); savedMarkup = currentCurrency.markup"
                         @change="calculateMarkup({rrp: $event})" @cancel="resetMarkup" @revert="revertMarkup"/>
                     </div>
                     <div class="form-element">
@@ -263,6 +263,12 @@ export default {
             // This function fires when a change happens to the current product in the store. It also fires initially
             // This can mean: A new product is shown. The product in the store has been updated
             this.productToEdit = JSON.parse(JSON.stringify(newVal))
+
+            // Check if the product has any currencies, else add a default currency
+            if (this.productToEdit.prices.length < 1) {
+                this.productToEdit.prices.push(JSON.parse(JSON.stringify(this.defaultPriceObject)))
+            }
+
             // Check if the current currency is available. Else set it to the first available
             if (!this.productToEdit.prices[this.currencyIndex]) this.currencyIndex = 0
 

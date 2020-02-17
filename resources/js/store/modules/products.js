@@ -237,12 +237,84 @@ export default {
             commit('setCurrentProductId', id)
             commit('setSingleVisisble', true)
         },
-        instantiateNewProduct({ commit }, { id, fileId }) {
-            console.log('instantiating new product in store with id: ' + id + ', and file id: ' + fileId)
-            Product.insert({
-                data: { id: id, collection_id: fileId, title: 'Unnamed product' },
-            })
-            // Product.insert({ data: product })
+        async instantiateNewProduct({ commit, state, rootGetters }, { id, fileId }) {
+            const authUser = rootGetters['persist/authUser']
+            const currentSelection = rootGetters['entities/selections/currentSelection']
+            const workspace = rootGetters['persist/currentWorkspace']
+
+            // Get the product
+            const product = await Product.new()
+
+            // Instantiate initial data
+            product.id = id
+            product.file_id = fileId
+            product.collection_id = fileId
+
+            // START Parse the json objects to javascript objects
+            // Test that each json object is actually valid json before trying to parse it
+            if (typeof product.color_variants == 'string' && isJSON(product.color_variants))
+                product.color_variants = JSON.parse(product.color_variants)
+            if (typeof product.assortments == 'string' && isJSON(product.assortments))
+                product.assortments = JSON.parse(product.assortments)
+            if (typeof product.prices == 'string' && isJSON(product.prices)) product.prices = JSON.parse(product.prices)
+
+            function isJSON(str) {
+                try {
+                    return JSON.parse(str) && !!str
+                } catch (e) {
+                    return false
+                }
+            }
+            // END Parse the json objects to javascript objects
+
+            // START Format the Delivery Date
+            let date = product.delivery_date
+            if (date) {
+                let newDate = new Date(date).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+                product.delivery_date = newDate
+            }
+            // END Format the Delivery Date
+
+            // START Find the correct price
+            // Check if the chosen currency exists on the product
+            if (product.prices.length > 0) {
+                // First check if the user currency is available
+                if (authUser.currency && product.prices.find(x => x.currency == authUser.currency)) {
+                    const userPrices = product.prices.find(x => x.currency == authUser.currency)
+                    product.userPrices = userPrices
+                }
+                // Then check if the team currency is available
+                else if (
+                    currentSelection &&
+                    currentSelection.currency &&
+                    product.prices.find(x => x.currency == currentSelection.currency)
+                ) {
+                    const selectionPrices = product.prices.find(x => x.currency == currentSelection.currency)
+                    product.userPrices = selectionPrices
+                }
+                // Then check if the workspace currency is available
+                else if (workspace.currency && product.prices.find(x => x.currency == workspace.currency)) {
+                    const workspacePrices = product.prices.find(x => x.currency == workspace.currency)
+                    product.userPrices = workspacePrices
+                }
+                // Else use the first available currency
+                else {
+                    product.userPrices = product.prices[0]
+                }
+            }
+            // If there are no prices
+            else {
+                product.userPrices = {
+                    currency: 'unset',
+                    markup: null,
+                    recommended_retail_price: null,
+                    wholesale_price: null,
+                }
+            }
+            // END Find the correct price
+
+            // Save the product to our state
+            state.products.push(product)
         },
         async updateProduct({ commit }, product) {
             commit('updateProduct', product)
