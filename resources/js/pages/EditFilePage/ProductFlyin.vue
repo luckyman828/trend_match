@@ -70,6 +70,11 @@
                 </Draggable>
 
                 <h3>Details</h3>
+                <div class="form-element">
+                    <label for="product-name">Product name</label>
+                    <BaseEditInputWrapper id="product-name" :type="'text'"
+                    :value="product.title" :oldValue="originalProduct.title" v-model="product.title"/>
+                </div>
                 <div class="col-2">
                     <div class="form-element">
                         <label for="datasource-id">Product ID</label>
@@ -126,14 +131,14 @@
                         <label for="wholesale">WHS ({{currentCurrency.currency}})</label>
                         <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
                         :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].wholesale_price : null" 
-                        v-model.number="currentCurrency.wholesale_price" @submit="savedMarkup = currentCurrency.markup"
+                        v-model.number="currentCurrency.wholesale_price" @submit="calculateMarkup({whs: $event}); savedMarkup = currentCurrency.markup"
                         @change="calculateMarkup({whs: $event})" @cancel="resetMarkup" @revert="revertMarkup"/>
                     </div>
                     <div class="form-element">
                         <label for="recommended-retail">RPP ({{currentCurrency.currency}})</label>
                         <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
                         :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].recommended_retail_price : null" 
-                        v-model.number="currentCurrency.recommended_retail_price" @submit="savedMarkup = currentCurrency.markup"
+                        v-model.number="currentCurrency.recommended_retail_price" @submit="calculateMarkup({rrp: $event}); savedMarkup = currentCurrency.markup"
                         @change="calculateMarkup({rrp: $event})" @cancel="resetMarkup" @revert="revertMarkup"/>
                     </div>
                     <div class="form-element">
@@ -258,6 +263,12 @@ export default {
             // This function fires when a change happens to the current product in the store. It also fires initially
             // This can mean: A new product is shown. The product in the store has been updated
             this.productToEdit = JSON.parse(JSON.stringify(newVal))
+
+            // Check if the product has any currencies, else add a default currency
+            if (this.productToEdit.prices.length < 1) {
+                this.productToEdit.prices.push(JSON.parse(JSON.stringify(this.defaultPriceObject)))
+            }
+
             // Check if the current currency is available. Else set it to the first available
             if (!this.productToEdit.prices[this.currencyIndex]) this.currencyIndex = 0
 
@@ -393,58 +404,54 @@ export default {
             const vm = this
             this.updatingProduct = true
 
-            // Remove the add price option from the prices
-            this.product.prices.splice(this.product.prices.length-1)
+            this.productToEdit.updated_at = new Date()
+                .toISOString()
+                .slice(0, 19)
+                .replace('T', ' ')
 
             const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
 
             // Check if we have any files (images) we need to upload
-            const variants = productToUpload.color_variants
-            for (let i = 0; i < variants.length; i++) {
-                const variant = variants[i]
-                const editVariant = this.productToEdit.color_variants[i]
-                if (variant.imageToUpload) {
-                    vm.$set(editVariant.imageToUpload, 'progress', 0)
-                }
-            }
-            for (let i = 0; i < variants.length; i++) {
-                const variant = variants[i]
-                const editVariant = this.productToEdit.color_variants[i]
-                if (variant.imageToUpload) {
-                    // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
-                    await this.uploadImages({files: [editVariant.imageToUpload], callback: function(uploadProgress) {
+            // const variants = productToUpload.color_variants
+            // for (let i = 0; i < variants.length; i++) {
+            //     const variant = variants[i]
+            //     const editVariant = this.productToEdit.color_variants[i]
+            //     if (variant.imageToUpload) {
+            //         vm.$set(editVariant.imageToUpload, 'progress', 0)
+            //     }
+            // }
+            // for (let i = 0; i < variants.length; i++) {
+            //     const variant = variants[i]
+            //     const editVariant = this.productToEdit.color_variants[i]
+            //     if (variant.imageToUpload) {
+            //         // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
+            //         await this.uploadImages({files: [editVariant.imageToUpload], callback: function(uploadProgress) {
                     
-                    if (uploadProgress == 100) {
-                        vm.$set(editVariant.imageToUpload, 'progress', 99)
-                    } else {
-                        vm.$set(editVariant.imageToUpload, 'progress', uploadProgress)
-                    }
-                    // editVariant.imageToUpload.progress = uploadProgress
-                    } })
-                    .then(success => {
-                        // When done trying to upload the image
-                        if (success) {
-                            variant.blob_id = variant.imageToUpload.id
-                            delete variant.imageToUpload
-                            variant.image = null
-                        }
-                    })
+            //         if (uploadProgress == 100) {
+            //             vm.$set(editVariant.imageToUpload, 'progress', 99)
+            //         } else {
+            //             vm.$set(editVariant.imageToUpload, 'progress', uploadProgress)
+            //         }
+            //         // editVariant.imageToUpload.progress = uploadProgress
+            //         } })
+            //         .then(success => {
+            //             // When done trying to upload the image
+            //             if (success) {
+            //                 variant.blob_id = variant.imageToUpload.id
+            //                 delete variant.imageToUpload
+            //                 variant.image = null
+            //             }
+            //         })
 
-                }
-            }
+            //     }
+            // }
 
-            // Check if we have any files (images) we need to delete
-            const filesToDelete = this.filesToDelete
-            if (filesToDelete.length > 0) {
-                // Attempt to delete the images
-                this.deleteImages(filesToDelete)
-            }
-
-            // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
-            // Long code to account for timezone differences.
-            const theDate = new Date (productToUpload.delivery_date)
-            productToUpload.delivery_date = theDate.toJSON(), new Date(theDate.getTime() - (theDate.getTimezoneOffset() * 60000)).toJSON().slice(0,10)
-
+            // // Check if we have any files (images) we need to delete
+            // const filesToDelete = this.filesToDelete
+            // if (filesToDelete.length > 0) {
+            //     // Attempt to delete the images
+            //     this.deleteImages(filesToDelete)
+            // }
 
             await this.updateProduct(productToUpload)
             .then(success => {

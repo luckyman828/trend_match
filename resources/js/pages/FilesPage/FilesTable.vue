@@ -4,7 +4,7 @@
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>
-                        <BaseSearchField :searchKey="['title','name']"/>
+                        <!-- <BaseSearchField :searchKey="['title','name']"/> -->
                     </template>
                     <template v-slot:right>
                         <span>showing <strong>{{folder.folders.length + folder.files.length}}</strong> of 
