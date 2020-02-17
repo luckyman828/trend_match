@@ -55,14 +55,24 @@ export default {
                                 // Assume no match
                                 let match = false
                                 searchKey.forEach(key => {
+                                    // Check that we have a value
+                                    if (!x[key]) return false
+                                    // Convert the value to match to a string so we can search it
+                                    const valueToMatch = x[key].toString().toLowerCase()
                                     // If a match is found for any of the keys, return true
-                                    if (x[key].toLowerCase().search(searchString) >= 0) {
+                                    if (valueToMatch.search(searchString) >= 0) {
                                         match = true
                                     }
                                 })
                                 return match
                             }
-                            else return x[searchKey].toLowerCase().search(searchString) >= 0
+                            else {
+                                // Check that we have a value
+                                if (!x[searchKey]) return false
+                                // Convert the value to match to a string so we can search it
+                                const valueToMatch = x[searchKey].toString().toLowerCase()
+                                return valueToMatch.search(searchString) >= 0
+                            }
                         })
                         arrayToReturn.push(arrayObjectToReturn)
                     })
@@ -79,19 +89,33 @@ export default {
                             let match = false
                             searchKey.forEach(key => {
                                 // If a match is found for any of the keys, return true
-                                if (x[key].toLowerCase().search(searchString) >= 0) {
+                                // Check that we have a value
+                                if (!x[key]) return false
+                                // Convert the value to match to a string so we can search it
+                                const valueToMatch = x[key].toString().toLowerCase()
+                                if (valueToMatch.search(searchString) >= 0) {
                                     match = true
                                 }
                             })
                             return match
                         }
-                        else return x[searchKey].toLowerCase().search(searchString) >= 0
+                        else {
+                            // Check that we have a value
+                            if (!x[searchKey]) return false
+                            // Convert the value to match to a string so we can search it
+                            const valueToMatch = x[searchKey].toString().toLowerCase()
+                            return valueToMatch.search(searchString) >= 0
+                        }
                     })
                 }
 
             }
             // Else search by the option itself
-            return array.filter(x => x.toLowerCase().search(searchString) >= 0)
+            return array.filter(x => {
+                // Convert the value to match to a string so we can search it
+                const valueToMatch = x.toString().toLowerCase()
+                valueToMatch.search(searchString) >= 0
+            })
         }
     },
     methods: {

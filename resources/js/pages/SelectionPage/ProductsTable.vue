@@ -14,7 +14,8 @@
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>
-                        <BaseSearchField/>
+                        <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category']"
+                        v-model="productsFilteredBySearch"/>
 
                         <BaseDropdown class="dropdown-parent left">
                             <template v-slot:button="slotProps">
@@ -77,7 +78,7 @@
                     </template>
                     <template v-slot:right>
                         <span>{{selectedProducts.length}} selected</span>
-                        <span v-if="products.length != productTotals.all">{{products.length}}/{{productTotals.all}} showing</span>
+                        <span v-if="productsFilteredBySearch.length != productTotals.all">{{productsFilteredBySearch.length}}/{{productTotals.all}} showing</span>
                         <span v-else>{{productTotals.all}} records</span>
                     </template>
                 </BaseTableTopBar>
@@ -106,7 +107,7 @@
 
                 <RecycleScroller
                     class="products-scroller"
-                    :items="products"
+                    :items="productsFilteredBySearch"
                     :item-size="78"
                     page-mode
                     key-field="id"
@@ -144,7 +145,8 @@ export default {
         ProductsTableRow,
     },
     data: function() { return {
-        selectedProducts: []
+        selectedProducts: [],
+        productsFilteredBySearch: this.products,
     }},
     computed: {
         ...mapGetters('entities/products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
