@@ -487,6 +487,21 @@ input[type='submit'] {
 i {
     position: relative;
     color: $fontIcon;
+    &.xs {
+        font-size: 10px;
+    }
+    &.sm {
+        font-size: 12px;
+    }
+    &.md {
+        font-size: 18px;
+    }
+    &.lg {
+        font-size: 40px;
+    }
+    &.xl {
+        font-size: 64px;
+    }
     &.medium {
         font-size: 18px;
     }

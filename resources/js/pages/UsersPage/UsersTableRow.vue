@@ -7,7 +7,7 @@
                 :value="userToEdit.name" :oldValue="user.name" v-model="userToEdit.name"
                 @submit="updateWorkspaceUser(userToEdit); editName = false" @cancel="$emit('cancelEditName'); editName = false;"/>
         </td>
-        <td v-else class="title clickable">
+        <td v-else class="title">
             <i class="fas fa-user"></i>
             <span>{{user.name}}</span>
         </td>

@@ -80,7 +80,7 @@
 
         <BaseContextMenu ref="contextMenuTeam" class="context-team" v-slot="slotProps">
             <div class="item-group">
-                <div class="item" @click="showSingleTeam(slotProps.item.id); slotProps.hide()">
+                <div class="item" @click="showSingleTeam(slotProps.item); slotProps.hide()">
                     <div class="icon-wrapper">
                         <i class="far fa-users"></i>
                     </div>
@@ -164,7 +164,7 @@
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
-                    <BaseSelectButtons type="radio" ref="userCurrencySelector" :options="availableWorkspaceRoles"
+                    <BaseSelectButtons type="radio" :options="availableWorkspaceRoles"
                     v-model="userToEdit.role" :submitOnChange="true" :optionDescriptionKey="'description'"
                     :optionNameKey="'role'" :optionValueKey="'role'"/>
                 </div>
@@ -278,21 +278,20 @@ export default {
         }
     },
     methods: {
-        ...mapActions('entities/teamInvites', ['deleteInvite', 'resend']),
-        ...mapActions('entities/userTeams', ['removeUserFromTeam']),
+        ...mapActions('teams', ['removeUserFromTeam']),
         ...mapActions('users', ['updateWorkspaceUser', 'updateUserPassword', 'removeUsersFromWorkspace']),
         ...mapActions('teams', ['insertOrUpdateTeam', 'deleteTeam']),
-        ...mapMutations('entities/teams', ['setCurrentTeamId', 'setAvailableTeamIds']),
+        ...mapMutations('teams', ['setCurrentTeam', 'setAvailableTeamIds']),
         onSelect(index) {
             this.$emit('onSelect', index)
         },
         showNext() {
             if (this.nextTeamId)
-                this.setCurrentTeamId(this.nextTeamId)
+                this.setCurrentTeam(this.teams.find(x => x.id == this.nextTeamId))
         },
         showPrev() {
             if (this.prevTeamId)
-                this.setCurrentTeamId(this.prevTeamId)
+                this.setCurrentTeam(this.teams.find(x => x.id == this.prevTeamId))
         },
         onSetUserPassword(mouseEvent, user) {
             const contextMenu = this.$refs.contextMenuUserPassword
@@ -388,9 +387,9 @@ export default {
             // emit open new user modal
             this.$emit('onNewUser')
         },
-        showSingleTeam(id) {
+        showSingleTeam(team) {
             this.setAvailableTeamIds(this.teams.map(x => x.id))
-            this.setCurrentTeamId(id)
+            this.setCurrentTeam(team)
             this.$refs.TeamFlyin.toggle()
         },
         showTeamContext(e, team) {
