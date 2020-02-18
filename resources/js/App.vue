@@ -4,7 +4,7 @@
             <router-view></router-view>
         </transition>
     </div>
-    <div class="app" id="app-component" v-else>
+    <div class="app" id="app-component" v-else-if="authUser && currentWorkspace">
         <TheNavbarLogo/>
         <TheNavbar/>
         <TheSidebar/>
@@ -16,10 +16,13 @@
             </div>
         </div>
     </div>
+    <div class="loading-wrapper" v-else>
+        <BaseLoader/>
+    </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, Store, mapMutations } from 'vuex'
 import TheSidebar from './components/layout/TheSidebar'
 import TheNavbar from './components/layout/TheNavbar'
 import TheNavbarLogo from './components/layout/TheNavbarLogo'
@@ -40,7 +43,8 @@ export default{
     }},
     computed: {
         ...mapGetters('persist', ['userPermissionLevel', 'currentWorkspaceId']),
-        ...mapGetters('auth', ['isAuthenticated']),
+        ...mapGetters('workspaces', ['workspaces', 'currentWorkspace']),
+        ...mapGetters('auth', ['isAuthenticated', 'authUser', 'authStatus']),
         // authUser() {
         //     return AuthUser.query().with('teams').with('workspaces').first()
         // },
@@ -54,8 +58,51 @@ export default{
         //     return Team.query().with('files').get()
         // },
     },
+    watch : {
+        // Watch for changes to the authStatus
+        authStatus: function(newVal) {
+            // When our auth status changes to success 
+            // -> initialize the workspace
+            if (newVal == 'success') {
+                this.initWorkspace()
+            }
+        }
+        // authUser(newVal) {
+        //     if (newVal.teams != null) {
+        //         if (newVal.teams.length > 0) {
+        //             if (this.authUser.role_id >= 3) {
+        //                 this.setCurrentTeam(0)
+        //             }
+        //             else {
+        //                 this.setCurrentTeam(this.authUser.teams[0].id)
+        //                 this.setLoadingInit(false)
+        //             }
+        //         }
+        //     }
+        // },
+        // currentWorkspaceId: async function(newVal, oldVal) {
+        //     console.log('There was a change in workspace!')
+        //     if (oldVal && oldVal != newVal) {
+        //         await this.initRequiresWorkspace()
+        //         this.fetchUsers(this.currentWorkspaceId)
+        //     }
+        // }
+    },
     methods: {
+        ...mapActions('persist', ['getUids']),
         ...mapActions('auth', ['getAuthUser', 'logout']),
+        ...mapActions('workspaces', ['fetchWorkspaces']),
+        ...mapMutations('workspaces', ['setCurrentWorkspaceIndex']),
+        initWorkspace() {
+            // Get workspaces
+            this.fetchWorkspaces().then(() => {
+                // Set the current workspace
+                this.setCurrentWorkspaceIndex(0)
+            })
+            // Fetch workspace user and teams
+            // this.fetchTeams()
+            // this.fetchTeams()
+        }
         // ...mapActions('entities/teams', ['fetchTeams']),
         // ...mapActions('entities/users', ['fetchUsers']),
         // ...mapActions('entities/userTeams', ['fetchUserTeams']),
@@ -121,55 +168,39 @@ export default{
         //     }
         // }
     },
-    watch : {
-        // authUser(newVal) {
-        //     if (newVal.teams != null) {
-        //         if (newVal.teams.length > 0) {
-        //             if (this.authUser.role_id >= 3) {
-        //                 this.setCurrentTeam(0)
-        //             }
-        //             else {
-        //                 this.setCurrentTeam(this.authUser.teams[0].id)
-        //                 this.setLoadingInit(false)
-        //             }
-        //         }
-        //     }
-        // },
-        // currentWorkspaceId: async function(newVal, oldVal) {
-        //     console.log('There was a change in workspace!')
-        //     if (oldVal && oldVal != newVal) {
-        //         await this.initRequiresWorkspace()
-        //         this.fetchUsers(this.currentWorkspaceId)
-        //     }
-        // }
-    },
     created() {
-        // this.fetchInitialData()
-        // // Fetch data based on the Auth User
-        // .then(this.initRequiresWorkspace)
+        // Set up a request intercepter that checks if the user is still authenticated
+        axios.interceptors.response.use(response => response, (error) => {
+            if (error.response.status === 401) {
+                // if you ever get an unauthorized, logout the user
+                this.logout()
+            }
+            return Promise.reject(error.response);
+        });
 
-        // Check if the user is authorized. If that is the case get the auth user
+        // Check if the user is authenticated. 
+        // If that is the case get the auth user
         if (this.isAuthenticated) {
             this.getAuthUser()
+            
+            // Get some snowflake IDs now we're at it
+            this.getUids()
         }
         
-        // Check if the logged in user is no longer authorized
-        axios.interceptors.response.use(undefined, function (err) {
-            return new Promise(function (resolve, reject) {
-            if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
-            // if you ever get an unauthorized, logout the user
-                this.logout()
-            // you can also redirect to /login if needed !
-            }
-            throw err;
-            });
-        });
     },
 }
 </script>
 
 <style lang="scss">
     @import '~@/_variables.scss';
+    .loading-wrapper {
+        min-height: 100vh;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        background: $bg;
+    }
     html, body, #app {
         color: $dark;
         // font-family: 'Source Sans Pro', sans-serif;

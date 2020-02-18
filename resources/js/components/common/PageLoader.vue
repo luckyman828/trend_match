@@ -1,6 +1,6 @@
 <template>
     <div class="page-loader">
-        <slot v-if="!loadingInit && !loading"/>
+        <slot v-if="!loading"/>
         <BaseLoader v-else/>
     </div>
 </template>
@@ -12,11 +12,6 @@ export default {
     props: [
         'loading'
     ],
-    computed: {
-        loadingInit () {
-            return this.$store.getters['persist/loadingInit']
-        }
-    }
 }
 </script>
 

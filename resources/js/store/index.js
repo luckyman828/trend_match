@@ -5,6 +5,9 @@ import database from './database'
 // import authUser from './modules/authUser'
 import persist from './modules/persist'
 import auth from './modules/auth'
+import workspaces from './modules/workspaces'
+import teams from './modules/teams'
+import users from './modules/users'
 import VuexORMisDirtyPlugin from '@vuex-orm/plugin-change-flags'
 VuexORM.use(VuexORMisDirtyPlugin)
 
@@ -17,6 +20,9 @@ const store = new Vuex.Store({
     modules: {
         persist,
         auth,
+        workspaces,
+        teams,
+        users,
     },
 })
 

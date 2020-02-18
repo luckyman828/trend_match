@@ -18,9 +18,9 @@
             <template v-slot:header>
                 <BaseTableHeader class="select"><BaseCheckbox @change="(checked) => checked ? selectedTeams = teams : selectedTeams = []"/></BaseTableHeader>
                 <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Name</BaseTableHeader>
-                <BaseTableHeader :sortKey="'owner'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Owner</BaseTableHeader>
+                <!-- <BaseTableHeader :sortKey="'owner'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Owner</BaseTableHeader> -->
                 <BaseTableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Members</BaseTableHeader>
-                <BaseTableHeader :sortKey="'files'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Files</BaseTableHeader>
+                <!-- <BaseTableHeader :sortKey="'files'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Files</BaseTableHeader> -->
                 <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Team Currency</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
@@ -52,7 +52,7 @@
                 <BaseTableHeader class="select"><BaseCheckbox/></BaseTableHeader>
                 <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</BaseTableHeader>
-                <BaseTableHeader :sortKey="'workspaceRoleId'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Workspace Role</BaseTableHeader>
+                <BaseTableHeader :sortKey="'role'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Workspace Role</BaseTableHeader>
                 <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Currency</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
@@ -84,23 +84,23 @@
                     <div class="icon-wrapper">
                         <i class="far fa-users"></i>
                     </div>
-                    <u>V</u>iew / <u>E</u>dit team
+                    <span><u>V</u>iew / <u>E</u>dit team</span>
                 </div>
             </div>
             <div class="item-group">
                 <div class="item" @click="$refs['teamRow-'+slotProps.item.id][0].editTitle = true; slotProps.hide()">
                     <div class="icon-wrapper"><i class="far fa-pen"></i></div>
-                    <u>R</u>ename
+                    <span><u>R</u>ename</span>
                 </div>
                 <div class="item" @click.stop="onEditTeamCurrency(slotProps.mouseEvent, slotProps.item)">
                     <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
-                    <u>C</u>hange currency
+                    <span><u>C</u>hange currency</span>
                 </div>
             </div>
             <div class="item-group">
                 <div class="item" @click="onDeleteTeam(slotProps.item); slotProps.hide()">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
-                    <u>D</u>elete team
+                    <span><u>D</u>elete team</span>
                 </div>
             </div>
         </BaseContextMenu>
@@ -109,32 +109,32 @@
             <div class="item-group">
                 <div class="item" @click="$refs['userRow-'+slotProps.item.id][0].editName = true; slotProps.hide()">
                     <div class="icon-wrapper"><i class="far fa-pen"></i></div>
-                    <u>R</u>ename User
+                    <span><u>R</u>ename User</span>
                 </div>
             </div>
             <div class="item-group">
                 <div class="item" @click.stop="onEditUserCurrency(slotProps.mouseEvent, slotProps.item)">
                     <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
-                    <u>C</u>hange Currency
+                    <span><u>C</u>hange Currency</span>
                 </div>
                 <div class="item" @click.stop="onEditUserRole(slotProps.mouseEvent, slotProps.item)">
                     <div class="icon-wrapper"><i class="far fa-key"></i></div>
-                    Change Workspace <u>R</u>ole
+                    <span>Change Workspace <u>R</u>ole</span>
                 </div>
                 <div class="item" @click.stop="onSetUserPassword(slotProps.mouseEvent, slotProps.item);slotProps.hide()">
                     <div class="icon-wrapper"><i class="far fa-lock"></i></div>
-                    Set <u>P</u>assword
+                    <span>Set <u>P</u>assword</span>
                 </div>
             </div>
             <div class="item-group">
                 <div class="item" @click="onDeleteUser(slotProps.item); slotProps.hide()">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
-                    <u>D</u>elete User from Workspace
+                    <span><u>D</u>elete User from Workspace</span>
                 </div>
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuTeamCurrency" class="context-currency" @hide="teamToEdit.currency != originalTeam.currency && updateTeam(teamToEdit)">
+        <BaseContextMenu ref="contextMenuTeamCurrency" class="context-currency" @hide="teamToEdit.currency != originalTeam.currency && insertOrUpdateTeam(teamToEdit)">
             <template v-slot:header>
                 Change Team Currency
             </template>
@@ -146,7 +146,7 @@
             </template>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuUserCurrency" class="context-currency" @hide="userToEdit.currency != originalUser.currency && updateUser(userToEdit)">
+        <BaseContextMenu ref="contextMenuUserCurrency" class="context-currency" @hide="userToEdit.currency != originalUser.currency && updateWorkspaceUser(userToEdit)">
             <template v-slot:header>
                 Change User Currency
             </template>
@@ -158,16 +158,25 @@
             </template>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuWorkspaceRole" class="context-role" 
-        @hide="userToEdit.workspaceUser.permission_level != originalUser.workspaceUsers[0].permission_level && updateWorkspaceUser(userToEdit.workspaceUser)">
+        <BaseContextMenu ref="contextMenuWorkspaceRole" class="context-role">
             <template v-slot:header>
                 Change Workspace Role
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
-                    <BaseRadioButtons ref="userCurrencySelector" :options="availableWorkspaceRoles" :currentOptionId="slotProps.item.workspaceRoleId"
-                    v-model="userToEdit.workspaceUsers[0].permission_level" :submitOnChange="true" :optionDescriptionKey="'description'"
-                    :optionNameKey="'name'" :optionValueKey="'id'"/>
+                    <BaseSelectButtons type="radio" ref="userCurrencySelector" :options="availableWorkspaceRoles"
+                    v-model="userToEdit.role" :submitOnChange="true" :optionDescriptionKey="'description'"
+                    :optionNameKey="'role'" :optionValueKey="'role'"/>
+                </div>
+                <div class="item-group">
+                    <div class="item-wrapper">
+                        <button class="primary" :class="{disabled: userToEdit.role == originalUser.role}" 
+                        @click="updateWorkspaceUser(userToEdit);slotProps.hide()">
+                            <span>Save</span>
+                        </button>
+                        <button class="invisible ghost-hover" style="margin-left: 8px;"
+                        @click="slotProps.hide(); userToEdit.role = originalUser.role"><span>Cancel</span></button>
+                    </div>
                 </div>
             </template>
         </BaseContextMenu>
@@ -250,8 +259,9 @@ export default {
         selectedUsers: [],
     }},
     computed: {
-        ...mapGetters('persist', ['currentWorkspaceId', 'currentWorkspace', 'userPermissionLevel', 'availableCurrencies', 'availableWorkspaceRoles']),
-        ...mapGetters('entities/teams', ['currentTeam', 'nextTeamId', 'prevTeamId']),
+        ...mapGetters('persist', ['availableCurrencies']),
+        ...mapGetters('workspaces', ['currentWorkspace', 'availableWorkspaceRoles']),
+        ...mapGetters('teams', ['currentTeam', 'nextTeamId', 'prevTeamId']),
         passwordSubmitDisabled() {
             return this.newUserPassword.length < 8
         },
@@ -270,9 +280,8 @@ export default {
     methods: {
         ...mapActions('entities/teamInvites', ['deleteInvite', 'resend']),
         ...mapActions('entities/userTeams', ['removeUserFromTeam']),
-        ...mapActions('entities/users', ['updateUser', 'updateUserPassword']),
-        ...mapActions('entities/teams', ['updateTeam', 'deleteTeam']),
-        ...mapActions('entities/workspaceUsers', ['updateWorkspaceUser', 'deleteWorkspaceUser']),
+        ...mapActions('users', ['updateWorkspaceUser', 'updateUserPassword', 'removeUsersFromWorkspace']),
+        ...mapActions('teams', ['insertOrUpdateTeam', 'deleteTeam']),
         ...mapMutations('entities/teams', ['setCurrentTeamId', 'setAvailableTeamIds']),
         onSelect(index) {
             this.$emit('onSelect', index)
@@ -316,8 +325,8 @@ export default {
             })
         },
         onEditUserCurrency(mouseEvent, user) {
-            this.userToEdit = user;
-            this.originalUser = JSON.parse(JSON.stringify(user));
+            this.userToEdit = JSON.parse(JSON.stringify(user));
+            this.originalUser = user;
             const contextMenu = this.$refs.contextMenuUserCurrency
             contextMenu.item = user;
             contextMenu.show(mouseEvent)
@@ -328,8 +337,8 @@ export default {
             })
         },
         onEditUserRole(mouseEvent, user) {
-            this.userToEdit = user;
-            this.originalUser = JSON.parse(JSON.stringify(user));
+            this.userToEdit = JSON.parse(JSON.stringify(user));
+            this.originalUser = user;
             const contextMenu = this.$refs.contextMenuWorkspaceRole
             contextMenu.item = user;
             contextMenu.show(mouseEvent)
@@ -360,11 +369,9 @@ export default {
                 const newTeam = {
                     id: null,
                     title: 'New team',
-                    workspace_id: this.currentWorkspaceId,
                     owner: null,
-                    users: [],
-                    files: [],
-                    currency: this.currentWorkspace.currency,
+                    user_count: 0,
+                    currency: null,
                 }
                 // Push new new to the current teams array
                 this.teams.push(newTeam)
@@ -423,23 +430,23 @@ export default {
         onDeleteTeam(team) {
             (window.confirm(
                 'Are you sure you want to delete this team?\nIt will be permanently deleted.'))
-            ? this.deleteTeam(team.id) : false
+            ? this.deleteTeam(team) : false
         },
         onDeleteUser(user) {
             if (window.confirm('Are you sure you want to remove this user from the workspace?')) {
                 // Remove the user from our state
-                const index = this.users.findIndex(x => x.id == user.id)
-                this.users.splice(index, 1)
+                // const index = this.users.findIndex(x => x.id == user.id)
+                // this.users.splice(index, 1)
                 // Find every team the user was a member of and remove the user from their team
-                this.teams.forEach(team => {
-                    const index = team.users.findIndex(x => x.id == user.id)
-                    if (index >= 0) {
-                        team.users.splice(index, 1)
-                    }
-                })
+                // this.teams.forEach(team => {
+                //     const index = team.users.findIndex(x => x.id == user.id)
+                //     if (index >= 0) {
+                //         team.users.splice(index, 1)
+                //     }
+                // })
 
                 // Do the actual deleting in the DB
-                this.deleteWorkspaceUser({workspaceId: this.currentWorkspaceId, user: user})
+                this.removeUsersFromWorkspace({workspaceId: this.currentWorkspace.id, users: [user]})
             }
         },
         onRenameTeam(team, index) {

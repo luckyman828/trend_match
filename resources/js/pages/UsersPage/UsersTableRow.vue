@@ -5,7 +5,7 @@
             <i class="fa-user" :class="user.id ? 'fas' : 'far'"></i>
             <BaseEditInputWrapper ref="editName" :activateOnMount="true" :type="'text'"
                 :value="userToEdit.name" :oldValue="user.name" v-model="userToEdit.name"
-                @submit="updateUser(userToEdit); editName = false" @cancel="$emit('cancelEditName'); editName = false;"/>
+                @submit="updateWorkspaceUser(userToEdit); editName = false" @cancel="$emit('cancelEditName'); editName = false;"/>
         </td>
         <td v-else class="title clickable">
             <i class="fas fa-user"></i>
@@ -13,7 +13,7 @@
         </td>
         <td class="email">{{user.email}}</td>
         <td class="role">
-            <button class="ghost editable sm" @click.stop="$emit('editRole', $event, user)"><span>{{availableWorkspaceRoles[user.workspaceRoleId].name}}</span></button>
+            <button class="ghost editable sm" @click.stop="$emit('editRole', $event, user)"><span>{{user.role}}</span></button>
         </td>
         <td class="currency">
             <button class="ghost editable sm" @click.stop="$emit('editCurrency', $event, user)"><span>{{user.currency ? user.currency : 'Set currency'}}</span></button>
@@ -38,10 +38,11 @@ export default {
         userToEdit: this.user,
     }},
     computed: {
-        ...mapGetters('persist', ['availableWorkspaceRoles'])
+        ...mapGetters('persist', ['availableWorkspaceRoles']),
+        ...mapGetters('workspaces', ['userWorkspaceRole'])
     },
     methods: {
-        ...mapActions('entities/users', ['updateUser']),
+        ...mapActions('users', ['updateWorkspaceUser']),
     },
 }
 </script>

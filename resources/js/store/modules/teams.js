@@ -14,18 +14,10 @@ export default {
     },
 
     getters: {
-        loadingTeams: state => {
-            return state.loading
-        },
-        currentTeamId: state => {
-            return state.currentTeamId
-        },
-        availableTeamIds: state => {
-            return state.availableTeamIds
-        },
-        teams: state => {
-            return state.teams
-        },
+        loadingTeams: state => state.loading,
+        currentTeamId: state => state.currentTeamId,
+        availableTeamIds: state => state.availableTeamIds,
+        teams: state => state.teams,
         currentTeam: (state, getters) => {
             const teamId = getters.currentTeamId
             const teams = getters.teams
@@ -56,21 +48,20 @@ export default {
     },
 
     actions: {
-        async fetchTeams({ commit, dispatch }, workspace_id) {
+        async fetchTeams({ commit, state }, workspace_id) {
             // Set the state to loading
             if (workspace_id) {
                 commit('setLoading', true)
 
-                const apiUrl = `/api/workspace/${workspace_id}/teams`
+                const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${workspace_id}/teams`
 
                 let tryCount = 3
                 let succes = false
                 while (tryCount-- > 0 && !succes) {
                     try {
                         const response = await axios.get(`${apiUrl}`)
-                        Team.create({ data: response.data })
+                        state.teams = response.data
                         commit('setLoading', false)
-                        dispatch('instantiateTeams')
                         succes = true
                     } catch (err) {
                         console.log('API error in teams.js :')
@@ -81,68 +72,31 @@ export default {
                 }
             }
         },
-        async createTeam({ commit, dispatch, state }, team) {
+        async insertOrUpdateTeam({ commit, rootGetters, dispatch }, team) {
+            const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             let succes
-
-            let apiURL = `/api/team`
-            let requestMethod = 'post'
-
-            // Instantiate a new team to push to the store
-            const newTeam = {
-                id: null,
-                title: team.title,
-                currency: team.currency,
-                users: [],
-                files: [],
-            }
-            // Update state
-            state.teams.push(newTeam)
-
-            await axios({
-                method: requestMethod,
-                url: apiURL,
-                data: {
-                    team: team,
-                },
-            })
-                .then(async response => {
-                    succes = true
-
-                    // Update the new teams id
-                    newTeam.id = response.data.id
-                    // Add team to Vuex ORM
-                    await commit('updateTeam', response.data)
-                })
-                .catch(err => {
-                    console.log(err)
-                    console.log(err.response)
-                    succes = false
-                })
-            return succes
-        },
-        async updateTeam({ commit }, team) {
-            let succes
-
-            let apiURL = `/api/team`
-            let requestMethod = 'post'
-            if (team.id) {
-                apiURL = `/api/team/${team.id}`
-                requestMethod = 'put'
-            }
 
             let teamToPush = {
-                id: team.id,
                 title: team.title,
                 currency: team.currency,
-                category_scope: team.category_scope,
-                workspace_id: team.workspace_id,
             }
+
+            let apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${workspaceId}/teams`
+            let requestMethod = 'post'
+            if (team.id) {
+                apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/teams/${team.id}`
+                requestMethod = 'put'
+            } else {
+                // Get a unique id for the new team
+                // const newId = await dispatch('persist/useUid', null, { root: true })
+                // // team.id = newId
+                // console.log(newId)
+            }
+
             await axios({
                 method: requestMethod,
-                url: apiURL,
-                data: {
-                    team: teamToPush,
-                },
+                url: apiUrl,
+                data: teamToPush,
             })
                 .then(response => {
                     console.log(response.data)
@@ -151,23 +105,21 @@ export default {
                     commit('updateTeam', teamToPush)
                 })
                 .catch(err => {
+                    console.log(err)
                     console.log(err.response)
                     succes = false
                 })
             return succes
         },
-        async deleteTeam({ commit }, team_id) {
-            commit('deleteTeam', team_id)
-            const apiUrl = `/api/team`
+        async deleteTeam({ commit }, team) {
+            commit('deleteTeam', team)
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/teams/${team.id}`
             let succes
-            await axios
-                .delete(apiUrl, {
-                    data: {
-                        team_id: team_id,
-                    },
-                })
+            await axios({
+                method: 'delete',
+                url: apiUrl,
+            })
                 .then(response => {
-                    console.log(response.data)
                     succes = true
                 })
                 .catch(err => {
@@ -175,68 +127,6 @@ export default {
                     succes = false
                 })
             return succes
-        },
-        async instantiateTeams({ state, rootGetters }) {
-            const adminPermissionLevel = rootGetters['persist/adminPermissionLevel']
-            const teams = Team.query()
-                // .with('users.userTeams')
-                .with('userTeams.user')
-                .with('teamFiles')
-                .with('files')
-                .all()
-            const authUser = AuthUser.query()
-                .with('teams')
-                .first()
-
-            // Create user objects for each team that has all the data we want
-            teams.forEach(team => {
-                team.users = []
-                team.userTeams.forEach(userTeam => {
-                    if (userTeam.user) {
-                        userTeam.user.teamRoleId = userTeam.permission_level
-                        team.users.push(userTeam.user)
-                    }
-                    // userTeam.user.teamRoleId = userTeam.permission_level
-                    // team.users.push(userTeam.user)
-                })
-            })
-
-            if (authUser.role_id >= adminPermissionLevel) {
-                state.teams = teams
-            } else {
-                // Get the users teams
-                let userTeams = []
-                teams.forEach(team => {
-                    if (authUser.teams.find(x => x.id == team.id)) userTeams.push(team)
-                })
-                state.teams = userTeams
-            }
-        },
-        // async instantiateTeam({ state, rootGetters }, team) {
-        //     const newTeam = Team.find(team.id)
-        //     state.teams.push(newTeam)
-        // },
-        async recalcTeamUsers({ state, rootGetters }, teamToRecalc) {
-            const team = Team.query()
-                // .with('users.userTeams')
-                .with('userTeams.user')
-                .find(teamToRecalc.id)
-
-            // Create user objects for each team that has all the data we want
-            team.users = []
-            team.userTeams.forEach(userTeam => {
-                if (userTeam.user) {
-                    userTeam.user.teamRoleId = userTeam.permission_level
-                    team.users.push(userTeam.user)
-                }
-                // else {
-                //     console.log('userTeam lags a user!')
-                //     console.log(userTeam)
-                // }
-            })
-
-            // // Set the team to recalculate to the new team
-            teamToRecalc.users = team.users
         },
     },
 
@@ -251,13 +141,12 @@ export default {
         setAvailableTeamIds(state, ids) {
             state.availableTeamIds = ids
         },
-        updateTeam(state, team) {
-            Team.insert({ data: team })
-        },
-        deleteTeam(state, team_id) {
-            const index = state.teams.findIndex(x => x.id == team_id)
+        updateTeam(state, team) {},
+        deleteTeam(state, team) {
+            // teams.forEach(team => {
+            const index = state.teams.findIndex(x => x.id == team.id)
             state.teams.splice(index, 1)
-            Team.delete(team_id)
+            // })
         },
     },
 }

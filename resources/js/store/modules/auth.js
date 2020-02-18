@@ -7,13 +7,13 @@ export default {
     state: {
         token: localStorage.getItem('user-token') || '',
         status: '',
-        authUser: null,
+        user: null,
     },
 
     getters: {
         isAuthenticated: state => !!state.token,
         authStatus: state => state.status,
-        authUser: state => state.authUser,
+        authUser: state => state.user,
     },
 
     actions: {
@@ -47,7 +47,8 @@ export default {
                 })
             return success
         },
-        async logout({ commit, state }, { email, password }) {
+        async logout({ commit, state }) {
+            console.log('log out froms ate')
             // Remember to add actual logging out request here to the API
             localStorage.removeItem('user-token')
             state.token = ''
@@ -81,7 +82,7 @@ export default {
 
     mutations: {
         setAuthUser(state, user) {
-            state.authUser = user
+            state.user = user
         },
     },
 }

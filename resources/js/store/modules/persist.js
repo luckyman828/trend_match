@@ -21,6 +21,7 @@ export default {
         loadingInit: true,
         viewAdminPermissionLevel: 3,
         adminPermissionLevel: 4,
+        uids: [],
         availableCurrencies: [
             'AED',
             'AFN',
@@ -251,9 +252,11 @@ export default {
             },
         ],
         currentFolderId: null,
+        uids: [],
     },
 
     getters: {
+        uids: state => state.uids,
         currentTeamId: state => {
             return state.currentTeamId
         },
@@ -425,6 +428,17 @@ export default {
     },
 
     actions: {
+        async getUids({ commit, state }) {
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/snowflake/ids?count=2000`
+            await axios.get(apiUrl).then(response => {
+                state.uids = state.uids.concat(response.data)
+            })
+        },
+        async useUid({ commit, state }) {
+            const uid = state.uids[state.uids.length - 1]
+            state.uids.pop()
+            return uid
+        },
         setCurrentTeam({ commit }, id) {
             commit('setCurrentTeam', id)
         },

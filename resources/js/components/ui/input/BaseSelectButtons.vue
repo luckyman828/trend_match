@@ -153,7 +153,9 @@ export default {
 @import '~@/_variables.scss';
 
     .select-buttons {
-        margin-bottom: 12px;
+        &:not(:last-child) {
+            margin-bottom: 12px;
+        }
     }
     .search-wrapper + .wrapper {
         border-top: solid 1px $divider;
@@ -195,9 +197,9 @@ export default {
                 font-size: 12px;
                 font-weight: 400;
                 margin-top: -4px;
-                white-space: nowrap;
+                // white-space: nowrap;
                 width: calc(100% - 16px);
-                overflow: hidden;
+                // overflow: hidden;
             }
             &:hover, &.active {
                 background: $bgContentActive;
@@ -205,7 +207,7 @@ export default {
             &.has-description {
                 label {
                     align-items: flex-start;
-                    .radiomark, .checkbox {
+                    .radiobox, .checkbox {
                         margin-top: 4px;
                     }
                 }

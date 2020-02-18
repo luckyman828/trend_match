@@ -1,8 +1,8 @@
 <template>
     <portal to="modals">
-        <div class="modal-wrapper" :class="[{active: isVisible}, classes]" ref="modalWrapper">
-            <div class="inner" v-if="isVisible">
-                <div class="overlay" :class="{active: isVisible}" @click="hide"></div>
+        <div class="modal-wrapper" :class="[{visible: show},classes]" ref="modalWrapper">
+            <div class="inner" v-if="show">
+                <div class="overlay" @click="close"></div>
 
                 <div class="modal" ref="modal">
                     <div class="header" v-if="$slots['header'] || $scopedSlots['header'] || header || subHeader">
@@ -12,11 +12,11 @@
                         <h2 v-if="header" v-html="header"></h2>
                         <slot name="header"/>
                         <div class="right">
-                            <button class="close md circle" @click="hide"><i class="fal fa-times"></i></button>
+                            <button class="close md circle" @click="close"><i class="fal fa-times"></i></button>
                         </div>
                     </div>
                     <div class="body">
-                        <slot :hide="hide"/>
+                        <slot :close="close"/>
                     </div>
                 </div>
             </div>
@@ -31,45 +31,22 @@ export default {
     props: [
         'header',
         'subHeader',
-        'visibilityKey',
         'classes',
-        'goBack'
+        'goBack',
+        'show'
     ],
     data: function () { return {
-        visible: false,
     }},
     computed: {
-        isVisible() {
-            if (this.visibilityKey != null) {
-                return this.visibilityKey
-            } else {
-                return this.visible
-            }
-        }
     },
     methods: {
-        hide() {
-            this.visible = false
-            this.$emit('hide')
-        },
-        show() {
-            this.visible = true
-            this.$emit('show')
-        },
-        toggle() {
-            // If the modal is already visible - close it
-            if (this.isVisible) {
-                this.hide()
-            } 
-            // Else, show the modaæ
-            else { 
-                this.show()
-            }
+        close() {
+            this.$emit('close')
         },
         hotkeyHandler(event) {
             const key = event.code
             if (key == 'Escape')
-                this.hide()
+                this.close()
         },
     },
     created() {
@@ -87,6 +64,11 @@ export default {
     .modal-wrapper {
         position: fixed;
         z-index: 9;
+        &.visible {
+            .overlay {
+                display: block;
+            }
+        }
         > .inner {
             position: fixed;
             width: 100%;
@@ -95,6 +77,16 @@ export default {
             top: 0;
             overflow: auto;
         }
+    }
+    .overlay {
+        z-index: 11;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: rgba($dark, 50%);
+        display: none;
     }
     .modal {
         position: relative;

@@ -18,19 +18,16 @@ export default {
     name: 'createTeamModal',
     data: function () { return {
         teamToCreate: {
-            title: '',
-            workspace_id: this.currentWorkspaceId,
-            currency: null
+            title: ''
         },
     }},
     computed: {
         ...mapGetters('persist', ['currentWorkspaceId']),
     },
     methods: {
-        ...mapActions('entities/teams', ['createTeam']),
+        ...mapActions('entities/teams', ['insertOrUpdateTeam']),
         onSubmit() {
-            this.teamToCreate.workspace_id = this.currentWorkspaceId
-            this.createTeam(this.teamToCreate)
+            this.insertOrUpdateTeam(this.teamToCreate)
             this.close()
         },
         show() {
