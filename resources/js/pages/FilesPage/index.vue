@@ -26,8 +26,8 @@ export default {
         ...mapGetters('entities/selections', ['loadingSelections']),
         ...mapGetters('persist', ['currentWorkspaceId']),
         loading () {
-            return (this.loadingCollections || this.files == null || this.loadingInit || this.loadingSelections) ? true : false
-            // return (this.loadingCollections || this.files == null || this.loadingInit) ? true : false
+            // return (this.loadingCollections || this.files == null || this.loadingInit || this.loadingSelections) ? true : false
+            return (this.loadingCollections || this.files == null || this.loadingInit) ? true : false
         }
     },
     methods: {

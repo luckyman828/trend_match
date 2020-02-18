@@ -1,8 +1,13 @@
 <template>
-    <div class="app" id="app-component">
+    <div class="login-screen" v-if="$route.name == 'login'">
+        <transition name="fade">
+            <router-view></router-view>
+        </transition>
+    </div>
+    <div class="app" id="app-component" v-else>
         <TheNavbarLogo/>
         <TheNavbar/>
-        <TheSidebar :authUser="authUser"/>
+        <TheSidebar/>
         <div class="main" id="main">
             <div class="container">
                 <transition name="fade">
@@ -10,7 +15,6 @@
                 </transition>
             </div>
         </div>
-        <!-- <portal-target name="modalWrapper" multiple/> -->
     </div>
 </template>
 
@@ -22,7 +26,6 @@ import TheNavbarLogo from './components/layout/TheNavbarLogo'
 import AuthUser from './store/models/AuthUser';
 import TeamFile from './store/models/TeamFile';
 import Team from './store/models/Team';
-import { Query } from '@vuex-orm/core';
 import Workspace from './store/models/Workspace'
 
 export default{
@@ -37,112 +40,130 @@ export default{
     }},
     computed: {
         ...mapGetters('persist', ['userPermissionLevel', 'currentWorkspaceId']),
-        authUser() {
-            return AuthUser.query().with('teams').with('workspaces').first()
-        },
-        workspaces() {
-            return Workspace.all()
-        },
-        teamFiles() {
-            return TeamFile.all()
-        },
-        teams() {
-            return Team.query().with('files').get()
-        },
+        ...mapGetters('auth', ['isAuthenticated']),
+        // authUser() {
+        //     return AuthUser.query().with('teams').with('workspaces').first()
+        // },
+        // workspaces() {
+        //     return Workspace.all()
+        // },
+        // teamFiles() {
+        //     return TeamFile.all()
+        // },
+        // teams() {
+        //     return Team.query().with('files').get()
+        // },
     },
     methods: {
-        ...mapActions('entities/authUser', ['getAuthUser']),
-        ...mapActions('entities/teams', ['fetchTeams']),
-        ...mapActions('entities/users', ['fetchUsers']),
-        ...mapActions('entities/userTeams', ['fetchUserTeams']),
-        ...mapActions('entities/workspaces', ['fetchWorkspaces']),
-        ...mapActions('entities/folders', ['fetchFolders']),
-        ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
-        ...mapActions('entities/teamFiles', ['fetchTeamFiles']),
-        ...mapActions('entities/roles', ['fetchRoles']),
-        ...mapActions('entities/collections', ['fetchCollections']),
-        ...mapActions('entities/taskTeams', ['fetchTaskTeams']),
-        ...mapActions('entities/phases', ['fetchPhases']),
-        ...mapActions('entities/tasks', ['fetchTasks']),
-        ...mapActions('entities/taskParents', ['fetchTaskParents']),
-        ...mapActions('entities/fileTasks', ['fetchFileTasks']),
-        ...mapActions('entities/actions', ['updateAction']),
-        ...mapActions('entities/selections', ['fetchSelections']),
-        ...mapActions('persist', ['setCurrentTeam', 'setTeamFilter', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']),
-        async fetchInitialData() {
-            // Get user
-            console.log('App: Getting initial data')
-            await Promise.all([
-                this.getAuthUser(),
-                this.fetchWorkspaces(),
-            ])
-            this.setUserPermissionLevel(this.authUser.role_id)
-            if (this.authUser.workspaces.length > 1) console.log('multiple workspaces!');
-            this.setCurrentWorkspace({workspace_id: this.workspaces[0].id, user_id: this.authUser.id})
-            // this.setCurrentWorkspace({workspace_id: this.authUser.workspaces[0].id, user_id: this.authUser.id})
-        },
-        async initRequiresWorkspace() {
-            // Only get data for the current workspace
-            console.log('getting init data from workspace: '+ this.currentWorkspaceId)
-            this.setLoadingInit(true)
-            if (this.authUser) {
-                await (
-                    this.fetchWorkspaceUsers(this.currentWorkspaceId),
-                    this.fetchFolders(this.currentWorkspaceId),
-                    this.fetchTeams(this.currentWorkspaceId),
-                    this.fetchUserTeams(this.currentWorkspaceId),
-                    this.fetchTeamFiles(this.currentWorkspaceId),
-                    this.fetchTaskTeams(this.currentWorkspaceId),
-                    this.fetchCollections(this.currentWorkspaceId),
-                    this.fetchPhases(this.currentWorkspaceId),
-                    this.fetchTasks(this.currentWorkspaceId),
-                    this.fetchTaskParents(this.currentWorkspaceId),
-                    this.fetchFileTasks(this.currentWorkspaceId),
-                    this.fetchRoles(),
-                    this.fetchSelections(this.currentWorkspaceId)
-                )
+        ...mapActions('auth', ['getAuthUser', 'logout']),
+        // ...mapActions('entities/teams', ['fetchTeams']),
+        // ...mapActions('entities/users', ['fetchUsers']),
+        // ...mapActions('entities/userTeams', ['fetchUserTeams']),
+        // ...mapActions('entities/workspaces', ['fetchWorkspaces']),
+        // ...mapActions('entities/folders', ['fetchFolders']),
+        // ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
+        // ...mapActions('entities/teamFiles', ['fetchTeamFiles']),
+        // ...mapActions('entities/roles', ['fetchRoles']),
+        // ...mapActions('entities/collections', ['fetchCollections']),
+        // ...mapActions('entities/taskTeams', ['fetchTaskTeams']),
+        // ...mapActions('entities/phases', ['fetchPhases']),
+        // ...mapActions('entities/tasks', ['fetchTasks']),
+        // ...mapActions('entities/taskParents', ['fetchTaskParents']),
+        // ...mapActions('entities/fileTasks', ['fetchFileTasks']),
+        // ...mapActions('entities/actions', ['updateAction']),
+        // ...mapActions('entities/selections', ['fetchSelections']),
+        // ...mapActions('persist', ['setCurrentTeam', 'setTeamFilter', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']),
+        // async fetchInitialData() {
+        //     // Get user
+        //     console.log('App: Getting initial data')
+        //     await Promise.all([
+        //         this.getAuthUser(),
+        //         this.fetchWorkspaces(),
+        //     ])
+        //     this.setUserPermissionLevel(this.authUser.role_id)
+        //     if (this.authUser.workspaces.length > 1) console.log('multiple workspaces!');
+        //     this.setCurrentWorkspace({workspace_id: this.workspaces[0].id, user_id: this.authUser.id})
+        //     // this.setCurrentWorkspace({workspace_id: this.authUser.workspaces[0].id, user_id: this.authUser.id})
+        // },
+        // async initRequiresWorkspace() {
+        //     // Only get data for the current workspace
+        //     console.log('getting init data from workspace: '+ this.currentWorkspaceId)
+        //     this.setLoadingInit(true)
+        //     if (this.authUser) {
+        //         await (
+        //             this.fetchWorkspaceUsers(this.currentWorkspaceId),
+        //             this.fetchFolders(this.currentWorkspaceId),
+        //             this.fetchTeams(this.currentWorkspaceId),
+        //             this.fetchUserTeams(this.currentWorkspaceId),
+        //             this.fetchTeamFiles(this.currentWorkspaceId),
+        //             this.fetchTaskTeams(this.currentWorkspaceId),
+        //             this.fetchCollections(this.currentWorkspaceId),
+        //             this.fetchPhases(this.currentWorkspaceId),
+        //             this.fetchTasks(this.currentWorkspaceId),
+        //             this.fetchTaskParents(this.currentWorkspaceId),
+        //             this.fetchFileTasks(this.currentWorkspaceId),
+        //             this.fetchRoles()
+        //             // this.fetchSelections(this.currentWorkspaceId)
+        //         )
                 
-                if (this.authUser.role_id >= 5) {
-                    this.setCurrentTeam(0)
-                    this.setTeamFilter(0)
-                }
-                else if (this.authUser.teams.length > 0) {
-                    this.setCurrentTeam(this.authUser.teams[0].id)
-                    this.setTeamFilter(this.authUser.teams[0].id)
-                }
-                this.setLoadingInit(false)
+        //         if (this.authUser.role_id >= 5) {
+        //             this.setCurrentTeam(0)
+        //             this.setTeamFilter(0)
+        //         }
+        //         else if (this.authUser.teams.length > 0) {
+        //             this.setCurrentTeam(this.authUser.teams[0].id)
+        //             this.setTeamFilter(this.authUser.teams[0].id)
+        //         }
+        //         this.setLoadingInit(false)
                 
-            } else {
-                this.loadingOverwrite = true
-            }
-        }
+        //     } else {
+        //         this.loadingOverwrite = true
+        //     }
+        // }
     },
     watch : {
-        authUser(newVal) {
-            if (newVal.teams != null) {
-                if (newVal.teams.length > 0) {
-                    if (this.authUser.role_id >= 3) {
-                        this.setCurrentTeam(0)
-                    }
-                    else {
-                        this.setCurrentTeam(this.authUser.teams[0].id)
-                        this.setLoadingInit(false)
-                    }
-                }
-            }
-        },
-        currentWorkspaceId: async function(newVal, oldVal) {
-            console.log('There was a change in workspace!')
-            if (oldVal && oldVal != newVal) {
-                await this.initRequiresWorkspace()
-                this.fetchUsers(this.currentWorkspaceId)
-            }
-        }
+        // authUser(newVal) {
+        //     if (newVal.teams != null) {
+        //         if (newVal.teams.length > 0) {
+        //             if (this.authUser.role_id >= 3) {
+        //                 this.setCurrentTeam(0)
+        //             }
+        //             else {
+        //                 this.setCurrentTeam(this.authUser.teams[0].id)
+        //                 this.setLoadingInit(false)
+        //             }
+        //         }
+        //     }
+        // },
+        // currentWorkspaceId: async function(newVal, oldVal) {
+        //     console.log('There was a change in workspace!')
+        //     if (oldVal && oldVal != newVal) {
+        //         await this.initRequiresWorkspace()
+        //         this.fetchUsers(this.currentWorkspaceId)
+        //     }
+        // }
     },
     created() {
-        this.fetchInitialData()
-        // Fetch data based on the Auth User
-        .then(this.initRequiresWorkspace)
+        // this.fetchInitialData()
+        // // Fetch data based on the Auth User
+        // .then(this.initRequiresWorkspace)
+
+        // Check if the user is authorized. If that is the case get the auth user
+        if (this.isAuthenticated) {
+            this.getAuthUser()
+        }
+        
+        // Check if the logged in user is no longer authorized
+        axios.interceptors.response.use(undefined, function (err) {
+            return new Promise(function (resolve, reject) {
+            if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
+            // if you ever get an unauthorized, logout the user
+                this.logout()
+            // you can also redirect to /login if needed !
+            }
+            throw err;
+            });
+        });
     },
 }
 </script>

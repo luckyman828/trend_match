@@ -2,9 +2,7 @@ require('./bootstrap')
 
 window.Vue = require('vue')
 import store from './store/index'
-
-import VueRouter from 'vue-router'
-Vue.use(VueRouter)
+import router from './router'
 
 // import VueDragscroll from 'vue-dragscroll'
 // Vue.use(VueDragscroll)
@@ -71,6 +69,12 @@ requireComponent.keys().forEach(fileName => {
     )
 })
 
+// Check if the user is logged in
+const token = localStorage.getItem('user-token')
+if (token) {
+    axios.defaults.headers.common['Authorization'] = token
+}
+
 // Define global filters
 Vue.filter('truncate', function(value, limit) {
     if (value.length > limit) {
@@ -81,38 +85,6 @@ Vue.filter('truncate', function(value, limit) {
 })
 Vue.filter('formatDate', function(value) {
     return new Date(value).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
-})
-
-// Define route components
-import TeamsPage from './pages/TeamsPage'
-import SelectionPage from './pages/SelectionPage'
-import FilesPage from './pages/FilesPage'
-import EditFilePage from './pages/EditFilePage'
-
-const routes = [
-    { path: '/file/:fileId/edit', name: 'editFile', component: EditFilePage },
-    { path: '/files', name: 'files', component: FilesPage },
-    { path: '/teams', name: 'teams', component: TeamsPage },
-    { path: '/users', name: 'users', component: TeamsPage },
-    { path: '/file/:fileId/:selectionId', name: 'selection', component: SelectionPage },
-    { path: '*', redirect: '/files' },
-]
-
-const router = new VueRouter({
-    routes, // short for `routes: routes`
-    // mode: 'history' // remove '#' from urls. To enable this we need some server configuration
-    // link here: https://router.vuejs.org/guide/essentials/history-mode.html#example-server-configurations
-})
-
-router.beforeEach((to, from, next) => {
-    const authUser = window.auth_user
-    // Guard paths
-    // Guard teams
-    if (to.path == '/teams' && authUser.role_id < 2) next('/files'), console.log('access denied')
-    // Guard file edit
-    else if (to.path.startsWith('/file') && to.path.endsWith('edit') && authUser.role_id < 3)
-        next('/files'), console.log('access denied')
-    else next()
 })
 
 const app = new Vue({

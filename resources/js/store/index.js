@@ -4,6 +4,7 @@ import VuexORM from '@vuex-orm/core'
 import database from './database'
 // import authUser from './modules/authUser'
 import persist from './modules/persist'
+import auth from './modules/auth'
 import VuexORMisDirtyPlugin from '@vuex-orm/plugin-change-flags'
 VuexORM.use(VuexORMisDirtyPlugin)
 
@@ -14,8 +15,8 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
     plugins: [VuexORM.install(database)],
     modules: {
-        // authUser
         persist,
+        auth,
     },
 })
 

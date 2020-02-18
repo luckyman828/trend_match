@@ -66,7 +66,7 @@ export default {
         goToEditSingle() {
             this.$router.push({ name: 'editFile', params: { fileId: this.file.id } })
         },
-    }
+    },
 }
 </script>
 
