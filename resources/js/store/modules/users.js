@@ -117,9 +117,8 @@ export default {
             axios.put(apiUrl, { name: user.name, email: user.email })
         },
         async updateUserPassword({ commit }, user) {
-            console.log()
             const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/admins/users/${user.id}/change-password`
-            axios.put(apiUrl, { password: user.password })
+            axios.post(apiUrl, { password: user.password })
         },
     },
 
