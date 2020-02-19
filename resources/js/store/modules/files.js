@@ -97,6 +97,19 @@ export default {
                     console.log(err)
                 })
         },
+        async deleteFile({ commit }, fileId) {
+            commit('deleteFile', fileId)
+
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${fileId}`
+            await axios
+                .delete(apiUrl)
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(err => {
+                    console.log(err.response)
+                })
+        },
         async uploadFile({ commit, dispatch }, newFile) {
             let uploadSucces = true
             // Check if we have any products to upload
@@ -227,22 +240,6 @@ export default {
                 })
             return uploadSucces
         },
-        async deleteFile({ commit }, fileId) {
-            commit('deleteFile', fileId)
-
-            await axios
-                .delete(`/api/file`, {
-                    data: {
-                        file_id: fileId,
-                    },
-                })
-                .then(response => {
-                    console.log(response.data)
-                })
-                .catch(err => {
-                    console.log(err.response)
-                })
-        },
         async resetFile({ commit }, fileId) {
             console.log('resetting file!')
 
@@ -301,7 +298,9 @@ export default {
             state.filesUpdated = bool
         },
         deleteFile(state, fileId) {
-            Collection.delete(fileId)
+            // Remove the deleted item from the current array
+            const index = state.files.findIndex(x => x.id == fileId)
+            state.files.splice(index, 1)
         },
         setAvailableFileIds(state, fileIds) {
             state.availableFileIds = fileIds

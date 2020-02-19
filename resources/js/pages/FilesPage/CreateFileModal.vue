@@ -1,5 +1,5 @@
 <template>
-    <BaseModal :classes="['create-file-modal', currentScreen.name == 'mapFields' ? 'map-fields' : '']" 
+    <BaseModal :classes="['create-file-modal', currentScreen.name == 'mapFields' ? 'map-fields' : '']" :show="show" @close="$emit('close')"
     ref="modal" :header="currentScreen.header" :goBack="currentScreen.name == 'mapFields'" @goBack="onGoBack">
         <form @submit.prevent enctype="multipart/form-data">
 
@@ -11,7 +11,7 @@
 
                 <div class="form-element">
                     <label for="file-name-input">File name* (required)</label>
-                    <input type="text" id="file-name-input" class="input-wrapper" placeholder="unnamed file" v-model="newFile.title">
+                    <input type="text" id="file-name-input" class="input-wrapper" placeholder="unnamed file" v-model="newFile.name">
                 </div>
                 <div class="form-element">
                     <BaseDroparea multiple="true" accept=".csv, text/csv" ref="droparea"
@@ -48,11 +48,11 @@
                     </BaseDroparea>
                 </div>
                 <div class="form-controls">
-                    <button type="button" class="lg primary ghost" :disabled="newFile.title.length < 1"
+                    <button type="button" class="lg primary ghost" :disabled="newFile.name.length < 1"
                     @click="createEmpty">
                         <span>Create Empty</span>
                     </button>
-                    <button type="button" class="lg primary" :disabled="newFile.files.length <= 0 || newFile.title.length <= 0"
+                    <button type="button" class="lg primary" :disabled="newFile.files.length <= 0 || newFile.name.length <= 0"
                     @click="onGoToMapFields">
                         <span>Next: Map fields</span>
                     </button>
@@ -247,11 +247,17 @@ import Phase from '../../store/models/Phase';
 
 export default {
     name: 'createFileModal',
+    props: [
+        'show'
+    ],
     data: function () { return {
         currentScreen: {name: 'chooseFiles', header: 'Create new file'},
         newFile: {
-            title: '',
+            name: '',
+            type: 'File',
             files: [],
+            owner_count: 0,
+            children_count: 0,
         },
         uploadingFile: false,
         csvDelimiter: ';',
@@ -324,7 +330,8 @@ export default {
         }]
     }},
     computed: {
-        ...mapGetters('persist', ['currentWorkspaceId', 'currentFolderId']),
+        ...mapGetters('workspaces', ['currentWorkspace']),
+        ...mapGetters('files', ['currentFolder']),
         submitValid() {
             //assume true
             let valid = true
@@ -347,7 +354,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('entities/collections', ['uploadFile']),
+        ...mapActions('files', ['insertOrUpdateFile', 'uploadFile']),
         previewExampleValue(newValue, fieldName) {
             const files = this.availableFiles
             // First check that we have any previews available, and that we have a new value defined
@@ -456,23 +463,13 @@ export default {
         createEmpty() {
             // Create a copy of the new file object
             const newFile = JSON.parse(JSON.stringify(this.newFile))
-            newFile.folder_id = this.currentFolderId
-            newFile.workspace_id = this.currentWorkspaceId
-            newFile.id = this.$uuid.v4()
-            newFile.phase = Phase.query().first().id
-            this.uploadingFile = true
-            this.uploadFile(newFile)
-            .then(success => {
-                this.uploadingFile = false
-
-                // Close modal on succes
-                if (success) {
-                    this.$refs.modal.hide()
-                    // Reset modal
-                    this.reset()
-                }
-                else window.alert('Something went wrong. Please try again')
-            })
+            newFile.id = null
+            newFile.parent_id = this.currentFolder ? this.currentFolder.id : 0
+            newFile.workspace_id = this.currentWorkspace.id
+            this.insertOrUpdateFile(newFile)
+            // Reset modal
+            this.reset()
+            this.$emit('hide')
         },
         onGoToMapFields() {
             //Change the current screen
@@ -811,8 +808,8 @@ export default {
 
             // Set new file data
             const newFile = this.newFile
-            newFile.folder_id = this.currentFolderId
-            newFile.workspace_id = this.currentWorkspaceId
+            newFile.folder_id = this.currentFolder.id
+            newFile.workspace_id = this.currentWorkspace.id
             newFile.id = this.$uuid.v4()
             newFile.products = this.instantiateProducts(newFile.id)
             newFile.phase = Phase.query().first().id
@@ -825,7 +822,7 @@ export default {
 
                 // Close modal on succes
                 if (success) {
-                    this.$refs.modal.hide()
+                    this.$emit('hide')
                     // Reset modal
                     this.reset()
                 }

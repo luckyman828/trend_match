@@ -19,7 +19,7 @@
                 <!-- <th>Deadline <i class="fas fa-sort"></i></th> -->
                 <th>Items <i class="fas fa-sort"></i></th>
                 <th>Owners <i class="fas fa-sort"></i></th>
-                <th>Status <i class="fas fa-sort"></i></th>
+                <!-- <th>Status <i class="fas fa-sort"></i></th> -->
                 <th class="action">Action</th>
             </template>
             <template v-slot:body>
@@ -42,7 +42,7 @@
                             <i class="far fa-user"></i><span>{{folder.owner_count || 0}}</span>
                         </button>
                     </td>
-                    <td class="status">-</td>
+                    <!-- <td class="status">-</td> -->
                     <td class="action">
                         <button class="invisible ghost-hover" @click="showContextMenu($event, folder, 'folder')"><i class="fas fa-ellipsis-h"></i></button>
                     </td>
@@ -57,13 +57,13 @@
                     <td v-else class="title clickable" @click="showSingleFile(file)"><i class="fas fa-file dark15"></i> {{file.name}}</td>
                     <td class="modified">-</td>
                     <!-- <td class="deadline">{{file.end_date}}</td> -->
-                    <td class="items">-</td>
+                    <td class="items">{{file.children_count || '-'}}</td>
                     <td class="owners">
                         <button class="ghost editable sm" @click="showFileOwnersFlyin(file)">
-                            <i class="far fa-user"></i><span>{{file.owners.length}}</span>
+                            <i class="far fa-user"></i><span>{{file.owner_count || 0}}</span>
                         </button>
                     </td>
-                    <td class="status">Stage {{file.phase.id}}</td>
+                    <!-- <td class="status">-</td> -->
                     <td class="action">
                         <button class="invisible ghost-hover" @click="showContextMenu($event, file, 'file')"><i class="fas fa-ellipsis-h"></i></button>
                     </td>
@@ -374,10 +374,7 @@ export default {
             if (window.confirm(
                 'Are you sure you want to delete this folder?\nThe folder and all of its contents will be permanently deleted.'
             )) {
-                this.deleteFolder(folderId)
-                // Remove the moved item from the current array
-                const currentItemIndex = this.files.findIndex(x => x.id == folderId)
-                this.files.splice(currentItemIndex, 1)
+                this.deleteFile(folderId)
             }
         },
         onNewFolder() {
@@ -456,9 +453,6 @@ export default {
                 'Are you sure you want to delete this file?\nAll comments, requests and actions will be permanently deleted.'
             )) {
                 this.deleteFile(fileId)
-                // Remove the deleted item from the current array
-                const currentItemIndex = this.folder.files.findIndex(x => x.id == fileId)
-                this.folder.files.splice(currentItemIndex, 1)
             }
         },
         onRenameFile(file, index) {

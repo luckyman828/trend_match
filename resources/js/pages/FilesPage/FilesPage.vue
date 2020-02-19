@@ -1,19 +1,21 @@
 <template>
     <div class="files-page">
         <div class="breadcrumbs">
-            <button @click="setCurrentFolder(null)" class="invisible white-hover icon-left"><i class="far fa-building"></i> {{currentWorkspace.name}}</button>
+            <button @click="setCurrentFolder(null)" class="invisible white-hover">
+                <i class="far fa-building"></i><span>{{currentWorkspace.title}}</span>
+            </button>
             <div class="breadcrumb" v-for="(folder, index) in path" :key="folder.id">
                 <template v-if="folder.id != currentFolderId">
                     <button @click="setCurrentFolder(folder, index)" class="invisible white-hover icon-left">
                         <i class="far fa-folder"></i>
-                        {{folder.title}}
+                        <span>{{folder.title}}</span>
                         <!-- <i class="fas fa-caret-down contextual-menu-icon"></i> -->
                     </button>
                 </template>
                 <template v-else>
                     <button class="invisible white-hover icon-left">
                         <i class="far fa-folder-open"></i>
-                        {{folder.title}}
+                        <span>{{folder.title}}</span>
                         <!-- <i class="fas fa-caret-down contextual-menu-icon"></i> -->
                     </button>
                 </template>
