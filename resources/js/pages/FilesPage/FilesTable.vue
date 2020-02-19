@@ -52,7 +52,7 @@
                     <td v-if="toEdit && toEdit.item.id == file.id && toEdit.type == 'file' && toEdit.field == 'title'" class="title">
                         <BaseEditInputWrapper :activateOnMount="true" :type="'text'"
                             :value="toEdit.item.name" :oldValue="file.name" v-model="toEdit.item.name"
-                            @submit="updateFile(toEdit.item); clearToEdit()" @cancel="clearToEdit()"/>
+                            @submit="insertOrUpdateFile(toEdit.item); clearToEdit()" @cancel="clearToEdit()"/>
                         </td>
                     <td v-else class="title clickable" @click="showSingleFile(file)"><i class="fas fa-file dark15"></i> {{file.name}}</td>
                     <td class="modified">-</td>
@@ -291,7 +291,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('files', ['insertOrUpdateFile', 'deleteFile', 'updateFile', 'uploadToExistingFile']),
+        ...mapActions('files', ['insertOrUpdateFile', 'deleteFile', 'uploadToExistingFile']),
         ...mapMutations('files', ['removeUnsavedFiles']),
         ...mapActions('folders', ['deleteFolder', 'updateFolder']),
         showFileOwnersFlyin(file) {
@@ -346,7 +346,7 @@ export default {
                 // Set the folder id
                 item.folder_id = this.folderToMoveToId
                 item.catalog_id = this.folderToMoveToId
-                this.updateFile(item)
+                this.insertOrUpdateFile(item)
 
                 // Remove the moved item from the current array
                 const currentItemIndex = this.folder.files.findIndex(x => x.id == item.id)

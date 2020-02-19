@@ -2,19 +2,19 @@
     <div class="selections-table-row">
         <tr class="selection" @contextmenu.prevent="emitShowContext" @click="onClick">
             <td class="expand" :class="{active: childrenExpanded}" @click.stop="toggleExpanded" :style="indent">
-                <span class="square invisible" v-if="selection.children.length > 0">
+                <span class="square invisible" v-if="selection.children_count > 0">
                     <i class="fas fa-caret-down"></i>
                 </span>
             </td>
             <td class="title" v-if="selectionToEdit && selectionToEdit.selection.id == selection.id && selectionToEdit.field == 'name'" :style="selectionWidth">
-                <i v-if="selection.master" class="fa-file-certificate master" :class="selection.id ? 'fad' : 'far'"></i> 
+                <i v-if="selection.is_master" class="fa-file-certificate master" :class="selection.id ? 'fad' : 'far'"></i> 
                 <i v-else class="fa-file light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <BaseEditInputWrapper activateOnMount=true type="text"
                 :value="selectionToEdit.selection.name" :oldValue="selection.name" v-model="selectionToEdit.selection.name"
                 @submit="onUpdateSelection(selection); $emit('submitToEdit')" @cancel="$emit('cancelToEdit', selection)"/>
             </td>
             <td v-else class="title clickable" @click="onGoToSelection" :style="selectionWidth">
-                <i v-if="selection.master" class="fa-file-certificate master" :class="selection.id ? 'fad' : 'far'"></i> 
+                <i v-if="selection.is_master" class="fa-file-certificate master" :class="selection.id ? 'fad' : 'far'"></i> 
                 <i v-else class="fa-file light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <span :title="selection.name">{{selection.name}}</span>
             </td>
@@ -24,7 +24,7 @@
             <td class="nd">-</td>
             <td class="users">
                 <button class="ghost editable sm" @click="$emit('showSelectionUsersFlyin', selection)">
-                    <i class="far fa-user"></i><span>{{selection.users.length}}</span>
+                    <i class="far fa-user"></i><span>{{selection.user_count}}</span>
                 </button>
             </td>
             <td class="status">
@@ -79,7 +79,7 @@ export default {
         }
     },
     methods: {
-        ...mapGetters('entities/subfiles', ['updateSelection']),
+        ...mapActions('selections', ['insertOrUpdateSelection']),
         toggleExpanded() {
             this.childrenExpanded = !this.childrenExpanded
         },
@@ -121,7 +121,7 @@ export default {
             this.$forceUpdate() // <-- Remember to remove
         },
         onUpdateSelection(selection) {
-            this.updateSelection
+            this.insertOrUpdateSelection(selection)
         }
     }
 }

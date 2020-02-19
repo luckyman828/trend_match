@@ -52,12 +52,15 @@
                     :optionNameKey="'name'" :search="true"/>
                 </div>
                 <div class="item-group">
-                    <div class="item">
+                    <div class="item-wrapper">
                         <button class="primary" :class="{disabled: usersToAdd.length < 1}" 
                         @click="onAddUsersToFile();usersToAdd = [];slotProps.hide()">
                             <span>Add <template v-if="usersToAdd.length > 0">{{usersToAdd.length}} 
                             </template>user<template v-if="usersToAdd.length > 1">s</template></span></button>
-                        <button class="invisible ghost-hover" @click="slotProps.hide(); usersToAdd = []"><span>Cancel</span></button>
+                        <button class="invisible ghost-hover" style="margin-left: 8px;"
+                        @click="slotProps.hide(); usersToAdd = []">
+                            <span>Cancel</span>
+                        </button>
                     </div>
                 </div>
             </template>

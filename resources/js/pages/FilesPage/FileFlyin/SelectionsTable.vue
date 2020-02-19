@@ -284,12 +284,18 @@ export default {
             // First check that we don't already have an unsaved new selection
             if (this.selections.find(x => x.id == null)) return
             // Else instantiate a new master object in the table
-            const newSelection = await Selection.new()
-            console.log(newSelection)
+            const newSelection = {
+                id: null,
+                title: '',
+                parent_id: null,
+                is_master: true,
+                user_count: 0,
+            }
             // Push new selection to the parent
             if (parent) {
                 // If we are creating a sbu selection
                 newSelection.name = 'New Sub Selection'
+                newSelection.parent_id = parent.id
                 parent.children.push(newSelection)
                 // Expand the selection the new selection is added to
                 // Loop through the children to find the selectionrow in question
@@ -297,6 +303,7 @@ export default {
             } else {
                 // If no parent, we are creating a new master
                 newSelection.name = 'New Master Selection'
+                newSelection.parent_id = 0
                 this.selections.push(newSelection)
             }
             // Wait for changes to the dom to take effect

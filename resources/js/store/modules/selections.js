@@ -64,6 +64,20 @@ export default {
                 }
             }
         },
+        async fetchSelectionUsers({ commit }, selection) {
+            // Get owners for file
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selections.id}/users`
+            await axios.get(apiUrl).then(response => {
+                Vue.set(selection, 'users', response.data)
+            })
+        },
+        async fetchSelectionTeams({ commit }, selection) {
+            // Get owners for file
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selections.id}/teams`
+            await axios.get(apiUrl).then(response => {
+                Vue.set(selection, 'teams', response.data)
+            })
+        },
         addUsersToSelection({ commit }, { selection, usersToAdd }) {
             // Commit mutation to state
             commit('addUsersToSelection', { selection, usersToAdd })
@@ -84,12 +98,42 @@ export default {
             commit('removeTeamFromSelection', { selection, team })
             // Send request to API
         },
-        updateSelection({ commit }, selection) {},
+        async insertOrUpdateSelection({ commit }, selection) {
+            // Assume update
+            let apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selection.id}`
+            let requestMethod = 'put'
+            let requestBody = selection
+            // Check if we are inserting or updating
+            if (!selection.id) {
+                // If we are inserting
+                commit('insertSelection', selection)
+                requestMethod = 'post'
+                apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections`
+            } else {
+                commit('updateSelection', selection)
+            }
+
+            await axios({
+                method: requestMethod,
+                url: apiUrl,
+                data: requestBody,
+            }).then(async response => {
+                // Set the selections ID if not already set
+                if (!selection.id) selection.id = response.data.id
+            })
+        },
     },
 
     mutations: {
         setLoading(state, bool) {
             state.loading = bool
+        },
+        insertSelection(state, selection) {
+            // state.files.push(file)
+        },
+        updateSelection(state, selection) {
+            // const oldFile = state.files.find(x => x.id == file.id)
+            // Object.assign(oldFile, file)
         },
         setCurrentSelectionId(state, id) {
             state.currentSelectionId = id

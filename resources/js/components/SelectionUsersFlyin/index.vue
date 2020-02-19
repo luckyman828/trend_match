@@ -5,8 +5,8 @@
             @close="$emit('close')"/>
         </template>
         <template v-slot>
-            <!-- <SelectionTeamsTable v-if="show" :selection="selection"/> -->
-            <SelectionUsersTable style="margin-top: 40px;" v-if="show" :selection="selection"/>
+            <!-- <SelectionTeamsTable v-if="show && !loading" :selection="selection"/> -->
+            <SelectionUsersTable style="margin-top: 40px;" v-if="show && !loading" :selection="selection"/>
         </template>
     </BaseFlyin>
 </template>
@@ -25,8 +25,25 @@ export default {
         'show',
         'selection',
     ],
+    data: function() {return {
+        loadingUsers: true,
+    }},
+    watch: {
+        selection: async function(newVal, oldVal) {
+            if (!oldVal || newVal.id != oldVal.id) {
+                // If we have a new selection
+                // -> Fetch selections users
+                this.loadingUsers = true
+                await this.fetchSelectionUsers(this.selection)
+                this.loadingUsers = false
+            }
+        }
+    },
     computed: {
-        ...mapGetters('users', ['users'])
+        ...mapGetters('users', ['users']),
+        loading() {
+            return loadingUsers
+        }
     },
     methods: {
         ...mapActions('users', ['fetchUsers'])
