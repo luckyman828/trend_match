@@ -8,6 +8,8 @@ import auth from './modules/auth'
 import workspaces from './modules/workspaces'
 import teams from './modules/teams'
 import users from './modules/users'
+import files from './modules/files'
+import folders from './modules/folders'
 import VuexORMisDirtyPlugin from '@vuex-orm/plugin-change-flags'
 VuexORM.use(VuexORMisDirtyPlugin)
 
@@ -23,6 +25,8 @@ const store = new Vuex.Store({
         workspaces,
         teams,
         users,
+        files,
+        folders,
     },
 })
 

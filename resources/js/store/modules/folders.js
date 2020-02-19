@@ -5,45 +5,14 @@ export default {
     namespaced: true,
 
     state: {
-        loading: true,
+        currentFolder: null,
     },
 
     getters: {
-        loadingFolders: state => {
-            return state.loading
-        },
-        folders: state => {
-            const folders = Folder.query()
-                .with('folders.folders|files') // Get the folders and files of the the first level of subfolders
-                .with('files|parent')
-                .all()
-            return folders
-        },
+        currentFolder: state => state.currentFolder,
     },
 
     actions: {
-        async fetchFolders({ commit }, workspace_id) {
-            // Set the state to loading
-            commit('setLoading', true)
-
-            const apiUrl = `/api/workspace/${workspace_id}/folders`
-
-            let tryCount = 3
-            let succes = false
-            while (tryCount-- > 0 && !succes) {
-                try {
-                    const response = await axios.get(`${apiUrl}`)
-                    Folder.create({ data: response.data })
-                    commit('setLoading', false)
-                    succes = true
-                } catch (err) {
-                    console.log('API error in folders.js :')
-                    console.log(err.response)
-                    console.log(`Trying to fetch again. TryCount = ${tryCount}`)
-                    if (tryCount <= 0) throw err
-                }
-            }
-        },
         async updateFolder({ commit }, folderToUpdate) {
             // If the folder has an ID, send a PUT request to update the existing record.
             // Else send POST request to create a new folder.

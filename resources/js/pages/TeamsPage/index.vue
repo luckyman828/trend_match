@@ -22,7 +22,7 @@ export default {
         ...mapGetters('teams', ['loadingTeams']),
         ...mapGetters('users', ['loadingUsers']),
         loading () {
-            return (this.loadingTeams || this.loadingUsers) ? true : false
+            return (this.loadingTeams || this.loadingUsers)
         },
     },
     methods: {

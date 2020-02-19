@@ -17,27 +17,26 @@ export default {
     },
 
     actions: {
-        async fetchUsers({ commit, state }, workspace_id) {
+        async fetchUsers({ commit, state, rootGetters }) {
+            const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Set the state to loading
-            if (workspace_id) {
-                commit('setLoading', true)
+            commit('setLoading', true)
 
-                const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${workspace_id}/users`
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${workspaceId}/users`
 
-                let tryCount = 3
-                let succes = false
-                while (tryCount-- > 0 && !succes) {
-                    try {
-                        const response = await axios.get(`${apiUrl}`)
-                        state.users = response.data
-                        commit('setLoading', false)
-                        succes = true
-                    } catch (err) {
-                        console.log('API error in teams.js :')
-                        console.log(err)
-                        console.log(`Trying to fetch again. TryCount = ${tryCount}`)
-                        if (tryCount <= 0) throw err
-                    }
+            let tryCount = 3
+            let succes = false
+            while (tryCount-- > 0 && !succes) {
+                try {
+                    const response = await axios.get(`${apiUrl}`)
+                    state.users = response.data
+                    commit('setLoading', false)
+                    succes = true
+                } catch (err) {
+                    console.log('API error in teams.js :')
+                    console.log(err)
+                    console.log(`Trying to fetch again. TryCount = ${tryCount}`)
+                    if (tryCount <= 0) throw err
                 }
             }
         },

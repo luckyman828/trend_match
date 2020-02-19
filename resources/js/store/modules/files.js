@@ -8,39 +8,20 @@ export default {
 
     state: {
         loading: true,
+        files: [],
         filesUpdated: false,
         availableFileIds: [],
         currentFile: null,
+        currentFolder: null,
     },
 
     getters: {
-        loadingCollections: state => {
-            return state.loading
-        },
-        filesUpdated: state => {
-            return state.filesUpdated
-        },
-        availableFileIds: state => {
-            return state.availableFileIds
-        },
-        currentFile: state => {
-            return state.currentFile
-        },
-        files: (state, getters, rootState, rootGetters) => {
-            if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
-                const files = Collection.query()
-                    .with('selections')
-                    .all()
-                return files
-            }
-        },
-        // currentFile: (state, getters, rootState, rootGetters) => {
-        //     if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
-        //         const currentFileId = rootGetters['persist/currentFileId']
-        //         const files = getters.files
-        //         return files != null ? files.find(x => x.id == currentFileId) : null
-        //     }
-        // },
+        loadingFiles: state => state.loading,
+        filesUpdated: state => state.filesUpdated,
+        availableFileIds: state => state.availableFileIds,
+        currentFile: state => state.currentFile,
+        currentFolder: state => state.currentFolder,
+        files: state => state.files,
         nextFileId: (state, getters, rootState, rootGetters) => {
             const availableIds = getters.availableFileIds
             const currentId = rootGetters['persist/currentFileId']
@@ -63,54 +44,58 @@ export default {
                 }
             }
         },
-        currentTeamUsers(state, getters, rootState, rootGetters) {
-            if (!rootGetters['persist/loadingInit'] && !rootGetters['products/loadingProducts']) {
-                const currentTeamId = rootGetters['persist/teamFilterId']
-                const teams = rootGetters['entities/teams/teams']
-                const currentFile = getters.currentFile
-                let usersToReturn = []
-                if (currentFile) {
-                    if (currentTeamId > 0) {
-                        const thisTeam = teams.find(team => team.id == currentTeamId)
-                        if (thisTeam) {
-                            thisTeam.users.forEach(user => {
-                                if (currentFile.users) {
-                                    const fileUser = currentFile.users.find(x => x.id == user.id)
-                                    if (fileUser) usersToReturn.push(fileUser)
-                                }
-                            })
-                        }
-                    }
-                    return usersToReturn
-                }
-            }
-        },
     },
 
     actions: {
-        async fetchCollections({ commit }, workspace_id) {
+        async fetchFiles({ commit, state, rootGetters }) {
+            const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Set the state to loading
-            console.log('fethcing collections')
             commit('setLoading', true)
 
-            const apiUrl = `/api/workspace/${workspace_id}/files`
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${workspaceId}/files`
 
             let tryCount = 3
             let succes = false
-            const response = await axios
             while (tryCount-- > 0 && !succes) {
                 try {
                     const response = await axios.get(`${apiUrl}`)
-                    Collection.create({ data: response.data })
+                    state.files = response.data
                     commit('setLoading', false)
                     succes = true
                 } catch (err) {
-                    console.log('API error in collections.js :')
-                    console.log(err)
-                    console.log(`Trying to fetch again. TryCount = ${tryCount}`)
                     if (tryCount <= 0) throw err
                 }
             }
+        },
+        async insertOrUpdateFile({ commit }, file) {
+            // Assume update
+            let apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.id}`
+            let requestMethod = 'put'
+            // Check if we are inserting or updating
+            if (!file.id) {
+                // If we are inserting
+                requestMethod = 'post'
+                // Check if we are inserting in ROOT or in an existing folder
+                if (file.parent_id == 0) {
+                    apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${file.workspace_id}/files`
+                } else {
+                    apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files`
+                }
+            }
+
+            await axios({
+                method: requestMethod,
+                url: apiUrl,
+                data: file,
+            })
+                .then(async response => {
+                    console.log(response.data)
+                    // Set the files ID if not already set
+                    if (!file.id) file.id = response.data.id
+                })
+                .catch(err => {
+                    console.log(err)
+                })
         },
         async uploadFile({ commit, dispatch }, newFile) {
             let uploadSucces = true

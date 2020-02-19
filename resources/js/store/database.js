@@ -9,8 +9,6 @@ import Comment from './models/Comment'
 import comments from './modules/comments'
 import Country from './models/Country'
 import countries from './modules/countries'
-import Collection from './models/Collection'
-import collections from './modules/collections'
 import ProductFinalAction from './models/ProductFinalAction'
 import productFinalActions from './modules/productFinalActions'
 import CommentVote from './models/CommentVote'
@@ -41,8 +39,6 @@ import TaskAction from './models/TaskAction'
 import taskActions from './modules/taskActions'
 import Request from './models/Request'
 import requests from './modules/requests'
-import Folder from './models/Folder'
-import folders from './modules/folders'
 import Selection from './models/Selection'
 import selections from './modules/selections'
 
@@ -53,7 +49,6 @@ database.register(Action, actions)
 database.register(User, users)
 database.register(Comment, comments)
 database.register(Country, countries)
-database.register(Collection, collections)
 database.register(ProductFinalAction, productFinalActions)
 database.register(CommentVote, commentVotes)
 database.register(Category, categories)
@@ -69,7 +64,6 @@ database.register(FileTask, fileTasks)
 database.register(TaskParent, taskParents)
 database.register(TaskAction, taskActions)
 database.register(Request, requests)
-database.register(Folder, folders)
 database.register(Selection, selections)
 
 export default database
