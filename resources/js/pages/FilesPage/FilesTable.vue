@@ -292,8 +292,8 @@ export default {
     },
     methods: {
         ...mapActions('files', ['insertOrUpdateFile', 'deleteFile', 'updateFile', 'uploadToExistingFile']),
+        ...mapMutations('files', ['removeUnsavedFiles']),
         ...mapActions('folders', ['deleteFolder', 'updateFolder']),
-        ...mapMutations('persist', ['setCurrentFolderId']),
         showFileOwnersFlyin(file) {
             this.$emit('showFileOwnersFlyin', file)
         },
@@ -303,7 +303,6 @@ export default {
         },
         setCurrentFolder(folder) {
             this.$emit('setCurrentFolder', folder)
-            this.setCurrentFolderId(folder.id)
         },
         showContextMenu(e, item, type) {
             const folderMenu = this.$refs.contextMenuFolder
@@ -368,7 +367,7 @@ export default {
             this.toEdit = null
         },
         removeUnsavedFolders() {
-            this.files = this.files.filter(x => x.id != null)
+            this.removeUnsavedFiles()
         },
         onDeleteFolder(folderId) {
             if (window.confirm(

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Vue from 'vue'
 import Collection from '../models/Collection'
 import User from '../models/User'
 import Product from '../models/Product'
@@ -9,7 +10,6 @@ export default {
     state: {
         loading: true,
         files: [],
-        filesUpdated: false,
         availableFileIds: [],
         currentFile: null,
         currentFolder: null,
@@ -17,31 +17,23 @@ export default {
 
     getters: {
         loadingFiles: state => state.loading,
-        filesUpdated: state => state.filesUpdated,
-        availableFileIds: state => state.availableFileIds,
         currentFile: state => state.currentFile,
         currentFolder: state => state.currentFolder,
         files: state => state.files,
-        nextFileId: (state, getters, rootState, rootGetters) => {
-            const availableIds = getters.availableFileIds
-            const currentId = rootGetters['persist/currentFileId']
-            // return currentId
-            if (currentId && availableIds.length > 0) {
-                const currentIndex = availableIds.findIndex(x => x == currentId)
-                if (currentIndex < availableIds.length - 1) {
-                    return availableIds[currentIndex + 1]
-                }
+        nextFile: (state, getters, rootState, rootGetters) => {
+            // Find the index of the current file and add 1
+            const index = state.files.findIndex(x => x.id == state.currentFile.id)
+            // Check that the current file is not the last in the array
+            if (index + 1 < state.files.length) {
+                return state.files[index + 1]
             }
         },
-        prevFileId: (state, getters, rootState, rootGetters) => {
-            const availableIds = getters.availableFileIds
-            const currentId = rootGetters['persist/currentFileId']
-            // return currentId
-            if (currentId && availableIds.length > 0) {
-                const currentIndex = availableIds.findIndex(x => x == currentId)
-                if (currentIndex != 0) {
-                    return availableIds[currentIndex - 1]
-                }
+        prevFile: (state, getters, rootState, rootGetters) => {
+            // Find the index of the current file and add 1
+            const index = state.files.findIndex(x => x.id == state.currentFile.id)
+            // Check that the current file is not the first in the array
+            if (index < 0) {
+                return state.files[index - 1]
             }
         },
     },
@@ -66,6 +58,27 @@ export default {
                     if (tryCount <= 0) throw err
                 }
             }
+        },
+        async setCurrentFolder({ commit, state }, folder) {
+            // Assume root
+            let apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${folder.workspace_id}/files`
+
+            // Check if the folder to set is a folder or root
+            if (folder) {
+                apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${folder.id}/children`
+            }
+            await axios.get(apiUrl).then(response => {
+                state.files = response.data
+                state.currentFolder = folder
+            })
+        },
+        async setCurrentFile({ commit, state }, file) {
+            // Get selections for file
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.id}/selections`
+            await axios.get(apiUrl).then(response => {
+                Vue.set(file, 'selections', response.data)
+                state.currentFile = file
+            })
         },
         async insertOrUpdateFile({ commit }, file) {
             // Assume update
@@ -200,7 +213,6 @@ export default {
                     console.log(response.data)
                     // Commit to store
                     Collection.insert({ data: response.data })
-                    commit('setFilesUpdated', true)
                 })
                 .catch(err => {
                     console.log(err.response)
@@ -231,7 +243,6 @@ export default {
                     console.log('succes')
                     console.log(response.data)
                     uploadSucces = true
-                    commit('setFilesUpdated', true)
                 })
                 .catch(err => {
                     console.log('error')
@@ -280,13 +291,6 @@ export default {
             commit('removeApproverFromFile', { file, user })
             // Send request to API
         },
-        setCurrentFile({ commit }, file) {
-            // Get the current file form store
-            const fileToSet = Collection.query()
-                .with('selections')
-                .find(file.id)
-            commit('setCurrentFile', fileToSet)
-        },
     },
 
     mutations: {
@@ -294,13 +298,13 @@ export default {
         setLoading(state, bool) {
             state.loading = bool
         },
-        setFilesUpdated(state, bool) {
-            state.filesUpdated = bool
-        },
         deleteFile(state, fileId) {
             // Remove the deleted item from the current array
             const index = state.files.findIndex(x => x.id == fileId)
             state.files.splice(index, 1)
+        },
+        removeUnsavedFiles(state) {
+            state.files = state.files.filter(x => x.id != null)
         },
         setAvailableFileIds(state, fileIds) {
             state.availableFileIds = fileIds

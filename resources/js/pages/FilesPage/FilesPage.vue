@@ -1,12 +1,12 @@
 <template>
     <div class="files-page">
         <div class="breadcrumbs">
-            <button @click="setCurrentFolder(null)" class="invisible white-hover">
+            <button @click="onSetCurrentFolder(null)" class="invisible white-hover">
                 <i class="far fa-building"></i><span>{{currentWorkspace.title}}</span>
             </button>
             <div class="breadcrumb" v-for="(folder, index) in path" :key="folder.id">
                 <template v-if="folder.id != currentFolderId">
-                    <button @click="setCurrentFolder(folder, index)" class="invisible white-hover icon-left">
+                    <button @click="onSetCurrentFolder(folder, index)" class="invisible white-hover icon-left">
                         <i class="far fa-folder"></i>
                         <span>{{folder.title}}</span>
                         <!-- <i class="fas fa-caret-down contextual-menu-icon"></i> -->
@@ -23,7 +23,7 @@
         </div>
 
         <FilesTable :files="files" :folder="currentFolder" :selected="selected" 
-        @setCurrentFolder="setCurrentFolder" @showSingleFile="showSingleFile"
+        @setCurrentFolder="onSetCurrentFolder" @showSingleFile="showSingleFile"
         @showFileOwnersFlyin="showFileOwnersFlyin"/>
 
         <FileFlyin :file="currentFile" :show="fileFlyinVisible" @close="fileFlyinVisible = false"
@@ -90,14 +90,10 @@ export default {
         },
     },
     methods: {
-        ...mapActions('files', ['setCurrentFile']),
-        ...mapMutations('files', ['setAvailableFileIds']),
-        ...mapMutations('folders', ['setCurrentFolderId']),
+        ...mapActions('files', ['setCurrentFile', 'setCurrentFolder']),
         showSingleFile(file) {
             // Set the current file id
             this.setCurrentFile(file)
-            // Set available files (for navigation) to the currently visible files
-            this.setAvailableFileIds(this.currentFolder.files.map(x => x.id))
             // Show the flyin
             this.fileFlyinVisible = true
         },
@@ -111,28 +107,23 @@ export default {
             this.setCurrentFile(file)
             this.fileApproversFlyinVisible = true
         },
-        setCurrentFolder(folder, pathIndex) {
-            // if (folder != null) {
-            //     // Remove folders after the new folder from the current path
-            //     if (pathIndex != null) {
-            //         this.path.splice(pathIndex)
-            //     }
-            //     // Store what folder we are in now, so we know the path
-            //     this.path.push(folder)
-            //     // Set the current folder to the new id
-            //     this.currentFolderId = folder.id
-            //     this.currentFolder = this.folders.find(x => x.id == this.currentFolderId)
-            //     // Set current folder in store
-            //     this.setCurrentFolderId(folder.id)
-            // } else {
-            //     // Reset the folder and path
-            //     this.path = []
-            //     this.currentFolderId = null
-            //     this.currentFolder = this.rootFolder
-            //     // Set current folder in store
-            //     this.setCurrentFolderId(null)
+        onSetCurrentFolder(folder, pathIndex) {
+            if (folder != null) {
+                // Remove folders after the new folder from the current path
+                if (pathIndex != null) {
+                    this.path.splice(pathIndex)
+                }
+                // Store what folder we are in now, so we know the path
+                this.path.push(folder)
+                // Set current folder
+                this.setCurrentFolder(folder)
+            } else {
+                // Reset the folder and path
+                this.path = []
+                // Set the current folder
+                this.setCurrentFolder(null)
                 
-            // }
+            }
         },
     },
 

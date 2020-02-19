@@ -307,8 +307,7 @@ export default {
         },
         onDeleteSelection(selection, parent) {
             // Send request to API
-            console.log('Delete selection')
-            console.log(selection)
+            
 
             // Delete the selection from state
             // Check if the selection has a parent
