@@ -29,9 +29,6 @@ export default {
     created() {
         this.fetchFiles()
     },
-    destroyed() {
-        this.unsub()
-    }
 }
 </script>
 

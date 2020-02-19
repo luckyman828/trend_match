@@ -9,20 +9,16 @@ export default {
         currentSelectionId: null,
         availableSelectionRoles: [
             {
-                name: 'External',
-                description: 'Externals have limited rights',
-            },
-            {
-                name: 'Member',
+                role: 'User',
                 description: 'Gvies feedback and makes comments',
-            },
-            {
-                name: 'Observer',
-                description: 'Can only see data',
             },
             {
                 name: 'Owner',
                 description: 'Aligns the selection',
+            },
+            {
+                name: 'Approver',
+                description: 'Replies to requests',
             },
         ],
     },

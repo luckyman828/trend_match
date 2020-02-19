@@ -5,13 +5,14 @@
             @close="$emit('close')"/>
         </template>
         <template v-slot>
-            <SelectionTeamsTable v-if="show" :selection="selection"/>
+            <!-- <SelectionTeamsTable v-if="show" :selection="selection"/> -->
             <SelectionUsersTable style="margin-top: 40px;" v-if="show" :selection="selection"/>
         </template>
     </BaseFlyin>
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import SelectionUsersTable from './SelectionUsersTable'
 import SelectionTeamsTable from './SelectionTeamsTable'
 export default {
@@ -23,7 +24,17 @@ export default {
     props: [
         'show',
         'selection',
-    ]
+    ],
+    computed: {
+        ...mapGetters('users', ['users'])
+    },
+    methods: {
+        ...mapActions('users', ['fetchUsers'])
+    },
+    created() {
+        // Check if we have any workspace users, else fetch them
+        if (!this.users) this.fetchUsers()
+    }
 }
 </script>
 

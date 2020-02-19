@@ -1,17 +1,22 @@
 <template>
     <tr class="user-row table-row" ref="userRow" @contextmenu.prevent="$emit('showContextMenu', $event, user)">
         <td class="select"><BaseCheckbox/></td>
-        <td v-if="editName" class="title">
+        <td class="title" v-if="editName">
             <i class="fa-user" :class="user.id ? 'fas' : 'far'"></i>
             <BaseEditInputWrapper ref="editName" :activateOnMount="true" :type="'text'"
                 :value="userToEdit.name" :oldValue="user.name" v-model="userToEdit.name"
-                @submit="updateWorkspaceUser(userToEdit); editName = false" @cancel="$emit('cancelEditName'); editName = false;"/>
+                @submit="updateUser(userToEdit); editName = false" @cancel="$emit('cancelEditName'); editName = false;"/>
         </td>
-        <td v-else class="title">
+        <td class="title" v-else>
             <i class="fas fa-user"></i>
             <span>{{user.name}}</span>
         </td>
-        <td class="email">{{user.email}}</td>
+        <td class="email" v-if="editEmail">
+            <BaseEditInputWrapper ref="editEmail" :activateOnMount="true" :type="'text'"
+                :value="userToEdit.email" :oldValue="user.email" v-model="userToEdit.email"
+                @submit="updateUser(userToEdit); editEmail = false" @cancel="$emit('cancelEditEmail'); editEmail = false;"/>
+        </td>
+        <td class="email" v-else>{{user.email}}</td>
         <td class="role">
             <button class="ghost editable sm" @click.stop="$emit('editRole', $event, user)"><span>{{user.role}}</span></button>
         </td>
@@ -35,14 +40,13 @@ export default {
     ],
     data: function() { return {
         editName: false,
+        editEmail: false,
         userToEdit: this.user,
     }},
     computed: {
-        ...mapGetters('persist', ['availableWorkspaceRoles']),
-        ...mapGetters('workspaces', ['userWorkspaceRole'])
     },
     methods: {
-        ...mapActions('users', ['updateWorkspaceUser']),
+        ...mapActions('users', ['updateWorkspaceUser', 'updateUser']),
     },
 }
 </script>

@@ -469,7 +469,7 @@ export default {
             this.insertOrUpdateFile(newFile)
             // Reset modal
             this.reset()
-            this.$emit('hide')
+            this.$emit('close')
         },
         onGoToMapFields() {
             //Change the current screen
@@ -822,7 +822,7 @@ export default {
 
                 // Close modal on succes
                 if (success) {
-                    this.$emit('hide')
+                    this.$emit('close')
                     // Reset modal
                     this.reset()
                 }
@@ -835,7 +835,7 @@ export default {
             this.currentScreen = {name: 'chooseFiles', header: 'Create new file'}
             this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]
             this.newFile = {
-                title: '',
+                name: '',
                 files: [],
             }
             // Reset fields to match

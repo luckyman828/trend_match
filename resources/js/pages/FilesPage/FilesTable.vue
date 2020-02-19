@@ -30,7 +30,7 @@
                         <i v-else class="far fa-folder dark15"></i>
                         <BaseEditInputWrapper :activateOnMount="true" :type="'text'" :ref="'editTitleInput-' + toEdit.item.id"
                             :value="toEdit.item.name" :oldValue="folder.name" v-model="toEdit.item.name"
-                            @submit="insertOrUpdateFile(toEdit.item); clearToEdit()" @cancel="clearToEdit(); removeUnsavedFolders()"/>
+                            @submit="removeUnsavedFolders(); insertOrUpdateFile(toEdit.item); clearToEdit()" @cancel="clearToEdit(); removeUnsavedFolders()"/>
                         </td>
                     <td v-else-if="!folder.id" class="title"><i class="far fa-folder dark15"></i> {{folder.name}}</td>
                     <td v-else class="title clickable" @click="setCurrentFolder(folder)"><i class="fas fa-folder dark15"></i> {{folder.name}}</td>

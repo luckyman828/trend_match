@@ -111,6 +111,10 @@
                     <div class="icon-wrapper"><i class="far fa-pen"></i></div>
                     <span><u>R</u>ename User</span>
                 </div>
+                <div class="item" @click="$refs['userRow-'+slotProps.item.id][0].editEmail = true; slotProps.hide()">
+                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+                    <span><u>E</u>dit User Email</span>
+                </div>
             </div>
             <div class="item-group">
                 <div class="item" @click.stop="onEditUserCurrency(slotProps.mouseEvent, slotProps.item)">
@@ -193,7 +197,7 @@
                 </div>
                 <div class="item-group">
                     <div class="item-wrapper">
-                        <button class="primary" :class="{disabled: passwordSubmitDisabled}" 
+                        <button class="primary" :class="{disabled: passwordSubmitDisabled}" style="margin-right: 8px;"
                         @click="setUserPassword(slotProps.item);slotProps.hide()">
                             <span>Save</span></button>
                         <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
@@ -279,7 +283,7 @@ export default {
     },
     methods: {
         ...mapActions('teams', ['removeUserFromTeam']),
-        ...mapActions('users', ['updateWorkspaceUser', 'updateUserPassword', 'removeUsersFromWorkspace']),
+        ...mapActions('users', ['updateWorkspaceUser', 'updateUser', 'updateUserPassword', 'removeUsersFromWorkspace']),
         ...mapActions('teams', ['insertOrUpdateTeam', 'deleteTeam']),
         ...mapMutations('teams', ['setCurrentTeam', 'setAvailableTeamIds']),
         onSelect(index) {
@@ -307,9 +311,8 @@ export default {
         },
         setUserPassword(user) {
             const password = this.newUserPassword
-            console.log('setting user password to: '+password)
-            console.log(user)
-            this.updateUserPassword({user: user, password: password})
+            user.password = password
+            this.updateUserPassword(user)
         },
         onEditTeamCurrency(mouseEvent, team) {
             const contextMenu = this.$refs.contextMenuTeamCurrency

@@ -5,17 +5,17 @@
                 <i class="far fa-building"></i><span>{{currentWorkspace.title}}</span>
             </button>
             <div class="breadcrumb" v-for="(folder, index) in path" :key="folder.id">
-                <template v-if="folder.id != currentFolderId">
-                    <button @click="onSetCurrentFolder(folder, index)" class="invisible white-hover icon-left">
+                <template v-if="!currentFolder || folder.id != currentFolder.id">
+                    <button @click="onSetCurrentFolder(folder, index)" class="invisible white-hover">
                         <i class="far fa-folder"></i>
-                        <span>{{folder.title}}</span>
+                        <span>{{folder.name}}</span>
                         <!-- <i class="fas fa-caret-down contextual-menu-icon"></i> -->
                     </button>
                 </template>
                 <template v-else>
-                    <button class="invisible white-hover icon-left">
+                    <button class="invisible white-hover">
                         <i class="far fa-folder-open"></i>
-                        <span>{{folder.title}}</span>
+                        <span>{{folder.name}}</span>
                         <!-- <i class="fas fa-caret-down contextual-menu-icon"></i> -->
                     </button>
                 </template>
@@ -58,27 +58,13 @@ export default {
         // teamFilterId: '-1',
         loadingOverwrite: false,
         unsub: '',
-        currentFolderId: null,
         path: [],
         fileFlyinVisible: false,
         fileOwnersFlyinVisible: false,
         fileApproversFlyinVisible: false,
     }},
-    watch: {
-        // folders(newVal, oldVal) {
-        //     console.log('folders changed')
-        //     // Refresh the current folder if a change is detected
-        //     if (this.currentFolderId) {
-        //         this.currentFolder = this.folders.find(x => x.id == this.currentFolderId)
-        //     } else {
-        //         this.currentFolder = this.rootFolder
-        //     }
-        // }
-        
-    },
     computed: {
-        ...mapGetters('files', ['files', 'currentFile']),
-        ...mapGetters('folders', ['currentFolder']),
+        ...mapGetters('files', ['files', 'currentFile', 'currentFolder']),
         ...mapGetters('workspaces', ['currentWorkspace']),
         folders() {
             return this.files.filter(x => x.type == 'Folder')

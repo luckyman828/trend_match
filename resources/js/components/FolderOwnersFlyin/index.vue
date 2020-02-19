@@ -1,7 +1,7 @@
 <template>
     <BaseFlyin :show="show" @close="$emit('close')">
         <template v-slot:header>
-            <BaseFlyinHeader v-if="show" :title="'Folder Owners: '+folder.title" disableNavigation=true @close="$emit('close')"/>
+            <BaseFlyinHeader v-if="show" :title="'Folder Owners: '+folder.name" disableNavigation=true @close="$emit('close')"/>
         </template>
         <template v-slot>
             <FolderOwnersTable v-if="show" :folder="folder"/>
@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import FolderOwnersTable from './FolderOwnersTable'
 export default {
     name: 'folderOwnersFlyin',
@@ -19,7 +20,17 @@ export default {
     props: [
         'show',
         'folder'
-    ]
+    ],
+    computed: {
+        ...mapGetters('users', ['users'])
+    },
+    methods: {
+        ...mapActions('users', ['fetchUsers'])
+    },
+    created() {
+        // Check if we have any workspace users, else fetch them
+        if (!this.users) this.fetchUsers()
+    }
 }
 </script>
 

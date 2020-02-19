@@ -6,7 +6,7 @@ export default {
 
     state: {
         loading: true,
-        users: [],
+        users: null,
         addNewUserModalVisible: false,
     },
 
@@ -109,6 +109,17 @@ export default {
                     success = false
                 })
             return success
+        },
+        async updateUser({ commit }, user) {
+            commit('updateUser', user)
+
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/admins/users/${user.id}`
+            axios.put(apiUrl, { name: user.name, email: user.email })
+        },
+        async updateUserPassword({ commit }, user) {
+            console.log()
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/admins/users/${user.id}/change-password`
+            axios.put(apiUrl, { password: user.password })
         },
     },
 

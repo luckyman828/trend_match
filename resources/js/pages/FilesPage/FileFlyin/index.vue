@@ -6,11 +6,11 @@
                 <div class="item-group">
                     <button class="ghost editable" @click="$emit('showFileOwnersFlyin', file)">
                         <i class="far fa-user-shield"></i>
-                        <span>{{file.owners_count || 0}} File owners</span>
+                        <span>{{file.owner_count || 0}} File owners</span>
                     </button>
                     <button class="ghost editable" @click="$emit('showFileApproversFlyin', file)">
                         <i class="far fa-user-cog"></i>
-                        <span>{{file.approvers_count || 0}} File approvers</span>
+                        <span>{{file.approver_count || 0}} File approvers</span>
                     </button>
                     <button class="ghost" @click="goToEditSingle"><span>View / Edit products</span></button>
                 </div>

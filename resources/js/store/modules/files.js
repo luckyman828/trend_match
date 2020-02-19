@@ -59,16 +59,17 @@ export default {
                 }
             }
         },
-        async setCurrentFolder({ commit, state }, folder) {
+        async setCurrentFolder({ commit, state, rootGetters }, folder) {
+            const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Assume root
-            let apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${folder.workspace_id}/files`
+            let apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${workspaceId}/files`
 
             // Check if the folder to set is a folder or root
             if (folder) {
                 apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${folder.id}/children`
             }
             await axios.get(apiUrl).then(response => {
-                state.files = response.data
+                Vue.set(state, 'files', response.data)
                 state.currentFolder = folder
             })
         },
@@ -80,26 +81,38 @@ export default {
                 state.currentFile = file
             })
         },
+        async fetchFileOwners({ commit, state }, file) {
+            // Get owners for file
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.id}/users`
+            await axios.get(apiUrl).then(response => {
+                Vue.set(file, 'owners', response.data)
+            })
+        },
         async insertOrUpdateFile({ commit }, file) {
             // Assume update
             let apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.id}`
             let requestMethod = 'put'
+            let requestBody = file
             // Check if we are inserting or updating
             if (!file.id) {
                 // If we are inserting
+                commit('insertFile', file)
                 requestMethod = 'post'
                 // Check if we are inserting in ROOT or in an existing folder
                 if (file.parent_id == 0) {
                     apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${file.workspace_id}/files`
                 } else {
-                    apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files`
+                    apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.parent_id}/children`
+                    requestBody = { type: file.type, name: file.name }
                 }
+            } else {
+                commit('updateFile', file)
             }
 
             await axios({
                 method: requestMethod,
                 url: apiUrl,
-                data: file,
+                data: requestBody,
             })
                 .then(async response => {
                     console.log(response.data)
@@ -271,15 +284,21 @@ export default {
         async setPrevFileAsCurrent({ dispatch, getters }) {
             if (getters.prevFileId) dispatch('persist/setCurrentFileId', getters.prevFileId, { root: true })
         },
-        addUsersToFile({ commit }, { file, usersToAdd }) {
-            // Commit mutation to state
-            commit('addUsersToFile', { file, usersToAdd })
-            // Send request to API
+        async addUsersToFile({ commit }, { file, users }) {
+            commit('addOwnersToFile', { file, users })
+
+            // Loop through the users and post them
+            users.forEach(user => {
+                const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.id}/users/${user.id}`
+                axios.put(apiUrl)
+            })
         },
         removeUserFromFile({ commit }, { file, user }) {
             // Commit mutation to state
             commit('removeUserFromFile', { file, user })
             // Send request to API
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.id}/users/${user.id}`
+            axios.delete(apiUrl)
         },
         addApproversToFile({ commit }, { file, usersToAdd }) {
             // Commit mutation to state
@@ -298,6 +317,14 @@ export default {
         setLoading(state, bool) {
             state.loading = bool
         },
+        insertFile(state, file) {
+            state.files.push(file)
+        },
+        updateFile(state, file) {
+            // Remove unsaved files
+            const oldFile = state.files.find(x => x.id == file.id)
+            Object.assign(oldFile, file)
+        },
         deleteFile(state, fileId) {
             // Remove the deleted item from the current array
             const index = state.files.findIndex(x => x.id == fileId)
@@ -309,12 +336,20 @@ export default {
         setAvailableFileIds(state, fileIds) {
             state.availableFileIds = fileIds
         },
-        addUsersToFile(state, { file, usersToAdd }) {
-            file.owners = file.owners.concat(usersToAdd)
+        addOwnersToFile(state, { file, users }) {
+            if (file.owners) {
+                Vue.set(file, 'owners', file.owners.concat(users))
+            } else {
+                Vue.set(file, 'owners', users)
+            }
+            // Update user owner count
+            Vue.set(file, 'owner_count', file.owners.length)
         },
         removeUserFromFile(state, { file, user }) {
             const userIndex = file.owners.findIndex(x => x.id == user.id)
             file.owners.splice(userIndex, 1)
+            // Update user owner count
+            Vue.set(file, 'owner_count', file.owners.length)
         },
         addApproversToFile(state, { file, usersToAdd }) {
             file.approvers = file.approvers.concat(usersToAdd)

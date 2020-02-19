@@ -10,6 +10,7 @@ import teams from './modules/teams'
 import users from './modules/users'
 import files from './modules/files'
 import folders from './modules/folders'
+import selections from './modules/selections'
 import VuexORMisDirtyPlugin from '@vuex-orm/plugin-change-flags'
 VuexORM.use(VuexORMisDirtyPlugin)
 
@@ -27,6 +28,7 @@ const store = new Vuex.Store({
         users,
         files,
         folders,
+        selections,
     },
 })
 

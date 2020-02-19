@@ -98,7 +98,6 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import sortArray from '../../mixins/sortArray'
-import User from '../../store/models/User'
 
 export default {
     name: 'selectionUsersTable',
@@ -117,9 +116,10 @@ export default {
         contextUser: null,
     }},
     computed: {
-        ...mapGetters('entities/selections', ['availableSelectionRoles']),
+        ...mapGetters('selections', ['availableSelectionRoles']),
+        ...mapGetters('users', ['users']),
         availableUsers() {
-            const allUsers = User.all()
+            const allUsers = this.users
             // Filter the available users to exclude users already added
             return allUsers.filter(user => !this.selection.users.find(x => x.id == user.id))
         }

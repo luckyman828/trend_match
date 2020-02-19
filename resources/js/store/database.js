@@ -39,8 +39,6 @@ import TaskAction from './models/TaskAction'
 import taskActions from './modules/taskActions'
 import Request from './models/Request'
 import requests from './modules/requests'
-import Selection from './models/Selection'
-import selections from './modules/selections'
 
 const database = new Database()
 
@@ -64,6 +62,5 @@ database.register(FileTask, fileTasks)
 database.register(TaskParent, taskParents)
 database.register(TaskAction, taskActions)
 database.register(Request, requests)
-database.register(Selection, selections)
 
 export default database
