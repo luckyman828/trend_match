@@ -29,7 +29,7 @@ export default class AuthUser extends Model {
             teams: this.belongsToMany(Team, UserTeam, 'user_id', 'team_id'),
             workspaces: this.belongsToMany(Workspace, WorkspaceUser, 'user_id', 'workspace_id'),
             workspace_users: this.hasMany(WorkspaceUser, 'user_id'),
-            assigned_room_id: this.attr(''),
+            assigned_room_id: this.attr(null),
             impact: this.attr(null),
             currency: this.attr(null),
         }
