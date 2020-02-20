@@ -40,7 +40,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('users', ['users']),
+        ...mapGetters('users', ['users', 'loadingUsers']),
         loading() {
             return this.loadingUsers
         }
@@ -51,7 +51,7 @@ export default {
     },
     created() {
         // Check if we have any workspace users, else fetch them
-        if (!this.users) this.fetchUsers()
+        if (!this.users && !this.loadingUsers) this.fetchUsers()
     }
 }
 </script>

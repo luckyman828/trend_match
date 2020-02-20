@@ -1,7 +1,7 @@
 <template>
     <BaseFlyin :show="show" @close="$emit('close')">
         <template v-slot:header>
-            <BaseFlyinHeader v-if="show && file" :title="'File Owners: '+file.name" disableNavigation=true @close="$emit('close')"/>
+            <BaseFlyinHeader v-if="show && file" :title="`${file.type} Owners: ${file.name}`" disableNavigation=true @close="$emit('close')"/>
         </template>
         <template v-slot>
             <FileOwnersTable v-if="show && file" :file="file"/>
@@ -22,7 +22,7 @@ export default {
         'show'
     ],
     computed: {
-        ...mapGetters('users', ['users'])
+        ...mapGetters('users', ['users', 'loadingUsers'])
     },
     watch: {
         file: function(newVal, oldVal) {
@@ -39,7 +39,7 @@ export default {
     },
     created() {
         // Check if we have any workspace users, else fetch them
-        if (!this.users) this.fetchUsers()
+        if (!this.users && !this.loadingUsers) this.fetchUsers()
     }
 }
 </script>

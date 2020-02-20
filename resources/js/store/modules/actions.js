@@ -68,7 +68,7 @@ export default {
             }
 
             // Config API endpoint
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${action.selection_id}/products/${action.product_id}/${actionTypeURL}/${apiEndPoint}`
+            const apiUrl = `/selections/${action.selection_id}/products/${action.product_id}/${actionTypeURL}/${apiEndPoint}`
             const requestHeaders = {
                 'X-Kollekt-App-Key': process.env.MIX_KOLLEKT_API_KEY,
             }
