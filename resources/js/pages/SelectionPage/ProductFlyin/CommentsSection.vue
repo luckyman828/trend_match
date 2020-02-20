@@ -144,7 +144,7 @@ export default {
     },
     computed: {
         ...mapGetters('persist', ['authUser']),
-        ...mapGetters('entities/selections', ['currentSelection']),
+        ...mapGetters('selections', ['currentSelection']),
         submitDisabled () {
             if (this.writeScope == 'comment') {
                 return this.newComment.body.length < 1 || this.submitting
@@ -156,8 +156,8 @@ export default {
         },
     },
     methods: {
-        ...mapActions('entities/comments', ['insertOrUpdateComment']),
-        ...mapActions('entities/requests', ['insertOrUpdateRequest']),
+        ...mapActions('comments', ['insertOrUpdateComment']),
+        ...mapActions('requests', ['insertOrUpdateRequest']),
         activateWrite() {
             if (this.writeScope == 'request') {
                 this.$refs.requestField.focus()

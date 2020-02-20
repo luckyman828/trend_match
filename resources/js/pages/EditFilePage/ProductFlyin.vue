@@ -264,7 +264,6 @@ export default {
     }},
     watch: {
         currentProduct(newVal, oldVal) {
-            console.log('current product changed')
             // This function fires when a change happens to the current product in the store. It also fires initially
             // This can mean: A new product is shown. The product in the store has been updated
             this.productToEdit = JSON.parse(JSON.stringify(newVal))
@@ -449,22 +448,15 @@ export default {
                 }
             }
 
-            // // Check if we have any files (images) we need to delete
-            // const filesToDelete = this.filesToDelete
-            // if (filesToDelete.length > 0) {
-            //     // Attempt to delete the images
-            //     this.deleteImages(filesToDelete)
-            // }
-
             // Check if we have a new or existing product. If the product is new, insert it.
-            // if (productToUpload.id) {
-            //     await this.updateProduct(productToUpload)
-            // } else {
-            //     this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
-            //     this.setCurrentProduct(productToUpload)
-            //     // Resort the products to include the new product
-            //     this.$emit('onSort')
-            // }
+            if (productToUpload.id) {
+                await this.updateProduct(productToUpload)
+            } else {
+                this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
+                this.setCurrentProduct(productToUpload)
+                // Resort the products to include the new product
+                this.$emit('onSort')
+            }
             this.updatingProduct = false
         },
         calculateMarkup({whs, rrp} = {}) {

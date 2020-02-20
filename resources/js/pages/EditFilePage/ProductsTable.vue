@@ -156,11 +156,6 @@ export default {
     methods: {
         ...mapActions('products', ['setCurrentProduct', 'setAvailableProducts']),
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups']),
-        productImg(variant) {
-            if (variant.blob_id != null)
-                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-            else return variant.image
-        },
         onViewSingle(product) {
             this.setCurrentProduct(product)
             this.setAvailableProducts(this.products) // Save array of available products

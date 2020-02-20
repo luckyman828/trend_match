@@ -189,10 +189,24 @@ export default {
 
     actions: {
         async fetchProducts({ commit }, fileId) {
-            // Set the state to loading
             commit('setProductStatus', 'loading')
 
             const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${fileId}/products`
+
+            await axios
+                .get(apiUrl)
+                .then(response => {
+                    commit('insertProducts', { products: response.data, method: 'set' })
+                    commit('setProductStatus', 'success')
+                })
+                .catch(err => {
+                    commit('setProductStatus', 'error')
+                })
+        },
+        async fetchSelectionProducts({ commit }, selectionId) {
+            commit('setProductStatus', 'loading')
+
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selectionId}/products`
 
             await axios
                 .get(apiUrl)

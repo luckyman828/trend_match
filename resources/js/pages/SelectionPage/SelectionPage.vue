@@ -1,6 +1,10 @@
 <template>
     <div class="subfile">
-        <PageHeader :file="file"/>
+        <ThePageHeader :title="`${selection.title || 'Untitled Selection'}: 
+        ${selection.role == 'Owner' ? 'Alignment' 
+        : selection.role == 'Approver' ? 'Approval' 
+        : 'Feedback'}`"/>
+
         <!-- <div class="quick-actions">
             <p>Quick actions</p>
             <span v-if="productsNoIn.length > 0 && !hideQuickOut" class="button red wide" @click="OutNoInStyles()">'OUT' styles with no IN ({{productsNoIn.length}})</span>
@@ -22,7 +26,7 @@
 import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 // Import Components
 import ProductsTable from './ProductsTable'
-import PageHeader from './PageHeader'
+import ThePageHeader from '../../components/layout/ThePageHeader'
 import ProductFlyin from './ProductFlyin'
 // Mixins
 import sortArray from '../../mixins/sortArray'
@@ -31,7 +35,7 @@ export default{
     name: 'selectionPage',
     components: {
         ProductsTable,
-        PageHeader,
+        ThePageHeader,
         ProductFlyin
     },
     mixins: [
@@ -44,10 +48,12 @@ export default{
         hideQuickIn: false,
     }},
     computed: {
-        ...mapGetters('entities/products', ['products', 'productsFiltered', 'singleVisible']),
-        ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
-        ...mapGetters('entities/selections', ['currentSelectionId', 'currentSelection', 'isFeedback']),
-        ...mapGetters('persist', ['currentWorkspaceId', 'currentWorkspace', 'authUser']),
+        ...mapGetters('products', ['products', 'productsFiltered', 'singleVisible']),
+        ...mapGetters('files', ['currentFile']),
+        ...mapGetters('selections', ['currentSelection']),
+        selection() {
+            return this.currentSelection
+        },
         file() {
             return this.currentFile
         },
@@ -73,9 +79,8 @@ export default{
         },
     },
     methods: {
-        ...mapMutations('entities/products', ['setSingleVisisble']),
-        ...mapActions('entities/actions', ['updateAction']),
-        ...mapActions('persist', ['setTeamFilter']),
+        ...mapMutations('products', ['setSingleVisisble']),
+        ...mapActions('actions', ['updateAction']),
         InNoOutNoCommentStyles() {
             this.setHideQuickIn()
             this.massSubmitAction(this.productsNoOutNoComment, 1)

@@ -7,7 +7,8 @@ export default {
 
     state: {
         loading: true,
-        currentSelectionId: null,
+        status: true,
+        currentSelection: null,
         availableSelectionRoles: [
             {
                 role: 'User',
@@ -25,15 +26,9 @@ export default {
     },
 
     getters: {
-        loadingSelections: state => {
-            return state.loading
-        },
-        currentSelectionId: state => {
-            return state.currentSelectionId
-        },
-        currentSelection: state => {
-            return Selection.find(state.currentSelectionId)
-        },
+        loadingSelections: state => state.loading,
+        selectionsStatus: state => state.status,
+        currentSelection: state => state.currentSelection,
         availableSelectionRoles: state => {
             return state.availableSelectionRoles
         },
@@ -64,6 +59,20 @@ export default {
                     if (tryCount <= 0) throw err
                 }
             }
+        },
+        async fetchSelection({ commit }, selectionId) {
+            commit('setStatus', 'loading')
+
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selectionId}`
+            axios
+                .get(apiUrl)
+                .then(response => {
+                    commit('setCurrentSelection', response.data)
+                    commit('setStatus', 'success')
+                })
+                .catch(err => {
+                    commit('setStatus', 'error')
+                })
         },
         async fetchSelectionUsers({ commit }, selection) {
             // Get owners for file
@@ -139,15 +148,18 @@ export default {
         setLoading(state, bool) {
             state.loading = bool
         },
+        setStatus(state, status) {
+            state.status = status
+        },
+        setCurrentSelection(state, selection) {
+            state.currentSelection = selection
+        },
         insertSelection(state, selection) {
             // state.files.push(file)
         },
         updateSelection(state, selection) {
             // const oldFile = state.files.find(x => x.id == file.id)
             // Object.assign(oldFile, file)
-        },
-        setCurrentSelectionId(state, id) {
-            state.currentSelectionId = id
         },
         addUsersToSelection(state, { selection, users }) {
             // Make a clone of the user and set their default selection role

@@ -6,7 +6,7 @@
             <router-link :to="{name: 'files'}" class="back-link"><span class="circle primary"><i class="far fa-arrow-left"></i></span><span>Back to Files</span></router-link>
             <div class="breadcrumbs">
                 <router-link class="text-link" :to="{name: 'files'}">Files</router-link>
-                <span class="current"><strong>{{(currentFile != null) ? currentFile.title : 'Fetching..'}}</strong></span>
+                <span class="current"><strong>{{currentFile ? currentFile.name : 'Fetching..'}}</strong></span>
             </div>
 
         </div>
@@ -37,13 +37,7 @@ export default {
     data: function () { return {
     }},
     computed: {
-        ...mapGetters('persist', ['userPermissionLevel', 'currentFile', 'currentWorkspace']),
-        productsToExport() {
-            const products = this.products
-            if (this.onlyWithRequests) {
-                return products.filter(product => product.requests.length > 0)
-            } else return products
-        }
+        ...mapGetters('files', ['currentFile']),
     },
     methods: {
         ...mapActions('products', ['setAvailableProducts', 'instantiateNewProduct']),

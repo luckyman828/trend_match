@@ -16,10 +16,8 @@ export default {
         EditFilePage
     },
     data: function () { return {
-        loadingFile: true,
     }},
     computed: {
-        ...mapGetters('files', ['currentFile']),
         ...mapGetters('products', ['productsStatus']),
         loading () {
             return (this.productsStatus != 'success')
