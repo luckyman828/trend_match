@@ -9,7 +9,7 @@
         </td>
         <td class="image clickable" @click="$emit('onViewSingle',product)">
             <div class="img-wrapper">
-                <img v-if="product.color_variants[0] != null" :src="productImg(product.color_variants[0])">
+                <img v-if="product.variants[0] != null" :src="variantImage(product.variants[0])">
             </div>
         </td>
         <td class="id clickable" @click="$emit('onViewSingle',product)">{{product.datasource_id}}</td>
@@ -92,6 +92,8 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+// Mixins
+import variantImage from '../../mixins/variantImage'
 
 export default {
     name: 'productsRow',
@@ -99,8 +101,10 @@ export default {
         'product',
         'selectedProducts'
     ],
+    mixins: [
+        variantImage
+    ],
     computed: {
-        // ...mapGetters('persist', []),
         localSelectedProducts: {
             get() { return this.selectedProducts },
             set(localSelectedProducts) {this.$emit('input', localSelectedProducts)}
@@ -110,13 +114,7 @@ export default {
         onUpdateAction(product, actionCode) {
             this.$emit('updateAction', product, actionCode)
         },
-        productImg(variant) {
-            if (variant.blob_id != null)
-                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-            else if (variant.image) return variant.image
-            else return `/images/placeholder.JPG`
-        },
-    }
+    },
 }
 </script>
 

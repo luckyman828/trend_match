@@ -6,7 +6,9 @@
             :value="value" :disabled="disabled || readOnly"
             :class="{'input-wrapper': type != 'select'}" 
             @input="$emit('input', $event.target.value)" @blur="$emit('blur', $event)" @paste="$emit('paste', $event)">
-            <i v-if="type == 'select'" class="fas fa-caret-down"></i>
+            <div class="icon-right">
+                <slot/>
+            </div>
         </div>
         <div class="error-msg" v-if="error && typeof error == 'string'">
             <i class="far fa-exclamation-triangle"></i>
@@ -57,6 +59,7 @@ export default {
 @import '~@/_variables.scss';
 
     .input-field {
+        position: relative;
         &.read-only {
             .input-wrapper {
                 cursor: text;
@@ -100,16 +103,21 @@ export default {
             border: none;
             background: inherit;
         }
-            i {
-                position: absolute;
-                right: 0;
-                top: 0;
-                width: 40px;
-                height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
+            
+    }
+    .icon-left, .icon-right {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        &.icon-right {
+            left: auto;
+            right: 0;
+        }
     }
     .error-msg {
         display: none;

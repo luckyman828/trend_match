@@ -4,11 +4,11 @@
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>
-                        <BaseSearchField :searchKey="['title','name']"/>
+                        <!-- <BaseSearchField :searchKey="['title','name']"/> -->
                     </template>
                     <template v-slot:right>
-                        <span>showing <strong>{{folder.folders.length + folder.files.length}}</strong> of 
-                        <strong>{{folder.folders.length + folder.files.length}}</strong> records</span>
+                        <span>showing <strong>{{files.length}}</strong> of 
+                        <strong>{{files.length}}</strong> records</span>
                     </template>
                 </BaseTableTopBar>
             </template>
@@ -16,55 +16,54 @@
                 <th class="select"><BaseCheckbox/></th>
                 <th class="title">Name <i class="fas fa-sort"></i></th>
                 <th>Modified <i class="fas fa-sort"></i></th>
-                <th>Deadline <i class="fas fa-sort"></i></th>
+                <!-- <th>Deadline <i class="fas fa-sort"></i></th> -->
                 <th>Items <i class="fas fa-sort"></i></th>
                 <th>Owners <i class="fas fa-sort"></i></th>
-                <th>Status <i class="fas fa-sort"></i></th>
+                <!-- <th>Status <i class="fas fa-sort"></i></th> -->
                 <th class="action">Action</th>
             </template>
             <template v-slot:body>
-                <tr v-for="(folder) in folder.folders" :key="folder.id" class="folder" @contextmenu.prevent="showContextMenu($event, folder, 'folder')">
+                <tr v-for="folder in foldersToShow" :key="folder.id" class="folder" @contextmenu.prevent="showContextMenu($event, folder, 'folder')">
                     <td class="select"><BaseCheckbox/></td>
                     <td v-if="toEdit && toEdit.item.id == folder.id && toEdit.type == 'folder' && toEdit.field == 'title'" class="title">
                         <i v-if="folder.id" class="fas fa-folder dark15"></i>
                         <i v-else class="far fa-folder dark15"></i>
                         <BaseEditInputWrapper :activateOnMount="true" :type="'text'" :ref="'editTitleInput-' + toEdit.item.id"
-                            :value="toEdit.item.title" :oldValue="folder.title" v-model="toEdit.item.title"
-                            @submit="updateFolder(toEdit.item); clearToEdit()" @cancel="clearToEdit(); removeUnsavedFolders()"/>
+                            :value="toEdit.item.name" :oldValue="folder.name" v-model="toEdit.item.name"
+                            @submit="removeUnsavedFolders(); insertOrUpdateFile(toEdit.item); clearToEdit()" @cancel="clearToEdit(); removeUnsavedFolders()"/>
                         </td>
-                    <td v-else-if="!folder.id" class="title"><i class="far fa-folder dark15"></i> {{folder.title}}</td>
-                    <td v-else class="title clickable" @click="setCurrentFolder(folder)"><i class="fas fa-folder dark15"></i> {{folder.title}}</td>
+                    <td v-else-if="!folder.id" class="title"><i class="far fa-folder dark15"></i> {{folder.name}}</td>
+                    <td v-else class="title clickable" @click="setCurrentFolder(folder)"><i class="fas fa-folder dark15"></i> {{folder.name}}</td>
                     <td class="modified">-</td>
-                    <td class="deadline">-</td>
-                    <td class="items">{{folder.folders.length + folder.files.length}}</td>
+                    <!-- <td class="deadline">-</td> -->
+                    <td class="items">{{folder.children_count || '-'}}</td>
                     <td class="owners">
                         <button class="ghost editable sm" @click="showFolderOwnersFlyin(folder)">
-                            <i class="far fa-user"></i><span>{{folder.owners.length}}</span>
+                            <i class="far fa-user"></i><span>{{folder.owner_count || 0}}</span>
                         </button>
                     </td>
-                    <td class="status">-</td>
+                    <!-- <td class="status">-</td> -->
                     <td class="action">
                         <button class="invisible ghost-hover" @click="showContextMenu($event, folder, 'folder')"><i class="fas fa-ellipsis-h"></i></button>
                     </td>
                 </tr>
-                <tr v-for="(file) in folder.files" :key="file.id" class="file" @contextmenu.prevent="showContextMenu($event, file, 'file')">
+                <tr v-for="file in filesToShow" :key="file.id" class="file" @contextmenu.prevent="showContextMenu($event, file, 'file')">
                     <td class="select"><BaseCheckbox/></td>
                     <td v-if="toEdit && toEdit.item.id == file.id && toEdit.type == 'file' && toEdit.field == 'title'" class="title">
                         <BaseEditInputWrapper :activateOnMount="true" :type="'text'"
-                            :value="toEdit.item.title" :oldValue="file.title" v-model="toEdit.item.title"
-                            @submit="updateFile(toEdit.item); clearToEdit()" @cancel="clearToEdit()"/>
+                            :value="toEdit.item.name" :oldValue="file.name" v-model="toEdit.item.name"
+                            @submit="insertOrUpdateFile(toEdit.item); clearToEdit()" @cancel="clearToEdit()"/>
                         </td>
-                    <!-- <td v-else class="title clickable" @click="viewSingle(file.id)"><i class="fas fa-file dark15"></i> {{file.title}}</td> -->
-                    <td v-else class="title clickable" @click="showSingleFile(file)"><i class="fas fa-file dark15"></i> {{file.title}}</td>
+                    <td v-else class="title clickable" @click="showSingleFile(file)"><i class="fas fa-file dark15"></i> {{file.name}}</td>
                     <td class="modified">-</td>
-                    <td class="deadline">{{file.end_date}}</td>
-                    <td class="items">-</td>
+                    <!-- <td class="deadline">{{file.end_date}}</td> -->
+                    <td class="items">{{file.children_count || '-'}}</td>
                     <td class="owners">
                         <button class="ghost editable sm" @click="showFileOwnersFlyin(file)">
-                            <i class="far fa-user"></i><span>{{file.owners.length}}</span>
+                            <i class="far fa-user"></i><span>{{file.owner_count || 0}}</span>
                         </button>
                     </td>
-                    <td class="status">Stage {{file.phase.id}}</td>
+                    <!-- <td class="status">-</td> -->
                     <td class="action">
                         <button class="invisible ghost-hover" @click="showContextMenu($event, file, 'file')"><i class="fas fa-ellipsis-h"></i></button>
                     </td>
@@ -76,11 +75,8 @@
             </template>
         </BaseFlexTable>
 
-        <BaseModal
-            ref="editFileModal"
-            :header="'Add data to <br><strong>' + fileToEdit.title + '<strong>'"
-            :subHeader="'Upload more csvs to add data to the file'"
-        >
+        <BaseModal ref="editFileModal" :header="'Add data to <br><strong>' + fileToEdit.name + '<strong>'" 
+        :subHeader="'Upload more csvs to add data to the file'">
             <template v-slot:body>
                 <form>
                     <template v-if="!uploadingToFile">
@@ -122,7 +118,7 @@
                         <button v-if="folderToMoveToId != null" class="invisible ghost-hover true-square" @click="folderToMoveToId = folderToMoveTo.parent_id">
                             <i class="fas fa-arrow-left"></i>
                         </button>
-                        <span v-if="folderToMoveToId != null">{{folderToMoveTo.title}}</span>
+                        <span v-if="folderToMoveToId != null">{{folderToMoveTo.name}}</span>
                         <span v-else><span class="square true-square"><i class="far fa-building"></i></span> {{currentWorkspace.name}}</span>
                     </div>
                     <div class="folders-wrapper">
@@ -130,10 +126,10 @@
                             <div class="folder" :key="thisFolder.id">
                                 <p v-if="thisFolder.id != toMove.id" class="clickable"
                                 @click="folderToMoveToId = thisFolder.id">
-                                    <i class="fas fa-folder dark15"></i> {{thisFolder.title}}
+                                    <i class="fas fa-folder dark15"></i> {{thisFolder.name}}
                                 </p>
                                 <p v-else :key="thisFolder.id" class="disabled" style="opacity: .5;">
-                                    <i class="fas fa-folder dark15"></i> {{thisFolder.title}}
+                                    <i class="fas fa-folder dark15"></i> {{thisFolder.name}}
                                 </p>
                             </div>
                         </template>
@@ -197,7 +193,7 @@
 
         <BaseContextMenu ref="contextMenuFile" class="context-file" v-slot
         @keybind-v="viewSingle(contextMenuItem.id)"
-        @keybind-e="viewEditSingle(contextMenuItem.id)"
+        @keybind-e="onGoToEditFile(contextMenuItem.id)"
         @keybind-r="onEditField(contextMenuItem, 'file', 'title')"
         @keybind-a="showFileOwnersFlyin(contextMenuItem)"
         @keybind-m="onMoveTo(contextMenuItem, 'file')"
@@ -209,7 +205,7 @@
                     </div>
                     <u>V</u>iew file
                 </div>
-                <div class="item" @click="viewEditSingle(contextMenuItem.id)">
+                <div class="item" @click="onGoToEditFile(contextMenuItem.id)">
                     <div class="icon-wrapper">
                         <i class="far fa-file-edit"></i>
                     </div>
@@ -255,8 +251,9 @@ import FolderOwnersFlyin from '../../components/FolderOwnersFlyin'
 export default {
     name: 'filesTable',
     props: [
+        'folder',
+        'files',
         'selected',
-        'folder'
     ],
     components: {
         FolderOwnersFlyin,
@@ -279,38 +276,24 @@ export default {
             contextMenuItem: null,
             toEdit: null,
             toMove: null,
-            folderToMoveToId: this.folder.id,
+            folderToMoveTo: this.folder,
             flyinFolder: null,
             folderOwnersFlyinVisible: false,
         }
     },
     computed: {
-        ...mapGetters('persist', ['userPermissionLevel', 'authUser', 'currentWorkspaceId', 'currentWorkspace', 'currentFolderId']),
-        ...mapGetters('entities/collections', ['loadingCollections', 'files']),
-        ...mapGetters('entities/folders', ['loadingFolders', 'folders']),
-        selectedCount() {
-            return this.selected.length
+        ...mapGetters('workspaces', ['currentWorkspace']),
+        foldersToShow() {
+            return this.files.filter(x => x.type =='Folder')
         },
-        folderToMoveTo() {
-            // If we have no folder id we are the ROOT folder
-            if(this.folderToMoveToId == null) {
-                // Find all folders and files of the root folder
-                // Find folders in root
-                const rootFolders = this.folders.filter(x => !x.parent_id)
-                // Find files in root
-                const rootFiles = this.files.filter(x => !x.folder_id)
-                // Instantioate a rootfolder object
-                const rootFolder = {files: rootFiles, folders: rootFolders}
-                return rootFolder
-            } else {
-                return this.folders.find(x => x.id == this.folderToMoveToId)
-            }
-        },
+        filesToShow() {
+            return this.files.filter(x => x.type =='File')
+        }
     },
     methods: {
-        ...mapActions('entities/collections', ['deleteFile', 'updateFile', 'uploadToExistingFile']),
-        ...mapActions('entities/folders', ['deleteFolder', 'updateFolder']),
-        ...mapMutations('persist', ['setCurrentFolderId']),
+        ...mapActions('files', ['insertOrUpdateFile', 'deleteFile', 'uploadToExistingFile']),
+        ...mapMutations('files', ['removeUnsavedFiles']),
+        ...mapActions('folders', ['deleteFolder', 'updateFolder']),
         showFileOwnersFlyin(file) {
             this.$emit('showFileOwnersFlyin', file)
         },
@@ -320,7 +303,6 @@ export default {
         },
         setCurrentFolder(folder) {
             this.$emit('setCurrentFolder', folder)
-            this.setCurrentFolderId(folder.id)
         },
         showContextMenu(e, item, type) {
             const folderMenu = this.$refs.contextMenuFolder
@@ -358,13 +340,13 @@ export default {
                 this.updateFolder(item)
 
                 // Remove the moved item from the current array
-                const currentItemIndex = this.folder.folders.findIndex(x => x.id == item.id)
-                this.folder.folders.splice(currentItemIndex, 1)
+                const currentItemIndex = this.files.findIndex(x => x.id == item.id)
+                this.files.splice(currentItemIndex, 1)
             } else {
                 // Set the folder id
                 item.folder_id = this.folderToMoveToId
                 item.catalog_id = this.folderToMoveToId
-                this.updateFile(item)
+                this.insertOrUpdateFile(item)
 
                 // Remove the moved item from the current array
                 const currentItemIndex = this.folder.files.findIndex(x => x.id == item.id)
@@ -385,23 +367,19 @@ export default {
             this.toEdit = null
         },
         removeUnsavedFolders() {
-            this.folder.folders = this.folder.folders.filter(x => x.id != null)
+            this.removeUnsavedFiles()
         },
         onDeleteFolder(folderId) {
             if (window.confirm(
                 'Are you sure you want to delete this folder?\nThe folder and all of its contents will be permanently deleted.'
             )) {
-                this.deleteFolder(folderId)
-                // Remove the moved item from the current array
-                const currentItemIndex = this.folder.folders.findIndex(x => x.id == folderId)
-                this.folder.folders.splice(currentItemIndex, 1)
+                this.deleteFile(folderId)
             }
         },
         onNewFolder() {
-            const currentFolder = this.folder
             // Check if we already have added a new folder
-            const existingNewFolder = currentFolder.folders.find(x => x.id == null)
-            // If we already have a new folder, foxus the edit title field
+            const existingNewFolder = this.files.find(x => x.id == null && type == 'Folder')
+            // If we already have a new folder, focus the edit title field
             if (existingNewFolder) {
                 this.onEditField(existingNewFolder, 'folder', 'title')
                 // Focus the edit field
@@ -411,15 +389,17 @@ export default {
             else {
                 const newFolder = {
                     id: null,
-                    title: 'New folder',
-                    parent_id: currentFolder.id ? currentFolder.id : null,
-                    workspace_id: this.currentWorkspaceId,
-                    folders: [],
-                    files: [],
-                    owners: []
+                    name: 'New folder',
+                    type: 'Folder',
+                    parent_id: this.folder ? this.folder.id : 0,
+                    workspace_id: this.currentWorkspace.id,
+                    children: [],
+                    owners: [],
+                    children_count: 0,
+                    owner_count: 0,
                 }
                 // Push new folder to the current folder
-                currentFolder.folders.push(newFolder)
+                this.files.push(newFolder)
                 // Activate title edit of new folder
                 this.onEditField(newFolder, 'folder', 'title')
             }
@@ -464,7 +444,7 @@ export default {
         viewSingle(fileId) {
             this.$router.push({ name: 'file', params: { fileId: fileId } })
         },
-        viewEditSingle(fileId) {
+        onGoToEditFile(fileId) {
             this.$router.push({ name: 'editFile', params: { fileId: fileId } })
         },
         onDeleteFile(fileId) {
@@ -472,9 +452,6 @@ export default {
                 'Are you sure you want to delete this file?\nAll comments, requests and actions will be permanently deleted.'
             )) {
                 this.deleteFile(fileId)
-                // Remove the deleted item from the current array
-                const currentItemIndex = this.folder.files.findIndex(x => x.id == fileId)
-                this.folder.files.splice(currentItemIndex, 1)
             }
         },
         onRenameFile(file, index) {

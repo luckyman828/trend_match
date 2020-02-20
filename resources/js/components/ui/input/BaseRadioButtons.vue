@@ -165,6 +165,7 @@ export default {
                 font-size: 12px;
                 font-weight: 400;
                 margin-top: -4px;
+                max-width: 200px;
             }
             &:hover, &.active {
                 background: $bgContentActive;

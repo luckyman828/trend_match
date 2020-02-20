@@ -487,6 +487,21 @@ input[type='submit'] {
 i {
     position: relative;
     color: $fontIcon;
+    &.xs {
+        font-size: 10px;
+    }
+    &.sm {
+        font-size: 12px;
+    }
+    &.md {
+        font-size: 18px;
+    }
+    &.lg {
+        font-size: 40px;
+    }
+    &.xl {
+        font-size: 64px;
+    }
     &.medium {
         font-size: 18px;
     }
@@ -526,9 +541,6 @@ i {
     }
 }
 // DROPDOWN & TOOLTIP
-.has-tooltip {
-    cursor: pointer;
-}
 .dropdown-wrapper,
 .tooltip-wrapper {
     // position: relative;
@@ -1109,7 +1121,7 @@ form {
         display: block;
         width: 100%;
         margin-bottom: 24px;
-        .label {
+        > .label {
             cursor: pointer;
             display: inline-block;
             margin-top: 8px;

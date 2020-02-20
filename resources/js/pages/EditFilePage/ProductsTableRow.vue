@@ -9,7 +9,7 @@
         </td>
         <td class="image clickable" @click="$emit('onViewSingle',product)">
             <div class="img-wrapper">
-                <img v-if="product.color_variants[0] != null" :src="productImg(product.color_variants[0])">
+                <img :src="productImg(product.variants[0])">
             </div>
         </td>
         <td class="id clickable" @click="$emit('onViewSingle',product)">{{product.datasource_id}}</td>
@@ -40,10 +40,10 @@ export default {
     },
     methods: {
         productImg(variant) {
-            if (variant.blob_id != null)
+            if (!variant || (!variant.blob_id && !variant.image)) return `/images/placeholder.JPG`
+            if (variant.blob_id)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-            else if (variant.image) return variant.image
-            else return `/images/placeholder.JPG`
+            else return variant.image
         },
     }
 }

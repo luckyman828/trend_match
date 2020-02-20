@@ -6,9 +6,8 @@ export default {
 
     state: {
         loading: true,
-        currentSingleProductId: null,
-        currentProductId: null,
-        availableProductIds: [],
+        currentProduct: null,
+        availableProducts: [],
         selectedCategories: [],
         selectedDeliveryDates: [],
         selectedBuyerGroups: [],
@@ -17,14 +16,31 @@ export default {
         singleVisible: false,
         products: [],
         productsFiltered: [],
+        status: null,
     },
 
     getters: {
-        loadingProducts: state => {
-            return state.loading
+        loadingProducts: state => state.loading,
+        productsStatus: state => state.status,
+        currentProduct: state => state.currentProduct,
+        availableProducts: state => {
+            return state.availableProducts
         },
-        currentSingleProductId: state => {
-            return state.currentSingleProductId
+        nextProduct: state => {
+            // Find the index of the current product
+            const index = state.availableProducts.findIndex(x => x.id == state.currentProduct.id)
+            // Check that the current is not the last in the array
+            if (index + 1 < state.availableProducts.length) {
+                return state.availableProducts[index + 1]
+            }
+        },
+        prevProduct: state => {
+            // Find the index of the current product
+            const index = state.availableProducts.findIndex(x => x.id == state.currentProduct.id)
+            // Check that the current is not the first in the array
+            if (index > 0) {
+                return state.availableProducts[index - 1]
+            }
         },
         selectedCategories: state => {
             return state.selectedCategories
@@ -169,180 +185,135 @@ export default {
 
             return productsToReturn
         },
-        availableProductIds: state => {
-            return state.availableProductIds
-        },
-        currentProduct: (state, getters, rootState, rootGetters) => {
-            return state.currentProductId != null && getters.products != null
-                ? getters.products.find(x => x.id == state.currentProductId)
-                : null
-        },
-        nextProductId: (state, getters, rootState, rootGetters) => {
-            if (state.currentProductId != null && getters.availableProductIds.length > 0) {
-                const productIds = getters.availableProductIds
-                const currentProductIndex = productIds.findIndex(x => x == state.currentProductId)
-                if (currentProductIndex < productIds.length - 1) {
-                    return productIds[currentProductIndex + 1]
-                }
-            }
-        },
-        prevProductId: (state, getters, rootState, rootGetters) => {
-            if (state.currentProductId != null && getters.availableProductIds.length > 0) {
-                const productIds = getters.availableProductIds
-                const currentProductIndex = productIds.findIndex(x => x == state.currentProductId)
-                if (currentProductIndex != 0) {
-                    return productIds[currentProductIndex - 1]
-                }
-            }
-        },
     },
 
     actions: {
-        async fetchProducts({ commit, dispatch }, file_id) {
-            // Set the state to loading
-            commit('setLoading', true)
+        async fetchProducts({ commit }, fileId) {
+            commit('setProductStatus', 'loading')
 
-            const apiUrl = `/api/file/${file_id}/products`
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${fileId}/products`
 
-            let tryCount = 3
-            let succes = false
-            while (tryCount-- > 0 && !succes) {
-                try {
-                    const response = await axios.get(`${apiUrl}`)
-                    Product.create({ data: response.data })
-                    commit('setLoading', false)
-                    dispatch('instantiateProducts')
-                    succes = true
-                } catch (err) {
-                    console.log('API error in products.js :')
-                    console.log(err)
-                    console.log(`Trying to fetch again. TryCount = ${tryCount}`)
-                    if (tryCount <= 0) throw err
-                }
+            await axios
+                .get(apiUrl)
+                .then(response => {
+                    commit('insertProducts', { products: response.data, method: 'set' })
+                    commit('setProductStatus', 'success')
+                })
+                .catch(err => {
+                    commit('setProductStatus', 'error')
+                })
+        },
+        async fetchSelectionProducts({ commit }, selectionId) {
+            commit('setProductStatus', 'loading')
+
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selectionId}/products`
+
+            await axios
+                .get(apiUrl)
+                .then(response => {
+                    commit('insertProducts', { products: response.data, method: 'set' })
+                    commit('setProductStatus', 'success')
+                })
+                .catch(err => {
+                    commit('setProductStatus', 'error')
+                })
+        },
+        async insertProducts({ commit }, { file, products, addToState }) {
+            if (addToState) commit('insertProducts', { products, method: 'add' })
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.id}/products`
+            await axios.post(apiUrl, {
+                method: 'Add',
+                products: products,
+            })
+        },
+        instantiateNewProduct({ commit }) {
+            return {
+                title: 'Untitled product',
+                datasource_id: null,
+                short_description: null,
+                sale_description: null,
+                min_order: null,
+                min_variant_order: null,
+                brand: null,
+                category: null,
+                delivery_date: null,
+                buying_group: null,
+                is_editor_choice: null,
+                compositions: null,
+                prices: [],
+                variants: [],
+                assortments: [],
+                eans: [],
             }
         },
-        setCurrentProductId({ commit }, id) {
-            commit('setCurrentProductId', id)
+        setCurrentProduct({ commit }, product) {
+            commit('setCurrentProduct', product)
         },
-        setAvailableProductIds({ commit }, products) {
-            commit('setAvailableProductIds', products)
+        setAvailableProducts({ commit }, products) {
+            commit('setAvailableProducts', products)
         },
         showNextProduct({ commit, getters }) {
-            commit('setCurrentProductId', getters.nextProductId)
+            commit('setCurrentProduct', getters.nextProduct)
         },
         showPrevProduct({ commit, getters }) {
-            commit('setCurrentProductId', getters.prevProductId)
+            commit('setCurrentProduct', getters.prevProduct)
         },
-        showSingle({ commit }, id) {
-            commit('setCurrentProductId', id)
+        showSingle({ commit }, product) {
+            commit('setCurrentProduct', product)
             commit('setSingleVisisble', true)
         },
-        instantiateNewProduct({ commit }, { id, fileId }) {
-            console.log('instantiating new product in store with id: ' + id + ', and file id: ' + fileId)
-            Product.insert({
-                data: { id: id, collection_id: fileId, title: 'Unnamed product' },
-            })
-            // Product.insert({ data: product })
-        },
         async updateProduct({ commit }, product) {
-            product.prices = product.prices && product.prices.length > 0 ? JSON.stringify(product.prices) : []
-            product.color_variants =
-                product.color_variants && product.color_variants.length > 0
-                    ? JSON.stringify(product.color_variants)
-                    : []
-            product.assortments =
-                product.assortments && product.assortments.length > 0 ? JSON.stringify(product.assortments) : []
-            product.eans = product.eans && product.eans.length > 0 ? JSON.stringify(product.eans) : []
             commit('updateProduct', product)
 
-            await axios
-                .put(`/api/product`, {
-                    id: product.id,
-                    title: product.title,
-                    prices: product.prices,
-                    assortments: product.assortments,
-                    color_variants: product.color_variants,
-                    quantity: product.quantity,
-                    delivery_date: product.delivery_date,
-                    composition: product.composition,
-                    category: product.category,
-                    description: product.sale_description,
-                    collection_id: product.collection_id,
-                    datasource_id: product.datasource_id,
-                })
-                .then(response => {
-                    console.log(response.data)
-                })
-                .catch(err => {
-                    console.log(err.response)
-                })
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/products/${product.id}`
+            axios.put(apiUrl, product)
         },
-        async rotateImage({ commit }, file) {
-            // Upload images to Blob storage
-            let imageToReturn
+        async uploadImage({ commit, dispatch }, { file, product, image, callback }) {
+            // First generate presigned URL we can put the image to from the API
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/media/generate-persigned-url?file_id=${file.id}&datasource_id=${product.datasource_id}`
+            let presignedUrl
+            await axios.get(apiUrl).then(response => {
+                presignedUrl = response.data
+            })
 
-            const uploadApiUrl = `/api/product/rotate-img`
-            const axiosConfig = {
-                // headers: {
-                //     'Content-Type': 'multipart/form-data',
-                // },
-            }
-
-            // Append the file
-            let data = new FormData()
-            data.append('file', file)
-            console.log('Send rotate image request from store')
-
-            await axios
-                .post(uploadApiUrl, data, axiosConfig)
-                .then(response => {
-                    console.log('returning image')
-                    imageToReturn = response.data
-                })
-                .catch(err => {
-                    imageToReturn = false
-                    console.log('error')
-                    console.log(err.response)
-                })
-            return imageToReturn
-        },
-        async uploadImages({ commit, dispatch }, { files, callback }) {
-            // Upload images to Blob storage
-            let uploadSucces = false
+            // Next configure a request to the presigned URL
+            const uploadUrl = presignedUrl.presigned_url
             let uploadPercentage = 0
-
-            const uploadApiUrl = `/api/product/images`
             const axiosConfig = {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    'Content-Type': 'image/jpeg',
+                    'x-amz-acl': 'public-read',
                 },
                 onUploadProgress: progressEvent => {
                     uploadPercentage = parseInt(Math.round((progressEvent.loaded / progressEvent.total) * 100))
                     return callback(uploadPercentage)
                 },
             }
+            let data = new FormData().append('file', image)
 
-            // Append the files
-            let data = new FormData()
-            let count = 0
-            files.forEach(file => {
-                count++
-                data.append('files[' + count + ']', file.file, file.id)
-            })
-            console.log(count + ' images sent to API from store')
+            await axios.put(uploadUrl, data, axiosConfig)
 
-            await axios
-                .post(uploadApiUrl, data, axiosConfig)
-                .then(response => {
-                    console.log(response.data)
-                    uploadSucces = true
-                })
-                .catch(err => {
-                    console.log('error')
-                    console.log(err.response)
-                    uploadSucces = false
-                })
-            return uploadSucces
+            // // Append the files
+            // let data = new FormData()
+            // let count = 0
+            // files.forEach(file => {
+            //     count++
+            //     data.append('files[' + count + ']', file.file, file.id)
+            // })
+            // console.log(count + ' images sent to API from store')
+
+            // await axios
+            //     .post(uploadApiUrl, data, axiosConfig)
+            //     .then(response => {
+            //         console.log(response.data)
+            //         uploadSucces = true
+            //     })
+            //     .catch(err => {
+            //         console.log('error')
+            //         console.log(err.response)
+            //         uploadSucces = false
+            //     })
+            // return uploadSuccesupdateProduct
         },
         async deleteImages({ commit }, imagesToDelete) {
             await axios
@@ -377,85 +348,6 @@ export default {
                     commit('alertError')
                 })
         },
-        instantiateProducts({ state, rootGetters }) {
-            const authUser = rootGetters['persist/authUser']
-            const currentSelection = rootGetters['entities/selections/currentSelection']
-            const workspace = rootGetters['persist/currentWorkspace']
-
-            // Get the products
-            const products = Product.all()
-
-            // START Loop through each product and instantiate their initial data
-            products.forEach(product => {
-                // START Parse the json objects to javascript objects
-                // Test that each json object is actually valid json before trying to parse it
-                if (typeof product.color_variants == 'string' && isJSON(product.color_variants))
-                    product.color_variants = JSON.parse(product.color_variants)
-                if (typeof product.assortments == 'string' && isJSON(product.assortments))
-                    product.assortments = JSON.parse(product.assortments)
-                if (typeof product.prices == 'string' && isJSON(product.prices))
-                    product.prices = JSON.parse(product.prices)
-
-                function isJSON(str) {
-                    try {
-                        return JSON.parse(str) && !!str
-                    } catch (e) {
-                        return false
-                    }
-                }
-                // END Parse the json objects to javascript objects
-
-                // START Format the Delivery Date
-                let date = product.delivery_date
-                if (date) {
-                    let newDate = new Date(date).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
-                    product.delivery_date = newDate
-                }
-                // END Format the Delivery Date
-
-                // START Find the correct price
-                // Check if the chosen currency exists on the product
-                if (product.prices != null) {
-                    // First check if the user currency is available
-                    if (authUser.currency && product.prices.find(x => x.currency == authUser.currency)) {
-                        const userPrices = product.prices.find(x => x.currency == authUser.currency)
-                        product.userPrices = userPrices
-                    }
-                    // Then check if the team currency is available
-                    else if (
-                        currentSelection &&
-                        currentSelection.currency &&
-                        product.prices.find(x => x.currency == currentSelection.currency)
-                    ) {
-                        const selectionPrices = product.prices.find(x => x.currency == currentSelection.currency)
-                        product.userPrices = selectionPrices
-                    }
-                    // Then check if the workspace currency is available
-                    else if (workspace.currency && product.prices.find(x => x.currency == workspace.currency)) {
-                        const workspacePrices = product.prices.find(x => x.currency == workspace.currency)
-                        product.userPrices = workspacePrices
-                    }
-                    // Else use the first available currency
-                    else {
-                        product.userPrices = product.prices[0]
-                    }
-                }
-                // If there are no prices
-                else {
-                    product.userPrices = {
-                        currency: 'unset',
-                        markup: null,
-                        recommended_retail_price: null,
-                        wholesale_price: null,
-                    }
-                }
-                // END Find the correct price
-            })
-            // END Loop
-
-            // Save the products to our state
-            state.products = products
-        },
     },
 
     mutations: {
@@ -463,14 +355,31 @@ export default {
         setLoading(state, bool) {
             state.loading = bool
         },
-        setCurrentProductId(state, id) {
-            state.currentProductId = id
+        setProductStatus(state, status) {
+            state.status = status
         },
-        setAvailableProductIds(state, ids) {
-            state.availableProductIds = ids
+        insertProducts(state, { products, method }) {
+            // Loop through the products and format their delivery_date
+            products.forEach(product => {
+                if (product.delivery_date) {
+                    product.delivery_date = new Date(product.delivery_date).toLocaleDateString('en-GB', {
+                        month: 'long',
+                        year: 'numeric',
+                    })
+                }
+            })
+            if (method == 'add') {
+                // Add to existing products
+                state.products = state.products.concat(products)
+            } else {
+                state.products = products
+            }
         },
-        setCurrentProductId(state, id) {
-            state.currentProductId = id
+        setCurrentProduct(state, product) {
+            state.currentProduct = product
+        },
+        setAvailableProducts(state, products) {
+            state.availableProducts = products
         },
         updateSelectedCategories(state, payload) {
             state.selectedCategories = payload
@@ -487,15 +396,13 @@ export default {
         setCurrentProductFilter(state, payload) {
             state.currentProductFilter = payload
         },
-        setSingleVisisble(state, payload) {
-            state.singleVisible = payload
+        setSingleVisisble(state, bool) {
+            state.singleVisible = bool
         },
         updateProduct(state, product) {
-            product.updated_at = new Date()
-                .toISOString()
-                .slice(0, 19)
-                .replace('T', ' ')
-            Product.insert({ data: product })
+            // Replace the product with the new
+            let stateProduct = state.products.find(x => x.id == product.id)
+            Object.assign(stateProduct, product)
         },
         alertError: state => {
             window.alert('Network error. Please check your connection')

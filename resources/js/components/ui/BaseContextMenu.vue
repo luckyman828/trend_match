@@ -30,9 +30,11 @@ export default {
             return !!this.$slots.header || !!this.$scopedSlots.header
         },
         menuWidth() {
-            const columnCount = this.columns ? this.columns : 1
-            const baseWidth = 240
-            return {width: `${baseWidth * columnCount}px`}
+            // if (this.columns) {
+                const columnCount = this.columns ? this.columns : 1
+                const baseWidth = 240
+                return {width: `${baseWidth * columnCount}px`}
+            // }
         }
     },
     methods: {
@@ -161,8 +163,9 @@ export default {
         }
         .item, .item-wrapper {
             padding: 8px 16px;
-            line-height: 1;
             color: $dark05;
+            display: flex;
+            align-items: center;
             &:not(.item-wrapper) {
                 cursor: pointer;
                 &:hover {
@@ -171,7 +174,7 @@ export default {
             }
             .icon-wrapper {
                 width: 32px;
-                display: inline-block;
+                display: block;
                 color: $dark15;
                 i {
                     font-size: 16px;

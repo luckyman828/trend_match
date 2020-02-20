@@ -168,8 +168,8 @@ export default {
     },
     computed: {
         ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope']),
-        ...mapGetters('entities/products', ['currentProduct', 'nextProductId', 'prevProductId']),
-        ...mapGetters('entities/selections', ['currentSelectionId', 'currentSelection']),
+        ...mapGetters('products', ['currentProduct', 'nextProductId', 'prevProductId']),
+        ...mapGetters('selections', ['currentSelectionId', 'currentSelection']),
         product () {
             return this.currentProduct
         },
@@ -193,8 +193,8 @@ export default {
         },
     },
     methods: {
-        ...mapActions('entities/comments', ['createComment', 'markAsFinal']),
-        ...mapActions('entities/products', ['showNextProduct', 'showPrevProduct']),
+        ...mapActions('comments', ['createComment', 'markAsFinal']),
+        ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
         onUpdateAction(product, actionCode) {
             this.$emit('updateAction', product, actionCode)
         },

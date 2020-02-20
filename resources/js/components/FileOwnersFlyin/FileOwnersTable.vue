@@ -4,7 +4,7 @@
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:right>
-                        <span>0 records</span>
+                        <span>{{file.owner_count || 0}} records</span>
                     </template>
                 </BaseTableTopBar>
             </template>
@@ -52,12 +52,15 @@
                     :optionNameKey="'name'" :search="true"/>
                 </div>
                 <div class="item-group">
-                    <div class="item">
+                    <div class="item-wrapper">
                         <button class="primary" :class="{disabled: usersToAdd.length < 1}" 
                         @click="onAddUsersToFile();usersToAdd = [];slotProps.hide()">
                             <span>Add <template v-if="usersToAdd.length > 0">{{usersToAdd.length}} 
                             </template>user<template v-if="usersToAdd.length > 1">s</template></span></button>
-                        <button class="invisible ghost-hover" @click="slotProps.hide(); usersToAdd = []"><span>Cancel</span></button>
+                        <button class="invisible ghost-hover" style="margin-left: 8px;"
+                        @click="slotProps.hide(); usersToAdd = []">
+                            <span>Cancel</span>
+                        </button>
                     </div>
                 </div>
             </template>
@@ -66,9 +69,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import sortArray from '../../mixins/sortArray'
-import User from '../../store/models/User'
 
 export default {
     name: 'fileOwnersTable',
@@ -85,14 +87,15 @@ export default {
         usersToAdd: [],
     }},
     computed: {
+        ...mapGetters('users', ['users']),
         availableUsers() {
-            const allUsers = User.all()
+            const allUsers = this.users
             // Filter the available users to exclude users already added
             return allUsers.filter(user => !this.file.owners.find(owner => owner.id == user.id))
         }
     },
     methods: {
-        ...mapActions('entities/collections', ['addUsersToFile','removeUserFromFile']),
+        ...mapActions('files', ['addUsersToFile','removeUserFromFile']),
         showUserContext(e, user) {
             const contextMenu = this.$refs.contextMenuUser
             contextMenu.item = user
@@ -103,7 +106,7 @@ export default {
             contextMenu.show(e)
         },
         onAddUsersToFile(usersToAdd) {
-            this.addUsersToFile({file: this.file, usersToAdd: this.usersToAdd})
+            this.addUsersToFile({file: this.file, users: this.usersToAdd})
         },
         sortUsers(method, key) {
             // If if we are already sorting by the given key, flip the sort order

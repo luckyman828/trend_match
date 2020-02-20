@@ -1,7 +1,7 @@
 <template>
     <BaseFlyin ref="fileApproversFlyin" :show="show" @close="$emit('close')">
         <template v-slot:header>
-            <BaseFlyinHeader v-if="show" :title="'File Approvers: '+file.title" disableNavigation=true @close="$emit('close')"/>
+            <BaseFlyinHeader v-if="show" :title="'File Approvers: '+file.name" disableNavigation=true @close="$emit('close')"/>
         </template>
         <template v-slot>
             <FileApproversTable v-if="show" :file="file"/>
@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import FileApproversTable from './FileApproversTable'
 export default {
     name: 'fileApproversFlyin',
@@ -19,7 +20,17 @@ export default {
     props: [
         'show',
         'file'
-    ]
+    ],
+    computed: {
+        ...mapGetters('users', ['users'])
+    },
+    methods: {
+        ...mapActions('users', ['fetchUsers'])
+    },
+    created() {
+        // Check if we have any workspace users, else fetch them
+        if (!this.users) this.fetchUsers()
+    }
 }
 </script>
 

@@ -4,10 +4,11 @@
 
         </div>
         <div class="item-right">
-            <button class="primary" @click="$refs.createFileModal.$refs.modal.show()"><span>Add file</span></button>
+            <button class="primary" @click="createFileModalVisible = true"><span>Add file</span></button>
         </div>
 
-        <CreateFileModal ref="createFileModal"/>
+        <CreateFileModal :show="createFileModalVisible" ref="createFileModal" 
+        @close="createFileModalVisible = false"/>
     </div>
 </template>
 
@@ -21,6 +22,7 @@ export default {
         CreateFileModal
     },
     data: function () { return {
+        createFileModalVisible: false,
     }},
     computed: {
     },

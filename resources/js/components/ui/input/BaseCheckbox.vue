@@ -88,7 +88,7 @@ export default {
                 color: white;
             }
         }
-        &:hover {
+        &:hover, .input-wrapper:hover & {
             .checkmark {
                 border: solid 2px $primary;
             }

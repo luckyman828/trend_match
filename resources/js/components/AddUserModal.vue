@@ -1,7 +1,6 @@
 <template>
-    <BaseModal ref="addUserModal" :header="'Add new user to workspace'" v-slot 
+    <BaseModal ref="addUserModal" :header="'Add new user to workspace'" 
     :show="show" @close="$emit('close')">
-        <!-- <form @input="validateInput"> -->
         <form novalidate @submit="!submitDisabled && onSubmit($event)">
             <div class="user-wrapper" v-for="(user, index) in usersToAdd" :key="index">
                 <div class="controls" v-if="usersToAdd.length > 1">
@@ -46,11 +45,13 @@ export default {
             email: '',
             name: '',
             password: '',
+            role: 'Member'
         }],
         userDefaultObject: {
             email: '',
             name: '',
             password: '',
+            role: 'Member'
         },
         submitDisabled: true,
     }},
@@ -59,10 +60,10 @@ export default {
         'show'
     ],
     computed: {
-        ...mapGetters('persist', ['currentWorkspaceId']),
+        ...mapGetters('workspaces', ['currentWorkspace']),
     },
     methods: {
-        ...mapActions('entities/workspaceUsers', ['addUsersToWorkspace']),
+        ...mapActions('users', ['addUsersToWorkspace']),
         onAddUser() {
             this.usersToAdd.push(JSON.parse(JSON.stringify(this.userDefaultObject)))
         },
@@ -95,8 +96,14 @@ export default {
             const inputIsValid = this.validateInput()
             if (!inputIsValid) return
             // Submit form
-            this.addUsersToWorkspace({workspaceId: this.currentWorkspaceId, usersToAdd: this.usersToAdd})
-            this.$emit('close')
+            this.addUsersToWorkspace(this.usersToAdd).then(success => {
+                if (success) {
+                    // Close modal on success
+                    this.$emit('close')
+                } else {
+                    // Display error
+                }
+            })
         },
         validateInput(inputField) {
             // inputField is expected to be the inputfield triggering the validation check.

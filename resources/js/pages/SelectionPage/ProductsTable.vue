@@ -14,7 +14,8 @@
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>
-                        <BaseSearchField/>
+                        <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category']"
+                        v-model="productsFilteredBySearch"/>
 
                         <BaseDropdown class="dropdown-parent left">
                             <template v-slot:button="slotProps">
@@ -77,13 +78,13 @@
                     </template>
                     <template v-slot:right>
                         <span>{{selectedProducts.length}} selected</span>
-                        <span v-if="products.length != productTotals.all">{{products.length}}/{{productTotals.all}} showing</span>
+                        <span v-if="productsFilteredBySearch.length != productTotals.all">{{productsFilteredBySearch.length}}/{{productTotals.all}} showing</span>
                         <span v-else>{{productTotals.all}} records</span>
                     </template>
                 </BaseTableTopBar>
             </template>
             <template v-slot:header>
-                <BaseTableHeader class="select"><BaseCheckbox
+                <BaseTableHeader class="select"><BaseCheckbox :modelValue="true" :value="selectedProducts.length > 0"
                 @change="(checked) => checked ? selectedProducts = products : selectedProducts = []"/>
                 </BaseTableHeader>
                 <BaseTableHeader class="image"></BaseTableHeader>
@@ -106,7 +107,7 @@
 
                 <RecycleScroller
                     class="products-scroller"
-                    :items="products"
+                    :items="productsFilteredBySearch"
                     :item-size="78"
                     page-mode
                     key-field="id"
@@ -130,8 +131,6 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ProductsTableRow from './ProductsTableRow'
 
-import Product from '../../store/models/Product';
-
 export default {
     name: 'productsTable',
     props: [
@@ -144,14 +143,14 @@ export default {
         ProductsTableRow,
     },
     data: function() { return {
-        selectedProducts: []
+        selectedProducts: [],
+        productsFilteredBySearch: this.products,
     }},
     computed: {
-        ...mapGetters('entities/products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
-        ...mapGetters('persist', ['currentWorkspaceId', 'authUser']),
+        ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
         currentProductFilter: {
             get () {
-                return this.$store.getters['entities/products/currentProductFilter']
+                return this.$store.getters['products/currentProductFilter']
             },
             set (value) {
                 this.setCurrentProductFilter(value)
@@ -159,7 +158,7 @@ export default {
         },
         selectedCategories: {
             get () {
-                return this.$store.getters['entities/products/selectedCategories']
+                return this.$store.getters['products/selectedCategories']
             },
             set (value) {
                 this.updateSelectedCategories(value)
@@ -167,7 +166,7 @@ export default {
         },
         selectedDeliveryDates: {
             get () {
-                return this.$store.getters['entities/products/selectedDeliveryDates']
+                return this.$store.getters['products/selectedDeliveryDates']
             },
             set (value) {
                 this.updateSelectedDeliveryDates(value)
@@ -175,7 +174,7 @@ export default {
         },
         selectedBuyerGroups: {
             get () {
-                return this.$store.getters['entities/products/selectedBuyerGroups']
+                return this.$store.getters['products/selectedBuyerGroups']
             },
             set (value) {
                 this.updateSelectedBuyerGroups(value)
@@ -183,7 +182,7 @@ export default {
         },
         unreadOnly: {
             get () {
-                return this.$store.getters['entities/products/unreadOnly']
+                return this.$store.getters['products/unreadOnly']
             },
             set (value) {
                 this.setUnreadOnly(value)
@@ -191,15 +190,10 @@ export default {
         },
     },
     methods: {
-        ...mapActions('entities/products', ['setCurrentProductId', 'setAvailableProductIds']),
-        ...mapMutations('entities/products', ['setSingleVisisble','updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter', 'updateSelectedBuyerGroups']),
-        ...mapActions('entities/actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions']),
-        ...mapActions('entities/comments', ['setComment', 'destroyComment']),
-        productImg(variant) {
-            if (variant.blob_id != null)
-                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-            else return variant.image
-        },
+        ...mapActions('products', ['setCurrentProduct', 'setAvailableProducts']),
+        ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter', 'updateSelectedBuyerGroups']),
+        ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions']),
+        ...mapActions('comments', ['setComment', 'destroyComment']),
         onViewSingle(product) {
             this.setCurrentProductId(product.id)
             this.setAvailableProductIds(this.products.map(x => x.id)) // Save array of available products

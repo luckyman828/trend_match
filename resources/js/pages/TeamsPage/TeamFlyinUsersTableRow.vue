@@ -13,7 +13,7 @@
         </td>
         <td class="email">{{user.email}}</td>
         <td class="role">
-            <button class="ghost editable sm" @click.stop="$emit('editRole', $event, user)"><span>{{availableTeamRoles[user.teamRoleId].name}}</span></button>
+            <button class="ghost editable sm" @click.stop="$emit('editRole', $event, user)"><span>{{user.role}}</span></button>
         </td>
         <td class="currency">
             <button class="ghost editable sm" @click.stop="$emit('editCurrency', $event, user)"><span>{{user.currency ? user.currency : 'Set user currency'}}</span></button>
@@ -42,7 +42,7 @@ export default {
         ...mapGetters('persist', ['availableTeamRoles'])
     },
     methods: {
-        ...mapActions('entities/users', ['updateUser']),
+        ...mapActions('users', ['updateUser']),
     },
 }
 </script>

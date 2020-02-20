@@ -1,5 +1,5 @@
 <template>
-    <div class="team-single">
+    <div class="team-single" v-if="currentTeamStatus == 'success'">
         <BaseFlexTable>
             <template v-slot:topBar>
                 <BaseTableTopBar>
@@ -66,16 +66,25 @@
             </template>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuTeamRole" class="context-role" 
-        @hide="userToEdit.teamRoleId != originalUser.teamRoleId && updateUserTeam({user_id: userToEdit.id, team_id: team.id, permission_level: userToEdit.teamRoleId})">
+        <BaseContextMenu ref="contextMenuTeamRole" class="context-role">
             <template v-slot:header>
                 Change Team Role
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
-                    <BaseRadioButtons ref="userTeamRoleSelector" :options="availableTeamRoles" :currentOptionId="slotProps.item.teamRoleId"
-                    v-model="userToEdit.teamRoleId" :submitOnChange="true" :optionDescriptionKey="'description'"
-                    :optionNameKey="'name'" :optionValueKey="'id'"/>
+                    <BaseSelectButtons type="radio" ref="userTeamRoleSelector" :options="availableTeamRoles"
+                    v-model="userToEdit.role" :submitOnChange="true" :optionDescriptionKey="'description'"
+                    :optionNameKey="'role'" :optionValueKey="'role'"/>
+                </div>
+                <div class="item-group">
+                    <div class="item-wrapper">
+                        <button class="primary" :class="{disabled: userToEdit.role == originalUser.role}" 
+                        @click="updateTeamUser({team, user: userToEdit});slotProps.hide()">
+                            <span>Save</span>
+                        </button>
+                        <button class="invisible ghost-hover" style="margin-left: 8px;"
+                        @click="slotProps.hide(); userToEdit.role = originalUser.role"><span>Cancel</span></button>
+                    </div>
                 </div>
             </template>
         </BaseContextMenu>
@@ -87,21 +96,29 @@
             <template v-slot="slotProps">
                 <div class="item-group">
                     <BaseSelectButtons :type="'checkbox'" :options="availableUsers"
-                    v-model="userIdsToAdd" :submitOnChange="true" :optionDescriptionKey="'email'"
-                    :optionNameKey="'name'" :optionValueKey="'id'" :search="true"/>
+                    v-model="usersToAdd" :submitOnChange="true" :optionDescriptionKey="'email'"
+                    :optionNameKey="'name'" :search="true"/>
                 </div>
                 <div class="item-group">
-                    <div class="item">
-                        <button class="primary" :class="{disabled: userIdsToAdd.length < 1}" 
-                        @click="addUsersToTeam({team, userIdsToAdd});userIdsToAdd = [];slotProps.hide()">
-                            <span>Add <template v-if="userIdsToAdd.length > 0">{{userIdsToAdd.length}} 
-                            </template>user<template v-if="userIdsToAdd.length > 1">s</template></span></button>
-                        <button class="invisible ghost-hover" @click="slotProps.hide(); userIdsToAdd = []"><span>Cancel</span></button>
+                    <div class="item-wrapper">
+                        <button class="primary" :class="{disabled: usersToAdd.length < 1}" style="margin-right: 8px;" 
+                        @click="addUsersToTeam({team, users: usersToAdd});usersToAdd = [];slotProps.hide()">
+                            <span>Add <template v-if="usersToAdd.length > 0">{{usersToAdd.length}} 
+                            </template>user<template v-if="usersToAdd.length > 1">s</template></span></button>
+                        <button class="invisible ghost-hover" @click="slotProps.hide(); usersToAdd = []"><span>Cancel</span></button>
                     </div>
                 </div>
             </template>
         </BaseContextMenu>
 
+    </div>
+    <BaseLoader v-else-if="currentTeamStatus == 'loading'"/>
+    <div v-else class="error-wrapper">
+        <i class="far fa-exclamation-triangle lg"></i>
+        <span>Something went wrong</span>
+        <button class="dark md" @click="fetchTeamUsers(team)">
+            <span>Try again</span>
+        </button>
     </div>
 </template>
 
@@ -130,19 +147,21 @@ export default {
         selected: [],
         userToEdit: null,
         originalUser: null,
-        userIdsToAdd: [],
+        usersToAdd: [],
         usersFilteredBySearch: this.team.users
     }},
     watch: {
         team: function(newVal, oldVal) {
             // If we have a new team
             if (!oldVal || newVal.id != oldVal.id) {
+                this.fetchTeamUsers(this.team)
                 this.$refs.searchField.clear()
             }
         }
     },
     computed: {
-        ...mapGetters('persist', ['authUser', 'availableTeamRoles', 'availableCurrencies']),
+        ...mapGetters('persist', ['authUser', 'availableCurrencies']),
+        ...mapGetters('teams', ['currentTeamStatus', 'availableTeamRoles']),
         authUserTeam() {
             return UserTeam.where('user_id', AuthUser.first().id).where('team_id', this.team.id).first()
         },
@@ -153,8 +172,8 @@ export default {
         }
     },
     methods: {
-        ...mapActions('entities/users', ['updateUser']),
-        ...mapActions('entities/userTeams', ['removeUserFromTeam', 'updateUserTeam', 'addUsersToTeam']),
+        ...mapActions('users', ['updateWorkspaceUser']),
+        ...mapActions('teams', ['removeUserFromTeam', 'updateTeamUser', 'addUsersToTeam', 'fetchTeamUsers']),
         sortUsers(method, key) {
             // If if we are already sorting by the given key, flip the sort order
             if (this.sortKey == key) {
@@ -191,7 +210,7 @@ export default {
         },
         onRemoveUserFromTeam(user) {
             // if ( confirm("Are you sure you want to remove this user from this team?") )
-                this.removeUserFromTeam({user_id: user.id, team: this.team})
+                this.removeUserFromTeam({user: user, team: this.team})
         },
         onEditUserRole(mouseEvent, user) {
             this.userToEdit = user;
@@ -200,6 +219,9 @@ export default {
             contextMenu.item = user;
             contextMenu.show(mouseEvent)
         },
+    },
+    created() {
+        this.fetchTeamUsers(this.team)
     },
     updated() {
         this.usersFilteredBySearch = this.team.users
@@ -211,6 +233,17 @@ export default {
 
     .body {
         padding: 16px;
+    }
+    .error-wrapper {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        > span {
+            margin: 12px 0;
+        }
     }
 
 </style>

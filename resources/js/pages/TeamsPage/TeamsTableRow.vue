@@ -5,25 +5,26 @@
             <i class="fa-users" :class="team.id ? 'fas' : 'far'"></i>
             <BaseEditInputWrapper ref="editTitle" :activateOnMount="true" :type="'text'"
                 :value="teamToEdit.title" :oldValue="team.title" v-model="teamToEdit.title"
-                @submit="updateTeam(teamToEdit); editTitle = false" @cancel="$emit('cancelEditTitle'); editTitle = false;"/>
+                @submit="insertOrUpdateTeam(teamToEdit); editTitle = false" 
+                @cancel="$emit('cancelEditTitle'); editTitle = false;"/>
         </td>
-        <td v-else class="title clickable" @click="showSingle(team.id)">
+        <td v-else class="title clickable" @click="showSingle()">
             <i class="fa-users" :class="team.id ? 'fas' : 'far'"></i>
             <span>{{team.title}}</span>
         </td>
-        <td class="owner">{{team.owner}}</td>
-        <td class="members clickable" @click="showSingle(team.id)"><span>{{team.users.length}} Members</span></td>
-        <td class="files">
+        <!-- <td class="owner">{{team.owner}}</td> -->
+        <td class="members clickable" @click="showSingle()"><span>{{team.user_count}} Members</span></td>
+        <!-- <td class="files">
             <v-popover :aria-disabled="team.files.length <= 0" style="display: inline-block">
                 <span class="tooltip-target">{{team.files.length}} <i class="far fa-info-circle"/></span>
                 <BaseTooltipList slot="popover" :header="'Team files'" :array="team.files" :arrayValueKey="'title'"/>
             </v-popover>
-        </td>
+        </td> -->
         <td class="currency">
             <button class="ghost editable sm" @click.stop="$emit('editCurrency', $event, team)"><span>{{team.currency ? team.currency : 'Set currency'}}</span></button>
         </td>
         <td class="action">
-            <button class="invisible ghost-hover primary" @click="showSingle(team.id)"><span>View / Edit</span></button>
+            <button class="invisible ghost-hover primary" @click="showSingle()"><span>View / Edit</span></button>
             <button class="invisible ghost-hover" @click.stop="$emit('showContextMenu', $event, team)"><i class="far fa-ellipsis-h medium"></i></button>
         </td>
     </tr>
@@ -47,15 +48,16 @@ export default {
         teamToEdit: this.team,
     }},
     computed: {
+        ...mapGetters('workspaces', ['currentWorkspace']),
         localSelectedTeams: {
             get() { return this.selectedTeams },
             set(localSelectedTeams) {this.$emit('input', localSelectedTeams)}
         }
     },
     methods: {
-        ...mapActions('entities/teams', ['updateTeam']),
-        showSingle(id) {
-            this.$emit('showSingle', id)
+        ...mapActions('teams', ['insertOrUpdateTeam']),
+        showSingle() {
+            this.$emit('showSingle', this.team)
         },
     },
 }

@@ -27,10 +27,9 @@ export default {
     components: {
     },
     computed: {
-        ...mapGetters('persist', ['userPermissionLevel']),
     },
     methods: {
-        ...mapMutations('entities/users', ['setAddNewUserModalVisible']),
+        ...mapMutations('users', ['setAddNewUserModalVisible']),
     }
 };
 </script>

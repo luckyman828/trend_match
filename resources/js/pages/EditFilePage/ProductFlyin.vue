@@ -1,18 +1,22 @@
 <template>
     <BaseFlyin class="edit-product-single" :show="show" @close="onCloseSingle" :columns=2>
         <template v-slot:header>
-            <BaseFlyinHeader v-if="show" :title="product.title" :next="nextProductId" :prev="prevProductId"
+            <BaseFlyinHeader v-if="show" :title="product.title" :next="nextProduct" :prev="prevProduct"
             @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
                 <div class="item-group">
                     <div class="last-update" v-if="product.created_at != product.updated_at">
                         <span>Changes saved</span>
                         <span>{{product.updated_at}}</span>
                     </div>
-                    <div class="hotkey-wrapper">
+                    <div class="hotkey-wrapper" v-tooltip="{content: !productToEdit.datasource_id && 'Product must have an ID'}">
                         <!-- <h3><BaseEditable :value="product.title" :type="'text'" v-model="product.title"/></h3> -->
-                        <button v-if="!updatingProduct && gettingImagesFromURL <= 0" class="ghost" :class="{disabled: !hasChanges}" 
-                        @click="onUpdateProduct"><i class="far fa-save"></i><span>Save</span></button>
-                        <button v-else class="ghost disabled"><BaseLoader/></button>
+                        <button v-if="!updatingProduct && gettingImagesFromURL <= 0" class="ghost" :class="{disabled: !saveActive}"
+                        @click="saveActive && onUpdateProduct()"><i class="far fa-save">
+                            </i><span>Save</span>
+                        </button>
+                        <button v-else class="ghost disabled">
+                            <BaseLoader/>
+                        </button>
                         <span class="hotkey"><span class="key">S</span> Save</span>
                     </div>
                 </div>
@@ -20,11 +24,11 @@
         </template>
         <template v-slot v-if="show">
             <BaseFlyinColumn>
-                <span style="margin-right: 8px;">Variants ({{product.color_variants.length}})</span>
+                <span style="margin-right: 8px;">Variants ({{product.variants.length}})</span>
                 <button class="invisible ghost-hover" @click="onAddVariant"><i class="far fa-plus"></i><span>Add Variant</span></button>
-                <Draggable v-model="product.color_variants" class="product-variants">
+                <Draggable v-model="product.variants" class="product-variants">
                     
-                    <div class="product-variant" v-for="(variant, index) in product.color_variants" :key="index"
+                    <div class="product-variant" v-for="(variant, index) in product.variants" :key="index"
                     @contextmenu.prevent="showVariantContext($event, index)">
                         <div class="img-wrapper" @dragenter="dragActive($event, index)" @dragleave="dragLeave" @drop="dragDrop">
                             <div class="drop-area" :class="{drag: dragActiveIndex == index}">
@@ -65,15 +69,20 @@
                                 </button>
                             </div>
                         </div>
-                        <BaseEditable :ref="'nameInput-'+index" :placeholder="'Untitled variant'" :value="variant.color" :type="'text'" v-model="variant.color"/>
+                        <BaseEditable :ref="'nameInput-'+index" :placeholder="'Untitled variant'" :value="variant.name" :type="'text'" v-model="variant.name"/>
                     </div>
                 </Draggable>
 
                 <h3>Details</h3>
+                <div class="form-element">
+                    <label for="product-name">Product name</label>
+                    <BaseEditInputWrapper id="product-name" :type="'text'"
+                    :value="product.title" :oldValue="originalProduct.title" v-model="product.title"/>
+                </div>
                 <div class="col-2">
                     <div class="form-element">
                         <label for="datasource-id">Product ID</label>
-                        <BaseEditInputWrapper id="datasource-id" :type="'text'" :maxlength="9" :pattern="'[0-9]'"
+                        <BaseEditInputWrapper id="datasource-id" :type="'text'" :maxlength="9" :pattern="'[0-9]'" :disabled="!!originalProduct.datasource_id"
                         :value="product.datasource_id" :oldValue="originalProduct.datasource_id" v-model="product.datasource_id"/>
                     </div>
                     <div class="form-element">
@@ -126,19 +135,19 @@
                         <label for="wholesale">WHS ({{currentCurrency.currency}})</label>
                         <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
                         :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].wholesale_price : null" 
-                        v-model.number="currentCurrency.wholesale_price" @submit="savedMarkup = currentCurrency.markup"
+                        v-model.number="currentCurrency.wholesale_price" @submit="calculateMarkup({whs: $event}); savedMarkup = currentCurrency.mark_up"
                         @change="calculateMarkup({whs: $event})" @cancel="resetMarkup" @revert="revertMarkup"/>
                     </div>
                     <div class="form-element">
                         <label for="recommended-retail">RPP ({{currentCurrency.currency}})</label>
                         <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
                         :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].recommended_retail_price : null" 
-                        v-model.number="currentCurrency.recommended_retail_price" @submit="savedMarkup = currentCurrency.markup"
+                        v-model.number="currentCurrency.recommended_retail_price" @submit="calculateMarkup({rrp: $event}); savedMarkup = currentCurrency.mark_up"
                         @change="calculateMarkup({rrp: $event})" @cancel="resetMarkup" @revert="revertMarkup"/>
                     </div>
                     <div class="form-element">
                         <label>Mark Up</label>
-                        <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{currentCurrency.markup}}</span>
+                        <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{currentCurrency.mark_up}}</span>
                     </div>
                 </div>
 
@@ -147,12 +156,12 @@
                     <div class="form-element">
                         <label for="min-order">Order minimum (pcs)</label>
                         <BaseEditInputWrapper :id="'min-order'" :type="'number'" 
-                        :oldValue="originalProduct.quantity" v-model.number="product.quantity"/>
+                        :oldValue="originalProduct.min_order" v-model.number="product.min_order"/>
                     </div>
                     <div class="form-element">
                         <label for="min-order">Variant minimum (pcs)</label>
                         <BaseEditInputWrapper :id="'min-order'" :type="'number'" 
-                        :oldValue="originalProduct.variant_min_quantity" v-model.number="product.variant_min_quantity"/>
+                        :oldValue="originalProduct.min_variant_order" v-model.number="product.min_variant_order"/>
                     </div>
                 </div>
             </BaseFlyinColumn>
@@ -223,7 +232,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Product from '../../store/models/Product'
 import Draggable from 'vuedraggable'
 
@@ -247,7 +256,7 @@ export default {
         gettingImagesFromURL: 0,
         defaultPriceObject: {
             currency: 'Unnamed currency',
-            markup: 0,
+            mark_up: 0,
             wholesale_price: 0,
             recommended_retail_price: 0
         },
@@ -258,11 +267,17 @@ export default {
             // This function fires when a change happens to the current product in the store. It also fires initially
             // This can mean: A new product is shown. The product in the store has been updated
             this.productToEdit = JSON.parse(JSON.stringify(newVal))
+
+            // Check if the product has any currencies, else add a default currency
+            if (this.productToEdit.prices.length < 1) {
+                this.productToEdit.prices.push(JSON.parse(JSON.stringify(this.defaultPriceObject)))
+            }
+
             // Check if the current currency is available. Else set it to the first available
             if (!this.productToEdit.prices[this.currencyIndex]) this.currencyIndex = 0
 
             // Create an empty variant if no variants are present
-            const variants = this.productToEdit.color_variants
+            const variants = this.productToEdit.variants
             if (variants.length <= 0) {
                 this.onAddVariant()
             }
@@ -270,8 +285,8 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('entities/products', ['currentProduct', 'nextProductId', 'prevProductId']),
-        ...mapGetters('persist', ['userPermissionLevel', 'authUser']),
+        ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct']),
+        ...mapGetters('files', ['currentFile']),
         product () {
             return this.productToEdit
         },
@@ -279,14 +294,14 @@ export default {
             return this.currentProduct
         },
         saveActive() {
-            return !this.updatingProduct && this.gettingImagesFromURL <= 0 && this.hasChanges
+            return !this.updatingProduct && this.gettingImagesFromURL <= 0 && this.hasChanges && !!this.productToEdit.datasource_id
         },
         currentCurrency () {
             return this.productToEdit 
             ? this.product.prices[this.currencyIndex] 
             : {
                 currency: null,
-                markup: null,
+                mark_up: null,
                 recommended_retail_price: null,
                 wholesale_price: null
             }
@@ -301,11 +316,11 @@ export default {
             const oldProduct = this.currentProduct
             let filesToDelete = []
             // Loop through the variants on the old product
-            oldProduct.color_variants.forEach(variant => {
+            oldProduct.variants.forEach(variant => {
                 // First check if the current variant has a blob id
                 if (variant.blob_id != null) {
                     // See if we can find the blob_id on the new product.
-                    const exists = newProduct.color_variants.find(x => x.blob_id == variant.blob_id)
+                    const exists = newProduct.variants.find(x => x.blob_id == variant.blob_id)
                     // If we cannot find the blob_ib on the new product, it must mean that the blob is no longer used.
                     // We can therefore delete it
                     if (!exists) {
@@ -317,7 +332,7 @@ export default {
         },
         imagesToUpload() {
             // Check if we have any files (images) we need to upload
-            const variants = this.productToEdit.color_variants
+            const variants = this.productToEdit.variants
             let imagesToUpload = []
             variants.forEach(variant => {
                 if (variant.imageToUpload) {
@@ -328,7 +343,8 @@ export default {
         },
     },
     methods: {
-        ...mapActions('entities/products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'uploadImages', 'deleteImages', 'rotateImage']),
+        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImage', 'deleteImages']),
+        ...mapMutations('products', ['setCurrentProduct']),
         showCurrencyContext(e) {
             this.$refs.contextCurrency.show(e)
         },
@@ -358,21 +374,9 @@ export default {
             // Emit event to parent
             this.$emit('closeSingle')
         },
-        onNextSingle() {
-            if (this.nextProductId != null) {
-                this.$emit('nextProduct')
-                this.showNextProduct()
-            }
-        },
-        onPrevSingle() {
-            if (this.prevProductId != null) {
-                this.$emit('prevProduct')
-                this.showPrevProduct()
-            }
-        },
         onAddVariant() {
-            this.product.color_variants.push({
-                color: null,
+            this.product.variants.push({
+                name: null,
                 image: null,
                 blob_id: null,
                 sizes: null,
@@ -380,7 +384,7 @@ export default {
         },
         removeVariant(index) {
             // Remove the variant from the product
-            const variants = this.productToEdit.color_variants
+            const variants = this.productToEdit.variants
             variants.splice(index, 1)
 
             if (variants.length <= 0) {
@@ -393,63 +397,67 @@ export default {
             const vm = this
             this.updatingProduct = true
 
-            // Remove the add price option from the prices
-            this.product.prices.splice(this.product.prices.length-1)
+            this.productToEdit.updated_at = new Date()
+                .toISOString()
+                .slice(0, 19)
+                .replace('T', ' ')
 
             const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
 
             // Check if we have any files (images) we need to upload
-            const variants = productToUpload.color_variants
+            const variants = productToUpload.variants
             for (let i = 0; i < variants.length; i++) {
                 const variant = variants[i]
-                const editVariant = this.productToEdit.color_variants[i]
+                const editVariant = this.productToEdit.variants[i]
                 if (variant.imageToUpload) {
                     vm.$set(editVariant.imageToUpload, 'progress', 0)
                 }
             }
             for (let i = 0; i < variants.length; i++) {
                 const variant = variants[i]
-                const editVariant = this.productToEdit.color_variants[i]
+                const editVariant = this.productToEdit.variants[i]
                 if (variant.imageToUpload) {
-                    // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
-                    await this.uploadImages({files: [editVariant.imageToUpload], callback: function(uploadProgress) {
-                    
-                    if (uploadProgress == 100) {
-                        vm.$set(editVariant.imageToUpload, 'progress', 99)
-                    } else {
-                        vm.$set(editVariant.imageToUpload, 'progress', uploadProgress)
-                    }
-                    // editVariant.imageToUpload.progress = uploadProgress
-                    } })
-                    .then(success => {
-                        // When done trying to upload the image
-                        if (success) {
-                            variant.blob_id = variant.imageToUpload.id
-                            delete variant.imageToUpload
-                            variant.image = null
+
+                    // await this.uploadImage(variant.imageToUpload.file)
+                    // // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
+                    await this.uploadImage({
+                        file: this.currentFile, 
+                        product: this.currentProduct, 
+                        image: variant.imageToUpload.file, 
+                        callback: function(uploadProgress) {
+                            console.log(uploadProgress)
                         }
                     })
+                    
+                    // if (uploadProgress == 100) {
+                    //     vm.$set(editVariant.imageToUpload, 'progress', 99)
+                    // } else {
+                    //     vm.$set(editVariant.imageToUpload, 'progress', uploadProgress)
+                    // }
+                    // // editVariant.imageToUpload.progress = uploadProgress
+                    // } })
+                    // .then(success => {
+                    //     // When done trying to upload the image
+                    //     if (success) {
+                    //         variant.blob_id = variant.imageToUpload.id
+                    //         delete variant.imageToUpload
+                    //         variant.image = null
+                    //     }
+                    // })
 
                 }
             }
 
-            // Check if we have any files (images) we need to delete
-            const filesToDelete = this.filesToDelete
-            if (filesToDelete.length > 0) {
-                // Attempt to delete the images
-                this.deleteImages(filesToDelete)
-            }
-
-            // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
-            // Long code to account for timezone differences.
-            const theDate = new Date (productToUpload.delivery_date)
-            productToUpload.delivery_date = theDate.toJSON(), new Date(theDate.getTime() - (theDate.getTimezoneOffset() * 60000)).toJSON().slice(0,10)
-
-
-            await this.updateProduct(productToUpload)
-            .then(success => {
-                this.updatingProduct = false
-            })
+            // // Check if we have a new or existing product. If the product is new, insert it.
+            // if (productToUpload.id) {
+            //     await this.updateProduct(productToUpload)
+            // } else {
+            //     this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
+            //     this.setCurrentProduct(productToUpload)
+            //     // Resort the products to include the new product
+            //     this.$emit('onSort')
+            // }
+            this.updatingProduct = false
         },
         calculateMarkup({whs, rrp} = {}) {
             const currency = this.currentCurrency
@@ -457,14 +465,14 @@ export default {
             const wholesale = whs || currency.wholesale_price
             const recommended = rrp || currency.recommended_retail_price
             if (wholesale > 0) {
-                currency.markup = Number(Math.round((recommended / wholesale) + 'e' + decimals)+ 'e-' + decimals)
-            } else currency.markup = 0
+                currency.mark_up = Number(Math.round((recommended / wholesale) + 'e' + decimals)+ 'e-' + decimals)
+            } else currency.mark_up = 0
         },
         resetMarkup() {
             if (this.savedMarkup)
-                this.currentCurrency.markup = this.savedMarkup
+                this.currentCurrency.mark_up = this.savedMarkup
             else {
-                this.currentCurrency.markup = this.originalProduct.prices[this.currencyIndex].markup
+                this.currentCurrency.mark_up = this.originalProduct.prices[this.currencyIndex].mark_up
             }
         },
         revertMarkup() {

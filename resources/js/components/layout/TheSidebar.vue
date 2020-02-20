@@ -1,21 +1,13 @@
 <template>
   <div class="vue-component-sidebar sidebar">
     <div class="nav">
-        <div class="top-items" v-if="currentWorkspace">
+        <div class="top-items">
             <router-link to="/files" class="link"><i class="fas fa-signal-alt-3"></i> Files</router-link>
-        <!-- <router-link to="/catalogue">Catalogue</router-link> -->
-        <!-- <router-link class="stick-to-bottom" to="/teams"><i class="fas fa-users"></i> Teams</router-link> -->
-
-        <!-- Admin routes -->
-        <template v-if="authUser != null">
-          <template v-if="authUser.role_id >= 2">
             <router-link to="/teams" class="link"><i class="fas fa-users"></i> Teams</router-link>
             <router-link to="/users" class="link"><i class="fas fa-user"></i> Users</router-link>
-          </template>
-        </template>
       </div>
-      <div class="bottom-items" v-if="authUser && currentWorkspace">
-        <BaseDropdown class="dropdown-parent left middle" ref="workspaceDropdown" v-if="authUser.workspaces.length > 1">
+      <div class="bottom-items">
+        <BaseDropdown class="dropdown-parent left middle" ref="workspaceDropdown" v-if="workspaces.length > 1">
             <template v-slot:button="slotProps">
               <div class="link" @click="slotProps.toggle">
                   <i class="far fa-building"></i>
@@ -25,8 +17,10 @@
             <template v-slot:header>
                 <span>Switch workspace</span>
             </template>
-            <template v-slot:body>
-                <BaseRadioButtons :options="authUser.workspaces" :currentOptionId="currentWorkspace.id" :optionNameKey="'name'" :optionValueKey="'id'" @change="setCurrentWorkspace({workspace_id: $event, user_id: authUser.id}); $refs.workspaceDropdown.toggle()"/>
+            <template v-slot:body="slotProps">
+                <BaseSelectButtons type="radio" :options="workspaces" :value="currentWorkspaceIndex"
+                optionNameKey="title" optionValueKey="index" :submitOnChange="true"
+                @submit="setCurrentWorkspaceIndex($event); slotProps.toggle()"/>
             </template>
         </BaseDropdown>
       </div>
@@ -34,14 +28,8 @@
     <div class="bottom-drawer" @click="drawerExpanded = !drawerExpanded" :class="{collapsed: !drawerExpanded}">
         <div class="header">
             <div class="hide-screen-sm">
-                <template v-if="!loadingUser">
-                    <strong class="user">{{authUser.name}}</strong>
-                    <p class="role">{{authUser.role.title}}</p>
-                </template>
-                <template v-else>
-                    <strong class="user">Fetching user</strong>
-                    <p class="role">Fethcing role</p>
-                </template>
+                <strong class="user">{{authUser.name}}</strong>
+                <p class="role">{{userWorkspaceRole}}</p>
             </div>
             <div class="show-screen-sm flex-center">
                 <i class="fas fa-user"></i>
@@ -56,7 +44,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 import SignoutButton from './SignoutButton'
 
@@ -69,20 +57,11 @@ export default {
     drawerExpanded: false,
   }},
   computed: {
-    ...mapGetters('persist', ['currentWorkspace', 'authUser']),
-    loadingUser () {
-      let loading = false
-      if (this.authUser == null) {
-        loading = true
-      } else {
-        if (this.authUser.role == null)
-          loading = true
-      }
-      return loading
-    }
+    ...mapGetters('auth', ['authUser']),
+    ...mapGetters('workspaces', ['workspaces', 'userWorkspaceRole', 'currentWorkspace', 'currentWorkspaceIndex']),
   },
   methods: {
-    ...mapActions('persist', ['setCurrentWorkspace']),
+    ...mapMutations('workspaces', ['setCurrentWorkspaceIndex']),
   }
 };
 </script>

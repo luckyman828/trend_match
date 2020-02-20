@@ -36,7 +36,7 @@
                     <span style="display: block; color: #3B86FF; font-size: 20px; font-weight: 700; padding-top: 20px; box-sizing: border-box; margin-bottom: 8px;">#{{index+1}} of {{productsToExport.length}} styles</span>
                     <span style="display: block; font-size: 24px; margin-bottom: 12px;">{{product.title}}</span>
                     <div style="display: flex; margin-bottom: 12px;">
-                        <img height="400px; width: auto;" v-if="product.color_variants[0] != null" :src="variantImg(product.color_variants[0])">
+                        <img height="400px; width: auto;" v-if="product.color_variants[0] != null" :src="variantImage(product.color_variants[0])">
                         <div style="margin-left: 16px;">
                             <span style="display: block; font-size: 14px; font-weight: 700;">Style number</span>
                             <span style="display: block; margin-bottom: 12px; font-size: 14px;">{{product.datasource_id}}</span>
@@ -62,7 +62,7 @@
                         <div v-for="(variant, index) in product.color_variants" :key="index" style="flex: 1; overflow: hidden; padding: 8px; box-sizing: border-box; max-width: 100px;">
                             <div style="width: 100%; height: 100%;">
                                 <div style="padding-top: 110%; width: 100%; position: relative; overflow: hidden;">
-                                    <img style="position: absolute; top: 0; left: 0; height:100%; width: 100%; object-fit: cover;" :src="variantImg(variant)">
+                                    <img style="position: absolute; top: 0; left: 0; height:100%; width: 100%; object-fit: cover;" :src="variantImage(variant)">
                                 </div>
                             </div>
                             <span style="font-size: 10px; font-weight: 500;">{{variant.color}}</span>
@@ -213,9 +213,13 @@
 <script>
 import axios from 'axios';
 import { mapActions, mapGetters } from 'vuex'
+import variantImage from '../../mixins/variantImage'
 
 export default {
     name: "selectionPageNavbar",
+    mixins: {
+        variantImage,
+    },
     data: function () { return {
         submittingTaskComplete: false,
         exportingPDF: false,
@@ -228,9 +232,7 @@ export default {
         exportModalVisible: false,
     }},
     computed: {
-        ...mapGetters('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']),
-        ...mapGetters('entities/products', ['productsFiltered']),
-        ...mapGetters('entities/tasks', ['userTasks']),
+        ...mapGetters('products', ['productsFiltered']),
         productsToExport() {
             const products = this.productsFiltered
             if (this.onlyWithRequests) {
@@ -239,13 +241,6 @@ export default {
         }
     },
     methods: {
-        ...mapActions('entities/tasks', ['completeTask', 'undoCompleteTask']),
-        ...mapActions('persist', ['setCurrentTaskId']),
-        variantImg (variant) {
-            if (variant.blob_id != null)
-                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-            else return variant.image
-        },
         printToPdf: async function(event) {
             const vm = this
             var endpoint = "https://v2018.api2pdf.com/chrome/html"
@@ -256,7 +251,7 @@ export default {
                 }
             }
             var payload = {
-                html: `<head><title>Flemming</title><link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet"></head><body>${this.$refs.exportToPdf.innerHTML}</body>`, //Use your own HTML
+                html: `<head><link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet"></head><body>${this.$refs.exportToPdf.innerHTML}</body>`, //Use your own HTML
                 inlinePdf: true,
                 fileName: (this.currentWorkspace.name + '_' + this.currentFile.title).replace(/ /g, '_'),
                 options: {

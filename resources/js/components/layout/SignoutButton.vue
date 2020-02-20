@@ -1,22 +1,17 @@
 <template>
-  <a class="logout-wrapper signout-button" href="/logout"
-        onclick="event.preventDefault();
-        document.getElementById('logout-form').submit();">
+    <button class="logout-wrapper signout-button" @click="logout">
         <i class="far fa-sign-out fa-flip-horizontal"></i>
         Sign out
-        <form id="logout-form" action="/logout" method="POST" style="display: none;">
-            <input type="hidden" name="_token" :value="csrfToken">
-        </form>
-    </a>
+    </button>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
     name: 'signoutButton',
-    computed: {
-        csrfToken () {
-            return window.Laravel.csrfToken
-        }
+    methods: {
+        ...mapActions('auth', ['logout']),
     }
 }
 </script>
@@ -24,8 +19,7 @@ export default {
 <style scoped lang="scss">
     @import '~@/_variables.scss';
 
-    a.link.signout-button {
-        text-decoration: none;
-        color: $primary;
+    button.link.signout-button {
+        height: 80px;
     }
 </style>
