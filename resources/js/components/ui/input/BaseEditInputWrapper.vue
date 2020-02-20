@@ -1,11 +1,16 @@
 <template>
-    <div class="edit-input-wrapper" :class="{active: editActive}">
+    <div class="edit-input-wrapper" :class="[{active: editActive}, {disabled: disabled}]">
         <div class="input-parent controls-right controls-inside control-items-2" @click="setActive">
 
-            <input ref="input" :id="id" class="input-wrapper" :type="type" :value="value" :placeholder="placeholder"
+            <!-- <BaseInputField class="input" ref="input" :id="id" :type="type" :value="value" 
+            :placeholder="placeholder" 
+            step="any" :pattern="pattern"
+            @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" 
+            @keyup="change" @keydown="validateInput" :maxlength="maxlength"/> -->
+            <input ref="input" :id="id" class="input-wrapper" :type="type" :value="value" :placeholder="placeholder" :disabled="disabled"
             @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" @keyup="change" step="any" @keydown="validateInput" :maxlength="maxlength" :pattern="pattern">
 
-            <div class="controls" v-if="!editActive">
+            <div class="controls" v-if="!editActive && !disabled">
                 <button v-tooltip.top="'Edit'" class="edit"><i class="far fa-pen"></i></button>
                 <button v-if="value != oldValue" v-tooltip.top="`Revert to original (${oldValue})`" @click.stop="revert" class="square true-square yellow-green"><span>E</span></button>
             </div>
@@ -31,7 +36,8 @@ export default {
         'id',
         'maxlength',
         'pattern',
-        'activateOnMount'
+        'activateOnMount',
+        'disabled'
     ],
     data: function () { return {
         editActive: false,
@@ -50,6 +56,7 @@ export default {
             document.activeElement.blur()
         },
         setActive() {
+            if (this.disabled) return
             const el = this.$refs.input
             el.focus()
             el.select()
@@ -90,9 +97,13 @@ export default {
         line-height: 1.6;
         &:not(.active) {
             cursor: pointer;
-            .input-wrapper {
+            .input-wrapper, .input {
                 transition: .3s;
                 cursor: pointer;
+                &:disabled {
+                    cursor: text;
+                    background: $bg;
+                }
             }
             .buttons {
                 display: none;

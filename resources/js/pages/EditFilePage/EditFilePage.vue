@@ -1,6 +1,6 @@
 <template>
     <div class="edit-file-component">
-        <EditFileHeader :file="file"/>
+        <ThePageHeader :title="`Editing: ${file.name}`"/>
 
         <ProductsTable :sortKey="sortKey" :sortAsc="sortAsc"
         :file="file" :products="productsFiltered"
@@ -16,15 +16,16 @@ import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 import ProductsTable from './ProductsTable'
 import EditFileHeader from './EditFileHeader'
 import ProductFlyin from './ProductFlyin'
+import ThePageHeader from '../../components/layout/ThePageHeader'
 // Mixins
 import sortArray from '../../mixins/sortArray'
 
 export default{
     name: 'editFilePage',
     components: {
-        EditFileHeader,
         ProductsTable,
         ProductFlyin,
+        ThePageHeader,
     },
     mixins: [
         sortArray
@@ -34,15 +35,14 @@ export default{
         sortAsc: true,
     }},
     computed: {
-        ...mapGetters('entities/products', ['products', 'productsFiltered', 'singleVisible']),
-        ...mapGetters('entities/collections', ['loadingCollections', 'files', 'currentFile']),
-        ...mapGetters('persist', ['currentWorkspaceId', 'currentWorkspace', 'authUser']),
+        ...mapGetters('files', ['currentFile']),
+        ...mapGetters('products', ['products', 'productsFiltered', 'singleVisible']),
         file() {
             return this.currentFile
         },
     },
     methods: {
-        ...mapMutations('entities/products', ['setSingleVisisble']),
+        ...mapMutations('products', ['setSingleVisisble']),
         onSort(method, key) {
             if (this.sortKey !== key) {
                 this.sortAsc = method

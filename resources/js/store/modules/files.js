@@ -13,14 +13,16 @@ export default {
         availableFileIds: [],
         currentFile: null,
         currentFolder: null,
+        status: null,
     },
 
     getters: {
         loadingFiles: state => state.loading,
+        filesStatus: state => state.status,
         currentFile: state => state.currentFile,
         currentFolder: state => state.currentFolder,
         files: state => state.files,
-        nextFile: (state, getters, rootState, rootGetters) => {
+        nextFile: state => {
             // Find the index of the current file and add 1
             const index = state.files.findIndex(x => x.id == state.currentFile.id)
             // Check that the current file is not the last in the array
@@ -28,11 +30,11 @@ export default {
                 return state.files[index + 1]
             }
         },
-        prevFile: (state, getters, rootState, rootGetters) => {
+        prevFile: state => {
             // Find the index of the current file and add 1
             const index = state.files.findIndex(x => x.id == state.currentFile.id)
             // Check that the current file is not the first in the array
-            if (index < 0) {
+            if (index > 0) {
                 return state.files[index - 1]
             }
         },
@@ -59,6 +61,22 @@ export default {
                 }
             }
         },
+        async fetchFile({ commit, state, rootGetters }, fileid) {
+            const workspaceId = rootGetters['workspaces/currentWorkspace'].id
+            // Set the state to loading
+            commit('setFilesStatus', 'loading')
+
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${fileid}`
+            await axios
+                .get(apiUrl)
+                .then(response => {
+                    commit('setCurrentFile', response.data)
+                    commit('setFilesStatus', 'success')
+                })
+                .catch(err => {
+                    commit('setFilesStatus', 'error')
+                })
+        },
         async setCurrentFolder({ commit, state, rootGetters }, folder) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Assume root
@@ -78,7 +96,7 @@ export default {
             const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.id}/selections`
             await axios.get(apiUrl).then(response => {
                 Vue.set(file, 'selections', response.data)
-                state.currentFile = file
+                commit('setCurrentFile', file)
             })
         },
         async fetchFileOwners({ commit, state }, file) {
@@ -317,8 +335,14 @@ export default {
         setLoading(state, bool) {
             state.loading = bool
         },
+        setFilesStatus(state, status) {
+            state.status = status
+        },
         insertFile(state, file) {
             state.files.push(file)
+        },
+        setCurrentFile(state, file) {
+            state.currentFile = file
         },
         updateFile(state, file) {
             // Remove unsaved files

@@ -193,7 +193,7 @@
 
         <BaseContextMenu ref="contextMenuFile" class="context-file" v-slot
         @keybind-v="viewSingle(contextMenuItem.id)"
-        @keybind-e="viewEditSingle(contextMenuItem.id)"
+        @keybind-e="onGoToEditFile(contextMenuItem.id)"
         @keybind-r="onEditField(contextMenuItem, 'file', 'title')"
         @keybind-a="showFileOwnersFlyin(contextMenuItem)"
         @keybind-m="onMoveTo(contextMenuItem, 'file')"
@@ -205,7 +205,7 @@
                     </div>
                     <u>V</u>iew file
                 </div>
-                <div class="item" @click="viewEditSingle(contextMenuItem.id)">
+                <div class="item" @click="onGoToEditFile(contextMenuItem.id)">
                     <div class="icon-wrapper">
                         <i class="far fa-file-edit"></i>
                     </div>
@@ -444,7 +444,7 @@ export default {
         viewSingle(fileId) {
             this.$router.push({ name: 'file', params: { fileId: fileId } })
         },
-        viewEditSingle(fileId) {
+        onGoToEditFile(fileId) {
             this.$router.push({ name: 'editFile', params: { fileId: fileId } })
         },
         onDeleteFile(fileId) {

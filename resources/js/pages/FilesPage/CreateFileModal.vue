@@ -817,7 +817,6 @@ export default {
 
             // First we need to create a file for the products, since the API requires that products be uploaded to an existing file
             await this.insertOrUpdateFile(newFile)
-            console.log(newFile)
 
             // Then we will instantiate the products and attempt to upload them
             const newProducts = this.instantiateProducts(newFile.id)

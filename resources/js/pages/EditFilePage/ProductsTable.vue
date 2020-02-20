@@ -72,7 +72,7 @@
                 </BaseTableTopBar>
             </template>
             <template v-slot:header>
-                <BaseTableHeader class="select"><BaseCheckbox
+                <BaseTableHeader class="select"><BaseCheckbox :modelValue="true" :value="selectedProducts.length > 0"
                 @change="(checked) => checked ? selectedProducts = products : selectedProducts = []"/>
                 </BaseTableHeader>
                 <BaseTableHeader class="image"></BaseTableHeader>
@@ -126,11 +126,11 @@ export default {
         productsFilteredBySearch: this.products
     }},
     computed: {
-        ...mapGetters('entities/products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
+        ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
         ...mapGetters('persist', ['currentWorkspaceId', 'authUser']),
         selectedCategories: {
             get () {
-                return this.$store.getters['entities/products/selectedCategories']
+                return this.$store.getters['products/selectedCategories']
             },
             set (value) {
                 this.updateSelectedCategories(value)
@@ -138,7 +138,7 @@ export default {
         },
         selectedDeliveryDates: {
             get () {
-                return this.$store.getters['entities/products/selectedDeliveryDates']
+                return this.$store.getters['products/selectedDeliveryDates']
             },
             set (value) {
                 this.updateSelectedDeliveryDates(value)
@@ -146,7 +146,7 @@ export default {
         },
         selectedBuyerGroups: {
             get () {
-                return this.$store.getters['entities/products/selectedBuyerGroups']
+                return this.$store.getters['products/selectedBuyerGroups']
             },
             set (value) {
                 this.updateSelectedBuyerGroups(value)
@@ -154,16 +154,16 @@ export default {
         },
     },
     methods: {
-        ...mapActions('entities/products', ['setCurrentProductId', 'setAvailableProductIds']),
-        ...mapMutations('entities/products', ['setSingleVisisble','updateSelectedCategories', 'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups']),
+        ...mapActions('products', ['setCurrentProduct', 'setAvailableProducts']),
+        ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups']),
         productImg(variant) {
             if (variant.blob_id != null)
                 return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
             else return variant.image
         },
         onViewSingle(product) {
-            this.setCurrentProductId(product.id)
-            this.setAvailableProductIds(this.products.map(x => x.id)) // Save array of available products
+            this.setCurrentProduct(product)
+            this.setAvailableProducts(this.products) // Save array of available products
             this.setSingleVisisble(true)
         },
     },

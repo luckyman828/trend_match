@@ -3,7 +3,7 @@
         <div class="input-parent controls-right controls-inside control-items-2" @click="setActive">
             <textarea ref="input" :id="id" class="input-wrapper" :type="type" :value="value"
             :placeholder="placeholder" step="any" :maxlength="maxlength" :pattern="pattern"
-            @input="resize" @keyup.enter.exact="submit" @keydown.esc.stop 
+            @input="resize" @keydown.enter.exact.prevent @keyup.enter.exact="submit" @keydown.esc.stop 
             @keyup.esc="cancel" @keyup="change" @keydown="validateInput"/>
             <div class="controls" v-if="!editActive">
                 <button v-tooltip.top="'Edit'" class="edit"><i class="far fa-pen"></i></button>

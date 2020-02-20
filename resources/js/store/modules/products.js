@@ -6,9 +6,8 @@ export default {
 
     state: {
         loading: true,
-        currentSingleProductId: null,
-        currentProductId: null,
-        availableProductIds: [],
+        currentProduct: null,
+        availableProducts: [],
         selectedCategories: [],
         selectedDeliveryDates: [],
         selectedBuyerGroups: [],
@@ -21,12 +20,27 @@ export default {
     },
 
     getters: {
-        loadingProducts: state => {
-            return state.loading
-        },
+        loadingProducts: state => state.loading,
         productsStatus: state => state.status,
-        currentSingleProductId: state => {
-            return state.currentSingleProductId
+        currentProduct: state => state.currentProduct,
+        availableProducts: state => {
+            return state.availableProducts
+        },
+        nextProduct: state => {
+            // Find the index of the current product
+            const index = state.availableProducts.findIndex(x => x.id == state.currentProduct.id)
+            // Check that the current is not the last in the array
+            if (index + 1 < state.availableProducts.length) {
+                return state.availableProducts[index + 1]
+            }
+        },
+        prevProduct: state => {
+            // Find the index of the current product
+            const index = state.availableProducts.findIndex(x => x.id == state.currentProduct.id)
+            // Check that the current is not the first in the array
+            if (index > 0) {
+                return state.availableProducts[index - 1]
+            }
         },
         selectedCategories: state => {
             return state.selectedCategories
@@ -171,40 +185,14 @@ export default {
 
             return productsToReturn
         },
-        availableProductIds: state => {
-            return state.availableProductIds
-        },
-        currentProduct: (state, getters, rootState, rootGetters) => {
-            return state.currentProductId != null && getters.products != null
-                ? getters.products.find(x => x.id == state.currentProductId)
-                : null
-        },
-        nextProductId: (state, getters, rootState, rootGetters) => {
-            if (state.currentProductId != null && getters.availableProductIds.length > 0) {
-                const productIds = getters.availableProductIds
-                const currentProductIndex = productIds.findIndex(x => x == state.currentProductId)
-                if (currentProductIndex < productIds.length - 1) {
-                    return productIds[currentProductIndex + 1]
-                }
-            }
-        },
-        prevProductId: (state, getters, rootState, rootGetters) => {
-            if (state.currentProductId != null && getters.availableProductIds.length > 0) {
-                const productIds = getters.availableProductIds
-                const currentProductIndex = productIds.findIndex(x => x == state.currentProductId)
-                if (currentProductIndex != 0) {
-                    return productIds[currentProductIndex - 1]
-                }
-            }
-        },
     },
 
     actions: {
-        async fetchProducts({ commit, dispatch }, file_id) {
+        async fetchProducts({ commit }, fileId) {
             // Set the state to loading
             commit('setProductStatus', 'loading')
 
-            const apiUrl = `/api/file/${file_id}/products`
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${fileId}/products`
 
             await axios
                 .get(apiUrl)
@@ -224,118 +212,27 @@ export default {
                 products: products,
             })
         },
-        setCurrentProductId({ commit }, id) {
-            commit('setCurrentProductId', id)
+        setCurrentProduct({ commit }, product) {
+            commit('setCurrentProduct', product)
         },
-        setAvailableProductIds({ commit }, products) {
-            commit('setAvailableProductIds', products)
+        setAvailableProducts({ commit }, products) {
+            commit('setAvailableProducts', products)
         },
         showNextProduct({ commit, getters }) {
-            commit('setCurrentProductId', getters.nextProductId)
+            commit('setCurrentProduct', getters.nextProduct)
         },
         showPrevProduct({ commit, getters }) {
-            commit('setCurrentProductId', getters.prevProductId)
+            commit('setCurrentProduct', getters.prevProduct)
         },
-        showSingle({ commit }, id) {
-            commit('setCurrentProductId', id)
+        showSingle({ commit }, product) {
+            commit('setCurrentProduct', product)
             commit('setSingleVisisble', true)
-        },
-        async instantiateNewProduct({ commit, state, rootGetters }, { id, fileId }) {
-            const authUser = rootGetters['persist/authUser']
-            const currentSelection = rootGetters['entities/selections/currentSelection']
-            const workspace = rootGetters['persist/currentWorkspace']
-
-            // Get the product
-            const product = await Product.new()
-
-            // Instantiate initial data
-            product.id = id
-            product.file_id = fileId
-            product.collection_id = fileId
-
-            // START Parse the json objects to javascript objects
-            // Test that each json object is actually valid json before trying to parse it
-            if (typeof product.color_variants == 'string' && isJSON(product.color_variants))
-                product.color_variants = JSON.parse(product.color_variants)
-            if (typeof product.assortments == 'string' && isJSON(product.assortments))
-                product.assortments = JSON.parse(product.assortments)
-            if (typeof product.prices == 'string' && isJSON(product.prices)) product.prices = JSON.parse(product.prices)
-
-            function isJSON(str) {
-                try {
-                    return JSON.parse(str) && !!str
-                } catch (e) {
-                    return false
-                }
-            }
-            // END Parse the json objects to javascript objects
-
-            // START Format the Delivery Date
-            let date = product.delivery_date
-            if (date) {
-                let newDate = new Date(date).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
-                product.delivery_date = newDate
-            }
-            // END Format the Delivery Date
-
-            // START Find the correct price
-            // Check if the chosen currency exists on the product
-            if (product.prices.length > 0) {
-                // First check if the user currency is available
-                if (authUser.currency && product.prices.find(x => x.currency == authUser.currency)) {
-                    const userPrices = product.prices.find(x => x.currency == authUser.currency)
-                    product.userPrices = userPrices
-                }
-                // Then check if the team currency is available
-                else if (
-                    currentSelection &&
-                    currentSelection.currency &&
-                    product.prices.find(x => x.currency == currentSelection.currency)
-                ) {
-                    const selectionPrices = product.prices.find(x => x.currency == currentSelection.currency)
-                    product.userPrices = selectionPrices
-                }
-                // Then check if the workspace currency is available
-                else if (workspace.currency && product.prices.find(x => x.currency == workspace.currency)) {
-                    const workspacePrices = product.prices.find(x => x.currency == workspace.currency)
-                    product.userPrices = workspacePrices
-                }
-                // Else use the first available currency
-                else {
-                    product.userPrices = product.prices[0]
-                }
-            }
-            // If there are no prices
-            else {
-                product.userPrices = {
-                    currency: 'unset',
-                    markup: null,
-                    recommended_retail_price: null,
-                    wholesale_price: null,
-                }
-            }
-            // END Find the correct price
-
-            // Save the product to our state
-            state.products.push(product)
         },
         async updateProduct({ commit }, product) {
             commit('updateProduct', product)
-            product.prices = product.prices && product.prices.length > 0 ? JSON.stringify(product.prices) : []
-            product.color_variants =
-                product.color_variants && product.color_variants.length > 0
-                    ? JSON.stringify(product.color_variants)
-                    : []
-            product.assortments =
-                product.assortments && product.assortments.length > 0 ? JSON.stringify(product.assortments) : []
-            product.eans = product.eans && product.eans.length > 0 ? JSON.stringify(product.eans) : []
 
-            // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
-            // Long code to account for timezone differences.
-            const theDate = new Date(product.delivery_date)
-            ;(product.delivery_date = theDate.toJSON()),
-                new Date(theDate.getTime() - theDate.getTimezoneOffset() * 60000).toJSON().slice(0, 10)
-            return true
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/products/${product.id}`
+            axios.put(apiUrl, product)
         },
         async rotateImage({ commit }, file) {
             // Upload images to Blob storage
@@ -437,85 +334,6 @@ export default {
                     commit('alertError')
                 })
         },
-        instantiateProducts({ state, rootGetters }) {
-            const authUser = rootGetters['persist/authUser']
-            const currentSelection = rootGetters['entities/selections/currentSelection']
-            const workspace = rootGetters['persist/currentWorkspace']
-
-            // Get the products
-            const products = Product.all()
-
-            // START Loop through each product and instantiate their initial data
-            products.forEach(product => {
-                // START Parse the json objects to javascript objects
-                // Test that each json object is actually valid json before trying to parse it
-                if (typeof product.color_variants == 'string' && isJSON(product.color_variants))
-                    product.color_variants = JSON.parse(product.color_variants)
-                if (typeof product.assortments == 'string' && isJSON(product.assortments))
-                    product.assortments = JSON.parse(product.assortments)
-                if (typeof product.prices == 'string' && isJSON(product.prices))
-                    product.prices = JSON.parse(product.prices)
-
-                function isJSON(str) {
-                    try {
-                        return JSON.parse(str) && !!str
-                    } catch (e) {
-                        return false
-                    }
-                }
-                // END Parse the json objects to javascript objects
-
-                // START Format the Delivery Date
-                let date = product.delivery_date
-                if (date) {
-                    let newDate = new Date(date).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
-                    product.delivery_date = newDate
-                }
-                // END Format the Delivery Date
-
-                // START Find the correct price
-                // Check if the chosen currency exists on the product
-                if (product.prices != null) {
-                    // First check if the user currency is available
-                    if (authUser.currency && product.prices.find(x => x.currency == authUser.currency)) {
-                        const userPrices = product.prices.find(x => x.currency == authUser.currency)
-                        product.userPrices = userPrices
-                    }
-                    // Then check if the team currency is available
-                    else if (
-                        currentSelection &&
-                        currentSelection.currency &&
-                        product.prices.find(x => x.currency == currentSelection.currency)
-                    ) {
-                        const selectionPrices = product.prices.find(x => x.currency == currentSelection.currency)
-                        product.userPrices = selectionPrices
-                    }
-                    // Then check if the workspace currency is available
-                    else if (workspace.currency && product.prices.find(x => x.currency == workspace.currency)) {
-                        const workspacePrices = product.prices.find(x => x.currency == workspace.currency)
-                        product.userPrices = workspacePrices
-                    }
-                    // Else use the first available currency
-                    else {
-                        product.userPrices = product.prices[0]
-                    }
-                }
-                // If there are no prices
-                else {
-                    product.userPrices = {
-                        currency: 'unset',
-                        markup: null,
-                        recommended_retail_price: null,
-                        wholesale_price: null,
-                    }
-                }
-                // END Find the correct price
-            })
-            // END Loop
-
-            // Save the products to our state
-            state.products = products
-        },
     },
 
     mutations: {
@@ -527,6 +345,15 @@ export default {
             state.status = status
         },
         insertProducts(state, { products, method }) {
+            // Loop through the products and format their delivery_date
+            products.forEach(product => {
+                if (product.delivery_date) {
+                    product.delivery_date = new Date(product.delivery_date).toLocaleDateString('en-GB', {
+                        month: 'long',
+                        year: 'numeric',
+                    })
+                }
+            })
             if (method == 'add') {
                 // Add to existing products
                 state.products.push(products)
@@ -534,14 +361,11 @@ export default {
                 state.products = products
             }
         },
-        setCurrentProductId(state, id) {
-            state.currentProductId = id
+        setCurrentProduct(state, product) {
+            state.currentProduct = product
         },
-        setAvailableProductIds(state, ids) {
-            state.availableProductIds = ids
-        },
-        setCurrentProductId(state, id) {
-            state.currentProductId = id
+        setAvailableProducts(state, products) {
+            state.availableProducts = products
         },
         updateSelectedCategories(state, payload) {
             state.selectedCategories = payload
