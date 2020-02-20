@@ -69,7 +69,7 @@ export default {
             // Set the state to loading
             commit('setLoading', true)
 
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${workspaceId}/teams`
+            const apiUrl = `/workspaces/${workspaceId}/teams`
 
             let tryCount = 3
             let succes = false
@@ -90,7 +90,7 @@ export default {
         async fetchTeamUsers({ commit, state }, team) {
             // Set the state to loading
             state.currentTeamStatus = 'loading'
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/teams/${team.id}/users`
+            const apiUrl = `/teams/${team.id}/users`
             axios
                 .get(`${apiUrl}`)
                 .then(response => {
@@ -111,10 +111,10 @@ export default {
                 currency: team.currency,
             }
 
-            let apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${workspaceId}/teams`
+            let apiUrl = `/workspaces/${workspaceId}/teams`
             let requestMethod = 'post'
             if (team.id) {
-                apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/teams/${team.id}`
+                apiUrl = `/teams/${team.id}`
                 requestMethod = 'put'
             } else {
                 // Get a unique id for the new team
@@ -143,7 +143,7 @@ export default {
         },
         async deleteTeam({ commit }, team) {
             commit('deleteTeam', team)
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/teams/${team.id}`
+            const apiUrl = `/teams/${team.id}`
             let succes
             await axios({
                 method: 'delete',
@@ -171,7 +171,7 @@ export default {
             })
 
             let succes
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/teams/${team.id}/users`
+            const apiUrl = `/teams/${team.id}/users`
 
             // Update the state
             commit('addUsersToTeam', { team, users: usersToPush })
@@ -194,7 +194,7 @@ export default {
             return succes
         },
         async updateTeamUser({ commit }, { team, user }) {
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/teams/${team.id}/users`
+            const apiUrl = `/teams/${team.id}/users`
 
             await axios({
                 method: 'post',
@@ -210,7 +210,7 @@ export default {
             commit('removeUserFromTeam', { team, user })
 
             // Update API
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/teams/${team.id}/users`
+            const apiUrl = `/teams/${team.id}/users`
             await axios({
                 method: 'post',
                 url: apiUrl,

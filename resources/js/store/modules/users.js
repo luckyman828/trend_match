@@ -22,7 +22,7 @@ export default {
             // Set the state to loading
             commit('setLoading', true)
 
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${workspaceId}/users`
+            const apiUrl = `/workspaces/${workspaceId}/users`
 
             let tryCount = 3
             let succes = false
@@ -45,7 +45,7 @@ export default {
             commit('updateUser', userToUpdate)
 
             let succes
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${workspaceId}/users`
+            const apiUrl = `/workspaces/${workspaceId}/users`
 
             await axios({
                 method: 'post',
@@ -69,7 +69,7 @@ export default {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             let succes
 
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${workspaceId}/users-email`
+            const apiUrl = `/workspaces/${workspaceId}/users-email`
 
             // Instantiate a new workspaceUser object, to strip away any added/calculated attributes
             let dataToPost = { users: usersToAdd }
@@ -91,7 +91,7 @@ export default {
         },
         async removeUsersFromWorkspace({ commit }, { workspaceId, users }) {
             commit('removeUsers', users)
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${workspaceId}/users`
+            const apiUrl = `/workspaces/${workspaceId}/users`
             let success
             // const usersToPost = users.map(user => {
             //     return { user_id: user.id }
@@ -113,11 +113,11 @@ export default {
         async updateUser({ commit }, user) {
             commit('updateUser', user)
 
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/admins/users/${user.id}`
+            const apiUrl = `/admins/users/${user.id}`
             axios.put(apiUrl, { name: user.name, email: user.email })
         },
         async updateUserPassword({ commit }, user) {
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/admins/users/${user.id}/change-password`
+            const apiUrl = `/admins/users/${user.id}/change-password`
             axios.post(apiUrl, { password: user.password })
         },
     },

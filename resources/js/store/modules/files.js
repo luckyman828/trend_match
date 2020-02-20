@@ -46,7 +46,7 @@ export default {
             // Set the state to loading
             commit('setLoading', true)
 
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${workspaceId}/files`
+            const apiUrl = `/workspaces/${workspaceId}/files`
 
             let tryCount = 3
             let succes = false
@@ -66,7 +66,7 @@ export default {
             // Set the state to loading
             commit('setFilesStatus', 'loading')
 
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${fileid}`
+            const apiUrl = `/files/${fileid}`
             await axios
                 .get(apiUrl)
                 .then(response => {
@@ -80,11 +80,11 @@ export default {
         async setCurrentFolder({ commit, state, rootGetters }, folder) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Assume root
-            let apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${workspaceId}/files`
+            let apiUrl = `/workspaces/${workspaceId}/files`
 
             // Check if the folder to set is a folder or root
             if (folder) {
-                apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${folder.id}/children`
+                apiUrl = `/files/${folder.id}/children`
             }
             await axios.get(apiUrl).then(response => {
                 Vue.set(state, 'files', response.data)
@@ -93,7 +93,7 @@ export default {
         },
         async setCurrentFile({ commit, state }, file) {
             // Get selections for file
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.id}/selections`
+            const apiUrl = `/files/${file.id}/selections`
             await axios.get(apiUrl).then(response => {
                 Vue.set(file, 'selections', response.data)
                 commit('setCurrentFile', file)
@@ -101,14 +101,14 @@ export default {
         },
         async fetchFileOwners({ commit, state }, file) {
             // Get owners for file
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.id}/users`
+            const apiUrl = `/files/${file.id}/users`
             await axios.get(apiUrl).then(response => {
                 Vue.set(file, 'owners', response.data)
             })
         },
         async insertOrUpdateFile({ commit }, file) {
             // Assume update
-            let apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.id}`
+            let apiUrl = `/files/${file.id}`
             let requestMethod = 'put'
             let requestBody = file
             // Check if we are inserting or updating
@@ -118,9 +118,9 @@ export default {
                 requestMethod = 'post'
                 // Check if we are inserting in ROOT or in an existing folder
                 if (file.parent_id == 0) {
-                    apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces/${file.workspace_id}/files`
+                    apiUrl = `/workspaces/${file.workspace_id}/files`
                 } else {
-                    apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.parent_id}/children`
+                    apiUrl = `/files/${file.parent_id}/children`
                     requestBody = { type: file.type, name: file.name }
                 }
             } else {
@@ -144,7 +144,7 @@ export default {
         async deleteFile({ commit }, fileId) {
             commit('deleteFile', fileId)
 
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${fileId}`
+            const apiUrl = `/files/${fileId}`
             await axios
                 .delete(apiUrl)
                 .then(response => {
@@ -307,7 +307,7 @@ export default {
 
             // Loop through the users and post them
             users.forEach(user => {
-                const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.id}/users/${user.id}`
+                const apiUrl = `/files/${file.id}/users/${user.id}`
                 axios.put(apiUrl)
             })
         },
@@ -315,7 +315,7 @@ export default {
             // Commit mutation to state
             commit('removeUserFromFile', { file, user })
             // Send request to API
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.id}/users/${user.id}`
+            const apiUrl = `/files/${file.id}/users/${user.id}`
             axios.delete(apiUrl)
         },
         addApproversToFile({ commit }, { file, usersToAdd }) {

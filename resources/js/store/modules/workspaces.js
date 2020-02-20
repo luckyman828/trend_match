@@ -36,7 +36,7 @@ export default {
             // Set the state to loading
             commit('setLoading', true)
 
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/workspaces`
+            const apiUrl = `/workspaces`
 
             let tryCount = 3
             let succes = false

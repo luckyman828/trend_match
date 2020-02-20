@@ -56,7 +56,7 @@ export default {
             request.id = 15
 
             // Config API endpoint
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/request`
+            const apiUrl = `/request`
             const requestHeaders = {
                 'X-Kollekt-App-Key': process.env.MIX_KOLLEKT_API_KEY,
             }
@@ -90,7 +90,7 @@ export default {
             commit('deleteRequest', { product, request })
 
             // Config API endpoint
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/request`
+            const apiUrl = `/request`
             const requestHeaders = {
                 'X-Kollekt-App-Key': process.env.MIX_KOLLEKT_API_KEY,
             }
