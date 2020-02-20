@@ -11,4 +11,5 @@ class WorkspaceUser extends Model
     // protected $table = 'user_teams';
     protected $primaryKey = ['workspace_id', 'user_id'];
     public $timestamps = false;
+
 }

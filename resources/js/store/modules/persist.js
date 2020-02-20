@@ -5,6 +5,7 @@ import Action from '../../store/models/Action'
 import AuthUser from '../../store/models/AuthUser'
 import { RootGetters } from '@vuex-orm/core'
 import axios from 'axios'
+import Folder from '../models/Folder'
 
 export default {
     namespaced: true,
@@ -20,6 +21,7 @@ export default {
         loadingInit: true,
         viewAdminPermissionLevel: 3,
         adminPermissionLevel: 4,
+        uids: [],
         availableCurrencies: [
             'AED',
             'AFN',
@@ -193,17 +195,61 @@ export default {
             'ZMW',
             'ZWL',
         ],
+        availableWorkspaceRoles: [
+            {
+                id: 0,
+                name: 'External',
+                description: 'No rights what so ever',
+            },
+            {
+                id: 1,
+                name: 'User',
+                description: 'A basic user with no special rights',
+            },
+            {
+                id: 2,
+                name: 'Observer',
+                description: 'Like a ghost. Can go anywhere, but cannot change anything.',
+            },
+            {
+                id: 3,
+                name: 'Admin',
+                description: 'Can do some special move and rewoke powers.',
+            },
+            {
+                id: 4,
+                name: 'Owner',
+                description:
+                    'All the powers of the Admin, with the added security of only being able to be kicked by other Owners.',
+            },
+        ],
+        currentFolderId: null,
+        uids: [],
     },
 
     getters: {
+        uids: state => state.uids,
         currentTeamId: state => {
             return state.currentTeamId
+        },
+        currentFolderId: state => {
+            return state.currentFolderId
+        },
+        currentFolder: state => {
+            return state.currentFolderId
+                ? Folder.query()
+                      .with('folders|files')
+                      .find(state.currentFolderId)
+                : null
         },
         // editFile: state => {
         //     return state.editFile
         // },
         availableCurrencies: state => {
             return state.availableCurrencies
+        },
+        availableWorkspaceRoles: state => {
+            return state.availableWorkspaceRoles
         },
         teamFilterId: state => {
             return state.teamFilterIdx
@@ -351,6 +397,17 @@ export default {
     },
 
     actions: {
+        async getUids({ commit, state }) {
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/snowflake/ids?count=2000`
+            await axios.get(apiUrl).then(response => {
+                state.uids = state.uids.concat(response.data)
+            })
+        },
+        async useUid({ commit, state }) {
+            const uid = state.uids[state.uids.length - 1]
+            state.uids.pop()
+            return uid
+        },
         setCurrentTeam({ commit }, id) {
             commit('setCurrentTeam', id)
         },
@@ -399,6 +456,9 @@ export default {
     mutations: {
         setCurrentTeam(state, id) {
             state.currentTeamId = id
+        },
+        setCurrentFolderId(state, id) {
+            state.currentFolderId = id
         },
         setTeamFilter(state, id) {
             state.teamFilterId = id

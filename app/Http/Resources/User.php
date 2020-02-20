@@ -14,20 +14,19 @@ class User extends JsonResource
      */
     public function toArray($request)
     {
-        // return parent::toArray($request);
+        return parent::toArray($request);
 
-        return [
-            'id' => $this->id,
-            'email' => $this->email,
-            'name' => $this->name,
-            'country_id' => $this->country_id,
-            // 'team_ids' => $this->team_ids,
-            'role_id' => $this->role_id,
-            'created_at' => $this->created_at,
-            'impact' => $this->impact,
-            'currency' => $this->currency,
-            // 'assigned_room_id' => $this->assigned_room_id,
-            // 'workspaces' => $this->workspaces
-        ];
+        // return [
+        //     'id' => $this->id,
+        //     'email' => $this->email,
+        //     'name' => $this->name,
+        //     'country_id' => $this->country_id,
+        //     // 'team_ids' => $this->team_ids,
+        //     'role_id' => $this->role_id,
+        //     'created_at' => $this->created_at,
+        //     'impact' => $this->impact,
+        //     // 'assigned_room_id' => $this->assigned_room_id,
+        //     // 'workspaces' => $this->workspaces
+        // ];
     }
 }

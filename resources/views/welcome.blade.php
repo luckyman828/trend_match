@@ -22,17 +22,13 @@
         <link rel="stylesheet" src="{{ asset('css/vue-styles.css') }}" />
         {{-- <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700&display=swap" rel="stylesheet"> --}}
 
-        <script>
-            //Set the logged in user
-            window.auth_user = {!! json_encode($auth_user); !!};
-        </script>
-
     </head>
     <body>
         <div class="main-wrapper">
             
             <div id="app">
                 <app></app>
+                <portal-target name="modals" multiple></portal-target>
             </div>
         </div>
 

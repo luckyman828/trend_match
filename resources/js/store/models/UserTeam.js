@@ -16,10 +16,31 @@ export default class UserTeam extends Model {
         const data = {
             user_id: this.attr(''),
             team_id: this.attr(''),
+            permission_level: this.attr(''),
             team: this.belongsTo(Team, 'team_id', 'id'),
             user: this.belongsTo(User, 'user_id', 'id'),
         }
 
         return data
+    }
+
+    get teamRole() {
+        switch (this.permission_level) {
+            case 0:
+                return 'External'
+                break
+            case 1:
+                return 'Member'
+                break
+            case 2:
+                return 'Observer'
+                break
+            case 3:
+                return 'Admin'
+                break
+            case 4:
+                return 'Owner'
+                break
+        }
     }
 }

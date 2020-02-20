@@ -12,6 +12,7 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -138,5 +139,13 @@ class ProductController extends Controller
 
         // return $output;
         return 'Images successfully deleted!';
+    }
+
+    public function insertMany(Request $request, $file_id)
+    {
+        $products = $request->products;
+
+        Product::insert($products);
+        return $request;
     }
 }

@@ -13,16 +13,20 @@ use App\Http\Resources\Team as TeamResource;
 use App\Collection;
 use App\FileTask;
 Use App\Http\Resources\Collection as CollectionResource;
+use App\Catalogue as Folder;
+Use App\Http\Resources\Catalogue as FolderResource;
 use App\User;
 use App\Http\Resources\User as UserResource;
 use App\TeamFile;
 use App\Http\Resources\TeamFile as TeamFileResource;
 use App\Phase;
 use App\PhaseTeam;
+use App\Subfile;
 use App\Task;
 use App\TaskParent;
 use App\TaskTeam;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -31,7 +35,9 @@ class WorkspaceController extends Controller
     // Return all workspaces available to the logged in user
     public function workspaces()
     {
-        $workspaces = Workspace::get();
+        $workspaces = Workspace::whereHas('workspace_users', function (Builder $query) {
+            $query->where('user_id', Auth::id());
+        })->get();
         // Return collection of products as a resource
         return WorkspaceResource::collection($workspaces);
     }
@@ -39,6 +45,7 @@ class WorkspaceController extends Controller
     // Return all workspaceUsers available to the logged in user
     public function workspaceUsers()
     {
+        // $workspaceUsers = WorkspaceUser::where('currentW', Auth::id())->get();
         $workspaceUsers = WorkspaceUser::get();
         // Return collection of products as a resource
         return WorkspaceUserResource::collection($workspaceUsers);
@@ -62,6 +69,15 @@ class WorkspaceController extends Controller
 
         // Return collection of users as a resource
         return TeamResource::collection($teams);
+    }
+
+    // Return all folders of the workspace
+    public function folders($workspace_id)
+    {
+        $folders = Folder::where('workspace_id', $workspace_id)->get();
+
+        // Return collection of products as a resource
+        return FolderResource::collection($folders);
     }
 
     // Return all collections of the workspace
@@ -151,6 +167,28 @@ class WorkspaceController extends Controller
        })->get();
 
        return $result;
+  }
+
+  public function subfiles($workspace_id)
+  {
+    //   $response = Subfile::whereHas('file', function (Builder $query) use($workspace_id) {
+    //       $query->where('workspace_id', $workspace_id);
+    //   })->descendants()->depthFirst()->get();
+
+    //   $response = Subfile::tree()->breadthFirst()->get();
+    //   $response = Subfile::with('children')->tree()->depthFirst()->get();
+
+
+        $response = Subfile::whereHas('file', function (Builder $query) use($workspace_id) {
+          $query->where('workspace_id', $workspace_id);
+      })->with('children')->get();
+
+
+    //   $response = Subfile::whereHas('file', function (Builder $query) use($workspace_id) {
+    //       $query->where('workspace_id', $workspace_id);
+    //   })->where('parent_id', null)->with('descendants')->depthFirst()->get();
+
+      return $response;
   }
 
 }
