@@ -448,15 +448,15 @@ export default {
                 }
             }
 
-            // Check if we have a new or existing product. If the product is new, insert it.
-            if (productToUpload.id) {
-                await this.updateProduct(productToUpload)
-            } else {
-                this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
-                this.setCurrentProduct(productToUpload)
-                // Resort the products to include the new product
-                this.$emit('onSort')
-            }
+            // // Check if we have a new or existing product. If the product is new, insert it.
+            // if (productToUpload.id) {
+            //     await this.updateProduct(productToUpload)
+            // } else {
+            //     this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
+            //     this.setCurrentProduct(productToUpload)
+            //     // Resort the products to include the new product
+            //     this.$emit('onSort')
+            // }
             this.updatingProduct = false
         },
         calculateMarkup({whs, rrp} = {}) {

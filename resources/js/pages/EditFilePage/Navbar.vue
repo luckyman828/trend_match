@@ -16,25 +16,27 @@
 
         <div class="items-right">
 
+            <button class="button dark wide" @click="onExport"><span>Export products</span></button>
             <button class="button primary wide" @click="onNewProduct"><span>Create new product</span></button>
 
         </div>
 
-        <SearchModal ref="searchModal"/>
+        <ExportProductsModal v-if="currentFile" :show="exportModalVisible" @close="exportModalVisible = false"/>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import SearchModal from '../../components/SearchModal'
+import ExportProductsModal from '../../components/ExportProductsModal'
 
 export default {
     name: "editFilePageNavbar",
     components: {
-        SearchModal
+        ExportProductsModal
     },
     data: function () { return {
+        exportModalVisible: false,
     }},
     computed: {
         ...mapGetters('files', ['currentFile']),
@@ -47,6 +49,9 @@ export default {
             this.setCurrentProduct(newProduct)
             this.setSingleVisisble(true)
         },
+        onExport() {
+            this.exportModalVisible = true
+        }
     },
 };
 </script>

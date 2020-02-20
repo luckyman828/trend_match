@@ -1,0 +1,220 @@
+<template>
+    <BaseModal ref="exportModal" :header="'Export <strong>' + currentFile.name + '</strong> to PDF'"
+    @close="$emit('close')" :show="show">
+        <template v-slot v-if="show">
+            <h3 style="text-align: center">The products in your current view will be exported'</h3>
+            <form>
+                <h4>Requests & comments</h4>
+                <div class="form-element">
+                    <BaseCheckboxInputField v-model="exportComments">
+                        Include Requests and comments
+                    </BaseCheckboxInputField>
+                </div>
+                <div class="form-element" v-if="exportComments">
+                    <BaseCheckboxInputField v-model="currentSelectionOnly">
+                        Only include requests/comments from the current selection
+                    </BaseCheckboxInputField>
+                </div>
+                <div class="form-element">
+                    <BaseCheckboxInputField v-model="onlyWithRequests">
+                        Only include Products with Requests
+                    </BaseCheckboxInputField>
+                </div>
+
+                <h4>Distribution</h4>
+                <div class="form-element">
+                    <BaseCheckboxInputField v-model="includeDistribution">
+                        Include distribution (In/Out/Focus)
+                    </BaseCheckboxInputField>
+                </div>
+                <div class="form-element" v-if="includeDistribution">
+                    <BaseCheckboxInputField v-model="includeNotDecided">
+                        Include "Not Decided" in distribution
+                    </BaseCheckboxInputField>
+                </div>
+                <div class="form-element">
+                    <h4>Export details</h4>
+                    <div class="input-wrapper disabled">
+                        <p>{{productsToExport.length}} products 
+                            <template v-if="exportComments">, {{productsToExport.filter(x => x.requests_count > 0).length}} with requests</template>
+                            <template v-if="includeDistribution">, with {{productsToExport.reduce((acc, el) => acc + el.action_count, 0)}} actions</template>
+                            <template v-if="includeNotDecided">, and {{productsToExport.reduce((acc, el) => acc + el.nd_count, 0)}} not decided</template>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-element" v-if="includeDistribution">
+                    <BaseCheckboxInputField v-model="previewPdf">
+                        Preview PDF
+                    </BaseCheckboxInputField>
+                </div>
+            </form>
+            <button v-if="exportingPDF" class="button xl dark disabled"><BaseLoader/></button>
+            <template v-else-if="generatedPDF">
+                <a class="button lg primary full-width" :href="generatedPDF" target="_blank" :download="(currentWorkspace.name + '_' + currentFile.title).replace(/ /g, '_') + '.pdf'">Download PDF</a>
+                <Button style="margin-top: 32px;" class="button xl dark" @click="printToPdf"><span>new PDF</span></Button>
+            </template>
+            <button v-else class="button lg dark full-width" @click="printToPdf"><span>Export as PDF</span></button>
+
+            <ExportPdf ref="exportToPdf" v-if="previewPdf"/>
+        </template>
+    </BaseModal>
+</template>
+
+<script>
+import axios from 'axios';
+import { mapActions, mapGetters } from 'vuex'
+import ExportPdf from './ExportPdf'
+
+
+export default {
+    name: "exportProductsModal",
+    props: [
+        'show'
+    ],
+    components: {
+        ExportPdf
+    },
+    data: function () { return {
+        exportingPDF: false,
+        exportComments: true,
+        generatedPDF: null,
+        onlyWithRequests: false,
+        includeDistribution: false,
+        includeNotDecided: false,
+        currentSelectionOnly: false,
+        previewPdf: false,
+    }},
+    computed: {
+        ...mapGetters('workspaces', ['currentWorkspace']),
+        ...mapGetters('products', ['productsFiltered']),
+        ...mapGetters('files', ['currentFile']),
+        productsToExport() {
+            const products = this.productsFiltered
+            if (this.onlyWithRequests) {
+                return products.filter(product => product.requests.length > 0)
+            } else return products
+        }
+    },
+    methods: {
+        printToPdf: async function(event) {
+            const vm = this
+            var endpoint = "https://v2018.api2pdf.com/chrome/html"
+            var apiKey = "16b0a04b-8c9b-48f6-ad41-4149368bff58" //Replace this API key from portal.api2pdf.com
+            var config = {
+                headers: {
+                Authorization: apiKey
+                }
+            }
+            var payload = {
+                html: `<head><link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet"></head><body>${this.$refs.exportToPdf.innerHTML}</body>`, //Use your own HTML
+                inlinePdf: true,
+                fileName: (this.currentWorkspace.name + '_' + this.currentFile.title).replace(/ /g, '_'),
+                options: {
+                    displayHeaderFooter: true,
+                    preferCSSPageSize: true,
+                    footerTemplate: '<div class="page-footer" style="width:100%; text-align:right; font-size: 8px; font-weight: 700; font-family: Roboto, sans-serif, helvetica, arial; box-sizing: border-box; padding-right: 32px; padding-bottom: 12px;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>'
+                }
+            }
+            this.exportingPDF = true
+            this.$refs.exportToPdf.style.display = 'block'; // Show the pdf element for sizing purposes
+            await this.setPageHeight()
+
+            await axios.post(endpoint, payload, config)
+                .then(function(response) {
+                    window.open(response.data.pdf)
+                    vm.generatedPDF = response.data.pdf
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
+            this.$refs.exportToPdf.style.display = 'none'; // Hide the pdf element again
+            this.exportingPDF = false
+        },
+        setPageHeight() {
+            const pages = this.$refs.productPage
+            let nextPageIndex = 1
+            pages.forEach(page => {
+                // const pageHeight = 1040
+                const pageHeight = 1000
+                const heightDif = pageHeight - (page.clientHeight - pageHeight)
+                if (heightDif > 0 && nextPageIndex < pages.length) {
+                    pages[nextPageIndex].style.marginTop = heightDif + 'px'
+                }
+                nextPageIndex++
+            })
+        },
+    },
+};
+</script>
+
+<style lang="scss" scoped>
+@import '~@/_variables.scss';
+
+    // .navbar-file {
+    //     width: 100%;
+    //     padding: 8px 60px;
+    //     padding-right: 77px;
+    //     display: flex;
+    //     justify-content: space-between;
+    //     > * {
+    //         display: flex;
+    //         align-items: center;
+    //     }
+    //     .example-pdf {
+    //         display: none;
+    //         position: fixed;
+    //         left: 50%;
+    //         transform: translateX(-50%);
+    //         width: 100%;
+    //         max-width: 1000px;
+    //         height: 90vh;
+    //         top: 5vh;
+    //         background: white;
+    //         box-shadow: 0 0 20px rgba(black,50%);
+    //         z-index: -99;
+    //         overflow-x: hidden;
+    //         overflow-y: auto;
+    //     }
+    // }
+    // .items-center {
+    //     flex: 1;
+    //     padding: 0 40px;
+    // }
+    // .back-link {
+    //     padding-right: 28px;
+    //     border-right: solid 2px $light2;
+    //     margin-right: 28px;
+    //     .circle {
+    //         margin-right: 8px;
+    //     }
+    // }
+    // .breadcrumbs {
+    //     display: flex;
+    //     > * {
+    //         display: inline-flex;
+    //         align-items: center;
+    //     }
+    //     > *:not(:first-child)::before {
+    //         content: '';
+    //         pointer-events: none;
+    //         color: $dark1;
+    //         margin-left: 8px;
+    //         margin-right: 10px;
+    //         margin-bottom: 2px;
+    //         font-size: 10px;
+    //         font-family: "Font Awesome 5 Pro";
+    //         font-weight: 900;
+    //         -moz-osx-font-smoothing: grayscale;
+    //         -webkit-font-smoothing: antialiased;
+    //         display: inline-block;
+    //         font-style: normal;
+    //         font-variant: normal;
+    //         text-rendering: auto;
+    //         line-height: 1;
+    //     }
+    //     > *:last-child::before {
+    //         content: '';
+    //     }
+    // }
+
+</style>

@@ -277,7 +277,7 @@ export default {
             })
 
             // Next configure a request to the presigned URL
-            const uploadUrl = presignedUrl.url
+            const uploadUrl = presignedUrl.presigned_url
             let uploadPercentage = 0
             const axiosConfig = {
                 headers: {
