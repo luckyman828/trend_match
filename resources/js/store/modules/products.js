@@ -254,72 +254,52 @@ export default {
             const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/products/${product.id}`
             axios.put(apiUrl, product)
         },
-        async rotateImage({ commit }, file) {
-            // Upload images to Blob storage
-            let imageToReturn
+        async uploadImage({ commit, dispatch }, { file, product, image, callback }) {
+            // First generate presigned URL we can put the image to from the API
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/media/generate-persigned-url?file_id=${file.id}&datasource_id=${product.datasource_id}`
+            let presignedUrl
+            await axios.get(apiUrl).then(response => {
+                presignedUrl = response.data
+            })
 
-            const uploadApiUrl = `/api/product/rotate-img`
-            const axiosConfig = {
-                // headers: {
-                //     'Content-Type': 'multipart/form-data',
-                // },
-            }
-
-            // Append the file
-            let data = new FormData()
-            data.append('file', file)
-            console.log('Send rotate image request from store')
-
-            await axios
-                .post(uploadApiUrl, data, axiosConfig)
-                .then(response => {
-                    console.log('returning image')
-                    imageToReturn = response.data
-                })
-                .catch(err => {
-                    imageToReturn = false
-                    console.log('error')
-                    console.log(err.response)
-                })
-            return imageToReturn
-        },
-        async uploadImages({ commit, dispatch }, { files, callback }) {
-            // Upload images to Blob storage
-            let uploadSucces = false
+            // Next configure a request to the presigned URL
+            const uploadUrl = presignedUrl.url
             let uploadPercentage = 0
-
-            const uploadApiUrl = `/api/product/images`
             const axiosConfig = {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    'Content-Type': 'image/jpeg',
+                    'x-amz-acl': 'public-read',
                 },
                 onUploadProgress: progressEvent => {
                     uploadPercentage = parseInt(Math.round((progressEvent.loaded / progressEvent.total) * 100))
                     return callback(uploadPercentage)
                 },
             }
+            let data = new FormData().append('file', image)
 
-            // Append the files
-            let data = new FormData()
-            let count = 0
-            files.forEach(file => {
-                count++
-                data.append('files[' + count + ']', file.file, file.id)
-            })
-            console.log(count + ' images sent to API from store')
+            await axios.put(uploadUrl, data, axiosConfig)
 
-            await axios
-                .post(uploadApiUrl, data, axiosConfig)
-                .then(response => {
-                    console.log(response.data)
-                    uploadSucces = true
-                })
-                .catch(err => {
-                    console.log('error')
-                    console.log(err.response)
-                    uploadSucces = false
-                })
-            return uploadSuccesupdateProduct
+            // // Append the files
+            // let data = new FormData()
+            // let count = 0
+            // files.forEach(file => {
+            //     count++
+            //     data.append('files[' + count + ']', file.file, file.id)
+            // })
+            // console.log(count + ' images sent to API from store')
+
+            // await axios
+            //     .post(uploadApiUrl, data, axiosConfig)
+            //     .then(response => {
+            //         console.log(response.data)
+            //         uploadSucces = true
+            //     })
+            //     .catch(err => {
+            //         console.log('error')
+            //         console.log(err.response)
+            //         uploadSucces = false
+            //     })
+            // return uploadSuccesupdateProduct
         },
         async deleteImages({ commit }, imagesToDelete) {
             await axios

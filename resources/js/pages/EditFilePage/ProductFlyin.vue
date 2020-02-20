@@ -344,7 +344,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImages', 'deleteImages', 'rotateImage']),
+        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImage', 'deleteImages']),
         ...mapMutations('products', ['setCurrentProduct']),
         showCurrencyContext(e) {
             this.$refs.contextCurrency.show(e)
@@ -406,39 +406,48 @@ export default {
             const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
 
             // Check if we have any files (images) we need to upload
-            // const variants = productToUpload.variants
-            // for (let i = 0; i < variants.length; i++) {
-            //     const variant = variants[i]
-            //     const editVariant = this.productToEdit.variants[i]
-            //     if (variant.imageToUpload) {
-            //         vm.$set(editVariant.imageToUpload, 'progress', 0)
-            //     }
-            // }
-            // for (let i = 0; i < variants.length; i++) {
-            //     const variant = variants[i]
-            //     const editVariant = this.productToEdit.variants[i]
-            //     if (variant.imageToUpload) {
-            //         // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
-            //         await this.uploadImages({files: [editVariant.imageToUpload], callback: function(uploadProgress) {
-                    
-            //         if (uploadProgress == 100) {
-            //             vm.$set(editVariant.imageToUpload, 'progress', 99)
-            //         } else {
-            //             vm.$set(editVariant.imageToUpload, 'progress', uploadProgress)
-            //         }
-            //         // editVariant.imageToUpload.progress = uploadProgress
-            //         } })
-            //         .then(success => {
-            //             // When done trying to upload the image
-            //             if (success) {
-            //                 variant.blob_id = variant.imageToUpload.id
-            //                 delete variant.imageToUpload
-            //                 variant.image = null
-            //             }
-            //         })
+            const variants = productToUpload.variants
+            for (let i = 0; i < variants.length; i++) {
+                const variant = variants[i]
+                const editVariant = this.productToEdit.variants[i]
+                if (variant.imageToUpload) {
+                    vm.$set(editVariant.imageToUpload, 'progress', 0)
+                }
+            }
+            for (let i = 0; i < variants.length; i++) {
+                const variant = variants[i]
+                const editVariant = this.productToEdit.variants[i]
+                if (variant.imageToUpload) {
 
-            //     }
-            // }
+                    // await this.uploadImage(variant.imageToUpload.file)
+                    // // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
+                    await this.uploadImage({
+                        file: this.currentFile, 
+                        product: this.currentProduct, 
+                        image: variant.imageToUpload.file, 
+                        callback: function(uploadProgress) {
+                            console.log(uploadProgress)
+                        }
+                    })
+                    
+                    // if (uploadProgress == 100) {
+                    //     vm.$set(editVariant.imageToUpload, 'progress', 99)
+                    // } else {
+                    //     vm.$set(editVariant.imageToUpload, 'progress', uploadProgress)
+                    // }
+                    // // editVariant.imageToUpload.progress = uploadProgress
+                    // } })
+                    // .then(success => {
+                    //     // When done trying to upload the image
+                    //     if (success) {
+                    //         variant.blob_id = variant.imageToUpload.id
+                    //         delete variant.imageToUpload
+                    //         variant.image = null
+                    //     }
+                    // })
+
+                }
+            }
 
             // // Check if we have any files (images) we need to delete
             // const filesToDelete = this.filesToDelete
@@ -448,14 +457,14 @@ export default {
             // }
 
             // Check if we have a new or existing product. If the product is new, insert it.
-            if (productToUpload.id) {
-                await this.updateProduct(productToUpload)
-            } else {
-                this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
-                this.setCurrentProduct(productToUpload)
-                // Resort the products to include the new product
-                this.$emit('onSort')
-            }
+            // if (productToUpload.id) {
+            //     await this.updateProduct(productToUpload)
+            // } else {
+            //     this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
+            //     this.setCurrentProduct(productToUpload)
+            //     // Resort the products to include the new product
+            //     this.$emit('onSort')
+            // }
             this.updatingProduct = false
         },
         calculateMarkup({whs, rrp} = {}) {
