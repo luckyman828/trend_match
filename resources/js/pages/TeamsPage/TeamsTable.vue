@@ -16,7 +16,10 @@
                 </BaseTableTopBar>
             </template>
             <template v-slot:header>
-                <BaseTableHeader class="select"><BaseCheckbox @change="(checked) => checked ? selectedTeams = teams : selectedTeams = []"/></BaseTableHeader>
+                <BaseTableHeader class="select">
+                    <BaseCheckbox :value="selectedTeams.length > 0" :modelValue="true" 
+                    @change="(checked) => checked ? selectedTeams = teams : selectedTeams = []"/>
+                </BaseTableHeader>
                 <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Name</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'owner'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Owner</BaseTableHeader> -->
                 <BaseTableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Members</BaseTableHeader>
@@ -49,7 +52,10 @@
                 </BaseTableTopBar>
             </template>
             <template v-slot:header>
-                <BaseTableHeader class="select"><BaseCheckbox/></BaseTableHeader>
+                <BaseTableHeader class="select">
+                    <BaseCheckbox :value="selectedUsers.length > 0" :modelValue="true" 
+                    @change="(checked) => checked ? selectedUsers = users : selectedUsers = []"/>
+                </BaseTableHeader>
                 <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</BaseTableHeader>
                 <BaseTableHeader :sortKey="'role'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Workspace Role</BaseTableHeader>
@@ -59,7 +65,7 @@
             <template v-slot:body>
                 <UsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in usersFilteredBySearch" :key="user.id" :user="user" :index="index"
                 @showContextMenu="showUserContext($event, user)" @editCurrency="onEditUserCurrency($event, user)"
-                @editRole="onEditUserRole($event, user)"/>
+                @editRole="onEditUserRole($event, user)" :selectedUsers.sync="selectedUsers"/>
             </template>
             <template v-slot:footer>
                 <td><button class="primary invisible" @click="onNewUser"><i class="far fa-plus"></i><span>Add new: User</span></button></td>
@@ -220,12 +226,8 @@ export default {
     name: 'teamsTable',
     props: [
         'teams',
-        'loading',
         'authUser',
-        'collection',
-        'selectedCount',
         'users',
-        'authUser',
     ],
     mixins: [
         sortArray
@@ -238,7 +240,6 @@ export default {
     data: function() { return {
         sortKey: 'id',
         sortAsc: true,
-        expandedIds: [],
         editUser: {
             permission_level: '',
         },
@@ -255,7 +256,6 @@ export default {
         originalUser: null,
         editTitle: false,
         editCurrency: false,
-        // currentTab: 'Teams',
         teamsFilteredBySearch: [],
         usersFilteredBySearch: [],
         newUserPassword: '',

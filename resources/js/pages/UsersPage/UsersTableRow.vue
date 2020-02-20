@@ -1,6 +1,9 @@
 <template>
     <tr class="user-row table-row" ref="userRow" @contextmenu.prevent="$emit('showContextMenu', $event, user)">
-        <td class="select"><BaseCheckbox/></td>
+        <td class="select">
+            <BaseCheckbox :value="user" :modelValue="selectedUsers" 
+            @change="$emit('update:selectedUsers', $event)"/>
+        </td>
         <td class="title" v-if="editName">
             <i class="fa-user" :class="user.id ? 'fas' : 'far'"></i>
             <BaseEditInputWrapper ref="editName" :activateOnMount="true" :type="'text'"
@@ -36,7 +39,7 @@ export default {
     name: 'usersTableRow',
     props: [
         'user',
-        'index'
+        'selectedUsers'
     ],
     data: function() { return {
         editName: false,

@@ -1,6 +1,4 @@
 import { Database } from '@vuex-orm/core'
-import Product from './models/Product'
-import products from './modules/products'
 import Action from './models/Action'
 import actions from './modules/actions'
 import User from './models/User'
@@ -42,7 +40,6 @@ import requests from './modules/requests'
 
 const database = new Database()
 
-database.register(Product, products)
 database.register(Action, actions)
 database.register(User, users)
 database.register(Comment, comments)

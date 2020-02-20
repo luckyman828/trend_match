@@ -80,7 +80,9 @@
                                     <td><BaseInputField class="input-field" disabled=true :value="file.fileName" readOnly=true /></td>
                                     <td><i class="fas fa-equals"></i></td>
                                     <td><BaseInputField class="input-field" disabled=true :class="{'auto-match': file.key.autoMatch}"
-                                    :value="file.key.fieldName" type="select" @click="showSelectKeyContext($event, file)"/></td>
+                                    :value="file.key.fieldName" type="select" @click="showSelectKeyContext($event, file)">
+                                        <i class="fas fa-caret-down"></i>
+                                    </BaseInputField></td>
                                     <td><BaseInputField :errorTooltip="file.keyError" class="input-field" disabled=true readOnly=true
                                         :value="previewExampleValue(file.key, 'datasource_id')"/>
                                     </td>
@@ -105,7 +107,9 @@
                                     <td>
                                         <BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
                                         class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
-                                        :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)"/>
+                                        :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
+                                            <i class="fas fa-caret-down"></i>
+                                        </BaseInputField>
                                     </td>
                                     <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
                                         :value="previewExampleValue(field.newValue, field.name)"/>
@@ -142,7 +146,9 @@
                                                     <td><BaseInputField :id="'currency-'+index+'-file'" 
                                                     class="input-field" disabled=true
                                                     :value="currency.fileIndex != null ? availableFiles[currency.fileIndex].fileName : null" 
-                                                    type="select" @click="showSelectFileContext($event, currency)"/></td>
+                                                    type="select" @click="showSelectFileContext($event, currency)">
+                                                        <i class="fas fa-caret-down"></i>
+                                                    </BaseInputField></td>
                                                 </tr>
                                             </table>
                                         </div>
@@ -165,7 +171,9 @@
                                                 <td><i class="fas fa-equals"></i></td>
                                                 <td><BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
                                                 class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
-                                                :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)"/></td>
+                                                :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
+                                                    <i class="fas fa-caret-down"></i>
+                                                </BaseInputField></td>
                                                 <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
                                                     :value="previewExampleValue(field.newValue, field.name)"/>
                                                 </td>
@@ -273,9 +281,9 @@ export default {
             headersToMatch: ['brand','brand name']},
             {name: 'category', displayName: 'Category',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['category','style category','product category']},
-            {name: 'quantity', displayName: 'Minimum Order Quantity',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            {name: 'min_order', displayName: 'Minimum Order Quantity',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['minimum','minimum quantity','quantity','minimum order quantity','order minimum','order minimum quantity']},
-            {name: 'variant_min_quantity', displayName: 'Minimum Variant Quantity',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            {name: 'min_variant_order', displayName: 'Minimum Variant Quantity',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['variant minimum','variant minimum quantity','minimum variant','minimum variant quantity','color minimum','colour minimum','minimum per color']},
             {name: 'composition', displayName: 'Composition',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['composition','materials','quality','material']},
@@ -284,12 +292,12 @@ export default {
             {name: 'editors_choice', displayName: 'Editors Choice',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['editors choice','focus','focus style','focus product']},
             {name: 'assortment_name', displayName: 'Assortment Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['assortment name','box name']},
+            headersToMatch: ['assortment name','box name', 'ass name']},
             {name: 'box_ean', displayName: 'Assortment Box EAN',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['box ean','assortment box ean','assortment ean']},
+            headersToMatch: ['box ean','assortment box ean','assortment ean', 'ass ean']},
             {name: 'box_size', displayName: 'Assortment Box Size',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['box size','assortment box size', 'ass.']},
-            {name: 'color', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['box size','assortment box size', 'ass.', 'ass size', 'assortment size']},
+            {name: 'variant_name', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['color','colour','variant','variant name','color name','colour name','main colour name']},
             {name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['picture url','image url','img url','picture','image','img']},
@@ -297,8 +305,8 @@ export default {
             headersToMatch: ['sizes','variant sizes','size','variant size']},
             {name: 'eans', displayName: 'EANs',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['eans','ean','variant ean','style ean']},
-            {name: 'buyer_group', displayName: 'Buyer Group',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['buyer group','buyer','pricelist']},
+            {name: 'buying_group', displayName: 'Buyer Group',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['buyer group','buyer','pricelist', 'buying group']},
         ],
         currencyDefaultObject: {
             currencyName: '',
@@ -306,7 +314,7 @@ export default {
             fieldsToMatch: [
                 {name: 'currency', displayName: 'Currency Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
                 headersToMatch: ['currency','currency name']},
-                {name: 'markup', displayName: 'Mark Up',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+                {name: 'mark_up', displayName: 'Mark Up',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
                 headersToMatch: ['markup','mark up']},
                 {name: 'wholesale_price', displayName: 'Wholesale Price',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
                 headersToMatch: ['whs','wholesale price','whs price']},
@@ -320,7 +328,7 @@ export default {
             fieldsToMatch: [
                 {name: 'currency', displayName: 'Currency Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
                 headersToMatch: ['currency','currency name']},
-                {name: 'markup', displayName: 'Mark Up',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+                {name: 'mark_up', displayName: 'Mark Up',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
                 headersToMatch: ['markup','mark up']},
                 {name: 'wholesale_price', displayName: 'Wholesale Price',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
                 headersToMatch: ['whs','wholesale price','whs price']},
@@ -355,6 +363,7 @@ export default {
     },
     methods: {
         ...mapActions('files', ['insertOrUpdateFile', 'uploadFile']),
+        ...mapActions('products', ['insertProducts']),
         previewExampleValue(newValue, fieldName) {
             const files = this.availableFiles
             // First check that we have any previews available, and that we have a new value defined
@@ -367,19 +376,7 @@ export default {
         },
         validateKey(file) {
             // Assume no error
-            file.keyError = false
-
-            // Test n values
-            // const limit = 10
-            // for (let i = 0;i<limit;i++) {
-            //     // Find the field value
-            //     const fieldValue = file.lines[i][file.key.fieldIndex]
-            //     // Test that the field is an integer
-            //     if (typeof fieldValue != 'number') {
-            //         file.keyError = "Value must be a number"
-            //     }
-            // }
-            
+            file.keyError = false   
         },
         validateField(field, limit=10) {
             const fieldName = field.name
@@ -402,7 +399,7 @@ export default {
                 if (fieldValue && valid) {
 
                     // Test for integers
-                    if (['quantity','variant_min_quantity','box_size','eans','markup','recommended_retail_price','wholesale_price'].includes(fieldName)) {
+                    if (['min_order','min_variant_order','box_size','eans','mark_up','recommended_retail_price','wholesale_price'].includes(fieldName)) {
                         if (isNaN(fieldValue)) {
                             field.error = `Must be a <strong>number</strong>.
                             <br>Found value: <i>${fieldValue}</i> on <strong>line ${i+2}</strong>`
@@ -613,9 +610,7 @@ export default {
                         if (!product) {
                             product = {
                                 datasource_id: keyValue,
-                                id: this.$uuid.v4(),
-                                collection_id: fileId,
-                                color_variants: [],
+                                variants: [],
                                 assortments: [],
                                 prices: [],
                                 eans: []
@@ -625,7 +620,7 @@ export default {
 
                         // VARIANTS
                         // Find / Instantiate this lines variant
-                        let variantKeyField = this.fieldsToMatch.find(x => x.name == 'color')
+                        let variantKeyField = this.fieldsToMatch.find(x => x.name == 'variant_name')
                         let variant = null
                         // Check that the variant key is from this file
                         if (variantKeyField.newValue.fileIndex == fileIndex && variantKeyField.newValue.fieldIndex != null) {
@@ -634,14 +629,14 @@ export default {
                             // Find the variant keys value
                             let variantKeyValue = line[variantKeyIndex]
                             // Find this lines variant name
-                            variant = product.color_variants.find(x => x.color == variantKeyValue)
+                            variant = product.variants.find(x => x.name == variantKeyValue)
                             if (!variant) {
                                 variant = {
-                                    color: variantKeyValue,
+                                    name: variantKeyValue,
                                     image: null,
                                     sizes: []
                                 }
-                                product.color_variants.push(variant)
+                                product.variants.push(variant)
                             }
                         }
 
@@ -659,7 +654,7 @@ export default {
                             assortment = product.assortments.find(x => x.assortment_name == assortmentKeyValue)
                             if (!assortment) {
                                 assortment = {
-                                    assortment_name: assortmentKeyValue,
+                                    name: assortmentKeyValue,
                                     box_ean: null,
                                     box_size: null,
                                 }
@@ -692,7 +687,7 @@ export default {
                                         currency: currencyKeyValue,
                                         wholesale_price: 0,
                                         recommended_retail_price: 0,
-                                        markup: 0
+                                        mark_up: 0
                                     }
                                     product.prices.push(currency)
                                 }
@@ -710,7 +705,7 @@ export default {
                                         currency: thisCurrencyObject.currencyName,
                                         wholesale_price: 0,
                                         recommended_retail_price: 0,
-                                        markup: 0
+                                        mark_up: 0
                                     }
                                     product.prices.push(currency)
                                 }
@@ -739,14 +734,18 @@ export default {
 
                                 // Check for special case fields that need to be added to objects in json fields
                                 // Variants
-                                if (['color','image','sizes'].includes(fieldName)) {
+                                if (['variant_name','image','sizes'].includes(fieldName)) {
                                     // Check if we have matched a variant for this line
                                     if (variant) {
                                         // If the variant exists, add the field value to it
                                         // Check if the field is an array, because then it should be added to the sizes array
                                         if (Array.isArray(variant[fieldName])) {
-                                            variant[fieldName].push(fieldValue)
-                                        } else {
+                                            // Only push the value if it does not already exists
+                                            let arrayValueExists = variant[fieldName].includes(fieldValue)
+                                            if (!arrayValueExists) {
+                                                variant[fieldName].push(fieldValue)
+                                            }
+                                        } else if (fieldName != 'variant_name') { // Exclude variant_name to only write "name" to the variant
                                             variant[fieldName] = fieldValue
                                         }
                                     }
@@ -755,8 +754,10 @@ export default {
                                 else if (['assortment_name','box_ean','box_size'].includes(fieldName)) {
                                     // Check if we have matched an assortment for this line
                                     if (assortment) {
-                                        // If the variant exists, add the field value to it
-                                        assortment[fieldName] = fieldValue
+                                        // If the assortment exists, add the field value to it
+                                        if (fieldName != 'assortment_name') { // Exclude assortment_name to only write "name" to the variant
+                                            assortment[fieldName] = fieldValue
+                                        }
                                     }
                                 }
 
@@ -784,7 +785,7 @@ export default {
 
             return productsToReturn
         },
-        submitFiles() {
+        async submitFiles() {
 
             // First validate all fields
             // Loop through the fields and look for errors
@@ -808,26 +809,26 @@ export default {
 
             // Set new file data
             const newFile = this.newFile
-            newFile.folder_id = this.currentFolder.id
+            newFile.id = null
+            newFile.parent_id = this.currentFolder ? this.currentFolder.id : 0
             newFile.workspace_id = this.currentWorkspace.id
-            newFile.id = this.$uuid.v4()
-            newFile.products = this.instantiateProducts(newFile.id)
-            newFile.phase = Phase.query().first().id
 
-            // Create collection from name
             this.uploadingFile = true
-            this.uploadFile(newFile)
-            .then(success => {
-                this.uploadingFile = false
 
-                // Close modal on succes
-                if (success) {
-                    this.$emit('close')
-                    // Reset modal
-                    this.reset()
-                }
-                else window.alert('Something went wrong. Please try again')
+            // First we need to create a file for the products, since the API requires that products be uploaded to an existing file
+            await this.insertOrUpdateFile(newFile)
+            console.log(newFile)
+
+            // Then we will instantiate the products and attempt to upload them
+            const newProducts = this.instantiateProducts(newFile.id)
+            await this.insertProducts({file: newFile, products: newProducts, addToState: false})
+            .then(() => {
+                this.$emit('close')
+                this.reset()
+            }).catch(err => {
+                window.alert('Something went wrong. Please try again')
             })
+            this.uploadingFile = false
         },
         reset() {
             this.availableFiles = []

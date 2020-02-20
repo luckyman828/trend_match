@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Vue from 'vue'
 import Selection from '../models/Selection'
 
 export default {
@@ -66,27 +67,37 @@ export default {
         },
         async fetchSelectionUsers({ commit }, selection) {
             // Get owners for file
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selections.id}/users`
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selection.id}/users`
             await axios.get(apiUrl).then(response => {
                 Vue.set(selection, 'users', response.data)
             })
         },
         async fetchSelectionTeams({ commit }, selection) {
             // Get owners for file
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selections.id}/teams`
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selection.id}/teams`
             await axios.get(apiUrl).then(response => {
                 Vue.set(selection, 'teams', response.data)
             })
         },
-        addUsersToSelection({ commit }, { selection, usersToAdd }) {
+        addUsersToSelection({ commit }, { selection, users }) {
             // Commit mutation to state
-            commit('addUsersToSelection', { selection, usersToAdd })
+            commit('addUsersToSelection', { selection, users })
             // Send request to API
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selection.id}/users`
+            axios.post(apiUrl, {
+                method: 'Add',
+                user_ids: users.map(x => x.id),
+            })
         },
-        removeUserFromSelection({ commit }, { selection, user }) {
+        removeUsersFromSelection({ commit }, { selection, users }) {
             // Commit mutation to state
-            commit('removeUserFromSelection', { selection, user })
+            commit('removeUsersFromSelection', { selection, users })
             // Send request to API
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selection.id}/users`
+            axios.post(apiUrl, {
+                method: 'Remove',
+                user_ids: users.map(x => x.id),
+            })
         },
         addTeamsToSelection({ commit }, { selection, teamsToAdd }) {
             // Commit mutation to state
@@ -138,20 +149,26 @@ export default {
         setCurrentSelectionId(state, id) {
             state.currentSelectionId = id
         },
-        addUsersToSelection(state, { selection, usersToAdd }) {
-            // Make a clone of the user and set their default selection permission level
+        addUsersToSelection(state, { selection, users }) {
+            // Make a clone of the user and set their default selection role
             const usersToPush = []
-            usersToAdd.forEach(user => {
+            users.forEach(user => {
                 const userToPush = JSON.parse(JSON.stringify(user))
                 userToPush.role = 'Member'
-                user.selection_teams = []
                 usersToPush.push(userToPush)
             })
-            selection.users = selection.users.concat(usersToPush)
+            if (selection.users) {
+                Vue.set(selection, 'users', selection.users.concat(usersToPush))
+            } else {
+                Vue.set(selection, 'users', usersToPush)
+            }
         },
-        removeUserFromSelection(state, { selection, user }) {
-            const userIndex = selection.users.findIndex(x => x.id == user.id)
-            selection.users.splice(userIndex, 1)
+        removeUsersFromSelection(state, { selection, users }) {
+            // Loop through the users and remove them
+            users.forEach(user => {
+                const userIndex = selection.users.findIndex(x => x.id == user.id)
+                selection.users.splice(userIndex, 1)
+            })
         },
         addTeamsToSelection(state, { selection, teamsToAdd }) {
             // Add teams to teams array

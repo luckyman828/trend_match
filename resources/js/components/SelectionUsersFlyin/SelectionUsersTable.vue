@@ -12,7 +12,10 @@
                 </BaseTableTopBar>
             </template>
             <template v-slot:header>
-                <BaseTableHeader class="select"><BaseCheckbox/></BaseTableHeader>
+                <BaseTableHeader class="select">
+                    <BaseCheckbox :value="selected.length > 0" :modelValue="true" 
+                    @change="(checked) => checked ? selected = selection.users : selected = []"/>
+                </BaseTableHeader>
                 <BaseTableHeader class="name" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</BaseTableHeader>
                 <BaseTableHeader :sortKey="'role'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Role</BaseTableHeader>
@@ -20,7 +23,7 @@
             </template>
             <template v-slot:body>
                 <tr v-for="user in selection.users" :key="user.id" class="user-row table-row" ref="userRow" @contextmenu.prevent="showUserContext($event, user)">
-                    <td class="select"><BaseCheckbox/></td>
+                    <td class="select"><BaseCheckbox :value="user" v-model="selected"/></td>
                     <td class="title clickable">
                         <i class="fas fa-user"></i>
                         <span>{{user.name}}</span>
@@ -68,12 +71,15 @@
                     :optionNameKey="'name'" :search="true"/>
                 </div>
                 <div class="item-group">
-                    <div class="item">
+                    <div class="item-wrapper">
                         <button class="primary" :class="{disabled: usersToAdd.length < 1}" 
                         @click="onAddUsersToSelection();usersToAdd = [];slotProps.hide()">
                             <span>Add <template v-if="usersToAdd.length > 0">{{usersToAdd.length}} 
                             </template>user<template v-if="usersToAdd.length > 1">s</template></span></button>
-                        <button class="invisible ghost-hover" @click="slotProps.hide(); usersToAdd = []"><span>Cancel</span></button>
+                        <button class="invisible ghost-hover" style="margin-left: 8px;"
+                        @click="slotProps.hide(); usersToAdd = []">
+                            <span>Cancel</span>
+                        </button>
                     </div>
                 </div>
             </template>
@@ -122,10 +128,10 @@ export default {
             const allUsers = this.users
             // Filter the available users to exclude users already added
             return allUsers.filter(user => !this.selection.users.find(x => x.id == user.id))
-        }
+        },
     },
     methods: {
-        ...mapActions('entities/selections', ['addUsersToSelection','removeUserFromSelection']),
+        ...mapActions('selections', ['addUsersToSelection','removeUsersFromSelection']),
         showUserContext(e, user) {
             const contextMenu = this.$refs.contextMenuUser
             this.contextUser = user
@@ -142,7 +148,7 @@ export default {
             contextMenu.show(e)
         },
         onAddUsersToSelection(usersToAdd) {
-            this.addUsersToSelection({selection: this.selection, usersToAdd: this.usersToAdd})
+            this.addUsersToSelection({selection: this.selection, users: this.usersToAdd})
         },
         sortUsers(method, key) {
             // If if we are already sorting by the given key, flip the sort order
@@ -160,7 +166,7 @@ export default {
         onRemoveUser(user) {
             // If we have a selection, loop through the selection and remove those
             // Else, remove the parsed user
-            this.removeUserFromSelection({selection: this.selection, user: user})
+            this.removeUsersFromSelection({selection: this.selection, users: [user]})
         },
     }
 }

@@ -17,12 +17,14 @@ export default {
         singleVisible: false,
         products: [],
         productsFiltered: [],
+        status: null,
     },
 
     getters: {
         loadingProducts: state => {
             return state.loading
         },
+        productsStatus: state => state.status,
         currentSingleProductId: state => {
             return state.currentSingleProductId
         },
@@ -200,26 +202,27 @@ export default {
     actions: {
         async fetchProducts({ commit, dispatch }, file_id) {
             // Set the state to loading
-            commit('setLoading', true)
+            commit('setProductStatus', 'loading')
 
             const apiUrl = `/api/file/${file_id}/products`
 
-            let tryCount = 3
-            let succes = false
-            while (tryCount-- > 0 && !succes) {
-                try {
-                    const response = await axios.get(`${apiUrl}`)
-                    Product.create({ data: response.data })
-                    commit('setLoading', false)
-                    dispatch('instantiateProducts')
-                    succes = true
-                } catch (err) {
-                    console.log('API error in products.js :')
-                    console.log(err)
-                    console.log(`Trying to fetch again. TryCount = ${tryCount}`)
-                    if (tryCount <= 0) throw err
-                }
-            }
+            await axios
+                .get(apiUrl)
+                .then(response => {
+                    commit('insertProducts', { products: response.data, method: 'set' })
+                    commit('setProductStatus', 'success')
+                })
+                .catch(err => {
+                    commit('setProductStatus', 'error')
+                })
+        },
+        async insertProducts({ commit }, { file, products, addToState }) {
+            if (addToState) commit('insertProducts', { products, method: 'add' })
+            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.id}/products`
+            await axios.post(apiUrl, {
+                method: 'Add',
+                products: products,
+            })
         },
         setCurrentProductId({ commit }, id) {
             commit('setCurrentProductId', id)
@@ -519,6 +522,17 @@ export default {
         //Set the loading status of the app
         setLoading(state, bool) {
             state.loading = bool
+        },
+        setProductStatus(state, status) {
+            state.status = status
+        },
+        insertProducts(state, { products, method }) {
+            if (method == 'add') {
+                // Add to existing products
+                state.products.push(products)
+            } else {
+                state.products = products
+            }
         },
         setCurrentProductId(state, id) {
             state.currentProductId = id

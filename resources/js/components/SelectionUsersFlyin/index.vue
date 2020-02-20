@@ -42,11 +42,12 @@ export default {
     computed: {
         ...mapGetters('users', ['users']),
         loading() {
-            return loadingUsers
+            return this.loadingUsers
         }
     },
     methods: {
-        ...mapActions('users', ['fetchUsers'])
+        ...mapActions('users', ['fetchUsers']),
+        ...mapActions('selections', ['fetchSelectionUsers'])
     },
     created() {
         // Check if we have any workspace users, else fetch them
