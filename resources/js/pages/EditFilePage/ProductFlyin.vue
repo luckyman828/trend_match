@@ -8,11 +8,15 @@
                         <span>Changes saved</span>
                         <span>{{product.updated_at}}</span>
                     </div>
-                    <div class="hotkey-wrapper">
+                    <div class="hotkey-wrapper" v-tooltip="{content: !productToEdit.datasource_id && 'Product must have an ID'}">
                         <!-- <h3><BaseEditable :value="product.title" :type="'text'" v-model="product.title"/></h3> -->
-                        <button v-if="!updatingProduct && gettingImagesFromURL <= 0" class="ghost" :class="{disabled: !hasChanges}" 
-                        @click="onUpdateProduct"><i class="far fa-save"></i><span>Save</span></button>
-                        <button v-else class="ghost disabled"><BaseLoader/></button>
+                        <button v-if="!updatingProduct && gettingImagesFromURL <= 0" class="ghost" :class="{disabled: !saveActive}"
+                        @click="saveActive && onUpdateProduct()"><i class="far fa-save">
+                            </i><span>Save</span>
+                        </button>
+                        <button v-else class="ghost disabled">
+                            <BaseLoader/>
+                        </button>
                         <span class="hotkey"><span class="key">S</span> Save</span>
                     </div>
                 </div>
@@ -228,7 +232,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Product from '../../store/models/Product'
 import Draggable from 'vuedraggable'
 
@@ -260,6 +264,7 @@ export default {
     }},
     watch: {
         currentProduct(newVal, oldVal) {
+            console.log('current product changed')
             // This function fires when a change happens to the current product in the store. It also fires initially
             // This can mean: A new product is shown. The product in the store has been updated
             this.productToEdit = JSON.parse(JSON.stringify(newVal))
@@ -282,6 +287,7 @@ export default {
     },
     computed: {
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct']),
+        ...mapGetters('files', ['currentFile']),
         product () {
             return this.productToEdit
         },
@@ -289,7 +295,7 @@ export default {
             return this.currentProduct
         },
         saveActive() {
-            return !this.updatingProduct && this.gettingImagesFromURL <= 0 && this.hasChanges
+            return !this.updatingProduct && this.gettingImagesFromURL <= 0 && this.hasChanges && !!this.productToEdit.datasource_id
         },
         currentCurrency () {
             return this.productToEdit 
@@ -338,7 +344,8 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'uploadImages', 'deleteImages', 'rotateImage']),
+        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImages', 'deleteImages', 'rotateImage']),
+        ...mapMutations('products', ['setCurrentProduct']),
         showCurrencyContext(e) {
             this.$refs.contextCurrency.show(e)
         },
@@ -440,7 +447,15 @@ export default {
             //     this.deleteImages(filesToDelete)
             // }
 
-            await this.updateProduct(productToUpload)
+            // Check if we have a new or existing product. If the product is new, insert it.
+            if (productToUpload.id) {
+                await this.updateProduct(productToUpload)
+            } else {
+                this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
+                this.setCurrentProduct(productToUpload)
+                // Resort the products to include the new product
+                this.$emit('onSort')
+            }
             this.updatingProduct = false
         },
         calculateMarkup({whs, rrp} = {}) {

@@ -7,7 +7,7 @@
         @onSort="onSort"/>
 
         <ProductFlyin :show="singleVisible"
-        @closeSingle="setSingleVisisble(false)"/>
+        @closeSingle="setSingleVisisble(false)" @onSort="onSort"/>
     </div>
 </template>
 
@@ -44,11 +44,13 @@ export default{
     methods: {
         ...mapMutations('products', ['setSingleVisisble']),
         onSort(method, key) {
-            if (this.sortKey !== key) {
-                this.sortAsc = method
-                this.sortKey = key
-            } else {
-                this.sortAsc = !this.sortAsc
+            if (method && key) {
+                if (this.sortKey !== key) {
+                    this.sortAsc = method
+                    this.sortKey = key
+                } else {
+                    this.sortAsc = !this.sortAsc
+                }
             }
             this.sortProducts()
         },

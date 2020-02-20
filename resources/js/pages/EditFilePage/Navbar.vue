@@ -16,7 +16,7 @@
 
         <div class="items-right">
 
-            <button class="button primary wide" @click="onCreateNewProduct"><span>Create new product</span></button>
+            <button class="button primary wide" @click="onNewProduct"><span>Create new product</span></button>
 
         </div>
 
@@ -26,7 +26,7 @@
 
 <script>
 import axios from 'axios';
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import SearchModal from '../../components/SearchModal'
 
 export default {
@@ -46,19 +46,12 @@ export default {
         }
     },
     methods: {
-        ...mapActions('entities/products', ['showSingle', 'setAvailableProductIds', 'instantiateNewProduct']),
-        openSearch() {
-            this.$refs.searchModal.toggle()
-        },
-        async onCreateNewProduct() {
-            // Generate UUID for new product
-            console.log('show new product')
-            const newUUID = this.$uuid.v4()
-            await this.instantiateNewProduct({id: newUUID, fileId: this.currentFile.id})
-            // Show single with the new ID
-            this.showSingle(newUUID)
-            // Set the available products to only the new id, to disable going to prev/next product.
-            this.setAvailableProductIds([newUUID])
+        ...mapActions('products', ['setAvailableProducts', 'instantiateNewProduct']),
+        ...mapMutations('products', ['setCurrentProduct', 'setSingleVisisble']),
+        async onNewProduct() {
+            const newProduct = await this.instantiateNewProduct()
+            this.setCurrentProduct(newProduct)
+            this.setSingleVisisble(true)
         },
     },
 };

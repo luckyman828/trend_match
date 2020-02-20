@@ -212,6 +212,26 @@ export default {
                 products: products,
             })
         },
+        instantiateNewProduct({ commit }) {
+            return {
+                title: 'Untitled product',
+                datasource_id: null,
+                short_description: null,
+                sale_description: null,
+                min_order: null,
+                min_variant_order: null,
+                brand: null,
+                category: null,
+                delivery_date: null,
+                buying_group: null,
+                is_editor_choice: null,
+                compositions: null,
+                prices: [],
+                variants: [],
+                assortments: [],
+                eans: [],
+            }
+        },
         setCurrentProduct({ commit }, product) {
             commit('setCurrentProduct', product)
         },
@@ -356,7 +376,7 @@ export default {
             })
             if (method == 'add') {
                 // Add to existing products
-                state.products.push(products)
+                state.products = state.products.concat(products)
             } else {
                 state.products = products
             }
@@ -382,8 +402,8 @@ export default {
         setCurrentProductFilter(state, payload) {
             state.currentProductFilter = payload
         },
-        setSingleVisisble(state, payload) {
-            state.singleVisible = payload
+        setSingleVisisble(state, bool) {
+            state.singleVisible = bool
         },
         updateProduct(state, product) {
             // Replace the product with the new
