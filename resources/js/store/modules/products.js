@@ -281,7 +281,7 @@ export default {
             let uploadPercentage = 0
             const axiosConfig = {
                 headers: {
-                    'content-type': 'multipart/form-data',
+                    'Content-Type': 'multipart/form-data',
                     'x-amz-acl': 'public-read',
                 },
                 onUploadProgress: progressEvent => {

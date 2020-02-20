@@ -62,7 +62,7 @@ export default {
             // Include the token in future requests
             axios.defaults.headers.common['Authorization'] = `Bearer ${state.token}`
 
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/auth/me`
+            const apiUrl = `/auth/me`
             await axios
                 .get(apiUrl)
                 .then(response => {

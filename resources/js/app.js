@@ -1,8 +1,12 @@
-require('./bootstrap')
+// require('./bootstrap')
 
 window.Vue = require('vue')
 import store from './store/index'
 import router from './router'
+
+window.axios = require('axios')
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+window.axios.defaults.baseURL = 'https://dev-platform.kollekt.dk/v1'
 
 // import VueDragscroll from 'vue-dragscroll'
 // Vue.use(VueDragscroll)
