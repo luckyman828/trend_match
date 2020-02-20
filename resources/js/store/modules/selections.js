@@ -63,7 +63,7 @@ export default {
         async fetchSelection({ commit }, selectionId) {
             commit('setStatus', 'loading')
 
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selectionId}`
+            const apiUrl = `/selections/${selectionId}`
             axios
                 .get(apiUrl)
                 .then(response => {
@@ -76,14 +76,14 @@ export default {
         },
         async fetchSelectionUsers({ commit }, selection) {
             // Get owners for file
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selection.id}/users`
+            const apiUrl = `/selections/${selection.id}/users`
             await axios.get(apiUrl).then(response => {
                 Vue.set(selection, 'users', response.data)
             })
         },
         async fetchSelectionTeams({ commit }, selection) {
             // Get owners for file
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selection.id}/teams`
+            const apiUrl = `/selections/${selection.id}/teams`
             await axios.get(apiUrl).then(response => {
                 Vue.set(selection, 'teams', response.data)
             })
@@ -92,7 +92,7 @@ export default {
             // Commit mutation to state
             commit('addUsersToSelection', { selection, users })
             // Send request to API
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selection.id}/users`
+            const apiUrl = `/selections/${selection.id}/users`
             axios.post(apiUrl, {
                 method: 'Add',
                 user_ids: users.map(x => x.id),
@@ -102,7 +102,7 @@ export default {
             // Commit mutation to state
             commit('removeUsersFromSelection', { selection, users })
             // Send request to API
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selection.id}/users`
+            const apiUrl = `/selections/${selection.id}/users`
             axios.post(apiUrl, {
                 method: 'Remove',
                 user_ids: users.map(x => x.id),
@@ -120,7 +120,7 @@ export default {
         },
         async insertOrUpdateSelection({ commit }, selection) {
             // Assume update
-            let apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selection.id}`
+            let apiUrl = `/selections/${selection.id}`
             let requestMethod = 'put'
             let requestBody = selection
             // Check if we are inserting or updating
@@ -128,7 +128,7 @@ export default {
                 // If we are inserting
                 commit('insertSelection', selection)
                 requestMethod = 'post'
-                apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections`
+                apiUrl = `/selections`
             } else {
                 commit('updateSelection', selection)
             }

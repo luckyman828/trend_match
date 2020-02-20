@@ -206,7 +206,7 @@ export default {
         async fetchSelectionProducts({ commit }, selectionId) {
             commit('setProductStatus', 'loading')
 
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/selections/${selectionId}/products`
+            const apiUrl = `/selections/${selectionId}/products`
 
             await axios
                 .get(apiUrl)
@@ -220,7 +220,7 @@ export default {
         },
         async insertProducts({ commit }, { file, products, addToState }) {
             if (addToState) commit('insertProducts', { products, method: 'add' })
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${file.id}/products`
+            const apiUrl = `/files/${file.id}/products`
             await axios.post(apiUrl, {
                 method: 'Add',
                 products: products,
@@ -265,7 +265,7 @@ export default {
         async updateProduct({ commit }, product) {
             commit('updateProduct', product)
 
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/products/${product.id}`
+            const apiUrl = `/products/${product.id}`
             axios.put(apiUrl, product)
         },
         async uploadImage({ commit, dispatch }, { file, product, image, callback }) {

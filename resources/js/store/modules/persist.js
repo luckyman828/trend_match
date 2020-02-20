@@ -398,7 +398,7 @@ export default {
 
     actions: {
         async getUids({ commit, state }) {
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/snowflake/ids?count=2000`
+            const apiUrl = `/snowflake/ids?count=2000`
             await axios.get(apiUrl).then(response => {
                 state.uids = state.uids.concat(response.data)
             })

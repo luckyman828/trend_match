@@ -55,7 +55,7 @@ export default {
             }
 
             // Config API endpoint
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/comment`
+            const apiUrl = `/comment`
             const requestHeaders = {
                 'X-Kollekt-App-Key': process.env.MIX_KOLLEKT_API_KEY,
             }
@@ -89,7 +89,7 @@ export default {
             commit('deleteComment', { product, comment })
 
             // Config API endpoint
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/comment`
+            const apiUrl = `/comments`
             const requestHeaders = {
                 'X-Kollekt-App-Key': process.env.MIX_KOLLEKT_API_KEY,
             }

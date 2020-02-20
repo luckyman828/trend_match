@@ -21,7 +21,7 @@ export default {
             state.status = 'loading'
             let success = false
 
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/auth/login`
+            const apiUrl = `/auth/login`
             await axios
                 .post(apiUrl, {
                     email,
