@@ -423,7 +423,7 @@ export default {
                     await this.uploadImage({
                         file: this.currentFile, 
                         product: this.currentProduct, 
-                        image: variant.imageToUpload.file, 
+                        image: editVariant.imageToUpload.file, 
                         callback: function(uploadProgress) {
                             console.log(uploadProgress)
                         }

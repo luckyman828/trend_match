@@ -191,7 +191,7 @@ export default {
         async fetchProducts({ commit }, fileId) {
             commit('setProductStatus', 'loading')
 
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/files/${fileId}/products`
+            const apiUrl = `/files/${fileId}/products`
 
             await axios
                 .get(apiUrl)
@@ -270,7 +270,7 @@ export default {
         },
         async uploadImage({ commit, dispatch }, { file, product, image, callback }) {
             // First generate presigned URL we can put the image to from the API
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/media/generate-persigned-url?file_id=${file.id}&datasource_id=${product.datasource_id}`
+            const apiUrl = `/media/generate-persigned-url?file_id=${file.id}&datasource_id=${product.datasource_id}`
             let presignedUrl
             await axios.get(apiUrl).then(response => {
                 presignedUrl = response.data
@@ -281,7 +281,7 @@ export default {
             let uploadPercentage = 0
             const axiosConfig = {
                 headers: {
-                    'Content-Type': 'image/jpeg',
+                    'content-type': 'multipart/form-data',
                     'x-amz-acl': 'public-read',
                 },
                 onUploadProgress: progressEvent => {
@@ -289,9 +289,11 @@ export default {
                     return callback(uploadPercentage)
                 },
             }
-            let data = new FormData().append('file', image)
+            // let data = new FormData().append('image', new Blob(image), image.name)
+            let data = new FormData()
+            data.append('image', image, image.name)
 
-            await axios.put(uploadUrl, data, axiosConfig)
+            await axios.put(uploadUrl, image, axiosConfig)
 
             // // Append the files
             // let data = new FormData()
