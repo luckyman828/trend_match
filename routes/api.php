@@ -21,11 +21,9 @@ Route::middleware('auth:api')->group( function(){
     // List workspaces available to logged in user
     Route::get('workspaces', 'WorkspaceController@workspaces');
     // List WorkspaceUsers available to logged in user
-    Route::get('workspace/{workspace_id}/workspace-users', 'WorkspaceController@workspaceUsers');
+    Route::get('workspace-users', 'WorkspaceController@workspaceUsers');
     // List workspace teams
     Route::get('workspace/{workspace_id}/teams', 'WorkspaceController@teams');
-    // List workspace folders
-    Route::get('workspace/{workspace_id}/folders', 'WorkspaceController@folders');
     // List workspace files
     Route::get('workspace/{workspace_id}/files', 'WorkspaceController@files');
     // List workspace team files
@@ -44,23 +42,16 @@ Route::middleware('auth:api')->group( function(){
     Route::get('workspace/{workspace_id}/task-teams', 'WorkspaceController@taskTeams');
     // List workspace file tasks
     Route::get('workspace/{workspace_id}/file-tasks', 'WorkspaceController@fileTasks');
-    Route::get('workspace/{workspace_id}/selections', 'WorkspaceController@subfiles');
-    Route::get('workspace/{workspace_id}/subfile_users', 'WorkspaceController@subfileUsers');
-    Route::get('workspace/{workspace_id}/subfile_teams', 'WorkspaceController@subfileTeams');
-    Route::get('workspace/{workspace_id}/subfile_completed_products', 'WorkspaceController@subfileCompletedProducts');
 
     // xxx TEAMS xxx
     // List current workspace team invites
     Route::get('workspace/{workspace_id}/team-invites', 'TeamController@invites');
     // Create team
-    Route::post('team', 'TeamController@insertOrUpdate');
+    Route::post('workspace/{workspace_id}/team', 'TeamController@store');
     // Update team
-    Route::put('team/{id}', 'TeamController@insertOrUpdate');
+    Route::put('team', 'TeamController@update');
     // Delete team
     Route::delete('team', 'TeamController@destroyTeam');
-
-    Route::put('user-team', 'TeamController@insertOrUpdateUserTeam');
-    Route::put('team/user', 'TeamController@insertOrUpdateUserTeam');
 
     // xxx FILES xxx
     Route::get('file/{file_id}/products', 'FileController@products');
@@ -73,22 +64,15 @@ Route::middleware('auth:api')->group( function(){
     Route::get('file/{file_id}/task-actions', 'FileController@taskActions');
     Route::get('file/{file_id}/requests', 'FileController@requests');
     
-    // xxx FILES CRUD xxx
     Route::post('file', 'FileController@upload');
     Route::put('file', 'FileController@insertOrUpdate');
     Route::delete('file', 'FileController@destroy');
     Route::post('file/reset', 'FileController@reset');
 
-    // xxx FOLDERS CRUD xxx
-    Route::post('folder', 'FolderController@insertOrUpdate');
-    Route::put('folder/{folder_id}', 'FolderController@insertOrUpdate');
-    Route::delete('folder/{folder_id}', 'FolderController@destroy');
-
     // xxx PRODUCTS xxx
     Route::put('product', 'ProductController@insertOrUpdate');
     Route::delete('product', 'ProductController@delete');
     Route::post('product/images', 'ProductController@uploadImages');
-    Route::post('file/{file_id}/products', 'ProductController@insertMany');
     Route::delete('product/images', 'ProductController@deleteImages');
     Route::post('product/rotate-img', 'ProductController@rotateImage');
     
@@ -144,15 +128,7 @@ Route::middleware('auth:api')->group( function(){
     Route::post('invite-user', 'MailController@inviteUser');
     Route::post('invite-users', 'MailController@inviteUsers');
     Route::get('roles', 'UserController@roles');
-    // Create / Update user
-    Route::post('user', 'UserController@insertOrUpdate');
-    Route::put('user/{id}', 'UserController@insertOrUpdate');
-    Route::put('workspace-user', 'UserController@insertOrUpdateWorkspaceUser');
-
-    // Add / Create user on Workspace
-    Route::post('workspace/{workspace_id}/users/add', 'UserController@createOrAddUsersToWorkspace');
-    // remove user from Workspace
-    Route::delete('workspace/{workspace_id}/user', 'UserController@removeUserFromWorkspace');
+    Route::put('user/role', 'UserController@changeRole');
 
     // xxx Comments xxx
     // create new comment
@@ -172,8 +148,7 @@ Route::middleware('auth:api')->group( function(){
     Route::post('resend-invite', 'MailController@resendInvite');
 
     // xxxx Teams xxx
-    Route::delete('team/user', 'TeamController@removeUser');
-    Route::post('team/users', 'TeamController@addUsers');
+    Route::delete('user-team', 'TeamController@destroy');
 
     // xxxx Cache xxx
     Route::put('cache/workspace', 'WorkspaceController@cacheCurrentWorkspace');

@@ -15,13 +15,22 @@ use Illuminate\Support\Facades\DB;
 
 class TeamController extends Controller
 {
-    public function removeUser(Request $request)
+    // public function index()
+    // {
+    //     $team_invites = TeamInvite::get();
+
+    //     // Return collection of users as a resource
+    //     return TeamInviteResource::collection($team_invites);
+    // }
+
+    public function destroy(Request $request)
     {
         $user_team = UserTeam::find(['user_id' => $request->user_id, 'team_id' => $request->team_id]);
         if ( $user_team ) {
             $user_team->delete();
-            return $user_team;
+            return "succes";
         }
+        else return $request;
     }
 
     public function invites($workspace_id)
@@ -70,34 +79,6 @@ class TeamController extends Controller
             return new TeamResource($team);
         }
     }
-    public function insertOrUpdate(Request $request, $id = null)
-    {
-        if ($id) {
-            $existingTeam = Team::find($id);
-            $team = $existingTeam;
-            $team->id = $id;
-        } else {
-            $team = new Team;
-        }
-
-        $team->workspace_id = $request->team['workspace_id'];
-        $team->title = $request->team['title'];
-        $team->currency = $request->team['currency'];
-
-        // return $action;
-
-        if($team->save()) {
-
-            return $team;
-            // Fire event
-            $dataToReturn = new TeamResource($team);
-            // broadcast(new ActionUpdated($actionToReturn))->toOthers();
-            // broadcast(new ActionUpdated($actionToReturn))->toOthers();
-
-            // return $dataToReturn;
-            return json_decode( json_encode($dataToReturn), true);
-        }
-    }
     public function destroyTeam(Request $request)
     {
         // Find all team specific records
@@ -120,51 +101,6 @@ class TeamController extends Controller
         });
 
         return 'Deleted team with id: ' . $team_id;
-    }
-
-    public function insertOrUpdateUserTeam(Request $request)
-    {
-        $existingUserTeam = UserTeam::where('user_id', $request->user_id)->where('team_id', $request->team_id)->first();
-        $userTeam = $existingUserTeam ? $existingUserTeam : new UserTeam;
-
-        $userTeam->user_id = $request->user_id;
-        $userTeam->team_id = $request->team_id;
-        $userTeam->permission_level = $request->permission_level;
-
-
-        if($userTeam->save()) {
-
-            return $userTeam;
-            // Fire event
-            // $dataToReturn = new UserResource($user);
-            // // broadcast(new ActionUpdated($actionToReturn))->toOthers();
-            // // broadcast(new ActionUpdated($actionToReturn))->toOthers();
-
-            // // return $dataToReturn;
-            // return json_decode( json_encode($dataToReturn), true);
-        }
-    }
-
-    public function addUsers(Request $request)
-    {
-        $count = 0;
-        $starttime = microtime(true);
-        $dataToInsert = [];
-
-        foreach($request->user_ids as $user_id){
-            $dataToPush = [
-                'team_id' => $request->team_id,
-                'user_id' => $user_id,
-                'permission_level' => 1,
-            ];
-            array_push($dataToInsert, $dataToPush);
-            $count++;
-        }
-        $endtime = microtime(true);
-        $timediff = $endtime - $starttime;
-        UserTeam::insert($dataToInsert);
-
-        return 'Inserted ' . $count . ' records. Time elapsed: ' . $timediff;
     }
 
 }

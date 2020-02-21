@@ -41,82 +41,36 @@ export default {
                 }
             }
         },
-        async insertOrUpdateRequest({ commit }, { product, request }) {
-            let requestMethod = 'post'
-            // check if the provided request should be posted or updates
-            if (request.id != null) {
-                requestMethod = 'put'
-                commit('updateRequest', { product, request })
-            } else {
-                requestMethod = 'post'
-                // Add the new request to our product
-                commit('insertRequest', { product, request })
-            }
+        async createRequest({ commit }, { request }) {
+            commit('setSubmitting', true)
 
-            request.id = 15
+            const response = await axios.post(`/api/request`, {
+                product_id: request.product_id,
+                task_id: request.task_id,
+                team_id: request.team_id,
+                user_id: request.user_id,
+                body: request.body,
+            })
 
-            // Config API endpoint
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/request`
-            const requestHeaders = {
-                'X-Kollekt-App-Key': process.env.MIX_KOLLEKT_API_KEY,
-            }
-
-            // Assume success
-            let success = true
-
-            // await axios({
-            //     method: requestMethod,
-            //     url: apiUrl,
-            //     data: {
-            //         request,
-            //     },
-            //     headers: requestHeaders,
-            // })
-            //     .then(async response => {
-            //         // Get and set the request id equal to the id given by the database
-            //         newRequest.id = response.data.id
-            //     })
-            //     .catch(err => {
-            //         console.log(err.response)
-            //         success = false
-            //         commit('alertError')
-            //         newRequest.failed = true
-            //     })
-
-            return success
+            // Get and set the request id equal to the id given by the database
+            request.id = response.data.id
+            commit('addRequest', { request: request })
+            commit('setSubmitting', false)
         },
-        async deleteRequest({ commit }, { product, request }) {
-            // Delete the request from our state
-            commit('deleteRequest', { product, request })
+        async updateRequest({ commit }, { request }) {
+            commit('setSubmitting', true)
 
-            // Config API endpoint
-            const apiUrl = `${process.env.MIX_KOLLEKT_API_URL_BASE}/request`
-            const requestHeaders = {
-                'X-Kollekt-App-Key': process.env.MIX_KOLLEKT_API_KEY,
-            }
-            let requestMethod = 'delete'
+            await axios.put(`/api/request`, {
+                id: request.id,
+                product_id: request.product_id,
+                task_id: request.task_id,
+                team_id: request.team_id,
+                user_id: request.user_id,
+                body: request.body,
+            })
 
-            // Assume success
-            let success = true
-
-            // await axios({
-            //     method: requestMethod,
-            //     url: apiUrl,
-            //     data: {
-            //         request,
-            //     },
-            //     headers: requestHeaders,
-            // })
-            //     .then(async response => {
-            //         // Get and set the request id equal to the id given by the database
-            //         newRequest.id = response.data.id
-            //     })
-            //     .catch(err => {
-            //         console.log(err.response)
-            //         success = false
-            //         commit('alertError')
-            //         newRequest.failed = true
-            //     })
+            commit('updateRequest', { request: request })
+            commit('setSubmitting', false)
         },
     },
 
@@ -128,30 +82,18 @@ export default {
         setSubmitting(state, bool) {
             state.submitting = bool
         },
-        updateRequest: async (state, { product, request }) => {
-            // If a product has been provided. use that, else find the product from our state
-            const requestProduct = product
-                ? product
-                : this.state.entities.products.products.find(x => x.id == request.product_id)
-            // Find the index of the request and replace it
-            const requestIndex = requestProduct.requests.findIndex(x => x.id == request.id)
-            requestProduct.requests[requestIndex] = request
+        addRequest: (state, { request }) => {
+            // Submit new request
+            Request.insert({
+                data: request,
+            })
         },
-        insertRequest: async (state, { product, request }) => {
-            // If a product has been provided. use that, else find the product from our state
-            const requestProduct = product
-                ? product
-                : this.state.entities.products.products.find(x => x.id == request.product_id)
-            requestProduct.requests.push(request)
-        },
-        deleteRequest(state, { product, request }) {
-            // If a product has been provided. use that, else find the product from our state
-            const requestProduct = product
-                ? product
-                : this.state.entities.products.products.find(x => x.id == request.product_id)
-
-            const requestIndex = requestProduct.requests.findIndex(x => x.id == request.id)
-            requestProduct.requests.splice(requestIndex, 1)
+        updateRequest: (state, { request }) => {
+            // update request
+            Request.update({
+                where: request.id,
+                data: request,
+            })
         },
     },
 }

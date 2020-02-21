@@ -1,5 +1,5 @@
 <template>
-    <BaseModal ref="modal" class="search-modal minimal">
+    <Modal ref="modal" class="search-modal minimal">
         <div class="search">
             <input
                 ref="searchField"
@@ -61,15 +61,19 @@
         <p v-else-if="searchStr.length > 0" style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
             No results
         </p>
-    </BaseModal>
+    </Modal>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import Fuse from 'fuse.js'
+import Modal from './Modal'
 
 export default {
     name: 'searchModal',
+    components: {
+        Modal,
+    },
     data: function() {
         return {
             searchStr: '',

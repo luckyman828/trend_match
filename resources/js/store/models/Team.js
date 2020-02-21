@@ -29,7 +29,6 @@ export default class Team extends Model {
             files: this.belongsToMany(Collection, TeamFile, 'team_id', 'file_id'),
             invites: this.hasMany(TeamInvite, 'team_id'),
             taskTeams: this.hasMany(TaskTeam, 'team_id', 'id'),
-            userTeams: this.hasMany(UserTeam, 'team_id'),
         }
 
         return data

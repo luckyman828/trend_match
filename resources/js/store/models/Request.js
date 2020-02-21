@@ -12,20 +12,13 @@ export default class Request extends Model {
         const data = {
             id: this.attr(null),
             product_id: this.attr(''),
-            selection_id: this.attr(''),
+            task_id: this.attr(''),
             team_id: this.attr(''),
             user_id: this.attr(''),
             body: this.attr(''),
             status: this.attr(''),
-            // user: this.belongsTo(User, 'user_id'),
+            user: this.belongsTo(User, 'user_id'),
             team: this.belongsTo(Team, 'team_id'),
-
-            selection: this.attr({
-                name: 'unknown selection',
-            }),
-            user: this.attr({
-                name: 'unknown user',
-            }),
         }
 
         return data

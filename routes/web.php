@@ -18,10 +18,9 @@ use Illuminate\Support\Facades\URL;
 //     return view('welcome');
 // });
 
-// Auth::routes(['register' => true]);
+Auth::routes(['register' => true]);
 
-// Route::get('/', 'HomeController@index')->middleware('auth');
-Route::get('/', 'HomeController@index');
+Route::get('/', 'HomeController@index')->middleware('auth');
 
 // LEGAL
 Route::view('/privacy-policy', 'legal/privacyPolicy');

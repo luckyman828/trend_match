@@ -3,7 +3,6 @@ import { Model } from '@vuex-orm/core'
 import TeamFile from './TeamFile'
 import Team from './Team'
 import Product from './Product'
-import Selection from './Selection'
 
 export default class Collection extends Model {
     // This is the name used as module name of the Vuex Store.
@@ -18,15 +17,11 @@ export default class Collection extends Model {
             title: this.attr(''),
             phase: this.attr(''),
             catalog_id: this.attr(''),
-            folder_id: this.attr(''),
             start_date: this.attr('unset'),
             end_date: this.attr('unset'),
-            owners: this.attr([]),
-            approvers: this.attr([]),
             teamFiles: this.hasMany(TeamFile, 'file_id'),
             products: this.attr(''),
             // products: this.hasMany(Product, 'collection_id'),
-            selections: this.hasMany(Selection, 'file_id'),
             teams: this.belongsToMany(Team, TeamFile, 'file_id', 'team_id'),
         }
 

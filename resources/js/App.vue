@@ -1,13 +1,8 @@
 <template>
-    <div class="login-screen" v-if="$route.name == 'login'">
-        <transition name="fade">
-            <router-view></router-view>
-        </transition>
-    </div>
-    <div class="app" id="app-component" v-else-if="authUser && currentWorkspace">
-        <TheNavbarLogo/>
-        <TheNavbar/>
-        <TheSidebar/>
+    <div class="app" id="app-component">
+        <NavbarLogo/>
+        <Navbar/>
+        <Sidebar :authUser="authUser"/>
         <div class="main" id="main">
             <div class="container">
                 <transition name="fade">
@@ -16,88 +11,136 @@
             </div>
         </div>
     </div>
-    <div class="loading-wrapper" v-else>
-        <BaseLoader/>
-    </div>
 </template>
 
 <script>
-import { mapActions, mapGetters, Store, mapMutations } from 'vuex'
-import TheSidebar from './components/layout/TheSidebar'
-import TheNavbar from './components/layout/TheNavbar'
-import TheNavbarLogo from './components/layout/TheNavbarLogo'
+import store from './store'
+import { mapActions, mapGetters } from 'vuex'
+import Sidebar from './components/Sidebar'
+import Navbar from './components/Navbar'
+import NavbarLogo from './components/NavbarLogo'
 import AuthUser from './store/models/AuthUser';
 import TeamFile from './store/models/TeamFile';
 import Team from './store/models/Team';
-import Workspace from './store/models/Workspace'
+import { Query } from '@vuex-orm/core';
 
 export default{
     name: 'app',
+    store,
     components: {
-        TheSidebar,
-        TheNavbar,
-        TheNavbarLogo,
+        Sidebar,
+        Navbar,
+        NavbarLogo,
     },
+    data: function () { return {
+        // currentWorkspaceId: null,
+    }},
     computed: {
-        ...mapGetters('workspaces', ['workspaces', 'currentWorkspace']),
-        ...mapGetters('auth', ['isAuthenticated', 'authUser', 'authStatus']),
+        ...mapGetters('persist', ['userPermissionLevel', 'currentWorkspaceId']),
+        authUser() {
+            return AuthUser.query().with('teams').with('workspaces').first()
+        },
+        teamFiles() {
+            return TeamFile.all()
+        },
+        teams() {
+            return Team.query().with('files').get()
+        },
     },
-    watch : {
-        // Watch for changes to the authStatus
-        authStatus: function(newVal) {
-            // When our auth status changes to success 
-            // -> initialize the workspace
-            if (newVal == 'success') {
-                this.initWorkspace()
+    methods: {
+        ...mapActions('entities/authUser', ['getAuthUser']),
+        ...mapActions('entities/teams', ['fetchTeams']),
+        ...mapActions('entities/users', ['fetchUsers']),
+        ...mapActions('entities/userTeams', ['fetchUserTeams']),
+        ...mapActions('entities/workspaces', ['fetchWorkspaces']),
+        ...mapActions('entities/workspaceUsers', ['fetchWorkspaceUsers']),
+        ...mapActions('entities/teamFiles', ['fetchTeamFiles']),
+        ...mapActions('entities/roles', ['fetchRoles']),
+        ...mapActions('entities/collections', ['fetchCollections']),
+        ...mapActions('entities/taskTeams', ['fetchTaskTeams']),
+        ...mapActions('entities/phases', ['fetchPhases']),
+        ...mapActions('entities/tasks', ['fetchTasks']),
+        ...mapActions('entities/taskParents', ['fetchTaskParents']),
+        ...mapActions('entities/fileTasks', ['fetchFileTasks']),
+        ...mapActions('entities/actions', ['updateAction']),
+        ...mapActions('persist', ['setCurrentTeam', 'setTeamFilter', 'setCurrentWorkspace', 'setLoadingInit', 'setUserPermissionLevel']),
+        async fetchInitialData() {
+            // Get user
+            console.log('App: Getting initial data')
+            await Promise.all([
+                this.getAuthUser(),
+                this.fetchWorkspaceUsers(),
+                this.fetchWorkspaces(),
+            ])
+            this.setUserPermissionLevel(this.authUser.role_id)
+            if (this.authUser.workspaces.length > 1) console.log('multiple workspaces!');
+            this.setCurrentWorkspace({workspace_id: this.authUser.workspaces[0].id, user_id: this.authUser.id})
+        },
+        async initRequiresWorkspace() {
+            // Only get data for the current workspace
+            console.log('getting init data from workspace: '+ this.currentWorkspaceId)
+            this.setLoadingInit(true)
+            if (this.authUser) {
+                await (
+                    this.fetchTeams(this.currentWorkspaceId),
+                    this.fetchUserTeams(this.currentWorkspaceId),
+                    this.fetchTeamFiles(this.currentWorkspaceId),
+                    this.fetchTaskTeams(this.currentWorkspaceId),
+                    this.fetchCollections(this.currentWorkspaceId),
+                    this.fetchPhases(this.currentWorkspaceId),
+                    this.fetchTasks(this.currentWorkspaceId),
+                    this.fetchTaskParents(this.currentWorkspaceId),
+                    this.fetchFileTasks(this.currentWorkspaceId),
+                    this.fetchRoles()
+                )
+                
+                if (this.authUser.role_id >= 5) {
+                    this.setCurrentTeam(0)
+                    this.setTeamFilter(0)
+                }
+                else if (this.authUser.teams.length > 0) {
+                    this.setCurrentTeam(this.authUser.teams[0].id)
+                    this.setTeamFilter(this.authUser.teams[0].id)
+                }
+                this.setLoadingInit(false)
+                
+            } else {
+                this.loadingOverwrite = true
             }
         }
     },
-    methods: {
-        ...mapActions('persist', ['getUids']),
-        ...mapActions('auth', ['getAuthUser', 'logout']),
-        ...mapActions('workspaces', ['fetchWorkspaces']),
-        ...mapMutations('workspaces', ['setCurrentWorkspaceIndex']),
-        initWorkspace() {
-            // Get workspaces
-            this.fetchWorkspaces().then(() => {
-                // Set the current workspace
-                this.setCurrentWorkspaceIndex(0)
-            })
+    watch : {
+        authUser(newVal) {
+            if (newVal.teams != null) {
+                if (newVal.teams.length > 0) {
+                    if (this.authUser.role_id >= 3) {
+                        this.setCurrentTeam(0)
+                    }
+                    else {
+                        this.setCurrentTeam(this.authUser.teams[0].id)
+                        this.setLoadingInit(false)
+                    }
+                }
+            }
+        },
+        currentWorkspaceId: async function(newVal, oldVal) {
+            console.log('There was a change in workspace!')
+            if (oldVal && oldVal != newVal) {
+                await this.initRequiresWorkspace()
+                this.fetchUsers(this.currentWorkspaceId)
+            }
         }
     },
     created() {
-        // Set up a request intercepter that checks if the user is still authenticated
-        axios.interceptors.response.use(response => response, (error) => {
-            if (error.response.status === 401) {
-                // if you ever get an unauthorized, logout the user
-                this.logout()
-            }
-            return Promise.reject(error.response);
-        });
-
-        // Check if the user is authenticated. 
-        // If that is the case get the auth user
-        if (this.isAuthenticated) {
-            this.getAuthUser()
-            
-            // Get some snowflake IDs now we're at it
-            this.getUids()
-        }
-        
+        this.fetchInitialData()
+        // Fetch data based on the Auth User
+        .then(this.initRequiresWorkspace)
     },
 }
 </script>
 
 <style lang="scss">
     @import '~@/_variables.scss';
-    .loading-wrapper {
-        min-height: 100vh;
-        width: 100%;
-        justify-content: center;
-        align-items: center;
-        display: flex;
-        background: $bg;
-    }
     html, body, #app {
         color: $dark;
         // font-family: 'Source Sans Pro', sans-serif;
@@ -111,7 +154,7 @@ export default{
         min-height: 100vh;
         min-width: 100vw;
         grid-template-columns: 260px auto;
-        grid-template-rows: 72px auto;
+        grid-template-rows: 70px auto;
         grid-template-areas: 
             "logo navbar" 
             "sidebar main";
@@ -131,7 +174,7 @@ export default{
         padding: 20px 60px;
         overflow-y: scroll;
         overflow-x: auto;
-        background: $grey;
+        background: $light;
     }
     h1 {
         margin-bottom: 30px;
@@ -142,6 +185,9 @@ export default{
         &.small-gap {
             grid-gap: 12px;
         }
+    }
+    .grid-3 {
+        grid-template-columns: repeat(3, 1fr);
     }
     .grid-2 {
         grid-template-columns: repeat(2, 1fr);
@@ -154,6 +200,59 @@ export default{
         box-shadow: 0 2px 6px rgba(0,0,0,.1);
         background: white;
     }
+    .tabs {
+        margin-left: -16px;
+        margin-right: -16px;
+        width: calc(100% + 32px);
+        .tab {
+            display: inline-block;
+            font-size: 18px;
+            opacity: .5;
+            padding: 10px 25px;
+            border-bottom: solid 3px transparent;
+            margin-bottom: 8px;
+            &.active {
+                opacity: 1;
+                border-color: $primary;
+            }
+            &:not(.active):hover {
+                border-color: rgba($primary, .5);
+                cursor: pointer;
+            }
+        }
+    }
+    .vdp-datepicker {
+        display: grid;
+        justify-items: end;
+        &.disabled {
+            pointer-events: none;
+            opacity: .5;
+        }
+        > div::after {
+            content: "";
+            font-size: 11px;
+            color: $dark2;
+            display: block;
+            position: absolute;
+            z-index: 1;
+            right: 12px;
+            height: 32px;
+            top: 0;
+            line-height: 32px;
+            font-weight: 900;
+            font-family: "Font Awesome 5 Pro"
+        }
+        input {
+            border: solid 1px $light2;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0,0,0,.1);
+            padding-left: 12px;
+            height: 32px;
+            width: 150px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    }
     .loading {
         animation: loading 2s;
         animation-iteration-count: infinite;
@@ -163,6 +262,61 @@ export default{
         50% {opacity: 1;}
         100% {opacity: 0;}
     }
+
+    // Tables
+    .flex-table {
+        .card > & {
+            margin-left: -16px;
+            margin-right: -16px;
+            width: calc(100% + 32px);
+        }
+        &.disabled {
+            .flex-table-row:not(.header-row) {
+                opacity: .5;
+            }
+        }
+        .flex-table-row {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 45px;
+            > * {
+                &.select {
+                    margin-left: 16px;
+                    min-width: 80px;
+                }
+            }
+        }
+        .header-row {
+            font-weight: 700;
+            font-size: 12px;
+            height: 45px;
+            border-bottom: solid 2px $light1;
+        }
+        .item-row {
+            border-bottom: solid 1px $light1;
+            &:hover {
+                background: $light;
+            }
+        }
+        th {
+            text-transform: uppercase;
+            font-size: 12px;
+            font-weight: 600;
+            color: $dark2;
+            i {
+                color: $light2;
+                margin: 0;
+                margin-left: 4px;
+            }
+            &.active {
+                i {
+                    color: $primary
+                }
+            }
+        }
+    }
+    
     .clickable {
         cursor: pointer;
     }
@@ -186,6 +340,23 @@ export default{
             }
         }
     }
+
+    // Icons
+    i {
+        &.green {
+            color: $green;
+        }
+        &.red {
+            color: $red;
+        }
+        &.dark {
+            color: $dark;
+        }
+        &.primary {
+            color: $primary;
+        }
+    }
+
     // Scrollbar
     *:not(.app) {
         /* width */

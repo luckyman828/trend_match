@@ -199,7 +199,7 @@ class FileController extends Controller
         $file->workspace_id = $request->workspace_id;
         $file->title = $request->title;
         $file->phase = $request->phase;
-        $file->folder_id = $request->folder_id;
+        $file->folder_id = $request->catalog_id;
         $file->catalog_id = $request->catalog_id;
         $file->start_date = $request->start_date;
         $file->end_date = $request->end_date;

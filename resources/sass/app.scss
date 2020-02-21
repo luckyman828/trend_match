@@ -15,21 +15,26 @@
 @import '~@fortawesome/fontawesome-pro/scss/solid';
 @import '~@fortawesome/fontawesome-pro/scss/light';
 @import '~@fortawesome/fontawesome-pro/scss/brands';
-@import '~@fortawesome/fontawesome-pro/scss/duotone';
 
-/*
-  This will hide the focus indicator if the element receives focus via the mouse,
-  but it will still show up on keyboard focus.
-*/
-.js-focus-visible :focus:not(.focus-visible) {
-    outline: none;
-    box-shadow: none;
+// FONTS
+body,
+html {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.6;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-
 *,
 *::before,
 *::after {
     box-sizing: border-box;
+}
+th {
+    text-align: left;
 }
 input,
 button,
@@ -44,44 +49,14 @@ textarea {
 a {
     text-decoration: none;
     color: inherit;
-}
-// FONTS
-body,
-html {
-    margin: 0;
-    font-family: 'Roboto', sans-serif;
-    font-size: 14px;
-    font-weight: 400;
-    text-align: left;
-    line-height: 1.6;
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    color: $fontBody;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-button,
-a,
-th,
-strong {
-    color: $font;
+    &.text-link {
+        color: $primary;
+    }
 }
 h2 {
     font-size: 24px;
     font-weight: 400;
     margin: 12px 0 4px;
-}
-h3 {
-    margin-top: 40px;
-    &:first-child {
-        margin-top: 0;
-    }
-    &:last-child {
-        margin-bottom: 0;
-    }
 }
 label:not(.input-wrapper) {
     font-size: 12px;
@@ -236,12 +211,11 @@ textarea {
     color: white;
 }
 
-// SHAPES: BUTTONS, SQUARES, PILLS, CIRCLES
+// SHAPES: BUTTONS, SQUARES, PILLS, BUBBLES, CIRCLES
 .hotkey-wrapper {
     display: inline-flex;
     align-items: center;
     flex-direction: column;
-    justify-content: flex-start;
     .hotkey {
         font-size: 10px;
         color: $dark2;
@@ -255,185 +229,139 @@ textarea {
         }
     }
 }
-button,
 .button,
 .square,
 .pill,
-.circle,
-input[type='submit'] {
+.bubble,
+.circle {
     line-height: 1;
+    transition: 0.2s;
     text-align: center;
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    color: $font;
+    color: $dark2;
+    border: none;
     text-decoration: none;
-    font-weight: 700;
-    user-select: none;
-    border: solid 1px transparent;
-    padding: 0 1px;
-
-    &.editable {
-        font-weight: 400;
-    }
-
-    // SIZES
-    // Default
-    height: 32px;
-    font-size: 12px;
-    > span:first-child {
-        margin-left: 12px;
-    }
-    > span:last-child {
-        margin-right: 12px;
-    }
-    i {
-        &.fa,
-        &.fas,
-        &.far,
-        &.fal,
-        &.fad,
-        &.fab {
-            width: 32px - 4px;
-            text-align: center;
-            font-size: 14px;
-            color: inherit;
-        }
-    }
-    &.ghost i {
-        &.fa,
-        &.fas,
-        &.far,
-        &.fal,
-        &.fad,
-        &.fab {
-            width: 32px - 4px;
-        }
-    }
-    @each $size in $button-sizes {
-        &.#{nth($size,1)} {
-            height: nth($size, 2);
-            font-size: nth($size, 3);
-            i {
-                &.fa,
-                &.fas,
-                &.far,
-                &.fal,
-                &.fad,
-                &.fab {
-                    width: nth($size, 2) - 4px;
-                    font-size: nth($size, 3) + 2px;
-                }
-            }
-            &.ghost i {
-                &.fa,
-                &.fas,
-                &.far,
-                &.fal,
-                &.fad,
-                &.fab {
-                    width: nth($size, 2) - 4px;
-                }
-            }
-            > span:first-child {
-                margin-left: nth($size, 4);
-            }
-            > span:last-child {
-                margin-right: nth($size, 4);
-            }
-        }
-    }
-
-    // COLORS
-    border-color: $grey;
-    background: $grey;
-    color: $font;
-    &:hover {
-        background: $grey2;
-        border-color: $grey2;
-    }
-    &:active {
-        background: $grey2;
-        border-color: $grey;
-    }
-    @each $color in $brand-colors {
-        &.#{nth($color,1)},
-        &.#{nth($color,1)}-hover:hover {
-            border-color: nth($color, 2);
-            background: nth($color, 2);
-            color: nth($color, 4);
-            i {
-                color: nth($color, 4);
-            }
-            &.invisible,
-            &.ghost {
-                color: nth($color, 2);
-                background: transparent;
-                i {
-                    color: nth($color, 2);
-                }
-                &:not(.ghost-hover):hover {
-                    border-color: nth($color, 2);
-                    background: nth($color, 2);
-                    color: nth($color, 4);
-                    i {
-                        color: nth($color, 4);
-                    }
-                    i.context {
-                        background: nth($color, 3);
-                    }
-                }
-            }
-            &.ghost {
-                border-color: nth($color, 2);
-            }
-            &.ghost-hover:hover {
-                background: transparent;
-                color: nth($color, 2);
-                border-color: nth($color, 2);
-                i {
-                    color: nth($color, 2);
-                }
-            }
-        }
-        &.#{nth($color,1)}:hover {
-            background: nth($color, 3);
-        }
-        &.#{nth($color,1)}:active,
-        &.#{nth($color,1)}-hover:active {
-            background: nth($color, 5);
-        }
-    }
-
-    &.ghost,
-    &.ghost-hover:hover {
-        background: transparent;
-        color: $font;
-        border: solid 1px $dark2;
-        i {
-            color: $font;
-        }
-    }
     &.ghost {
+        border: solid 1px $dark2;
+        background: transparent;
         &:hover {
-            padding: 0;
-            border: solid 2px $primary;
+            background: $light2;
+        }
+    }
+    &.dark,
+    &.dark-hover:hover,
+    &.role-2 {
+        color: white;
+        border-color: $dark05;
+        background: $dark05;
+        &.invisible,
+        &.ghost {
+            color: $dark;
+            background: transparent;
+        }
+    }
+    &.green,
+    &.green-hover:hover,
+    &.role-4 {
+        border-color: $green;
+        background: $green;
+        color: white;
+        &.invisible,
+        &.ghost {
+            color: $green;
+            background: transparent;
+        }
+    }
+    &.red,
+    &.red-hover:hover,
+    &.role-5 {
+        border-color: $red;
+        background: $red;
+        color: white;
+        &.invisible,
+        &.ghost {
+            color: $red;
+            background: transparent;
+        }
+    }
+    &.yellow,
+    &.yellow-hover:hover {
+        border-color: $yellow;
+        background: $yellow;
+        color: $dark;
+        &.invisible,
+        &.ghost {
+            color: $yellow;
+            background: transparent;
+        }
+    }
+    &.yellow-green,
+    &.yellow-green-hover:hover {
+        border-color: $yellowGreen;
+        background: $yellowGreen;
+        color: white;
+        &.invisible,
+        &.ghost {
+            color: $yellowGreen;
+            background: transparent;
+        }
+    }
+    &.primary,
+    &.primary-hover:hover,
+    &.role-1 {
+        border-color: $primary;
+        background: $primary;
+        color: white;
+        &.invisible,
+        &.ghost {
+            color: $primary;
+            background: transparent;
+        }
+    }
+    &.white,
+    &.white-hover:hover {
+        border-color: white;
+        background: white;
+        color: $dark;
+        &.invisible,
+        &.ghost {
+            color: white;
+            background: transparent;
+        }
+    }
+    &.light,
+    &.light-hover:hover {
+        border-color: $light1;
+        background: $light1;
+        color: $dark05;
+        &.invisible,
+        &.ghost {
+            color: $light1;
+            background: transparent;
+        }
+    }
+    &.light-2,
+    &.light-2-hover:hover,
+    &.role-3 {
+        border-color: $light2;
+        background: $light2;
+        color: $dark05;
+        &.invisible,
+        &.ghost {
+            color: $dark05;
+            border-color: $light2;
+            background: transparent;
         }
     }
     &.invisible {
         font-weight: 500;
         background: none;
         border-color: transparent;
-        color: $dark2;
-        i {
-            color: $dark2;
-        }
-        &:not(.ghost-hover):hover {
-            background: $light1;
-            color: $font;
-            i {
-                color: $font;
-            }
+        color: $dark15;
+        &:hover {
+            border-color: inherit;
         }
     }
     &.disabled,
@@ -442,23 +370,71 @@ input[type='submit'] {
         pointer-events: none;
         opacity: 0.5;
     }
-    &:focus {
-        outline: none;
-        box-shadow: 0 0 1px 1px $primary;
-    }
 }
-button,
 .button,
-.square,
-input[type='submit'] {
+.square {
+    height: 32px;
+    font-size: 12px;
+    padding: 0 12px;
+    color: $dark;
     border-radius: 4px;
-    &.full-width {
+    // -- ICONS --
+    i {
+        // font-size: 16px;
+        // line-height: 28px;
+    }
+    &.icon-right,
+    &.icon-left {
+        min-width: 76px;
+        i {
+            font-size: 14px;
+        }
+        &.active {
+            i {
+                font-weight: 900;
+            }
+        }
+    }
+    &.icon-right {
+        padding-right: 8px;
+        text-align: right;
+        i {
+            margin-left: 12px;
+        }
+    }
+    &.icon-left {
+        padding-left: 8px;
+        text-align: left;
+        i {
+            margin-right: 8px;
+        }
+    }
+    // -- SIZES --
+    &.true-square {
+        min-width: 32px;
+        width: 32px;
+        padding: 0;
+    }
+    &.tiny {
+        min-width: 0;
+        padding: 0;
+    }
+    &.wide {
+        min-width: 155px;
+        padding: 0 12px;
+    }
+    &.xl {
+        height: 50px;
         width: 100%;
+        line-height: 50px;
+        font-weight: 500;
+        font-size: 14px;
     }
 }
-button,
-.button,
-input[type='submit'] {
+.button {
+    min-width: 92px;
+    font-weight: 700;
+    user-select: none;
     cursor: pointer;
     &.text-link {
         padding-top: 4px;
@@ -470,11 +446,44 @@ input[type='submit'] {
         }
     }
 }
-.pill,
-.circle {
-    border-radius: 500px;
+.square {
+    font-weight: 700;
+    border-radius: 2px;
+}
+.pill {
+    height: 32px;
+    padding: 0 20px;
+    border-radius: 50px;
+    background: $light1;
+    font-weight: 500;
+    &.small {
+        height: 20px;
+        font-size: 12px;
+        padding: 0 8px;
+    }
+    &.tiny {
+        height: 14px;
+        font-size: 10px;
+        padding: 0 4px;
+    }
 }
 .circle {
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    &.small {
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        .star {
+            font-size: 9px;
+        }
+    }
+    &.tiny {
+        width: 14px;
+        height: 14px;
+        font-size: 10px;
+    }
     .fa-chevron-right {
         margin-left: 2px;
     }
@@ -483,42 +492,26 @@ input[type='submit'] {
     }
 }
 
-// ICONS
-i {
-    position: relative;
-    color: $fontIcon;
-    &.xs {
-        font-size: 10px;
-    }
-    &.sm {
-        font-size: 12px;
-    }
-    &.md {
-        font-size: 18px;
-    }
-    &.lg {
-        font-size: 40px;
-    }
-    &.xl {
-        font-size: 64px;
-    }
-    &.medium {
-        font-size: 18px;
-    }
-    // COLORS
-    @each $color in $brand-colors {
-        &.#{nth($color,1)},
-        &.#{nth($color,1)}-hover:hover {
-            color: nth($color, 2);
+// CLOSE BUTTONS / ICONS
+.close {
+    transition: 0.3s;
+    &.circle {
+        height: 40px;
+        width: 40px;
+        display: block;
+        text-align: center;
+        background: $light2;
+        border-radius: 20px;
+        cursor: pointer;
+        color: $dark05;
+        i {
+            font-size: 21px;
+            line-height: 40px;
         }
-    }
-    // Icons in icons
-    i {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        font-size: 9px;
-        transform: translate(-50%, -50%);
+        &:hover {
+            color: $red;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
     }
 }
 
@@ -540,7 +533,69 @@ i {
         background: transparent;
     }
 }
+
+// MODALS
+.modal-wrapper {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: -1;
+    overflow: auto;
+    > .modal {
+        display: none;
+        position: absolute;
+        z-index: 120;
+        left: 50vw;
+        top: 10vh;
+        min-height: 70vh;
+        width: 100%;
+        max-width: 646px;
+        margin: 0;
+        background: $light;
+        margin-bottom: 5vh;
+        padding-bottom: 60px;
+        > .inner {
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+            > .header {
+                text-align: center;
+                margin-bottom: 40px;
+                .title {
+                    margin-bottom: 8px;
+                }
+                .desc {
+                    font-size: 16px;
+                    color: $dark2;
+                }
+            }
+        }
+    }
+    &.active {
+        z-index: 99;
+        > .modal,
+        > .overlay {
+            display: block;
+        }
+    }
+    &.minimal {
+        .modal {
+            min-height: 0;
+            .close {
+                display: none;
+            }
+            .inner {
+                max-width: none;
+            }
+        }
+    }
+}
 // DROPDOWN & TOOLTIP
+.has-tooltip {
+    cursor: pointer;
+}
 .dropdown-wrapper,
 .tooltip-wrapper {
     // position: relative;
@@ -780,13 +835,6 @@ i {
 
     background-color: $darkAlt;
     color: white;
-    strong,
-    span,
-    p,
-    i,
-    u {
-        color: white;
-    }
     box-shadow: 0 10px 10px -5px rgba($dark, 10%);
     z-index: 99999999;
 
@@ -958,6 +1006,7 @@ i {
     }
 }
 
+.radio-buttons,
 .checkbox-buttons {
     label {
         padding: 8px;
@@ -1034,30 +1083,30 @@ i {
 }
 
 // TABS / TAB HEADERS
-// .tab-headers {
-//     display: flex;
-//     .tab {
-//         height: 40px;
-//         width: 152px;
-//         display: flex;
-//         align-items: center;
-//         color: $dark2;
-//         background: $light2;
-//         border-radius: 8px 8px 0 0;
-//         cursor: pointer;
-//         user-select: none;
-//         padding: 0 16px;
-//         font-weight: 500;
-//         &.active {
-//             color: $dark;
-//             background: $light1;
-//             cursor: auto;
-//         }
-//         &:not(:last-child) {
-//             margin-right: 4px;
-//         }
-//     }
-// }
+.tab-headers {
+    display: flex;
+    .tab {
+        height: 40px;
+        width: 152px;
+        display: flex;
+        align-items: center;
+        color: $dark2;
+        background: $light2;
+        border-radius: 8px 8px 0 0;
+        cursor: pointer;
+        user-select: none;
+        padding: 0 16px;
+        font-weight: 500;
+        &.active {
+            color: $dark;
+            background: $light1;
+            cursor: auto;
+        }
+        &:not(:last-child) {
+            margin-right: 4px;
+        }
+    }
+}
 
 // FORMS & INPUT
 
@@ -1121,7 +1170,7 @@ form {
         display: block;
         width: 100%;
         margin-bottom: 24px;
-        > .label {
+        .label {
             cursor: pointer;
             display: inline-block;
             margin-top: 8px;
@@ -1131,7 +1180,7 @@ form {
 .input-wrapper {
     display: block;
     min-height: 40px;
-    border: solid 1px $dark2;
+    border: solid 1px $light1;
     color: $dark05;
     border-radius: 4px;
     padding: 8px 12px;
@@ -1156,9 +1205,7 @@ form {
     // }
     &:focus,
     &.active {
-        box-shadow: 0 0 0 1px $primary inset;
-        border-color: $primary;
-        outline: none;
+        border: solid 2px $primary;
     }
     &.small {
         min-height: 30px;
@@ -1245,12 +1292,11 @@ form {
     }
 }
 .drop-area {
-    // outline: 2px dashed $light2;
-    // outline-offset: -10px;
-    border: 2px dashed $divider;
+    outline: 2px dashed $light2;
+    outline-offset: -10px;
     background: white;
-    padding: 20px 12px 24px;
-    min-height: 200px;
+    padding: 12px 12px;
+    height: 200px;
     position: relative;
     display: flex;
     align-items: center;
@@ -1265,18 +1311,6 @@ form {
         cursor: pointer;
         z-index: 1;
     }
-}
-
-// LAYOUT / COLUMNS
-.col-3 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 8px;
-}
-.col-2 {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-gap: 8px;
 }
 
 // TRANSITIONS
