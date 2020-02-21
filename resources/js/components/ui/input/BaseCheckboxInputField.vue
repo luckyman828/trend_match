@@ -1,6 +1,7 @@
 <template>
     <label class="checkbox-input input-wrapper">
-        <BaseCheckbox ref="input" class="checkbox"/>
+        <BaseCheckbox ref="input" class="checkbox" 
+        :value="value" :modelValue="true" @change="$emit('input', $event)"/>
         <span><slot/></span>
     </label>
 </template>

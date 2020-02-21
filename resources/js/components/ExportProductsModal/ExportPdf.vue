@@ -1,27 +1,68 @@
 <template>
-    <div class="example-pdf" 
-        style="font-family: arial, helvetica, sans-serif;">
-        <div ref="pdfWrapper" style="font-family: 'Roboto', sans-serif, helvetica, arial; position: relative;">
-            <div style="height: 1040px; width: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center;">
+    <div class="example-pdf">
+        <div class="overlay" @click="$emit('close')"></div>
+        <div class="wrapper" ref="pdfWrapper">
+            <div class="inner" style="font-family: 'Roboto', sans-serif, helvetica, arial; position: relative;">
+                <div class="page" v-for="(productChunk, index) in productChunks" :key="index"
+                style="width: 576pt; height: 792pt; box-sizing: border-box; padding: 38px;
+                display: flex; flex-wrap: wrap; justify-content: space-between; align-items: space-between;">
+                    <div class="product-wrapper" v-for="product in productChunk" :key="product.datasource_id"
+                    style="width: calc(50% - 12px); border: solid 2px; border-radius: 4px; height: calc(100% / 3 - 24px); box-sizing: border-box;">
+                        <div class="col-wrapper" style="display: flex; justify-content: space-between;">
+                            <div class="col-left" style="width: calc(50% - 12px); display: flex; flex-direction: column;
+                            justify-content: space-between;">
+                                <div class="row-top">
+                                    <p>{{product.datasource_id}}</p>
+                                    <p>{{product.title}}</p>
+                                </div>
+                                <div class="row-bottom">
+                                    <div class="img-wrapper" style="position: relative; padding-top: 133.3333%;
+                                    border: solid 2px; height: 0; width: 100%; margin-right: 24px;">
+                                        <img :src="variantImage(product.variants[0])" style="; height: 100%; width: 100%; position: absolute;
+                                        left: 0; top: 0; object-fit: contain;">
+                                    </div>
+                                    <table class="prices">
+                                        <tr>
+                                            <td>Rec. Retail Price:</td>
+                                            <td style="text-align: right">{{product.prices[0] && product.prices[0].recommended_retail_price}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Rec. Retail Price:</td>
+                                            <td style="text-align: right">{{product.prices[0] && product.prices[0].mark_up}}</td>
+                                        </tr>
+                                        <tr style="font-weight: 700;">
+                                            <td>Price ({{product.prices[0] && product.prices[0].currency}})</td>
+                                            <td style="text-align: right">{{product.prices[0] && product.prices[0].wholesale_price}}}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div style="height: 1040px; width: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center;">
                 <span style="font-size: 28px; font-weight: 700; margin-top: 20px;">{{currentWorkspace.name}}</span>
                 <div>
                     <span style="font-size: 28px; font-weight: 700; display: block; margin-bottom: 20px;">{{currentFile.title}}</span>
-                    <span style="color: #3B86FF; font-size: 20px; font-weight: 700; display: block;">{{productsToExport.length}} style{{productsToExport.length > 1 ? 's' : ''}}</span>
+                    <span style="color: #3B86FF; font-size: 20px; font-weight: 700; display: block;">{{products.length}} style{{products.length > 1 ? 's' : ''}}</span>
                 </div>
                 <img style="display: block; margin: 0 auto; width: 150px;" src="https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/kollekt_logo_color.png">
             </div>
-            <div v-for="(product, index) in productsToExport" :key="product.id" style="min-height: 1040px; width: 100%;" ref="productPage">
-                <span style="display: block; color: #3B86FF; font-size: 20px; font-weight: 700; padding-top: 20px; box-sizing: border-box; margin-bottom: 8px;">#{{index+1}} of {{productsToExport.length}} styles</span>
+            <div v-for="(product, index) in products" :key="product.id" style="min-height: 1040px; width: 100%;" ref="productPage">
+                <span style="display: block; color: #3B86FF; font-size: 20px; font-weight: 700; padding-top: 20px; box-sizing: border-box; margin-bottom: 8px;">#{{index+1}} of {{products.length}} styles</span>
                 <span style="display: block; font-size: 24px; margin-bottom: 12px;">{{product.title}}</span>
                 <div style="display: flex; margin-bottom: 12px;">
-                    <img height="400px; width: auto;" v-if="product.color_variants[0] != null" :src="variantImage(product.color_variants[0])">
+                    <img height="400px; width: auto;" v-if="product.variants[0] != null" :src="variantImage(product.variants[0])">
                     <div style="margin-left: 16px;">
                         <span style="display: block; font-size: 14px; font-weight: 700;">Style number</span>
                         <span style="display: block; margin-bottom: 12px; font-size: 14px;">{{product.datasource_id}}</span>
                         <span style="display: block; font-size: 14px; font-weight: 700;">Category</span>
                         <span style="display: block; margin-bottom: 12px; font-size: 14px;">{{product.category}}</span>
                         <span style="display: block; font-size: 14px; font-weight: 700;">Minimum production</span>
-                        <span style="display: block; margin-bottom: 12px; font-size: 14px;">{{product.quantity}} Units</span>
+                        <span style="display: block; margin-bottom: 12px; font-size: 14px;">{{product.min_order}} Units</span>
+                        <span style="display: block; margin-bottom: 12px; font-size: 14px;">{{product.min_variant_order}} Units</span>
                         <span style="display: block; font-size: 14px; font-weight: 700;">WHS ({{product.userPrices.currency}})</span>
                         <span style="display: block; margin-bottom: 12px; font-size: 14px;">{{product.userPrices.wholesale_price}}</span>
                         <span style="display: block; font-size: 14px; font-weight: 700;">RPP ({{product.userPrices.currency}})</span>
@@ -37,13 +78,13 @@
                 <span style="display: block; font-size: 14px;">{{new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})}}</span>
 
                 <div style="display: flex; height: 150px; overflow: hidden; margin-left: -8px; margin-right: -8px;">
-                    <div v-for="(variant, index) in product.color_variants" :key="index" style="flex: 1; overflow: hidden; padding: 8px; box-sizing: border-box; max-width: 100px;">
+                    <div v-for="(variant, index) in product.variants" :key="index" style="flex: 1; overflow: hidden; padding: 8px; box-sizing: border-box; max-width: 100px;">
                         <div style="width: 100%; height: 100%;">
                             <div style="padding-top: 110%; width: 100%; position: relative; overflow: hidden;">
                                 <img style="position: absolute; top: 0; left: 0; height:100%; width: 100%; object-fit: cover;" :src="variantImage(variant)">
                             </div>
                         </div>
-                        <span style="font-size: 10px; font-weight: 500;">{{variant.color}}</span>
+                        <span style="font-size: 10px; font-weight: 500;">{{variant.name}}</span>
                     </div>
                 </div>
 
@@ -107,89 +148,74 @@
                     </template>
                 </div>
 
-            </div>
+            </div> -->
         </div>
     </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import variantImage from '../../mixins/variantImage'
 
 export default {
     name: 'exportPdf',
-    mixins: {
+    mixins: [
         variantImage,
-    },
+    ],
+    props: [
+        'products',
+        'exportComments',
+        'includeDistribution',
+    ],
+    computed: {
+        ...mapGetters('workspaces', ['currentWorkspace']),
+        ...mapGetters('files', ['currentFile']),
+        productChunks() {
+            const array = this.products
+            const chunkedArr = [];
+            const size = 6
+            for (let i = 0; i < array.length; i++) {
+                const last = chunkedArr[chunkedArr.length - 1];
+                if (!last || last.length === size) {
+                    chunkedArr.push([array[i]]);
+                } else {
+                    last.push(array[i]);
+                }
+            }
+            return chunkedArr;
+        }
+    }
 }
 </script>
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
-
-    .navbar-file {
+    .example-pdf {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
         width: 100%;
-        padding: 8px 60px;
-        padding-right: 77px;
-        display: flex;
-        justify-content: space-between;
-        > * {
-            display: flex;
-            align-items: center;
+        height: 100%;
+        .overlay {
+            display: block;
+            z-index: 0
         }
-        .example-pdf {
-            display: none;
-            position: fixed;
-            left: 50%;
-            transform: translateX(-50%);
+        .wrapper {
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin: auto;
             width: 100%;
             max-width: 1000px;
             height: 90vh;
             top: 5vh;
             background: white;
             box-shadow: 0 0 20px rgba(black,50%);
-            z-index: -99;
             overflow-x: hidden;
             overflow-y: auto;
-        }
-    }
-    .items-center {
-        flex: 1;
-        padding: 0 40px;
-    }
-    .back-link {
-        padding-right: 28px;
-        border-right: solid 2px $light2;
-        margin-right: 28px;
-        .circle {
-            margin-right: 8px;
-        }
-    }
-    .breadcrumbs {
-        display: flex;
-        > * {
-            display: inline-flex;
-            align-items: center;
-        }
-        > *:not(:first-child)::before {
-            content: '';
-            pointer-events: none;
-            color: $dark1;
-            margin-left: 8px;
-            margin-right: 10px;
-            margin-bottom: 2px;
-            font-size: 10px;
-            font-family: "Font Awesome 5 Pro";
-            font-weight: 900;
-            -moz-osx-font-smoothing: grayscale;
-            -webkit-font-smoothing: antialiased;
-            display: inline-block;
-            font-style: normal;
-            font-variant: normal;
-            text-rendering: auto;
-            line-height: 1;
-        }
-        > *:last-child::before {
-            content: '';
+            z-index: 1;
         }
     }
 

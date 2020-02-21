@@ -34,28 +34,29 @@
                 </div>
                 <div class="form-element">
                     <h4>Export details</h4>
-                    <div class="input-wrapper disabled">
-                        <p>{{productsToExport.length}} products 
-                            <template v-if="exportComments">, {{productsToExport.filter(x => x.requests_count > 0).length}} with requests</template>
-                            <template v-if="includeDistribution">, with {{productsToExport.reduce((acc, el) => acc + el.action_count, 0)}} actions</template>
-                            <template v-if="includeNotDecided">, and {{productsToExport.reduce((acc, el) => acc + el.nd_count, 0)}} not decided</template>
+                    <div class="input-wrapper multiline disabled">
+                        <p>{{productsToExport.length}} products <br>
+                            <template v-if="exportComments">{{productsToExport.filter(x => x.requests_count > 0).length}} with requests</template><br>
+                            <template v-if="includeDistribution">with {{productsToExport.reduce((acc, el) => acc + el.action_count, 0)}} actions</template><br>
+                            <template v-if="includeNotDecided">and {{productsToExport.reduce((acc, el) => acc + el.nd_count, 0)}} not decided</template>
                         </p>
                     </div>
                 </div>
-                <div class="form-element" v-if="includeDistribution">
-                    <BaseCheckboxInputField v-model="previewPdf">
-                        Preview PDF
-                    </BaseCheckboxInputField>
-                </div>
             </form>
-            <button v-if="exportingPDF" class="button xl dark disabled"><BaseLoader/></button>
+            <button class="ghost md full-width" style="margin-bottom: 20px;" 
+            @click="previewPdf = true">
+                Preview PDF
+            </button>
+            <BaseLoader v-if="exportingPDF"/>
             <template v-else-if="generatedPDF">
                 <a class="button lg primary full-width" :href="generatedPDF" target="_blank" :download="(currentWorkspace.name + '_' + currentFile.title).replace(/ /g, '_') + '.pdf'">Download PDF</a>
                 <Button style="margin-top: 32px;" class="button xl dark" @click="printToPdf"><span>new PDF</span></Button>
             </template>
             <button v-else class="button lg dark full-width" @click="printToPdf"><span>Export as PDF</span></button>
 
-            <ExportPdf ref="exportToPdf" v-if="previewPdf"/>
+            <ExportPdf ref="exportToPdf" v-if="previewPdf" :products="productsToExport"
+            :includeDistribution="includeDistribution" :exportComments="exportComments"
+            @close="previewPdf = false"/>
         </template>
     </BaseModal>
 </template>
@@ -105,30 +106,53 @@ export default {
                 Authorization: apiKey
                 }
             }
-            var payload = {
-                html: `<head><link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet"></head><body>${this.$refs.exportToPdf.innerHTML}</body>`, //Use your own HTML
-                inlinePdf: true,
-                fileName: (this.currentWorkspace.name + '_' + this.currentFile.title).replace(/ /g, '_'),
-                options: {
-                    displayHeaderFooter: true,
-                    preferCSSPageSize: true,
-                    footerTemplate: '<div class="page-footer" style="width:100%; text-align:right; font-size: 8px; font-weight: 700; font-family: Roboto, sans-serif, helvetica, arial; box-sizing: border-box; padding-right: 32px; padding-bottom: 12px;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>'
-                }
-            }
-            this.exportingPDF = true
-            this.$refs.exportToPdf.style.display = 'block'; // Show the pdf element for sizing purposes
-            await this.setPageHeight()
 
-            await axios.post(endpoint, payload, config)
-                .then(function(response) {
-                    window.open(response.data.pdf)
-                    vm.generatedPDF = response.data.pdf
+            this.exportingPDF = true
+            this.previewPdf = true
+
+            this.$nextTick(() => {
+                this.$nextTick(async () => {
+                    const payload = {
+                        html: `<head>
+                        <style>
+                            @page {
+                                size: 576pt 792pt;
+                            }
+                            body {
+                                margin: 0;
+                                padding: 0;
+                            }
+                        </style>
+                        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet">
+                        </head>
+                        <body>${this.$refs.exportToPdf.$refs.pdfWrapper.innerHTML}</body>`, //Use your own HTML
+                        inlinePdf: true,
+                        fileName: (this.currentWorkspace.name + '_' + this.currentFile.title).replace(/ /g, '_'),
+                        options: {
+                            displayHeaderFooter: true,
+                            preferCSSPageSize: true,
+                            marginLeft: 0,
+                            marginRight: 0,
+                            marginTop: 0,
+                            marginBottom: 0,
+                            // headerTemplate: '<div class="page-header" style="color: #000; font-family: Roboto, sans-serif, helvetica, arial;"><h2 style="font-size: 60px;"> I am a header </h2></div>',
+                            // footerTemplate: '<div class="page-footer" style="width:100%; text-align:right; font-size: 8px; font-weight: 700; font-family: Roboto, sans-serif, helvetica, arial; box-sizing: border-box; padding-right: 32px; padding-bottom: 12px;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>'
+                        }
+                    }
+                    // await this.setPageHeight()
+
+                    await axios.post(endpoint, payload, config)
+                        .then(function(response) {
+                            window.open(response.data.pdf)
+                            vm.generatedPDF = response.data.pdf
+                        })
+                        .catch(function(error) {
+                            console.log(error);
+                    });
+                    this.exportingPDF = false
+                    this.previewPdf = false
                 })
-                .catch(function(error) {
-                    console.log(error);
-                });
-            this.$refs.exportToPdf.style.display = 'none'; // Hide the pdf element again
-            this.exportingPDF = false
+            })
         },
         setPageHeight() {
             const pages = this.$refs.productPage
