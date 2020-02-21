@@ -29,15 +29,14 @@
                 <Draggable v-model="product.variants" class="product-variants">
                     
                     <div class="product-variant" v-for="(variant, index) in product.variants" :key="index"
-                    @contextmenu.prevent="showVariantContext($event, index)">
+                    @contextmenu.prevent="showVariantContext($event, index)" :class="{'has-img': !!variant.image}">
                         <div class="img-wrapper" @dragenter="dragActive($event, index)" @dragleave="dragLeave" @drop="dragDrop">
                             <div class="drop-area" :class="{drag: dragActiveIndex == index}">
                                 <!-- <input v-if="variant.image || variant.blob_id" type="file" accept="image/*" @change="filesChange($event, index, variant)" @click.prevent> -->
                                 <input type="file" :ref="'fileInput-'+index" accept="image/*" @change="filesChange($event, index, variant)">
-                                <p v-if="variant.imageToUpload != null">TESTSS</p>
-                                <p v-if="variant.imageToUpload != null && variant.imageToUpload.progress">TESsasadasdasdTSS</p>
-                                <div v-if="variant.imageToUpload != null && variant.imageToUpload.progress != null" class="progress-wrapper">
-                                    <span>{{variant.imageToUpload.progress}}%</span>
+                                <div v-if="variant.imageToUpload && variant.imageToUpload.uploading" class="progress-wrapper">
+                                    <span v-if="variant.imageToUpload.progress > 0">{{variant.imageToUpload.progress}}%</span>
+                                    <span v-else>Preparing upload..</span>
                                     <svg height="4">
                                         <rect class="background" width="100%" height="4"/>
                                         <rect class="value" v-if="variant.imageToUpload.progress > 0" :width="variant.imageToUpload.progress + '%'" height="4"/>
@@ -402,61 +401,50 @@ export default {
                 .slice(0, 19)
                 .replace('T', ' ')
 
-            const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
+            // const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
+            const productToUpload = this.productToEdit
 
             // Check if we have any files (images) we need to upload
             const variants = productToUpload.variants
+            // for (let i = 0; i < variants.length; i++) {
+            //     const variant = variants[i]
+            //     const editVariant = this.productToEdit.variants[i]
+            //     if (variant.imageToUpload) {
+            //         vm.$set(editVariant.imageToUpload, 'progress', 0)
+            //     }
+            // }
             for (let i = 0; i < variants.length; i++) {
                 const variant = variants[i]
                 const editVariant = this.productToEdit.variants[i]
                 if (variant.imageToUpload) {
-                    vm.$set(editVariant.imageToUpload, 'progress', 0)
-                }
-            }
-            for (let i = 0; i < variants.length; i++) {
-                const variant = variants[i]
-                const editVariant = this.productToEdit.variants[i]
-                if (variant.imageToUpload) {
+                    // Set uploading to true
+                    variant.imageToUpload.uploading = true
+                    variant.imageToUpload.progress = 0
 
-                    // await this.uploadImage(variant.imageToUpload.file)
-                    // // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
+                    // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
                     await this.uploadImage({
                         file: this.currentFile, 
-                        product: this.currentProduct, 
+                        product: this.currentProduct,
+                        variant: editVariant,
                         image: editVariant.imageToUpload.file, 
-                        callback: function(uploadProgress) {
-                            console.log(uploadProgress)
+                        callback: progress => {
+                            editVariant.imageToUpload.progress = progress
                         }
                     })
-                    
-                    // if (uploadProgress == 100) {
-                    //     vm.$set(editVariant.imageToUpload, 'progress', 99)
-                    // } else {
-                    //     vm.$set(editVariant.imageToUpload, 'progress', uploadProgress)
-                    // }
-                    // // editVariant.imageToUpload.progress = uploadProgress
-                    // } })
-                    // .then(success => {
-                    //     // When done trying to upload the image
-                    //     if (success) {
-                    //         variant.blob_id = variant.imageToUpload.id
-                    //         delete variant.imageToUpload
-                    //         variant.image = null
-                    //     }
-                    // })
-
+                    // Remove the image to upload
+                    delete variant.imageToUpload
                 }
             }
 
-            // // Check if we have a new or existing product. If the product is new, insert it.
-            // if (productToUpload.id) {
-            //     await this.updateProduct(productToUpload)
-            // } else {
-            //     this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
-            //     this.setCurrentProduct(productToUpload)
-            //     // Resort the products to include the new product
-            //     this.$emit('onSort')
-            // }
+            // Check if we have a new or existing product. If the product is new, insert it.
+            if (productToUpload.id) {
+                await this.updateProduct(productToUpload)
+            } else {
+                this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
+                this.setCurrentProduct(productToUpload)
+                // Resort the products to include the new product
+                this.$emit('onSort')
+            }
             this.updatingProduct = false
         },
         calculateMarkup({whs, rrp} = {}) {
@@ -511,17 +499,16 @@ export default {
             this.dragCounter = 0
         },
         async filesChange(e, index, variant) {
+            console.log('fileChange')
             const vm = this
             const file = e.target.files[0]
             // Check that the file is an image
             if (file && file['type'].split('/')[0] === 'image') {
-                // Generate UUID for the new image
-                const newUUID = this.$uuid.v4()
 
                 // Get the orientation of the image to correct for photos taken with an iPhone
                 await this.getOrientation(file, imgRotation => {
                         // save the image to upload to the variant with its rotation data,
-                        vm.$set(variant, 'imageToUpload', {file: file, id: newUUID, rotation: imgRotation})
+                        vm.$set(variant, 'imageToUpload', {file: file, rotation: imgRotation, progress: 0, uploading: false})
                         // variant.imageToUpload = {file: file, id: newUUID, rotation: imgRotation}
                 })
 
@@ -588,15 +575,13 @@ export default {
                 // Add to a counter of images we are currently processing
                 const vm = this
                 vm.gettingImagesFromURL++
-                // Generate a new uuid for the image
-                const newUUID = this.$uuid.v4()
                 // Send a request to get the image
                 var request = new XMLHttpRequest();
                 await (
                     request.open('GET', variant.image, true),
                     request.responseType = 'blob',
                     request.onload = function() {
-                        variant.imageToUpload = {file: request.response, id: newUUID}
+                        vm.$set(variant, 'imageToUpload', {file: request.response, progress: 0, uploading: false})
                         // decrement the images in process counter
                         vm.gettingImagesFromURL--
                     },
@@ -638,6 +623,32 @@ export default {
         display: inline-block;
         &:not(:last-child) {
             margin-right: 12px;
+        }
+        &.has-img {
+            .drop-area {
+                border: none;
+            }
+        }
+        .progress-wrapper {
+            position: absolute;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            background: rgba($dark, .5);
+            svg {
+                width: 90%;
+                rect {
+                    fill: white;
+                }
+                rect.value {
+                    fill: $primary;
+                } 
+            }
         }
         .img-wrapper {
             padding-top: 133.33%; // 4:3 
