@@ -17,11 +17,13 @@
         <div class="items-right">
 
             <button class="button dark wide" @click="onExport"><span>Export products</span></button>
+            <button class="button dark wide" @click="onExportCsv"><span>Export CSV</span></button>
             <button class="button primary wide" @click="onNewProduct"><span>Create new product</span></button>
 
         </div>
 
         <ExportProductsModal v-if="currentFile" :show="exportModalVisible" @close="exportModalVisible = false"/>
+        <ExportToCsvModal v-if="currentFile" :show="exportCsvModalVisible" @close="exportCsvModalVisible = false"/>
     </div>
 </template>
 
@@ -29,14 +31,17 @@
 import axios from 'axios';
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ExportProductsModal from '../../components/ExportProductsModal'
+import ExportToCsvModal from '../../components/ExportToCsvModal'
 
 export default {
     name: "editFilePageNavbar",
     components: {
-        ExportProductsModal
+        ExportProductsModal,
+        ExportToCsvModal,
     },
     data: function () { return {
         exportModalVisible: false,
+        exportCsvModalVisible: false,
     }},
     computed: {
         ...mapGetters('files', ['currentFile']),
@@ -51,6 +56,9 @@ export default {
         },
         onExport() {
             this.exportModalVisible = true
+        },
+        onExportCsv() {
+            this.exportCsvModalVisible = true
         }
     },
 };
