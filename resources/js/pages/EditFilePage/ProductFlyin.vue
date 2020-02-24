@@ -96,6 +96,11 @@
                     :value="product.category" :oldValue="originalProduct.category" v-model="product.category"/>
                 </div>
                 <div class="form-element">
+                    <label for="buying-group">Buyer Group</label>
+                    <BaseEditInputWrapper id="buying-group" :type="'text'" 
+                    :value="product.buyer_group" :oldValue="originalProduct.buyer_group" v-model="product.buyer_group"/>
+                </div>
+                <div class="form-element">
                     <label for="composition">Composition</label>
                     <BaseEditInputWrapper id="composition" :type="'text'" 
                     :value="product.composition" :oldValue="originalProduct.composition" v-model="product.composition"/>
@@ -199,7 +204,7 @@
                             <div class="icon-wrapper">
                                 <i class="far fa-pen"></i>
                             </div>
-                            <u>R</u>rename
+                            <u>R</u>ename
                         </div>
                     </div>
                     <div class="item-group">
@@ -470,14 +475,7 @@ export default {
             const key = event.code
 
             // Only do these if the current target is not the comment box
-            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.visible) {
-
-                if (key == 'Escape')
-                    this.onCloseSingle()
-                if (key == 'ArrowRight')
-                    this.onNextSingle()
-                if (key == 'ArrowLeft')
-                    this.onPrevSingle()
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
                 if (key == 'KeyS' && this.saveActive)
                     this.onUpdateProduct()
             }
