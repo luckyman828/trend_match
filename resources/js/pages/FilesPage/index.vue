@@ -1,5 +1,6 @@
 <template>
-    <PageLoader :loading="loading">
+    <PageLoader :loading="loading"
+    @workspaceChange="fetchData">
         <FilesPage/>
     </PageLoader>
 </template>
@@ -25,9 +26,12 @@ export default {
     },
     methods: {
         ...mapActions('files', ['fetchFiles']),
+        fetchData() {
+            this.fetchFiles()
+        }
     },
     created() {
-        this.fetchFiles()
+        this.fetchData()
     },
 }
 </script>
