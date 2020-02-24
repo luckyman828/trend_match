@@ -260,13 +260,14 @@ export default {
     ],
     data: function () { return {
         currentScreen: {name: 'chooseFiles', header: 'Create new file'},
-        newFile: {
+        defalultNewFile: {
             name: '',
             type: 'File',
             files: [],
             owner_count: 0,
             children_count: 0,
         },
+        newFile: null,
         uploadingFile: false,
         csvDelimiter: ';',
         availableFiles: [],
@@ -834,10 +835,7 @@ export default {
             this.singleCurrencyFile = true
             this.currentScreen = {name: 'chooseFiles', header: 'Create new file'}
             this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]
-            this.newFile = {
-                name: '',
-                files: [],
-            }
+            this.newFile = JSON.parse(JSON.stringify(this.defalultNewFile))
             // Reset fields to match
             this.fieldsToMatch.forEach(field => {
                 field.enabled = true
@@ -846,6 +844,9 @@ export default {
             })
         }
     },
+    created() {
+        this.newFile = JSON.parse(JSON.stringify(this.defalultNewFile))
+    }
 }
 </script>
 
