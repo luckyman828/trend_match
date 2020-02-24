@@ -4,7 +4,7 @@
         <template v-slot v-if="show">
             <h3 style="text-align: center">The products in your current view will be exported'</h3>
             <form>
-                <h4>Requests & comments</h4>
+                <!-- <h4>Requests & comments</h4>
                 <div class="form-element">
                     <BaseCheckboxInputField v-model="exportComments">
                         Include Requests and comments
@@ -31,7 +31,7 @@
                     <BaseCheckboxInputField v-model="includeNotDecided">
                         Include "Not Decided" in distribution
                     </BaseCheckboxInputField>
-                </div>
+                </div> -->
                 <div class="form-element">
                     <h4>Export details</h4>
                     <div class="input-wrapper multiline disabled">
