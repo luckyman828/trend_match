@@ -94,7 +94,7 @@
                 >
                     <ProductsTableRow class="product-row flex-table-row"
                     :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
-                    @onViewSingle="onViewSingle"/>
+                    @onViewSingle="onViewSingle" @showContextMenu="showContext"/>
                 </RecycleScroller>
 
                 <tr v-if="products.length <= 0">
@@ -103,6 +103,27 @@
                 </tr>
             </template>
         </BaseFlexTable>
+
+        <BaseContextMenu ref="contextMenu" v-slot>
+            <div class="item-group">
+                <div class="item" @click="onViewSingle(contextItem)">
+                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+                    <span><u>V</u>iew / Edit</span>
+                </div>
+            </div>
+            <div class="item-group">
+                <div class="item" @click.stop="onNewProduct()">
+                    <div class="icon-wrapper"><i class="far fa-plus"></i></div>
+                    <span><u>A</u>dd New Product</span>
+                </div>
+            </div>
+            <div class="item-group">
+                <div class="item">
+                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                    <span><u>D</u>elete Product</span>
+                </div>
+            </div>
+        </BaseContextMenu>
     </div>
 </template>
 
@@ -123,7 +144,8 @@ export default {
     },
     data: function() { return {
         selectedProducts: [],
-        productsFilteredBySearch: this.products
+        productsFilteredBySearch: this.products,
+        contextItem: null,
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
@@ -154,11 +176,23 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['setCurrentProduct', 'setAvailableProducts']),
+        ...mapActions('products', ['setCurrentProduct', 'setAvailableProducts', 'instantiateNewProduct']),
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups']),
         onViewSingle(product) {
             this.setCurrentProduct(product)
             this.setAvailableProducts(this.products) // Save array of available products
+            this.setSingleVisisble(true)
+        },
+        showContext(mouseEvent, product) {
+            console.log(mouseEvent)
+            console.log(product)
+            const contextMenu = this.$refs.contextMenu
+            this.contextItem = product;
+            contextMenu.show(mouseEvent)
+        },
+        async onNewProduct() {
+            const newProduct = await this.instantiateNewProduct()
+            this.setCurrentProduct(newProduct)
             this.setSingleVisisble(true)
         },
     },

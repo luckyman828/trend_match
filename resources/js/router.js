@@ -7,6 +7,7 @@ Vue.use(VueRouter)
 // Define route components
 import LoginPage from './pages/Login'
 import TeamsPage from './pages/TeamsPage'
+import UsersPage from './pages/UsersPage'
 import SelectionPage from './pages/SelectionPage'
 import FilesPage from './pages/FilesPage'
 import EditFilePage from './pages/EditFilePage'
@@ -16,7 +17,7 @@ const routes = [
     { path: '/file/:fileId/edit', name: 'editFile', component: EditFilePage },
     { path: '/files', name: 'files', component: FilesPage },
     { path: '/teams', name: 'teams', component: TeamsPage },
-    { path: '/users', name: 'users', component: TeamsPage },
+    { path: '/users', name: 'users', component: UsersPage },
     { path: '/file/:fileId/:selectionId', name: 'selection', component: SelectionPage },
     { path: '*', redirect: '/files' },
 ]

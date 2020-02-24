@@ -297,43 +297,6 @@ export default {
                     variant.image = presignedUrl.url
                 })
                 .catch(err => {})
-
-            // var url =
-            //     'https://kollekt.fra1.digitaloceanspaces.com/kollekt-platform-local-longlv/workspaces/679623326800281600/files/679973405696458752/12234/d9aeb195-717b-4e9c-b5cd-93c8772027e6.jpg'
-            // xhr.open('GET', url)
-            // xhr.send()
-            // console.log(blob)
-            // let data = new FormData()
-            // data.append('image', blob, image.name)
-
-            // await axios.get(
-            //     'https://kollekt.fra1.digitaloceanspaces.com/kollekt-platform-local-longlv/workspaces/679623326800281600/files/679973405696458752/12234/d9aeb195-717b-4e9c-b5cd-93c8772027e6.jpg',
-            //     axiosConfig
-            // )
-            // var xhr
-            // await axios.put(uploadUrl, blob, axiosConfig)
-
-            // // Append the files
-            // let data = new FormData()
-            // let count = 0
-            // files.forEach(file => {
-            //     count++
-            //     data.append('files[' + count + ']', file.file, file.id)
-            // })
-            // console.log(count + ' images sent to API from store')
-
-            // await axios
-            //     .post(uploadApiUrl, data, axiosConfig)
-            //     .then(response => {
-            //         console.log(response.data)
-            //         uploadSucces = true
-            //     })
-            //     .catch(err => {
-            //         console.log('error')
-            //         console.log(err.response)
-            //         uploadSucces = false
-            //     })
-            // return uploadSuccesupdateProduct
         },
         async deleteImages({ commit }, imagesToDelete) {
             await axios
@@ -379,8 +342,11 @@ export default {
             state.status = status
         },
         insertProducts(state, { products, method }) {
-            // Loop through the products and format their delivery_date
+            // Loop through the products and format their data as necessary
             products.forEach(product => {
+                // Cast datasource_if to a number
+                product.datasource_id = parseInt(product.datasource_id)
+                // Format delivery_date
                 if (product.delivery_date) {
                     product.delivery_date = new Date(product.delivery_date).toLocaleDateString('en-GB', {
                         month: 'long',

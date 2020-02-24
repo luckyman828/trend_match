@@ -152,7 +152,6 @@ export default {
                             // footerTemplate: '<div class="page-footer" style="width:100%; text-align:right; font-size: 8px; font-weight: 700; font-family: Roboto, sans-serif, helvetica, arial; box-sizing: border-box; padding-right: 32px; padding-bottom: 12px;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>'
                         }
                     }
-                    // await this.setPageHeight()
 
                     await axios.post(endpoint, payload, config)
                         .then(function(response) {
@@ -165,19 +164,6 @@ export default {
                     this.exportingPDF = false
                     this.previewPdf = false
                 })
-            })
-        },
-        setPageHeight() {
-            const pages = this.$refs.productPage
-            let nextPageIndex = 1
-            pages.forEach(page => {
-                // const pageHeight = 1040
-                const pageHeight = 1000
-                const heightDif = pageHeight - (page.clientHeight - pageHeight)
-                if (heightDif > 0 && nextPageIndex < pages.length) {
-                    pages[nextPageIndex].style.marginTop = heightDif + 'px'
-                }
-                nextPageIndex++
             })
         },
     },

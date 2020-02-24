@@ -8,13 +8,13 @@ export default {
                         //If B does not have a key
                         return sortAsc ? 1 : -1
                     }
-                    // If the keys have lengths - sort by their length
-                    if (a[key].length) {
+                    // If the keys are arrays - sort by their length
+                    if (Array.isArray(a[key])) {
                         if (sortAsc) return a[key].length > b[key].length ? 1 : -1
                         else return a[key].length < b[key].length ? 1 : -1
                     }
 
-                    // If the keys don't have length - sort by the key
+                    // If the keys are not arrays - sort by the key
                     else {
                         if (sortAsc) return a[key] > b[key] ? 1 : -1
                         else return a[key] < b[key] ? 1 : -1
@@ -24,7 +24,7 @@ export default {
                         // If neither A nor B has the key, don't sort them.
                         return 0
                     } else {
-                        // If a has no key, but it in the back
+                        // If a has no key, put it in the back
                         return sortAsc ? -1 : 1
                     }
                 }

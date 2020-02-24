@@ -1,0 +1,287 @@
+<template>
+    <div class="users-table">
+
+        <BaseFlexTable v-if="currentTab == 'Members'">
+            <template v-slot:tabs>
+                <BaseTableTabs :tabs="['Teams','Members']" v-model="currentTab" :activeTab="currentTab"/>
+            </template>
+            <template v-slot:topBar>
+                <BaseTableTopBar>
+                    <template v-slot:left>
+                        <BaseSearchField :searchKey="['name','email']" :arrayToSearch="users" v-model="usersFilteredBySearch"/>
+                    </template>
+                    <template v-slot:right>
+                        <span>showing <strong>{{usersFilteredBySearch.length}}</strong> of <strong>{{users.length}}</strong> records</span>
+                    </template>
+                </BaseTableTopBar>
+            </template>
+            <template v-slot:header>
+                <BaseTableHeader class="select">
+                    <BaseCheckbox :value="selectedUsers.length > 0" :modelValue="true" 
+                    @change="(checked) => checked ? selectedUsers = users : selectedUsers = []"/>
+                </BaseTableHeader>
+                <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</BaseTableHeader>
+                <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</BaseTableHeader>
+                <BaseTableHeader :sortKey="'role'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Workspace Role</BaseTableHeader>
+                <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Currency</BaseTableHeader>
+                <BaseTableHeader class="action">Action</BaseTableHeader>
+            </template>
+            <template v-slot:body>
+                <UsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in usersFilteredBySearch" :key="user.id" :user="user" :index="index"
+                @showContextMenu="showUserContext($event, user)" @editCurrency="onEditUserCurrency($event, user)"
+                @editRole="onEditUserRole($event, user)" :selectedUsers.sync="selectedUsers"/>
+            </template>
+            <template v-slot:footer>
+                <td><button class="primary invisible" @click="onNewUser"><i class="far fa-plus"></i><span>Add new: User</span></button></td>
+            </template>
+        </BaseFlexTable>
+
+        <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps">
+            <div class="item-group">
+                <div class="item" @click="$refs['userRow-'+slotProps.item.id][0].editName = true; slotProps.hide()">
+                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+                    <span><u>R</u>ename User</span>
+                </div>
+                <div class="item" @click="$refs['userRow-'+slotProps.item.id][0].editEmail = true; slotProps.hide()">
+                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+                    <span><u>E</u>dit User Email</span>
+                </div>
+            </div>
+            <div class="item-group">
+                <div class="item" @click.stop="onEditUserCurrency(slotProps.mouseEvent, slotProps.item)">
+                    <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
+                    <span><u>C</u>hange Currency</span>
+                </div>
+                <div class="item" @click.stop="onEditUserRole(slotProps.mouseEvent, slotProps.item)">
+                    <div class="icon-wrapper"><i class="far fa-key"></i></div>
+                    <span>Change Workspace <u>R</u>ole</span>
+                </div>
+                <div class="item" @click.stop="onSetUserPassword(slotProps.mouseEvent, slotProps.item);slotProps.hide()">
+                    <div class="icon-wrapper"><i class="far fa-lock"></i></div>
+                    <span>Set <u>P</u>assword</span>
+                </div>
+            </div>
+            <div class="item-group">
+                <div class="item" @click="onDeleteUser(slotProps.item); slotProps.hide()">
+                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                    <span><u>D</u>elete User from Workspace</span>
+                </div>
+            </div>
+        </BaseContextMenu>
+
+        <BaseContextMenu ref="contextMenuUserCurrency" class="context-currency">
+            <template v-slot:header>
+                Change User Currency
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <BaseRadioButtons ref="userCurrencySelector" :options="availableCurrencies" 
+                    :currentOptionId="originalUser.currency" :search="true" v-model="userToEdit.currency" :submitOnChange="true"/>
+                </div>
+                <div class="item-group">
+                    <div class="item-wrapper">
+                        <button class="primary" :disabled="userToEdit.currency == originalUser.currency"
+                        @click="updateWorkspaceUser(userToEdit);slotProps.hide()">
+                            <span>Save</span>
+                        </button>
+                        <button class="invisible invisible ghost" style="margin-left: 8px;"
+                        @click="slotProps.hide()">
+                            <span>Cancel</span>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </BaseContextMenu>
+
+        <BaseContextMenu ref="contextMenuWorkspaceRole" class="context-role">
+            <template v-slot:header>
+                Change Workspace Role
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <BaseSelectButtons type="radio" :options="availableWorkspaceRoles"
+                    v-model="userToEdit.role" :submitOnChange="true" :optionDescriptionKey="'description'"
+                    :optionNameKey="'role'" :optionValueKey="'role'"/>
+                </div>
+                <div class="item-group">
+                    <div class="item-wrapper">
+                        <button class="primary" :class="{disabled: userToEdit.role == originalUser.role}" 
+                        @click="updateWorkspaceUser(userToEdit);slotProps.hide()">
+                            <span>Save</span>
+                        </button>
+                        <button class="invisible ghost-hover" style="margin-left: 8px;"
+                        @click="slotProps.hide(); userToEdit.role = originalUser.role"><span>Cancel</span></button>
+                    </div>
+                </div>
+            </template>
+        </BaseContextMenu>
+
+        <BaseContextMenu ref="contextMenuUserPassword" class="context-password">
+            <template v-slot:header>
+                Change User's Password
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <div class="item-wrapper">
+                        <BaseInputField type="text" ref="userPasswordInput" placeholder="New password" v-model="newUserPassword"/>
+                    </div>
+                </div>
+                <div class="item-group">
+                    <div class="item-wrapper">
+                        <button class="primary" :class="{disabled: passwordSubmitDisabled}" style="margin-right: 8px;"
+                        @click="setUserPassword(slotProps.item);slotProps.hide()">
+                            <span>Save</span></button>
+                        <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
+                    </div>
+                </div>
+            </template>
+        </BaseContextMenu>
+
+    </div>
+</template>
+
+<script>
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import UsersTableRow from '../UsersPage/UsersTableRow'
+import sortArray from '../../mixins/sortArray'
+
+export default {
+    name: 'usersTable',
+    props: [
+        'authUser',
+        'users',
+    ],
+    mixins: [
+        sortArray
+    ],
+    components: {
+        UsersTableRow,
+    },
+    data: function() { return {
+        sortKey: 'id',
+        sortAsc: true,
+        editUser: {
+            permission_level: '',
+        },
+        userToEdit: null,
+        originalUser: null,
+        usersFilteredBySearch: [],
+        newUserPassword: '',
+        selectedUsers: [],
+    }},
+    computed: {
+        ...mapGetters('persist', ['availableCurrencies']),
+        ...mapGetters('workspaces', ['currentWorkspace', 'availableWorkspaceRoles']),
+        passwordSubmitDisabled() {
+            return this.newUserPassword.length < 8
+        },
+        currentTab: {
+            get () {
+                const routeName = this.$route.name
+                if (routeName == 'teams') return 'Teams'
+                if (routeName == 'users') return 'Members'
+            },
+            set (newVal) {
+                if (newVal == 'Teams') this.$router.push({name: 'teams'})
+                if (newVal == 'Members') this.$router.push({name: 'users'})
+            }
+        }
+    },
+    methods: {
+        ...mapActions('users', ['updateWorkspaceUser', 'updateUser', 'updateUserPassword', 'removeUsersFromWorkspace']),
+        onSetUserPassword(mouseEvent, user) {
+            const contextMenu = this.$refs.contextMenuUserPassword
+            contextMenu.item = user;
+            contextMenu.show(mouseEvent)
+            // Wait for the context menu to show in the DOM
+            this.$nextTick(() => {
+                // Set focus to the input field
+                const input = this.$refs.userPasswordInput
+                input.focus()
+                input.select()
+            })
+        },
+        setUserPassword(user) {
+            const password = this.newUserPassword
+            user.password = password
+            this.updateUserPassword(user)
+        },
+        onEditUserCurrency(mouseEvent, user) {
+            this.userToEdit = JSON.parse(JSON.stringify(user));
+            this.originalUser = user;
+            const contextMenu = this.$refs.contextMenuUserCurrency
+            contextMenu.item = user;
+            contextMenu.show(mouseEvent)
+            // Wait for the context menu to show in the DOM
+            this.$nextTick(() => {
+                // Set focus to the search field
+                this.$refs.userCurrencySelector.focusSearch()
+            })
+        },
+        onEditUserRole(mouseEvent, user) {
+            this.userToEdit = JSON.parse(JSON.stringify(user));
+            this.originalUser = user;
+            const contextMenu = this.$refs.contextMenuWorkspaceRole
+            contextMenu.item = user;
+            contextMenu.show(mouseEvent)
+        },
+        onNewUser() {
+            // emit open new user modal
+            this.$emit('onNewUser')
+        },
+        showUserContext(e, user) {
+            const contextMenu = this.$refs.contextMenuUser
+            contextMenu.item = user
+            contextMenu.show(e)
+        },
+        onDeleteUser(user) {
+            if (window.confirm('Are you sure you want to remove this user from the workspace?')) {
+                this.removeUsersFromWorkspace({workspaceId: this.currentWorkspace.id, users: [user]})
+            }
+        },
+        sortUsers(method, key) {
+            this.onSortArray(this.users, method, key)
+        },
+        onSortArray(array, method, key) {
+            // If if we are already sorting by the given key, flip the sort order
+            if (this.sortKey == key) {
+                this.sortAsc = !this.sortAsc
+            }
+            else {
+                this.sortKey = key
+                this.sortAsc = method
+            }
+            let sortAsc = this.sortAsc
+
+            this.sortArray(array, this.sortAsc, this.sortKey)
+        }
+    },
+    updated() {
+        // Set the filteredbySearch arrays if we have a change
+        this.usersFilteredBySearch = this.users
+    },
+    mounted() {
+        // Initially set the filteredbySearch arrays
+        this.usersFilteredBySearch = this.users
+    }
+}
+</script>
+
+<style scoped lang="scss">
+    @import '~@/_variables.scss';
+
+    .users-table {
+        margin-top: 52px;
+        padding-top: 0;
+        ::v-deep {
+            td, th {
+                &.title {
+                    min-width: 248px;
+                    max-width: 248px;
+                    display: flex;
+                    align-items: center;
+                }
+            }
+        }
+    }
+</style>

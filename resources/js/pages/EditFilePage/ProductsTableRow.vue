@@ -1,5 +1,6 @@
 <template>
-    <tr class="products-table-row" :class="'action-'+product.currentAction">
+    <tr class="products-table-row" :class="'action-'+product.currentAction"
+    @contextmenu.prevent="$emit('showContextMenu', $event, product)">
 
         <span v-if="product.newComment" class="circle tiny primary"></span>
         

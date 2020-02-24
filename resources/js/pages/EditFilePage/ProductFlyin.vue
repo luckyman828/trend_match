@@ -96,6 +96,11 @@
                     :value="product.category" :oldValue="originalProduct.category" v-model="product.category"/>
                 </div>
                 <div class="form-element">
+                    <label for="buying-group">Buyer Group</label>
+                    <BaseEditInputWrapper id="buying-group" :type="'text'" 
+                    :value="product.buyer_group" :oldValue="originalProduct.buyer_group" v-model="product.buyer_group"/>
+                </div>
+                <div class="form-element">
                     <label for="composition">Composition</label>
                     <BaseEditInputWrapper id="composition" :type="'text'" 
                     :value="product.composition" :oldValue="originalProduct.composition" v-model="product.composition"/>
@@ -199,7 +204,7 @@
                             <div class="icon-wrapper">
                                 <i class="far fa-pen"></i>
                             </div>
-                            <u>R</u>rename
+                            <u>R</u>ename
                         </div>
                     </div>
                     <div class="item-group">
@@ -401,18 +406,18 @@ export default {
                 .slice(0, 19)
                 .replace('T', ' ')
 
-            // const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
             const productToUpload = this.productToEdit
+
+            let productIsNew = false
+
+            // Check if the product has not yet been saved. If true, save it, since we cannot upload images to an unsaved product.
+            if (!productToUpload.id) {
+                productIsNew = true
+                await this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
+            }
 
             // Check if we have any files (images) we need to upload
             const variants = productToUpload.variants
-            // for (let i = 0; i < variants.length; i++) {
-            //     const variant = variants[i]
-            //     const editVariant = this.productToEdit.variants[i]
-            //     if (variant.imageToUpload) {
-            //         vm.$set(editVariant.imageToUpload, 'progress', 0)
-            //     }
-            // }
             for (let i = 0; i < variants.length; i++) {
                 const variant = variants[i]
                 const editVariant = this.productToEdit.variants[i]
@@ -424,7 +429,7 @@ export default {
                     // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
                     await this.uploadImage({
                         file: this.currentFile, 
-                        product: this.currentProduct,
+                        product: productToUpload,
                         variant: editVariant,
                         image: editVariant.imageToUpload.file, 
                         callback: progress => {
@@ -436,11 +441,11 @@ export default {
                 }
             }
 
-            // Check if we have a new or existing product. If the product is new, insert it.
-            if (productToUpload.id) {
-                await this.updateProduct(productToUpload)
-            } else {
-                this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
+            console.log(productToUpload)
+
+            // Update the product
+            await this.updateProduct(productToUpload)
+            if (productIsNew) {
                 this.setCurrentProduct(productToUpload)
                 // Resort the products to include the new product
                 this.$emit('onSort')
@@ -470,14 +475,7 @@ export default {
             const key = event.code
 
             // Only do these if the current target is not the comment box
-            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.visible) {
-
-                if (key == 'Escape')
-                    this.onCloseSingle()
-                if (key == 'ArrowRight')
-                    this.onNextSingle()
-                if (key == 'ArrowLeft')
-                    this.onPrevSingle()
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
                 if (key == 'KeyS' && this.saveActive)
                     this.onUpdateProduct()
             }
@@ -758,7 +756,7 @@ export default {
             }
             > .controls {
                 position: absolute;
-                z-index: 2;
+                z-index: 1;
                 right: 4px;
                 top: 4px;
                 opacity: 0;

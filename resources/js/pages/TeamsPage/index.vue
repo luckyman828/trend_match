@@ -1,5 +1,6 @@
 <template>
-    <PageLoader :loading="loading">
+    <PageLoader :loading="loading" 
+    @workspaceChange="fetchData">
         <TeamsPage/>
     </PageLoader>
 </template>
@@ -25,13 +26,19 @@ export default {
             return (this.loadingTeams || this.loadingUsers)
         },
     },
+    watch: {
+    },
     methods: {
         ...mapActions('users', ['fetchUsers']),
         ...mapActions('teams', ['fetchTeams']),
+        fetchData() {
+            // Fetch workspace data
+            this.fetchTeams(this.currentWorkspace.id)
+            this.fetchUsers(this.currentWorkspace.id)
+        }
     },
     created () {
-        this.fetchTeams(this.currentWorkspace.id)
-        this.fetchUsers(this.currentWorkspace.id)
+        this.fetchData()
     },
 }
 </script>

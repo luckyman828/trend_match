@@ -105,8 +105,20 @@ export default {
             // Hide the context menu on clicks inside it
             if (this.visible) {
                 const el = event.target
-                if (el.classList.contains('item') && !el.classList.contains('no-close') && event.target.closest('.context-menu')) {
+
+                // Check if we have clicked an item
+                if (el.classList.contains('item') && !el.classList.contains('no-close') && el.closest('.context-menu')) {
                     this.hide()
+                    return
+                } 
+                // Or check if the parent of this element is a context Menu item
+                else {
+                    // find the item parent
+                    const item = el.closest('.item')
+                    if (item && !item.classList.contains('no-close') && item.closest('.context-menu')) {
+                        this.hide()
+                        return
+                    }
                 }
             }
         }
