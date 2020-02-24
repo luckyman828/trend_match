@@ -48,11 +48,11 @@
                 Preview PDF
             </button>
             <BaseLoader v-if="exportingPDF"/>
-            <template v-else-if="generatedPDF">
-                <a class="button lg primary full-width" :href="generatedPDF" target="_blank" :download="(currentWorkspace.name + '_' + currentFile.title).replace(/ /g, '_') + '.pdf'">Download PDF</a>
-                <Button style="margin-top: 32px;" class="button xl dark" @click="printToPdf"><span>new PDF</span></Button>
+            <button v-else-if="!generatedPDF" class="button lg dark full-width" @click="printToPdf"><span>Export as PDF</span></button>
+            <template v-else>
+                <Button class="button lg dark full-width" @click="printToPdf"><span>Generate New PDF</span></Button>
+                <a class="button lg ghost dark full-width" style="margin-top: 20px;" :href="generatedPDF" target="_blank" :download="(currentWorkspace.name + '_' + currentFile.title).replace(/ /g, '_') + '.pdf'">Download PDF</a>
             </template>
-            <button v-else class="button lg dark full-width" @click="printToPdf"><span>Export as PDF</span></button>
 
             <ExportPdf ref="exportToPdf" v-if="previewPdf" :products="productsToExport"
             :includeDistribution="includeDistribution" :exportComments="exportComments"
@@ -65,6 +65,7 @@
 import axios from 'axios';
 import { mapActions, mapGetters } from 'vuex'
 import ExportPdf from './ExportPdf'
+import formatDate from '../../mixins/formatDate'
 
 
 export default {
@@ -75,6 +76,9 @@ export default {
     components: {
         ExportPdf
     },
+    mixins: [
+        formatDate
+    ],
     data: function () { return {
         exportingPDF: false,
         exportComments: true,
@@ -122,6 +126,15 @@ export default {
                                 margin: 0;
                                 padding: 0;
                             }
+                            p {
+                                margin: none;
+                            }
+                            td {
+                                line-height: 1;
+                            }
+                            td, p, span {
+                                font-size: 9px;
+                            }
                         </style>
                         <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet">
                         </head>
@@ -135,7 +148,7 @@ export default {
                             marginRight: 0,
                             marginTop: 0,
                             marginBottom: 0,
-                            // headerTemplate: '<div class="page-header" style="color: #000; font-family: Roboto, sans-serif, helvetica, arial;"><h2 style="font-size: 60px;"> I am a header </h2></div>',
+                            headerTemplate: `<div class="page-header" style="font-family: Roboto, sans-serif, helvetica, arial; display: flex; justify-content: space-between; width: 100%; box-sizing: border-box;"><div class"col-left" style="padding-left: 38px; width: 33%;"><table><tr><td style="font-size: 6px; font-weight: 700; line-height: 1;">${this.currentFile.name}</td></tr><tr><td style="font-size: 6px; line-height: 1;">${this.formatDate(new Date)}</td></tr></table></div><div class="col-mid"></div><div classs="col-right" style="font-size: 6px; padding-right: 38px; text-align: right; width: 33%">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div></div>`,
                             // footerTemplate: '<div class="page-footer" style="width:100%; text-align:right; font-size: 8px; font-weight: 700; font-family: Roboto, sans-serif, helvetica, arial; box-sizing: border-box; padding-right: 32px; padding-bottom: 12px;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>'
                         }
                     }
