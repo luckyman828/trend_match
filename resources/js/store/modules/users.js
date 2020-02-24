@@ -5,7 +5,7 @@ export default {
     namespaced: true,
 
     state: {
-        loading: true,
+        loading: false,
         users: null,
         addNewUserModalVisible: false,
     },
@@ -21,24 +21,13 @@ export default {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Set the state to loading
             commit('setLoading', true)
+            console.log('fetch users')
 
             const apiUrl = `/workspaces/${workspaceId}/users`
-
-            let tryCount = 3
-            let succes = false
-            while (tryCount-- > 0 && !succes) {
-                try {
-                    const response = await axios.get(`${apiUrl}`)
-                    state.users = response.data
-                    commit('setLoading', false)
-                    succes = true
-                } catch (err) {
-                    console.log('API error in teams.js :')
-                    console.log(err)
-                    console.log(`Trying to fetch again. TryCount = ${tryCount}`)
-                    if (tryCount <= 0) throw err
-                }
-            }
+            axios.get(apiUrl).then(response => {
+                state.users = response.data
+                commit('setLoading', false)
+            })
         },
         async updateWorkspaceUser({ commit, rootGetters }, userToUpdate) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id

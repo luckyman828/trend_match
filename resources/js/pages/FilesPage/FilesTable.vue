@@ -38,7 +38,7 @@
                     <!-- <td class="deadline">-</td> -->
                     <td class="items">{{folder.children_count || '-'}}</td>
                     <td class="owners">
-                        <button class="ghost editable sm" @click="showFolderOwnersFlyin(folder)">
+                        <button class="ghost editable sm" @click="showFileOwnersFlyin(folder)">
                             <i class="far fa-user"></i><span>{{folder.owner_count || 0}}</span>
                         </button>
                     </td>
@@ -145,12 +145,10 @@
             </template>
         </BaseModal>
 
-        <FolderOwnersFlyin :folder="flyinFolder" :show="folderOwnersFlyinVisible" @close="folderOwnersFlyinVisible = false"/>
-
         <BaseContextMenu ref="contextMenuFolder" class="context-folder" v-slot
         @keybind-o="setCurrentFolder(contextMenuItem)"
         @keybind-r="onEditField(contextMenuItem, 'folder', 'title')"
-        @keybind-a="showFolderOwnersFlyin(contextMenuItem)"
+        @keybind-a="showFileOwnersFlyin(contextMenuItem)"
         @keybind-m="onMoveTo(contextMenuItem, 'folder')"
         @keybind-d="onDeleteFolder(contextMenuItem.id)">
             <div class="item-group">
@@ -168,7 +166,7 @@
                     </div>
                     <u>R</u>ename
                 </div>
-                <div class="item" @click="showFolderOwnersFlyin(contextMenuItem)">
+                <div class="item" @click="showFileOwnersFlyin(contextMenuItem)">
                     <div class="icon-wrapper">
                         <i class="far fa-user-plus"></i>
                     </div>
@@ -246,7 +244,6 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import FolderOwnersFlyin from '../../components/FolderOwnersFlyin'
 
 export default {
     name: 'filesTable',
@@ -256,7 +253,6 @@ export default {
         'selected',
     ],
     components: {
-        FolderOwnersFlyin,
     },
     data: function() {
         return {
@@ -277,8 +273,6 @@ export default {
             toEdit: null,
             toMove: null,
             folderToMoveTo: this.folder,
-            flyinFolder: null,
-            folderOwnersFlyinVisible: false,
         }
     },
     computed: {
@@ -296,10 +290,6 @@ export default {
         ...mapActions('folders', ['deleteFolder', 'updateFolder']),
         showFileOwnersFlyin(file) {
             this.$emit('showFileOwnersFlyin', file)
-        },
-        showFolderOwnersFlyin(folder) {
-            this.flyinFolder = folder
-            this.folderOwnersFlyinVisible = true
         },
         setCurrentFolder(folder) {
             this.$emit('setCurrentFolder', folder)

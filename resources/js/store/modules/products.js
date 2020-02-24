@@ -268,7 +268,7 @@ export default {
             const apiUrl = `/products/${product.id}`
             axios.put(apiUrl, product)
         },
-        async uploadImage({ commit, dispatch }, { file, product, image, callback }) {
+        async uploadImage({ commit, dispatch }, { file, product, variant, image, callback }) {
             // First generate presigned URL we can put the image to from the API
             const apiUrl = `/media/generate-persigned-url?file_id=${file.id}&datasource_id=${product.datasource_id}`
             let presignedUrl
@@ -278,22 +278,40 @@ export default {
 
             // Next configure a request to the presigned URL
             const uploadUrl = presignedUrl.presigned_url
-            let uploadPercentage = 0
-            const axiosConfig = {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'x-amz-acl': 'public-read',
-                },
-                onUploadProgress: progressEvent => {
-                    uploadPercentage = parseInt(Math.round((progressEvent.loaded / progressEvent.total) * 100))
-                    return callback(uploadPercentage)
-                },
-            }
-            // let data = new FormData().append('image', new Blob(image), image.name)
-            let data = new FormData()
-            data.append('image', image, image.name)
 
-            await axios.put(uploadUrl, image, axiosConfig)
+            let blob = new Blob([image], { type: image.type })
+            let xhr = new XMLHttpRequest()
+            await new Promise((resolve, reject) => {
+                xhr.open('PUT', uploadUrl)
+                xhr.setRequestHeader('x-amz-acl', 'public-read')
+                xhr.setRequestHeader('Content-Type', 'image/jpeg')
+                xhr.upload.onprogress = event => {
+                    return callback(parseInt(Math.round((event.loaded / event.total) * 100)))
+                }
+                xhr.onload = () => resolve(xhr)
+                xhr.onerror = () => reject(xhr)
+                xhr.send(blob)
+            })
+                .then(response => {
+                    // On success, set the image on the variant
+                    variant.image = presignedUrl.url
+                })
+                .catch(err => {})
+
+            // var url =
+            //     'https://kollekt.fra1.digitaloceanspaces.com/kollekt-platform-local-longlv/workspaces/679623326800281600/files/679973405696458752/12234/d9aeb195-717b-4e9c-b5cd-93c8772027e6.jpg'
+            // xhr.open('GET', url)
+            // xhr.send()
+            // console.log(blob)
+            // let data = new FormData()
+            // data.append('image', blob, image.name)
+
+            // await axios.get(
+            //     'https://kollekt.fra1.digitaloceanspaces.com/kollekt-platform-local-longlv/workspaces/679623326800281600/files/679973405696458752/12234/d9aeb195-717b-4e9c-b5cd-93c8772027e6.jpg',
+            //     axiosConfig
+            // )
+            // var xhr
+            // await axios.put(uploadUrl, blob, axiosConfig)
 
             // // Append the files
             // let data = new FormData()
