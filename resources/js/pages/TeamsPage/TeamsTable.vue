@@ -72,15 +72,15 @@
             </template>
         </BaseFlexTable>
 
-        <BaseFlyin ref="TeamFlyin">
-            <template v-slot:header="slotProps" v-if="currentTeam">
-                <BaseFlyinHeader :title="currentTeam.title" @closeFlyin="slotProps.close()" class="flyin-header" :next="nextTeamId" :prev="prevTeamId"
+        <BaseFlyin ref="TeamFlyin" :show="teamFlyInVisible" @close="teamFlyInVisible = false">
+            <template v-slot:header v-if="currentTeam">
+                <BaseFlyinHeader :title="currentTeam.title" @close="teamFlyInVisible = false" class="flyin-header" 
+                :next="nextTeamId" :prev="prevTeamId"
                 @next="showNext" @prev="showPrev">
                 </BaseFlyinHeader>
             </template>
-            <template v-slot="slotProps" v-if="currentTeam">
-                <TeamFlyin :team="currentTeam" :workspaceUsers="users"
-                @closeFlyin="slotProps.close()"/>
+            <template v-slot v-if="currentTeam">
+                <TeamFlyin :team="currentTeam" :workspaceUsers="users"/>
             </template>
         </BaseFlyin>
 
@@ -273,6 +273,7 @@ export default {
         newUserPassword: '',
         selectedTeams: [],
         selectedUsers: [],
+        teamFlyInVisible: false,
     }},
     computed: {
         ...mapGetters('persist', ['availableCurrencies']),
@@ -405,7 +406,7 @@ export default {
         showSingleTeam(team) {
             this.setAvailableTeamIds(this.teams.map(x => x.id))
             this.setCurrentTeam(team)
-            this.$refs.TeamFlyin.toggle()
+            this.teamFlyInVisible = true
         },
         showTeamContext(e, team) {
             const contextMenu = this.$refs.contextMenuTeam
