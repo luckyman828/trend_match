@@ -756,7 +756,7 @@ export default {
             }
             > .controls {
                 position: absolute;
-                z-index: 2;
+                z-index: 1;
                 right: 4px;
                 top: 4px;
                 opacity: 0;
