@@ -21,7 +21,6 @@ export default {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Set the state to loading
             commit('setLoading', true)
-            console.log('fetch users')
 
             const apiUrl = `/workspaces/${workspaceId}/users`
             axios.get(apiUrl).then(response => {

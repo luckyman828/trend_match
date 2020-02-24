@@ -1,5 +1,6 @@
 <template>
-    <PageLoader :loading="loading">
+    <PageLoader :loading="loading" 
+    @workspaceChange="fetchData">
         <UsersPage/>
     </PageLoader>
 </template>
@@ -8,7 +9,6 @@
 import { mapActions, mapGetters } from 'vuex'
 import UsersPage from './UsersPage'
 import PageLoader from '../../components/common/PageLoader'
-import User from '../../store/models/User'
 
 export default {
     name: 'usersPageLoader',
@@ -17,56 +17,26 @@ export default {
         PageLoader
     },
     data: function () { return {
-        unsub: '',
-        loadingInit: true,
     }},
     computed: {
-        ...mapGetters('persist', ['currentWorkspaceId']),
-        ...mapGetters('entities/teams', ['loadingTeams']),
-        ...mapGetters('entities/userTeams', ['loadingUserTeams']),
-        ...mapGetters('entities/users', ['loadingUsers']),
-        ...mapGetters('entities/workspaceUsers', ['loadingWorkspaceUsers']),
+        ...mapGetters('workspaces', ['currentWorkspace']),
+        ...mapGetters('users', ['loadingUsers']),
         loading () {
-            return (this.loadingTeams || this.loadingUserTeams || this.loadingUsers || this.loadingInit || this.loadingWorkspaceUsers || this.loadingUsers) ? true : false
+            return (this.loadingTeams || this.loadingUsers)
         },
     },
     watch: {
-        loading: function(newVal, oldVal) {
-            if (newVal == false) {
-                this.instantiateTeams()
-            }
-        }
     },
     methods: {
-        ...mapActions('entities/users', ['fetchUsers']),
-        ...mapActions('entities/teams', ['instantiateTeams']),
-        async initRequiresWorkspace() {
-            console.log('init')
-            if (User.all().length <= 0)
-                await this.fetchUsers(this.currentWorkspaceId)
-
-            this.loadingInit = false
-        },
+        ...mapActions('users', ['fetchUsers']),
+        fetchData() {
+            // Fetch workspace data
+            this.fetchUsers(this.currentWorkspace.id)
+        }
     },
     created () {
-        if (this.currentWorkspaceId != null) {
-            this.initRequiresWorkspace()
-        }
-        // Else, wait till a workspace id is set, and then fetch the data
-        this.unsub = this.$store.subscribe((mutation, state) => {
-            if(mutation.type == 'persist/setCurrentWorkspace') {
-                this.initRequiresWorkspace()
-            } 
-        })
+        this.fetchData()
     },
-    mounted() {
-        if (!this.loading) {
-            this.instantiateTeams()
-        }
-    },
-    destroyed () {
-        this.unsub()
-    }
 }
 </script>
 
