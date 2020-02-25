@@ -31,7 +31,8 @@ export default {
     data: function() { return {
         sticky: false,
         distToTop: null,
-        scrollParent: null
+        scrollParent: null,
+        scrollHeaderInitialized: false,
     }},
     props: [
         'stickyHeader'
@@ -66,6 +67,8 @@ export default {
         },
         handleScroll (event) {
             // Fix table header to screen
+            // Initialize the header
+            this.initScrollHeader()
             const stickyThis = this.$refs.stickyHeader
             const desiredOffset = 16
             // Get scrollparent offset from top
@@ -90,6 +93,12 @@ export default {
                 this.sticky = false
             }
         },
+        initScrollHeader() {
+            if (this.stickyHeader && !this.scrollHeaderInitialized) {
+                this.distToTop =  this.getYPos(this.$refs.stickyHeader)
+                this.scrollHeaderInitialized = true
+            }
+        }
     },
     created () {
         if (this.stickyHeader) {
@@ -103,11 +112,8 @@ export default {
         }
     },
     mounted() {
-        if (this.stickyHeader) {
-            this.distToTop =  this.getYPos(this.$refs.stickyHeader)
-            this.scrollParent = this.getScrollParent(this.$el, false)
-            this.scrollParent.addEventListener('scroll', this.handleScroll)
-        }
+        this.scrollParent = this.getScrollParent(this.$el, false)
+        this.scrollParent.addEventListener('scroll', this.handleScroll)
     }
 }
 </script>
