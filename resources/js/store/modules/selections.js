@@ -83,7 +83,7 @@ export default {
             // Check if we are inserting a master or a child
             let apiUrl = ''
             if (selection.parent_id) {
-                apiUrl = `/selection/${selection.parent_id}/children`
+                apiUrl = `/selections/${selection.parent_id}/children`
             } else {
                 apiUrl = `/files/${file.id}/selections`
             }
