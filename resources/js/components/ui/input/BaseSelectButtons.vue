@@ -117,6 +117,17 @@ export default {
             }
         }
     },
+    watch: {
+        // Watch for external changes to the value
+        value: function(newVal, oldVal) {
+            // Preset the selection to the current option
+            this.selection = this.value
+        },
+        // Watch for changes to the options and reset the optionsFilteredBySearch
+        options: function(newVal, oldVal) {
+            this.optionsFilteredBySearch = newVal
+        }
+    },
     methods: {
         submit() {
             this.$emit('input', this.selection)

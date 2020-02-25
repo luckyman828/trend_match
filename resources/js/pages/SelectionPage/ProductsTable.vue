@@ -1,6 +1,6 @@
 <template>
     <div class="products-table-wrapper">
-        <BaseFlexTable class="products-table">
+        <BaseFlexTable class="products-table" stickyHeader="true">
             <template v-slot:tabs>
                 <BaseTableTab :label="`Overview ${productTotals.all}`" :modelValue="currentProductFilter"
                 value="overview" @change="setCurrentProductFilter($event)"/>
@@ -88,19 +88,19 @@
                 @change="(checked) => checked ? selectedProducts = products : selectedProducts = []"/>
                 </BaseTableHeader>
                 <BaseTableHeader class="image"></BaseTableHeader>
-                <BaseTableHeader class="id" :sortKey="'datasource_id'" :currentSortKey="sortKey" :sortAsc="sortAsc" 
-                @sort="(sortAsc, sortKey) => $emit('onSort', sortAsc, sortKey)">ID</BaseTableHeader>
-                <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey" :sortAsc="sortAsc"
-                @sort="(sortAsc, sortKey) => $emit('onSort', sortAsc, sortKey)">Product Name</BaseTableHeader>
+                <BaseTableHeader class="id" :sortKey="'datasource_id'" :currentSortKey="sortKey"
+                @sort="onSort">ID</BaseTableHeader>
+                <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey"
+                @sort="onSort">Product Name</BaseTableHeader>
                 <BaseTableHeader class="focus"></BaseTableHeader>
-                <BaseTableHeader :sortKey="'ins'" :currentSortKey="sortKey" :sortAsc="sortAsc"
-                @sort="(sortAsc, sortKey) => $emit('onSort', sortAsc, sortKey)">In</BaseTableHeader>
-                <BaseTableHeader :sortKey="'outs'" :currentSortKey="sortKey" :sortAsc="sortAsc"
-                @sort="(sortAsc, sortKey) => $emit('onSort', sortAsc, sortKey)">Out</BaseTableHeader>
-                <BaseTableHeader :sortKey="'nds'" :currentSortKey="sortKey" :sortAsc="sortAsc"
-                @sort="(sortAsc, sortKey) => $emit('onSort', sortAsc, sortKey)">ND</BaseTableHeader>
-                <BaseTableHeader :sortKey="'requests'" :currentSortKey="sortKey" :sortAsc="sortAsc"
-                @sort="(sortAsc, sortKey) => $emit('onSort', sortAsc, sortKey)">Requests</BaseTableHeader>
+                <BaseTableHeader :sortKey="'ins'" :currentSortKey="sortKey"
+                @sort="onSort">In</BaseTableHeader>
+                <BaseTableHeader :sortKey="'outs'" :currentSortKey="sortKey"
+                @sort="onSort">Out</BaseTableHeader>
+                <BaseTableHeader :sortKey="'nds'" :currentSortKey="sortKey"
+                @sort="onSort">ND</BaseTableHeader>
+                <BaseTableHeader :sortKey="'requests'" :currentSortKey="sortKey"
+                @sort="onSort">Requests</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
@@ -128,26 +128,30 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import ProductsTableRow from './ProductsTableRow'
+import sortArray from '../../mixins/sortArray'
 
 export default {
     name: 'productsTable',
     props: [
         'products',
-        'sortAsc',
-        'sortKey',
         'file',
+    ],
+    mixins: [
+        sortArray
     ],
     components: {
         ProductsTableRow,
     },
     data: function() { return {
+        sortKey: 'datasource_id',
         selectedProducts: [],
         productsFilteredBySearch: this.products,
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
+        ...mapState('products', {stateProducts: 'products'}),
         currentProductFilter: {
             get () {
                 return this.$store.getters['products/currentProductFilter']
@@ -199,6 +203,11 @@ export default {
             this.setAvailableProductIds(this.products.map(x => x.id)) // Save array of available products
             this.setSingleVisisble(true)
         },
+        onSort(sortAsc, sortKey) {
+            this.sortKey = sortKey
+            // Sort the products in our state to make sure the sort happens everywhere in the dashboard
+            this.sortArray(this.stateProducts, sortKey, sortKey)
+        }
     },
     created () {
         // Setup event broadcast listening

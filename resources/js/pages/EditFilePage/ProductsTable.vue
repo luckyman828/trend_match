@@ -1,6 +1,6 @@
 <template>
     <div class="products-table-wrapper">
-        <BaseFlexTable class="products-table">
+        <BaseFlexTable class="products-table" stickyHeader="true">
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>

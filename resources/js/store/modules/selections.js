@@ -9,6 +9,8 @@ export default {
         loading: true,
         status: true,
         currentSelection: null,
+        selections: [],
+        selectionsTree: [],
         availableSelectionRoles: [
             {
                 role: 'User',
@@ -29,6 +31,8 @@ export default {
         loadingSelections: state => state.loading,
         selectionsStatus: state => state.status,
         currentSelection: state => state.currentSelection,
+        selections: state => state.selections,
+        selectionsTree: state => state.selectionsTree,
         availableSelectionRoles: state => {
             return state.availableSelectionRoles
         },
@@ -38,27 +42,14 @@ export default {
     },
 
     actions: {
-        async fetchSelections({ commit }, workspace_id) {
-            // Set the state to loading
+        async fetchSelections({ commit }, file) {
             commit('setLoading', true)
-
-            const apiUrl = `/api/workspace/${workspace_id}/selections`
-
-            let tryCount = 3
-            let succes = false
-            while (tryCount-- > 0 && !succes) {
-                try {
-                    const response = await axios.get(`${apiUrl}`)
-                    Selection.create({ data: response.data })
-                    commit('setLoading', false)
-                    succes = true
-                } catch (err) {
-                    console.log('API error in Selection.js :')
-                    console.log(err.response)
-                    console.log(`Trying to fetch again. TryCount = ${tryCount}`)
-                    if (tryCount <= 0) throw err
-                }
-            }
+            const apiUrl = `/files/${file.id}/selections/flat`
+            await axios.get(apiUrl).then(response => {
+                commit('insertSelections', response.data)
+                commit('insertSelectionsAsTree', response.data)
+            })
+            commit('setLoading', false)
         },
         async fetchSelection({ commit }, selectionId) {
             commit('setStatus', 'loading')
@@ -86,6 +77,43 @@ export default {
             const apiUrl = `/selections/${selection.id}/teams`
             await axios.get(apiUrl).then(response => {
                 Vue.set(selection, 'teams', response.data)
+            })
+        },
+        async insertSelection({ commit }, { file, selection }) {
+            // Check if we are inserting a master or a child
+            let apiUrl = ''
+            if (selection.parent_id) {
+                apiUrl = `/selections/${selection.parent_id}/children`
+            } else {
+                apiUrl = `/files/${file.id}/selections`
+            }
+            await axios.post(apiUrl, selection).then(async response => {
+                selection.id = response.data.id
+                // commit('insertSelections', { file, selections: [selection] })
+            })
+        },
+        async updateSelection({ commit }, selection) {
+            // Assume update
+            let apiUrl = `/files/${file.id}/selections`
+            let requestMethod = 'put'
+            let requestBody = selection
+            // Check if we are inserting or updating
+            if (!selection.id) {
+                // If we are inserting
+                commit('insertSelection', selection)
+                requestMethod = 'post'
+                apiUrl = `/selections`
+            } else {
+                commit('updateSelection', selection)
+            }
+
+            await axios({
+                method: requestMethod,
+                url: apiUrl,
+                data: requestBody,
+            }).then(async response => {
+                // Set the selections ID if not already set
+                if (!selection.id) selection.id = response.data.id
             })
         },
         addUsersToSelection({ commit }, { selection, users }) {
@@ -118,30 +146,6 @@ export default {
             commit('removeTeamFromSelection', { selection, team })
             // Send request to API
         },
-        async insertOrUpdateSelection({ commit }, selection) {
-            // Assume update
-            let apiUrl = `/selections/${selection.id}`
-            let requestMethod = 'put'
-            let requestBody = selection
-            // Check if we are inserting or updating
-            if (!selection.id) {
-                // If we are inserting
-                commit('insertSelection', selection)
-                requestMethod = 'post'
-                apiUrl = `/selections`
-            } else {
-                commit('updateSelection', selection)
-            }
-
-            await axios({
-                method: requestMethod,
-                url: apiUrl,
-                data: requestBody,
-            }).then(async response => {
-                // Set the selections ID if not already set
-                if (!selection.id) selection.id = response.data.id
-            })
-        },
     },
 
     mutations: {
@@ -154,8 +158,30 @@ export default {
         setCurrentSelection(state, selection) {
             state.currentSelection = selection
         },
-        insertSelection(state, selection) {
-            // state.files.push(file)
+        insertSelections(state, selections) {
+            // Check if we have already instantiated selections
+            state.selections.push(...selections)
+        },
+        insertSelectionsAsTree(state, selections) {
+            const list = selections
+            let map = {},
+                node,
+                roots = [],
+                i
+            for (i = 0; i < list.length; i += 1) {
+                map[list[i].id] = i // initialize the map
+                Vue.set(list[i], 'children', []) // initialize the children
+            }
+            for (i = 0; i < list.length; i += 1) {
+                node = list[i]
+                if (node.parent_id !== '0') {
+                    // if you have dangling branches check that map[node.parentId] exists
+                    list[map[node.parent_id]].children.push(node)
+                } else {
+                    roots.push(node)
+                }
+            }
+            state.selectionsTree = roots
         },
         updateSelection(state, selection) {
             // const oldFile = state.files.find(x => x.id == file.id)

@@ -2,7 +2,7 @@
     <div class="selections-table-row">
         <tr class="selection" @contextmenu.prevent="emitShowContext" @click="onClick">
             <td class="expand" :class="{active: childrenExpanded}" @click.stop="toggleExpanded" :style="indent">
-                <span class="square invisible" v-if="selection.children_count > 0">
+                <span class="square invisible" v-if="selection.children.length > 0">
                     <i class="fas fa-caret-down"></i>
                 </span>
             </td>
@@ -61,7 +61,8 @@ export default {
         'selectionToEdit',
         'parent',
         'moveSelectionActive',
-        'path'
+        'path',
+        'file'
     ],
     data: function() { return {
         childrenExpanded: false
@@ -79,7 +80,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('selections', ['insertOrUpdateSelection']),
+        ...mapActions('selections', ['insertSelection', 'updateSelection']),
         toggleExpanded() {
             this.childrenExpanded = !this.childrenExpanded
         },
@@ -121,7 +122,12 @@ export default {
             this.$forceUpdate() // <-- Remember to remove
         },
         onUpdateSelection(selection) {
-            this.insertOrUpdateSelection(selection)
+            // Check if we are inserting or updating
+            if (!selection.id) {
+                this.insertSelection({file: this.file, selection})
+            } else {
+                this.updateSelection(selection)
+            }
         }
     }
 }

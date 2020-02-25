@@ -76,7 +76,8 @@ export default {
         },
     },
     methods: {
-        ...mapActions('files', ['setCurrentFile', 'setCurrentFolder']),
+        ...mapActions('files', ['setCurrentFolder']),
+        ...mapMutations('files', ['setCurrentFile']),
         showSingleFile(file) {
             // Set the current file id
             this.setCurrentFile(file)

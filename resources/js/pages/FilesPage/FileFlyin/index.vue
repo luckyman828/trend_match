@@ -14,9 +14,9 @@
         </template>
         <template v-if="file && show" v-slot>
             <div class="file-single">
-                <SelectionsTable :selections="currentFile.selections" @showSelectionUsersFlyin="showSelectionUsersFlyin($event)"/>
+                <SelectionsTable v-if="!loadingSelections" :selections="selectionsTree" @showSelectionUsersFlyin="showSelectionUsersFlyin($event)"/>
 
-                <SelectionUsersFlyin :selection="currentSelection" :show="SelectionUsersFlyinVisible"
+                <SelectionUsersFlyin v-if="!loadingSelections" :selection="currentSelection" :show="SelectionUsersFlyinVisible"
                 @close="SelectionUsersFlyinVisible = false"/>
             </div>
         </template>
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import SelectionsTable from './SelectionsTable'
 import SelectionUsersFlyin from '../../../components/SelectionUsersFlyin'
 
@@ -42,11 +42,24 @@ export default {
         currentSelection: null,
         SelectionUsersFlyinVisible: false,
     }},
+    watch: {
+        file: async function(newVal, oldVal) {
+            // Check if we have a new file
+            if (!oldVal || newVal.id != oldVal.id) {
+                this.fetchData()
+            }
+        }
+    },
     computed: {
         ...mapGetters('files', ['nextFile', 'prevFile', 'currentFile']),
+        ...mapGetters('selections', ['loadingSelections', 'selectionsTree']),
     },
     methods: {
-        ...mapActions('files', ['setCurrentFile']),
+        ...mapMutations('files', ['setCurrentFile']),
+        ...mapActions('selections', ['fetchSelections']),
+        fetchData() {
+            this.fetchSelections(this.currentFile)
+        },
         showSelectionUsersFlyin(selection) {
             this.currentSelection = selection
             this.SelectionUsersFlyinVisible = true

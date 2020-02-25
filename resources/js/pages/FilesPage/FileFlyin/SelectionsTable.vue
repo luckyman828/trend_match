@@ -10,19 +10,19 @@
             </template>
             <template v-slot:header>
                 <BaseTableHeader class="expand"></BaseTableHeader>
-                <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc">Name</BaseTableHeader>
-                <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" :sortAsc="sortAsc">Items</BaseTableHeader>
-                <BaseTableHeader :sortKey="'in'" :currentSortKey="sortKey" :sortAsc="sortAsc">In</BaseTableHeader>
-                <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" :sortAsc="sortAsc">Out</BaseTableHeader>
-                <BaseTableHeader :sortKey="'nd'" :currentSortKey="sortKey" :sortAsc="sortAsc">ND</BaseTableHeader>
-                <BaseTableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc">Users</BaseTableHeader>
-                <BaseTableHeader :sortKey="'status'" :currentSortKey="sortKey" :sortAsc="sortAsc">Status</BaseTableHeader>
+                <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" @sort="onSort">Name</BaseTableHeader>
+                <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader>
+                <BaseTableHeader :sortKey="'in'" :currentSortKey="sortKey" @sort="onSort">In</BaseTableHeader>
+                <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" @sort="onSort">Out</BaseTableHeader>
+                <BaseTableHeader :sortKey="'nd'" :currentSortKey="sortKey" @sort="onSort">ND</BaseTableHeader>
+                <BaseTableHeader :sortKey="'users'" :currentSortKey="sortKey" @sort="onSort">Users</BaseTableHeader>
+                <BaseTableHeader :sortKey="'status'" :currentSortKey="sortKey" @sort="onSort">Status</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
                 <div class="body">
-                    <SelectionsTableRow :ref="'selection-row-'+selection.id" v-for="selection in selections.filter(x => !x.parent_id)" :key="selection.id"
-                    :selection="selection" :depth="0" :path="[selection.id]" :moveSelectionActive="moveSelectionActive" 
+                    <SelectionsTableRow :ref="'selection-row-'+selection.id" v-for="selection in selections" :key="selection.id"
+                    :selection="selection" :depth="0" :path="[selection.id]" :moveSelectionActive="moveSelectionActive" :file="currentFile"
                     :selectionToEdit="selectionToEdit" @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
                     @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showContext="showContextMenuSelection"
                     @endMoveSelection="endMoveSelection" @showOptionsContext="showOptionsContext" @onClick="rowClick"/>
@@ -160,6 +160,7 @@
 import { mapGetters, mapActions } from 'vuex'
 import SelectionsTableRow from './SelectionsTableRow'
 import Selection from '../../../store/models/Selection'
+import sortArray from '../../../mixins/sortArray'
 
 export default {
     name: 'selectionsTable',
@@ -169,9 +170,11 @@ export default {
     components: {
         SelectionsTableRow,
     },
+    mixins: [
+        sortArray
+    ],
     data: function() { return {
         sortKey: null,
-        sortAsc: true,
         selectionToEdit: null,
         contextSelection: null,
         contextSelectionComponent: null,
@@ -182,9 +185,13 @@ export default {
         selectionToMoveParent: null,
     }},
     computed: {
-        ...mapGetters('entities/collections', ['currentFile']),
+        ...mapGetters('files', ['currentFile']),
     },
     methods: {
+        onSort(sortAsc, sortKey) {
+            this.sortKey = sortKey
+            this.sortArray(this.selections, sortAsc, sortKey)
+        },
         rowClick(e, component) {
             if (this.moveSelectionActive) {
                 e.stopPropagation()
@@ -286,16 +293,22 @@ export default {
             // Else instantiate a new master object in the table
             const newSelection = {
                 id: null,
-                title: '',
-                parent_id: null,
-                is_master: true,
+                name: '',
+                type: 'Master',
+                currency: null,
                 user_count: 0,
+                children: [],
             }
             // Push new selection to the parent
             if (parent) {
                 // If we are creating a sbu selection
                 newSelection.name = 'New Sub Selection'
                 newSelection.parent_id = parent.id
+                newSelection.type = 'Normal'
+                // Instantiate a children array on the parent
+                if (!parent.children) {
+                    this.$set(parent, 'children', [])
+                }
                 parent.children.push(newSelection)
                 // Expand the selection the new selection is added to
                 // Loop through the children to find the selectionrow in question

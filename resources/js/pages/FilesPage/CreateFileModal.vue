@@ -14,7 +14,7 @@
                     <input type="text" id="file-name-input" class="input-wrapper" placeholder="unnamed file" v-model="newFile.name">
                 </div>
                 <div class="form-element">
-                    <BaseDroparea multiple="true" accept=".csv, text/csv" ref="droparea"
+                    <BaseDroparea multiple="true" accept=".csv, text/csv, .tsv" ref="droparea"
                     @input="filesChange">
                         <template v-slot="slotProps">
                             <template v-if="newFile.files.length < 1">
@@ -269,17 +269,16 @@ export default {
         },
         newFile: null,
         uploadingFile: false,
-        csvDelimiter: ';',
         availableFiles: [],
         filePreviews: [],
         singleCurrencyFile: true,
         fieldsToMatch: [
             {name: 'title', displayName: 'Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['title','name','style name','product name']},
+            headersToMatch: ['title','name','style name','product name' ,'style_name', 'product_name']},
             {name: 'sale_description', displayName: 'Description',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['description','sales description']},
             {name: 'brand', displayName: 'Brand',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['brand','brand name']},
+            headersToMatch: ['brand','brand name', 'brand_name']},
             {name: 'category', displayName: 'Category',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['category','style category','product category']},
             {name: 'min_order', displayName: 'Minimum Order Quantity',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
@@ -299,13 +298,13 @@ export default {
             {name: 'box_size', displayName: 'Assortment Box Size',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['box size','assortment box size', 'ass.', 'ass size', 'assortment size']},
             {name: 'variant_name', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['color','colour','variant','variant name','color name','colour name','main colour name']},
+            headersToMatch: ['color','colour','variant','variant name','color name','colour name','main colour name', 'colour_name']},
             {name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['picture url','image url','img url','picture','image','img']},
             {name: 'sizes', displayName: 'Variant Sizes',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['sizes','variant sizes','size','variant size']},
             {name: 'eans', displayName: 'EANs',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['eans','ean','variant ean','style ean']},
+            headersToMatch: ['eans','ean','variant ean','style ean', 'ean_no']},
             {name: 'buying_group', displayName: 'Buyer Group',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['buyer group','buyer','pricelist', 'buying group']},
         ],
@@ -363,7 +362,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('files', ['insertOrUpdateFile', 'uploadFile']),
+        ...mapActions('files', ['insertOrUpdateFile']),
         ...mapActions('products', ['insertProducts']),
         previewExampleValue(newValue, fieldName) {
             const files = this.availableFiles
@@ -445,7 +444,7 @@ export default {
                 const extension = file.name.split('.').pop();
 
                 // Check that the file is a csv
-                if (extension == 'csv') {
+                if (extension == 'csv' || extension == 'tsv') {
                     if (!this.newFile.files.find(x => x.name == file.name)) {
                         this.newFile.files.push(file)
                     }
@@ -492,16 +491,38 @@ export default {
         processFile(csv, fileName) {
 
             // Split the csv into lines by line breaks
-            const allTextLines = csv.split(/\r\n|\r|\n/g)
-            
-            const csvLines = []
-            const csvHeaders = []
+            // NB: This regex is magic
+            // It matches strings seperated by linebreaks (CLRF (windows,max,linux shouldb be supported)) 
+            // not inside double quotation marks, while allowing for escaped " marks. 
+            const allTextLines = csv.match(/(?:"(?:\\.|[^"])*"|\\.|[^\r\n|\r|\n])+/g)
+
             // Loop thorugh the lines
             let lineIndex = 0
-            allTextLines.forEach(line => {
+            const csvLines = []
+            const csvHeaders = []
+
+            // Attempt to determine file delimiter
+            const csvDelimiters = [';', ',', '\t']
+            let delimiterIndex = 0
+            // Loop through our delimiters and try to split the first row by it. Apply the delimiter with the highest number of matches
+            // This should work because the first row should contain headers and therefore not include any other delimiters
+            let cellCount = 0
+            let testDelimiterIndex = 0
+            csvDelimiters.forEach(delimiter => {
+                const testCellCount = allTextLines[0].split(delimiter).length
+                if (testCellCount >= cellCount) {
+                    cellCount = testCellCount
+                    delimiterIndex = testDelimiterIndex
+                }
+                testDelimiterIndex++
+            })
+            const csvDelimiter = csvDelimiters[delimiterIndex]
+
+            while (lineIndex < allTextLines.length) {
+                const line = allTextLines[lineIndex]
                 
                 // Split the line by our delimiter
-                const cells = line.split(this.csvDelimiter)
+                const cells = line.split(csvDelimiter)
 
                 // Read the first line as headers
                 if (lineIndex == 0) {
@@ -513,13 +534,15 @@ export default {
                         cellIndex++
                     })
                 }
-                // Make sure that there are not fewer lines than headers
-                else if (cells.length >= csvHeaders.length) {
+                // Not the header row
+                else {
                     // Push the cells to our lines array
                     csvLines.push(cells)
                 }
+                // Increment the row index
                 lineIndex++
-            })
+            }
+
             const fileToPush = {fileName: fileName, key: {fileIndex: null, fieldName: null, fieldIndex: null}, headers: csvHeaders, lines: csvLines, error: false}
             // Check if the file already exists. If so, replace it instead of adding
             const existingFile = this.availableFiles.find(x => x.fileName == fileName)
@@ -550,7 +573,7 @@ export default {
             // Step 2: Match Keys (ID)
             // Check if the file already has a key
             if (file.key.fieldIndex == null) {
-                const keysToMatch = ['id','style number','style no','product id','number']
+                const keysToMatch = ['id','style number','style no','product id','number', 'style_no', 'style_number']
                 let keyAutoMatchIndex = file.headers.findIndex(header => keysToMatch.includes(header.fieldName.toLowerCase()))
                 if (keyAutoMatchIndex >= 0) {
                     const keyToPush = {fileIndex: fileIndex, fieldName: file.headers[keyAutoMatchIndex].fieldName, fieldIndex: keyAutoMatchIndex, autoMatch: true}
