@@ -117,6 +117,13 @@ export default {
             }
         }
     },
+    watch: {
+        // Watch for external changes to the value
+        value: function(newVal, oldVal) {
+            // Preset the selection to the current option
+            this.selection = this.value
+        }
+    },
     methods: {
         submit() {
             this.$emit('input', this.selection)
