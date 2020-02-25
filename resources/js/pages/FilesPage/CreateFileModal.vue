@@ -362,7 +362,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('files', ['insertOrUpdateFile', 'uploadFile']),
+        ...mapActions('files', ['insertOrUpdateFile']),
         ...mapActions('products', ['insertProducts']),
         previewExampleValue(newValue, fieldName) {
             const files = this.availableFiles

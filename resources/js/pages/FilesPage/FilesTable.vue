@@ -13,14 +13,12 @@
                 </BaseTableTopBar>
             </template>
             <template v-slot:header>
-                <th class="select"><BaseCheckbox/></th>
-                <th class="title">Name <i class="fas fa-sort"></i></th>
-                <th>Modified <i class="fas fa-sort"></i></th>
-                <!-- <th>Deadline <i class="fas fa-sort"></i></th> -->
-                <th>Items <i class="fas fa-sort"></i></th>
-                <th>Owners <i class="fas fa-sort"></i></th>
-                <!-- <th>Status <i class="fas fa-sort"></i></th> -->
-                <th class="action">Action</th>
+                <BaseTableHeader class="select"><BaseCheckbox/></BaseTableHeader>
+                <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" @sort="onSort">Name</BaseTableHeader>
+                <BaseTableHeader :sortKey="'modified'" :currentSortKey="sortKey" @sort="onSort">Modified</BaseTableHeader>
+                <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader>
+                <BaseTableHeader :sortKey="'owners'" :currentSortKey="sortKey" @sort="onSort">Owners</BaseTableHeader>
+                <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
                 <tr v-for="folder in foldersToShow" :key="folder.id" class="folder" @contextmenu.prevent="showContextMenu($event, folder, 'folder')">
@@ -197,7 +195,7 @@
         @keybind-m="onMoveTo(contextMenuItem, 'file')"
         @keybind-d="onDeleteFile(contextMenuItem.id)">
             <div class="item-group">
-                <div class="item" @click="viewSingle(contextMenuItem.id)">
+                <div class="item" @click="showSingleFile(contextMenuItem)">
                     <div class="icon-wrapper">
                         <i class="far fa-file"></i>
                     </div>
@@ -244,6 +242,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import sortArray from '../../mixins/sortArray'
 
 export default {
     name: 'filesTable',
@@ -252,12 +251,12 @@ export default {
         'files',
         'selected',
     ],
-    components: {
-    },
+    mixins: [
+        sortArray
+    ],
     data: function() {
         return {
-            sortBy: 'id',
-            sortAsc: true,
+            sortKey: null,
             fileToEdit: {
                 id: '',
                 title: '',
@@ -395,41 +394,12 @@ export default {
             }
             
         },
-        // onSelect(index) {
-        //     this.$emit('onSelect', index)
-        // },
         hideTooltip() {
             this.tooltip.active = false
         },
-        onSortBy(key, method) {
-            // Check if the sorting key we are setting is already the key we are sorting by
-            // If this is the case, toggle the sorting method (asc|desc)
-            if (this.sortBy !== key) {
-                this.sortAsc = method
-                this.sortBy = key
-            } else {
-                this.sortAsc = !this.sortAsc
-            }
-            this.sortFiles()
-        },
-        sortFiles() {
-            console.log('sorting files')
-            const files = this.files
-            let key = this.sortBy
-            let sortAsc = this.sortAsc
-            const dataSorted = files.sort((a, b) => {
-                // If the keys don't have length - sort by the key
-                if (!files[0][key].length) {
-                    if (sortAsc) return a[key] > b[key] ? 1 : -1
-                    else return a[key] < b[key] ? 1 : -1
-
-                    // If the keys have lengths - sort by their length
-                } else {
-                    if (sortAsc) return a[key].length > b[key].length ? 1 : -1
-                    else return a[key].length < b[key].length ? 1 : -1
-                }
-            })
-            return dataSorted
+        onSort(sortAsc, sortKey) {
+            this.sortKey = sortKey
+            this.sortArray(this.files, sortAsc, sortKey)
         },
         viewSingle(fileId) {
             this.$router.push({ name: 'file', params: { fileId: fileId } })

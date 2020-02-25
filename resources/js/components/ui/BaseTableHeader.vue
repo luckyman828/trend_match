@@ -20,18 +20,34 @@ export default {
     props: [
         'sortKey',
         'currentSortKey',
-        'sortAsc',
         'descDefault'
     ],
+    data: function() { return {
+        sortAsc: this.descDefault ? false : true
+    }},
     computed: {
         active () {
             return this.sortKey == this.currentSortKey
         }
     },
+    watch: {
+        active: function(newVal, oldVal) {
+            // on activate
+            if (newVal) {
+                this.sortAsc = this.descDefault ? false : true
+            }
+        }
+    },
     methods: {
         sort() {
-            const sortAsc = this.descDefault ? false : true
-            this.$emit('sort', sortAsc, this.sortKey)
+            // If this header is already active, flip the sort order
+            if (this.active) this.sortAsc = !this.sortAsc
+            this.$emit('sort', this.sortAsc, this.sortKey)
+        }
+    },
+    mounted () {
+        if(this.active) { 
+            this.$emit('sort', this.sortAsc, this.sortKey)
         }
     }
 }

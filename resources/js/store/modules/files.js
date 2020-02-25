@@ -91,14 +91,6 @@ export default {
                 state.currentFolder = folder
             })
         },
-        async setCurrentFile({ commit, state }, file) {
-            // Get selections for file
-            const apiUrl = `/files/${file.id}/selections`
-            await axios.get(apiUrl).then(response => {
-                Vue.set(file, 'selections', response.data)
-                commit('setCurrentFile', file)
-            })
-        },
         async fetchFileOwners({ commit, state }, file) {
             // Get owners for file
             const apiUrl = `/files/${file.id}/users`
@@ -154,69 +146,6 @@ export default {
                     console.log(err.response)
                 })
         },
-        async uploadFile({ commit, dispatch }, newFile) {
-            let uploadSucces = true
-            // Check if we have any products to upload
-            if (newFile.products && newFile.products.length > 0) {
-                // Upload products to DB
-                uploadSucces = false
-                // Check if
-                const uploadApiUrl = `api/file/${newFile.id}/products`
-
-                // Loop through the products and format their data correctly for the API
-                const productsToUpload = []
-                newFile.products.forEach(product => {
-                    // Stringify their json values
-                    product.prices = JSON.stringify(product.prices)
-                    product.eans = JSON.stringify(product.eans)
-                    product.assortments = JSON.stringify(product.assortments)
-                    product.color_variants = JSON.stringify(product.color_variants)
-
-                    // Correctly format date
-                    // First test that the date has actually been set
-                    if (product.delivery_date) {
-                        // Check for special cases where the date is of format mmm-yy ("jan-20") which will be parsed incorrectly by the new Date() function
-                        // Regex that looks for a work with exactly 3 characters between A-z.
-                        const reg = new RegExp('\\b[A-z]{3}\\b')
-                        if (reg.test(product.delivery_date)) {
-                            // If true then add a "1-" to the date to avoid ambiguity
-                            product.delivery_date = '1-' + product.delivery_date
-                        }
-
-                        const theDate = new Date(product.delivery_date)
-
-                        // Change the delivery_date format back to MySQL Date format (yyyy-mm-dd)
-                        // Long code to account for timezone differences
-                        product.delivery_date = new Date(theDate.getTime() - theDate.getTimezoneOffset() * 60000)
-                            .toJSON()
-                            .slice(0, 10)
-                    }
-
-                    productsToUpload.push(product)
-                })
-
-                await axios
-                    .post(uploadApiUrl, {
-                        products: productsToUpload,
-                    })
-                    .then(response => {
-                        console.log('succes')
-                        console.log(response.data)
-                        uploadSucces = true
-                    })
-                    .catch(err => {
-                        console.log('error')
-                        console.log(err.response)
-                        uploadSucces = false
-                    })
-            }
-
-            // If success create a file (collection) for the products
-            if (uploadSucces) {
-                dispatch('updateFile', newFile)
-            }
-            return uploadSucces
-        },
         async updateFile({ commit }, fileToUpdate) {
             const startDate = fileToUpdate.start_date ? fileToUpdate.start_date : null
             const endDate = fileToUpdate.end_date ? fileToUpdate.end_date : null
@@ -248,39 +177,6 @@ export default {
                 .catch(err => {
                     console.log(err.response)
                 })
-        },
-        async uploadToExistingFile({ commit, dispatch }, file) {
-            // Upload products to DB
-            let uploadSucces = false
-
-            const uploadApiUrl = `${process.env.MIX_UPLOAD_API_URL_BASE}/hooks/import-csv?collection_id=${file.id}`
-            const axiosConfig = {
-                headers: {
-                    'X-Kollekt-App-Key': process.env.MIX_KOLLEKT_APP_API_KEY,
-                },
-            }
-            let data = new FormData()
-            // Append the files
-            file.files.forEach(file => {
-                data.append('files', file)
-            })
-
-            // console.log(data)
-
-            await axios
-                .post(uploadApiUrl, data, axiosConfig)
-                // .post(proxyUrl + uploadApiUrl, data, axiosConfig)
-                .then(response => {
-                    console.log('succes')
-                    console.log(response.data)
-                    uploadSucces = true
-                })
-                .catch(err => {
-                    console.log('error')
-                    console.log(err)
-                    uploadSucces = false
-                })
-            return uploadSucces
         },
         async resetFile({ commit }, fileId) {
             console.log('resetting file!')

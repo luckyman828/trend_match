@@ -26,16 +26,16 @@ export default {
         'selection',
     ],
     data: function() {return {
-        loadingUsers: true,
+        loadingSelectionUsers: true,
     }},
     watch: {
         selection: async function(newVal, oldVal) {
             if (!oldVal || newVal.id != oldVal.id) {
                 // If we have a new selection
                 // -> Fetch selections users
-                this.loadingUsers = true
+                this.loadingSelectionUsers = true
                 await this.fetchSelectionUsers(this.selection)
-                this.loadingUsers = false
+                this.loadingSelectionUsers = false
             }
         }
     },
