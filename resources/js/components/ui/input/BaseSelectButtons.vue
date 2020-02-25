@@ -122,6 +122,10 @@ export default {
         value: function(newVal, oldVal) {
             // Preset the selection to the current option
             this.selection = this.value
+        },
+        // Watch for changes to the options and reset the optionsFilteredBySearch
+        options: function(newVal, oldVal) {
+            this.optionsFilteredBySearch = newVal
         }
     },
     methods: {
