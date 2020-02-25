@@ -1,8 +1,8 @@
 <template>
     <div class="subfile">
-        <ThePageHeader :title="`${selection.title || 'Untitled Selection'}: 
-        ${selection.role == 'Owner' ? 'Alignment' 
-        : selection.role == 'Approver' ? 'Approval' 
+        <ThePageHeader :title="`${selection.name || 'Untitled Selection'}: 
+        ${selection.your_role == 'Owner' ? 'Alignment' 
+        : selection.your_role == 'Approver' ? 'Approval' 
         : 'Feedback'}`"/>
 
         <!-- <div class="quick-actions">
@@ -12,9 +12,8 @@
             <span class="button invisible icon-right red-hover" @click="setHideQuickIn(); setHideQuickOut()">Hide quick actions <i class="far fa-times-circle"></i></span>
         </div> -->
 
-        <ProductsTable ref="productsComponent" :sortKey="sortKey" :sortAsc="sortAsc"
-        :file="file" :products="productsFiltered"
-        @onSort="onSort" @updateAction="onUpdateAction"/>
+        <ProductsTable ref="productsComponent" :file="file" :products="productsFiltered" 
+        @updateAction="onUpdateAction"/>
 
         <ProductFlyin :show="singleVisible"
         @close="setSingleVisisble(false)" @updateAction="onUpdateAction"/>
@@ -28,8 +27,6 @@ import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 import ProductsTable from './ProductsTable'
 import ThePageHeader from '../../components/layout/ThePageHeader'
 import ProductFlyin from './ProductFlyin'
-// Mixins
-import sortArray from '../../mixins/sortArray'
 
 export default{
     name: 'selectionPage',
@@ -38,12 +35,7 @@ export default{
         ThePageHeader,
         ProductFlyin
     },
-    mixins: [
-        sortArray
-    ],
     data: function () { return {
-        sortKey: 'datasource_id',
-        sortAsc: true,
         hideQuickOut: false,
         hideQuickIn: false,
     }},
@@ -111,18 +103,6 @@ export default{
             // Check if we are doing are doing feedback or alignment
             this.updateAction({product, action: actionToPost, isFeedback: this.isFeedback})
         },
-        onSort(method, key) {
-            if (this.sortKey !== key) {
-                this.sortAsc = method
-                this.sortKey = key
-            } else {
-                this.sortAsc = !this.sortAsc
-            }
-            this.sortProducts()
-        },
-        sortProducts() {
-            this.sortArray(this.products, this.sortAsc, this.sortKey)
-        }
     },
     created() {
         // this.hideQuickOut = this.$cookies.get(`quick_out_${this.currentFile.id}_${this.currentTask.id}`)

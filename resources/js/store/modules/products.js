@@ -15,7 +15,6 @@ export default {
         currentProductFilter: 'overview',
         singleVisible: false,
         products: [],
-        productsFiltered: [],
         status: null,
     },
 
