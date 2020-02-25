@@ -1,7 +1,7 @@
 <template>
     <div class="teams-table">
 
-        <BaseFlexTable v-if="currentTab == 'Teams'">
+        <BaseFlexTable v-if="currentTab == 'Teams'" stickyHeader="true">
             <template v-slot:tabs>
                 <BaseTableTabs :tabs="['Teams','Members']" v-model="currentTab" :activeTab="currentTab"/>
             </template>

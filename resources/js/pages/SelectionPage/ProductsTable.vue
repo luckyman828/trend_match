@@ -1,6 +1,6 @@
 <template>
     <div class="products-table-wrapper">
-        <BaseFlexTable class="products-table">
+        <BaseFlexTable class="products-table" stickyHeader="true">
             <template v-slot:tabs>
                 <BaseTableTab :label="`Overview ${productTotals.all}`" :modelValue="currentProductFilter"
                 value="overview" @change="setCurrentProductFilter($event)"/>
