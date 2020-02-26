@@ -16,8 +16,10 @@ export default {
 
                     // If the keys are not arrays - sort by the key
                     else {
-                        if (sortAsc) return a[key] > b[key] ? 1 : -1
-                        else return a[key] < b[key] ? 1 : -1
+                        const aKey = typeof a[key] == 'string' ? a[key].toLowerCase() : a[key]
+                        const bKey = typeof b[key] == 'string' ? b[key].toLowerCase() : b[key]
+                        if (sortAsc) return aKey > bKey ? 1 : -1
+                        else return aKey < bKey ? 1 : -1
                     }
                 } else {
                     if (!a[key] && !b[key]) {
