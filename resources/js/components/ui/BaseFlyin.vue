@@ -16,7 +16,8 @@ export default {
     name: 'baseFlyin',
     props: [
         'show',
-        'columns'
+        'columns',
+        'disableKeyHandler'
     ],
     data: function () { return {
         visible: false,
@@ -42,11 +43,13 @@ export default {
             // this.$refs.flyIn.webkitAnimationPlayState = 'running'
         },
         hotkeyHandler(event) {
-            const key = event.code
-            // Only do these if the current target is not the comment box
-            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
-                if (key == 'Escape')
-                    this.close()
+            if (!this.disableKeyHandler) {
+                const key = event.code
+                // Only do these if the current target is not the comment box
+                if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
+                    if (key == 'Escape')
+                        this.close()
+                }
             }
         }
     },
