@@ -39,7 +39,6 @@ export default {
         SelectionUsersFlyin,
     },
     data: function(){ return {
-        currentSelection: null,
         SelectionUsersFlyinVisible: false,
     }},
     watch: {
@@ -52,16 +51,17 @@ export default {
     },
     computed: {
         ...mapGetters('files', ['nextFile', 'prevFile', 'currentFile']),
-        ...mapGetters('selections', ['loadingSelections', 'selectionsTree']),
+        ...mapGetters('selections', ['loadingSelections', 'selectionsTree', 'currentSelection']),
     },
     methods: {
         ...mapMutations('files', ['setCurrentFile']),
         ...mapActions('selections', ['fetchSelections']),
+        ...mapMutations('selections', ['setCurrentSelection']),
         fetchData() {
             this.fetchSelections(this.currentFile)
         },
         showSelectionUsersFlyin(selection) {
-            this.currentSelection = selection
+            this.setCurrentSelection(selection)
             this.SelectionUsersFlyinVisible = true
         },
         showNext() {

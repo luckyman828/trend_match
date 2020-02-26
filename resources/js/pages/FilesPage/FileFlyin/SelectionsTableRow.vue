@@ -22,6 +22,11 @@
             <td class="in">-</td>
             <td class="out">-</td>
             <td class="nd">-</td>
+            <td class="teams">
+                <button class="ghost editable sm" @click="$emit('showSelectionUsersFlyin', selection)">
+                    <i class="far fa-user"></i><span>{{selection.team_count}}</span>
+                </button>
+            </td>
             <td class="users">
                 <button class="ghost editable sm" @click="$emit('showSelectionUsersFlyin', selection)">
                     <i class="far fa-user"></i><span>{{selection.user_count}}</span>

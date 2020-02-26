@@ -48,7 +48,6 @@ export default {
             return success
         },
         async logout({ commit, state }) {
-            console.log('log out froms ate')
             // Remember to add actual logging out request here to the API
             localStorage.removeItem('user-token')
             state.token = ''

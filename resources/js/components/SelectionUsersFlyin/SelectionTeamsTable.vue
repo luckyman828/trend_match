@@ -20,7 +20,7 @@
             <template v-slot:body>
                 <tr v-for="team in selection.teams" :key="team.id" class="team-row table-row" ref="teamRow" @contextmenu.prevent="showTeamContext($event, team)">
                     <td class="select"><BaseCheckbox/></td>
-                    <td class="title clickable">
+                    <td class="title">
                         <i class="fas fa-users"></i>
                         <span>{{team.title}}</span>
                     </td>
@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import sortArray from '../../mixins/sortArray'
 import Team from '../../store/models/Team'
 
@@ -90,15 +90,16 @@ export default {
         teamsToAdd: [],
     }},
     computed: {
+        ...mapGetters('teams', ['teams']),
         availableTeams() {
-            const allTeams = Team.query().with('users').all()
+            const allTeams = this.teams
             // return allTeams
             // Filter the available teams to exclude teams already added
             return allTeams.filter(team => !this.selection.teams.find(x => x.id == team.id))
         }
     },
     methods: {
-        ...mapActions('entities/selections', ['addTeamsToSelection','removeTeamFromSelection']),
+        ...mapActions('selections', ['addTeamsToSelection','removeTeamsFromSelection']),
         showTeamContext(e, team) {
             const contextMenu = this.$refs.contextMenuTeam
             contextMenu.item = team
@@ -109,7 +110,7 @@ export default {
             contextMenu.show(e)
         },
         onAddTeamsToSelection() {
-            this.addTeamsToSelection({selection: this.selection, teamsToAdd: this.teamsToAdd})
+            this.addTeamsToSelection({selection: this.selection, teams: this.teamsToAdd})
         },
         sortTeams(method, key) {
             // If if we are already sorting by the given key, flip the sort order
@@ -127,7 +128,7 @@ export default {
         onRemoveTeam(team) {
             // If we have a selection, loop through the selection and remove those
             // Else, remove the parsed team
-            this.removeTeamFromSelection({selection: this.selection, team: team})
+            this.removeTeamsFromSelection({selection: this.selection, teams: [team]})
         },
     }
 }
