@@ -97,7 +97,6 @@ export default {
                 .catch(err => {
                     commit('setStatus', 'error')
                 })
-            console.log('Fetch selection thinks its done')
             return selection
         },
         async fetchSelectionUsers({ commit, dispatch }, selection) {
@@ -111,6 +110,7 @@ export default {
             commit('setUsersStatus', 'success')
         },
         async fetchSelectionTeams({ commit, dispatch }, selection) {
+            console.log('fetch selection teams')
             // Get teams for selection
             commit('setTeamsStatus', 'loading')
             let teams = []

@@ -94,6 +94,7 @@ export default {
             await axios
                 .get(`${apiUrl}`)
                 .then(response => {
+                    console.log('Fetch team users')
                     commit('addUsersToTeam', { team, users: response.data })
                     state.currentTeamStatus = 'success'
                 })
@@ -158,6 +159,7 @@ export default {
             return succes
         },
         async addUsersToTeam({ commit, dispatch }, { team, users }) {
+            console.log('Add users to team action')
             // Make a copy of the users and set their role to 'Member' as default
             const usersCopy = JSON.parse(JSON.stringify(users))
             const usersToPush = usersCopy.map(x => {
@@ -237,6 +239,7 @@ export default {
             state.teams.splice(index, 1)
         },
         addUsersToTeam(state, { team, users }) {
+            console.log('add users to team')
             if (team.users) {
                 Vue.set(team, 'users', team.users.concat(users))
             } else {

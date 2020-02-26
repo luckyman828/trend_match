@@ -67,6 +67,7 @@ export default {
             this.fetchingData = false
         },
         async fetchSelectionTeamsUsers(teams) {
+            console.log('fetch selection team users')
             // Use of promise and map to fetch users for all teams in parallel
             await Promise.all(teams.map(async team => {
                 await this.fetchTeamUsers(team)
