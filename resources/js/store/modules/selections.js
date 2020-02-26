@@ -339,12 +339,14 @@ export default {
             } else {
                 Vue.set(selection, 'teams', teams)
             }
+            selection.team_count = selection.teams.length
         },
         removeTeamsFromSelection(state, { selection, teams }) {
             teams.forEach(team => {
                 const teamIndex = selection.teams.findIndex(x => x.id == team.id)
                 selection.teams.splice(teamIndex, 1)
             })
+            selection.team_count = selection.teams.length
         },
     },
 }

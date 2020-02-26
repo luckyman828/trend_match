@@ -57,8 +57,8 @@
                     :optionNameKey="'title'" :search="true"/>
                 </div>
                 <div class="item-group">
-                    <div class="item">
-                        <button class="primary" :class="{disabled: teamsToAdd.length < 1}" 
+                    <div class="item-wrapper">
+                        <button class="primary" :class="{disabled: teamsToAdd.length < 1}" style="margin-right: 8px;" 
                         @click="onAddTeamsToSelection(teamsToAdd);teamsToAdd = [];slotProps.hide()">
                             <span>Add <template v-if="teamsToAdd.length > 0">{{teamsToAdd.length}} 
                             </template>team<template v-if="teamsToAdd.length > 1">s</template></span></button>
