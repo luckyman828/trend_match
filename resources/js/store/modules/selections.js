@@ -86,7 +86,7 @@ export default {
             commit('setStatus', 'loading')
 
             const apiUrl = `/selections/${selectionId}`
-            axios
+            await axios
                 .get(apiUrl)
                 .then(response => {
                     commit('setCurrentSelection', response.data)
@@ -95,6 +95,7 @@ export default {
                 .catch(err => {
                     commit('setStatus', 'error')
                 })
+            console.log('Fetch selection thinks its done')
         },
         async fetchSelectionUsers({ commit, dispatch }, selection) {
             // Get users for selection
@@ -275,6 +276,7 @@ export default {
         },
         setCurrentSelection(state, selection) {
             state.currentSelection = selection
+            console.log('new selection set')
         },
         insertSelections(state, selections) {
             // Check if we have already instantiated selections

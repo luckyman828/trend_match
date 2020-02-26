@@ -129,7 +129,6 @@ export default {
                 data: teamToPush,
             })
                 .then(response => {
-                    console.log(response.data)
                     if (!team.id) team.id = response.data.id
                     succes = true
                     commit('updateTeam', teamToPush)
@@ -184,7 +183,6 @@ export default {
                 },
             })
                 .then(async response => {
-                    console.log(response.data)
                     succes = true
                 })
                 .catch(err => {

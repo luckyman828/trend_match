@@ -2,10 +2,13 @@
     <div class="fly-in-wrapper" :class="[{visible: isVisible}]">
         <div class="overlay" @click="close"></div>
         <div class="fly-in" ref="flyIn" :class="{'has-columns': columns > 1}">
-            <slot name="header" :toggle="toggle"/>
-            <div class="body" :style="columnStyle">
-                <slot :toggle="toggle"/>
-            </div>
+            <template v-if="!loading">
+                <slot name="header" :toggle="toggle"/>
+                <div class="body" :style="columnStyle">
+                    <slot :toggle="toggle"/>
+                </div>
+            </template>
+            <BaseLoader v-else/>
         </div>
     </div>
 </template>
@@ -17,7 +20,8 @@ export default {
     props: [
         'show',
         'columns',
-        'disableKeyHandler'
+        'disableKeyHandler',
+        'loading',
     ],
     data: function () { return {
         visible: false,
