@@ -59,7 +59,7 @@
                 <div class="item-group">
                     <div class="item">
                         <button class="primary" :class="{disabled: teamsToAdd.length < 1}" 
-                        @click="onAddTeamsToSelection();teamsToAdd = [];slotProps.hide()">
+                        @click="onAddTeamsToSelection(teamsToAdd);teamsToAdd = [];slotProps.hide()">
                             <span>Add <template v-if="teamsToAdd.length > 0">{{teamsToAdd.length}} 
                             </template>team<template v-if="teamsToAdd.length > 1">s</template></span></button>
                         <button class="invisible ghost-hover" @click="slotProps.hide(); teamsToAdd = []"><span>Cancel</span></button>
@@ -100,6 +100,7 @@ export default {
     },
     methods: {
         ...mapActions('selections', ['addTeamsToSelection','removeTeamsFromSelection']),
+        ...mapActions('teams', ['fetchTeamUsers']),
         showTeamContext(e, team) {
             const contextMenu = this.$refs.contextMenuTeam
             contextMenu.item = team
@@ -109,8 +110,13 @@ export default {
             const contextMenu = this.$refs.contextMenuAddTeams
             contextMenu.show(e)
         },
-        onAddTeamsToSelection() {
-            this.addTeamsToSelection({selection: this.selection, teams: this.teamsToAdd})
+        async onAddTeamsToSelection(teams) {
+            // Fetch the users for the team, then add it to the selection
+            // Use of promise and map to fetch users for all teams in parallel
+            await Promise.all(this.teamsToAdd.map(async team => {
+                await this.fetchTeamUsers(team)
+            }))
+            this.addTeamsToSelection({selection: this.selection, teams})
         },
         sortTeams(method, key) {
             // If if we are already sorting by the given key, flip the sort order

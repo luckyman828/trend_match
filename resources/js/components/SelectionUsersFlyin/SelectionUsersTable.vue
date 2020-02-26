@@ -24,7 +24,7 @@
             <template v-slot:body>
                 <tr v-for="user in users" :key="user.id" class="user-row table-row" ref="userRow" @contextmenu.prevent="showUserContext($event, user)">
                     <td class="select"><BaseCheckbox :value="user" v-model="selected"/></td>
-                    <td class="title clickable">
+                    <td class="title">
                         <i class="fas fa-user"></i>
                         <span>{{user.name}}</span>
                     </td>
@@ -139,7 +139,7 @@ export default {
         availableUsers() {
             const allUsers = this.workspaceUsers
             // Filter the available users to exclude users already added
-            return allUsers.filter(user => !this.selection.users.find(x => x.id == user.id))
+            return allUsers.filter(user => !this.users.find(x => x.id == user.id))
         },
     },
     methods: {

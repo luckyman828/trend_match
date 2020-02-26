@@ -195,8 +195,6 @@ export default {
             })
         },
         removeTeamsFromSelection({ commit }, { selection, teams }) {
-            console.log(teams)
-            console.log(teams.map(x => x.id))
             // Commit mutation to state
             commit('removeTeamsFromSelection', { selection, teams })
             // Send request to API
