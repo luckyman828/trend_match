@@ -14,15 +14,15 @@ export default {
         selectionsTree: [],
         availableSelectionRoles: [
             {
-                role: 'User',
+                role: 'Member',
                 description: 'Gvies feedback and makes comments',
             },
             {
-                name: 'Owner',
+                role: 'Owner',
                 description: 'Aligns the selection',
             },
             {
-                name: 'Approver',
+                role: 'Approver',
                 description: 'Replies to requests',
             },
         ],
@@ -53,6 +53,7 @@ export default {
                             if (!usersTorReturn.find(x => x.id == teamUser.id)) {
                                 const userToPush = JSON.parse(JSON.stringify(teamUser))
                                 userToPush.added_by_team = true
+                                userToPush.role = 'Member'
                                 usersTorReturn.push(userToPush)
                             }
                         })
@@ -157,7 +158,13 @@ export default {
         },
         addUsersToSelection({ commit }, { selection, users }) {
             // Commit mutation to state
-            commit('addUsersToSelection', { selection, users })
+            commit('addUsersToSelection', {
+                selection,
+                users: users.map(user => {
+                    user.role = 'Member'
+                    return user
+                }),
+            })
             // Send request to API
             const apiUrl = `/selections/${selection.id}/users`
             axios.post(apiUrl, {
@@ -166,6 +173,21 @@ export default {
                     return {
                         id: x.id,
                         role: 'Member',
+                    }
+                }),
+            })
+        },
+        updateSelectionUsers({ commit }, { selection, users }) {
+            // Commit mutation to state
+            commit('updateSelectionUsers', { selection, users })
+            // Send request to API
+            const apiUrl = `/selections/${selection.id}/users`
+            axios.post(apiUrl, {
+                method: 'Add',
+                users: users.map(x => {
+                    return {
+                        id: x.id,
+                        role: x.role,
                     }
                 }),
             })
@@ -258,6 +280,18 @@ export default {
             } else {
                 Vue.set(selection, 'users', users)
             }
+        },
+        updateSelectionUsers(state, { selection, users }) {
+            // Loop through our users
+            users.forEach(user => {
+                // If the user exists edit it, else add it
+                const existingUser = selection.users.find(x => x.id == user.id)
+                if (existingUser) {
+                    existingUser.role = user.role
+                } else {
+                    selection.users.push(user)
+                }
+            })
         },
         removeUsersFromSelection(state, { selection, users }) {
             // Loop through the users and remove them

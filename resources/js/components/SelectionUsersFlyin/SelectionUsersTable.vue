@@ -102,10 +102,10 @@
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
-                    <BaseSelectButtons type="radio" ref="userCurrencySelector" :options="availableSelectionRoles"
+                    <BaseSelectButtons type="radio" ref="userCurrencySelector" :options="filteredAvailableSelectionRoles"
                     v-model="userToEdit.role" :submitOnChange="true" :optionDescriptionKey="'description'"
-                    :optionNameKey="'name'" :optionValueKey="'name'"
-                    @submit="contextUser.role = userToEdit.role; slotProps.hide()"/>
+                    :optionNameKey="'role'" :optionValueKey="'role'"
+                    @submit="onUpdateSelectionUser();slotProps.hide()"/>
                 </div>
             </template>
         </BaseContextMenu>
@@ -135,6 +135,11 @@ export default {
     }},
     computed: {
         ...mapGetters('selections', ['availableSelectionRoles']),
+        filteredAvailableSelectionRoles() {
+            return this.availableSelectionRoles.filter(x => {
+                return this.selection.type != 'Master' ? x.role != 'Approver' : true
+            })
+        },
         ...mapGetters('users', {workspaceUsers: 'users'}),
         availableUsers() {
             const allUsers = this.workspaceUsers
@@ -143,7 +148,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('selections', ['addUsersToSelection','removeUsersFromSelection']),
+        ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection']),
         showUserContext(e, user) {
             const contextMenu = this.$refs.contextMenuUser
             this.contextUser = user
@@ -161,6 +166,11 @@ export default {
         },
         onAddUsersToSelection(usersToAdd) {
             this.addUsersToSelection({selection: this.selection, users: this.usersToAdd})
+        },
+        onUpdateSelectionUser() {
+            // // Update state
+            // this.contextUser.role = this.userToEdit.role
+            this.updateSelectionUsers({selection: this.selection, users: [this.userToEdit]})
         },
         sortUsers(method, key) {
             // If if we are already sorting by the given key, flip the sort order

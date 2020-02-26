@@ -7,14 +7,14 @@
                 </span>
             </td>
             <td class="title" v-if="selectionToEdit && selectionToEdit.selection.id == selection.id && selectionToEdit.field == 'name'" :style="selectionWidth">
-                <i v-if="selection.is_master" class="fa-file-certificate master" :class="selection.id ? 'fad' : 'far'"></i> 
+                <i v-if="isMaster" class="fa-file-certificate master" :class="selection.id ? 'fad' : 'far'"></i> 
                 <i v-else class="fa-file light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <BaseEditInputWrapper activateOnMount=true type="text"
                 :value="selectionToEdit.selection.name" :oldValue="selection.name" v-model="selectionToEdit.selection.name"
                 @submit="onUpdateSelection(selection); $emit('submitToEdit')" @cancel="$emit('cancelToEdit', selection)"/>
             </td>
             <td v-else class="title clickable" @click="onGoToSelection" :style="selectionWidth">
-                <i v-if="selection.is_master" class="fa-file-certificate master" :class="selection.id ? 'fad' : 'far'"></i> 
+                <i v-if="isMaster" class="fa-file-certificate master" :class="selection.id ? 'fad' : 'far'"></i> 
                 <i v-else class="fa-file light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <span :title="selection.name">{{selection.name}}</span>
             </td>
@@ -46,7 +46,8 @@
         <template v-if="childrenExpanded">
             <selectionsTableRow v-for="selection in selection.children" :parent="selection" :selection="selection" :path="path.concat(selection.id)"
             :selectionToEdit="selectionToEdit" :key="selection.id" :depth="depth+1" :moveSelectionActive="moveSelectionActive"
-            @submitToEdit="$emit('submitToEdit')" @cancelToEdit="$emit('cancelToEdit', $event)" @showContext="emitEmissionShowContext" @emitOnClick="emitOnClick"/>
+            @submitToEdit="$emit('submitToEdit')" @cancelToEdit="$emit('cancelToEdit', $event)" @showContext="emitEmissionShowContext" @emitOnClick="emitOnClick"
+            @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin', $event)"/>
         </template>
     </div>
 </template>
@@ -67,7 +68,8 @@ export default {
         'parent',
         'moveSelectionActive',
         'path',
-        'file'
+        'file',
+        'isMaster'
     ],
     data: function() { return {
         childrenExpanded: false
