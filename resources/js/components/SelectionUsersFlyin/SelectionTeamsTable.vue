@@ -20,7 +20,7 @@
             <template v-slot:body>
                 <tr v-for="team in selection.teams" :key="team.id" class="team-row table-row" ref="teamRow" @contextmenu.prevent="showTeamContext($event, team)">
                     <td class="select"><BaseCheckbox/></td>
-                    <td class="title clickable">
+                    <td class="title">
                         <i class="fas fa-users"></i>
                         <span>{{team.title}}</span>
                     </td>
@@ -57,9 +57,9 @@
                     :optionNameKey="'title'" :search="true"/>
                 </div>
                 <div class="item-group">
-                    <div class="item">
-                        <button class="primary" :class="{disabled: teamsToAdd.length < 1}" 
-                        @click="onAddTeamsToSelection();teamsToAdd = [];slotProps.hide()">
+                    <div class="item-wrapper">
+                        <button class="primary" :class="{disabled: teamsToAdd.length < 1}" style="margin-right: 8px;" 
+                        @click="onAddTeamsToSelection(teamsToAdd);teamsToAdd = [];slotProps.hide()">
                             <span>Add <template v-if="teamsToAdd.length > 0">{{teamsToAdd.length}} 
                             </template>team<template v-if="teamsToAdd.length > 1">s</template></span></button>
                         <button class="invisible ghost-hover" @click="slotProps.hide(); teamsToAdd = []"><span>Cancel</span></button>
@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import sortArray from '../../mixins/sortArray'
 import Team from '../../store/models/Team'
 
@@ -90,15 +90,17 @@ export default {
         teamsToAdd: [],
     }},
     computed: {
+        ...mapGetters('teams', ['teams']),
         availableTeams() {
-            const allTeams = Team.query().with('users').all()
+            const allTeams = this.teams
             // return allTeams
             // Filter the available teams to exclude teams already added
             return allTeams.filter(team => !this.selection.teams.find(x => x.id == team.id))
         }
     },
     methods: {
-        ...mapActions('entities/selections', ['addTeamsToSelection','removeTeamFromSelection']),
+        ...mapActions('selections', ['addTeamsToSelection','removeTeamsFromSelection']),
+        ...mapActions('teams', ['fetchTeamUsers']),
         showTeamContext(e, team) {
             const contextMenu = this.$refs.contextMenuTeam
             contextMenu.item = team
@@ -108,8 +110,13 @@ export default {
             const contextMenu = this.$refs.contextMenuAddTeams
             contextMenu.show(e)
         },
-        onAddTeamsToSelection() {
-            this.addTeamsToSelection({selection: this.selection, teamsToAdd: this.teamsToAdd})
+        async onAddTeamsToSelection(teams) {
+            // Fetch the users for the team, then add it to the selection
+            // Use of promise and map to fetch users for all teams in parallel
+            await Promise.all(this.teamsToAdd.map(async team => {
+                await this.fetchTeamUsers(team)
+            }))
+            this.addTeamsToSelection({selection: this.selection, teams})
         },
         sortTeams(method, key) {
             // If if we are already sorting by the given key, flip the sort order
@@ -127,7 +134,7 @@ export default {
         onRemoveTeam(team) {
             // If we have a selection, loop through the selection and remove those
             // Else, remove the parsed team
-            this.removeTeamFromSelection({selection: this.selection, team: team})
+            this.removeTeamsFromSelection({selection: this.selection, teams: [team]})
         },
     }
 }

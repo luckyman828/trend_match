@@ -5,12 +5,12 @@
         : selection.your_role == 'Approver' ? 'Approval' 
         : 'Feedback'}`"/>
 
-        <!-- <div class="quick-actions">
+        <div class="quick-actions">
             <p>Quick actions</p>
             <span v-if="productsNoIn.length > 0 && !hideQuickOut" class="button red wide" @click="OutNoInStyles()">'OUT' styles with no IN ({{productsNoIn.length}})</span>
             <span v-if="productsNoOutNoComment.length > 0 && !hideQuickIn" class="button green wide" @click="InNoOutNoCommentStyles()">'IN' styles with no OUT & no Comments ({{productsNoOutNoComment.length}})</span>
             <span class="button invisible icon-right red-hover" @click="setHideQuickIn(); setHideQuickOut()">Hide quick actions <i class="far fa-times-circle"></i></span>
-        </div> -->
+        </div>
 
         <ProductsTable ref="productsComponent" :file="file" :products="productsFiltered" 
         @updateAction="onUpdateAction"/>
@@ -50,24 +50,32 @@ export default{
             return this.currentFile
         },
         productsNoIn() {
-            const products = this.products
-            let productMatches = []
-            products.forEach(product => {
-                if (product.ins.length <= 0 && product.focus.length <= 0) {
-                    productMatches.push(product)
-                }
+            // const products = this.products
+            // let productMatches = []
+            // products.forEach(product => {
+            //     if (!product.currentAction && product.ins.length <= 0 && product.focus.length <= 0) {
+            //         productMatches.push(product)
+            //     }
+            // })
+            // return productMatches
+
+            return this.products.filter(product => {
+                return !product.currentAction && product.ins.length <= 0 && product.focus.length <= 0
             })
-            return productMatches
         },
         productsNoOutNoComment() {
-            const products = this.products
-            let productMatches = []
-            products.forEach(product => {
-                if (product.comments.length < 1 && product.outs.length < 1 && product.requests.length < 1) {
-                    productMatches.push(product)
-                }
+            // const products = this.products
+            // let productMatches = []
+            // products.forEach(product => {
+            //     if (!product.currentAction && product.comments.length < 1 && product.outs.length < 1 && product.requests.length < 1) {
+            //         productMatches.push(product)
+            //     }
+            // })
+            // return productMatches
+
+            return this.products.filter(product => {
+                return !product.currentAction && product.comments.length < 1 && product.outs.length < 1 && product.requests.length < 1
             })
-            return productMatches
         },
     },
     methods: {

@@ -8,11 +8,11 @@ export default {
     namespaced: true,
 
     state: {
-        loading: true,
+        loading: false,
         currentTeam: null,
         currentTeamStatus: 'loading',
         availableTeamIds: [],
-        teams: [],
+        teams: null,
         availableTeamRoles: [
             {
                 role: 'Member',
@@ -91,7 +91,7 @@ export default {
             // Set the state to loading
             state.currentTeamStatus = 'loading'
             const apiUrl = `/teams/${team.id}/users`
-            axios
+            await axios
                 .get(`${apiUrl}`)
                 .then(response => {
                     commit('addUsersToTeam', { team, users: response.data })

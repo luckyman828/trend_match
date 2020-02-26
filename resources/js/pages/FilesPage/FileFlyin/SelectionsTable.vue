@@ -15,7 +15,8 @@
                 <BaseTableHeader :sortKey="'in'" :currentSortKey="sortKey" @sort="onSort">In</BaseTableHeader>
                 <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" @sort="onSort">Out</BaseTableHeader>
                 <BaseTableHeader :sortKey="'nd'" :currentSortKey="sortKey" @sort="onSort">ND</BaseTableHeader>
-                <BaseTableHeader :sortKey="'users'" :currentSortKey="sortKey" @sort="onSort">Users</BaseTableHeader>
+                <BaseTableHeader :sortKey="'team_count'" :currentSortKey="sortKey" @sort="onSort">Teams</BaseTableHeader>
+                <BaseTableHeader :sortKey="'user_count'" :currentSortKey="sortKey" @sort="onSort">Users</BaseTableHeader>
                 <BaseTableHeader :sortKey="'status'" :currentSortKey="sortKey" @sort="onSort">Status</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
@@ -23,7 +24,8 @@
                 <div class="body">
                     <SelectionsTableRow :ref="'selection-row-'+selection.id" v-for="selection in selections" :key="selection.id"
                     :selection="selection" :depth="0" :path="[selection.id]" :moveSelectionActive="moveSelectionActive" :file="currentFile"
-                    :selectionToEdit="selectionToEdit" @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
+                    :selectionToEdit="selectionToEdit" :isMaster="true"
+                    @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
                     @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showContext="showContextMenuSelection"
                     @endMoveSelection="endMoveSelection" @showOptionsContext="showOptionsContext" @onClick="rowClick"/>
                 </div>
