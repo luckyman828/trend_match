@@ -246,7 +246,7 @@ export default {
             team.user_count = team.users.length
         },
         removeUserFromTeam(state, { team, user }) {
-            const index = team.users.find(x => x.id == user.id)
+            const index = team.users.findIndex(x => x.id == user.id)
             team.users.splice(index, 1)
             team.user_count = team.users.length
         },

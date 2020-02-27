@@ -29,9 +29,13 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps">
+        <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps"
+        @keybind-r="$refs['userRow-'+slotProps.item.id][0].editName = true"
+        @keybind-c="onEditUserCurrency(slotProps.mouseEvent, slotProps.item)"
+        @keybind-t="onEditUserRole(slotProps.mouseEvent, slotProps.item)"
+        @keybind-d="onRemoveUserFromTeam(slotProps.item)">
             <div class="item-group">
-                <div class="item" @click="$refs['userRow-'+slotProps.item.id][0].editName = true; slotProps.hide()">
+                <div class="item" @click="$refs['userRow-'+slotProps.item.id][0].editName = true">
                     <div class="icon-wrapper"><i class="far fa-pen"></i></div>
                     <u>R</u>ename User
                 </div>
@@ -43,11 +47,11 @@
                 </div>
                 <div class="item" @click.stop="onEditUserRole(slotProps.mouseEvent, slotProps.item)">
                     <div class="icon-wrapper"><i class="far fa-key"></i></div>
-                    Change Team <u>R</u>ole
+                    Change <u>Team</u> Role
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="onRemoveUserFromTeam(slotProps.item); slotProps.hide()">
+                <div class="item" @click="onRemoveUserFromTeam(slotProps.item)">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
                     <u>D</u>elete User from Team
                 </div>
