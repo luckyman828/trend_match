@@ -104,6 +104,7 @@ export default {
                     // Display error
                 }
             })
+            this.reset()
         },
         validateInput(inputField) {
             // inputField is expected to be the inputfield triggering the validation check.
@@ -142,8 +143,8 @@ export default {
             // Regular expression to check against:
             var regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
             const isValidEmail = regex.test(email)
-            const emailDoesNotExist = this.users.findIndex(x => x.email == email) < 0
-            const valid = isValidEmail && emailDoesNotExist
+            const emailExists = this.users.find(x => x.email == email)
+            const valid = isValidEmail && !emailExists
             if (valid) {
                 field.error = false
                 return true
@@ -169,6 +170,10 @@ export default {
                 return false
             }
         },
+        reset() {
+            this.submitDisabled = true
+            this.usersToAdd = [JSON.parse(JSON.stringify(this.userDefaultObject))]
+        }
     }
 }
 </script>

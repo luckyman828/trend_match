@@ -135,7 +135,6 @@ export default {
     name: 'editProductsTable',
     props: [
         'products',
-        'sortAsc',
         'sortKey',
         'file',
     ],
