@@ -71,13 +71,18 @@ export default {
             this.usersToAdd.splice(index, 1)
         },
         onPaste(e, index) {
+            // e.preventDefault()
             // Get the clipData
             const clipData = e.clipboardData.getData('text/plain')
             clipData.trim('\r\n')
             const rows = clipData.split('\n')
+            console.log(rows)
             rows.forEach(row => {
                 const cells = row.split('\t')
-                if (cells.length > 1) e.preventDefault()
+                // Prevent fancy paste for simple pasting
+                if (cells.length <= 1) return
+                // Else prevent default pasting
+                else e.preventDefault()
                 // If the cell 0 has an @ character, add a user object
                 if (cells[0].indexOf('@') >= 0) {
                     const newUser = {email: cells[0], name: cells[1], password: cells[2]}
