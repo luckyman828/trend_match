@@ -210,6 +210,9 @@ export default {
         }
     },
     created () {
+        // Initially sort the products
+        this.onSort(this.sortKey, true)
+
         // Setup event broadcast listening
 
         // Echo.private(`workspace.${this.currentWorkspaceId}`)

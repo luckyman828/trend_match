@@ -113,7 +113,12 @@ export default {
             }
         },
     },
-
+    created() {
+        // If we have a current folder set, set that folder as current
+        if (this.currentFolder) {
+            this.onSetCurrentFolder(this.currentFolder)
+        }
+    }
 }
 </script>
 

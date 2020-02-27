@@ -2,21 +2,31 @@
     <div class="subfile">
         <ThePageHeader :title="`${selection.name || 'Untitled Selection'}: 
         ${selection.your_role == 'Owner' ? 'Alignment' 
-        : selection.your_role == 'Approver' ? 'Approval' 
-        : 'Feedback'}`"/>
+        : selection.your_role == 'Approver' ? 'Approval'
+        : selection.your_role == 'Member' ? 'Feedback' 
+        : 'Access Denied'}`"/>
 
-        <div class="quick-actions">
-            <p>Quick actions</p>
-            <span v-if="productsNoIn.length > 0 && !hideQuickOut" class="button red wide" @click="OutNoInStyles()">'OUT' styles with no IN ({{productsNoIn.length}})</span>
-            <span v-if="productsNoOutNoComment.length > 0 && !hideQuickIn" class="button green wide" @click="InNoOutNoCommentStyles()">'IN' styles with no OUT & no Comments ({{productsNoOutNoComment.length}})</span>
-            <span class="button invisible icon-right red-hover" @click="setHideQuickIn(); setHideQuickOut()">Hide quick actions <i class="far fa-times-circle"></i></span>
-        </div>
+        <!-- Access denied -->
+        <template v-if="!selection.your_role">
+            <p>You don't have access to this selection</p>
+        </template>
 
-        <ProductsTable ref="productsComponent" :file="file" :products="productsFiltered" 
-        @updateAction="onUpdateAction"/>
+        <!-- Access granted -->
+        <template v-else>
+            <div class="quick-actions">
+                <p>Quick actions</p>
+                <span v-if="productsNoIn.length > 0 && !hideQuickOut" class="button red wide" @click="OutNoInStyles()">'OUT' styles with no IN ({{productsNoIn.length}})</span>
+                <span v-if="productsNoOutNoComment.length > 0 && !hideQuickIn" class="button green wide" @click="InNoOutNoCommentStyles()">'IN' styles with no OUT & no Comments ({{productsNoOutNoComment.length}})</span>
+                <span class="button invisible icon-right red-hover" @click="setHideQuickIn(); setHideQuickOut()">Hide quick actions <i class="far fa-times-circle"></i></span>
+            </div>
 
-        <ProductFlyin :show="singleVisible"
-        @close="setSingleVisisble(false)" @updateAction="onUpdateAction"/>
+            <ProductsTable ref="productsComponent" :file="file" :products="productsFiltered" 
+            @updateAction="onUpdateAction"/>
+
+            <ProductFlyin :show="singleVisible"
+            @close="setSingleVisisble(false)" @updateAction="onUpdateAction"/>
+        </template>
+
 
     </div>
 </template>
@@ -115,8 +125,6 @@ export default{
     created() {
         // this.hideQuickOut = this.$cookies.get(`quick_out_${this.currentFile.id}_${this.currentTask.id}`)
         // this.hideQuickIn = this.$cookies.get(`quick_in_${this.currentFile.id}_${this.currentTask.id}`)
-        // Initially sort the products
-        this.sortProducts()
     },
 }
 </script>
