@@ -71,13 +71,18 @@ export default {
             this.usersToAdd.splice(index, 1)
         },
         onPaste(e, index) {
+            // e.preventDefault()
             // Get the clipData
             const clipData = e.clipboardData.getData('text/plain')
             clipData.trim('\r\n')
             const rows = clipData.split('\n')
+            console.log(rows)
             rows.forEach(row => {
                 const cells = row.split('\t')
-                if (cells.length > 1) e.preventDefault()
+                // Prevent fancy paste for simple pasting
+                if (cells.length <= 1) return
+                // Else prevent default pasting
+                else e.preventDefault()
                 // If the cell 0 has an @ character, add a user object
                 if (cells[0].indexOf('@') >= 0) {
                     const newUser = {email: cells[0], name: cells[1], password: cells[2]}
@@ -104,6 +109,7 @@ export default {
                     // Display error
                 }
             })
+            this.reset()
         },
         validateInput(inputField) {
             // inputField is expected to be the inputfield triggering the validation check.
@@ -142,8 +148,8 @@ export default {
             // Regular expression to check against:
             var regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
             const isValidEmail = regex.test(email)
-            const emailDoesNotExist = this.users.findIndex(x => x.email == email) < 0
-            const valid = isValidEmail && emailDoesNotExist
+            const emailExists = this.users.find(x => x.email == email)
+            const valid = isValidEmail && !emailExists
             if (valid) {
                 field.error = false
                 return true
@@ -169,6 +175,10 @@ export default {
                 return false
             }
         },
+        reset() {
+            this.submitDisabled = true
+            this.usersToAdd = [JSON.parse(JSON.stringify(this.userDefaultObject))]
+        }
     }
 }
 </script>

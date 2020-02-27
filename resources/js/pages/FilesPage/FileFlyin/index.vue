@@ -1,7 +1,9 @@
 <template>
-    <BaseFlyin ref="fileSingleFlyin" :show="show" @close="$emit('close')">
+    <BaseFlyin ref="fileSingleFlyin" :show="show" :disableKeyHandler="SelectionUsersFlyinVisible"
+    @close="$emit('close')">
         <template v-slot:header v-if="file && show">
             <BaseFlyinHeader :title="'File Overview: '+file.name" :next="nextFile" :prev="prevFile"
+            :disableNavigation="SelectionUsersFlyinVisible"
             @close="$emit('close')" @next="showNext" @prev="showPrev">
                 <div class="item-group">
                     <button class="ghost editable" @click="$emit('showFileOwnersFlyin', file)">

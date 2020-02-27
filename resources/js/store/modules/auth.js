@@ -50,9 +50,12 @@ export default {
         async logout({ commit, state }) {
             // Remember to add actual logging out request here to the API
             localStorage.removeItem('user-token')
+            localStorage.removeItem('workspace-index')
             state.token = ''
             // Redirect the user
             router.push({ name: 'login' })
+            // Refresh the page to clear our state
+            router.go()
         },
         async getAuthUser({ commit, state }) {
             state.status = 'loading'

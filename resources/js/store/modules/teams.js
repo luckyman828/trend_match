@@ -129,7 +129,6 @@ export default {
                 data: teamToPush,
             })
                 .then(response => {
-                    console.log(response.data)
                     if (!team.id) team.id = response.data.id
                     succes = true
                     commit('updateTeam', teamToPush)
@@ -165,6 +164,7 @@ export default {
                 x.role = 'Member'
                 return x
             })
+            console.log(usersToPush)
             // Format our users for our request body
             const usersToPost = users.map(user => {
                 return { id: user.id, role: 'Member' }
@@ -184,7 +184,6 @@ export default {
                 },
             })
                 .then(async response => {
-                    console.log(response.data)
                     succes = true
                 })
                 .catch(err => {
@@ -247,7 +246,7 @@ export default {
             team.user_count = team.users.length
         },
         removeUserFromTeam(state, { team, user }) {
-            const index = team.users.find(x => x.id == user.id)
+            const index = team.users.findIndex(x => x.id == user.id)
             team.users.splice(index, 1)
             team.user_count = team.users.length
         },

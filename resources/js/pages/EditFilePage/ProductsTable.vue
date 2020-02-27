@@ -76,9 +76,9 @@
                 @change="(checked) => checked ? selectedProducts = products : selectedProducts = []"/>
                 </BaseTableHeader>
                 <BaseTableHeader class="image"></BaseTableHeader>
-                <BaseTableHeader class="id" :sortKey="'datasource_id'" :currentSortKey="sortKey" :sortAsc="sortAsc" 
+                <BaseTableHeader class="id" :sortKey="'datasource_id'" :currentSortKey="sortKey"
                 @sort="(sortAsc, sortKey) => $emit('onSort', sortAsc, sortKey)">ID</BaseTableHeader>
-                <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey" :sortAsc="sortAsc"
+                <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey"
                 @sort="(sortAsc, sortKey) => $emit('onSort', sortAsc, sortKey)">Product Name</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
@@ -135,7 +135,6 @@ export default {
     name: 'editProductsTable',
     props: [
         'products',
-        'sortAsc',
         'sortKey',
         'file',
     ],

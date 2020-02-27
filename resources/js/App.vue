@@ -39,7 +39,7 @@ export default{
         TheNavbarLogo,
     },
     computed: {
-        ...mapGetters('workspaces', ['workspaces', 'currentWorkspace']),
+        ...mapGetters('workspaces', ['workspaces', 'currentWorkspace', 'currentWorkspaceIndex']),
         ...mapGetters('auth', ['isAuthenticated', 'authUser', 'authStatus']),
     },
     watch : {
@@ -61,7 +61,15 @@ export default{
             // Get workspaces
             this.fetchWorkspaces().then(() => {
                 // Set the current workspace
-                this.setCurrentWorkspaceIndex(0)
+                // If we don't have a current workspace saved, then set index to 0
+                console.log(this.currentWorkspaceIndex)
+                if (!this.currentWorkspaceIndex) {
+                    console.log('hello')
+                }
+                if (this.currentWorkspaceIndex == null) {
+                    console.log('set current workspace index')
+                    this.setCurrentWorkspaceIndex(0)
+                }
             })
         }
     },

@@ -114,7 +114,10 @@ export default {
             // Fetch the users for the team, then add it to the selection
             // Use of promise and map to fetch users for all teams in parallel
             await Promise.all(this.teamsToAdd.map(async team => {
-                await this.fetchTeamUsers(team)
+                // Check that we have not already fetched the users for the team
+                if (!team.users) {
+                    await this.fetchTeamUsers(team)
+                }
             }))
             this.addTeamsToSelection({selection: this.selection, teams})
         },

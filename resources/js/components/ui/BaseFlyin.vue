@@ -2,10 +2,13 @@
     <div class="fly-in-wrapper" :class="[{visible: isVisible}]">
         <div class="overlay" @click="close"></div>
         <div class="fly-in" ref="flyIn" :class="{'has-columns': columns > 1}">
-            <slot name="header" :toggle="toggle"/>
-            <div class="body" :style="columnStyle">
-                <slot :toggle="toggle"/>
-            </div>
+            <template v-if="!loading">
+                <slot name="header" :toggle="toggle"/>
+                <div class="body" :style="columnStyle">
+                    <slot :toggle="toggle"/>
+                </div>
+            </template>
+            <BaseLoader v-else/>
         </div>
     </div>
 </template>
@@ -16,7 +19,9 @@ export default {
     name: 'baseFlyin',
     props: [
         'show',
-        'columns'
+        'columns',
+        'disableKeyHandler',
+        'loading',
     ],
     data: function () { return {
         visible: false,
@@ -42,11 +47,13 @@ export default {
             // this.$refs.flyIn.webkitAnimationPlayState = 'running'
         },
         hotkeyHandler(event) {
-            const key = event.code
-            // Only do these if the current target is not the comment box
-            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
-                if (key == 'Escape')
-                    this.close()
+            if (!this.disableKeyHandler) {
+                const key = event.code
+                // Only do these if the current target is not the comment box
+                if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
+                    if (key == 'Escape')
+                        this.close()
+                }
             }
         }
     },

@@ -1,5 +1,6 @@
 <template>
-    <BaseFlyin ref="flyin" :show="show" @close="$emit('close')">
+    <BaseFlyin ref="flyin" :show="show" :loading="loading"
+    @close="$emit('close')">
         <template v-slot:header>
             <BaseFlyinHeader v-if="show" :title="'Selection Users: '+selection.name" disableNavigation=true 
             @close="$emit('close')"/>
@@ -27,44 +28,50 @@ export default {
     ],
     data: function() { return {
         loadingSelectionTeamUsers: true,
+        loadingSelection: true,
+        fetchingData: true,
     }},
     watch: {
-        selection: async function(newVal, oldVal) {
-            if (!oldVal || newVal.id != oldVal.id) {
-                // If we have a new selection
-                await this.fetchData()
+        // selection: async function(newVal, oldVal) {
+        //     if (!oldVal || newVal.id != oldVal.id) {
+        //         // If we have a new selection
+        //         await this.fetchData()
+        //     }
+        // }
+        show: async function(newVal, oldVal) {
+            if (newVal) {
+                // await this.fetchSelection(this.selection.id)
+                this.fetchData()
+                // console.log(JSON.parse(JSON.stringify(this.selection)))
             }
         }
     },
     computed: {
         ...mapGetters('users', ['users', 'loadingUsers']),
         ...mapGetters('teams', ['teams', 'loadingTeams']),
-        ...mapGetters('selections', ['selectionUsersStatus', 'selectionTeamsStatus', 'currentSelectionUsers']),
+        ...mapGetters('selections', ['currentSelectionUsers']),
         loading() {
             return this.loadingUsers 
             || this.loadingTeams
-            || this.loadingSelectionTeamUsers
-            || this.selectionUsersStatus != 'success' 
-            || this.selectionTeamsStatus != 'success'
+            || this.fetchingData
         }
     },
     methods: {
         ...mapActions('users', ['fetchUsers']),
         ...mapActions('teams', ['fetchTeams', 'fetchTeamUsers']),
-        ...mapActions('selections', ['fetchSelectionUsers', 'fetchSelectionTeams']),
+        ...mapActions('selections', ['fetchSelection']),
         async fetchData() {
-            this.fetchSelectionUsers(this.selection)
-            await this.fetchSelectionTeams(this.selection).then(teams => {
-                this.fetchSelectionTeamsUsers(teams)
-            })
+            this.fetchingData = true
+            const newSelection = await this.fetchSelection(this.selection.id) // Fetches selection with users and teams
+            await this.fetchSelectionTeamsUsers(this.selection.teams)
+            this.fetchingData = false
         },
         async fetchSelectionTeamsUsers(teams) {
-            this.loadingSelectionTeamUsers = true
+            console.log('fetch selection team users')
             // Use of promise and map to fetch users for all teams in parallel
             await Promise.all(teams.map(async team => {
                 await this.fetchTeamUsers(team)
             }))
-            this.loadingSelectionTeamUsers = false
         }
     },
     created() {

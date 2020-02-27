@@ -6,7 +6,7 @@ export default {
 
     state: {
         workspaces: [],
-        currentWorkspaceIndex: null,
+        currentWorkspaceIndex: localStorage.getItem('workspace-index') || null,
         loading: true,
         availableWorkspaceRoles: [
             {
@@ -65,6 +65,8 @@ export default {
             state.workspaces = workspaces
         },
         setCurrentWorkspaceIndex(state, index) {
+            // Save the current workspace index in local storage
+            localStorage.setItem('workspace-index', index)
             state.currentWorkspaceIndex = index
         },
     },

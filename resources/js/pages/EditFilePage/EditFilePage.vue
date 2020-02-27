@@ -3,7 +3,7 @@
 
         <ThePageHeader :title="`Editing: ${file.name}`"/>
 
-        <ProductsTable :sortKey="sortKey" :sortAsc="sortAsc"
+        <ProductsTable :sortKey="sortKey"
         :file="file" :products="productsFiltered"
         @onSort="onSort"/>
 
@@ -33,7 +33,6 @@ export default{
     ],
     data: function () { return {
         sortKey: 'datasource_id',
-        sortAsc: true,
     }},
     computed: {
         ...mapGetters('files', ['currentFile']),
@@ -45,23 +44,13 @@ export default{
     methods: {
         ...mapMutations('products', ['setSingleVisisble']),
         onSort(method, key) {
-            if (method && key) {
-                if (this.sortKey !== key) {
-                    this.sortAsc = method
-                    this.sortKey = key
-                } else {
-                    this.sortAsc = !this.sortAsc
-                }
-            }
-            this.sortProducts()
+            this.sortKey = key
+            this.sortArray(this.products, method, key)
         },
-        sortProducts() {
-            this.sortArray(this.products, this.sortAsc, this.sortKey)
-        }
     },
     created() {
         // Initially sort the products
-        this.sortProducts()
+        this.onSort(true, this.sortKey)
     },
 }
 </script>

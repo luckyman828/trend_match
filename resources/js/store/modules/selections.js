@@ -86,15 +86,18 @@ export default {
             commit('setStatus', 'loading')
 
             const apiUrl = `/selections/${selectionId}`
-            axios
+            let selection
+            await axios
                 .get(apiUrl)
                 .then(response => {
-                    commit('setCurrentSelection', response.data)
+                    selection = response.data
+                    commit('setCurrentSelection', selection)
                     commit('setStatus', 'success')
                 })
                 .catch(err => {
                     commit('setStatus', 'error')
                 })
+            return selection
         },
         async fetchSelectionUsers({ commit, dispatch }, selection) {
             // Get users for selection
@@ -107,6 +110,7 @@ export default {
             commit('setUsersStatus', 'success')
         },
         async fetchSelectionTeams({ commit, dispatch }, selection) {
+            console.log('fetch selection teams')
             // Get teams for selection
             commit('setTeamsStatus', 'loading')
             let teams = []
@@ -134,7 +138,7 @@ export default {
         },
         async updateSelection({ commit, dispatch }, selection) {
             // Assume update
-            let apiUrl = `/files/${file.id}/selections`
+            let apiUrl = ''
             let requestMethod = 'put'
             let requestBody = selection
             // Check if we are inserting or updating
@@ -142,9 +146,11 @@ export default {
                 // If we are inserting
                 commit('insertSelection', selection)
                 requestMethod = 'post'
-                apiUrl = `/selections`
+                apiUrl = `/files/${file.id}/selections`
             } else {
                 commit('updateSelection', selection)
+                requestMethod = 'put'
+                apiUrl = `/selections/${selection.id}`
             }
 
             await axios({
@@ -231,9 +237,8 @@ export default {
                 team_ids: teams.map(x => x.id),
             })
         },
-        updateSelectionUserCount({ commit }, selection) {
+        updateSelectionUserCount({ commit, state }, selection) {
             const usersToReturn = []
-            if (!selection) return usersToReturn
             // Get users manually added and from teams
             // Loop through the manually added users
             if (selection.users) {
@@ -257,6 +262,9 @@ export default {
                 })
             }
             selection.user_count = usersToReturn.length
+            // Check if the current selection also exists in our selections array. Then update that as well
+            const stateSelection = state.selections.find(x => x.id == selection.id)
+            if (stateSelection) stateSelection.user_count = usersToReturn.length
         },
     },
 
@@ -274,6 +282,7 @@ export default {
             state.usersStatus = status
         },
         setCurrentSelection(state, selection) {
+            // Update the current selection if we already have one
             state.currentSelection = selection
         },
         insertSelections(state, selections) {
@@ -340,6 +349,9 @@ export default {
                 Vue.set(selection, 'teams', teams)
             }
             selection.team_count = selection.teams.length
+            // Check if the current selection also exists in our selections array. Then update that as well
+            const stateSelection = state.selections.find(x => x.id == selection.id)
+            if (stateSelection) stateSelection.team_count = selection.teams.length
         },
         removeTeamsFromSelection(state, { selection, teams }) {
             teams.forEach(team => {
@@ -347,6 +359,9 @@ export default {
                 selection.teams.splice(teamIndex, 1)
             })
             selection.team_count = selection.teams.length
+            // Check if the current selection also exists in our selections array. Then update that as well
+            const stateSelection = state.selections.find(x => x.id == selection.id)
+            if (stateSelection) stateSelection.team_count = selection.teams.length
         },
     },
 }
