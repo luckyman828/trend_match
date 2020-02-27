@@ -112,25 +112,36 @@ export default {
         },
         productTotals(state, getters, rootState, rootGetters) {
             const products = getters.products
-            const totals = {
-                all: 0,
-                ins: 0,
-                outs: 0,
-                nds: 0,
-            }
-            totals.all = products.length
-            products.forEach(product => {
-                if (product.currentAction == null) {
-                    totals.nds++
-                } else if (product.currentAction.action > 0) {
-                    totals.ins++
-                } else {
-                    totals.outs++
+            const selection = rootGetters['selections/currentSelection']
+
+            if (selection) {
+                const totals = {
+                    all: 0,
+                    ins: 0,
+                    outs: 0,
+                    nds: 0,
                 }
-            })
-            return totals
+                totals.all = products.length
+
+                products.forEach(product => {
+                    if (selection.your_role == 'Member') {
+                        if (product.your_feedback == 'None') totals.nds++
+                        if (product.your_feedback == 'In') totals.ins++
+                        if (product.your_feedback == 'Out') totals.outs++
+                        if (product.your_feedback == 'Focus') totals.focus++
+                    }
+                    if (selection.your_role == 'Owner') {
+                        if (product.your_action == 'None') totals.nds++
+                        if (product.your_action == 'In') totals.ins++
+                        if (product.your_action == 'Out') totals.outs++
+                        if (product.your_action == 'Focus') totals.focus++
+                    }
+                })
+                return totals
+            }
         },
         productsFiltered(state, getters, rootState, rootGetters) {
+            const selection = rootGetters['selections/currentSelection']
             const products = getters.products
             const categories = getters.selectedCategories
             const deliveryDates = getters.selectedDeliveryDates
@@ -170,12 +181,16 @@ export default {
             // Filter by actions
             if (['ins', 'outs', 'nds'].includes(actionFilter)) {
                 const filteredByAction = productsToReturn.filter(product => {
-                    if (actionFilter == 'nds') {
-                        return product.currentAction == null
-                    } else if (actionFilter == 'ins') {
-                        return product.currentAction && product.currentAction.action >= 1
-                    } else if (actionFilter == 'outs') {
-                        return product.currentAction && product.currentAction.action < 1
+                    if (selection.your_role == 'Member') {
+                        if (actionFilter == 'nds') return product.your_feedback == 'None'
+                        if (actionFilter == 'outs') return product.your_feedback == 'Out'
+                        if (actionFilter == 'ins')
+                            return product.your_feedback == 'In' || product.your_feedback == 'Focus'
+                    }
+                    if (selection.your_role == 'Owner') {
+                        if (actionFilter == 'nds') return product.your_action == 'None'
+                        if (actionFilter == 'outs') return product.your_action == 'Out'
+                        if (actionFilter == 'ins') return product.your_action == 'In' || product.your_action == 'Focus'
                     }
                 })
                 productsToReturn = filteredByAction
