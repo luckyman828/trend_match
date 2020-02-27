@@ -1,5 +1,4 @@
 import axios from 'axios'
-import Request from '../models/Request'
 
 export default {
     namespaced: true,

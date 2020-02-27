@@ -73,7 +73,6 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import sortArray from '../../mixins/sortArray'
-import Team from '../../store/models/Team'
 
 export default {
     name: 'selectionTeamsTable',

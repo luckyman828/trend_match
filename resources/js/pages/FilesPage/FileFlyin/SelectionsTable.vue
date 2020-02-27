@@ -161,7 +161,6 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import SelectionsTableRow from './SelectionsTableRow'
-import Selection from '../../../store/models/Selection'
 import sortArray from '../../../mixins/sortArray'
 
 export default {

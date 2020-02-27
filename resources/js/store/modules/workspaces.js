@@ -1,5 +1,4 @@
 import axios from 'axios'
-import Workspace from '../models/Workspace'
 
 export default {
     namespaced: true,

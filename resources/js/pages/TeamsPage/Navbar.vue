@@ -21,7 +21,6 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import CreateTeamModal from '../../components/CreateTeamModal'
-import Team from '../../store/models/Team'
 
 export default {
     name: "teamsPageNavbar",

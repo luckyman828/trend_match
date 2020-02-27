@@ -68,7 +68,6 @@
 <script>
 import { mapActions } from 'vuex'
 import sortArray from '../../mixins/sortArray'
-import User from '../../store/models/User'
 
 export default {
     name: 'fileApproversTable',

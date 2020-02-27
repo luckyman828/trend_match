@@ -237,7 +237,6 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import Product from '../../store/models/Product'
 import Draggable from 'vuedraggable'
 
 export default {

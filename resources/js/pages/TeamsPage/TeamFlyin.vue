@@ -130,8 +130,6 @@
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import TeamFlyinUsersTableRow from './TeamFlyinUsersTableRow'
 import sortArray from '../../mixins/sortArray'
-import UserTeam from '../../store/models/UserTeam'
-import AuthUser from '../../store/models/AuthUser'
 
 export default {
     name: 'teamSingleFlyin',

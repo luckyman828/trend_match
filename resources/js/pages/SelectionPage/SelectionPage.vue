@@ -53,6 +53,7 @@ export default{
         ...mapGetters('products', ['products', 'productsFiltered', 'singleVisible']),
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('selections', ['currentSelection']),
+        ...mapGetters('auth', ['authUser']),
         selection() {
             return this.currentSelection
         },
@@ -90,7 +91,7 @@ export default{
     },
     methods: {
         ...mapMutations('products', ['setSingleVisisble']),
-        ...mapActions('actions', ['updateAction']),
+        ...mapActions('actions', ['insertOrUpdateAction']),
         InNoOutNoCommentStyles() {
             this.setHideQuickIn()
             this.massSubmitAction(this.productsNoOutNoComment, 1)
@@ -107,19 +108,14 @@ export default{
             this.hideQuickIn = true
             // this.$cookies.set(`quick_in_${this.currentFile.id}_${this.currentTask.id}`, true, Infinity)
         },
-        onUpdateAction(product, actionCode) {
-            // Instantiate an action object
-            const actionToPost = {
-                action: actionCode,
-                product_id: product.id,
-                user_id: this.authUser.id,
-                selection_id: this.currentSelection.id,
-                selection: this.currentSelection,
-                user: this.authUser,
+        onUpdateAction(product, action) {
+            let actionToPost
+            if (this.currentSelection.your_role == 'Member') {
+                actionToPost = product.your_feedback == action ? 'None' : action
+            } else if (this.currentSelection.your_role == 'Owner') {
+                actionToPost = product.your_action == action ? 'None' : action
             }
-            // Post comment to store
-            // Check if we are doing are doing feedback or alignment
-            this.updateAction({product, action: actionToPost, isFeedback: this.isFeedback})
+            this.insertOrUpdateAction({product, action: actionToPost, selection: this.selection, user: this.authUser})
         },
     },
     created() {

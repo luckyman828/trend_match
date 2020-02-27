@@ -1,8 +1,5 @@
 import axios from 'axios'
 import Vue from 'vue'
-import Team from '../models/Team'
-import User from '../models/User'
-import AuthUser from '../models/AuthUser'
 
 export default {
     namespaced: true,

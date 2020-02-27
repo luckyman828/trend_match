@@ -115,7 +115,7 @@
                 >
                     <ProductsTableRow class="product-row flex-table-row"
                     :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
-                    @onViewSingle="onViewSingle" @updateAction="(product, actionCode) => $emit('updateAction', product, actionCode)"/>
+                    @onViewSingle="onViewSingle" @updateAction="(product, action) => $emit('updateAction', product, action)"/>
                 </RecycleScroller>
 
                 <tr v-if="products.length <= 0">

@@ -250,8 +250,6 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import File from '../../store/models/Collection';
-import Phase from '../../store/models/Phase';
 
 export default {
     name: 'createFileModal',

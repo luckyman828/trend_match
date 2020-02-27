@@ -1,6 +1,4 @@
 import axios from 'axios'
-import Comment from '../models/Comment'
-import { uuid } from 'vue-uuid'
 
 export default {
     namespaced: true,

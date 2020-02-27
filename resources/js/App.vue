@@ -26,10 +26,6 @@ import { mapActions, mapGetters, Store, mapMutations } from 'vuex'
 import TheSidebar from './components/layout/TheSidebar'
 import TheNavbar from './components/layout/TheNavbar'
 import TheNavbarLogo from './components/layout/TheNavbarLogo'
-import AuthUser from './store/models/AuthUser';
-import TeamFile from './store/models/TeamFile';
-import Team from './store/models/Team';
-import Workspace from './store/models/Workspace'
 
 export default{
     name: 'app',

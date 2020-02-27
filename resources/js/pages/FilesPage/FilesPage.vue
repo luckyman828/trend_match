@@ -40,7 +40,6 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import FilesTable from './FilesTable'
 import FileFlyin from './FileFlyin'
-import Folder from '../../store/models/Folder'
 import FileOwnersFlyin from '../../components/FileOwnersFlyin'
 import FileApproversFlyin from '../../components/FileApproversFlyin'
 

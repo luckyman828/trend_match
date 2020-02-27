@@ -69,17 +69,17 @@
             </button>
         </td>
         <td class="action">
-            <button class="primary" :class="{'ghost': !product.currentAction || product.currentAction.action != 2}" 
-            @click="onUpdateAction(product, 2)">
+            <button class="primary" :class="{'ghost': product.your_feedback != 'Focus'}" 
+            @click="onUpdateAction(product, 'Focus')">
                 <i class="far fa-star"></i>
             </button>
-            <button class="primary" :class="{'ghost': !product.currentAction || product.currentAction.action != 1}" 
-            @click="onUpdateAction(product, 1)">
+            <button class="primary" :class="{'ghost': product.your_feedback != 'In'}" 
+            @click="onUpdateAction(product, 'In')">
                 <i class="far fa-heart"></i>
                 <span>In</span>
             </button>
-            <button class="primary" :class="{'ghost': !product.currentAction || product.currentAction.action != 0}" 
-            @click="onUpdateAction(product, 0)">
+            <button class="primary" :class="{'ghost': product.your_feedback != 'Out'}" 
+            @click="onUpdateAction(product, 'Out')">
                 <i class="far fa-times-circle"></i>
                 <span>out</span>
             </button>

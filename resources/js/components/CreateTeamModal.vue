@@ -12,7 +12,6 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import Team from '../store/models/Team'
 
 export default {
     name: 'createTeamModal',

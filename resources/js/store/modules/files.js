@@ -1,8 +1,5 @@
 import axios from 'axios'
 import Vue from 'vue'
-import Collection from '../models/Collection'
-import User from '../models/User'
-import Product from '../models/Product'
 
 export default {
     namespaced: true,

@@ -337,9 +337,11 @@ input[type='submit'] {
             }
             > span:first-child {
                 margin-left: nth($size, 4);
+                margin-right: 2px;
             }
             > span:last-child {
                 margin-right: nth($size, 4);
+                margin-left: 2px;
             }
         }
     }

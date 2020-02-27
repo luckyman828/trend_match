@@ -1,5 +1,4 @@
 import axios from 'axios'
-import Product from '../models/Product'
 
 export default {
     namespaced: true,
@@ -396,27 +395,45 @@ export default {
         procesSelectionProducts: state => {
             const products = state.products
             products.map(product => {
-                Vue.set(product, 'feedback', {
-                    ins: product.feedbacks.filter(x => x.action == 'In'),
-                    out: product.feedbacks.filter(x => x.action == 'Out'),
-                    focus: product.feedbacks.filter(x => x.action == 'Focus'),
+                Object.defineProperty(product, 'ins', {
+                    get: function() {
+                        return product.feedbacks.filter(x => x.action == 'In')
+                    },
                 })
-                Vue.set(
-                    product,
-                    'ins',
-                    product.feedbacks.filter(x => x.action == 'In')
-                )
-                Vue.set(
-                    product,
-                    'outs',
-                    product.feedbacks.filter(x => x.action == 'Out')
-                )
-                Vue.set(
-                    product,
-                    'focus',
-                    product.feedbacks.filter(x => x.action == 'Focus')
-                )
+                Object.defineProperty(product, 'outs', {
+                    get: function() {
+                        return product.feedbacks.filter(x => x.action == 'Out')
+                    },
+                })
+                Object.defineProperty(product, 'focus', {
+                    get: function() {
+                        return product.feedbacks.filter(x => x.action == 'Focus')
+                    },
+                })
                 Vue.set(product, 'nds', [])
+                Vue.set(product, 'requests', [])
+
+                // Vue.set(product, 'feedback', {
+                //     ins: product.feedbacks.filter(x => x.action == 'In'),
+                //     out: product.feedbacks.filter(x => x.action == 'Out'),
+                //     focus: product.feedbacks.filter(x => x.action == 'Focus'),
+                // })
+                // Define dynamic getters for the products ins, outs, focus and nds
+                // Vue.set(
+                //     product,
+                //     'ins',
+                //     product.feedbacks.filter(x => x.action == 'In')
+                // )
+                // Vue.set(
+                //     product,
+                //     'outs',
+                //     product.feedbacks.filter(x => x.action == 'Out')
+                // )
+                // Vue.set(
+                //     product,
+                //     'focus',
+                //     product.feedbacks.filter(x => x.action == 'Focus')
+                // )
             })
         },
     },
