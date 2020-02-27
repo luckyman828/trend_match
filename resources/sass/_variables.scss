@@ -63,7 +63,8 @@ $brand-colors: ('primary', $primary, mix(white, $primary, $lightenAmount), white
     ('dark', $dark05, mix(white, $dark05, $lightenAmount), white, $dark),
     ('green', $green, mix(white, $green, $lightenAmount), white, mix($dark05, $green, $darkenAmount)),
     ('red', $red, mix(white, $red, $lightenAmount), white, mix($dark05, $red, $darkenAmount)),
-    ('yellow', $yellow, mix(white, $yellow, $lightenAmount), $dark05, mix($dark05, $yellow, $darkenAmount));
+    ('yellow', $yellow, mix(white, $yellow, $lightenAmount), $dark05, mix($dark05, $yellow, $darkenAmount)),
+    ('white', white, mix(white, white, $lightenAmount), $dark05, mix($dark05, white, $darkenAmount));
 
 // BUTTON SIZES ($name, $height, $font-size, $padding)
 $button-sizes: ('xs', 20px, 12px, 4px), ('sm', 24px, 12px, 8px), ('md', 40px, 14px, 16px), ('lg', 48px, 14px, 20px),

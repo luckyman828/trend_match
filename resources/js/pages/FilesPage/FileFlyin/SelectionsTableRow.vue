@@ -72,7 +72,7 @@ export default {
         'isMaster'
     ],
     data: function() { return {
-        childrenExpanded: false
+        childrenExpanded: true
     }},
     computed: {
         indent() {

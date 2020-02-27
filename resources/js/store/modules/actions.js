@@ -38,12 +38,13 @@ export default {
             }
         },
 
-        async insertOrUpdateAction({ commit, rootGetters }, { product, action, selection, user }) {
+        async insertOrUpdateAction({ commit, dispatch }, { product, action, selection, user }) {
             // type = action|feedback
-            commit('insertOrUpdateAction', { product, action, selection, user })
             let apiUrl
             let requestBody
+            let oldAction
             if (selection.your_role == 'Member') {
+                oldAction = product.your_feedback
                 apiUrl = `/selections/${selection.id}/feedback`
                 requestBody = {
                     feedbacks: [
@@ -54,6 +55,7 @@ export default {
                     ],
                 }
             } else if (selection.your_role == 'Owner') {
+                oldAction = product.your_action
                 apiUrl = `/selections/${selection.id}/actions`
                 requestBody = {
                     actions: [
@@ -64,7 +66,20 @@ export default {
                     ],
                 }
             }
-            await axios.post(apiUrl, requestBody)
+
+            // Update state
+            commit('insertOrUpdateAction', { product, action, selection, user })
+
+            await axios.post(apiUrl, requestBody).catch(err => {
+                // Return the action to the old
+                commit('insertOrUpdateAction', { product, action: oldAction, selection, user })
+                // Dispatch an error alert
+                dispatch(
+                    'alerts/showAlert',
+                    'Something went wrong. Please try again, or contact Kollekt support, if the problem persists',
+                    { root: true }
+                )
+            })
         },
     },
 

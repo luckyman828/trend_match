@@ -111,7 +111,7 @@ export default{
         display: grid;
         min-height: 100vh;
         min-width: 100vw;
-        grid-template-columns: 260px auto;
+        grid-template-columns: 160px auto;
         grid-template-rows: 72px auto;
         grid-template-areas: 
             "logo navbar" 

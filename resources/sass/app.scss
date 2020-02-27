@@ -287,6 +287,16 @@ input[type='submit'] {
     > span:last-child {
         margin-right: 12px;
     }
+    &:not(.ghost):not(.invisible) i {
+        &.fa,
+        &.fas,
+        &.far,
+        &.fal,
+        &.fad,
+        &.fab {
+            font-weight: 900;
+        }
+    }
     i {
         &.fa,
         &.fas,
@@ -337,11 +347,15 @@ input[type='submit'] {
             }
             > span:first-child {
                 margin-left: nth($size, 4);
-                margin-right: 2px;
+                &:not(:last-child) {
+                    margin-right: 2px;
+                }
             }
             > span:last-child {
                 margin-right: nth($size, 4);
-                margin-left: 2px;
+                &:not(:first-child) {
+                    margin-left: 2px;
+                }
             }
         }
     }
@@ -420,6 +434,9 @@ input[type='submit'] {
         &:hover {
             padding: 0;
             border: solid 2px $primary;
+            i {
+                font-weight: 900;
+            }
         }
     }
     &.invisible {

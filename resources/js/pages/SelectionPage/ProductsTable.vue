@@ -2,13 +2,13 @@
     <div class="products-table-wrapper">
         <BaseFlexTable class="products-table" stickyHeader="true">
             <template v-slot:tabs>
-                <BaseTableTab :label="`Overview ${productTotals.all}`" :modelValue="currentProductFilter"
+                <BaseTableTab :label="`Overview`" :count="productTotals.all" :modelValue="currentProductFilter"
                 value="overview" @change="setCurrentProductFilter($event)"/>
-                <BaseTableTab :label="`In ${productTotals.ins}`" :modelValue="currentProductFilter"
+                <BaseTableTab :label="`In`" :count="productTotals.ins" :modelValue="currentProductFilter"
                 value="ins" @change="setCurrentProductFilter($event)"/>
-                <BaseTableTab :label="`Out ${productTotals.outs}`" :modelValue="currentProductFilter"
+                <BaseTableTab :label="`Out`" :count="productTotals.outs" :modelValue="currentProductFilter"
                 value="outs" @change="setCurrentProductFilter($event)"/>
-                <BaseTableTab :label="`Nds ${productTotals.nds}`" :modelValue="currentProductFilter"
+                <BaseTableTab :label="`Nds`" :count="productTotals.nds" :modelValue="currentProductFilter"
                 value="nds" @change="setCurrentProductFilter($event)"/>
             </template>
             <template v-slot:topBar>

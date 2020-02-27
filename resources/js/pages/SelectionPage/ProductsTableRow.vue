@@ -69,16 +69,16 @@
             </button>
         </td>
         <td class="action">
-            <button class="primary" :class="{'ghost': product.your_feedback != 'Focus'}" 
+            <button :class="product.your_feedback != 'Focus' ? 'ghost': 'primary'" 
             @click="onUpdateAction(product, 'Focus')">
                 <i class="far fa-star"></i>
             </button>
-            <button class="primary" :class="{'ghost': product.your_feedback != 'In'}" 
+            <button :class="product.your_feedback != 'In' ? 'ghost': 'green'" 
             @click="onUpdateAction(product, 'In')">
                 <i class="far fa-heart"></i>
                 <span>In</span>
             </button>
-            <button class="primary" :class="{'ghost': product.your_feedback != 'Out'}" 
+            <button :class="product.your_feedback != 'Out' ? 'ghost': 'red'" 
             @click="onUpdateAction(product, 'Out')">
                 <i class="far fa-times-circle"></i>
                 <span>out</span>
@@ -111,8 +111,8 @@ export default {
         }
     },
     methods: {
-        onUpdateAction(product, actionCode) {
-            this.$emit('updateAction', product, actionCode)
+        onUpdateAction(product, action) {
+            this.$emit('updateAction', product, action)
         },
     },
 }

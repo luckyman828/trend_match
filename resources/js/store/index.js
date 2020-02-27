@@ -10,6 +10,7 @@ import folders from './modules/folders'
 import selections from './modules/selections'
 import products from './modules/products'
 import actions from './modules/actions'
+import alerts from './modules/alerts'
 
 // Load Vuex
 Vue.use(Vuex)
@@ -27,6 +28,7 @@ const store = new Vuex.Store({
         selections,
         products,
         actions,
+        alerts,
     },
 })
 

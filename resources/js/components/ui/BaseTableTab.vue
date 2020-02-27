@@ -1,6 +1,9 @@
 <template>
-    <div class="tab" :class="{'active': modelValue == value}" @click="change">
+    <div class="tab" :class="[{'active': active}, {'has-count': count != null}]" @click="change">
         <span>{{label}}</span>
+        <span v-if="count != null" class="count pill sm" :class="active ? 'primary' : 'white'">
+            <span>{{count}}</span>
+        </span>
     </div>
 </template>
 
@@ -10,8 +13,14 @@ export default {
     props: [
         'modelValue',
         'value',
-        'label'
+        'label',
+        'count',
     ],
+    computed: {
+        active() {
+            return this.modelValue == this.value
+        }
+    },
     methods: {
         change() {
             this.$emit('input', this.value)
@@ -25,7 +34,7 @@ export default {
 @import '~@/_variables.scss';
     $borderRadius: 4px;
     .tab {
-        height: 40px;
+        height: 44px;
         width: 220px;
         display: flex;
         justify-content: center;
@@ -38,7 +47,6 @@ export default {
         color: $dark15;
         cursor: pointer;
         padding-bottom: $borderRadius;
-        box-sizing: content-box;
         &:hover {
             background: $light2;
             color: $dark05;
@@ -50,6 +58,10 @@ export default {
         }
         &:not(:last-child) {
             margin-right: 8px;
+        }
+        &.has-count {
+            justify-content: space-between;
+            padding: 0 32px $borderRadius;
         }
     }
 
