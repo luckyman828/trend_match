@@ -44,9 +44,8 @@ export default {
         SelectionUsersFlyinVisible: false,
     }},
     watch: {
-        file: async function(newVal, oldVal) {
-            // Check if we have a new file
-            if (!oldVal || newVal.id != oldVal.id) {
+        show: function(newVal, oldVal) {
+            if (newVal) {
                 this.fetchData()
             }
         }

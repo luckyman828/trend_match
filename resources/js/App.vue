@@ -62,12 +62,7 @@ export default{
             this.fetchWorkspaces().then(() => {
                 // Set the current workspace
                 // If we don't have a current workspace saved, then set index to 0
-                console.log(this.currentWorkspaceIndex)
-                if (!this.currentWorkspaceIndex) {
-                    console.log('hello')
-                }
                 if (this.currentWorkspaceIndex == null) {
-                    console.log('set current workspace index')
                     this.setCurrentWorkspaceIndex(0)
                 }
             })

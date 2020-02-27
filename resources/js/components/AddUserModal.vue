@@ -76,7 +76,6 @@ export default {
             const clipData = e.clipboardData.getData('text/plain')
             clipData.trim('\r\n')
             const rows = clipData.split('\n')
-            console.log(rows)
             rows.forEach(row => {
                 const cells = row.split('\t')
                 // Prevent fancy paste for simple pasting
