@@ -13,11 +13,19 @@
 
         <!-- Access granted -->
         <template v-else>
-            <div class="quick-actions">
+            <div class="quick-actions" v-if="productsNoOutNoComment.length > 0 || productsNoIn.length > 0">
                 <p>Quick actions</p>
-                <span v-if="productsNoIn.length > 0 && !hideQuickOut" class="button red wide" @click="OutNoInStyles()">'OUT' styles with no IN ({{productsNoIn.length}})</span>
-                <span v-if="productsNoOutNoComment.length > 0 && !hideQuickIn" class="button green wide" @click="InNoOutNoCommentStyles()">'IN' styles with no OUT & no Comments ({{productsNoOutNoComment.length}})</span>
-                <span class="button invisible icon-right red-hover" @click="setHideQuickIn(); setHideQuickOut()">Hide quick actions <i class="far fa-times-circle"></i></span>
+                <button v-if="productsNoOutNoComment.length > 0" class="green-hover md ghost" 
+                @click="InNoOutNoCommentStyles()" style="margin-right: 8px;">
+                    <span>'IN' styles with no OUT & no Comments ({{productsNoOutNoComment.length}})</span>
+                </button>
+                <button v-if="productsNoIn.length > 0" class="red-hover md ghost" 
+                @click="OutNoInStyles()" style="margin-right: 8px;">
+                    <span>'OUT' styles with no IN ({{productsNoIn.length}})</span>
+                </button>
+                <button class="invisible ghost-hover md" @click="setHideQuickIn(); setHideQuickOut()">
+                    <span>Hide quick actions</span><i class="far fa-times-circle"></i>
+                </button>
             </div>
 
             <ProductsTable ref="productsComponent" :file="file" :products="productsFiltered" 
@@ -61,44 +69,38 @@ export default{
             return this.currentFile
         },
         productsNoIn() {
-            // const products = this.products
-            // let productMatches = []
-            // products.forEach(product => {
-            //     if (!product.currentAction && product.ins.length <= 0 && product.focus.length <= 0) {
-            //         productMatches.push(product)
-            //     }
-            // })
-            // return productMatches
-
-            return this.products.filter(product => {
-                return !product.currentAction && product.ins.length <= 0 && product.focus.length <= 0
-            })
+            if (this.currentSelection.your_role == 'Member') {
+                return this.products.filter(product => {
+                    return product.your_feedback == 'None' && product.ins.length <= 0 && product.focus.length <= 0
+                })
+            }
+            if (this.currentSelection.your_role == 'Owner') {
+                return this.products.filter(product => {
+                    return product.your_action == 'None' && product.ins.length <= 0 && product.focus.length <= 0
+                })
+            }
         },
         productsNoOutNoComment() {
-            // const products = this.products
-            // let productMatches = []
-            // products.forEach(product => {
-            //     if (!product.currentAction && product.comments.length < 1 && product.outs.length < 1 && product.requests.length < 1) {
-            //         productMatches.push(product)
-            //     }
-            // })
-            // return productMatches
-
-            return this.products.filter(product => {
-                return !product.currentAction && product.comments.length < 1 && product.outs.length < 1 && product.requests.length < 1
-            })
+            if (this.currentSelection.your_role == 'Member') {
+                return this.products.filter(product => {
+                    return product.your_feedback == 'None' && product.comments.length < 1 && product.outs.length < 1 && product.requests.length < 1
+                })
+            }
+            if (this.currentSelection.your_role == 'Owner') {
+                return this.products.filter(product => {
+                    return product.your_action == 'None' && product.comments.length < 1 && product.outs.length < 1 && product.requests.length < 1
+                })
+            }
         },
     },
     methods: {
         ...mapMutations('products', ['setSingleVisisble']),
-        ...mapActions('actions', ['insertOrUpdateAction']),
+        ...mapActions('actions', ['insertOrUpdateAction', 'insertOrUpdateActions']),
         InNoOutNoCommentStyles() {
-            this.setHideQuickIn()
-            this.massSubmitAction(this.productsNoOutNoComment, 1)
+            this.onInsertOrUpdateActions(this.productsNoOutNoComment, 'In')
         },
         OutNoInStyles() {
-            this.setHideQuickOut()
-            this.massSubmitAction(this.productsNoIn, 0)
+            this.onInsertOrUpdateActions(this.productsNoIn, 'Out')
         },
         setHideQuickOut() {
             this.hideQuickOut = true
@@ -117,6 +119,9 @@ export default{
             }
             this.insertOrUpdateAction({product, action: actionToPost, selection: this.selection, user: this.authUser})
         },
+        onInsertOrUpdateActions(products, action) {
+            this.insertOrUpdateActions({products, action, selection: this.selection, user: this.authUser})
+        }
     },
     created() {
         // this.hideQuickOut = this.$cookies.get(`quick_out_${this.currentFile.id}_${this.currentTask.id}`)

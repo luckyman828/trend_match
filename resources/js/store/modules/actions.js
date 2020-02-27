@@ -81,6 +81,65 @@ export default {
                 )
             })
         },
+        async insertOrUpdateActions({ commit, dispatch }, { products, action, selection, user }) {
+            // type = action|feedback
+            let apiUrl
+            let requestBody
+            let oldActions
+            const productActions = products.map(product => {
+                return {
+                    product,
+                    action,
+                }
+            })
+            if (selection.your_role == 'Member') {
+                oldActions = products.map(product => {
+                    return {
+                        product,
+                        action: product.your_feedback,
+                    }
+                })
+                apiUrl = `/selections/${selection.id}/feedback`
+                requestBody = {
+                    feedbacks: products.map(product => {
+                        return {
+                            product_id: product.id,
+                            feedback: action,
+                        }
+                    }),
+                }
+            } else if (selection.your_role == 'Owner') {
+                oldActions = products.map(product => {
+                    return {
+                        product,
+                        action: product.your_action,
+                    }
+                })
+                apiUrl = `/selections/${selection.id}/actions`
+                requestBody = {
+                    actions: products.map(product => {
+                        return {
+                            product_id: product.id,
+                            action: action,
+                        }
+                    }),
+                }
+            }
+
+            // Update state
+            commit('insertOrUpdateActions', { productActions, selection, user })
+
+            await axios.post(apiUrl, requestBody).catch(err => {
+                // Return the action to the old
+                commit('insertOrUpdateActions', { productActions: oldActions, selection, user })
+                // Dispatch an error alert
+                dispatch(
+                    'alerts/showAlert',
+                    'Something went wrong. Please try again, or contact Kollekt support, if the problem persists',
+                    { root: true }
+                )
+            })
+        },
     },
 
     mutations: {
@@ -128,6 +187,55 @@ export default {
                     existingAction.action = action
                     existingAction.user_id = user.id
                 }
+            }
+        },
+        insertOrUpdateActions(state, { productActions, selection, user }) {
+            // Loop through our products and update their actions
+            if (selection.your_role == 'Member') {
+                productActions.forEach(productAction => {
+                    productAction.product.your_feedback = productAction.action
+                    // Check if the action already exists in the products feedbacks array
+                    const existingAction = productAction.product.feedbacks.find(
+                        x =>
+                            x.product_id == productAction.product.id &&
+                            x.selection_id == selection.id &&
+                            x.user_id == user.id
+                    )
+                    if (!existingAction) {
+                        productAction.product.feedbacks.push({
+                            action: productAction.action,
+                            product_id: productAction.product.id,
+                            selection: selection,
+                            selection_id: selection.id,
+                            user_id: user.id,
+                        })
+                    } else {
+                        existingAction.action = productAction.action
+                    }
+                })
+            }
+            if (selection.your_role == 'Owner') {
+                productActions.forEach(productAction => {
+                    productAction.product.your_action = productAction.action
+                    // Check if the action already exists in the products feedbacks array
+                    const existingAction = productAction.product.actions.find(
+                        x =>
+                            x.product_id == productAction.product.id &&
+                            x.selection_id == selection.id &&
+                            x.user_id == user.id
+                    )
+                    if (!existingAction) {
+                        productAction.product.actions.push({
+                            action: productAction.action,
+                            product_id: productAction.product.id,
+                            selection: selection,
+                            selection_id: selection.id,
+                            user_id: user.id,
+                        })
+                    } else {
+                        existingAction.action = productAction.action
+                    }
+                })
             }
         },
     },
