@@ -211,6 +211,7 @@ export default {
                 .get(apiUrl)
                 .then(response => {
                     commit('insertProducts', { products: response.data, method: 'set' })
+                    commit('procesSelectionProducts')
                     commit('setProductStatus', 'success')
                 })
                 .catch(err => {
@@ -391,6 +392,32 @@ export default {
         },
         alertError: state => {
             window.alert('Network error. Please check your connection')
+        },
+        procesSelectionProducts: state => {
+            const products = state.products
+            products.map(product => {
+                Vue.set(product, 'feedback', {
+                    ins: product.feedbacks.filter(x => x.action == 'In'),
+                    out: product.feedbacks.filter(x => x.action == 'Out'),
+                    focus: product.feedbacks.filter(x => x.action == 'Focus'),
+                })
+                Vue.set(
+                    product,
+                    'ins',
+                    product.feedbacks.filter(x => x.action == 'In')
+                )
+                Vue.set(
+                    product,
+                    'outs',
+                    product.feedbacks.filter(x => x.action == 'Out')
+                )
+                Vue.set(
+                    product,
+                    'focus',
+                    product.feedbacks.filter(x => x.action == 'Focus')
+                )
+                Vue.set(product, 'nds', [])
+            })
         },
     },
 }
