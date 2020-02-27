@@ -30,30 +30,30 @@
         </BaseFlexTable>
 
         <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps"
-        @keybind-r="$refs['userRow-'+slotProps.item.id][0].editName = true"
-        @keybind-c="onEditUserCurrency(slotProps.mouseEvent, slotProps.item)"
-        @keybind-t="onEditUserRole(slotProps.mouseEvent, slotProps.item)"
-        @keybind-d="onRemoveUserFromTeam(slotProps.item)">
+        @keybind-r="$refs['userRow-'+contextUser.id][0].editName = true"
+        @keybind-c="onEditUserCurrency(contextMouseEvent, contextUser)"
+        @keybind-t="onEditUserRole(contextMouseEvent, contextUser)"
+        @keybind-d="onRemoveUserFromTeam(contextUser)">
             <div class="item-group">
                 <div class="item" @click="$refs['userRow-'+slotProps.item.id][0].editName = true">
                     <div class="icon-wrapper"><i class="far fa-pen"></i></div>
-                    <u>R</u>ename User
+                    <span><u>R</u>ename User</span>
                 </div>
             </div>
             <div class="item-group">
                 <div class="item" @click.stop="onEditUserCurrency(slotProps.mouseEvent, slotProps.item)">
                     <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
-                    <u>C</u>hange User Currency
+                    <span><u>C</u>hange User Currency</span>
                 </div>
                 <div class="item" @click.stop="onEditUserRole(slotProps.mouseEvent, slotProps.item)">
                     <div class="icon-wrapper"><i class="far fa-key"></i></div>
-                    Change <u>Team</u> Role
+                    <span>Change <u>T</u>eam Role</span>
                 </div>
             </div>
             <div class="item-group">
                 <div class="item" @click="onRemoveUserFromTeam(slotProps.item)">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
-                    <u>D</u>elete User from Team
+                    <span><u>D</u>elete User from Team</span>
                 </div>
             </div>
         </BaseContextMenu>
@@ -152,13 +152,16 @@ export default {
         userToEdit: null,
         originalUser: null,
         usersToAdd: [],
-        usersFilteredBySearch: this.team.users
+        usersFilteredBySearch: this.team.users,
+
+        contextUser: null,
+        contextMouseEvent: null,
     }},
     watch: {
         team: function(newVal, oldVal) {
             // If we have a new team
             if (!oldVal || newVal.id != oldVal.id) {
-                this.fetchTeamUsers(this.team)
+                this.fetchData()
                 this.$refs.searchField.clear()
             }
         }
@@ -192,6 +195,8 @@ export default {
             this.sortArray(this.team.users, this.sortAsc, this.sortKey)
         },
         showUserContext(e, user) {
+            this.contextUser = user
+            this.contextMouseEvent = e
             const contextMenu = this.$refs.contextMenuUser
             contextMenu.item = user
             contextMenu.show(e)
@@ -223,9 +228,14 @@ export default {
             contextMenu.item = user;
             contextMenu.show(mouseEvent)
         },
+        fetchData() {
+            if (this.team.users == null) {
+                this.fetchTeamUsers(this.team)
+            }
+        }
     },
     created() {
-        this.fetchTeamUsers(this.team)
+        this.fetchData()
     },
     updated() {
         this.usersFilteredBySearch = this.team.users

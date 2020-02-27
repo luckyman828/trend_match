@@ -83,20 +83,25 @@ export default {
 
                 // contextMenu.style.top=mouseY+'px'
             })
+            // Add event listeners
+            document.body.addEventListener('keyup', this.hotkeyHandler)
+            document.body.addEventListener('click', this.clickHandler)
+
         },
         hide() {
             this.visible = false
             this.$nextTick(() => {
                 this.$emit('hide')
             })
+            // Remove event listeners
+            document.body.removeEventListener('keyup', this.hotkeyHandler)
+            document.body.removeEventListener('click', this.clickHandler)
         },
         hotkeyHandler(event) {
             // Only listen if the contextMenu is visible
             if(this.visible && event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
                 const key = event.code
-                // Close on escape key
-                // if (key == 'Escape')
-                    this.hide()
+                this.hide()
                 // Get the key name and emit it
                 this.$emit('keybind-'+event.key,event)
             }
@@ -123,14 +128,6 @@ export default {
             }
         }
     },
-    created() {
-        document.body.addEventListener('keyup', this.hotkeyHandler)
-        document.body.addEventListener('click', this.clickHandler)
-    },
-    destroyed() {
-        document.body.removeEventListener('keyup', this.hotkeyHandler)
-        document.body.removeEventListener('click', this.clickHandler)
-    }
 
 }
 </script>
