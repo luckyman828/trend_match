@@ -13,7 +13,7 @@
 
             <div class="option unset-option" v-if="unsetOption" @click="onUnset">
                 <label>
-                    <i class="fas fa-minus"></i>
+                    <i class="far fa-trash-alt"></i>
                     <div class="label">
                         {{unsetOption}}
                     </div>
