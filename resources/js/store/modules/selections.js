@@ -138,7 +138,7 @@ export default {
         },
         async updateSelection({ commit, dispatch }, selection) {
             // Assume update
-            let apiUrl = `/files/${file.id}/selections`
+            let apiUrl = ''
             let requestMethod = 'put'
             let requestBody = selection
             // Check if we are inserting or updating
@@ -146,9 +146,11 @@ export default {
                 // If we are inserting
                 commit('insertSelection', selection)
                 requestMethod = 'post'
-                apiUrl = `/selections`
+                apiUrl = `/files/${file.id}/selections`
             } else {
                 commit('updateSelection', selection)
+                requestMethod = 'put'
+                apiUrl = `/selections/${selection.id}`
             }
 
             await axios({

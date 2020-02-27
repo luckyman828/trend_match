@@ -11,7 +11,7 @@
                 <i v-else class="fa-file light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <BaseEditInputWrapper activateOnMount=true type="text"
                 :value="selectionToEdit.selection.name" :oldValue="selection.name" v-model="selectionToEdit.selection.name"
-                @submit="onUpdateSelection(selection); $emit('submitToEdit')" @cancel="$emit('cancelToEdit', selection)"/>
+                @submit="$emit('submitToEdit');onUpdateSelection(selection)" @cancel="$emit('cancelToEdit', selection)"/>
             </td>
             <td v-else class="title clickable" @click="onGoToSelection" :style="selectionWidth">
                 <i v-if="isMaster" class="fa-file-certificate master" :class="selection.id ? 'fad' : 'far'"></i> 
