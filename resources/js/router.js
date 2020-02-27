@@ -18,7 +18,7 @@ const routes = [
     { path: '/files', name: 'files', component: FilesPage },
     { path: '/teams', name: 'teams', component: TeamsPage },
     { path: '/users', name: 'users', component: UsersPage },
-    { path: '/file/:fileId/:selectionId', name: 'selection', component: SelectionPage },
+    { path: '/file/:fileId/selection/:selectionId', name: 'selection', component: SelectionPage },
     { path: '*', redirect: '/files' },
 ]
 

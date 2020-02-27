@@ -84,7 +84,10 @@ export default {
                 else e.preventDefault()
                 // If the cell 0 has an @ character, add a user object
                 if (cells[0].indexOf('@') >= 0) {
-                    const newUser = {email: cells[0], name: cells[1], password: cells[2]}
+                    const newUser = JSON.parse(JSON.stringify(this.userDefaultObject))
+                    newUser.email = cells[0]
+                    newUser.name = cells[1]
+                    newUser.password = cells[2]
                     // If no email has been provided for the first user, replace the first user
                     if (this.usersToAdd[index].email && this.usersToAdd[index].email.indexOf('@') >= 0) {
                         this.usersToAdd.push(newUser)
