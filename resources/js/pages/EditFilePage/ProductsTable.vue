@@ -148,7 +148,6 @@ export default {
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
-        ...mapGetters('persist', ['currentWorkspaceId', 'authUser']),
         selectedCategories: {
             get () {
                 return this.$store.getters['products/selectedCategories']

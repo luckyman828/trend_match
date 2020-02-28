@@ -38,9 +38,6 @@ export default {
         editName: false,
         userToEdit: this.user,
     }},
-    computed: {
-        ...mapGetters('persist', ['availableTeamRoles'])
-    },
     methods: {
         ...mapActions('users', ['updateUser']),
     },

@@ -11,6 +11,7 @@ import selections from './modules/selections'
 import products from './modules/products'
 import actions from './modules/actions'
 import alerts from './modules/alerts'
+import comments from './modules/comments'
 
 // Load Vuex
 Vue.use(Vuex)
@@ -29,6 +30,7 @@ const store = new Vuex.Store({
         products,
         actions,
         alerts,
+        comments,
     },
 })
 

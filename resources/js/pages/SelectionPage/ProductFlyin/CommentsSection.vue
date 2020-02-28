@@ -16,7 +16,10 @@
                     <!-- <div class="sender-wrapper" v-for="(comment, index) in product.comments" :key="comment.id" :class="{own: comment.user_id == authUser.id}"> -->
                     <div class="sender-wrapper" v-for="(comment, index) in product.comments" :key="index" :class="{own: comment.user_id == authUser.id}">
                         <comment :product="product" :comment="comment"/>
-                        <div class="sender" v-if="product.comments[index+1] ? product.comments[index+1].user_id != comment.user_id : true">{{comment.selection.name}} {{(comment.user_id == authUser.id) ? '| You' : comment.user.name}}</div>
+                        <div class="sender" v-if="product.comments[index+1] ? product.comments[index+1].user_id != comment.user_id : true">
+                            <!-- {{comment.selection.name}}  -->
+                            {{(comment.user_id == authUser.id) ? '| You' : comment.user.name}}
+                        </div>
                     </div>
 
                 </template>
@@ -54,7 +57,7 @@
                 <form @submit="onSubmit" :class="[{active: writeActive}]" v-show="writeScope == 'request'">
                     <div class="input-parent request">
                         <BaseInputTextArea ref="requestField" :disabled="selectionRequest && !writeActive"
-                        placeholder="Write your request here..." v-model="newRequest.body" 
+                        placeholder="Write your request here..." v-model="newRequest.content" 
                         @keydown.native.enter.exact.prevent @click.native="activateWrite"
                         @keyup.native.esc="deactivateWrite(); cancelRequest()" @keyup.native.enter.exact="onSubmit"></BaseInputTextArea>
                         <div class="edit-request" v-if="selectionRequest && !writeActive"
@@ -83,7 +86,7 @@
                 <form @submit="onSubmit" :class="[{active: writeActive}]" v-show="writeScope == 'comment'">
                     <div class="input-parent comment">
                         <BaseInputTextArea ref="commentField"
-                        placeholder="Write your comment here..." v-model="newComment.body" 
+                        placeholder="Write your comment here..." v-model="newComment.content" 
                         @click.native="activateWrite" @keydown.native.enter.exact.prevent  
                         @keyup.native.esc="deactivateWrite" @keyup.native.enter.exact="onSubmit"></BaseInputTextArea>
                     </div>
@@ -115,7 +118,6 @@ export default {
     name: 'commentsSection',
     props: [
         'product',
-        'visisble',
     ],
     components: {
         Comment,
@@ -124,11 +126,11 @@ export default {
     },
     data: function () { return {
         newComment: {
-            body: '',
+            content: '',
             important: false,
         },
         newRequest: {
-            body: '',
+            content: '',
             important: false,
         },
         commentScope: 'comments',
@@ -142,24 +144,17 @@ export default {
             if (newVal.id != oldVal.id)
                 this.update()
         },
-        show(newVal, oldVal) {
-            if (newVal) {
-                document.body.addEventListener('keydown', this.hotkeyHandler)
-            } else {
-                document.body.removeEventListener('keydown', this.hotkeyHandler)
-            }
-        }
     },
     computed: {
-        ...mapGetters('persist', ['authUser']),
+        ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', ['currentSelection']),
         submitDisabled () {
             if (this.writeScope == 'comment') {
-                return this.newComment.body.length < 1 || this.submitting
+                return this.newComment.content.length < 1 || this.submitting
             }
             else {
-                return this.newRequest.body.length < 1
-                // return this.newRequest.body.length < 1 || this.submitting
+                return this.newRequest.content.length < 1
+                // return this.newRequest.content.length < 1 || this.submitting
             }
         },
     },
@@ -185,9 +180,10 @@ export default {
         },
         cancelRequest() {
             this.deactivateWrite()
-            this.newRequest.body = (this.selectionRequest) ? this.selectionRequest.body : ''
+            this.newRequest.content = (this.selectionRequest) ? this.selectionRequest.content : ''
         },
         async onSubmit(e) {
+
             if (e) e.preventDefault()
             if (this.submitDisabled) return
 
@@ -202,7 +198,7 @@ export default {
                     user_id: this.authUser.id,
                     product_id: this.product.id,
                     selection_id: this.currentSelection.id,
-                    body: this.newComment.body,
+                    content: this.newComment.content,
                     user: this.authUser,
                     selection: this.currentSelection,
                     votes: []
@@ -218,7 +214,7 @@ export default {
                     user_id: this.authUser.id,
                     product_id: this.product.id,
                     selection_id: this.currentSelection.id,
-                    body: this.newRequest.body,
+                    content: this.newRequest.content,
                     user: this.authUser,
                     selection: this.currentSelection
                 }
@@ -238,9 +234,9 @@ export default {
             
             // Reset comment
             if (this.writeScope == 'comment') {
-                this.newComment.body = ''
+                this.newComment.content = ''
             } else {
-                this.newRequest.body = this.selectionRequest.body
+                this.newRequest.content = this.selectionRequest.content
             }
             this.resizeTextareas()
 
@@ -256,11 +252,11 @@ export default {
             // Find the existing selection request if any
             this.selectionRequest = this.product.requests.find(x => x.selection_id == this.currentSelection.id)
             // Set the new request equal to the existing if one exists
-            this.newRequest.body = (this.selectionRequest) ? this.selectionRequest.body : ''
+            this.newRequest.content = (this.selectionRequest) ? this.selectionRequest.content : ''
             // Set the id of the new request if one exists
             this.newRequest.id = (this.selectionRequest) ? this.selectionRequest.id : null
             // Reset the new comment field
-            this.newComment.body = ''
+            this.newComment.content = ''
             this.writeActive = false
 
             // Preset the height of the request field
@@ -281,6 +277,7 @@ export default {
             const key = e.code
             if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
                 if (key == 'Enter') {
+                    e.preventDefault()
                     this.activateWrite()
                 }
             }
@@ -288,6 +285,12 @@ export default {
     },
     mounted() {
         this.update()
+    },
+    created() {
+        // Insert small delay before we add our event listener to stop the same event that showed this section, do things inside the component
+        setTimeout(() => {
+            document.body.addEventListener('keyup', this.hotkeyHandler)
+        }, 10)
     },
     destroyed() {
         document.body.removeEventListener('keyup', this.hotkeyHandler)

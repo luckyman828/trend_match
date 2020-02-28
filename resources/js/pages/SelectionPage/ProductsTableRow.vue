@@ -1,6 +1,6 @@
 <template>
     <tr class="products-table-row" :class="product.currentAction && 'action-'+ product.currentAction.action" tabindex="0"
-    @keydown="hotkeyHandler($event)" ref="row">
+    @keydown="hotkeyHandler($event)" @keyup="keypressHandler($event)" ref="row">
 
         <span v-if="product.newComment" class="circle tiny primary"></span>
         
@@ -156,13 +156,17 @@ export default {
                 this.focusPrevRow(event)
             if (key == 'ArrowRight')
                 this.focusNextRow(event)
-            if (key == 'Enter')
+            if (key == 'Enter') {
                 this.$emit('onViewSingle', this.product)
+            }
+        },
+        keypressHandler(event) {
+            const key = event.code
             if (key == 'KeyI')
                 this.onUpdateAction(this.product, 'In')
             if (key == 'KeyO')
                 this.onUpdateAction(this.product, 'Out')
-            if (key == 'KeyF')
+            if (key == 'KeyF' || key == 'KeyU')
                 this.onUpdateAction(this.product, 'Focus')
         }
     },

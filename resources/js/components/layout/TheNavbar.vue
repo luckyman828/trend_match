@@ -31,17 +31,8 @@ export default {
         NavbarEditFile,
     },
     computed: {
-        ...mapGetters('persist', ['currentFile']),
-        ...mapGetters('entities/products', ['products']),
-        loadingProducts() {
-            if (this.products) {
-                if (this.products.length > 0)
-                    return false
-            }
-        }
+        ...mapGetters('files', ['currentFile'])
     },
-    methods: {
-    }
 };
 </script>
 

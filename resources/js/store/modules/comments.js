@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Vue from 'vue'
 
 export default {
     namespaced: true,
@@ -40,47 +41,44 @@ export default {
                 }
             }
         },
-        async insertOrUpdateComment({ commit }, { product, comment }) {
-            let requestMethod = 'post'
+        async insertOrUpdateComment({ commit, dispatch }, { product, comment }) {
+            // Update our state
+            commit('insertOrUpdateComment', { product, comment })
+            let requestMethod
+            let apiUrl
             // check if the provided comment should be posted or updates
             if (comment.id != null) {
                 requestMethod = 'put'
-                commit('updateComment', { product, comment })
+                apiUrl = `/comments/${comment.id}`
             } else {
                 requestMethod = 'post'
                 // Add the new comment to our product
-                commit('insertComment', { product, comment })
+                apiUrl = `/selections/${comment.selection_id}/products/${product.id}/comments`
             }
 
-            // Config API endpoint
-            const apiUrl = `/comment`
-            const requestHeaders = {
-                'X-Kollekt-App-Key': process.env.MIX_KOLLEKT_API_KEY,
-            }
-
-            // Assume success
-            let success = true
-
-            // await axios({
-            //     method: requestMethod,
-            //     url: apiUrl,
-            //     data: {
-            //         comment,
-            //     },
-            //     headers: requestHeaders,
-            // })
-            //     .then(async response => {
-            //         // Get and set the comment id equal to the id given by the database
-            //         newComment.id = response.data.id
-            //     })
-            //     .catch(err => {
-            //         console.log(err.response)
-            //         success = false
-            //         commit('alertError')
-            //         newComment.failed = true
-            //     })
-
-            return success
+            await axios({
+                method: requestMethod,
+                url: apiUrl,
+                // data: comment,
+                data: {
+                    content: comment.content,
+                    is_important: false,
+                },
+            })
+                .then(response => {
+                    // Set the given ID to the comment if we were posting a new comment
+                    if (!comment.id) comment.id = response.data.id
+                })
+                .catch(err => {
+                    // On error, set error on the comment
+                    Vue.set(comment, 'error', true)
+                    // Alert the user
+                    dispatch(
+                        'alerts/showAlert',
+                        'Error on comment. Please try again. If the error persists, please contact Kollekt support',
+                        { root: true }
+                    )
+                })
         },
         async deleteComment({ commit }, { product, comment }) {
             // Delete the comment from our state
@@ -125,21 +123,16 @@ export default {
         setSubmitting(state, bool) {
             state.submitting = bool
         },
-        updateComment: async (state, { product, comment }) => {
-            // If a product has been provided. use that, else find the product from our state
-            const commentProduct = product
-                ? product
-                : this.state.entities.products.products.find(x => x.id == comment.product_id)
-            // Find the index of the comment and replace it
-            const commentIndex = commentProduct.comments.findIndex(x => x.id == comment.id)
-            commentProduct.comments[commentIndex] = comment
-        },
-        insertComment: async (state, { product, comment }) => {
-            // If a product has been provided. use that, else find the product from our state
-            const commentProduct = product
-                ? product
-                : this.state.entities.products.products.find(x => x.id == comment.product_id)
-            commentProduct.comments.push(comment)
+        insertOrUpdateComment(state, { product, comment }) {
+            // First see if the comment already exists
+            const existingCommentIndex = product.comments.findIndex(x => x.id == comment.id)
+            if (existingCommentIndex >= 0) {
+                Vue.set(product.comments, existingCommentIndex, comment)
+            }
+            // Else insert the comment
+            else {
+                product.comments.push(comment)
+            }
         },
         deleteComment(state, { product, comment }) {
             // If a product has been provided. use that, else find the product from our state

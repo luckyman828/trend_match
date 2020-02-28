@@ -6,7 +6,7 @@
             <router-link :to="{name: 'files'}" class="back-link"><span class="circle primary"><i class="far fa-arrow-left"></i></span><span>Back to Files</span></router-link>
             <div class="breadcrumbs">
                 <router-link class="text-link" :to="{name: 'files'}">Files</router-link>
-                <span class="current"><strong>{{currentFile.title}}</strong></span>
+                <span class="current"><strong>{{currentFile.name}}</strong></span>
             </div>
 
         </div>
@@ -27,7 +27,7 @@
                 <div style="height: 1040px; width: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center;">
                     <span style="font-size: 28px; font-weight: 700; margin-top: 20px;">{{currentWorkspace.name}}</span>
                     <div>
-                        <span style="font-size: 28px; font-weight: 700; display: block; margin-bottom: 20px;">{{currentFile.title}}</span>
+                        <span style="font-size: 28px; font-weight: 700; display: block; margin-bottom: 20px;">{{currentFile.name}}</span>
                         <span style="color: #3B86FF; font-size: 20px; font-weight: 700; display: block;">{{productsToExport.length}} style{{productsToExport.length > 1 ? 's' : ''}}</span>
                     </div>
                     <img style="display: block; margin: 0 auto; width: 150px;" src="https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/kollekt_logo_color.png">
@@ -135,7 +135,7 @@
         <!-- PDF ENDS  -->
 
 
-        <BaseModal ref="exportModal" :header="'Export <strong>' + currentFile.title + '</strong> to PDF'" :subHeader="'The products in your current view will be exported'"
+        <BaseModal ref="exportModal" :header="'Export <strong>' + currentFile.name + '</strong> to PDF'" :subHeader="'The products in your current view will be exported'"
         @close="exportModalVisible=false" :show="exportModalVisible">
             <template v-slot:body v-if="exportModalVisible">
                 <form>
@@ -201,7 +201,7 @@
                 </form>
                 <span v-if="exportingPDF" class="button xl dark disabled"><Loader/></span>
                 <template v-else-if="generatedPDF">
-                    <a class="button xl primary" :href="generatedPDF" target="_blank" :download="(currentWorkspace.name + '_' + currentFile.title).replace(/ /g, '_') + '.pdf'">Download PDF</a>
+                    <a class="button xl primary" :href="generatedPDF" target="_blank" :download="(currentWorkspace.name + '_' + currentFile.name).replace(/ /g, '_') + '.pdf'">Download PDF</a>
                     <span style="margin-top: 32px;" class="button xl dark" @click="printToPdf">Generate new PDF</span>
                 </template>
                 <span v-else class="button xl dark" @click="printToPdf">Export as PDF</span>
@@ -233,6 +233,7 @@ export default {
     }},
     computed: {
         ...mapGetters('products', ['productsFiltered']),
+        ...mapGetters('files', ['currentFile']),
         productsToExport() {
             const products = this.productsFiltered
             if (this.onlyWithRequests) {
@@ -253,7 +254,7 @@ export default {
             var payload = {
                 html: `<head><link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet"></head><body>${this.$refs.exportToPdf.innerHTML}</body>`, //Use your own HTML
                 inlinePdf: true,
-                fileName: (this.currentWorkspace.name + '_' + this.currentFile.title).replace(/ /g, '_'),
+                fileName: (this.currentWorkspace.name + '_' + this.currentFile.name).replace(/ /g, '_'),
                 options: {
                     displayHeaderFooter: true,
                     preferCSSPageSize: true,

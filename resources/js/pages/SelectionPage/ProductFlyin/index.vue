@@ -109,7 +109,7 @@
 
             <DistributionSection :product="currentProduct"/>
 
-            <CommentsSection class="comments" :product="product" :selection="currentSelection" :visisble="show"/>
+            <CommentsSection class="comments" :product="product" :selection="currentSelection"/>
         </template>
     </BaseFlyin>
 </template>
@@ -144,14 +144,13 @@ export default {
         },
         show(newVal, oldVal) {
             if (newVal) {
-                document.body.addEventListener('keydown', this.hotkeyHandler)
+                document.body.addEventListener('keyup', this.hotkeyHandler)
             } else {
-                document.body.removeEventListener('keydown', this.hotkeyHandler)
+                document.body.removeEventListener('keyup', this.hotkeyHandler)
             }
         }
     },
     computed: {
-        ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope']),
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct']),
         ...mapGetters('selections', ['currentSelectionId', 'currentSelection']),
         product () {
@@ -204,7 +203,7 @@ export default {
                         this.onUpdateAction(this.product, 'In')
                     if (key == 'KeyO')
                         this.onUpdateAction(this.product, 'Out')
-                    if (key == 'KeyF')
+                    if (key == 'KeyF' || key == 'KeyU')
                         this.onUpdateAction(this.product, 'Focus')
                 }
             }

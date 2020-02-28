@@ -21,7 +21,7 @@ export default {
         'request'
     ],
     computed: {
-        ...mapGetters('persist', ['authUser', 'userPermissionLevel', 'currentTask']),
+        ...mapGetters('auth', ['authUser']),
     },
     methods: {
     }

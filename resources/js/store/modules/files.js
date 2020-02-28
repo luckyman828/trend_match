@@ -189,12 +189,6 @@ export default {
                     console.log(err.response)
                 })
         },
-        async setNextFileAsCurrent({ dispatch, getters }) {
-            if (getters.nextFileId) dispatch('persist/setCurrentFileId', getters.nextFileId, { root: true })
-        },
-        async setPrevFileAsCurrent({ dispatch, getters }) {
-            if (getters.prevFileId) dispatch('persist/setCurrentFileId', getters.prevFileId, { root: true })
-        },
         async addUsersToFile({ commit }, { file, users }) {
             commit('addOwnersToFile', { file, users })
 

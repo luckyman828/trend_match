@@ -165,11 +165,8 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('persist', ['authUser', 'availableCurrencies']),
+        ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('teams', ['currentTeamStatus', 'availableTeamRoles']),
-        authUserTeam() {
-            return UserTeam.where('user_id', AuthUser.first().id).where('team_id', this.team.id).first()
-        },
         availableUsers() {
             // Users who are on the workspace and not on the team
             const allUsers = JSON.parse(JSON.stringify(this.workspaceUsers))

@@ -20,9 +20,6 @@ export default {
             title: ''
         },
     }},
-    computed: {
-        ...mapGetters('persist', ['currentWorkspaceId']),
-    },
     methods: {
         ...mapActions('entities/teams', ['insertOrUpdateTeam']),
         onSubmit() {

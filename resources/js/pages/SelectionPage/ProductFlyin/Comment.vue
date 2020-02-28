@@ -1,25 +1,34 @@
 <template>
-    <div class="comment-wrapper" :class="[{'has-traits': comment.important || comment.votes.length > 0 || comment.focus}, {'edit-active': editActive}]">
+    <div class="comment-wrapper" :class="[{'has-traits': hasTraits}, {'edit-active': editActive}]">
         <div class="traits">
             <span v-if="comment.important" class="circle small yellow"><i class="fas fa-exclamation"></i></span>
             <span v-if="comment.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
-            <span v-if="comment.votes.length > 0" class="pill small primary"> <i class="fas fa-plus"></i> {{comment.votes.length}}</span>
+            <!-- <span v-if="comment.votes.length > 0" class="pill small primary"> <i class="fas fa-plus"></i> {{comment.votes.length}}</span> -->
         </div>
-        <div class="comment" :class="[{important: comment.important}, {failed: comment.failed}]">
-            <span v-if="!own || typeof comment.id != 'number'" class="body">{{comment.body}}</span>
+        <div class="comment" :class="[{important: comment.important}, {failed: comment.error}]">
+            <span v-if="!own || typeof comment.id != 'number'" class="body">{{comment.content}}</span>
             <span v-else class="body">
                 <BaseEditableTextarea ref="editCommentInput" :hideEditButton="true" 
-                :value="commentToEdit.body" v-model="commentToEdit.body"
-                @activate="setEditActive" @submit="onUpdateProduct"/>
+                :value="commentToEdit.content" v-model="commentToEdit.content"
+                @activate="setEditActive" @submit="onUpdateComment"/>
             </span>
             <div class="controls">
-                <template v-if="comment.failed">
+
+                <!-- comment error -->
+                <template v-if="comment.error">
                     <span v-if="typeof comment.id != 'number'" class="failed clickable" v-tooltip.top="'Retry submit'" @click="retrySubmitComment">
                         <i class="far fa-exclamation-circle"></i> Failed</span>
-                    <span v-else class="failed clickable" v-tooltip.top="'Retry edit'" @click="onUpdateProduct">
+                    <span v-else class="failed clickable" v-tooltip.top="'Retry edit'" @click="retrySubmitComment">
                         <i class="far fa-exclamation-circle"></i> Failed</span>
                 </template>
-                <template v-else-if="typeof comment.id == 'number'">
+
+                <!-- comment posting -->
+                <template v-else-if="!comment.id">
+                    <BaseLoader :message="'posting..'"/>
+                </template>
+
+                <!-- regular comment -->
+                <template v-else>
                     <button v-tooltip.top="'Delete'" class="button true-square invisible ghost dark-hover"
                     @click="onDeleteComment">
                         <i class="far fa-trash-alt"></i></button>
@@ -27,9 +36,7 @@
                     @click="$refs.editCommentInput.activate()">
                         <i class="far fa-pen"></i></button>
                 </template>
-                <template v-else>
-                    <BaseLoader :message="'posting..'"/>
-                </template>
+                
             </div>
         </div>
     </div>
@@ -50,13 +57,18 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('persist', ['authUser', 'userPermissionLevel']),
+        ...mapGetters('auth', ['authUser']),
         own() {
             return this.comment.user_id == this.authUser.id
+        },
+        hasTraits() {
+            return this.comment.important 
+            // || this.comment.votes.length > 0 
+            || this.comment.focus
         }
     },
     methods: {
-        ...mapActions('entities/comments', ['insertOrUpdateComment', 'deleteComment']),
+        ...mapActions('comments', ['insertOrUpdateComment', 'deleteComment']),
         onDeleteComment() {
             window.confirm(
                 'Are you sure you want to delete this comment?'
@@ -70,8 +82,8 @@ export default {
         retrySubmitComment() {
             this.insertOrUpdateComment({product: this.product, comment: this.comment})
         },
-        onUpdateProduct() {
-            this.insertOrUpdateComment({product: this.product, comment: this.commentToEdit})
+        onUpdateComment() {
+            this.insertOrUpdateComment({product: this.product, comment: this.comment})
         }
     }
 }

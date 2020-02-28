@@ -10,7 +10,7 @@
             </div>
             <div class="items-right">
 
-                <button v-if="userPermissionLevel >= 4" class="primary" @click="$refs.createTeamModal.show()"><span>Add new: Team</span></button>
+                <button class="primary" @click="$refs.createTeamModal.show()"><span>Add new: Team</span></button>
 
             </div>
         </div>
@@ -31,7 +31,6 @@ export default {
         CreateTeamModal,
     },
     computed: {
-        ...mapGetters('persist', ['userPermissionLevel']),
         addTeamValid () {
             if (this.teams.length <= 0)
                 return false
