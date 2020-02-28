@@ -128,7 +128,11 @@ export default {
             }
         }
     },
-
+    destroyed() {
+        // Remove event listeners
+        document.body.removeEventListener('keyup', this.hotkeyHandler)
+        document.body.removeEventListener('click', this.clickHandler)
+    }
 }
 </script>
 

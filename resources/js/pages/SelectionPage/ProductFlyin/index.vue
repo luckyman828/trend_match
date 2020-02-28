@@ -109,7 +109,7 @@
 
             <DistributionSection :product="currentProduct"/>
 
-            <CommentsSection class="comments" :product="product" :selection="currentSelection"/>
+            <CommentsSection class="comments" :product="product" :selection="currentSelection" :visisble="show"/>
         </template>
     </BaseFlyin>
 </template>
@@ -142,6 +142,13 @@ export default {
             if (oldVal && oldVal.id != newVal.id)
                 this.currentImgIndex = 0
         },
+        show(newVal, oldVal) {
+            if (newVal) {
+                document.body.addEventListener('keydown', this.hotkeyHandler)
+            } else {
+                document.body.removeEventListener('keydown', this.hotkeyHandler)
+            }
+        }
     },
     computed: {
         ...mapGetters('persist', ['currentTeamId', 'userPermissionLevel', 'actionScope']),
@@ -203,9 +210,9 @@ export default {
             }
         }
     },
-    created() {
-        document.body.addEventListener('keydown', this.hotkeyHandler)
-    },
+    // created() {
+    //     document.body.addEventListener('keydown', this.hotkeyHandler)
+    // },
     destroyed() {
         document.body.removeEventListener('keydown', this.hotkeyHandler)
     }

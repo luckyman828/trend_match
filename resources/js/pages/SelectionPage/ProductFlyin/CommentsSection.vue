@@ -115,6 +115,7 @@ export default {
     name: 'commentsSection',
     props: [
         'product',
+        'visisble',
     ],
     components: {
         Comment,
@@ -141,6 +142,13 @@ export default {
             if (newVal.id != oldVal.id)
                 this.update()
         },
+        show(newVal, oldVal) {
+            if (newVal) {
+                document.body.addEventListener('keydown', this.hotkeyHandler)
+            } else {
+                document.body.removeEventListener('keydown', this.hotkeyHandler)
+            }
+        }
     },
     computed: {
         ...mapGetters('persist', ['authUser']),
@@ -280,9 +288,6 @@ export default {
     },
     mounted() {
         this.update()
-    },
-    created() {
-        document.body.addEventListener('keyup', this.hotkeyHandler)
     },
     destroyed() {
         document.body.removeEventListener('keyup', this.hotkeyHandler)
