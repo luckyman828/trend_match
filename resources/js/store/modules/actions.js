@@ -170,23 +170,7 @@ export default {
                 }
             }
             if (selection.your_role == 'Owner') {
-                product.your_action = action
-                // Check if the action already exists in the products actions array
-                const existingAction = product.actions.find(
-                    x => x.product_id == product.id && x.selection_id == selection.id
-                )
-                if (!existingAction) {
-                    product.actions.push({
-                        action: action,
-                        product_id: product.id,
-                        selection: selection,
-                        selection_id: selection.id,
-                        user_id: user.id,
-                    })
-                } else {
-                    existingAction.action = action
-                    existingAction.user_id = user.id
-                }
+                product.action = action
             }
         },
         insertOrUpdateActions(state, { productActions, selection, user }) {

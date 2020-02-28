@@ -410,6 +410,26 @@ export default {
         procesSelectionProducts: state => {
             const products = state.products
             products.map(product => {
+                Object.defineProperty(product, 'yourPrice', {
+                    get: function() {
+                        // Check if the product has any prices
+                        if (product.prices.length <= 0) {
+                            // If no prices are available, return a default empty price object
+                            return {
+                                currency: 'Not set',
+                                mark_up: null,
+                                wholesale_price: null,
+                                recommended_retail_price: null,
+                            }
+                        }
+                        // Else check if we have a preferred currency set, and try to match that
+                        if (product.preferred_currency) {
+                            const preferredPrice = product.prices.find(x => (x.currency = product.preferred_currency))
+                            if (preferredPrice) return preferredPrice
+                            else return product.prices[0]
+                        }
+                    },
+                })
                 Object.defineProperty(product, 'ins', {
                     get: function() {
                         return product.feedbacks.filter(x => x.action == 'In')

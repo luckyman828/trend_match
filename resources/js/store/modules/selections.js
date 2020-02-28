@@ -34,6 +34,14 @@ export default {
         selectionUsersStatus: state => state.usersStatus,
         selectionTeamsStatus: state => state.teamsStatus,
         currentSelection: state => state.currentSelection,
+        currentSelectionMode: state =>
+            state.currentSelection.your_role == 'Member'
+                ? 'Feedback'
+                : state.currentSelection.your_role == 'Owner'
+                ? 'Alignment'
+                : state.currentSelection.your_role == 'Approver'
+                ? 'Approval'
+                : 'No Access',
         currentSelectionUsers: state => {
             const selection = state.currentSelection
             const usersToReturn = []

@@ -113,7 +113,7 @@
                     key-field="id"
                     v-slot="{ item, index }"
                 >
-                    <ProductsTableRow class="product-row flex-table-row"
+                    <ProductsTableRow class="product-row flex-table-row" :selection="selection" :currentAction="currentAction"
                     :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
                     @onViewSingle="onViewSingle" @updateAction="(product, action) => $emit('updateAction', product, action)"/>
                 </RecycleScroller>
@@ -137,6 +137,8 @@ export default {
     props: [
         'products',
         'file',
+        'selection',
+        'currentAction',
     ],
     mixins: [
         sortArray
@@ -194,13 +196,14 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['setCurrentProduct', 'setAvailableProducts']),
-        ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter', 'updateSelectedBuyerGroups']),
+        ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories',
+        'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
+        'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts']),
         ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions']),
         ...mapActions('comments', ['setComment', 'destroyComment']),
         onViewSingle(product) {
-            this.setCurrentProductId(product.id)
-            this.setAvailableProductIds(this.products.map(x => x.id)) // Save array of available products
+            this.setCurrentProduct(product)
+            this.setAvailableProducts(this.products) // Save array of available products
             this.setSingleVisisble(true)
         },
         onSort(sortAsc, sortKey) {

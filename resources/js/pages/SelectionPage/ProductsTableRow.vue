@@ -22,7 +22,7 @@
             <template slot="popover">
                 <BaseTooltipList header="Focus">
                     <BaseTooltipListItem v-for="(action, index) in product.focus" :key="index"
-                    :label="action.selection_name" :value="action.user_name"/>
+                    :label="action.selection_name" :value="action.user.name"/>
                 </BaseTooltipList>
             </template>
         </v-popover>
@@ -33,7 +33,7 @@
             <template slot="popover">
                 <BaseTooltipList header="Ins">
                     <BaseTooltipListItem v-for="(action, index) in product.ins" :key="index"
-                    :label="action.selection_name" :value="action.user_name"/>
+                    :label="action.selection_name" :value="action.user.name"/>
                 </BaseTooltipList>
             </template>
         </v-popover>
@@ -44,7 +44,7 @@
             <template slot="popover">
                 <BaseTooltipList header="Outs">
                     <BaseTooltipListItem v-for="(action, index) in product.outs" :key="index"
-                    :label="action.selection_name" :value="action.user_name"/>
+                    :label="action.selection_name" :value="action.user.name"/>
                 </BaseTooltipList>
             </template>
         </v-popover>
@@ -69,16 +69,16 @@
             </button>
         </td>
         <td class="action">
-            <button :class="product.your_feedback != 'Focus' ? 'ghost': 'primary'" 
+            <button :class="product[currentAction] != 'Focus' ? 'ghost': 'primary'" 
             @click="onUpdateAction(product, 'Focus')">
                 <i class="far fa-star"></i>
             </button>
-            <button :class="product.your_feedback != 'In' ? 'ghost': 'green'" 
+            <button :class="product[currentAction] != 'In' ? 'ghost': 'green'" 
             @click="onUpdateAction(product, 'In')">
                 <i class="far fa-heart"></i>
                 <span>In</span>
             </button>
-            <button :class="product.your_feedback != 'Out' ? 'ghost': 'red'" 
+            <button :class="product[currentAction] != 'Out' ? 'ghost': 'red'" 
             @click="onUpdateAction(product, 'Out')">
                 <i class="far fa-times-circle"></i>
                 <span>out</span>
@@ -99,16 +99,19 @@ export default {
     name: 'productsRow',
     props: [
         'product',
-        'selectedProducts'
+        'selectedProducts',
+        'selection',
+        'currentAction'
     ],
     mixins: [
         variantImage
     ],
     computed: {
+        ...mapGetters('selections', ['currentSelectionMode']),
         localSelectedProducts: {
             get() { return this.selectedProducts },
             set(localSelectedProducts) {this.$emit('input', localSelectedProducts)}
-        }
+        },
     },
     methods: {
         onUpdateAction(product, action) {

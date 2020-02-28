@@ -28,10 +28,11 @@
                 </button>
             </div>
 
-            <ProductsTable ref="productsComponent" :file="file" :products="productsFiltered" 
+            <ProductsTable ref="productsComponent" :file="file" :products="productsFiltered"
+            :selection="currentSelection" :currentAction="currentAction"
             @updateAction="onUpdateAction"/>
 
-            <ProductFlyin :show="singleVisible"
+            <ProductFlyin :show="singleVisible" :selection="currentSelection" :currentAction="currentAction"
             @close="setSingleVisisble(false)" @updateAction="onUpdateAction"/>
         </template>
 
@@ -60,10 +61,14 @@ export default{
     computed: {
         ...mapGetters('products', ['products', 'productsFiltered', 'singleVisible']),
         ...mapGetters('files', ['currentFile']),
-        ...mapGetters('selections', ['currentSelection']),
+        ...mapGetters('selections', ['currentSelection', 'currentSelectionMode']),
         ...mapGetters('auth', ['authUser']),
         selection() {
             return this.currentSelection
+        },
+        // Get the action according to the current type of selection access
+        currentAction() {
+            return this.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action'
         },
         file() {
             return this.currentFile
