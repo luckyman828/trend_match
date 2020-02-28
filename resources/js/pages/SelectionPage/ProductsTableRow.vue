@@ -152,20 +152,18 @@ export default {
                     this.focusNextRow(event)
                 }
             }
-            if (key == 'ArrowLeft') {
+            if (key == 'ArrowLeft')
                 this.focusPrevRow(event)
-            }
-            if (key == 'ArrowRight') {
+            if (key == 'ArrowRight')
                 this.focusNextRow(event)
-            }
-            if ( true ) {
-                if (key == 'KeyI')
-                    this.onUpdateAction(this.product, 'In')
-                if (key == 'KeyO')
-                    this.onUpdateAction(this.product, 'Out')
-                if (key == 'KeyF')
-                    this.onUpdateAction(this.product, 'Focus')
-            }
+            if (key == 'Enter')
+                this.$emit('onViewSingle', this.product)
+            if (key == 'KeyI')
+                this.onUpdateAction(this.product, 'In')
+            if (key == 'KeyO')
+                this.onUpdateAction(this.product, 'Out')
+            if (key == 'KeyF')
+                this.onUpdateAction(this.product, 'Focus')
         }
     },
 }
