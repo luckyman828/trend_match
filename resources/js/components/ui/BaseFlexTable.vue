@@ -202,7 +202,7 @@ export default {
             }
         }
         td {
-            overflow: hidden;
+            // overflow: hidden;
         }
         th, td {
             padding: 0 4px;

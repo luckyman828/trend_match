@@ -113,7 +113,8 @@
                     key-field="id"
                     v-slot="{ item, index }"
                 >
-                    <ProductsTableRow class="product-row flex-table-row" :selection="selection" :currentAction="currentAction"
+                    <ProductsTableRow class="product-row flex-table-row"
+                    :selection="selection" :currentAction="currentAction"
                     :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
                     @onViewSingle="onViewSingle" @updateAction="(product, action) => $emit('updateAction', product, action)"/>
                 </RecycleScroller>
@@ -210,7 +211,7 @@ export default {
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
             this.sortArray(this.stateProducts, sortKey, sortKey)
-        }
+        },
     },
     created () {
         // Initially sort the products

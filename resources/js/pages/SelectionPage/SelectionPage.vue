@@ -116,12 +116,7 @@ export default{
             // this.$cookies.set(`quick_in_${this.currentFile.id}_${this.currentTask.id}`, true, Infinity)
         },
         onUpdateAction(product, action) {
-            let actionToPost
-            if (this.currentSelection.your_role == 'Member') {
-                actionToPost = product.your_feedback == action ? 'None' : action
-            } else if (this.currentSelection.your_role == 'Owner') {
-                actionToPost = product.your_action == action ? 'None' : action
-            }
+            const actionToPost = product[this.currentAction] == action ? 'None' : action
             this.insertOrUpdateAction({product, action: actionToPost, selection: this.selection, user: this.authUser})
         },
         onInsertOrUpdateActions(products, action) {

@@ -1,5 +1,6 @@
 <template>
-    <tr class="products-table-row" :class="product.currentAction && 'action-'+ product.currentAction.action">
+    <tr class="products-table-row" :class="product.currentAction && 'action-'+ product.currentAction.action" tabindex="0"
+    @keydown="hotkeyHandler($event)" ref="row">
 
         <span v-if="product.newComment" class="circle tiny primary"></span>
         
@@ -13,11 +14,11 @@
             </div>
         </td>
         <td class="id clickable" @click="$emit('onViewSingle',product)">{{product.datasource_id}}</td>
-        <td class="title clickable" @click="$emit('onViewSingle',product)"><span>{{product.title}}</span></td>
+        <td class="title"><span class="clickable" @click="$emit('onViewSingle',product)">{{product.title}}</span></td>
         
-        <v-popover class="focus" :disabled="product.focus.length <= 0">
+        <v-popover class="focus" :disabled="product.focus.length <= 0" tabindex="-1">
             <td class="focus tooltip-target">
-                <button class="ghost sm"><span>{{product.focus.length}}</span><i class="far fa-star"></i></button>
+                <button tabindex="-1" class="ghost sm"><span>{{product.focus.length}}</span><i class="far fa-star"></i></button>
             </td>
             <template slot="popover">
                 <BaseTooltipList header="Focus">
@@ -101,22 +102,71 @@ export default {
         'product',
         'selectedProducts',
         'selection',
-        'currentAction'
+        'currentAction',
+        'index',
     ],
     mixins: [
         variantImage
     ],
     computed: {
         ...mapGetters('selections', ['currentSelectionMode']),
+        ...mapGetters('products', ['currentFocusIndex']),
         localSelectedProducts: {
             get() { return this.selectedProducts },
             set(localSelectedProducts) {this.$emit('input', localSelectedProducts)}
         },
     },
+    watch: {
+        // Watch for changes to the current focus index 
+        currentFocusIndex: function(newVal, oldVal) {
+            // console.log(newVal)
+            if (newVal == this.index) {
+                // console.log('focus this row')
+                // console.log(this.$refs.row)
+                // console.log(this.$refs.row.$el)
+                this.$refs.row.focus()
+            }
+        }
+    },
     methods: {
+        ...mapMutations('products', ['setCurrentFocusIndex']),
         onUpdateAction(product, action) {
             this.$emit('updateAction', product, action)
         },
+        focusNextRow(event) {
+            // Get the next row
+            event.preventDefault()
+            this.setCurrentFocusIndex(this.index+1)
+        },
+        focusPrevRow(event) {
+            // Get the previous row
+            event.preventDefault()
+            this.setCurrentFocusIndex(this.index-1)
+        },
+        hotkeyHandler(event) {
+            const key = event.code
+            if (key == 'Tab') {
+                if (event.shiftKey) {
+                    this.focusPrevRow(event)
+                } else {
+                    this.focusNextRow(event)
+                }
+            }
+            if (key == 'ArrowLeft') {
+                this.focusPrevRow(event)
+            }
+            if (key == 'ArrowRight') {
+                this.focusNextRow(event)
+            }
+            if ( true ) {
+                if (key == 'KeyI')
+                    this.onUpdateAction(this.product, 'In')
+                if (key == 'KeyO')
+                    this.onUpdateAction(this.product, 'Out')
+                if (key == 'KeyF')
+                    this.onUpdateAction(this.product, 'Focus')
+            }
+        }
     },
 }
 </script>
