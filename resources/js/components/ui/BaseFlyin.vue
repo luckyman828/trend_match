@@ -93,13 +93,14 @@ export default {
         flex-direction: column;
         right: -100%;
         margin: 0;
-        max-width: 1032px;
+        width: 70vw;
+        min-width: 1032px;
+        max-width: 1200px;
         z-index: 11;
         top: 0;
         position: fixed;
         height: 100vh;
         box-shadow: -2px 0 10px #0000001A;
-        width: 100%;
         background: $bg;
         // transition-timing-function: ease-out;
         transition-timing-function: cubic-bezier(0.060, 0.975, 0.195, 0.985);;

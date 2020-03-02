@@ -11,9 +11,8 @@
                 <BaseInputTextArea v-model="comment.content"
                 @keyup.enter.exact.native="onUpdateComment" @keydown.enter.exact.native.prevent/>
             </span>
-            <div class="save-controls">
-                <BaseButton hotkey="ENTER" />
-            </div>
+
+            <!-- Comment Controls -->
             <div class="controls">
 
                 <!-- comment error -->
@@ -22,9 +21,7 @@
                 </span>
 
                 <!-- comment posting -->
-                <template v-else-if="!comment.id">
-                    <BaseLoader :message="'posting..'"/>
-                </template>
+                <BaseLoader v-else-if="!comment.id" :message="'posting..'"/>
 
                 <!-- regular comment -->
                 <template v-else>
@@ -37,6 +34,12 @@
                 </template>
                 
             </div>
+        </div>
+        <div class="save-controls" v-if="editActive">
+            <BaseButton buttonClass="green" :hotkey="{key: 'ENTER', label: 'Save'}" style="margin-right: 8px">
+                <span>Save</span>
+            </BaseButton>
+            <button class="invisible ghost-hover"><span>Cancel</span></button>
         </div>
     </div>
 </template>
@@ -108,11 +111,12 @@ export default {
             margin-top: 16px;
         }
     }
-    .pill {
-        i {
-            font-size: 8px;
-            margin-right: 4px;
-        }
+    .save-controls {
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        transform: translateY(100%);
+        display: flex;
     }
     .traits {
         position: absolute;
