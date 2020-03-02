@@ -39,7 +39,7 @@
             <BaseButton buttonClass="green" :hotkey="{key: 'ENTER', label: 'Save'}" style="margin-right: 8px">
                 <span>Save</span>
             </BaseButton>
-            <button class="invisible ghost-hover"><span>Cancel</span></button>
+            <button class="invisible ghost-hover" @click="editActive = false"><span>Cancel</span></button>
         </div>
     </div>
 </template>
@@ -98,6 +98,7 @@ export default {
         max-width: calc(100% - 64px);
         &.edit-active {
             width: 100%;
+            margin-bottom: 80px;
             .comment {
                 padding: 2px;
                 ::v-deep {

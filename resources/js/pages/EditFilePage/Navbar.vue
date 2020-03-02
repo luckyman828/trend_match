@@ -70,7 +70,6 @@ export default {
     .navbar-file {
         width: 100%;
         padding: 8px 60px;
-        padding-right: 77px;
         display: flex;
         justify-content: space-between;
         > * {

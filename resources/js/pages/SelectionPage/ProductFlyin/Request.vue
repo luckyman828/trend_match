@@ -1,12 +1,14 @@
 <template>
-    <div class="request-wrapper" :class="[{own: (request.user_id == authUser.id)}, 
+    <div class="request-wrapper" :class="[{own: own}, 
     {'has-traits': request.focus}]">
         <div class="traits">
             <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
         </div>
         <div class="request">
-            <strong class="sender">{{request.selection.name}} | {{(request.user_id == authUser.id) ? 'You' : request.user.name}}</strong>
-            <span class="body">{{request.body}}</span>
+            <strong class="sender">
+                <!-- {{request.selection.name}} |  -->
+                {{own ? 'You' : request.author.name}}</strong>
+            <span class="content">{{request.content}}</span>
             <small class="id">Request ID: {{request.id}}</small>
         </div>        
     </div>
@@ -22,6 +24,9 @@ export default {
     ],
     computed: {
         ...mapGetters('auth', ['authUser']),
+        own() {
+            return this.request.author_id == this.authUser.id
+        }
     },
     methods: {
     }
@@ -67,21 +72,20 @@ export default {
             font-size: 12px;
         }
         .id {
-            font-size: 10px;
+            font-size: 12px;
             font-weight: 500;
         }
         .own & {
             background: $primary;
             color: white;
+            strong {
+                color: white;
+            }
         }
-        .master & {
-            background: $dark;
-            color: white;
-        }
-        .body {
+        .content {
             white-space: pre-wrap;
             word-wrap: break-word;
-            margin: 16px 0;
+            margin: 12px 0;
         }
     }
 </style>

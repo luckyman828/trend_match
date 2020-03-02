@@ -1,5 +1,5 @@
 <template>
-    <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=3>
+    <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=4>
         <template v-slot:header>
             <BaseFlyinHeader v-if="show" :title="`#${product.datasource_id}: ${product.title}`" :next="nextProduct" :prev="prevProduct"
             @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
@@ -109,6 +109,8 @@
 
             <DistributionSection :product="currentProduct"/>
 
+            <RequestsSection class="comments" :product="product" :selection="currentSelection"/>
+
             <CommentsSection class="comments" :product="product" :selection="currentSelection"/>
         </template>
     </BaseFlyin>
@@ -118,6 +120,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import CommentsSection from './CommentsSection'
 import DistributionSection from './DistributionSection'
+import RequestsSection from './RequestsSection'
 import variantImage from '../../../mixins/variantImage'
 
 export default {
@@ -132,6 +135,7 @@ export default {
     components: {
         CommentsSection,
         DistributionSection,
+        RequestsSection,
     },
     data: function () { return {
             currentImgIndex: 0,
@@ -305,9 +309,6 @@ export default {
                 }
             }
         }
-    }
-    .comments {
-        background: $bg;
     }
 }
 </style>

@@ -93,9 +93,9 @@ export default {
         flex-direction: column;
         right: -100%;
         margin: 0;
-        width: 70vw;
+        width: calc(100vw - 142px);
         min-width: 1032px;
-        max-width: 1200px;
+        max-width: 1500px;
         z-index: 11;
         top: 0;
         position: fixed;
