@@ -11,15 +11,15 @@
                 <BaseInputTextArea v-model="comment.content"
                 @keyup.enter.exact.native="onUpdateComment" @keydown.enter.exact.native.prevent/>
             </span>
+            <div class="save-controls">
+                <BaseButton hotkey="ENTER" />
+            </div>
             <div class="controls">
 
                 <!-- comment error -->
-                <template v-if="comment.error">
-                    <span v-if="typeof comment.id != 'number'" class="failed clickable" v-tooltip.top="'Retry submit'" @click="retrySubmitComment">
-                        <i class="far fa-exclamation-circle"></i> Failed</span>
-                    <span v-else class="failed clickable" v-tooltip.top="'Retry edit'" @click="retrySubmitComment">
-                        <i class="far fa-exclamation-circle"></i> Failed</span>
-                </template>
+                <span v-if="comment.error" class="failed clickable" v-tooltip.top="!comment.id ? 'Retry submit' : 'Retry edit'" @click="retrySubmitComment">
+                    <i class="far fa-exclamation-circle"></i> Failed
+                </span>
 
                 <!-- comment posting -->
                 <template v-else-if="!comment.id">

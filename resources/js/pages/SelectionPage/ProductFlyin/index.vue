@@ -4,16 +4,16 @@
             <BaseFlyinHeader v-if="show" :title="`#${product.datasource_id}: ${product.title}`" :next="nextProduct" :prev="prevProduct"
             @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
                 <div class="item-group">
-                    <button :class="product[yourAction] != 'Focus' ? 'ghost': 'primary'" 
+                    <button :class="product[currentAction] != 'Focus' ? 'ghost': 'primary'" 
                     @click="onUpdateAction(product, 'Focus')">
                         <i class="far fa-star"></i>
                     </button>
-                    <button :class="product[yourAction] != 'In' ? 'ghost': 'green'" 
+                    <button :class="product[currentAction] != 'In' ? 'ghost': 'green'" 
                     @click="onUpdateAction(product, 'In')">
                         <i class="far fa-heart"></i>
                         <span>In</span>
                     </button>
-                    <button :class="product[yourAction] != 'Out' ? 'ghost': 'red'" 
+                    <button :class="product[currentAction] != 'Out' ? 'ghost': 'red'" 
                     @click="onUpdateAction(product, 'Out')">
                         <i class="far fa-times-circle"></i>
                         <span>out</span>
@@ -125,7 +125,6 @@ export default {
     props: [
         'show',
         'selection',
-        'yourAction',
     ],
     mixins: [
         variantImage
@@ -152,9 +151,12 @@ export default {
     },
     computed: {
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct']),
-        ...mapGetters('selections', ['currentSelectionId', 'currentSelection']),
+        ...mapGetters('selections', ['currentSelectionId', 'currentSelection', 'currentSelectionModeAction']),
         product () {
             return this.currentProduct
+        },
+        currentAction () {
+            return this.currentSelectionModeAction
         },
     },
     methods: {

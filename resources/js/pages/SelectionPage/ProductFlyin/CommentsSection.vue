@@ -3,7 +3,7 @@
 
         <template v-slot:header class="random">
             <BaseToggle class="toggle" :options="[
-            {value: 'requests', label: 'Requests', count: product.comments.length},
+            {value: 'requests', label: 'Requests', count: product.requests.length},
             {value: 'comments', label: 'Comments', count: product.comments.length}
             ]"
             v-model="commentScope"/>

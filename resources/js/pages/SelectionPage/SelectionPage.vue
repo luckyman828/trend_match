@@ -61,14 +61,14 @@ export default{
     computed: {
         ...mapGetters('products', ['products', 'productsFiltered', 'singleVisible']),
         ...mapGetters('files', ['currentFile']),
-        ...mapGetters('selections', ['currentSelection', 'currentSelectionMode']),
+        ...mapGetters('selections', ['currentSelection', 'currentSelectionMode', 'currentSelectionModeAction']),
         ...mapGetters('auth', ['authUser']),
         selection() {
             return this.currentSelection
         },
         // Get the action according to the current type of selection access
         currentAction() {
-            return this.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action'
+            return this.currentSelectionModeAction
         },
         file() {
             return this.currentFile
