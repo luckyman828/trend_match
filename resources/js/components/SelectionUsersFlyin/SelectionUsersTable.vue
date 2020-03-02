@@ -30,7 +30,7 @@
                     </td>
                     <td class="email">{{user.email}}</td>
                     <td class="role">
-                        <button class="ghost editable" 
+                        <button class="ghost editable sm" 
                         @click="showRoleContext($event, user)">
                             <span>{{user.role}}</span>
                         </button>

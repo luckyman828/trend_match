@@ -117,25 +117,25 @@ export default {
             const selection = rootGetters['selections/currentSelection']
             const currentAction = rootGetters['selections/currentSelectionModeAction']
 
-            if (selection) {
-                const totals = {
-                    all: 0,
-                    ins: 0,
-                    focus: 0,
-                    outs: 0,
-                    nds: 0,
-                    count: 0,
-                }
-                totals.all = products.length
+            const totals = {
+                all: 0,
+                ins: 0,
+                focus: 0,
+                outs: 0,
+                nds: 0,
+                count: 0,
+            }
+            totals.all = products.length
 
+            if (selection) {
                 products.forEach(product => {
                     if (!product[currentAction] || product[currentAction] == 'None') totals.nds++
                     if (product[currentAction] == 'In') totals.ins++
                     if (product[currentAction] == 'Out') totals.outs++
                     if (product[currentAction] == 'Focus') totals.focus++
                 })
-                return totals
             }
+            return totals
         },
         productsFiltered(state, getters, rootState, rootGetters) {
             const currentAction = rootGetters['selections/currentSelectionModeAction']

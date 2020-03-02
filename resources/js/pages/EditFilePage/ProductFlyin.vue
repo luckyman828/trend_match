@@ -238,6 +238,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Draggable from 'vuedraggable'
+import axios from 'axios'
 
 export default {
     name: 'editProductFlyin',
@@ -440,8 +441,6 @@ export default {
                 }
             }
 
-            console.log(productToUpload)
-
             // Update the product
             await this.updateProduct(productToUpload)
             if (productIsNew) {
@@ -567,31 +566,27 @@ export default {
                 this.$refs['url-input-'+index][0].focus()
             })
         },
-        async getImageFromURL(variant) {
-            if (variant.image) {
-                // Add to a counter of images we are currently processing
-                const vm = this
-                vm.gettingImagesFromURL++
-                // Send a request to get the image
-                var request = new XMLHttpRequest();
-                await (
-                    request.open('GET', variant.image, true),
-                    request.responseType = 'blob',
-                    request.onload = function() {
-                        vm.$set(variant, 'imageToUpload', {file: request.response, progress: 0, uploading: false})
-                        // decrement the images in process counter
-                        vm.gettingImagesFromURL--
-                    },
-                    request.send()
-                )
-            }
+        async getImageFromURL(url) {
+            // Add to a counter of images we are currently processing
+            this.gettingImagesFromURL++
+            // Send a request to get the image
+            let image
+            await axios.get(url, {responseType: 'blob'}).then(response => {
+                image = response.data
+            }).catch(err => {
+                image = false
+            })
+            this.gettingImagesFromURL--
+            return image
         },
-        setVariantImageURL(variant, imageURL) {
-            variant.image = imageURL
-            variant.blob_id = null
-            // if (variant.imageToUpload)
-            //     delete variant.imageToUpload
-            this.getImageFromURL(variant)
+        async setVariantImageURL(variant, imageURL) {
+            const image = await this.getImageFromURL(imageURL)
+            if (image) {
+                this.$set(variant, 'imageToUpload', {file: image, progress: 0, uploading: false})
+                variant.image = imageURL
+            } else {
+                alert('Unable to fetch image from URL. Try manually downloading the image, and upload it as a file. Contact Kollekt Support if the error persists')
+            }
         },
     },
     created() {

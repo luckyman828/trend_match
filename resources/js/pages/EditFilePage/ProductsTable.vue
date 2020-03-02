@@ -182,8 +182,6 @@ export default {
             this.setSingleVisisble(true)
         },
         showContext(mouseEvent, product) {
-            console.log(mouseEvent)
-            console.log(product)
             const contextMenu = this.$refs.contextMenu
             this.contextItem = product;
             contextMenu.show(mouseEvent)

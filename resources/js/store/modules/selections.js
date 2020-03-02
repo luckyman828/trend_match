@@ -34,14 +34,17 @@ export default {
         selectionUsersStatus: state => state.usersStatus,
         selectionTeamsStatus: state => state.teamsStatus,
         currentSelection: state => state.currentSelection,
-        currentSelectionMode: state =>
-            state.currentSelection.your_role == 'Member'
-                ? 'Feedback'
-                : state.currentSelection.your_role == 'Owner'
-                ? 'Alignment'
-                : state.currentSelection.your_role == 'Approver'
-                ? 'Approval'
-                : 'No Access',
+        currentSelectionMode: state => {
+            if (state.currentSelection) {
+                return state.currentSelection.your_role == 'Member'
+                    ? 'Feedback'
+                    : state.currentSelection.your_role == 'Owner'
+                    ? 'Alignment'
+                    : state.currentSelection.your_role == 'Approver'
+                    ? 'Approval'
+                    : 'No Access'
+            }
+        },
         currentSelectionModeAction: (state, getters) =>
             getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
         currentSelectionUsers: state => {
