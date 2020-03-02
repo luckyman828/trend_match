@@ -112,8 +112,10 @@ export default {
         }
     },
     mounted() {
-        this.scrollParent = this.getScrollParent(this.$el, false)
-        this.scrollParent.addEventListener('scroll', this.handleScroll)
+        if (this.stickyHeader) {
+            this.scrollParent = this.getScrollParent(this.$el, false)
+            this.scrollParent.addEventListener('scroll', this.handleScroll)
+        }
     }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
     <div class="selection-users-table">
-        <BaseFlexTable>
+        <BaseFlexTable :stickyHeader="false">
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>

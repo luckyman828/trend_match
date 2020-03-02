@@ -1,6 +1,6 @@
 <template>
     <div class="selection-teams-table">
-        <BaseFlexTable stickyHeader="false">
+        <BaseFlexTable :stickyHeader="false">
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>
