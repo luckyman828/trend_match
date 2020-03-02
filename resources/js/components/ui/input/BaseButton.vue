@@ -13,7 +13,7 @@
 <script>
 export default {
     name: 'baseButton',
-    props: [,
+    props: [
         'buttonClass',
         'hotkey'
     ],
