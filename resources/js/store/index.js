@@ -12,6 +12,7 @@ import products from './modules/products'
 import actions from './modules/actions'
 import alerts from './modules/alerts'
 import comments from './modules/comments'
+import requests from './modules/requests'
 
 // Load Vuex
 Vue.use(Vuex)
@@ -31,6 +32,7 @@ const store = new Vuex.Store({
         actions,
         alerts,
         comments,
+        requests,
     },
 })
 

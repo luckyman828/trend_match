@@ -450,7 +450,7 @@ export default {
                     'comments',
                     product.comments.filter(x => !x.is_deleted)
                 )
-                Vue.set(product, 'requests', [])
+                // Vue.set(product, 'requests', [])
 
                 // Vue.set(product, 'feedback', {
                 //     ins: product.feedbacks.filter(x => x.action == 'In'),

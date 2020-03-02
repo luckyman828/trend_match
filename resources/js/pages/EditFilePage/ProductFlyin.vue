@@ -268,24 +268,7 @@ export default {
     }},
     watch: {
         currentProduct(newVal, oldVal) {
-            // This function fires when a change happens to the current product in the store. It also fires initially
-            // This can mean: A new product is shown. The product in the store has been updated
-            this.productToEdit = JSON.parse(JSON.stringify(newVal))
-
-            // Check if the product has any currencies, else add a default currency
-            if (this.productToEdit.prices.length < 1) {
-                this.productToEdit.prices.push(JSON.parse(JSON.stringify(this.defaultPriceObject)))
-            }
-
-            // Check if the current currency is available. Else set it to the first available
-            if (!this.productToEdit.prices[this.currencyIndex]) this.currencyIndex = 0
-
-            // Create an empty variant if no variants are present
-            const variants = this.productToEdit.variants
-            if (variants.length <= 0) {
-                this.onAddVariant()
-            }
-
+            this.initProduct()
         }
     },
     computed: {
@@ -349,6 +332,24 @@ export default {
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImage', 'deleteImages']),
         ...mapMutations('products', ['setCurrentProduct']),
+        initProduct() {
+            // Make a copy of the product, so we can check for changes compared to the original
+            this.productToEdit = JSON.parse(JSON.stringify(this.currentProduct))
+
+            // Check if the product has any currencies, else add a default currency
+            if (this.productToEdit.prices.length < 1) {
+                this.productToEdit.prices.push(JSON.parse(JSON.stringify(this.defaultPriceObject)))
+            }
+
+            // Check if the current currency is available. Else set it to the first available
+            if (!this.productToEdit.prices[this.currencyIndex]) this.currencyIndex = 0
+
+            // Create an empty variant if no variants are present
+            const variants = this.productToEdit.variants
+            if (variants.length <= 0) {
+                this.onAddVariant()
+            }
+        },
         showCurrencyContext(e) {
             this.$refs.contextCurrency.show(e)
         },
@@ -448,6 +449,7 @@ export default {
                 // Resort the products to include the new product
                 this.$emit('onSort')
             }
+            this.initProduct()
             this.updatingProduct = false
         },
         calculateMarkup({whs, rrp} = {}) {
@@ -495,7 +497,6 @@ export default {
             this.dragCounter = 0
         },
         async filesChange(e, index, variant) {
-            console.log('fileChange')
             const vm = this
             const file = e.target.files[0]
             // Check that the file is an image
