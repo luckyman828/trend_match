@@ -170,7 +170,8 @@ export default {
                 }
             }
             if (selection.your_role == 'Owner') {
-                product.action = action
+                Vue.set(product, 'action', action)
+                Vue.set(product, 'action_author', user)
             }
         },
         insertOrUpdateActions(state, { productActions, selection, user }) {
@@ -200,25 +201,9 @@ export default {
             }
             if (selection.your_role == 'Owner') {
                 productActions.forEach(productAction => {
-                    productAction.product.your_action = productAction.action
-                    // Check if the action already exists in the products feedbacks array
-                    const existingAction = productAction.product.actions.find(
-                        x =>
-                            x.product_id == productAction.product.id &&
-                            x.selection_id == selection.id &&
-                            x.user_id == user.id
-                    )
-                    if (!existingAction) {
-                        productAction.product.actions.push({
-                            action: productAction.action,
-                            product_id: productAction.product.id,
-                            selection: selection,
-                            selection_id: selection.id,
-                            user_id: user.id,
-                        })
-                    } else {
-                        existingAction.action = productAction.action
-                    }
+                    productAction.product.action = productAction.action
+                    Vue.set(productAction.product, 'action', productAction.action)
+                    Vue.set(productAction.product, 'action_author', user)
                 })
             }
         },

@@ -74,28 +74,16 @@ export default{
             return this.currentFile
         },
         productsNoIn() {
-            if (this.currentSelection.your_role == 'Member') {
-                return this.products.filter(product => {
-                    return product.your_feedback == 'None' && product.ins.length <= 0 && product.focus.length <= 0
-                })
-            }
-            if (this.currentSelection.your_role == 'Owner') {
-                return this.products.filter(product => {
-                    return product.your_action == 'None' && product.ins.length <= 0 && product.focus.length <= 0
-                })
-            }
+            return this.products.filter(product => {
+                return (!product[this.currentAction] || product[this.currentAction] == 'None') 
+                && product.ins.length <= 0 && product.focus.length <= 0
+            })
         },
         productsNoOutNoComment() {
-            if (this.currentSelection.your_role == 'Member') {
-                return this.products.filter(product => {
-                    return product.your_feedback == 'None' && product.comments.length < 1 && product.outs.length < 1 && product.requests.length < 1
-                })
-            }
-            if (this.currentSelection.your_role == 'Owner') {
-                return this.products.filter(product => {
-                    return product.your_action == 'None' && product.comments.length < 1 && product.outs.length < 1 && product.requests.length < 1
-                })
-            }
+            return this.products.filter(product => {
+                return (!product[this.currentAction] || product[this.currentAction] == 'None') 
+                && product.comments.length < 1 && product.outs.length < 1 && product.requests.length < 1
+            })
         },
     },
     methods: {
