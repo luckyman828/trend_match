@@ -403,6 +403,7 @@ export default {
         procesSelectionProducts: state => {
             const products = state.products
             products.map(product => {
+                // Currency
                 Object.defineProperty(product, 'yourPrice', {
                     get: function() {
                         // Check if the product has any prices
@@ -423,6 +424,8 @@ export default {
                         }
                     },
                 })
+
+                // Actions
                 Object.defineProperty(product, 'ins', {
                     get: function() {
                         return product.feedbacks.filter(x => x.action == 'In')
@@ -439,6 +442,14 @@ export default {
                     },
                 })
                 Vue.set(product, 'nds', [])
+
+                // Comments / Requests
+                // Remove deleted comments
+                Vue.set(
+                    product,
+                    'comments',
+                    product.comments.filter(x => !x.is_deleted)
+                )
                 Vue.set(product, 'requests', [])
 
                 // Vue.set(product, 'feedback', {

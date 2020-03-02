@@ -85,33 +85,8 @@ export default {
             commit('deleteComment', { product, comment })
 
             // Config API endpoint
-            const apiUrl = `/comments`
-            const requestHeaders = {
-                'X-Kollekt-App-Key': process.env.MIX_KOLLEKT_API_KEY,
-            }
-            let requestMethod = 'delete'
-
-            // Assume success
-            let success = true
-
-            // await axios({
-            //     method: requestMethod,
-            //     url: apiUrl,
-            //     data: {
-            //         comment,
-            //     },
-            //     headers: requestHeaders,
-            // })
-            //     .then(async response => {
-            //         // Get and set the comment id equal to the id given by the database
-            //         newComment.id = response.data.id
-            //     })
-            //     .catch(err => {
-            //         console.log(err.response)
-            //         success = false
-            //         commit('alertError')
-            //         newComment.failed = true
-            //     })
+            const apiUrl = `/comments/${comment.id}`
+            await axios.delete(apiUrl)
         },
     },
 

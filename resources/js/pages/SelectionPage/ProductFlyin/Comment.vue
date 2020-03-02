@@ -6,11 +6,10 @@
             <!-- <span v-if="comment.votes.length > 0" class="pill small primary"> <i class="fas fa-plus"></i> {{comment.votes.length}}</span> -->
         </div>
         <div class="comment" :class="[{important: comment.important}, {failed: comment.error}]">
-            <span v-if="!own || typeof comment.id != 'number'" class="body">{{comment.content}}</span>
+            <span v-if="!editActive" class="body">{{comment.content}}</span>
             <span v-else class="body">
-                <BaseEditableTextarea ref="editCommentInput" :hideEditButton="true" 
-                :value="commentToEdit.content" v-model="commentToEdit.content"
-                @activate="setEditActive" @submit="onUpdateComment"/>
+                <BaseInputTextArea v-model="comment.content"
+                @keyup.enter.exact.native="onUpdateComment" @keydown.enter.exact.native.prevent/>
             </span>
             <div class="controls">
 
@@ -33,7 +32,7 @@
                     @click="onDeleteComment">
                         <i class="far fa-trash-alt"></i></button>
                     <button v-tooltip.top="'Edit'" class="button true-square invisible ghost dark-hover"
-                    @click="$refs.editCommentInput.activate()">
+                    @click="editActive = true">
                         <i class="far fa-pen"></i></button>
                 </template>
                 
@@ -76,14 +75,12 @@ export default {
                 ? this.deleteComment({product: this.product, comment: this.comment})
                 : false
         },
-        setEditActive(boolean) {
-            this.editActive = boolean
-        },
         retrySubmitComment() {
             this.insertOrUpdateComment({product: this.product, comment: this.comment})
         },
         onUpdateComment() {
             this.insertOrUpdateComment({product: this.product, comment: this.comment})
+            this.editActive = false
         }
     }
 }
@@ -98,6 +95,14 @@ export default {
         max-width: calc(100% - 64px);
         &.edit-active {
             width: 100%;
+            .comment {
+                padding: 2px;
+                ::v-deep {
+                    .input-wrapper {
+                        border: none;
+                    }
+                }
+            }
         }
         &.has-traits {
             margin-top: 16px;
