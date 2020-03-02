@@ -63,7 +63,7 @@ export default {
         fileApproversFlyinVisible: false,
     }},
     computed: {
-        ...mapGetters('files', ['files', 'currentFile', 'currentFolder']),
+        ...mapGetters('files', ['files', 'currentFile', 'currentFolder', 'currentFolderId']),
         ...mapGetters('workspaces', ['currentWorkspace']),
         folders() {
             return this.files.filter(x => x.type == 'Folder')

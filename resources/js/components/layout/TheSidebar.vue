@@ -61,7 +61,7 @@ export default {
     ...mapGetters('workspaces', ['workspaces', 'userWorkspaceRole', 'currentWorkspace', 'currentWorkspaceIndex']),
   },
   methods: {
-    ...mapMutations('workspaces', ['setCurrentWorkspaceIndex']),
+    ...mapActions('workspaces', ['setCurrentWorkspaceIndex']),
   }
 };
 </script>

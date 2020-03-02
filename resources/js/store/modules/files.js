@@ -17,6 +17,7 @@ export default {
         loadingFiles: state => state.loading,
         filesStatus: state => state.status,
         currentFile: state => state.currentFile,
+        currentFolderId: state => state.currentFolderId,
         currentFolder: state => state.currentFolder,
         files: state => state.files,
         nextFile: state => {
@@ -85,7 +86,7 @@ export default {
             }
             await axios.get(apiUrl).then(response => {
                 Vue.set(state, 'files', response.data)
-                state.currentFolder = folder
+                commit('setCurrentFolder', folder)
             })
         },
         async fetchFileOwners({ commit, state }, file) {
@@ -175,20 +176,6 @@ export default {
                     console.log(err.response)
                 })
         },
-        async resetFile({ commit }, fileId) {
-            console.log('resetting file!')
-
-            await axios
-                .post(`/api/file/reset`, {
-                    file_id: fileId,
-                })
-                .then(response => {
-                    console.log(response.data)
-                })
-                .catch(err => {
-                    console.log(err.response)
-                })
-        },
         async addUsersToFile({ commit }, { file, users }) {
             commit('addOwnersToFile', { file, users })
 
@@ -231,6 +218,9 @@ export default {
         setCurrentFile(state, file) {
             state.currentFile = file
         },
+        setCurrentFolder(state, folder) {
+            state.currentFolder = folder
+        },
         updateFile(state, file) {
             // Remove unsaved files
             const oldFile = state.files.find(x => x.id == file.id)
@@ -268,9 +258,6 @@ export default {
         removeApproverFromFile(state, { file, user }) {
             const userIndex = file.approvers.findIndex(x => x.id == user.id)
             file.approvers.splice(userIndex, 1)
-        },
-        setCurrentFile(state, file) {
-            state.currentFile = file
         },
     },
 }

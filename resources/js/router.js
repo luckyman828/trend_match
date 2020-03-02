@@ -29,6 +29,13 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+    // Reset current folder
+    if (!['files', 'editFile', 'selection'].includes(to.name)) {
+        // If we are not going to a file related path --> reset the current folder
+        console.log('resetting folder')
+        store.commit('files/setCurrentFolder', null)
+    }
+
     // Guard paths
     // Check that the user is not going to the login page already
     if (to.path !== '/login' && !store.getters['auth/isAuthenticated']) {

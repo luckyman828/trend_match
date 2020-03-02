@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, Store, mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import TheSidebar from './components/layout/TheSidebar'
 import TheNavbar from './components/layout/TheNavbar'
 import TheNavbarLogo from './components/layout/TheNavbarLogo'
@@ -46,13 +46,20 @@ export default{
             if (newVal == 'success') {
                 this.initWorkspace()
             }
+        },
+        // Watch for workspace changes
+        currentWorkspaceIndex: function(newVal) {
+            // If we are in a selection -> send us back to files
+            if (this.$route.name == 'selection' || this.$route.name == 'editFile') {
+                this.$router.push({name: 'files'})
+            }
         }
     },
     methods: {
         ...mapActions('persist', ['getUids']),
         ...mapActions('auth', ['getAuthUser', 'logout']),
-        ...mapActions('workspaces', ['fetchWorkspaces']),
-        ...mapMutations('workspaces', ['setCurrentWorkspaceIndex']),
+        ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex']),
+        ...mapActions('files', ['setCurrentFolder']),
         initWorkspace() {
             // Get workspaces
             this.fetchWorkspaces().then(() => {
@@ -84,7 +91,6 @@ export default{
             // Get some snowflake IDs now we're at it
             this.getUids()
         }
-        
     },
 }
 </script>

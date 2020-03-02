@@ -53,6 +53,11 @@ export default {
                 }
             }
         },
+        async setCurrentWorkspaceIndex({ commit }, index) {
+            // Reset the current folder ID
+            commit('files/setCurrentFolder', null, { root: true })
+            commit('setCurrentWorkspaceIndex', index)
+        },
     },
 
     mutations: {
