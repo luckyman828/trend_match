@@ -42,6 +42,8 @@ export default {
                 : state.currentSelection.your_role == 'Approver'
                 ? 'Approval'
                 : 'No Access',
+        currentSelectionModeAction: (state, getters) =>
+            getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
         currentSelectionUsers: state => {
             const selection = state.currentSelection
             const usersToReturn = []

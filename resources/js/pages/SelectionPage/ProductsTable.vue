@@ -4,7 +4,7 @@
             <template v-slot:tabs>
                 <BaseTableTab :label="`Overview`" :count="productTotals.all" :modelValue="currentProductFilter"
                 value="overview" @change="setCurrentProductFilter($event)"/>
-                <BaseTableTab :label="`In`" :count="productTotals.ins" :modelValue="currentProductFilter"
+                <BaseTableTab :label="`In`" :count="productTotals.ins + productTotals.focus" :modelValue="currentProductFilter"
                 value="ins" @change="setCurrentProductFilter($event)"/>
                 <BaseTableTab :label="`Out`" :count="productTotals.outs" :modelValue="currentProductFilter"
                 value="outs" @change="setCurrentProductFilter($event)"/>
