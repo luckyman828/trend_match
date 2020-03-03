@@ -86,7 +86,7 @@ export default {
     ],
     data: function () { return {
         exportingPDF: false,
-        exportComments: true,
+        exportComments: this.$route.name == 'selection' ? true : false,
         generatedPDF: null,
         onlyWithRequests: false,
         includeDistribution: false,
@@ -144,6 +144,7 @@ export default {
                         <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet">
                         </head>
                         <body>${this.$refs.exportToPdf.$refs.pdfWrapper.innerHTML}</body>`, //Use your own HTML
+                        // <body>${this.$refs.exportToPdf.$refs.pdfWrapper.innerHTML}</body>`, //Use your own HTML
                         inlinePdf: true,
                         fileName: (this.currentWorkspace.name + '_' + this.currentFile.title).replace(/ /g, '_'),
                         options: {

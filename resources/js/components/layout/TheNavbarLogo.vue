@@ -1,6 +1,6 @@
 <template>
     <router-link to="/collection" class="logo link">
-        <img class="hide-screen-sm" src="/images/kollekt-logo-color-1.svg" />
+        <img class="hide-screen-sm" src="/images/kollekt-logo-color-2.svg" />
         <img class="show-screen-sm" src="/images/kollekt_logo_small.svg" />
     </router-link>
 </template>

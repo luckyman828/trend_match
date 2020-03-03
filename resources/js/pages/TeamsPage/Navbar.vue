@@ -53,7 +53,6 @@ export default {
     .flex-wrapper {
         width: 100%;
         padding: 8px 60px;
-        padding-right: 77px;
         display: flex;
         justify-content: space-between;
     }

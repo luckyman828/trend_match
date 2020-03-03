@@ -430,6 +430,8 @@ export default {
                             const preferredPrice = product.prices.find(x => (x.currency = product.preferred_currency))
                             if (preferredPrice) return preferredPrice
                             else return product.prices[0]
+                        } else {
+                            return product.prices[0]
                         }
                     },
                 })

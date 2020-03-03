@@ -29,8 +29,11 @@
                                     <div class="img-sizer" style="width: 80%;">
                                         <div class="img-wrapper" style="position: relative; padding-top: 133.3333%;
                                         border: solid 2px; height: 0; width: 100%;">
-                                            <img :src="variantImage(product.variants[0])" style="; height: 100%; width: 100%; position: absolute;
+                                            <img src="https://www.bestseller.com/webseller/psp.show_picture?picturesId=3483243&thumb=true" 
+                                            style="height: 100%; width: 100%; position: absolute;
                                             left: 0; top: 0; object-fit: contain;">
+                                            <!-- <img :src="variantImage(product.variants[0])" style="height: 100%; width: 100%; position: absolute;
+                                            left: 0; top: 0; object-fit: contain;"> -->
                                         </div>
                                     </div>
                                     <table class="prices">
@@ -62,11 +65,13 @@
                                 <div class="row-bottom" v-if="includeDistribution">
                                     <table class="distribution" style="width: 100%">
                                         <tr v-for="(action, index) in product.feedbacks" :key="index">
-                                            <td style="font-size: 7px;">{{action.user.name || 'Unknown user'}}</td>
+                                            <td style="font-size: 7px; border-bottom: solid 1px #E4E4E4">
+                                                {{action.user.name || 'Unknown user'}}
+                                            </td>
                                             <td v-if="!!action.action && action.action != 'None'" 
-                                            style="font-size: 7px; width: 40px" 
+                                            style="font-size: 7px; width: 24px; border-bottom: solid 1px #E4E4E4" 
                                             :style="{textAlign: action.action == 'Out' ? 'left' : 'right'}">
-                                                {{action.action == 'Out' ? 'O' : 'I'}}
+                                                {{action.action == 'Out' ? 'O' : action.action == 'Focus' ? 'F' : 'I'}}
                                             </td>
                                         </tr>
                                     </table>
@@ -128,7 +133,7 @@ export default {
         margin: auto;
         width: 100%;
         height: 100%;
-        // visibility: hidden;
+        visibility: hidden;
         .overlay {
             display: block;
             z-index: 0
