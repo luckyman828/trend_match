@@ -4,7 +4,10 @@
         <template v-slot v-if="show">
             <h3 style="text-align: center">The products in your current view will be exported'</h3>
             <form>
-                <!-- <h4>Requests & comments</h4>
+
+            <!-- Selection export options -->
+            <template v-if="$route.name == 'selection'">
+                <h4>Requests & comments</h4>
                 <div class="form-element">
                     <BaseCheckboxInputField v-model="exportComments">
                         Include Requests and comments
@@ -31,22 +34,24 @@
                     <BaseCheckboxInputField v-model="includeNotDecided">
                         Include "Not Decided" in distribution
                     </BaseCheckboxInputField>
-                </div> -->
+                </div>
+            </template>
+
                 <div class="form-element">
                     <h4>Export details</h4>
                     <div class="input-wrapper multiline disabled">
                         <p>{{productsToExport.length}} products <br>
-                            <template v-if="exportComments">{{productsToExport.filter(x => x.requests_count > 0).length}} with requests</template><br>
-                            <template v-if="includeDistribution">with {{productsToExport.reduce((acc, el) => acc + el.action_count, 0)}} actions</template><br>
-                            <template v-if="includeNotDecided">and {{productsToExport.reduce((acc, el) => acc + el.nd_count, 0)}} not decided</template>
+                            <template v-if="exportComments">{{productsToExport.reduce((acc, x) => acc + x.requests.length > 0 ? 1 : 0, 0)}} with requests</template><br>
+                            <template v-if="includeDistribution">with {{productsToExport.reduce((acc, x) => acc + x.feedbacks.length, 0)}} actions</template><br>
+                            <template v-if="includeNotDecided">and {{productsToExport.reduce((acc, x) => acc + x.nds.length, 0)}} not decided</template>
                         </p>
                     </div>
                 </div>
             </form>
-            <!-- <button class="ghost md full-width" style="margin-bottom: 20px;" 
+            <button class="ghost md full-width" style="margin-bottom: 20px;" 
             @click="previewPdf = true">
                 Preview PDF
-            </button> -->
+            </button>
             <BaseLoader v-if="exportingPDF"/>
             <button v-else-if="!generatedPDF" class="button lg dark full-width" @click="printToPdf"><span>Export as PDF</span></button>
             <template v-else>
@@ -69,7 +74,7 @@ import formatDate from '../../mixins/formatDate'
 
 
 export default {
-    name: "exportProductsModal",
+    name: "exportPDFModal",
     props: [
         'show'
     ],

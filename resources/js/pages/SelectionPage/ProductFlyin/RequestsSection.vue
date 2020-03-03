@@ -23,6 +23,13 @@
                 <strong class="form-header">Your Request</strong>
 
                 <form @submit="onSubmit" :class="[{active: writeActive}]">
+                    <!-- <button class="ghost red-hover delete-request sm" 
+                    v-if="selectionRequest && writeActive"
+                    @click="onDeleteRequest">
+                        <i class="far fa-trash-alt"></i>
+                        <span>Delete request</span>
+                    </button> -->
+
                     <div class="input-parent request">
                         <BaseInputTextArea ref="requestField" :disabled="selectionRequest && !writeActive"
                         placeholder="Write your request here..." v-model="newRequest.content" 
@@ -89,12 +96,12 @@ export default {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', ['currentSelection']),
         submitDisabled () {
-            return this.newRequest.content.length < 1
+            return this.newRequest.content.length < 1 
+            || (this.selectionRequest && this.newRequest.content == this.selectionRequest.content)
         },
     },
     methods: {
-        ...mapActions('comments', ['insertOrUpdateComment']),
-        ...mapActions('requests', ['insertOrUpdateRequest']),
+        ...mapActions('requests', ['insertOrUpdateRequest', 'deleteRequest']),
         activateWrite() {
             this.$refs.requestField.focus()
             this.$refs.requestField.select()
@@ -109,6 +116,10 @@ export default {
         cancelRequest() {
             this.deactivateWrite()
             this.newRequest.content = (this.selectionRequest) ? this.selectionRequest.content : ''
+        },
+        onDeleteRequest() {
+            this.deleteRequest({product: this.product, request: this.selectionRequest})
+            this.selectionRequest = null
         },
         async onSubmit(e) {
 
@@ -244,6 +255,13 @@ export default {
             }
         }
         form {
+            position: relative;
+            .delete-request {
+                position: absolute;
+                right: 0;
+                top: -6px;
+                transform: translateY(-100%)
+            }
             .id {
                 font-size: 12px;
                 color: $dark2;

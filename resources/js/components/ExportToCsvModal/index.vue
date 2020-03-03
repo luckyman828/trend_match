@@ -24,7 +24,7 @@ import exportToCsv from '../../mixins/exportToCsv'
 
 
 export default {
-    name: "exportProductsModal",
+    name: "exportCSVModal",
     props: [
         'show'
     ],

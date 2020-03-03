@@ -291,8 +291,8 @@ export default {
             tr {
                 > * {
                     &.title {
-                        min-width: 248px;
-                        max-width: 248px;
+                        min-width: 220px;
+                        max-width: 220px;
                         display: flex;
                         align-items: center;
                         margin-right: 32px;

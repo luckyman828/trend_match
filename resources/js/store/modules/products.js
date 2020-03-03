@@ -200,6 +200,7 @@ export default {
                 .get(apiUrl)
                 .then(response => {
                     commit('insertProducts', { products: response.data, method: 'set' })
+                    commit('procesProducts')
                     commit('setProductStatus', 'success')
                 })
                 .catch(err => {
@@ -408,6 +409,32 @@ export default {
         alertError: state => {
             window.alert('Network error. Please check your connection')
         },
+        procesProducts: state => {
+            const products = state.products
+            products.map(product => {
+                // Currency
+                Object.defineProperty(product, 'yourPrice', {
+                    get: function() {
+                        // Check if the product has any prices
+                        if (product.prices.length <= 0) {
+                            // If no prices are available, return a default empty price object
+                            return {
+                                currency: 'Not set',
+                                mark_up: null,
+                                wholesale_price: null,
+                                recommended_retail_price: null,
+                            }
+                        }
+                        // Else check if we have a preferred currency set, and try to match that
+                        if (product.preferred_currency) {
+                            const preferredPrice = product.prices.find(x => (x.currency = product.preferred_currency))
+                            if (preferredPrice) return preferredPrice
+                            else return product.prices[0]
+                        }
+                    },
+                })
+            })
+        },
         procesSelectionProducts: state => {
             const products = state.products
             products.map(product => {
@@ -458,29 +485,6 @@ export default {
                     'comments',
                     product.comments.filter(x => !x.is_deleted)
                 )
-                // Vue.set(product, 'requests', [])
-
-                // Vue.set(product, 'feedback', {
-                //     ins: product.feedbacks.filter(x => x.action == 'In'),
-                //     out: product.feedbacks.filter(x => x.action == 'Out'),
-                //     focus: product.feedbacks.filter(x => x.action == 'Focus'),
-                // })
-                // Define dynamic getters for the products ins, outs, focus and nds
-                // Vue.set(
-                //     product,
-                //     'ins',
-                //     product.feedbacks.filter(x => x.action == 'In')
-                // )
-                // Vue.set(
-                //     product,
-                //     'outs',
-                //     product.feedbacks.filter(x => x.action == 'Out')
-                // )
-                // Vue.set(
-                //     product,
-                //     'focus',
-                //     product.feedbacks.filter(x => x.action == 'Focus')
-                // )
             })
         },
     },

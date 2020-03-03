@@ -110,13 +110,8 @@ export default {
             }
         },
         deleteRequest(state, { product, request }) {
-            // If a product has been provided. use that, else find the product from our state
-            const requestProduct = product
-                ? product
-                : this.state.entities.products.products.find(x => x.id == request.product_id)
-
-            const requestIndex = requestProduct.requests.findIndex(x => x.id == request.id)
-            requestProduct.requests.splice(requestIndex, 1)
+            const requestIndex = product.requests.findIndex(x => x.id == request.id)
+            product.requests.splice(requestIndex, 1)
         },
         alertError: state => {
             window.alert('Network error. Please check your connection')

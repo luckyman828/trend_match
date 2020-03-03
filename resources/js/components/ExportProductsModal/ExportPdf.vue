@@ -36,25 +36,38 @@
                                     <table class="prices">
                                         <tr>
                                             <td>Rec. Retail Price:</td>
-                                            <td style="text-align: right">{{product.prices[0] && product.prices[0].recommended_retail_price}}</td>
+                                            <td style="text-align: right">{{product.yourPrice.recommended_retail_price}}</td>
                                         </tr>
                                         <tr>
                                             <td>Mark up:</td>
-                                            <td style="text-align: right">{{product.prices[0] && product.prices[0].mark_up}}</td>
+                                            <td style="text-align: right">{{product.yourPrice.mark_up}}</td>
                                         </tr>
                                         <tr style="font-weight: 700; ">
-                                            <td style="padding-top: 4px;">Price ({{product.prices[0] && product.prices[0].currency}})</td>
-                                            <td style="text-align: right">{{product.prices[0] && product.prices[0].wholesale_price}}</td>
+                                            <td style="padding-top: 4px;">Price ({{product.yourPrice.currency}})</td>
+                                            <td style="text-align: right">{{product.yourPrice.wholesale_price}}</td>
                                         </tr>
                                     </table>
                                 </div>
                             </div>
 
-                            <div class="col-right" style="width: calc(50% - 6px); display: flex; flex-direction: column;">
-                                <div class="row">
+                            <div class="col-right" style="width: calc(50% - 6px); display: flex; flex-direction: column;
+                            justify-content: space-between; align-items: space-between;">
+                                <div class="row-top">
                                     <table class="assortments">
                                         <tr v-for="(assortment, index) in product.assortments" :key="index">
-                                            <td style="font-size: 7px;">{{assortment.name || 'Unnamed assortment'}} ({{assortment.box_size || 0}})</td>
+                                            <td style="font-size: 7px;">{{assortment.name || 'Unknown assortment'}} ({{assortment.box_size || 0}})</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="row-bottom" v-if="includeDistribution">
+                                    <table class="distribution" style="width: 100%">
+                                        <tr v-for="(action, index) in product.feedbacks" :key="index">
+                                            <td style="font-size: 7px;">{{action.user.name || 'Unknown user'}}</td>
+                                            <td v-if="!!action.action && action.action != 'None'" 
+                                            style="font-size: 7px; width: 40px" 
+                                            :style="{textAlign: action.action == 'Out' ? 'left' : 'right'}">
+                                                {{action.action == 'Out' ? 'O' : 'I'}}
+                                            </td>
                                         </tr>
                                     </table>
                                 </div>
@@ -115,7 +128,7 @@ export default {
         margin: auto;
         width: 100%;
         height: 100%;
-        visibility: hidden;
+        // visibility: hidden;
         .overlay {
             display: block;
             z-index: 0

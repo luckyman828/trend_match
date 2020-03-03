@@ -164,6 +164,7 @@ export default {
                         selection: selection,
                         selection_id: selection.id,
                         user_id: user.id,
+                        user: user,
                     })
                 } else {
                     existingAction.action = action
