@@ -413,6 +413,7 @@ export default {
 
             // Check if the product has not yet been saved. If true, save it, since we cannot upload images to an unsaved product.
             if (!productToUpload.id) {
+                console.log('insert products')
                 productIsNew = true
                 await this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
             }
@@ -443,6 +444,7 @@ export default {
             }
 
             // Update the product
+            console.log('update product')
             await this.updateProduct(productToUpload)
             if (productIsNew) {
                 this.setCurrentProduct(productToUpload)

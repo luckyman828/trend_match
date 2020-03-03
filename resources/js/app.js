@@ -17,11 +17,9 @@ Vue.use(VueCookies)
 import UUID from 'vue-uuid'
 Vue.use(UUID)
 
-// import directive from './directive'
-// Vue.use(directive)
-import dragscrollDirective from './dragscrollDirective'
+import dragscrollDirective from './directives/dragscrollDirective'
 Vue.use(dragscrollDirective)
-import clickOutsideDirective from './clickOutsideDirective'
+import clickOutsideDirective from './directives//clickOutsideDirective'
 Vue.use(clickOutsideDirective)
 
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'

@@ -14,7 +14,9 @@
             </div>
         </td>
         <td class="id clickable" @click="$emit('onViewSingle',product)">{{product.datasource_id}}</td>
-        <td class="title"><span class="clickable" @click="$emit('onViewSingle',product)">{{product.title}}</span></td>
+        <td class="title"><span class="clickable" @click="$emit('onViewSingle',product)">
+            <span v-tooltip="product.title.length > 30 && product.title">{{product.title | truncate(30)}}</span>
+        </span></td>
         
         <v-popover class="focus" :disabled="product.focus.length <= 0" tabindex="-1">
             <td class="focus tooltip-target">
@@ -106,8 +108,18 @@ export default {
         'index',
     ],
     mixins: [
-        variantImage
+        variantImage,
     ],
+    filters: {
+        truncate: function(text, length) {
+            const clamp = '...'
+            var node = document.createElement('div')
+            node.innerHTML = text
+            var content = node.textContent
+            // return `<span>124</span>`
+            return content.length > length ? content.slice(0, length) + clamp : content
+        }
+    },
     computed: {
         ...mapGetters('selections', ['currentSelectionMode']),
         ...mapGetters('products', ['currentFocusIndex']),
