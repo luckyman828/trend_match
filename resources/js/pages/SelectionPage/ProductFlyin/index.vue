@@ -228,6 +228,11 @@ export default {
 @import '~@/_variables.scss';
 
 .product-single {
+    .prices {
+        label {
+            white-space: nowrap;
+        }
+    }
     .details {
         background: $bgContent;
         ::v-deep {

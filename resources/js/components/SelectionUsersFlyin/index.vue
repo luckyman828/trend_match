@@ -62,7 +62,7 @@ export default {
         ...mapActions('selections', ['fetchSelection', 'calculateAllSelectionUsers']),
         async fetchData() {
             this.fetchingData = true
-            const newSelection = await this.fetchSelection(this.selection.id) // Fetches selection with users and teams
+            await this.fetchSelection(this.selection.id) // Fetches selection with users and teams
             await this.fetchSelectionTeamsUsers(this.selection.teams)
             await this.calculateAllSelectionUsers(this.selection)
             this.fetchingData = false

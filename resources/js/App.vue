@@ -143,7 +143,7 @@ export default{
     h1 {
         margin-bottom: 30px;
     }
-    .grid-2, .grid-3 {
+    .grid-2, .grid-3, .grid-4 {
         display: grid;
         grid-gap: 17px;
         &.small-gap {

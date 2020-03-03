@@ -7,8 +7,9 @@
                 style="width: 576pt; height: 792pt; box-sizing: border-box; padding: 60px 38px 38px;
                 display: flex; flex-wrap: wrap; justify-content: space-between; align-items: space-between;">
                     <div class="product-wrapper" v-for="product in productChunk" :key="product.datasource_id"
-                    style="width: calc(50% - 12px); border: solid 2px; border-radius: 4px; height: calc(100% / 3 - 24px); box-sizing: border-box;
-                    padding: 8px 12px;">
+                    style="border: solid 2px; border-radius: 4px; height: calc(100% / 3 - 24px); box-sizing: border-box;
+                    padding: 8px 12px;"
+                    :style="{width: exportComments ? '100%' : 'calc(50% - 12px)'}">
                         <div class="col-wrapper" style="display: flex; justify-content: space-between; height: 100%;">
                             <div class="col-left" style="width: calc(50% - 6px); display: flex; flex-direction: column;
                             justify-content: space-between; align-items: space-between;">
@@ -26,14 +27,11 @@
                                     </table>
                                 </div>
                                 <div class="row-bottom">
-                                    <div class="img-sizer" style="width: 80%;">
+                                    <div class="img-sizer" style="width: 92px;">
                                         <div class="img-wrapper" style="position: relative; padding-top: 133.3333%;
                                         border: solid 2px; height: 0; width: 100%;">
-                                            <img src="https://www.bestseller.com/webseller/psp.show_picture?picturesId=3483243&thumb=true" 
-                                            style="height: 100%; width: 100%; position: absolute;
+                                            <img :src="variantImage(product.variants[0])" style="height: 100%; width: 100%; position: absolute;
                                             left: 0; top: 0; object-fit: contain;">
-                                            <!-- <img :src="variantImage(product.variants[0])" style="height: 100%; width: 100%; position: absolute;
-                                            left: 0; top: 0; object-fit: contain;"> -->
                                         </div>
                                     </div>
                                     <table class="prices">
@@ -62,16 +60,27 @@
                                         </tr>
                                     </table>
                                 </div>
-                                <div class="row-bottom" v-if="includeDistribution">
-                                    <table class="distribution" style="width: 100%">
-                                        <tr v-for="(action, index) in product.feedbacks" :key="index">
-                                            <td style="font-size: 7px; border-bottom: solid 1px #E4E4E4">
-                                                {{action.user.name || 'Unknown user'}}
+                                <div class="row-bottom">
+                                    <table class="input" style="width: 100%">
+                                        <tr v-for="(user, index) in currentSelection.allUsers" :key="index">
+                                            <td v-if="includeDistribution || exportComments" 
+                                            style="font-size: 7px; border-bottom: solid 1px #E4E4E4; width: 60px;">
+                                                {{user.name || 'Unknown user'}}
                                             </td>
-                                            <td v-if="!!action.action && action.action != 'None'" 
+                                            <td v-if="includeDistribution" 
                                             style="font-size: 7px; width: 24px; border-bottom: solid 1px #E4E4E4" 
-                                            :style="{textAlign: action.action == 'Out' ? 'left' : 'right'}">
-                                                {{action.action == 'Out' ? 'O' : action.action == 'Focus' ? 'F' : 'I'}}
+                                            :style="{textAlign: !!product.feedbacks.find(x => x.user_id == user.id) 
+                                            && product.feedbacks.find(x => x.user_id == user.id).action == 'Out' ? 'right' : 'left'}">
+                                                <span v-if="!!product.feedbacks.find(x => x.user_id == user.id) 
+                                                    && product.feedbacks.find(x => x.user_id == user.id).action != 'None'">
+                                                    {{product.feedbacks.find(x => x.user_id == user.id).action == 'Out' ? 'O' 
+                                                    : product.feedbacks.find(x => x.user_id == user.id).action == 'Focus' ? 'F' : 'I'}}
+                                                </span>
+                                            </td>
+                                            <td v-if="exportComments" 
+                                            style="font-size: 7px; width: 100%; border-bottom: solid 1px #E4E4E4;
+                                            padding-left: 16px; text-align: right;">
+                                                I am supposed to be a comment
                                             </td>
                                         </tr>
                                     </table>
@@ -105,10 +114,11 @@ export default {
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
         ...mapGetters('files', ['currentFile']),
+        ...mapGetters('selections', ['currentSelection']),
         productChunks() {
             const array = this.products
             const chunkedArr = [];
-            const size = 6
+            const size = this.exportComments ? 3 : 6
             for (let i = 0; i < array.length; i++) {
                 const last = chunkedArr[chunkedArr.length - 1];
                 if (!last || last.length === size) {
@@ -133,7 +143,7 @@ export default {
         margin: auto;
         width: 100%;
         height: 100%;
-        visibility: hidden;
+        // visibility: hidden;
         .overlay {
             display: block;
             z-index: 0

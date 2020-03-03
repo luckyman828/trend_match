@@ -1290,6 +1290,11 @@ form {
 }
 
 // LAYOUT / COLUMNS
+.col-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 8px;
+}
 .col-3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

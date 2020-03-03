@@ -48,35 +48,6 @@ export default {
         },
         currentSelectionModeAction: (state, getters) =>
             getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
-        // currentSelectionUsers: state => {
-        //     const selection = state.currentSelection
-        //     const usersToReturn = []
-        //     if (!selection) return usersToReturn
-        //     // Get users manually added and from teams
-        //     // Loop through the manually added users to see if they should be removed
-        //     if (selection.users) {
-        //         usersToReturn.push(...selection.users)
-        //     }
-        //     // Add the team users if any
-        //     if (selection.teams) {
-        //         // Loop through the teams and add their users
-        //         // selection.teams.sort((a, b) => a.id - b.id)
-        //         selection.teams.forEach(team => {
-        //             if (team.users) {
-        //                 // Loop through the users to make sure they are not already added
-        //                 team.users.forEach(teamUser => {
-        //                     if (!usersToReturn.find(x => x.id == teamUser.id)) {
-        //                         const userToPush = JSON.parse(JSON.stringify(teamUser))
-        //                         userToPush.added_by_team = true
-        //                         userToPush.role = 'Member'
-        //                         usersToReturn.push(userToPush)
-        //                     }
-        //                 })
-        //             }
-        //         })
-        //     }
-        //     return usersToReturn
-        // },
         selections: state => state.selections,
         selectionsTree: state => state.selectionsTree,
         availableSelectionRoles: state => {
@@ -115,7 +86,6 @@ export default {
             return selection
         },
         async fetchSelectionUsers({ commit, dispatch }, selection) {
-            console.log('fetch selection users')
             // Get users for selection
             commit('setUsersStatus', 'loading')
             const apiUrl = `/selections/${selection.id}/users`
@@ -253,35 +223,6 @@ export default {
                 team_ids: teams.map(x => x.id),
             })
         },
-        // calculateSelectionUserCount({ commit, state }, selection) {
-        //     const usersToReturn = []
-        //     // Get users manually added and from teams
-        //     // Loop through the manually added users
-        //     if (selection.users) {
-        //         usersToReturn.push(...selection.users)
-        //     }
-        //     // Add the team users if any
-        //     if (selection.teams) {
-        //         // Loop through the teams and add their users
-        //         selection.teams.forEach(team => {
-        //             if (team.users) {
-        //                 // Loop through the users to make sure they are not already added
-        //                 team.users.forEach(teamUser => {
-        //                     if (!usersToReturn.find(x => x.id == teamUser.id)) {
-        //                         const userToPush = JSON.parse(JSON.stringify(teamUser))
-        //                         userToPush.added_by_team = true
-        //                         userToPush.role = 'Member'
-        //                         usersToReturn.push(userToPush)
-        //                     }
-        //                 })
-        //             }
-        //         })
-        //     }
-        //     selection.user_count = usersToReturn.length
-        //     // Check if the current selection also exists in our selections array. Then update that as well
-        //     const stateSelection = state.selections.find(x => x.id == selection.id)
-        //     if (stateSelection) stateSelection.user_count = usersToReturn.length
-        // },
         calculateAllSelectionUsers({ commit }, selection) {
             // This functions finds all the users who have access to the selection and adds them a an 'allUsers' array on the selection
             const usersToReturn = []
@@ -413,8 +354,10 @@ export default {
             Vue.set(selection, 'user_count', users.length)
             // Also update the selection if it exists in our state
             const stateSelection = state.selections.find(x => x.id == selection.id)
-            Vue.set(stateSelection, 'allUsers', users)
-            Vue.set(stateSelection, 'user_count', users.length)
+            if (stateSelection) {
+                Vue.set(stateSelection, 'allUsers', users)
+                Vue.set(stateSelection, 'user_count', users.length)
+            }
         },
     },
 }

@@ -139,7 +139,7 @@
                 <div class="col-3">
                     <div class="form-element">
                         <label for="wholesale">WHS ({{currentCurrency.currency}})</label>
-                        <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
+                        <BaseEditInputWrapper :id="'wholesale'" :type="'number'" 
                         :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].wholesale_price : null" 
                         v-model.number="currentCurrency.wholesale_price" @submit="calculateMarkup({whs: $event}); savedMarkup = currentCurrency.mark_up"
                         @change="calculateMarkup({whs: $event})" @cancel="resetMarkup" @revert="revertMarkup"/>
@@ -168,6 +168,42 @@
                         <label for="min-order">Variant minimum (pcs)</label>
                         <BaseEditInputWrapper :id="'min-order'" :type="'number'" 
                         :oldValue="originalProduct.min_variant_order" v-model.number="product.min_variant_order"/>
+                    </div>
+                </div>
+
+                <div class="assortments">
+                    <h3>Assortments</h3>
+                    <div class="col-4">
+                        <label>Assortment name</label>
+                        <label>Box size</label>
+                        <label>EAN</label>
+                    </div>
+                    <div class="col-4" v-for="(assortment, index) in product.assortments" :key="index">
+                        <div class="form-element">
+                            <BaseEditInputWrapper
+                            :oldValue="originalProduct.assortments[index] ? originalProduct.assortments[index].name : null" 
+                            v-model="assortment.name"/>
+                        </div>
+                        <div class="form-element">
+                            <BaseEditInputWrapper type="number"
+                            :oldValue="originalProduct.assortments[index] ? originalProduct.assortments[index].box_size : null" 
+                            v-model.number="assortment.box_size"/>
+                        </div>
+                        <div class="form-element">
+                            <BaseEditInputWrapper type="number"
+                            :oldValue="originalProduct.assortments[index] ? originalProduct.assortments[index].box_ean : null" 
+                            v-model.number="assortment.box_ean"/>
+                        </div>
+                        <div class="form-element" style="display: flex; align-items: center;">
+                            <button class="invisible ghost-hover" @click="removeAssortment(index)">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-element">
+                        <button class="ghost" @click="addAssortment">
+                            <i class="far fa-plus"></i><span>Add assortment</span>
+                        </button>
                     </div>
                 </div>
             </BaseFlyinColumn>
@@ -265,6 +301,11 @@ export default {
             mark_up: 0,
             wholesale_price: 0,
             recommended_retail_price: 0
+        },
+        defaultAssortmentObject: {
+            name: 'new assortment',
+            box_size: 0,
+            box_ean: null,
         },
         contextVariantIndex: null,
         idError: null
@@ -386,6 +427,12 @@ export default {
         removeCurrency() {
             this.productToEdit.prices.splice(this.currencyIndex,1)
             this.currencyIndex = 0
+        },
+        addAssortment() {  
+            this.productToEdit.assortments.push(JSON.parse(JSON.stringify(this.defaultAssortmentObject)))
+        },
+        removeAssortment(index) {  
+            this.productToEdit.assortments.splice(index, 1)
         },
         onCloseSingle() {
             // Emit event to parent
@@ -623,6 +670,11 @@ export default {
         white-space: nowrap;
         overflow-x: auto;
         margin-bottom: 18px;
+    }
+    .assortments {
+        .col-4 {
+            grid-template-columns: 1fr 100px 192px 32px;
+        }
     }
     .product-variant {
         width: 180px;
