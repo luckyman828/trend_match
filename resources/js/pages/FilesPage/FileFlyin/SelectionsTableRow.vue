@@ -24,7 +24,7 @@
             <td class="nd">-</td>
             <td class="teams">
                 <button class="ghost editable sm" @click="$emit('showSelectionUsersFlyin', selection)">
-                    <i class="far fa-user"></i><span>{{selection.team_count}}</span>
+                    <i class="far fa-users"></i><span>{{selection.team_count}}</span>
                 </button>
             </td>
             <td class="users">

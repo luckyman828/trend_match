@@ -10,6 +10,7 @@ export default {
         usersStatus: null,
         teamsStatus: null,
         currentSelection: null,
+        currentSelectionUsers: null,
         selections: [],
         selectionsTree: [],
         availableSelectionRoles: [
@@ -47,34 +48,35 @@ export default {
         },
         currentSelectionModeAction: (state, getters) =>
             getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
-        currentSelectionUsers: state => {
-            const selection = state.currentSelection
-            const usersToReturn = []
-            if (!selection) return usersToReturn
-            // Get users manually added and from teams
-            // Loop through the manually added users to see if they should be removed
-            if (selection.users) {
-                usersToReturn.push(...selection.users)
-            }
-            // Add the team users if any
-            if (selection.teams) {
-                // Loop through the teams and add their users
-                selection.teams.forEach(team => {
-                    if (team.users) {
-                        // Loop through the users to make sure they are not already added
-                        team.users.forEach(teamUser => {
-                            if (!usersToReturn.find(x => x.id == teamUser.id)) {
-                                const userToPush = JSON.parse(JSON.stringify(teamUser))
-                                userToPush.added_by_team = true
-                                userToPush.role = 'Member'
-                                usersToReturn.push(userToPush)
-                            }
-                        })
-                    }
-                })
-            }
-            return usersToReturn
-        },
+        // currentSelectionUsers: state => {
+        //     const selection = state.currentSelection
+        //     const usersToReturn = []
+        //     if (!selection) return usersToReturn
+        //     // Get users manually added and from teams
+        //     // Loop through the manually added users to see if they should be removed
+        //     if (selection.users) {
+        //         usersToReturn.push(...selection.users)
+        //     }
+        //     // Add the team users if any
+        //     if (selection.teams) {
+        //         // Loop through the teams and add their users
+        //         // selection.teams.sort((a, b) => a.id - b.id)
+        //         selection.teams.forEach(team => {
+        //             if (team.users) {
+        //                 // Loop through the users to make sure they are not already added
+        //                 team.users.forEach(teamUser => {
+        //                     if (!usersToReturn.find(x => x.id == teamUser.id)) {
+        //                         const userToPush = JSON.parse(JSON.stringify(teamUser))
+        //                         userToPush.added_by_team = true
+        //                         userToPush.role = 'Member'
+        //                         usersToReturn.push(userToPush)
+        //                     }
+        //                 })
+        //             }
+        //         })
+        //     }
+        //     return usersToReturn
+        // },
         selections: state => state.selections,
         selectionsTree: state => state.selectionsTree,
         availableSelectionRoles: state => {
@@ -113,6 +115,7 @@ export default {
             return selection
         },
         async fetchSelectionUsers({ commit, dispatch }, selection) {
+            console.log('fetch selection users')
             // Get users for selection
             commit('setUsersStatus', 'loading')
             const apiUrl = `/selections/${selection.id}/users`
@@ -184,7 +187,7 @@ export default {
                     return user
                 }),
             })
-            dispatch('updateSelectionUserCount', selection)
+            dispatch('calculateAllSelectionUsers', selection)
             // Send request to API
             const apiUrl = `/selections/${selection.id}/users`
             axios.post(apiUrl, {
@@ -200,7 +203,7 @@ export default {
         async updateSelectionUsers({ commit, dispatch }, { selection, users }) {
             // Commit mutation to state
             await commit('updateSelectionUsers', { selection, users })
-            dispatch('updateSelectionUserCount', selection)
+            dispatch('calculateAllSelectionUsers', selection)
             // Send request to API
             const apiUrl = `/selections/${selection.id}/users`
             axios.post(apiUrl, {
@@ -216,7 +219,7 @@ export default {
         async removeUsersFromSelection({ commit, dispatch }, { selection, users }) {
             // Commit mutation to state
             await commit('removeUsersFromSelection', { selection, users })
-            dispatch('updateSelectionUserCount', selection)
+            dispatch('calculateAllSelectionUsers', selection)
             // Send request to API
             const apiUrl = `/selections/${selection.id}/users`
             axios.post(apiUrl, {
@@ -231,7 +234,7 @@ export default {
         async addTeamsToSelection({ commit, dispatch }, { selection, teams }) {
             // Commit mutation to state
             await commit('addTeamsToSelection', { selection, teams })
-            dispatch('updateSelectionUserCount', selection)
+            dispatch('calculateAllSelectionUsers', selection)
             // Send request to API
             const apiUrl = `/selections/${selection.id}/teams`
             axios.post(apiUrl, {
@@ -242,7 +245,7 @@ export default {
         async removeTeamsFromSelection({ commit, dispatch }, { selection, teams }) {
             // Commit mutation to state
             await commit('removeTeamsFromSelection', { selection, teams })
-            dispatch('updateSelectionUserCount', selection)
+            dispatch('calculateAllSelectionUsers', selection)
             // Send request to API
             const apiUrl = `/selections/${selection.id}/teams`
             axios.post(apiUrl, {
@@ -250,16 +253,46 @@ export default {
                 team_ids: teams.map(x => x.id),
             })
         },
-        updateSelectionUserCount({ commit, state }, selection) {
+        // calculateSelectionUserCount({ commit, state }, selection) {
+        //     const usersToReturn = []
+        //     // Get users manually added and from teams
+        //     // Loop through the manually added users
+        //     if (selection.users) {
+        //         usersToReturn.push(...selection.users)
+        //     }
+        //     // Add the team users if any
+        //     if (selection.teams) {
+        //         // Loop through the teams and add their users
+        //         selection.teams.forEach(team => {
+        //             if (team.users) {
+        //                 // Loop through the users to make sure they are not already added
+        //                 team.users.forEach(teamUser => {
+        //                     if (!usersToReturn.find(x => x.id == teamUser.id)) {
+        //                         const userToPush = JSON.parse(JSON.stringify(teamUser))
+        //                         userToPush.added_by_team = true
+        //                         userToPush.role = 'Member'
+        //                         usersToReturn.push(userToPush)
+        //                     }
+        //                 })
+        //             }
+        //         })
+        //     }
+        //     selection.user_count = usersToReturn.length
+        //     // Check if the current selection also exists in our selections array. Then update that as well
+        //     const stateSelection = state.selections.find(x => x.id == selection.id)
+        //     if (stateSelection) stateSelection.user_count = usersToReturn.length
+        // },
+        calculateAllSelectionUsers({ commit }, selection) {
             const usersToReturn = []
             // Get users manually added and from teams
-            // Loop through the manually added users
+            // Loop through the manually added users to see if they should be removed
             if (selection.users) {
                 usersToReturn.push(...selection.users)
             }
             // Add the team users if any
             if (selection.teams) {
                 // Loop through the teams and add their users
+                // selection.teams.sort((a, b) => a.id - b.id)
                 selection.teams.forEach(team => {
                     if (team.users) {
                         // Loop through the users to make sure they are not already added
@@ -274,10 +307,8 @@ export default {
                     }
                 })
             }
-            selection.user_count = usersToReturn.length
-            // Check if the current selection also exists in our selections array. Then update that as well
-            const stateSelection = state.selections.find(x => x.id == selection.id)
-            if (stateSelection) stateSelection.user_count = usersToReturn.length
+            commit('setAllSelectionUsers', { selection, users: usersToReturn })
+            return usersToReturn
         },
     },
 
@@ -375,6 +406,10 @@ export default {
             // Check if the current selection also exists in our selections array. Then update that as well
             const stateSelection = state.selections.find(x => x.id == selection.id)
             if (stateSelection) stateSelection.team_count = selection.teams.length
+        },
+        setAllSelectionUsers(state, { selection, users }) {
+            Vue.set(selection, 'allUsers', users)
+            Vue.set(selection, 'user_count', users.length)
         },
     },
 }

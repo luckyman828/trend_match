@@ -16,9 +16,9 @@
                     <BaseCheckbox :value="selected.length > 0" :modelValue="true" 
                     @change="(checked) => checked ? selected = users : selected = []"/>
                 </BaseTableHeader>
-                <BaseTableHeader class="name" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</BaseTableHeader>
-                <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</BaseTableHeader>
-                <BaseTableHeader :sortKey="'role'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Role</BaseTableHeader>
+                <BaseTableHeader class="name" :sortKey="'name'" :currentSortKey="sortKey" @sort="sortUsers">Name</BaseTableHeader>
+                <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" @sort="sortUsers">E-mail</BaseTableHeader>
+                <BaseTableHeader :sortKey="'role'" :currentSortKey="sortKey" @sort="sortUsers">Role</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
@@ -127,7 +127,6 @@ export default {
     ],
     data: function() { return {
         sortKey: null,
-        sortAsc: true,
         selected: [],
         usersToAdd: [],
         userToEdit: null,
@@ -174,16 +173,9 @@ export default {
         },
         sortUsers(method, key) {
             // If if we are already sorting by the given key, flip the sort order
-            if (this.sortKey == key) {
-                this.sortAsc = !this.sortAsc
-            }
-            else {
-                this.sortKey = key
-                this.sortAsc = method
-            }
-            let sortAsc = this.sortAsc
+            this.sortKey = key
 
-            this.sortArray(this.selection.users, this.sortAsc, this.sortKey)
+            this.sortArray(this.users, method, key)
         },
         onRemoveUser(user) {
             // If we have a selection, loop through the selection and remove those

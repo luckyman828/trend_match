@@ -161,7 +161,6 @@ export default {
                 x.role = 'Member'
                 return x
             })
-            console.log(usersToPush)
             // Format our users for our request body
             const usersToPost = users.map(user => {
                 return { id: user.id, role: 'Member' }

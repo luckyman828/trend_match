@@ -7,7 +7,7 @@
         </template>
         <template v-slot>
             <SelectionTeamsTable v-if="show && !loading" :selection="selection"/>
-            <SelectionUsersTable style="margin-top: 40px;" v-if="show && !loading" :selection="selection" :users="currentSelectionUsers"/>
+            <SelectionUsersTable style="margin-top: 40px;" v-if="show && !loading" :selection="selection" :users="selection.allUsers"/>
         </template>
     </BaseFlyin>
 </template>
@@ -59,15 +59,15 @@ export default {
     methods: {
         ...mapActions('users', ['fetchUsers']),
         ...mapActions('teams', ['fetchTeams', 'fetchTeamUsers']),
-        ...mapActions('selections', ['fetchSelection']),
+        ...mapActions('selections', ['fetchSelection', 'calculateAllSelectionUsers']),
         async fetchData() {
             this.fetchingData = true
             const newSelection = await this.fetchSelection(this.selection.id) // Fetches selection with users and teams
             await this.fetchSelectionTeamsUsers(this.selection.teams)
+            await this.calculateAllSelectionUsers(this.selection)
             this.fetchingData = false
         },
         async fetchSelectionTeamsUsers(teams) {
-            console.log('fetch selection team users')
             // Use of promise and map to fetch users for all teams in parallel
             await Promise.all(teams.map(async team => {
                 await this.fetchTeamUsers(team)
