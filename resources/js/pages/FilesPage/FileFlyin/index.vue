@@ -42,10 +42,16 @@ export default {
     },
     data: function(){ return {
         SelectionUsersFlyinVisible: false,
+        loadingData: true,
     }},
     watch: {
         show: function(newVal, oldVal) {
             if (newVal) {
+                this.fetchData()
+            }
+        },
+        file: function(newVal, oldVal) {
+            if (!oldVal || newVal.id != oldVal.id) {
                 this.fetchData()
             }
         }
@@ -58,8 +64,10 @@ export default {
         ...mapMutations('files', ['setCurrentFile']),
         ...mapActions('selections', ['fetchSelections']),
         ...mapMutations('selections', ['setCurrentSelection']),
-        fetchData() {
-            this.fetchSelections(this.currentFile)
+        async fetchData() {
+            this.loadingData = true
+            await this.fetchSelections(this.currentFile)
+            this.loadingData = false
         },
         showSelectionUsersFlyin(selection) {
             this.setCurrentSelection(selection)
