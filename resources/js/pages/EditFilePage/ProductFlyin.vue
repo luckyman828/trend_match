@@ -81,8 +81,10 @@
                 <div class="col-2">
                     <div class="form-element">
                         <label for="datasource-id">Product ID</label>
-                        <BaseEditInputWrapper id="datasource-id" :type="'text'" :maxlength="9" :pattern="'[0-9]'" :disabled="!!originalProduct.datasource_id"
-                        :value="product.datasource_id" :oldValue="originalProduct.datasource_id" v-model="product.datasource_id"/>
+                        <BaseEditInputWrapper id="datasource-id" :type="'text'" ref="idInput" :maxlength="9" 
+                        :pattern="'[0-9]'" :disabled="!!originalProduct.datasource_id" :value="product.datasource_id"
+                        :oldValue="originalProduct.datasource_id" v-model="product.datasource_id" :error="idError"
+                        @change="validateProductId"/>
                     </div>
                     <div class="form-element">
                         <label for="delivery">Delivery</label>
@@ -265,6 +267,7 @@ export default {
             recommended_retail_price: 0
         },
         contextVariantIndex: null,
+        idError: null
     }},
     watch: {
         currentProduct(newVal, oldVal) {
@@ -272,7 +275,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct']),
+        ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'products']),
         ...mapGetters('files', ['currentFile']),
         product () {
             return this.productToEdit
@@ -332,6 +335,15 @@ export default {
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImage', 'deleteImages']),
         ...mapMutations('products', ['setCurrentProduct']),
+        validateProductId(value) {
+            // Check if the value already exists on a product
+            const existingProduct = this.products.find(x => x.datasource_id == value)
+            if (existingProduct) {
+                this.idError = 'ID already taken'
+            } else {
+                this.idError = null
+            }
+        },
         initProduct() {
             // Make a copy of the product, so we can check for changes compared to the original
             this.productToEdit = JSON.parse(JSON.stringify(this.currentProduct))
@@ -413,7 +425,6 @@ export default {
 
             // Check if the product has not yet been saved. If true, save it, since we cannot upload images to an unsaved product.
             if (!productToUpload.id) {
-                console.log('insert products')
                 productIsNew = true
                 await this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
             }

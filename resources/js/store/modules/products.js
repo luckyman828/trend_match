@@ -225,10 +225,18 @@ export default {
         async insertProducts({ commit }, { file, products, addToState }) {
             if (addToState) commit('insertProducts', { products, method: 'add' })
             const apiUrl = `/files/${file.id}/products`
-            await axios.post(apiUrl, {
-                method: 'Add',
-                products: products,
-            })
+            await axios
+                .post(apiUrl, {
+                    method: 'Add',
+                    products: products,
+                })
+                .then(response => {
+                    // Add the created ID to the product, if we only have 1 product
+                    if (products.length <= 1) {
+                        const product = products[0]
+                        product.id = response.data.added_product_id_map[product.datasource_id]
+                    }
+                })
         },
         instantiateNewProduct({ commit }) {
             return {

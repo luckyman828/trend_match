@@ -7,8 +7,11 @@
             step="any" :pattern="pattern"
             @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" 
             @keyup="change" @keydown="validateInput" :maxlength="maxlength"/> -->
-            <input ref="input" :id="id" class="input-wrapper" :type="type" :value="value" :placeholder="placeholder" :disabled="disabled"
-            @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" @keyup="change" step="any" @keydown="validateInput" :maxlength="maxlength" :pattern="pattern">
+            <input ref="input" :id="id" class="input-wrapper" :type="type" v-model="localValue" autocomplete="off"
+            :placeholder="placeholder" :disabled="disabled" :class="{error: error}" v-tooltip="error"
+            step="any" :pattern="pattern" :maxlength="maxlength"
+            @keyup.enter="!error && submit()" @keydown.esc.stop @keyup.esc="cancel" 
+            @keyup="change" @keydown="validateInput">
 
             <div class="controls" v-if="!editActive && !disabled">
                 <button v-tooltip.top="'Edit'" class="edit"><i class="far fa-pen"></i></button>
@@ -16,8 +19,11 @@
             </div>
         </div>
         <div class="buttons">
-            <div class="hotkey-wrapper">
-                <button class="green" @click="submit"><span>Save</span></button>
+            <div class="hotkey-wrapper" v-tooltip="error">
+                <button class="green" :disabled="error"
+                @click="submit">
+                    <span>Save</span>
+                </button>
                 <span class="hotkey"><span class="key">Enter</span> Enter</span>
             </div>
             <button class="button ghost" @click="cancel"><span>Cancel</span></button>
@@ -37,21 +43,31 @@ export default {
         'maxlength',
         'pattern',
         'activateOnMount',
-        'disabled'
+        'disabled',
+        'error'
     ],
     data: function () { return {
         editActive: false,
+        localValue: this.value,
     }},
+    watch: {
+        value: function(newVal) {
+            this.localValue = newVal
+        }
+    },
     methods: {
         change(e) {
-            this.$emit('change', e.target.value)
+            // this.$emit('change', e.target.value)
+            this.$emit('change', this.localValue)
         },
         emit() {
-            this.$emit('input', this.$refs.input.value)
+            this.$emit('input', this.localValue)
+            // this.$emit('input', this.$refs.input.value)
         },
         submit() {
             this.emit()
-            this.$emit('submit', this.$refs.input.value)
+            this.$emit('submit', this.localValue)
+            // this.$emit('submit', this.$refs.input.value)
             this.editActive = false
             document.activeElement.blur()
         },
@@ -95,6 +111,11 @@ export default {
 
     .edit-input-wrapper {
         line-height: 1.6;
+        .input-wrapper {
+            &.error {
+                border-color: $red;
+            }
+        }
         &:not(.active) {
             cursor: pointer;
             .input-wrapper, .input {
