@@ -283,6 +283,7 @@ export default {
         //     if (stateSelection) stateSelection.user_count = usersToReturn.length
         // },
         calculateAllSelectionUsers({ commit }, selection) {
+            // This functions finds all the users who have access to the selection and adds them a an 'allUsers' array on the selection
             const usersToReturn = []
             // Get users manually added and from teams
             // Loop through the manually added users to see if they should be removed
@@ -410,6 +411,10 @@ export default {
         setAllSelectionUsers(state, { selection, users }) {
             Vue.set(selection, 'allUsers', users)
             Vue.set(selection, 'user_count', users.length)
+            // Also update the selection if it exists in our state
+            const stateSelection = state.selections.find(x => x.id == selection.id)
+            Vue.set(stateSelection, 'allUsers', users)
+            Vue.set(stateSelection, 'user_count', users.length)
         },
     },
 }
