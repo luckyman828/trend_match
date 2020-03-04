@@ -7,12 +7,13 @@
                 style="width: 576pt; height: 792pt; box-sizing: border-box; padding: 60px 38px 38px;
                 display: flex; flex-wrap: wrap; justify-content: space-between; align-items: space-between;">
                     <div class="product-wrapper" v-for="product in productChunk" :key="product.datasource_id"
-                    style="border: solid 2px; border-radius: 4px; height: calc(100% / 3 - 24px); box-sizing: border-box;
+                    style="border: solid 2px; border-radius: 4px; height: calc(100% / 4 - 12px); box-sizing: border-box;
                     padding: 8px 12px;"
                     :style="{width: exportComments ? '100%' : 'calc(50% - 12px)'}">
                         <div class="col-wrapper" style="display: flex; justify-content: space-between; height: 100%;">
-                            <div class="col-left" style="width: calc(50% - 6px); display: flex; flex-direction: column;
-                            justify-content: space-between; align-items: space-between;">
+                            <div class="col-left" style="display: flex; flex-direction: column;
+                            justify-content: space-between; align-items: space-between;"
+                            :style="{width: exportComments ? 'calc(25% - 6px)' : 'calc(33% - 6px)'}">
                                 <div class="row-top">
                                     <table class="id">
                                         <tr>
@@ -44,45 +45,54 @@
                                             <td style="text-align: right">{{product.yourPrice.mark_up}}</td>
                                         </tr>
                                         <tr style="font-weight: 700; ">
-                                            <td style="padding-top: 4px;">Price ({{product.yourPrice.currency}})</td>
+                                            <td style="padding-top: 2px;">Price ({{product.yourPrice.currency}})</td>
                                             <td style="text-align: right">{{product.yourPrice.wholesale_price}}</td>
                                         </tr>
                                     </table>
                                 </div>
                             </div>
 
-                            <div class="col-right" style="width: calc(50% - 6px); display: flex; flex-direction: column;
-                            justify-content: space-between; align-items: space-between;">
-                                <div class="row-top">
-                                    <table class="assortments">
-                                        <tr v-for="(assortment, index) in product.assortments" :key="index">
-                                            <td style="font-size: 7px;">{{assortment.name || 'Unknown assortment'}} ({{assortment.box_size || 0}})</td>
-                                        </tr>
-                                    </table>
+                            <div class="col-mid" style="display: flex; flex-direction: column;
+                            justify-content: space-between; align-items: space-between;"
+                            :style="{width: exportComments ? 'calc(25% - 6px)' : 'calc(33% - 6px)'}">
+                                <div class="row">
+                                    <div class="assortments" style="display: flex; flex-direction: column; width: 100%;">
+                                        <div v-for="(assortment, index) in product.assortments" :key="index"
+                                        style="line-height: 1; word-break: break-word; margin-bottom: 2px;">
+                                            <span style="font-size: 7px;">{{assortment.name || 'Unknown assortment'}} ({{assortment.box_size || 0}})</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="row-bottom">
-                                    <table class="input" style="width: 100%" v-if="includeDistribution || exportComments">
-                                        <tr v-for="(user, index) in currentSelection.allUsers" :key="index">
-                                            <td style="font-size: 7px; border-bottom: solid 1px #E4E4E4; width: 60px;">
-                                                {{user.name || 'Unknown user'}}
+                            </div>
+
+                            <div class="col-right" style="display: flex; flex-direction: column;
+                            justify-content: space-between; align-items: space-between;"
+                            :style="{width: exportComments ? 'calc(50% - 6px)' : 'calc(33% - 6px)'}">
+                                <div class="input" v-if="includeDistribution || exportComments">
+                                    <div class="row" v-for="(user, index) in currentSelection.allUsers" :key="index"
+                                    style="display: flex; flex-direction: row; width: 100%; align-items: center; border-bottom: solid 1px #E4E4E4;">
+                                        <div style="overflow: hidden; white-space: nowrap; max-width: 60px; min-width: 60px; margin-right: 8px;">
+                                            <td style="font-size: 7px;">
+                                                <span style="font-size: 7px;">{{user.name || 'Unknown user'}}</span>
                                             </td>
-                                            <td v-if="includeDistribution" 
-                                            style="font-size: 7px; width: 24px; border-bottom: solid 1px #E4E4E4" 
-                                            :style="{textAlign: !!product.feedbacks.find(x => x.user_id == user.id) 
-                                            && product.feedbacks.find(x => x.user_id == user.id).action == 'Out' ? 'right' : 'left'}">
-                                                <span v-if="!!product.feedbacks.find(x => x.user_id == user.id) 
-                                                    && product.feedbacks.find(x => x.user_id == user.id).action != 'None'">
-                                                    {{product.feedbacks.find(x => x.user_id == user.id).action == 'Out' ? 'O' 
-                                                    : product.feedbacks.find(x => x.user_id == user.id).action == 'Focus' ? 'F' : 'I'}}
-                                                </span>
-                                            </td>
-                                            <td v-if="exportComments" 
-                                            style="font-size: 7px; width: 100%; border-bottom: solid 1px #E4E4E4;
-                                            padding-left: 16px; text-align: right;">
-                                                I am supposed to be a comment
-                                            </td>
-                                        </tr>
-                                    </table>
+                                        </div>
+                                        <td v-if="includeDistribution" 
+                                        style="font-size: 7px; max-width: 24px; min-width: 24px;" 
+                                        :style="{textAlign: !!product.feedbacks.find(x => x.user_id == user.id) 
+                                        && product.feedbacks.find(x => x.user_id == user.id).action == 'Out' ? 'right' : 'left'}">
+                                            <span v-if="!!product.feedbacks.find(x => x.user_id == user.id) 
+                                            && product.feedbacks.find(x => x.user_id == user.id).action != 'None'"
+                                            style="font-size: 7px;">
+                                                {{product.feedbacks.find(x => x.user_id == user.id).action == 'Out' ? 'O' 
+                                                : product.feedbacks.find(x => x.user_id == user.id).action == 'Focus' ? 'F' : 'I'}}
+                                            </span>
+                                        </td>
+                                        <td v-if="exportComments" 
+                                        style="font-size: 7px; flex: 1;
+                                        padding-left: 12px;">
+                                            <span style="font-size: 7px;">I am supposed to be a comment</span>
+                                        </td>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -117,7 +127,7 @@ export default {
         productChunks() {
             const array = this.products
             const chunkedArr = [];
-            const size = this.exportComments ? 3 : 6
+            const size = this.exportComments ? 4 : 8
             for (let i = 0; i < array.length; i++) {
                 const last = chunkedArr[chunkedArr.length - 1];
                 if (!last || last.length === size) {
@@ -142,7 +152,7 @@ export default {
         margin: auto;
         width: 100%;
         height: 100%;
-        // visibility: hidden;
+        visibility: hidden;
         .overlay {
             display: block;
             z-index: 0
