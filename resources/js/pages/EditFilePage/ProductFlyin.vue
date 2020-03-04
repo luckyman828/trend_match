@@ -147,12 +147,12 @@
                         <BaseEditInputWrapper :id="'wholesale'" :type="'number'" 
                         :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].wholesale_price : null" 
                         v-model.number="price.wholesale_price" @submit="calculateMarkup({price, whs: $event})" @activate="savedMarkup = price.mark_up"
-                        @change="calculateMarkup({price, whs: $event})" @cancel="resetMarkup(price)" @revert="revertMarkup"/>
+                        @change="calculateMarkup({price, whs: $event})" @cancel="resetMarkup(price, index)" @revert="revertMarkup(price)"/>
 
                         <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
                         :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].recommended_retail_price : null" 
                         v-model.number="price.recommended_retail_price" @submit="calculateMarkup({price, rrp: $event})" @activate="savedMarkup = price.mark_up"
-                        @change="calculateMarkup({price, rrp: $event})" @cancel="resetMarkup(price)" @revert="revertMarkup"/>
+                        @change="calculateMarkup({price, rrp: $event})" @cancel="resetMarkup(price, index)" @revert="revertMarkup(price)"/>
 
                         <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{price.mark_up}}</span>
 
@@ -481,15 +481,15 @@ export default {
                 price.mark_up = Number(Math.round((recommended / wholesale) + 'e' + decimals)+ 'e-' + decimals)
             } else price.mark_up = 0
         },
-        resetMarkup() {
-            if (this.savedMarkup)
-                this.currentCurrency.mark_up = this.savedMarkup
+        resetMarkup(price, index) {
+            if (this.savedMarkup != null)
+                price.mark_up = this.savedMarkup
             else {
-                this.currentCurrency.mark_up = this.originalProduct.prices[this.currencyIndex].mark_up
+                price.mark_up = this.originalProduct.prices[index].mark_up
             }
         },
-        revertMarkup() {
-            this.calculateMarkup()
+        revertMarkup(price) {
+            this.calculateMarkup({price})
         },
         hotkeyHandler(event) {
             const key = event.code

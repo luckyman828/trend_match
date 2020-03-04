@@ -53,6 +53,7 @@ export default {
     }},
     watch: {
         value: function(newVal) {
+            console.log('value changed')
             this.localValue = newVal
         }
     },
@@ -78,9 +79,11 @@ export default {
             el.focus()
             el.select()
             this.editActive = true
+            this.$emit('activate')
         },
         cancel() {
             this.editActive = false
+            this.localValue = this.value
             document.activeElement.blur()
             this.$emit('cancel')
         },
