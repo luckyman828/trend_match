@@ -61,10 +61,9 @@
                                     </table>
                                 </div>
                                 <div class="row-bottom">
-                                    <table class="input" style="width: 100%">
+                                    <table class="input" style="width: 100%" v-if="includeDistribution || exportComments">
                                         <tr v-for="(user, index) in currentSelection.allUsers" :key="index">
-                                            <td v-if="includeDistribution || exportComments" 
-                                            style="font-size: 7px; border-bottom: solid 1px #E4E4E4; width: 60px;">
+                                            <td style="font-size: 7px; border-bottom: solid 1px #E4E4E4; width: 60px;">
                                                 {{user.name || 'Unknown user'}}
                                             </td>
                                             <td v-if="includeDistribution" 

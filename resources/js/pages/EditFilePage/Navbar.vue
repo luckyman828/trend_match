@@ -16,7 +16,7 @@
 
         <div class="items-right">
 
-            <button class="button dark wide" @click="onExport"><span>Export products</span></button>
+            <button class="button dark wide" @click="onExport"><span>Export PDF</span></button>
             <button class="button dark wide" @click="onExportCsv"><span>Export CSV</span></button>
             <button class="button primary wide" @click="onNewProduct"><span>Create new product</span></button>
 

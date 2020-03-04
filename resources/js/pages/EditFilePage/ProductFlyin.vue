@@ -141,16 +141,16 @@
                     </div>
                     <div class="col-5 form-element" v-for="(price, index) in product.prices" :key="index">
                         <BaseEditInputWrapper ref="currencyName" :id="'currencyName'" :type="'text'" 
-                        :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].currency : null" 
+                        :oldValue="originalProduct.prices[index] ? originalProduct.prices[index].currency : null" 
                         v-model="price.currency"/>
 
                         <BaseEditInputWrapper :id="'wholesale'" :type="'number'" 
-                        :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].wholesale_price : null" 
+                        :oldValue="originalProduct.prices[index] ? originalProduct.prices[index].wholesale_price : null" 
                         v-model.number="price.wholesale_price" @submit="calculateMarkup({price, whs: $event})" @activate="savedMarkup = price.mark_up"
                         @change="calculateMarkup({price, whs: $event})" @cancel="resetMarkup(price, index)" @revert="revertMarkup(price)"/>
 
                         <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
-                        :oldValue="originalProduct.prices[currencyIndex] ? originalProduct.prices[currencyIndex].recommended_retail_price : null" 
+                        :oldValue="originalProduct.prices[index] ? originalProduct.prices[index].recommended_retail_price : null" 
                         v-model.number="price.recommended_retail_price" @submit="calculateMarkup({price, rrp: $event})" @activate="savedMarkup = price.mark_up"
                         @change="calculateMarkup({price, rrp: $event})" @cancel="resetMarkup(price, index)" @revert="revertMarkup(price)"/>
 
@@ -268,7 +268,6 @@ export default {
         Draggable
     },
     data: function () { return {
-        currencyIndex: 0,
         productToEdit: null,
         savedMarkup: null,
         editingTitle: false,
@@ -361,12 +360,9 @@ export default {
             this.productToEdit = JSON.parse(JSON.stringify(this.currentProduct))
 
             // Check if the product has any currencies, else add a default currency
-            if (this.productToEdit.prices.length < 1) {
-                this.productToEdit.prices.push(JSON.parse(JSON.stringify(this.defaultPriceObject)))
-            }
-
-            // Check if the current currency is available. Else set it to the first available
-            if (!this.productToEdit.prices[this.currencyIndex]) this.currencyIndex = 0
+            // if (this.productToEdit.prices.length < 1) {
+            //     this.productToEdit.prices.push(JSON.parse(JSON.stringify(this.defaultPriceObject)))
+            // }
 
             // Create an empty variant if no variants are present
             const variants = this.productToEdit.variants
