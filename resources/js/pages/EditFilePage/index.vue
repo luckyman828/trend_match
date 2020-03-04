@@ -19,8 +19,9 @@ export default {
     }},
     computed: {
         ...mapGetters('products', ['productsStatus']),
+        ...mapGetters('files', ['currentFile']),
         loading () {
-            return (this.productsStatus != 'success')
+            return (this.productsStatus != 'success' || !this.currentFile)
         },
     },
     methods: {

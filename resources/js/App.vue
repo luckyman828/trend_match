@@ -16,7 +16,15 @@
             </div>
         </div>
     </div>
+    <div class="error-wrapper" v-else-if="error">
+        <img class="logo" src="/images/kollekt-logo-color-2.svg" alt="Kollekt logo">
+        <i class="xl far fa-exclamation-triangle"></i>
+        <h3>There was an error connecting Kollekt.</h3>
+        <p>Please try refreshing the page, or checking your connection.</p>
+        <p>Contact Kollekt Support if the error persists.</p>
+    </div>
     <div class="loading-wrapper" v-else>
+        <img class="logo" src="/images/kollekt-logo-color-2.svg" alt="Kollekt logo">
         <BaseLoader/>
     </div>
 </template>
@@ -34,6 +42,9 @@ export default{
         TheNavbar,
         TheNavbarLogo,
     },
+    data: function() { return {
+        error: false,
+    }},
     computed: {
         ...mapGetters('workspaces', ['workspaces', 'currentWorkspace', 'currentWorkspaceIndex']),
         ...mapGetters('auth', ['isAuthenticated', 'authUser', 'authStatus']),
@@ -71,7 +82,7 @@ export default{
             })
         }
     },
-    created() {
+    async created() {
         // Set up a request intercepter that checks if the user is still authenticated
         axios.interceptors.response.use(response => response, (error) => {
             if (this.$route.name != 'login') {
@@ -86,7 +97,9 @@ export default{
         // Check if the user is authenticated. 
         // If that is the case get the auth user
         if (this.isAuthenticated) {
-            this.getAuthUser()
+            await this.getAuthUser().catch(err => {
+                this.error = err
+            })
             
             // Get some snowflake IDs now we're at it
             this.getUids()
@@ -95,15 +108,24 @@ export default{
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
     @import '~@/_variables.scss';
-    .loading-wrapper {
+    .loading-wrapper, .error-wrapper {
         min-height: 100vh;
         width: 100%;
         justify-content: center;
         align-items: center;
         display: flex;
         background: $bg;
+        flex-direction: column;
+        .logo {
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin: auto;
+            top: 60px;
+            width: 120px;
+        }
     }
     html, body, #app {
         color: $dark;

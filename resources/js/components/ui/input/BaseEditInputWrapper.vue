@@ -11,7 +11,7 @@
             :placeholder="placeholder" :disabled="disabled" :class="{error: error}" v-tooltip="error"
             step="any" :pattern="pattern" :maxlength="maxlength"
             @keyup.enter="!error && submit()" @keydown.esc.stop @keyup.esc="cancel" 
-            @keyup="change" @keydown="validateInput">
+            @keyup="change($event); validateInput($event)" @keydown="validateAndSave">
 
             <div class="controls" v-if="!editActive && !disabled">
                 <button v-tooltip.top="'Edit'" class="edit"><i class="far fa-pen"></i></button>
@@ -49,6 +49,7 @@ export default {
     data: function () { return {
         editActive: false,
         localValue: this.value,
+        savedValue: null,
     }},
     watch: {
         value: function(newVal) {
@@ -88,14 +89,22 @@ export default {
             this.$emit('input', this.oldValue)
             this.$emit('revert')
         },
+        validateAndSave(e) {
+            if(this.pattern) {
+                const regex = new RegExp(this.pattern)
+                if(regex.test(e.target.value)) {
+                    this.savedValue = e.target.value
+                    console.log(this.savedValue)
+                }
+            }
+        },
         validateInput(e) {
-            // First check if the key presses was Enter or Escape and don't do anything if true
-            if (e.key == "Escape" || e.key == "Enter" || e.key == "Backspace") return
             // Then check if we have a pattern. If we do, don't allow anything that doesn't match the pattern to be entered
             if(this.pattern) {
                 const regex = new RegExp(this.pattern)
-                if(!regex.test(e.key))
-                    e.preventDefault()
+                if(!regex.test(e.target.value)) {
+                    this.localValue = this.savedValue
+                }
             }
         },
     },

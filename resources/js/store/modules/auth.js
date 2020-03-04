@@ -59,7 +59,8 @@ export default {
         },
         async getAuthUser({ commit, state }) {
             state.status = 'loading'
-            let success = false
+            let response
+            let error
 
             // Include the token in future requests
             axios.defaults.headers.common['Authorization'] = `Bearer ${state.token}`
@@ -72,13 +73,14 @@ export default {
                     commit('setAuthUser', response.data)
                     // return success
                     state.status = 'success'
-                    success = true
+                    response = response
                 })
                 .catch(err => {
                     state.status = 'error'
-                    success = false
+                    error = err
                 })
-            return success
+            if (error) throw error
+            else return response
         },
     },
 
