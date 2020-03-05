@@ -24,7 +24,7 @@
         </template>
     </BaseFlyin>
 </template>
-
+f
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import SelectionsTable from './SelectionsTable'
@@ -42,17 +42,17 @@ export default {
     },
     data: function(){ return {
         SelectionUsersFlyinVisible: false,
-        loadingData: true,
+        loadingData: false,
     }},
     watch: {
         show: function(newVal, oldVal) {
             if (newVal) {
-                this.fetchData()
+                if (!this.loadingData) this.fetchData()
             }
         },
         file: function(newVal, oldVal) {
             if (!oldVal || newVal.id != oldVal.id) {
-                this.fetchData()
+                if (!this.loadingData) this.fetchData()
             }
         }
     },
