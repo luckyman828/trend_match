@@ -75,5 +75,5 @@ jobs:
           deploy/k8s/4-gateway.yaml
         images: |
           reg.trendmatch.dk/kollekt/${{ secrets.DEV_CONTAINER_IMAGE }}:${{ github.sha }}
-        imagepullsecrets: |
+        imagePullSecrets: |
           regcred  
