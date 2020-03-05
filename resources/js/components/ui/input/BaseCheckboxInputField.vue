@@ -1,6 +1,7 @@
 <template>
-    <label class="checkbox-input input-wrapper">
-        <BaseCheckbox ref="input" class="checkbox" 
+    <label class="checkbox-input input-wrapper" :class="{'read-only': disabled}"
+    :tabindex="disabled ? -1 : 0">
+        <BaseCheckbox ref="input" class="checkbox" :disabled="disabled"
         :value="value" :modelValue="true" @change="$emit('input', $event)"/>
         <span><slot/></span>
     </label>
@@ -11,6 +12,7 @@ export default {
     name: 'baseCheckboxInputField',
     props: [
         'value',
+        'disabled'
     ],
 }
 </script>
@@ -18,6 +20,9 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 .checkbox-input {
+    &.read-only{
+        cursor: auto;
+    }
     cursor: pointer;
     user-select: none;
     &.input-wrapper:not(.multiline):not(.drop-area) {

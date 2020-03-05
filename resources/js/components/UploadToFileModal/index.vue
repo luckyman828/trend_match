@@ -1,270 +1,47 @@
 <template>
-    <BaseModal :classes="['create-file-modal', currentScreen.name == 'mapFields' ? 'map-fields' : '']" :show="show" @close="$emit('close')"
-    ref="modal" :header="currentScreen.header" :goBack="currentScreen.name == 'mapFields'" @goBack="onGoBack">
-        <form @submit.prevent enctype="multipart/form-data">
+    <BaseModal :classes="['upload-to-file-modal', currentScreen.header]" :show="show" @close="$emit('close')"
+    ref="modal" :header="currentScreen.header" :goBack="currentScreenIndex > 0" @goBack="currentScreenIndex--">
 
-            <template v-if="currentScreen.name == 'chooseFiles'">
-                <div class="form-element" style="text-align: center;">
-                    <p>A file is a collection of products that users will be able to view in the dashboard and/or app</p>
-                    <p><strong>Select CSV files to upload to get started, or create empty file</strong></p>
-                </div>
+        <UploadFilesScreen v-if="currentScreenIndex == 0" :filesToUpload="filesToUpload"
+        :replaceAllProducts.sync="replaceAllProducts"
+        @goToNextScreen="currentScreenIndex++;"
+        @processFile="processFile" @removeFileToUpload="removeFileToUpload"
+        @addFileToUpload="addFileToUpload"/>
 
-                <div class="form-element">
-                    <label for="file-name-input">File name* (required)</label>
-                    <input type="text" id="file-name-input" class="input-wrapper" placeholder="unnamed file" v-model="newFile.name">
-                </div>
-                <div class="form-element">
-                    <BaseDroparea multiple="true" accept=".csv, text/csv, .tsv" ref="droparea"
-                    @input="filesChange">
-                        <template v-slot="slotProps">
-                            <template v-if="newFile.files.length < 1">
-                                <strong>Drop your file(s) here or click to upload</strong>
-                                <i class="fal fa-file-csv big-icon primary"></i>
-                                <button type="button" class="dark md" @click="slotProps.activate">
-                                    <i class="far fa-file-csv"></i>
-                                    <span>Browse files</span>
-                                </button>
-                            </template>
-                            <template v-else>
-                                <strong>Drag and drop files here to upload</strong>
-                                <div class="files-wrapper">
-                                    <div class="file-to-upload" v-for="(file, index) in newFile.files" :key="index">
-                                        <span>{{file.name}}</span>
-                                        <button class="ghost" type="button" @click="removeFile(index)">
-                                            <i class="remove far fa-trash-alt"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <button type="button" class="dark md" @click="slotProps.activate">
-                                    <i class="far fa-file-csv"></i>
-                                    <span>Browse files</span>
-                                </button>
-                            </template>
-                        </template>
-                        <template v-slot:dragDisplay>
-                            <i class="big-icon fas fa-smile-beam"></i>
-                            <span>Drop file(s) here</span>
-                        </template>
-                    </BaseDroparea>
-                </div>
-                <div class="form-controls">
-                    <button type="button" class="lg primary ghost" :disabled="newFile.name.length < 1"
-                    @click="createEmpty">
-                        <span>Create Empty</span>
-                    </button>
-                    <button type="button" class="lg primary" :disabled="newFile.files.length <= 0 || newFile.name.length <= 0"
-                    @click="onGoToMapFields">
-                        <span>Next: Map fields</span>
-                    </button>
-                </div>
-            </template>
-            <template v-if="currentScreen.name == 'mapFields'">
-                <div class="form-element" style="text-align: center;">
-                    <p>Some text to help understand what mapping means. Should be short.</p>
-                    <p><strong>Select Fields to keep, and match with headers from your file(s).</strong></p>
-                </div>
-
-                <div class="map-fields">
-                    <div class="tables">
-
-                        <div class="table-wrapper link-ids">
-                            <h3>Link IDs <i v-tooltip.right="'Select the ID field for each file to link them'" class="far fa-info-circle"></i></h3>
-                            <table class="map-fields-table">
-                                <tr class="header">
-                                    <th><label>File</label></th>
-                                    <th></th>
-                                    <th><label>Key to match</label></th>
-                                    <th><label>Example</label></th>
-                                </tr>
-                                <tr v-for="(file, index) in availableFiles" :key="index">
-                                    <td><BaseInputField class="input-field" disabled=true :value="file.fileName" readOnly=true /></td>
-                                    <td><i class="fas fa-equals"></i></td>
-                                    <td><BaseInputField class="input-field" disabled=true :class="{'auto-match': file.key.autoMatch}"
-                                    :value="file.key.fieldName" type="select" @click="showSelectKeyContext($event, file)">
-                                        <i class="fas fa-caret-down"></i>
-                                    </BaseInputField></td>
-                                    <td><BaseInputField :errorTooltip="file.keyError" class="input-field" disabled=true readOnly=true
-                                        :value="previewExampleValue(file.key, 'datasource_id')"/>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-
-                        <div class="table-wrapper map-main-fields">
-                            <h3>Map fields</h3>
-                            <table class="map-fields-table">
-                                <tr class="header">
-                                    <th></th>
-                                    <th><label>Database</label></th>
-                                    <th></th>
-                                    <th><label>Matched Datasource</label></th>
-                                    <th><label>Example</label></th>
-                                </tr>
-                                <tr v-for="(field, index) in fieldsToMatch" :key="index" :class="{disabled: !field.enabled}">
-                                    <td><BaseCheckbox :value="field.enabled" v-model="field.enabled"/></td>
-                                    <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
-                                    <td><i class="fas fa-equals"></i></td>
-                                    <td>
-                                        <BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
-                                        class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
-                                        :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
-                                            <i class="fas fa-caret-down"></i>
-                                        </BaseInputField>
-                                    </td>
-                                    <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
-                                        :value="previewExampleValue(field.newValue, field.name)"/>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-
-                        <div class="table-wrapper map-currencies">
-                            <h3>Map currencies</h3>
-                            <table class="single-currency-file-table">
-                                <tr>
-                                    <td><BaseCheckbox :value="singleCurrencyFile" v-model="singleCurrencyFile"/></td>
-                                    <td><p>One CSV contains all currencies in a single header <span class="small">(i.e. there is a header like "currency" in a csv)</span></p></td>
-                                </tr>
-                            </table>
-                            <div class="currency-wrapper" v-for="(currency, index) in currenciesToMatch" :key="index">
-                                <template v-if="!singleCurrencyFile || index < 1">
-                                    <h4 v-if="!singleCurrencyFile">Currency {{index+1}}</h4>
-                                    <div class="currency-header" v-if="!singleCurrencyFile">
-                                        <div class="left">
-                                            <table class="map-fields-table">
-                                                <tr class="header">
-                                                    <th></th>
-                                                    <th><label :for="'currency-'+index+'-name'">Currency Name (ex. EUR)</label></th>
-                                                    <th></th>
-                                                    <th><label :for="'currency-'+index+'-file'">Linked File</label></th>
-                                                </tr>
-                                                <tr>
-                                                    <td></td>
-                                                    <td><BaseInputField :id="'currency-'+index+'-name'" 
-                                                    class="input-field" placeholder="Fx. EUR" v-model="currency.currencyName"/></td>
-                                                    <td><i class="fas fa-equals"></i></td>
-                                                    <td><BaseInputField :id="'currency-'+index+'-file'" 
-                                                    class="input-field" disabled=true
-                                                    :value="currency.fileIndex != null ? availableFiles[currency.fileIndex].fileName : null" 
-                                                    type="select" @click="showSelectFileContext($event, currency)">
-                                                        <i class="fas fa-caret-down"></i>
-                                                    </BaseInputField></td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                        <button v-if="index > 0" class="dark" @click="currenciesToMatch.splice(index,1)">
-                                            <i class="fas fa-trash-alt"></i><span>Remove currency</span>
-                                        </button>
-                                    </div>
-                                    <table class="map-fields-table">
-                                        <tr class="header">
-                                            <th></th>
-                                            <th><label>Database</label></th>
-                                            <th></th>
-                                            <th><label>Matched Datasource</label></th>
-                                            <th><label>Example</label></th>
-                                        </tr>
-                                        <tr v-for="(field, index) in currency.fieldsToMatch" :key="index" :class="{disabled: !field.enabled}">
-                                            <template v-if="field.name != 'currency' || singleCurrencyFile">
-                                                <td><BaseCheckbox v-if="field.name != 'currency' || singleCurrencyFile" :value="field.enabled" v-model="field.enabled"/></td>
-                                                <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
-                                                <td><i class="fas fa-equals"></i></td>
-                                                <td><BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
-                                                class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
-                                                :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
-                                                    <i class="fas fa-caret-down"></i>
-                                                </BaseInputField></td>
-                                                <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
-                                                    :value="previewExampleValue(field.newValue, field.name)"/>
-                                                </td>
-                                            </template>
-                                        </tr>
-                                    </table>
-                                </template>
-                            </div>
-                            <button v-if="!singleCurrencyFile" class="dark" 
-                            @click="currenciesToMatch.push(JSON.parse(JSON.stringify(currencyDefaultObject)))">
-                                <i class="fas fa-plus"></i><span>Add currency</span>
-                            </button>
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="form-controls">
-                    <button :disabled="!submitValid" type="submit" class="lg primary full-width"
-                    @click="submitFiles">
-                        <span>Create file</span>
-                    </button>
-                </div>
-            </template>
-
-        </form>
-
-        <BaseContextMenu ref="contextSelectFileKey" class="context-select-key">
-            <template v-slot:header>
-                Select key to link
-            </template>
-            <template v-slot="slotProps">
-                <div class="item-group">
-                    <BaseSelectButtons :type="'radio'" :unsetOption="'Remove mapping'" @unset="slotProps.item.newValue={fileIndex: null, fieldName: null, fieldIndex: null}"
-                    :options="slotProps.item.headers" :optionNameKey="'fieldName'"
-                    v-model="slotProps.item.key" :submitOnChange="true" :search="true" @submit="validateKey(slotProps.item);slotProps.hide()"/>
-                </div>
-            </template>
-        </BaseContextMenu>
-
-        <BaseContextMenu ref="contextSelectField" class="context-select-field">
-            <template v-slot:header>
-                Select field to match
-            </template>
-            <template v-slot="slotProps">
-                <div class="item-group">
-                    <BaseSelectButtons :type="'radio'" :unsetOption="'Remove mapping'" 
-                    @unset="slotProps.item.newValue={fileIndex: null, fieldName: null, fieldIndex: null};slotProps.item.error=false;slotProps.hide()"
-                    :options="availableFiles" multipleOptionArrays="true" optionGroupNameKey="fileName" optionGroupOptionsKey="headers"
-                    v-model="slotProps.item.newValue" :submitOnChange="true" :optionDescriptionKey="'fileName'"
-                    :optionNameKey="'fieldName'" :search="true" @submit="validateField(slotProps.item);slotProps.hide()"/>
-                </div>
-            </template>
-        </BaseContextMenu>
-
-        <BaseContextMenu ref="contextSelectFile" class="context-select-file">
-            <template v-slot:header>
-                Select file to match
-            </template>
-            <template v-slot="slotProps">
-                <div class="item-group">
-                    <BaseSelectButtons :type="'radio'" :unsetOption="'Remove mapping'" 
-                    @unset="slotProps.item.fileIndex = null;slotProps.hide()"
-                    :options="availableFiles"
-                    v-model="slotProps.item.fileIndex" :submitOnChange="true" :optionValueKey="'index'"
-                    :optionNameKey="'fileName'" @submit="autoMapCurrency(slotProps.item);slotProps.hide()"/>
-                </div>
-            </template>
-        </BaseContextMenu>
+        <MapFieldsScreen v-if="currentScreenIndex == 1" 
+        @goToPrevScreen="currentScreenIndex--"/>
 
     </BaseModal>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import UploadFilesScreen from './UploadFilesScreen'
+import MapFieldsScreen from './MapFieldsScreen'
 
 export default {
-    name: 'createFileModal',
+    name: 'uploadeToFileModal',
     props: [
         'show'
     ],
+    components: {
+        UploadFilesScreen,
+        MapFieldsScreen
+    },
     data: function () { return {
-        currentScreen: {name: 'chooseFiles', header: 'Create new file'},
-        defalultNewFile: {
-            name: '',
-            type: 'File',
-            files: [],
-            owner_count: 0,
-            children_count: 0,
-        },
+        screens: [
+            {
+                header: 'Choose files to upload',
+                class: 'index'
+            },
+            {
+                header: 'Map fields',
+                class: 'map-fields'
+            }
+        ],
+        filesToUpload: [],
+        replaceAllProducts: true,
+        currentScreenIndex: 0,
         newFile: null,
         uploadingFile: false,
         availableFiles: [],
@@ -338,6 +115,9 @@ export default {
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
         ...mapGetters('files', ['currentFolder']),
+        currentScreen() {
+            return this.screens[this.currentScreenIndex]
+        },
         submitValid() {
             //assume true
             let valid = true
@@ -362,6 +142,12 @@ export default {
     methods: {
         ...mapActions('files', ['insertOrUpdateFile']),
         ...mapActions('products', ['insertProducts']),
+        addFileToUpload(file) {
+            this.filesToUpload.push(file)
+        },
+        removeFileToUpload(index) {
+            this.filesToUpload.splice(index, 1)
+        },
         previewExampleValue(newValue, fieldName) {
             const files = this.availableFiles
             // First check that we have any previews available, and that we have a new value defined
@@ -435,57 +221,6 @@ export default {
             }
             return valid
         },
-        filesChange(fileList) {
-            const files = fileList
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i]
-                const extension = file.name.split('.').pop();
-
-                // Check that the file is a csv
-                if (extension == 'csv' || extension == 'tsv') {
-                    if (!this.newFile.files.find(x => x.name == file.name)) {
-                        this.newFile.files.push(file)
-                    }
-                } else {
-                    // Throw error
-                    console.log('invalid file extension')
-                }
-            }
-        },
-        removeFile(index) {
-            this.newFile.files.splice(index, 1)
-        },
-        createEmpty() {
-            // Create a copy of the new file object
-            const newFile = JSON.parse(JSON.stringify(this.newFile))
-            newFile.id = null
-            newFile.parent_id = this.currentFolder ? this.currentFolder.id : 0
-            newFile.workspace_id = this.currentWorkspace.id
-            this.insertOrUpdateFile(newFile)
-            // Reset modal
-            this.reset()
-            this.$emit('close')
-        },
-        onGoToMapFields() {
-            //Change the current screen
-            this.currentScreen={name: 'mapFields', header: 'Map fields'}
-            // Process the uploaded files
-            this.newFile.files.forEach(file => {
-                const fileReader = new FileReader()
-                fileReader.readAsText(file)
-                fileReader.onload = e => this.loadHandler(e, file.name)
-            })
-        },
-        onGoBack() {
-            //Change the current screen
-            this.currentScreen={name: 'chooseFiles', header: 'Create new file'}
-        },
-        loadHandler(event, fileName) {
-            const csv = event.target.result
-
-            // First read the files and process them
-            this.processFile(csv, fileName)
-        },
         processFile(csv, fileName) {
 
             // Split the csv into lines by line breaks
@@ -507,9 +242,7 @@ export default {
             let cellCount = 0
             let testDelimiterIndex = 0
             csvDelimiters.forEach(delimiter => {
-                // The split regex matches delimiters not in quotes
-                const splitRegex = new RegExp(`${delimiter}(?=(?:[^"]*"[^"]*")*[^"]*$)`, 'g')
-                const testCellCount = allTextLines[0].split(splitRegex).length
+                const testCellCount = allTextLines[0].split(delimiter).length
                 if (testCellCount >= cellCount) {
                     cellCount = testCellCount
                     delimiterIndex = testDelimiterIndex
@@ -522,9 +255,7 @@ export default {
                 const line = allTextLines[lineIndex]
                 
                 // Split the line by our delimiter
-                // The split regex matches delimiters not in quotes
-                const splitRegex = new RegExp(`${csvDelimiter}(?=(?:[^"]*"[^"]*")*[^"]*$)`, 'g')
-                const cells = line.split(splitRegex)
+                const cells = line.split(csvDelimiter)
 
                 // Read the first line as headers
                 if (lineIndex == 0) {
@@ -575,7 +306,7 @@ export default {
             // Step 2: Match Keys (ID)
             // Check if the file already has a key
             if (file.key.fieldIndex == null) {
-                const keysToMatch = ['id','style number','style no','style no.','product id','number', 'style_no', 'style_number']
+                const keysToMatch = ['id','style number','style no','product id','number', 'style_no', 'style_number']
                 let keyAutoMatchIndex = file.headers.findIndex(header => keysToMatch.includes(header.fieldName.toLowerCase()))
                 if (keyAutoMatchIndex >= 0) {
                     const keyToPush = {fileIndex: fileIndex, fieldName: file.headers[keyAutoMatchIndex].fieldName, fieldIndex: keyAutoMatchIndex, autoMatch: true}
@@ -602,21 +333,6 @@ export default {
                     }
                 }
             })
-        },
-        showSelectContext(e, field) {
-            const contextMenu = this.$refs.contextSelectField
-            contextMenu.item = field
-            contextMenu.show(e)
-        },
-        showSelectKeyContext(e, file) {
-            const contextMenu = this.$refs.contextSelectFileKey
-            contextMenu.item = file
-            contextMenu.show(e)
-        },
-        showSelectFileContext(e, currency) {
-            const contextMenu = this.$refs.contextSelectFile
-            contextMenu.item = currency
-            contextMenu.show(e)
         },
         instantiateProducts(fileId) {
             const productsToReturn = []
@@ -858,9 +574,8 @@ export default {
         reset() {
             this.availableFiles = []
             this.singleCurrencyFile = true
-            this.currentScreen = {name: 'chooseFiles', header: 'Create new file'}
+            this.currentScreenIndex = 0
             this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]
-            this.newFile = JSON.parse(JSON.stringify(this.defalultNewFile))
             // Reset fields to match
             this.fieldsToMatch.forEach(field => {
                 field.enabled = true
@@ -869,16 +584,13 @@ export default {
             })
         }
     },
-    created() {
-        this.newFile = JSON.parse(JSON.stringify(this.defalultNewFile))
-    }
 }
 </script>
 
 <style lang="scss">
 @import '~@/_variables.scss';
 
-    .create-file-modal {
+    .upload-to-file-modal {
         &.map-fields {
             .modal {
                 width: 1068px;
@@ -902,7 +614,7 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-    .create-file-modal {
+    .upload-to-file-modal {
         .form-controls {
             display: flex;
             justify-content: flex-end;

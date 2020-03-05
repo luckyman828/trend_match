@@ -16,14 +16,16 @@
 
         <div class="items-right">
 
-            <button class="button dark wide" @click="onExport"><span>Export PDF</span></button>
-            <button class="button dark wide" @click="onExportCsv"><span>Export CSV</span></button>
-            <button class="button primary wide" @click="onNewProduct"><span>Create new product</span></button>
+            <button class="button dark" @click="onExport"><span>Export PDF</span></button>
+            <button class="button dark" @click="onExportCsv"><span>Export CSV</span></button>
+            <button class="button primary" @click="onUploadToFile"><span>Upload CSV to file</span></button>
+            <button class="button primary" @click="onNewProduct"><span>Create new product</span></button>
 
         </div>
 
         <ExportProductsModal v-if="currentFile" :show="exportModalVisible" @close="exportModalVisible = false"/>
         <ExportToCsvModal v-if="currentFile" :show="exportCsvModalVisible" @close="exportCsvModalVisible = false"/>
+        <UploadToFileModal v-if="currentFile" :show="uploadToFileModalVisible" @close="uploadToFileModalVisible = false"/>
     </div>
 </template>
 
@@ -32,16 +34,19 @@ import axios from 'axios';
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ExportProductsModal from '../../components/ExportProductsModal'
 import ExportToCsvModal from '../../components/ExportToCsvModal'
+import UploadToFileModal from '../../components/UploadToFileModal'
 
 export default {
     name: "editFilePageNavbar",
     components: {
         ExportProductsModal,
         ExportToCsvModal,
+        UploadToFileModal,
     },
     data: function () { return {
         exportModalVisible: false,
         exportCsvModalVisible: false,
+        uploadToFileModalVisible: false,
     }},
     computed: {
         ...mapGetters('files', ['currentFile']),
@@ -59,6 +64,9 @@ export default {
         },
         onExportCsv() {
             this.exportCsvModalVisible = true
+        },
+        onUploadToFile() {
+            this.uploadToFileModalVisible =true
         }
     },
 };

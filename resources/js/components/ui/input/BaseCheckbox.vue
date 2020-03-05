@@ -1,6 +1,7 @@
 <template>
-    <div class="checkbox">
-        <input ref="checkbox" type="checkbox" :value="value" :checked="shouldBeChecked" @change="updateInput">
+    <div class="checkbox" :class="{'disabled': disabled}">
+        <input ref="checkbox" type="checkbox" :value="value" :checked="shouldBeChecked" :disabled="disabled"
+        @change="updateInput">
         <span class="checkmark solid"><i class="fas fa-check"></i></span>
     </div>
 </template>
@@ -14,7 +15,8 @@ export default {
     },
     props: [
         'value',
-        'modelValue'
+        'modelValue',
+        'disabled'
     ],
     computed: {
         shouldBeChecked() {
@@ -59,7 +61,7 @@ export default {
     .checkbox {
         position: relative;
         line-height: 0;
-        cursor: pointer;
+        cursor: auto;
         input[type=checkbox] {
             position: absolute;
             display: block;
@@ -68,12 +70,13 @@ export default {
             left: 0;
             width: 100%;
             height: 100%;
-            cursor: pointer;
+            cursor: auto;
             z-index: 1;
             &:checked + .checkmark {
                 height: 18px;
                 width: 18px;
-                border-color: $primary;
+                border-color: $grey2;
+                background: $grey2;
                 i {
                     font-weight: 500;
                 }
@@ -83,6 +86,27 @@ export default {
             margin: 0;
             height: 18px;
             width: 18px;
+            border: solid $dark2 1px;
+            i {
+                color: white;
+            }
+        }
+        &:hover, .input-wrapper:hover & {
+            .checkmark {
+                border: solid 2px $grey2;
+            }
+        }
+    }
+    .checkbox:not(.disabled) {
+        cursor: pointer;
+        input[type=checkbox] {
+            cursor: pointer;
+            &:checked + .checkmark {
+                border-color: $primary;
+                background: $primary;
+            }
+        }
+        .checkmark {
             border: solid $dark2 1px;
             i {
                 color: white;
