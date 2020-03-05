@@ -46,7 +46,7 @@ export default {
         // Fetch selection data
         const selectionId = this.$route.params.selectionId
         let selection
-        selection = await this.fetchSelection(selectionId),
+        selection = await this.fetchSelection({selectionId}),
         this.fetchSelectionProducts(selectionId)
         console.log(selection)
         await this.fetchSelectionTeamsUsers(selection.teams)

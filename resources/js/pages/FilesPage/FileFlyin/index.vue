@@ -66,7 +66,7 @@ export default {
         ...mapMutations('selections', ['setCurrentSelection']),
         async fetchData() {
             this.loadingData = true
-            await this.fetchSelections(this.currentFile)
+            await this.fetchSelections({file: this.currentFile})
             this.loadingData = false
         },
         showSelectionUsersFlyin(selection) {

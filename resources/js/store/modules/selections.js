@@ -60,7 +60,7 @@ export default {
             }
             for (i = 0; i < list.length; i += 1) {
                 node = list[i]
-                if (node.parent_id !== '0') {
+                if (node.parent_id != 0) {
                     // if you have dangling branches check that map[node.parentId] exists
                     list[map[node.parent_id]].children.push(node)
                 } else {
@@ -78,15 +78,20 @@ export default {
     },
 
     actions: {
-        async fetchSelections({ commit }, file) {
+        async fetchSelections({ commit }, { file, addToState = true }) {
             commit('setLoading', true)
             const apiUrl = `/files/${file.id}/selections/flat`
+            let selections
             await axios.get(apiUrl).then(response => {
-                commit('insertSelections', { selections: response.data, method: 'set' })
+                selections = response.data
+                if (addToState) {
+                    commit('insertSelections', { selections, method: 'set' })
+                }
             })
             commit('setLoading', false)
+            return selections
         },
-        async fetchSelection({ commit }, selectionId) {
+        async fetchSelection({ commit }, { selectionId, addToState = true }) {
             commit('setStatus', 'loading')
 
             const apiUrl = `/selections/${selectionId}`
@@ -95,7 +100,9 @@ export default {
                 .get(apiUrl)
                 .then(response => {
                     selection = response.data
-                    commit('setCurrentSelection', selection)
+                    if (addToState) {
+                        commit('setCurrentSelection', selection)
+                    }
                     commit('setStatus', 'success')
                 })
                 .catch(err => {
@@ -127,17 +134,20 @@ export default {
             commit('setTeamsStatus', 'success')
             return teams
         },
-        async insertSelection({ commit, dispatch }, { file, selection }) {
+        async insertSelection({ commit, dispatch }, { file, selection, addToState = true }) {
             // Check if we are inserting a master or a child
             let apiUrl = ''
-            if (selection.parent_id) {
-                apiUrl = `/selections/${selection.parent_id}/children`
-            } else {
+
+            if (selection.parent_id == '0' || !selection.parent_id) {
                 apiUrl = `/files/${file.id}/selections`
+            } else {
+                apiUrl = `/selections/${selection.parent_id}/children`
             }
             await axios.post(apiUrl, selection).then(async response => {
                 selection.id = response.data.id
-                // commit('insertSelections', { file, selections: [selection] })
+                if (addToState) {
+                    commit('insertSelections', { file, selections: [selection] })
+                }
             })
         },
         async updateSelection({ commit, dispatch }, selection) {
@@ -166,12 +176,14 @@ export default {
                 if (!selection.id) selection.id = response.data.id
             })
         },
-        async addUsersToSelection({ commit, dispatch }, { selection, users }) {
+        async addUsersToSelection({ commit, dispatch }, { selection, users, ignoreRole = true }) {
+            console.log(ignoreRole)
+            console.log(users)
             // Commit mutation to state
             await commit('addUsersToSelection', {
                 selection,
                 users: users.map(user => {
-                    user.role = 'Member'
+                    if (ignoreRole) user.role = 'Member'
                     return user
                 }),
             })
@@ -180,10 +192,10 @@ export default {
             const apiUrl = `/selections/${selection.id}/users`
             axios.post(apiUrl, {
                 method: 'Add',
-                users: users.map(x => {
+                users: users.map(user => {
                     return {
-                        id: x.id,
-                        role: 'Member',
+                        id: user.id,
+                        role: ignoreRole ? 'Member' : user.role,
                     }
                 }),
             })
@@ -269,6 +281,27 @@ export default {
             }
             commit('setAllSelectionUsers', { selection, users: usersToReturn })
             return usersToReturn
+        },
+        async createSelectionTree({ commit }, selections) {
+            const list = selections
+            let map = {},
+                node,
+                roots = [],
+                i
+            for (i = 0; i < list.length; i += 1) {
+                map[list[i].id] = i // initialize the map
+                Vue.set(list[i], 'children', []) // initialize the children
+            }
+            for (i = 0; i < list.length; i += 1) {
+                node = list[i]
+                if (node.parent_id != 0) {
+                    // if you have dangling branches check that map[node.parentId] exists
+                    list[map[node.parent_id]].children.push(node)
+                } else {
+                    roots.push(node)
+                }
+            }
+            return roots
         },
     },
 

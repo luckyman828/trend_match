@@ -40,6 +40,8 @@ export default {
 @import '~@/_variables.scss';
     .radiobox {
         font-weight: 500;
+        margin-top: 2px;
+        line-height: 1;
         &:hover {
             background: $bgContentActive;
             .radiomark {
