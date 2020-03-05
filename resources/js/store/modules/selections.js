@@ -79,11 +79,10 @@ export default {
 
     actions: {
         async fetchSelections({ commit }, file) {
-            console.log('fetch selections')
             commit('setLoading', true)
             const apiUrl = `/files/${file.id}/selections/flat`
             await axios.get(apiUrl).then(response => {
-                commit('insertSelections', response.data, 'set')
+                commit('insertSelections', { selections: response.data, method: 'set' })
             })
             commit('setLoading', false)
         },
@@ -290,7 +289,7 @@ export default {
             // Update the current selection if we already have one
             state.currentSelection = selection
         },
-        insertSelections(state, selections, method) {
+        insertSelections(state, { selections, method }) {
             // Check if we have already instantiated selections
             if (method == 'set') {
                 state.selections = selections
