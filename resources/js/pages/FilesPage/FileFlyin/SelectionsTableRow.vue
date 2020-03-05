@@ -131,7 +131,7 @@ export default {
         onUpdateSelection(selection) {
             // Check if we are inserting or updating
             if (!selection.id) {
-                this.insertSelection({file: this.file, selection})
+                this.insertSelection({file: this.file, selection, addToState: false})
             } else {
                 this.updateSelection(selection)
             }

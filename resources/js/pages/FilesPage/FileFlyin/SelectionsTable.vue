@@ -22,12 +22,30 @@
             </template>
             <template v-slot:body>
                 <div class="body">
-                    <SelectionsTableRow :ref="'selection-row-'+selection.id" v-for="selection in selections" :key="selection.id"
-                    :selection="selection" :depth="0" :path="[selection.id]" :moveSelectionActive="moveSelectionActive" :file="currentFile"
-                    :selectionToEdit="selectionToEdit" :isMaster="true"
-                    @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
-                    @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showContext="showContextMenuSelection"
-                    @endMoveSelection="endMoveSelection" @showOptionsContext="showOptionsContext" @onClick="rowClick"/>
+                    <!-- Show Selections -->
+                    <template v-if="selections.length > 0">
+                        <SelectionsTableRow :ref="'selection-row-'+selection.id" v-for="selection in selections" :key="selection.id"
+                        :selection="selection" :depth="0" :path="[selection.id]" :moveSelectionActive="moveSelectionActive" :file="currentFile"
+                        :selectionToEdit="selectionToEdit" :isMaster="true"
+                        @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
+                        @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showContext="showContextMenuSelection"
+                        @endMoveSelection="endMoveSelection" @showOptionsContext="showOptionsContext" @onClick="rowClick"/>
+                    </template>
+                    <!-- No selections  -->
+                    <template v-else>
+                        <div class="setup-wrapper">
+                            <button class="primary lg"
+                            @click="onShowCloneSetupContext">
+                                <i class="fas fa-clone"></i>
+                                <span>Copy Setup From Existing File</span>
+                            </button>
+                            <button class="primary ghost lg"
+                            @click="onNewSelection()">
+                                <i class="fas fa-plus"></i>
+                                <span>Manually add new Master Selection</span>
+                            </button>
+                        </div>
+                    </template>
                 </div>
             </template>
             <template v-slot:footer>
@@ -154,12 +172,29 @@
         <div ref="moveSelectionIndicator" class="move-selection-indicator" :class="{'active': moveSelectionActive}">
             <span>Click selection to move to</span>
         </div>
+
+        <BaseContextMenu ref="contextMenuCloneSetup" class="context-move">
+            <template v-slot:header>
+                <span>Select file to copy selections from</span>
+            </template>
+            <div class="item-group">
+                <!-- <BaseSelectButtons type="radio" search="true" :options="allFiles"/> -->
+                <BaseSelectButtons type="radio" search="true" :options="files.filter(x => x.type == 'File')"
+                optionNameKey="name" v-model="fileToClone" :submitOnChange="true"/>
+            </div>
+            <div class="item-group">
+                <div class="item-wrapper">
+                    <button class="primary" @click="onClone(fileToClone)"><span>Clone</span></button>
+                    <button class="invisible ghost-hover" style="margin-left: 8px;"><span>Cancel</span></button>
+                </div>
+            </div>
+        </BaseContextMenu>
         
     </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import SelectionsTableRow from './SelectionsTableRow'
 import sortArray from '../../../mixins/sortArray'
 
@@ -184,11 +219,16 @@ export default {
         moveSelectionActive: false,
         selectionToMove: null,
         selectionToMoveParent: null,
+        allFiles: [],
+        fileToClone: null,
     }},
     computed: {
-        ...mapGetters('files', ['currentFile']),
+        ...mapGetters('files', ['currentFile', 'files']),
     },
     methods: {
+        ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection', 
+        'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection']),
+        ...mapMutations('selections', ['insertSelections']),
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
             this.sortArray(this.selections, sortAsc, sortKey)
@@ -310,7 +350,8 @@ export default {
                 if (!parent.children) {
                     this.$set(parent, 'children', [])
                 }
-                parent.children.push(newSelection)
+                // parent.children.push(newSelection)
+                this.insertSelections({selections: [newSelection], method: 'add'})
                 // Expand the selection the new selection is added to
                 // Loop through the children to find the selectionrow in question
                 this.contextSelectionComponent.childrenExpanded = true
@@ -318,7 +359,8 @@ export default {
                 // If no parent, we are creating a new master
                 newSelection.name = 'New Master Selection'
                 newSelection.parent_id = 0
-                this.selections.push(newSelection)
+                // this.selections.push(newSelection)
+                this.insertSelections({selections: [newSelection], method: 'add'})
             }
             // Wait for changes to the dom to take effect
             this.$nextTick(() => {
@@ -357,6 +399,54 @@ export default {
                     this.selections.splice(unsavedSelectionIndex, 1)
                 }
             }
+        },
+        async onShowCloneSetupContext(e) {
+            // Check if we alreday fetched all files -> else fetch them
+            if (this.allFiles.length <= 0) {
+                // this.fetchFiles()
+            }
+            const contextMenu = this.$refs.contextMenuCloneSetup
+            contextMenu.show(e)
+        },
+        async onClone(file) {
+            // console.log(file)
+            // Clone selections and their users to the new file
+            // Fetch file selections
+            const selections = await this.fetchSelections({file, addToState: false})
+            console.log(selections)
+            // We have to copy the selection structure as well
+            // This means we have to insert one level of selections at a time
+            // Transform the selections into a tree structure 
+            const selectionTree = await this.createSelectionTree(selections)
+            // Loop through all selections and upload them
+            console.log(selectionTree)
+            selectionTree.forEach(rootSelection => {
+                this.cloneSelectionTree(rootSelection)
+            })
+        },
+        async cloneSelectionTree(selection) {
+            console.log(JSON.parse(JSON.stringify(selection)))
+            // Recursive function that calls itself for all children of a selection until there are no more children
+            // Make a clone of the selection to upload
+            const newSelection = JSON.parse(JSON.stringify(selection))
+            // Fetch the selection with its teams and users so we can add them to the clone
+            const selectionWithTeamsAndUsers = await this.fetchSelection({selectionId: selection.id, addToState: false})
+            // Set the selection ID to null, so we create a new selection
+            console.log(JSON.parse(JSON.stringify(selectionWithTeamsAndUsers)))
+            newSelection.id = null
+            await this.insertSelection({file: this.currentFile, selection: newSelection})
+            // Upload the fetched users and teams to our new selection
+            if (selectionWithTeamsAndUsers.users.length > 0) 
+                this.addUsersToSelection({selection: newSelection, users: selectionWithTeamsAndUsers.users, ignoreRole: false})
+            if (selectionWithTeamsAndUsers.teams.length > 0) 
+                this.addTeamsToSelection({selection: newSelection, teams: selectionWithTeamsAndUsers.teams})
+
+            // Loop through the selections children and repeat
+            selection.children.forEach(childSelection => {
+                // Set the parent id
+                childSelection.parent_id = newSelection.id
+                this.cloneSelectionTree(childSelection)
+            })
         }
     },
     destroyed() {
@@ -405,6 +495,21 @@ export default {
         border-radius: 4px;
         &.active {
             display: block;
+        }
+    }
+    .setup-wrapper {
+        height: 400px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        background: white;
+        margin-bottom: 2px;
+        button {
+            width: 280px;
+        }
+        > *:not(:last-child) {
+            margin-bottom: 24px;
         }
     }
     
