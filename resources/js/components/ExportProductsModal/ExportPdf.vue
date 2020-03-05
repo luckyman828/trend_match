@@ -7,7 +7,7 @@
                 style="width: 576pt; height: 792pt; box-sizing: border-box; padding: 60px 38px 38px;
                 display: flex; flex-wrap: wrap; justify-content: space-between; align-items: space-between;">
                     <div class="product-wrapper" v-for="product in productChunk" :key="product.datasource_id"
-                    style="border: solid 2px; border-radius: 4px; height: calc(100% / 4 - 12px); box-sizing: border-box;
+                    style="border: solid 2px; border-radius: 4px; height: calc(100% / 3 - 12px); box-sizing: border-box;
                     padding: 8px 12px;"
                     :style="{width: exportComments ? '100%' : 'calc(50% - 12px)'}">
                         <div class="col-wrapper" style="display: flex; justify-content: space-between; height: 100%;">
@@ -37,7 +37,7 @@
                                     </div>
                                     <table class="prices">
                                         <tr>
-                                            <td>Rec. Retail Price:</td>
+                                            <td>Retail Price:</td>
                                             <td style="text-align: right">{{product.yourPrice.recommended_retail_price}}</td>
                                         </tr>
                                         <tr>
@@ -127,7 +127,7 @@ export default {
         productChunks() {
             const array = this.products
             const chunkedArr = [];
-            const size = this.exportComments ? 4 : 8
+            const size = this.exportComments ? 3 : 6
             for (let i = 0; i < array.length; i++) {
                 const last = chunkedArr[chunkedArr.length - 1];
                 if (!last || last.length === size) {
@@ -152,7 +152,7 @@ export default {
         margin: auto;
         width: 100%;
         height: 100%;
-        visibility: hidden;
+        // visibility: hidden;
         .overlay {
             display: block;
             z-index: 0

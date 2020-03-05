@@ -16,7 +16,7 @@ export default {
         availableSelectionRoles: [
             {
                 role: 'Member',
-                description: 'Gvies feedback and makes comments',
+                description: 'Gives feedback and makes comments',
             },
             {
                 role: 'Owner',

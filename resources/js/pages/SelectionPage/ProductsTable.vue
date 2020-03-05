@@ -307,9 +307,13 @@ export default {
                         min-width: 48px;
                         max-width: 48px;
                     }
-                    &.focus, &.in, &.out, &.nd {
+                    &.focus, &.ins, &.nds {
                         min-width: 48px;
                         max-width: 48px;
+                    }
+                    &.outs{
+                        min-width: 56px;
+                        max-width: 56px;
                     }
                     &.requests {
                         margin-left: 32px;

@@ -75,7 +75,7 @@ export default {
             // Get the clipData
             const clipData = e.clipboardData.getData('text/plain')
             clipData.trim('\r\n')
-            const rows = clipData.split('\n')
+            const rows = clipData.split('\r\n')
             rows.forEach(row => {
                 const cells = row.split('\t')
                 // Prevent fancy paste for simple pasting
@@ -84,6 +84,8 @@ export default {
                 else e.preventDefault()
                 // If the cell 0 has an @ character, add a user object
                 if (cells[0].indexOf('@') >= 0) {
+                    console.log(cells)
+                    // console.log(cells)
                     const newUser = JSON.parse(JSON.stringify(this.userDefaultObject))
                     newUser.email = cells[0]
                     newUser.name = cells[1]

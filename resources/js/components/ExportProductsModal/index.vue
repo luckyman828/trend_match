@@ -2,7 +2,7 @@
     <BaseModal ref="exportModal" :header="'Export <strong>' + currentFile.name + '</strong> to PDF'"
     @close="$emit('close')" :show="show">
         <template v-slot v-if="show">
-            <h3 style="text-align: center">The products in your current view will be exported'</h3>
+            <h3 style="text-align: center">The products in your current view will be exported</h3>
             <form>
 
             <!-- Selection export options -->
