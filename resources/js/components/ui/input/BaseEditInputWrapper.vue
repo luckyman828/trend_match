@@ -53,7 +53,6 @@ export default {
     }},
     watch: {
         value: function(newVal) {
-            console.log('value changed')
             this.localValue = newVal
         }
     },
@@ -97,7 +96,6 @@ export default {
                 const regex = new RegExp(this.pattern)
                 if(regex.test(e.target.value)) {
                     this.savedValue = e.target.value
-                    console.log(this.savedValue)
                 }
             }
         },

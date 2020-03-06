@@ -1152,6 +1152,11 @@ form {
             margin-top: 8px;
         }
     }
+    .form-section {
+        // border-bottom: solid 2px $divider;
+        padding-bottom: 32px;
+        margin-bottom: 32px;
+    }
 }
 .input-wrapper {
     display: block;
@@ -1261,14 +1266,14 @@ form {
         }
     }
 }
-.edit-input-wrapper,
-.input-parent,
-.input-wrapper {
-    & + label {
-        display: block;
-        margin-top: 12px;
-    }
-}
+// .edit-input-wrapper,
+// .input-parent,
+// .input-wrapper {
+//     & + label {
+//         display: block;
+//         margin-top: 12px;
+//     }
+// }
 .drop-area {
     // outline: 2px dashed $light2;
     // outline-offset: -10px;
