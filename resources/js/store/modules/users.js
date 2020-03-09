@@ -68,7 +68,7 @@ export default {
                 .then(response => {
                     console.log(response)
                     succes = true
-                    commit('addUsers', usersToAdd)
+                    commit('addUsers', response.data)
                 })
                 .catch(err => {
                     console.log(err.response)
