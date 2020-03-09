@@ -1,5 +1,5 @@
 <template>
-    <tr class="user-row table-row" ref="userRow" :class="{self: user.id == authUser.id}"
+    <tr class="user-row table-row" ref="userRow" :class="{self: isSelf}"
     @contextmenu.prevent="$emit('showContextMenu', $event, user)">
         <td class="select">
             <BaseCheckbox :value="user" :modelValue="selectedUsers" 
@@ -13,7 +13,7 @@
         </td>
         <td class="title" v-else>
             <i class="fas fa-user"></i>
-            <span>{{user.name}}{{user.id == authUser.id && ` (You)`}}</span>
+            <span>{{user.name}}{{isSelf && ` (You)`}}</span>
         </td>
         <td class="email" v-if="editEmail">
             <BaseEditInputWrapper ref="editEmail" :activateOnMount="true" :type="'text'"
@@ -22,10 +22,24 @@
         </td>
         <td class="email" v-else>{{user.email}}</td>
         <td class="role">
-            <button class="ghost editable sm" @click.stop="$emit('editRole', $event, user)"><span>{{user.role}}</span></button>
+            <!-- Admin -->
+            <button v-if="authUserWorkspaceRole == 'Admin'" 
+            class="ghost editable sm" 
+            @click.stop="$emit('editRole', $event, user)">
+                <span>{{user.role}}</span>
+            </button>
+            <!-- Member -->
+            <span v-else>{{user.role}}</span>
         </td>
         <td class="currency">
-            <button class="ghost editable sm" @click.stop="$emit('editCurrency', $event, user)"><span>{{user.currency ? user.currency : 'Set currency'}}</span></button>
+            <!-- Admin or self -->
+            <button v-if="authUserWorkspaceRole == 'Admin' || isSelf"
+            class="ghost editable sm" 
+            @click.stop="$emit('editCurrency', $event, user)">
+                <span>{{user.currency ? user.currency : 'Set currency'}}</span>
+            </button>
+            <!-- Member -->
+            <span v-else>{{user.currency ? user.currency : 'No currency set'}}</span>
         </td>
         <td class="action">
             <button class="invisible ghost-hover" @click.stop="$emit('showContextMenu', $event, user)"><i class="far fa-ellipsis-h medium"></i></button>
@@ -49,6 +63,10 @@ export default {
     }},
     computed: {
         ...mapGetters('auth', ['authUser']),
+        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        isSelf() {
+            return this.authUser.id == this.user.id
+        }
     },
     methods: {
         ...mapActions('users', ['updateWorkspaceUser', 'updateUser']),
@@ -56,6 +74,16 @@ export default {
 }
 </script>
 
-<style>
+<style scoped lang="scss">
+    @import '~@/_variables.scss';
+
+    .user-row {
+        &.self {
+            i {
+                color: $primary;
+            }
+            font-weight: 500;
+        }
+    }
 
 </style>

@@ -63,16 +63,19 @@
                     <div class="icon-wrapper"><i class="far fa-key"></i></div>
                     <span>Change Workspace <u>R</u>ole</span>
                 </div>
-                <div class="item" @click.stop="onSetUserPassword(slotProps.mouseEvent, slotProps.item);slotProps.hide()">
-                    <div class="icon-wrapper"><i class="far fa-lock"></i></div>
+                <BaseContextMenuItem iconClass="far fa-lock" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
+                v-tooltip="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id 
+                && 'Can only set password of self. Admins can set the password of others'"
+                @click.stop="onSetUserPassword(slotProps.mouseEvent, slotProps.item);slotProps.hide()">
                     <span>Set <u>P</u>assword</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <div class="item" @click="onDeleteUser(slotProps.item); slotProps.hide()">
-                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                <BaseContextMenuItem :disabled="authUserWorkspaceRole != 'Admin'" iconClass="far fa-trash-alt"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can remove users'"
+                @click="onDeleteUser(slotProps.item)">
                     <span><u>D</u>elete User from Workspace</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
@@ -130,7 +133,17 @@
             <template v-slot="slotProps">
                 <div class="item-group">
                     <div class="item-wrapper">
-                        <BaseInputField type="text" ref="userPasswordInput" placeholder="New password" v-model="newUserPassword"/>
+                        <div>
+                            <label>New password</label>
+                            <BaseInputField type="text" ref="userPasswordInput" 
+                            placeholder="New password" v-model="newUserPassword"/>
+                        </div>
+                    </div>
+                    <div class="item-wrapper" v-if="authUserWorkspaceRole != 'Admin'">
+                        <div>
+                            <label>Old password</label>
+                            <BaseInputField type="text" placeholder="Old password" v-model="oldUserPassword"/>
+                        </div>
                     </div>
                 </div>
                 <div class="item-group">
@@ -155,7 +168,6 @@ import sortArray from '../../mixins/sortArray'
 export default {
     name: 'usersTable',
     props: [
-        'authUser',
         'users',
     ],
     mixins: [
@@ -174,13 +186,15 @@ export default {
         originalUser: null,
         usersFilteredBySearch: [],
         newUserPassword: '',
+        oldUserPassword: '',
         selectedUsers: [],
     }},
     computed: {
         ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('workspaces', ['currentWorkspace', 'availableWorkspaceRoles', 'authUserWorkspaceRole']),
+        ...mapGetters('auth', ['authUser']),
         passwordSubmitDisabled() {
-            return this.newUserPassword.length < 8
+            return this.newUserPassword.length < 8 || (this.authUserWorkspaceRole != 'Admin' && this.oldUserPassword.length < 8)
         },
         currentTab: {
             get () {
@@ -211,6 +225,7 @@ export default {
         setUserPassword(user) {
             const password = this.newUserPassword
             user.password = password
+            user.oldPassword = this.oldUserPassword
             this.updateUserPassword(user)
         },
         onEditUserCurrency(mouseEvent, user) {
@@ -242,6 +257,7 @@ export default {
             contextMenu.show(e)
         },
         onDeleteUser(user) {
+            console.log('on delete user')
             if (window.confirm('Are you sure you want to remove this user from the workspace?')) {
                 this.removeUsersFromWorkspace({workspaceId: this.currentWorkspace.id, users: [user]})
             }

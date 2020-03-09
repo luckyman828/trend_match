@@ -1,7 +1,7 @@
 <template>
     <div class="button-wrapper">
         <button v-bind="$attrs" :class="[buttonClass, {disabled: disabled}]"
-        @click="!disabled && $emit('click')">
+        @click="!disabled && $emit('click', $event)">
             <slot/>
         </button>
         <div class="hotkey" v-if="hotkey">
