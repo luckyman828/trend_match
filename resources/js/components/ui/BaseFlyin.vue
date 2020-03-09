@@ -74,7 +74,8 @@ export default {
                 display: block;
             }
             > .fly-in {
-                right: 0%;
+                // right: 0%;
+                transform: none;
             }
         }
     }
@@ -91,7 +92,8 @@ export default {
     .fly-in {
         display: flex;
         flex-direction: column;
-        right: -100%;
+        // right: -100%;
+        transform: translateX(100%);
         margin: 0;
         width: calc(100vw - 142px);
         min-width: 1032px;

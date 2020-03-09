@@ -45,28 +45,40 @@
 
         <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps">
             <div class="item-group">
-                <div class="item" @click="$refs['userRow-'+slotProps.item.id][0].editName = true; slotProps.hide()">
-                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+
+                <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
+                v-tooltip="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id 
+                && 'Can only change own name. Only admins can change the name of others.'"
+                @click="$refs['userRow-'+slotProps.item.id][0].editName = true">
                     <span><u>R</u>ename User</span>
-                </div>
-                <div class="item" @click="$refs['userRow-'+slotProps.item.id][0].editEmail = true; slotProps.hide()">
-                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+                </BaseContextMenuItem>
+
+                <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
+                v-tooltip="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id 
+                && 'Can only change own e-mail. Only admins can change the e-mail of others.'"
+                @click="$refs['userRow-'+slotProps.item.id][0].editEmail = true">
                     <span><u>E</u>dit User Email</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <div class="item" @click.stop="onEditUserCurrency(slotProps.mouseEvent, slotProps.item)">
-                    <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
+                <BaseContextMenuItem iconClass="far fa-usd-circle" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
+                v-tooltip="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id 
+                && 'Can only set own currency. Only admins can change currency of others.'"
+                @click.stop="onEditUserCurrency(slotProps.mouseEvent, slotProps.item)">
                     <span><u>C</u>hange Currency</span>
-                </div>
-                <div class="item" @click.stop="onEditUserRole(slotProps.mouseEvent, slotProps.item)">
-                    <div class="icon-wrapper"><i class="far fa-key"></i></div>
+                </BaseContextMenuItem>
+
+                <BaseContextMenuItem iconClass="far fa-key" :disabled="authUserWorkspaceRole != 'Admin'" 
+                v-tooltip="authUserWorkspaceRole != 'Admin'
+                && 'Only admins can change workspace role'"
+                @click.stop="onEditUserRole(slotProps.mouseEvent, slotProps.item)">
                     <span>Change Workspace <u>R</u>ole</span>
-                </div>
+                </BaseContextMenuItem>
+
                 <BaseContextMenuItem iconClass="far fa-lock" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
                 v-tooltip="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id 
                 && 'Can only set password of self. Admins can set the password of others'"
-                @click.stop="onSetUserPassword(slotProps.mouseEvent, slotProps.item);slotProps.hide()">
+                @click.stop="onSetUserPassword(slotProps.mouseEvent, slotProps.item)">
                     <span>Set <u>P</u>assword</span>
                 </BaseContextMenuItem>
             </div>

@@ -64,7 +64,7 @@
                                 <span>Filter by buyer group</span>
                             </template>
                             <template v-slot:body>
-                                <BaseCheckboxButtons :options="availableBuyerGroups" ref="filterBuyerGroup" v-model="selectedBuyerGroups" @change="$refs.filterBuyerGroup.submit()"/>
+                                <!-- <BaseCheckboxButtons :options="availableBuyerGroups" ref="filterBuyerGroup" v-model="selectedBuyerGroups" @change="$refs.filterBuyerGroup.submit()"/> -->
                                 <BaseSelectButtons header="Filter by buyer group" submitOnChange="true" 
                                 :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
                             </template>

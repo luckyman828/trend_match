@@ -2,7 +2,7 @@
     <div class="users">
         <h1>Users</h1>
         <div class="underline"></div>
-        <UsersTable :users="users" :authUser="authUser"
+        <UsersTable :users="users.filter(x => authUserWorkspaceRole == 'Admin' ? true : x.id == authUser.id)"
         @onNewUser="setAddNewUserModalVisible(true)"/>
         <AddUserModal ref="addUserModal" :show="addNewUserModalVisible" 
         @close="setAddNewUserModalVisible(false)" :users="users"/>
@@ -25,6 +25,7 @@ export default {
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('users', ['addNewUserModalVisible', 'users']),
+        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
     },
     methods: {
         ...mapMutations('users', ['setAddNewUserModalVisible']),
