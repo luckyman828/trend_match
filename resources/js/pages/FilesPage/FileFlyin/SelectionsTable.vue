@@ -178,8 +178,7 @@
                 <span>Select file to copy selections from</span>
             </template>
             <div class="item-group">
-                <!-- <BaseSelectButtons type="radio" search="true" :options="allFiles"/> -->
-                <BaseSelectButtons type="radio" search="true" :options="files.filter(x => x.type == 'File')"
+                <BaseSelectButtons type="radio" search="true" :options="allFiles.filter(x => x.type == 'File')"
                 optionNameKey="name" v-model="fileToClone" :submitOnChange="true"/>
             </div>
             <div class="item-group">
@@ -219,16 +218,16 @@ export default {
         moveSelectionActive: false,
         selectionToMove: null,
         selectionToMoveParent: null,
-        allFiles: [],
         fileToClone: null,
     }},
     computed: {
-        ...mapGetters('files', ['currentFile', 'files']),
+        ...mapGetters('files', ['currentFile', 'files', 'allFiles']),
     },
     methods: {
         ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection', 
         'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection']),
         ...mapMutations('selections', ['insertSelections']),
+        ...mapActions('files', ['fetchAllFiles']),
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
             this.sortArray(this.selections, sortAsc, sortKey)
@@ -403,7 +402,7 @@ export default {
         async onShowCloneSetupContext(e) {
             // Check if we alreday fetched all files -> else fetch them
             if (this.allFiles.length <= 0) {
-                // this.fetchFiles()
+                await this.fetchAllFiles()
             }
             const contextMenu = this.$refs.contextMenuCloneSetup
             contextMenu.show(e)

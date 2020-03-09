@@ -7,6 +7,7 @@ export default {
     state: {
         loading: true,
         files: [],
+        allFiles: [],
         availableFileIds: [],
         currentFile: null,
         currentFolder: null,
@@ -20,6 +21,7 @@ export default {
         currentFolderId: state => state.currentFolderId,
         currentFolder: state => state.currentFolder,
         files: state => state.files,
+        allFiles: state => state.allFiles,
         nextFile: state => {
             // Find the index of the current file and add 1
             const index = state.files.findIndex(x => x.id == state.currentFile.id)
@@ -39,6 +41,7 @@ export default {
     },
 
     actions: {
+        // Fetch the root files of the workspace
         async fetchFiles({ commit, state, rootGetters }) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Set the state to loading
@@ -58,6 +61,19 @@ export default {
                     if (tryCount <= 0) throw err
                 }
             }
+        },
+        // Fetch all the files of the workspace in a flat structure
+        async fetchAllFiles({ commit, state, rootGetters }) {
+            const workspaceId = rootGetters['workspaces/currentWorkspace'].id
+
+            const apiUrl = `/workspaces/${workspaceId}/files/flat`
+
+            let files
+            await axios.get(`${apiUrl}`).then(response => {
+                state.allFiles = response.data
+                files = response.data
+            })
+            return files
         },
         async fetchFile({ commit, state, rootGetters }, fileid) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
