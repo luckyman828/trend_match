@@ -100,7 +100,7 @@
                 <div class="form-element">
                     <label for="buying-group">Buyer Group</label>
                     <BaseEditInputWrapper id="buying-group" :type="'text'" 
-                    :value="product.buyer_group" :oldValue="originalProduct.buyer_group" v-model="product.buyer_group"/>
+                    :value="product.buying_group" :oldValue="originalProduct.buying_group" v-model="product.buying_group"/>
                 </div>
                 <div class="form-element">
                     <label for="composition">Composition</label>
