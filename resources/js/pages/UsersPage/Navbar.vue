@@ -8,23 +8,12 @@
 
             </div>
             <div class="items-right">
-                <!-- Admin routes -->
-                <!-- <template v-if="authUserWorkspaceRole == 'Admin'"> -->
-
-                    <BaseButton :buttonClass="'primary'" 
-                    :disabled="authUserWorkspaceRole != 'Admin'" :disabledTooltip="'New users can only be added by a workspace admin'"
-                    @click="setAddNewUserModalVisible(true)">
-                        <span>Add new: User</span>
-                    </BaseButton>
-                    <!-- <button @click.stop
-                    :disabled="authUserWorkspaceRole != 'Admin'" class="primary" 
-                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'New users can only be added by a workspace admin'"
-                    @click="setAddNewUserModalVisible(true)">
-                        <span>Add new: User</span>
-                    </button> -->
-                <!-- </template> -->
-
-
+                <BaseButton :buttonClass="'primary'" 
+                :disabled="authUserWorkspaceRole != 'Admin'" 
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'New users can only be added by a workspace admin'"
+                @click="setAddNewUserModalVisible(true)">
+                    <span>Add new: User</span>
+                </BaseButton>
             </div>
         </div>
 

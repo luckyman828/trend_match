@@ -32,7 +32,14 @@
                 @editRole="onEditUserRole($event, user)" :selectedUsers.sync="selectedUsers"/>
             </template>
             <template v-slot:footer>
-                <td><button class="primary invisible" @click="onNewUser"><i class="far fa-plus"></i><span>Add new: User</span></button></td>
+                <td>
+                    <BaseButton :buttonClass="'primary invisible'" 
+                    :disabled="authUserWorkspaceRole != 'Admin'" 
+                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'New users can only be added by a workspace admin'"
+                        @click="onNewUser">
+                        <span>Add new: User</span>
+                    </BaseButton>
+                </td>
             </template>
         </BaseFlexTable>
 
@@ -171,7 +178,7 @@ export default {
     }},
     computed: {
         ...mapGetters('persist', ['availableCurrencies']),
-        ...mapGetters('workspaces', ['currentWorkspace', 'availableWorkspaceRoles']),
+        ...mapGetters('workspaces', ['currentWorkspace', 'availableWorkspaceRoles', 'authUserWorkspaceRole']),
         passwordSubmitDisabled() {
             return this.newUserPassword.length < 8
         },
