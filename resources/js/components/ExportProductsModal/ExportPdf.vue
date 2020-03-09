@@ -71,13 +71,13 @@
                                 <div class="input" v-if="includeDistribution || exportComments">
                                     <div class="row" v-for="(user, index) in currentSelection.allUsers" :key="index"
                                     style="display: flex; flex-direction: row; width: 100%; align-items: center; border-bottom: solid 1px #E4E4E4;">
-                                        <div style="overflow: hidden; white-space: nowrap; max-width: 60px; min-width: 60px; margin-right: 8px;">
+                                        <div style="overflow: hidden; white-space: nowrap; max-width: 60px; min-width: 60px;">
                                             <td style="font-size: 7px;">
                                                 <span style="font-size: 7px;">{{user.name || 'Unknown user'}}</span>
                                             </td>
                                         </div>
-                                        <td v-if="includeDistribution" 
-                                        style="font-size: 7px; max-width: 24px; min-width: 24px;" 
+                                        <div v-if="includeDistribution" 
+                                        style="font-size: 7px; max-width: 24px; min-width: 24px; margin-left: 8px;" 
                                         :style="{textAlign: !!product.feedbacks.find(x => x.user_id == user.id) 
                                         && product.feedbacks.find(x => x.user_id == user.id).action == 'Out' ? 'right' : 'left'}">
                                             <span v-if="!!product.feedbacks.find(x => x.user_id == user.id) 
@@ -86,12 +86,11 @@
                                                 {{product.feedbacks.find(x => x.user_id == user.id).action == 'Out' ? 'O' 
                                                 : product.feedbacks.find(x => x.user_id == user.id).action == 'Focus' ? 'F' : 'I'}}
                                             </span>
-                                        </td>
-                                        <td v-if="exportComments" 
-                                        style="font-size: 7px; flex: 1;
-                                        padding-left: 12px;">
+                                        </div>
+                                        <div v-if="exportComments" 
+                                        style="font-size: 7px; flex: 1; margin-left: 12px;">
                                             <span style="font-size: 7px;">I am supposed to be a comment</span>
-                                        </td>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
