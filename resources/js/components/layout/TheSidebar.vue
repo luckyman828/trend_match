@@ -29,7 +29,7 @@
         <div class="header">
             <div class="hide-screen-sm">
                 <strong class="user">{{authUser.name}}</strong>
-                <p class="role">{{userWorkspaceRole}}</p>
+                <p class="role">{{authUserWorkspaceRole}}</p>
             </div>
             <div class="show-screen-sm flex-center">
                 <i class="fas fa-user"></i>
@@ -58,7 +58,7 @@ export default {
   }},
   computed: {
     ...mapGetters('auth', ['authUser']),
-    ...mapGetters('workspaces', ['workspaces', 'userWorkspaceRole', 'currentWorkspace', 'currentWorkspaceIndex']),
+    ...mapGetters('workspaces', ['workspaces', 'authUserWorkspaceRole', 'currentWorkspace', 'currentWorkspaceIndex']),
   },
   methods: {
     ...mapActions('workspaces', ['setCurrentWorkspaceIndex']),

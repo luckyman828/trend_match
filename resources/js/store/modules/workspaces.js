@@ -25,7 +25,7 @@ export default {
         availableWorkspaceRoles: state => state.availableWorkspaceRoles,
         currentWorkspaceIndex: state => state.currentWorkspaceIndex,
         currentWorkspace: state => state.workspaces[state.currentWorkspaceIndex],
-        userWorkspaceRole: (state, getters) => {
+        authUserWorkspaceRole: (state, getters) => {
             return getters.currentWorkspace ? getters.currentWorkspace.role : 'Undefined'
         },
     },
