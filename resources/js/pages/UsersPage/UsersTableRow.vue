@@ -1,5 +1,6 @@
 <template>
-    <tr class="user-row table-row" ref="userRow" @contextmenu.prevent="$emit('showContextMenu', $event, user)">
+    <tr class="user-row table-row" ref="userRow" :class="{self: user.id == authUser.id}"
+    @contextmenu.prevent="$emit('showContextMenu', $event, user)">
         <td class="select">
             <BaseCheckbox :value="user" :modelValue="selectedUsers" 
             @change="$emit('update:selectedUsers', $event)"/>
@@ -12,7 +13,7 @@
         </td>
         <td class="title" v-else>
             <i class="fas fa-user"></i>
-            <span>{{user.name}}</span>
+            <span>{{user.name}}{{user.id == authUser.id && ` (You)`}}</span>
         </td>
         <td class="email" v-if="editEmail">
             <BaseEditInputWrapper ref="editEmail" :activateOnMount="true" :type="'text'"
@@ -47,6 +48,7 @@ export default {
         userToEdit: this.user,
     }},
     computed: {
+        ...mapGetters('auth', ['authUser']),
     },
     methods: {
         ...mapActions('users', ['updateWorkspaceUser', 'updateUser']),

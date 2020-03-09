@@ -1,6 +1,7 @@
 <template>
     <div class="button-wrapper">
-        <button v-bind="$attrs" :class="buttonClass">
+        <button v-bind="$attrs" :class="[buttonClass, {disabled: disabled}]"
+        @click="!disabled && $emit('click')">
             <slot/>
         </button>
         <div class="hotkey" v-if="hotkey">
@@ -15,7 +16,9 @@ export default {
     name: 'baseButton',
     props: [
         'buttonClass',
-        'hotkey'
+        'hotkey',
+        'disabled',
+        'tooltip',
     ],
 }
 </script>
@@ -25,6 +28,7 @@ export default {
 
 .button-wrapper {
     position: relative;
+    display: inline-flex;
     .hotkey {
         position: absolute;
         bottom: -6px;

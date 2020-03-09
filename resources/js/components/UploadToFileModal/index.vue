@@ -227,7 +227,9 @@ export default {
             let cellCount = 0
             let testDelimiterIndex = 0
             csvDelimiters.forEach(delimiter => {
-                const testCellCount = allTextLines[0].split(delimiter).length
+                // The split regex matches delimiters not in quotes
+                const splitRegex = new RegExp(`${delimiter}(?=(?:[^"]*"[^"]*")*[^"]*$)`, 'g')
+                const testCellCount = allTextLines[0].split(splitRegex).length
                 if (testCellCount >= cellCount) {
                     cellCount = testCellCount
                     delimiterIndex = testDelimiterIndex
@@ -240,7 +242,9 @@ export default {
                 const line = allTextLines[lineIndex]
                 
                 // Split the line by our delimiter
-                const cells = line.split(csvDelimiter)
+                // The split regex matches delimiters not in quotes
+                const splitRegex = new RegExp(`${csvDelimiter}(?=(?:[^"]*"[^"]*")*[^"]*$)`, 'g')
+                const cells = line.split(splitRegex)
 
                 // Read the first line as headers
                 if (lineIndex == 0) {
@@ -269,7 +273,6 @@ export default {
             } else {
                 this.availableFiles.push(fileToPush)
             }
-            // this.autoMapHeaders(fileToPush, this.availableFiles.length-1)
         },
         addCurrency() {
             this.currenciesToMatch.push(JSON.parse(JSON.stringify(this.currencyDefaultObject)))
