@@ -1,17 +1,9 @@
 <template>
     <div class="upload-files">
-        <form @submit.prevent enctype="multipart/form-data">
+        <form @submit.prevent>
             <div class="form-element" style="text-align: center;">
                 <p>Add to or overwrite existing product data in this file.</p>
                 <p><strong>Select CSV files to upload to get started, or create empty file</strong></p>
-            </div>
-
-            <div class="form-element overwrite">
-                <BaseCheckboxInputField :value="replaceAllProducts" :disabled="true"
-                v-tooltip="'We currently only allow replacing all data'"
-                @input="$emit('update:replaceAllProducts', $event)">
-                    <span>Replace all existing products</span>
-                </BaseCheckboxInputField>
             </div>
 
             <div class="form-element">
@@ -50,8 +42,8 @@
             </div>
             <div class="form-controls">
                 <button type="button" class="lg primary" :disabled="filesToUpload.length <= 0"
-                @click="onGoToNextScreen">
-                    <span>Next: Map fields</span>
+                @click="$emit('goToNextScreen')">
+                    <span>Next: Select fields to replace</span>
                 </button>
             </div>
         </form>
@@ -64,7 +56,6 @@ export default {
     name: 'uploadFilesScreen',
     props: [
         'filesToUpload',
-        'replaceAllProducts',
     ],
     data: function () { return {
     }},
@@ -93,51 +84,34 @@ export default {
         removeFile(index) {
             this.$emit('removeFileToUpload', index)
         },
-        onGoToNextScreen() {
-            // Process the uploaded files
-            this.filesToUpload.forEach(file => {
-                // Read the file into memory
-                const fileReader = new FileReader()
-                fileReader.readAsText(file)
-                fileReader.onload = e => this.fileLoadHandler(e, file.name)
-            })
-            // Change the current screen
-            this.$emit('goToNextScreen')
-        },
-        fileLoadHandler(event, fileName) {
-            const csv = event.target.result
+        // onGoToNextScreen() {
+        //     // Process the uploaded files
+        //     this.filesToUpload.forEach(file => {
+        //         // Read the file into memory
+        //         const fileReader = new FileReader()
+        //         fileReader.readAsText(file)
+        //         fileReader.onload = e => this.fileLoadHandler(e, file.name)
+        //     })
+        //     // Change the current screen
+        //     this.$emit('goToNextScreen')
+        //     this.$emit('test', 'gototonext')
+        //     this.emitTest('Emit test')
+        // },
+        // fileLoadHandler(event, fileName) {
+        //     const csv = event.target.result
 
-            // Read the files and process them
-            this.$emit('processFile', csv, fileName)
-            // this.processFile(csv, fileName)
-        },
+        //     // Read the files and process them
+        //     this.emitTest('Emit test from file loader')
+        //     this.$emit('test', 'fileloader')
+        //     this.$emit('processFile', csv, fileName)
+        //     // this.processFile(csv, fileName)
+        // },
+        emitTest(msg) {
+            this.$emit('test', msg)
+        }
     },
 }
 </script>
-
-<style lang="scss">
-@import '~@/_variables.scss';
-
-    .upload-to-file-modal {
-        &.map-fields {
-            .modal {
-                width: 1068px;
-                max-width: 90vw;
-                .body {
-                    max-width: none;
-                    .input-field {
-                        &.auto-match {
-                            .input-wrapper {
-                                border-color: $primary
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-</style>
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';

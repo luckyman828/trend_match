@@ -81,7 +81,7 @@ export default {
             return {maxWidth: `${this.depth * indentAmount + baseIndent}px`, minWidth: `${this.depth * indentAmount + baseIndent}px` }
         },
         selectionWidth() {
-            const baseWidth = 240
+            const baseWidth = 340
             const indentAmount = 20
             return {maxWidth: `${baseWidth - this.depth * indentAmount}px`, minWidth: `${baseWidth - this.depth * indentAmount}px` }
         }

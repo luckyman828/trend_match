@@ -1,15 +1,23 @@
 <template>
-    <BaseModal :classes="['upload-to-file-modal', currentScreen.header]" :show="show" @close="$emit('close')"
+    <BaseModal :classes="['upload-to-file-modal', currentScreen.class]" :show="show" @close="$emit('close')"
     ref="modal" :header="currentScreen.header" :goBack="currentScreenIndex > 0" @goBack="currentScreenIndex--">
 
         <UploadFilesScreen v-if="currentScreenIndex == 0" :filesToUpload="filesToUpload"
-        :replaceAllProducts.sync="replaceAllProducts"
-        @goToNextScreen="currentScreenIndex++;"
-        @processFile="processFile" @removeFileToUpload="removeFileToUpload"
-        @addFileToUpload="addFileToUpload"/>
+        @goToNextScreen="currentScreenIndex++; processFilesToUpload()"
+        @addFileToUpload="addFileToUpload" @removeFileToUpload="removeFileToUpload"
+        @processFile="processFile"/>
 
-        <MapFieldsScreen v-if="currentScreenIndex == 1" 
+        <SelectFieldsScreen v-if="currentScreenIndex == 1"
+        :fields="fieldsToReplace" :replacePrices.sync="replacePrices"
+        @goToNextScreen="currentScreenIndex++;"
         @goToPrevScreen="currentScreenIndex--"/>
+
+        <MapFieldsScreen v-if="currentScreenIndex == 2"
+        :fields="fieldsToMatch" :availableFiles="availableFiles"
+        :fieldsToReplace="fieldsToReplace" :currenciesToMatch="currenciesToMatch"
+        :replacePrices="replacePrices"
+        @goToPrevScreen="currentScreenIndex--" @submit="onSubmit"
+        @addCurrency="addCurrency" @removeCurrency="removeCurrency"/>
 
     </BaseModal>
 </template>
@@ -17,15 +25,17 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import UploadFilesScreen from './UploadFilesScreen'
+import SelectFieldsScreen from './SelectFieldsScreen'
 import MapFieldsScreen from './MapFieldsScreen'
 
 export default {
-    name: 'uploadeToFileModal',
+    name: 'uploadToFileModal',
     props: [
         'show'
     ],
     components: {
         UploadFilesScreen,
+        SelectFieldsScreen,
         MapFieldsScreen
     },
     data: function () { return {
@@ -35,19 +45,37 @@ export default {
                 class: 'index'
             },
             {
+                header: 'Fields to replace',
+                class: 'fields-to-replace'
+            },
+            {
                 header: 'Map fields',
                 class: 'map-fields'
             }
         ],
         filesToUpload: [],
-        replaceAllProducts: true,
         currentScreenIndex: 0,
-        newFile: null,
-        uploadingFile: false,
         availableFiles: [],
         filePreviews: [],
         singleCurrencyFile: true,
-        fieldsToMatch: [
+        replacePrices: false,
+        fieldsToReplace: [
+            {name: 'title', displayName: 'Name', enabled: false},
+            {name: 'sale_description', displayName: 'Description', enabled: false},
+            {name: 'brand', displayName: 'Brand', enabled: false},
+            {name: 'category', displayName: 'Category', enabled: false},
+            {name: 'min_order', displayName: 'Minimum Order Quantity', enabled: false},
+            {name: 'min_variant_order', displayName: 'Minimum Variant Quantity', enabled: false},
+            {name: 'min_variant_order', displayName: 'Minimum Variant Quantity', enabled: false},
+            {name: 'composition', displayName: 'Composition', enabled: false},
+            {name: 'delivery_date', displayName: 'Delivery (date/month)', enabled: false},
+            {name: 'composition', displayName: 'Composition', enabled: false},
+            {name: 'assortments', displayName: 'Assortments', enabled: false},
+            {name: 'variants', displayName: 'Variants', enabled: false},
+            {name: 'eans', displayName: 'Product EANs', enabled: false},
+            {name: 'buying_group', displayName: 'Buyer Group', enabled: false},
+        ],
+        allFields: [
             {name: 'title', displayName: 'Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['title','name','style name','product name' ,'style_name', 'product_name']},
             {name: 'sale_description', displayName: 'Description',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
@@ -115,8 +143,25 @@ export default {
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
         ...mapGetters('files', ['currentFolder']),
+        ...mapGetters('products', ['products']),
         currentScreen() {
             return this.screens[this.currentScreenIndex]
+        },
+        fieldsToMatch() {
+            return this.allFields.filter(field => {
+                // If the name of the field is included in the fields to replace array, include it
+                if (this.fieldsToReplace.find(x => x.name == field.name && x.enabled)) {
+                    return true
+                }
+                else if (['assortment_name', 'box_size', 'box_ean'].includes(field.name)
+                && this.fieldsToReplace.find(x => x.name == 'assortments' && x.enabled)) {
+                    return true
+                }
+                else if (['variant_name', 'image', 'sizes'].includes(field.name)
+                && this.fieldsToReplace.find(x => x.name == 'variants' && x.enabled)) {
+                    return true
+                }
+            })
         },
         submitValid() {
             //assume true
@@ -130,7 +175,7 @@ export default {
             // Loop through the fields and look for errors
             this.fieldsToMatch.forEach(field => {
                 // Check if the field has been mapped
-                if (field.enabled && field.newValue.fieldIndex != null) {
+                if (field.newValue.fieldIndex != null) {
                     if (!this.validateField(field)) {
                         valid = false
                     }
@@ -141,12 +186,96 @@ export default {
     },
     methods: {
         ...mapActions('files', ['insertOrUpdateFile']),
-        ...mapActions('products', ['insertProducts']),
+        ...mapActions('products', ['updateProduct']),
         addFileToUpload(file) {
             this.filesToUpload.push(file)
         },
         removeFileToUpload(index) {
+            // Check if the file exists in our availableFiles array.
+            // If true also remove it there
+            const availableFileIndex = this.availableFiles.findIndex(x => x.fileName == this.filesToUpload[index].name)
+            if (availableFileIndex >= 0) this.availableFiles.splice(availableFileIndex, 1)
+            // Remove the file from our filesToUpload array
             this.filesToUpload.splice(index, 1)
+        },
+        processFilesToUpload() {
+            this.filesToUpload.forEach(file => {
+                // Read the file into memory
+                const fileReader = new FileReader()
+                fileReader.readAsText(file)
+                fileReader.onload = e => this.processFile(e.target.result, file.name)
+            })
+        },
+        processFile(csv, fileName) {
+
+            // Split the csv into lines by line breaks
+            // NB: This regex is magic
+            // It matches strings seperated by linebreaks (CLRF (windows,max,linux shouldb be supported)) 
+            // not inside double quotation marks, while allowing for escaped " marks. 
+            const allTextLines = csv.match(/(?:"(?:\\.|[^"])*"|\\.|[^\r\n|\r|\n])+/g)
+
+            // Loop thorugh the lines
+            let lineIndex = 0
+            const csvLines = []
+            const csvHeaders = []
+
+            // Attempt to determine file delimiter
+            const csvDelimiters = [';', ',', '\t']
+            let delimiterIndex = 0
+            // Loop through our delimiters and try to split the first row by it. Apply the delimiter with the highest number of matches
+            // This should work because the first row should contain headers and therefore not include any other delimiters
+            let cellCount = 0
+            let testDelimiterIndex = 0
+            csvDelimiters.forEach(delimiter => {
+                const testCellCount = allTextLines[0].split(delimiter).length
+                if (testCellCount >= cellCount) {
+                    cellCount = testCellCount
+                    delimiterIndex = testDelimiterIndex
+                }
+                testDelimiterIndex++
+            })
+            const csvDelimiter = csvDelimiters[delimiterIndex]
+
+            while (lineIndex < allTextLines.length) {
+                const line = allTextLines[lineIndex]
+                
+                // Split the line by our delimiter
+                const cells = line.split(csvDelimiter)
+
+                // Read the first line as headers
+                if (lineIndex == 0) {
+                    // Loop through the headerCells and push an object
+                    let cellIndex = 0
+                    cells.forEach(cell => {
+                        // Push the cells to our headers array
+                        csvHeaders.push({fileIndex: this.availableFiles.length, fieldName: cell, fieldIndex: cellIndex})
+                        cellIndex++
+                    })
+                }
+                // Not the header row
+                else {
+                    // Push the cells to our lines array
+                    csvLines.push(cells)
+                }
+                // Increment the row index
+                lineIndex++
+            }
+
+            const fileToPush = {fileName: fileName, key: {fileIndex: null, fieldName: null, fieldIndex: null}, headers: csvHeaders, lines: csvLines, error: false}
+            // Check if the file already exists. If so, replace it instead of adding
+            const existingFile = this.availableFiles.find(x => x.fileName == fileName)
+            if (existingFile) {
+                Object.assign(existingFile, fileToPush)
+            } else {
+                this.availableFiles.push(fileToPush)
+            }
+            // this.autoMapHeaders(fileToPush, this.availableFiles.length-1)
+        },
+        addCurrency() {
+            this.currenciesToMatch.push(JSON.parse(JSON.stringify(this.currencyDefaultObject)))
+        },
+        removeCurrency(index) {
+            this.currenciesToMatch.splice(index, 1)
         },
         previewExampleValue(newValue, fieldName) {
             const files = this.availableFiles
@@ -221,120 +350,7 @@ export default {
             }
             return valid
         },
-        processFile(csv, fileName) {
-
-            // Split the csv into lines by line breaks
-            // NB: This regex is magic
-            // It matches strings seperated by linebreaks (CLRF (windows,max,linux shouldb be supported)) 
-            // not inside double quotation marks, while allowing for escaped " marks. 
-            const allTextLines = csv.match(/(?:"(?:\\.|[^"])*"|\\.|[^\r\n|\r|\n])+/g)
-
-            // Loop thorugh the lines
-            let lineIndex = 0
-            const csvLines = []
-            const csvHeaders = []
-
-            // Attempt to determine file delimiter
-            const csvDelimiters = [';', ',', '\t']
-            let delimiterIndex = 0
-            // Loop through our delimiters and try to split the first row by it. Apply the delimiter with the highest number of matches
-            // This should work because the first row should contain headers and therefore not include any other delimiters
-            let cellCount = 0
-            let testDelimiterIndex = 0
-            csvDelimiters.forEach(delimiter => {
-                const testCellCount = allTextLines[0].split(delimiter).length
-                if (testCellCount >= cellCount) {
-                    cellCount = testCellCount
-                    delimiterIndex = testDelimiterIndex
-                }
-                testDelimiterIndex++
-            })
-            const csvDelimiter = csvDelimiters[delimiterIndex]
-
-            while (lineIndex < allTextLines.length) {
-                const line = allTextLines[lineIndex]
-                
-                // Split the line by our delimiter
-                const cells = line.split(csvDelimiter)
-
-                // Read the first line as headers
-                if (lineIndex == 0) {
-                    // Loop through the headerCells and push an object
-                    let cellIndex = 0
-                    cells.forEach(cell => {
-                        // Push the cells to our headers array
-                        csvHeaders.push({fileIndex: this.availableFiles.length, fieldName: cell, fieldIndex: cellIndex})
-                        cellIndex++
-                    })
-                }
-                // Not the header row
-                else {
-                    // Push the cells to our lines array
-                    csvLines.push(cells)
-                }
-                // Increment the row index
-                lineIndex++
-            }
-
-            const fileToPush = {fileName: fileName, key: {fileIndex: null, fieldName: null, fieldIndex: null}, headers: csvHeaders, lines: csvLines, error: false}
-            // Check if the file already exists. If so, replace it instead of adding
-            const existingFile = this.availableFiles.find(x => x.fileName == fileName)
-            if (existingFile) {
-                existingFile = fileToPush
-            } else {
-                this.availableFiles.push(fileToPush)
-            }
-            this.autoMapHeaders(fileToPush, this.availableFiles.length-1)
-        },
-        autoMapHeaders(file, fileIndex) {
-            // Loop through the fields we still need to match to a header
-            this.fieldsToMatch.forEach(field => {
-                if (field.enabled && field.newValue.fileIndex == null && field.newValue.fieldIndex == null) {
-                    // Test if the current header has a file that matches
-                    const autoMatchIndex = file.headers.findIndex(header => {
-                        return field.headersToMatch.includes(header.fieldName.toLowerCase()) 
-                    })
-                    if (autoMatchIndex >= 0) {
-                        const newValueToPush = {fileIndex: fileIndex, fieldName: file.headers[autoMatchIndex].fieldName, fieldIndex: autoMatchIndex, autoMatch: true}
-                        field.newValue = newValueToPush
-                        // Validate the value of the new mapping
-                        this.validateField(field)
-                    }
-                }
-            })
-
-            // Step 2: Match Keys (ID)
-            // Check if the file already has a key
-            if (file.key.fieldIndex == null) {
-                const keysToMatch = ['id','style number','style no','product id','number', 'style_no', 'style_number']
-                let keyAutoMatchIndex = file.headers.findIndex(header => keysToMatch.includes(header.fieldName.toLowerCase()))
-                if (keyAutoMatchIndex >= 0) {
-                    const keyToPush = {fileIndex: fileIndex, fieldName: file.headers[keyAutoMatchIndex].fieldName, fieldIndex: keyAutoMatchIndex, autoMatch: true}
-                    file.key = keyToPush
-                    // Validate the value of the new mapping
-                    this.validateKey(file)
-                }
-            }
-        },
-        autoMapCurrency(currency) {
-            // Loop through the fields we still need to match to a header
-            const file = this.availableFiles[currency.fileIndex]
-            currency.fieldsToMatch.forEach(field => {
-                if (field.enabled && field.newValue.fileIndex == null && field.newValue.fieldIndex == null) {
-                    // Test if the current header has a file that matches
-                    const autoMatchIndex = file.headers.findIndex(header => {
-                        return field.headersToMatch.includes(header.fieldName.toLowerCase()) 
-                    })
-                    if (autoMatchIndex >= 0) {
-                        const newValueToPush = {fileIndex: currency.fileIndex, fieldName: file.headers[autoMatchIndex].fieldName, fieldIndex: autoMatchIndex, autoMatch: true}
-                        field.newValue = newValueToPush
-                        // Validate the value of the new mapping
-                        this.validateField(field)
-                    }
-                }
-            })
-        },
-        instantiateProducts(fileId) {
+        instantiateProducts() {
             const productsToReturn = []
             
             // STEP 1) Loop through each of our available files and instantiate our products by key
@@ -350,127 +366,139 @@ export default {
                         // Check that the value does not already exists
                         let product = productsToReturn.find(x => x.datasource_id == keyValue)
                         if (!product) {
+                            // Instantiate the product
                             product = {
                                 datasource_id: keyValue,
-                                variants: [],
-                                assortments: [],
-                                prices: [],
-                                eans: []
                             }
+                            if(this.fieldsToReplace.find(x => x.name == 'variants' && x.enabled)) 
+                                product.variants = []
+                            if(this.replacePrices) 
+                                product.prices = []
+                            if(this.fieldsToReplace.find(x => x.name == 'assortments' && x.enabled)) 
+                                product.assortments = []
+                            if(this.fieldsToReplace.find(x => x.name == 'eans' && x.enabled)) 
+                                product.eans = []
+
                             productsToReturn.push(product)
                         }
 
                         // VARIANTS
-                        // Find / Instantiate this lines variant
-                        let variantKeyField = this.fieldsToMatch.find(x => x.name == 'variant_name')
-                        let variant = null
-                        // Check that the variant key is from this file
-                        if (variantKeyField.newValue.fileIndex == fileIndex && variantKeyField.newValue.fieldIndex != null) {
-                            // Find the variant keys index
-                            let variantKeyIndex = variantKeyField.newValue.fieldIndex
-                            // Find the variant keys value
-                            let variantKeyValue = line[variantKeyIndex]
-                            // Find this lines variant name
-                            variant = product.variants.find(x => x.name == variantKeyValue)
-                            if (!variant) {
-                                variant = {
-                                    name: variantKeyValue,
-                                    image: null,
-                                    sizes: []
+                        if (this.fieldsToReplace.find(x => x.name == 'variants' && x.enabled)) {
+                            // Find / Instantiate this lines variant
+                            let variantKeyField = this.fieldsToMatch.find(x => x.name == 'variant_name')
+                            let variant = null
+                            // Check that the variant key is from this file
+                            if (variantKeyField.newValue.fileIndex == fileIndex && variantKeyField.newValue.fieldIndex != null) {
+                                // Find the variant keys index
+                                let variantKeyIndex = variantKeyField.newValue.fieldIndex
+                                // Find the variant keys value
+                                let variantKeyValue = line[variantKeyIndex]
+                                // Find this lines variant name
+                                variant = product.variants.find(x => x.name == variantKeyValue)
+                                if (!variant) {
+                                    variant = {
+                                        name: variantKeyValue,
+                                        image: null,
+                                        sizes: []
+                                    }
+                                    product.variants.push(variant)
                                 }
-                                product.variants.push(variant)
                             }
                         }
 
                         // Assortments
-                        // Find / Instantiate this lines assortments
-                        let assortmentKeyField = this.fieldsToMatch.find(x => x.name == 'assortment_name')
-                        let assortment = null
-                        // Check that the assortment key is from this file
-                        if (assortmentKeyField.newValue.fileIndex == fileIndex) {
-                            // Find the assortment keys index
-                            let assortmentKeyIndex = assortmentKeyField.newValue.fieldIndex
-                            // Find the assortment keys value
-                            let assortmentKeyValue = line[assortmentKeyIndex]
-                            // Find this lines assortment name
-                            assortment = product.assortments.find(x => x.assortment_name == assortmentKeyValue)
-                            if (!assortment) {
-                                assortment = {
-                                    name: assortmentKeyValue,
-                                    box_ean: null,
-                                    box_size: null,
+                        if (this.fieldsToReplace.find(x => x.name == 'assortments' && x.enabled)) {
+                            // Find / Instantiate this lines assortments
+                            let assortmentKeyField = this.fieldsToMatch.find(x => x.name == 'assortment_name')
+                            let assortment = null
+                            // Check that the assortment key is from this file
+                            if (assortmentKeyField.newValue.fileIndex == fileIndex) {
+                                // Find the assortment keys index
+                                let assortmentKeyIndex = assortmentKeyField.newValue.fieldIndex
+                                // Find the assortment keys value
+                                let assortmentKeyValue = line[assortmentKeyIndex]
+                                // Find this lines assortment name
+                                assortment = product.assortments.find(x => x.assortment_name == assortmentKeyValue)
+                                if (!assortment) {
+                                    assortment = {
+                                        name: assortmentKeyValue,
+                                        box_ean: null,
+                                        box_size: null,
+                                    }
+                                    product.assortments.push(assortment)
                                 }
-                                product.assortments.push(assortment)
                             }
                         }
 
                         // CURRENCIES
-                        // Find / Instantiate this lines currencies
-                        let currency = null
-                        let currencies = this.currenciesToMatch
-                        
-                        // Check if we have single file containing all currencies
-                        if (this.singleCurrencyFile) {
-                            currencies = [this.currenciesToMatch[0]]
-                            let currencyObject = this.currenciesToMatch[0]
-                            // If so instantiate currencies the same way as we do for variants and assortments
-                            let currencyKeyField = currencyObject.fieldsToMatch.find(x => x.name == 'currency')
-                            // Check if the mapped currency field belongs to this file and is mapped
-                            if (currencyKeyField.newValue.fileIndex == fileIndex && currencyKeyField.newValue.fieldIndex != null) {
-                                // Find the currency keys index
-                                let currencyKeyIndex = currencyKeyField.newValue.fieldIndex
-                                // Find the currency keys value
-                                let currencyKeyValue = line[currencyKeyIndex]
-                                // Find this lines variant name
-                                currency = product.prices.find(x => x.currency == currencyKeyValue)
-
-                                if (!currency) {
-                                    currency = {
-                                        currency: currencyKeyValue,
-                                        wholesale_price: 0,
-                                        recommended_retail_price: 0,
-                                        mark_up: 0
-                                    }
-                                    product.prices.push(currency)
-                                }
-                            }
-                        }
-
-                        // Loop through our currencies to match
-                        currencies.forEach(thisCurrencyObject => {
+                        if (this.replacePrices) {
+                            // Find / Instantiate this lines currencies
+                            let currency = null
+                            let currencies = this.currenciesToMatch
+                            
                             // Check if we have single file containing all currencies
-                            if (!this.singleCurrencyFile) {
-                                // Instantiate a currency object
-                                currency = product.prices.find(x => x.currency == thisCurrencyObject.currencyName)
-                                if (!currency) {
-                                    currency = {
-                                        currency: thisCurrencyObject.currencyName,
-                                        wholesale_price: 0,
-                                        recommended_retail_price: 0,
-                                        mark_up: 0
+                            if (this.singleCurrencyFile) {
+                                currencies = [this.currenciesToMatch[0]]
+                                let currencyObject = this.currenciesToMatch[0]
+                                // If so instantiate currencies the same way as we do for variants and assortments
+                                let currencyKeyField = currencyObject.fieldsToMatch.find(x => x.name == 'currency')
+                                // Check if the mapped currency field belongs to this file and is mapped
+                                if (currencyKeyField.newValue.fileIndex == fileIndex && currencyKeyField.newValue.fieldIndex != null) {
+                                    // Find the currency keys index
+                                    let currencyKeyIndex = currencyKeyField.newValue.fieldIndex
+                                    // Find the currency keys value
+                                    let currencyKeyValue = line[currencyKeyIndex]
+                                    // Find this lines variant name
+                                    currency = product.prices.find(x => x.currency == currencyKeyValue)
+    
+                                    if (!currency) {
+                                        currency = {
+                                            currency: currencyKeyValue,
+                                            wholesale_price: 0,
+                                            recommended_retail_price: 0,
+                                            mark_up: 0
+                                        }
+                                        product.prices.push(currency)
                                     }
-                                    product.prices.push(currency)
                                 }
                             }
-                            // Loop through the currencies fields
-                            thisCurrencyObject.fieldsToMatch.forEach(field => {
-                                if (field.enabled && field.newValue.fileIndex == fileIndex) {
-                                    const currencyFieldValue = line[field.newValue.fieldIndex]
-                                    const currencyFieldName = field.name
-                                    // Check if we have matched a currency for this line
-                                    if (currency && currencyFieldName != 'currency') {
-                                        // If the currency exists, add the field value to it
-                                        currency[currencyFieldName] = currencyFieldValue
+    
+                            // Loop through our currencies to match
+                            currencies.forEach(thisCurrencyObject => {
+                                // Check if we have single file containing all currencies
+                                if (!this.singleCurrencyFile) {
+                                    // Instantiate a currency object
+                                    currency = product.prices.find(x => x.currency == thisCurrencyObject.currencyName)
+                                    if (!currency) {
+                                        currency = {
+                                            currency: thisCurrencyObject.currencyName,
+                                            wholesale_price: 0,
+                                            recommended_retail_price: 0,
+                                            mark_up: 0
+                                        }
+                                        product.prices.push(currency)
                                     }
                                 }
+                                // Loop through the currencies fields
+                                thisCurrencyObject.fieldsToMatch.forEach(field => {
+                                    if (field.newValue.fileIndex == fileIndex) {
+                                        const currencyFieldValue = line[field.newValue.fieldIndex]
+                                        const currencyFieldName = field.name
+                                        // Check if we have matched a currency for this line
+                                        if (currency && currencyFieldName != 'currency') {
+                                            // If the currency exists, add the field value to it
+                                            currency[currencyFieldName] = currencyFieldValue
+                                        }
+                                    }
+                                })
                             })
-                        })
+                        }
                              
                         // FIELDS
                         // Loop thorugh our fields to match, and check if they are matched to the current file
                         this.fieldsToMatch.forEach(field => {
                             // Check that the field has not been disabled
-                            if (field.enabled && field.newValue.fileIndex == fileIndex) {
+                            if (field.newValue.fileIndex == fileIndex) {
                                 const fieldValue = line[field.newValue.fieldIndex]
                                 const fieldName = field.name
 
@@ -527,7 +555,7 @@ export default {
 
             return productsToReturn
         },
-        async submitFiles() {
+        async onSubmit() {
 
             // First validate all fields
             // Loop through the fields and look for errors
@@ -535,7 +563,7 @@ export default {
             let valid = true
             this.fieldsToMatch.forEach(field => {
                 // Check if the field has been mapped
-                if (field.enabled && field.newValue.fieldIndex != null) {
+                if (field.newValue.fieldIndex != null) {
                     // Loop through all lines in the csv
                     // Find the file the field is mapped to to get the number of lines
                     const file = this.availableFiles[field.newValue.fileIndex]
@@ -549,196 +577,48 @@ export default {
                 return
             }
 
-            // Set new file data
-            const newFile = this.newFile
-            newFile.id = null
-            newFile.parent_id = this.currentFolder ? this.currentFolder.id : 0
-            newFile.workspace_id = this.currentWorkspace.id
+            // Instantiate products from the mapped CSVs
+            const newProducts = this.instantiateProducts()
 
-            this.uploadingFile = true
+            // Loop through the instantiated products and find a match in the existing products to update them
+            this.products.forEach(product => {
+                const newProduct = newProducts.find(x => x.datasource_id == product.datasource_id)
+                Object.assign(product, newProduct)
+            })
 
-            // First we need to create a file for the products, since the API requires that products be uploaded to an existing file
-            await this.insertOrUpdateFile(newFile)
-
-            // Then we will instantiate the products and attempt to upload them
-            const newProducts = this.instantiateProducts(newFile.id)
-            await this.insertProducts({file: newFile, products: newProducts, addToState: false})
+            // Send an update request to the API
+            await Promise.all(this.products.map(async product => {
+                await this.updateProduct(product)
+            }))
             .then(() => {
                 this.$emit('close')
                 this.reset()
             }).catch(err => {
+                console.log(err)
                 window.alert('Something went wrong. Please try again')
             })
-            this.uploadingFile = false
         },
         reset() {
             this.availableFiles = []
-            this.singleCurrencyFile = true
+            this.singleCurrencyFile = false
             this.currentScreenIndex = 0
             this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]
             // Reset fields to match
-            this.fieldsToMatch.forEach(field => {
+            this.allFields.forEach(field => {
                 field.enabled = true
                 field.error = false
                 field.newValue = {fileIndex: null, fieldName: null, fieldIndex: null}
+            })
+            this.replacePrices = false
+            this.fieldsToReplace.forEach(field => {
+                field.enabled = false
             })
         }
     },
 }
 </script>
 
-<style lang="scss">
-@import '~@/_variables.scss';
-
-    .upload-to-file-modal {
-        &.map-fields {
-            .modal {
-                width: 1068px;
-                max-width: 90vw;
-                .body {
-                    max-width: none;
-                    .input-field {
-                        &.auto-match {
-                            .input-wrapper {
-                                border-color: $primary
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-</style>
-
 <style scoped lang="scss">
 @import '~@/_variables.scss';
-
-    .upload-to-file-modal {
-        .form-controls {
-            display: flex;
-            justify-content: flex-end;
-            > :not(:last-child) {
-                margin-right: 16px;
-            }
-        }
-        .big-icon {
-            font-size: 60px;
-            margin: 32px 0 48px;
-        }
-        .files-wrapper {
-            margin: 32px 0 32px;
-            width: 100%;
-            .file-to-upload {
-                display: flex;
-                justify-content: space-between;
-                width: 100%;
-                align-items: center;
-                height: 40px;
-                padding: 4px 4px 4px 8px;
-                border: solid 1px $divider;
-                border-radius: 4px;
-                span {
-                    color: $primary;
-                }
-                &:not(:last-child) {
-                    margin-bottom: 4px;
-                }
-            }
-        }
-    }
-    .map-fields {
-        display: flex;
-        justify-content: center;
-        h3 {
-            padding-left: 24px;
-            margin: 48px 0 12px;
-            i {
-                margin-left: 8px;
-            }
-            &:hover {
-                i {
-                    color: $font;
-                }
-            }
-        }
-        table {
-            tr {
-                &.disabled {
-                    .input-field {
-                        opacity: .5;
-                    }
-                }
-                .input-field {
-                    width: 240px;
-                }
-            }
-        }
-        .link-ids {
-            .map-fields-table {
-                padding-left: 24px;
-            }
-        }
-        .map-currencies {
-            .single-currency-file-table {
-                margin-bottom: 32px;
-                td {
-                    padding-right: 4px
-                }
-            }
-            .currency-wrapper {
-                margin-bottom: 32px;
-                h4 {
-                    padding-left: 28px;
-                    margin-top: 0;
-                    margin-bottom: 4px;
-                }
-                .currency-header {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-bottom: 8px;
-                    align-items: flex-end;
-                    padding-left: 20px;
-                     p {
-                        padding-left: 24px;
-                        .small {
-                            font-size: 12px;
-                        }
-                    }
-                }
-                .input-field {
-                    width: 240px;
-                }
-            }
-        }
-        .available-fields {
-            margin-top: 116px;
-            background: $grey2;
-            border-radius: 4px;
-            padding: 12px 4px 8px 8px;
-            margin-left: 12px;
-            .inner {
-                max-height: 800px;
-                overflow-y: auto;
-                padding-right: 4px;
-            }
-            .fields-wrapper {
-                margin-top: 12px;
-            }
-            .field {
-                background: white;
-                border-radius: 4px;
-                height: 32px;
-                line-height: 32px;
-                padding: 0 8px;
-                margin-top: 4px;
-                width: 200px;
-                white-space: nowrap;
-            }
-        }
-        .form-controls {
-            margin-top: 32px;
-        }
-    }
 
 </style>

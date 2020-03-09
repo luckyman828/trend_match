@@ -178,8 +178,7 @@
                 <span>Select file to copy selections from</span>
             </template>
             <div class="item-group">
-                <!-- <BaseSelectButtons type="radio" search="true" :options="allFiles"/> -->
-                <BaseSelectButtons type="radio" search="true" :options="files.filter(x => x.type == 'File')"
+                <BaseSelectButtons type="radio" search="true" :options="allFiles.filter(x => x.type == 'File')"
                 optionNameKey="name" v-model="fileToClone" :submitOnChange="true"/>
             </div>
             <div class="item-group">
@@ -219,16 +218,16 @@ export default {
         moveSelectionActive: false,
         selectionToMove: null,
         selectionToMoveParent: null,
-        allFiles: [],
         fileToClone: null,
     }},
     computed: {
-        ...mapGetters('files', ['currentFile', 'files']),
+        ...mapGetters('files', ['currentFile', 'files', 'allFiles']),
     },
     methods: {
         ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection', 
         'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection']),
         ...mapMutations('selections', ['insertSelections']),
+        ...mapActions('files', ['fetchAllFiles']),
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
             this.sortArray(this.selections, sortAsc, sortKey)
@@ -403,7 +402,7 @@ export default {
         async onShowCloneSetupContext(e) {
             // Check if we alreday fetched all files -> else fetch them
             if (this.allFiles.length <= 0) {
-                // this.fetchFiles()
+                await this.fetchAllFiles()
             }
             const contextMenu = this.$refs.contextMenuCloneSetup
             contextMenu.show(e)
@@ -413,26 +412,22 @@ export default {
             // Clone selections and their users to the new file
             // Fetch file selections
             const selections = await this.fetchSelections({file, addToState: false})
-            console.log(selections)
             // We have to copy the selection structure as well
             // This means we have to insert one level of selections at a time
             // Transform the selections into a tree structure 
             const selectionTree = await this.createSelectionTree(selections)
             // Loop through all selections and upload them
-            console.log(selectionTree)
             selectionTree.forEach(rootSelection => {
                 this.cloneSelectionTree(rootSelection)
             })
         },
         async cloneSelectionTree(selection) {
-            console.log(JSON.parse(JSON.stringify(selection)))
             // Recursive function that calls itself for all children of a selection until there are no more children
             // Make a clone of the selection to upload
             const newSelection = JSON.parse(JSON.stringify(selection))
             // Fetch the selection with its teams and users so we can add them to the clone
             const selectionWithTeamsAndUsers = await this.fetchSelection({selectionId: selection.id, addToState: false})
             // Set the selection ID to null, so we create a new selection
-            console.log(JSON.parse(JSON.stringify(selectionWithTeamsAndUsers)))
             newSelection.id = null
             await this.insertSelection({file: this.currentFile, selection: newSelection})
             // Upload the fetched users and teams to our new selection
@@ -467,8 +462,8 @@ export default {
                     max-width: 48px
                 }
                 &.title { // Title
-                    min-width: 240px;
-                    max-width: 240px;
+                    min-width: 340px;
+                    max-width: 340px;
                 }
                 &.status { // Status
                     min-width: 202px;

@@ -121,7 +121,6 @@ export default {
             commit('setUsersStatus', 'success')
         },
         async fetchSelectionTeams({ commit, dispatch }, selection) {
-            console.log('fetch selection teams')
             // Get teams for selection
             commit('setTeamsStatus', 'loading')
             let teams = []
@@ -177,8 +176,6 @@ export default {
             })
         },
         async addUsersToSelection({ commit, dispatch }, { selection, users, ignoreRole = true }) {
-            console.log(ignoreRole)
-            console.log(users)
             // Commit mutation to state
             await commit('addUsersToSelection', {
                 selection,
@@ -384,19 +381,13 @@ export default {
             if (stateSelection) stateSelection.team_count = selection.teams.length
         },
         setAllSelectionUsers(state, { selection, users }) {
-            console.log('setting all selection users')
-            console.log(selection)
-            console.log(users)
             Vue.set(selection, 'allUsers', users)
             Vue.set(selection, 'user_count', users.length)
             // Also update the selection if it exists in our state
             const stateSelection = state.selections.find(x => x.id == selection.id)
             if (stateSelection) {
-                console.log('found state selection')
-                console.log(stateSelection)
                 Vue.set(stateSelection, 'allUsers', users)
                 Vue.set(stateSelection, 'user_count', users.length)
-                console.log(stateSelection)
             }
         },
     },
