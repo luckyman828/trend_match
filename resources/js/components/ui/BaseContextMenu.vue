@@ -101,9 +101,11 @@ export default {
             // Only listen if the contextMenu is visible
             if(this.visible && event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
                 const key = event.code
-                this.hide()
-                // Get the key name and emit it
-                this.$emit('keybind-'+event.key,event)
+                if (key != 'Tab' && key != 'ShiftKey') {
+                    this.hide()
+                    // Get the key name and emit it
+                    this.$emit('keybind-'+event.key,event)
+                }
             }
         },
         clickHandler(event) {
@@ -112,7 +114,10 @@ export default {
                 const el = event.target
 
                 // Check if we have clicked an item
-                if (el.classList.contains('item') && !el.classList.contains('no-close') && el.closest('.context-menu')) {
+                if (el.classList.contains('item') 
+                && !el.classList.contains('no-close') 
+                // && !item.classList.contains('context-menu-item')
+                && el.closest('.context-menu')) {
                     this.hide()
                     return
                 } 
@@ -120,7 +125,9 @@ export default {
                 else {
                     // find the item parent
                     const item = el.closest('.item')
-                    if (item && !item.classList.contains('no-close') && item.closest('.context-menu')) {
+                    if (item && !item.classList.contains('no-close') 
+                    // && !item.classList.contains('context-menu-item')
+                    && item.closest('.context-menu')) {
                         this.hide()
                         return
                     }
@@ -179,7 +186,7 @@ export default {
             color: $dark05;
             display: flex;
             align-items: center;
-            &:not(.item-wrapper) {
+            &:not(.item-wrapper):not(.context-menu-item) {
                 cursor: pointer;
                 &:hover {
                     background: $light1;
@@ -196,10 +203,10 @@ export default {
                     }
                 }
             }
-            &.disabled {
-                pointer-events: none;
-                opacity: .7;
-            }
+            // &.disabled {
+            //     // pointer-events: none;
+            //     opacity: .7;
+            // }
         }
         .header {
             padding-left: 16px;

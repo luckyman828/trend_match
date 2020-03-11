@@ -113,11 +113,6 @@ export default {
             if (team.id) {
                 apiUrl = `/teams/${team.id}`
                 requestMethod = 'put'
-            } else {
-                // Get a unique id for the new team
-                // const newId = await dispatch('persist/useUid', null, { root: true })
-                // // team.id = newId
-                // console.log(newId)
             }
 
             await axios({

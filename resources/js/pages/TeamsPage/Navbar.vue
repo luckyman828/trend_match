@@ -1,6 +1,5 @@
 <template>
     <div class="navbar-team">
-        <CreateTeamModal ref="createTeamModal"/>
 
         <div class="flex-wrapper">
             <div class="items-left">
@@ -10,11 +9,12 @@
             </div>
             <div class="items-right">
 
-                <button class="primary" @click="$refs.createTeamModal.show()"><span>Add new: Team</span></button>
+                <button class="primary" @click="addTeamModalVisible = true"><span>Add new: Team</span></button>
 
             </div>
         </div>
 
+        <CreateTeamModal :show="addTeamModalVisible" @close="addTeamModalVisible = false"/>
     </div>
 </template>
 
@@ -26,22 +26,10 @@ export default {
     name: "teamsPageNavbar",
     data: function () { return {
         addTeamName: '',
+        addTeamModalVisible: false,
     }},
     components: {
         CreateTeamModal,
-    },
-    computed: {
-        addTeamValid () {
-            if (this.teams.length <= 0)
-                return false
-                else
-                    if (this.teams.find(x => x.title.toLowerCase() == this.addTeamName.toLowerCase()))
-                        return false
-            return true
-        },
-        teams () {
-            return Team.all()
-        }
     },
 };
 </script>

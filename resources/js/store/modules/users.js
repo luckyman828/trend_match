@@ -1,4 +1,5 @@
 import axios from 'axios'
+import router from '../../router'
 
 export default {
     namespaced: true,
@@ -103,9 +104,36 @@ export default {
             const apiUrl = `/admins/users/${user.id}`
             axios.put(apiUrl, { name: user.name, email: user.email })
         },
-        async updateUserPassword({ commit }, user) {
-            const apiUrl = `/admins/users/${user.id}/change-password`
-            axios.post(apiUrl, { password: user.password })
+        async updateUserPassword({ commit, rootGetters, dispatch }, user) {
+            const authUser = rootGetters['auth/authUser']
+            let isSelf
+            let apiUrl
+            let data
+            // Self
+            if (authUser.id == user.id) {
+                isSelf = true
+                apiUrl = `/auth/change-password`
+                data = {
+                    new_password: user.password,
+                    old_password: user.oldPassword,
+                }
+            }
+            // Another user
+            else {
+                apiUrl = `/admins/users/${user.id}/change-password`
+                data = { password: user.password }
+            }
+            await axios
+                .post(apiUrl, data)
+                .then(response => {
+                    if (isSelf) router.go()
+                })
+                .catch(err => {
+                    const errMsg = isSelf
+                        ? 'Something went wrong. Make sure you entered your old password correctly.'
+                        : 'Something went wrong'
+                    dispatch('alerts/showAlert', errMsg, { root: true })
+                })
         },
     },
 

@@ -15,7 +15,7 @@
         </td>
         <td class="id clickable" @click="$emit('onViewSingle',product)">{{product.datasource_id}}</td>
         <td class="title"><span class="clickable" @click="$emit('onViewSingle',product)">
-            <span v-tooltip="product.title.length > 24 && product.title">{{product.title | truncate(24)}}</span>
+            <span v-tooltip="!!product.title && product.title.length > 24 && product.title">{{product.title | truncate(24)}}</span>
         </span></td>
         
         <v-popover class="focus" :disabled="product.focus.length <= 0" tabindex="-1">

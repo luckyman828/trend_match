@@ -25,7 +25,7 @@
                         <span>{{team.title}}</span>
                     </td>
                     <td class="users">
-                        <span>{{team.users.length}}</span>
+                        <span>{{team.user_count}}</span>
                     </td>
                     <td class="action">
                         <button class="invisible ghost-hover" @click="showTeamContext($event, team)"><i class="far fa-ellipsis-h medium"></i></button>
