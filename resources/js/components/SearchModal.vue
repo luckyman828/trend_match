@@ -154,9 +154,11 @@ export default {
             this.results = fuse.search(this.searchStr)
         },
         productImg(variant) {
-            if (variant.blob_id != null)
-                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-            else return variant.image
+            if (variant) {
+                if (variant.blob_id != null)
+                    return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
+                else return variant.image
+            }
         },
     },
 }
