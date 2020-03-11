@@ -7,7 +7,7 @@
         </template>
         <template v-slot>
             <SelectionTeamsTable v-if="show && !loading" :selection="selection"/>
-            <SelectionUsersTable style="margin-top: 40px;" v-if="show && !loading" :selection="selection" :users="selection.allUsers"/>
+            <SelectionUsersTable style="margin-top: 40px;" v-if="show && !loading" :selection="selection" :users="selection.users"/>
         </template>
     </BaseFlyin>
 </template>
@@ -27,8 +27,8 @@ export default {
         'selection',
     ],
     data: function() { return {
-        loadingSelectionTeamUsers: true,
-        loadingSelection: true,
+        loadingSelectionTeamUsers: false,
+        loadingSelection: false,
         fetchingData: true,
     }},
     watch: {
@@ -63,8 +63,8 @@ export default {
         async fetchData() {
             this.fetchingData = true
             await this.fetchSelection({selectionId: this.selection.id}) // Fetches selection with users and teams
-            await this.fetchSelectionTeamsUsers(this.selection.teams)
-            await this.calculateAllSelectionUsers(this.selection)
+            // await this.fetchSelectionTeamsUsers(this.selection.teams)
+            // await this.calculateAllSelectionUsers(this.selection)
             this.fetchingData = false
         },
         async fetchSelectionTeamsUsers(teams) {
