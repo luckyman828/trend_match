@@ -1,22 +1,33 @@
 <template>
     <BaseFlyin class="edit-product-single" :show="show" @close="onCloseSingle" :columns=2>
         <template v-slot:header>
-            <BaseFlyinHeader v-if="show" :title="product.title" :next="nextProduct" :prev="prevProduct"
+            <BaseFlyinHeader v-if="show" :next="nextProduct" :prev="prevProduct"
             @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
-                <div class="item-group">
-                    <div class="last-update" v-if="product.created_at != product.updated_at">
-                        <span>Changes saved</span>
-                        <span>{{product.updated_at}}</span>
+                <template v-slot:left>
+                    <div class="item-group product-title-wrapper">
+                        <h3>{{`#${product.datasource_id}: ${product.title}`}}</h3>
+                        <span class="product-count">Product 
+                            {{availableProducts.findIndex(x => x.id == product.id)+1}} 
+                            of 
+                            {{availableProducts.length}}</span>
                     </div>
-                    <div class="hotkey-wrapper" v-tooltip="{content: !productToEdit.datasource_id && 'Product must have an ID'}">
-                        <!-- <h3><BaseEditable :value="product.title" :type="'text'" v-model="product.title"/></h3> -->
-                        <button class="ghost save-button" :class="{disabled: !saveActive}"
-                        @click="saveActive && onUpdateProduct()"><i class="far fa-save">
-                            </i><span>Save</span>
-                        </button>
-                        <span class="hotkey"><span class="key">S</span> Save</span>
+                </template>
+                <template v-slot:right>
+                    <div class="item-group">
+                        <div class="last-update" v-if="product.created_at != product.updated_at">
+                            <span>Changes saved</span>
+                            <span>{{product.updated_at}}</span>
+                        </div>
+                        <div class="hotkey-wrapper" v-tooltip="{content: !productToEdit.datasource_id && 'Product must have an ID'}">
+                            <!-- <h3><BaseEditable :value="product.title" :type="'text'" v-model="product.title"/></h3> -->
+                            <button class="ghost save-button" :class="{disabled: !saveActive}"
+                            @click="saveActive && onUpdateProduct()"><i class="far fa-save">
+                                </i><span>Save</span>
+                            </button>
+                            <span class="hotkey"><span class="key">S</span> Save</span>
+                        </div>
                     </div>
-                </div>
+                </template>
             </BaseFlyinHeader>
         </template>
         <template v-slot v-if="show">
@@ -293,7 +304,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'products']),
+        ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'products', 'availableProducts']),
         ...mapGetters('files', ['currentFile']),
         product () {
             return this.productToEdit
@@ -635,6 +646,16 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
+
+.product-title-wrapper {
+    flex-direction: column;
+    justify-content: flex-start;
+    .product-count {
+        font-size: 12px;
+        line-height: 1;
+    }
+}
+
     .save-button {
         min-width: 72px;
     }

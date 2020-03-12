@@ -75,6 +75,12 @@
                     <span>Change Workspace <u>R</u>ole</span>
                 </BaseContextMenuItem>
 
+                <BaseContextMenuItem iconClass="far fa-lock" :disabled="slotProps.item.id != authUser.id" 
+                v-tooltip="slotProps.item.id != authUser.id 
+                && 'Can only set password of self'"
+                @click.stop="onSetUserPassword(slotProps.mouseEvent, slotProps.item)">
+                    <span>Set <u>P</u>assword</span>
+                </BaseContextMenuItem>
                 <!-- <BaseContextMenuItem iconClass="far fa-lock" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
                 v-tooltip="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id 
                 && 'Can only set password of self. Admins can set the password of others'"

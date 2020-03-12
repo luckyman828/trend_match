@@ -1,24 +1,35 @@
 <template>
     <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=4>
         <template v-slot:header>
-            <BaseFlyinHeader v-if="show" :title="`#${product.datasource_id}: ${product.title}`" :next="nextProduct" :prev="prevProduct"
+            <BaseFlyinHeader v-if="show" :next="nextProduct" :prev="prevProduct"
             @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
-                <div class="item-group">
-                    <button :class="product[currentAction] != 'Focus' ? 'ghost': 'primary'" 
-                    @click="onUpdateAction(product, 'Focus')">
-                        <i class="far fa-star"></i>
-                    </button>
-                    <button :class="product[currentAction] != 'In' ? 'ghost': 'green'" 
-                    @click="onUpdateAction(product, 'In')">
-                        <i class="far fa-heart"></i>
-                        <span>In</span>
-                    </button>
-                    <button :class="product[currentAction] != 'Out' ? 'ghost': 'red'" 
-                    @click="onUpdateAction(product, 'Out')">
-                        <i class="far fa-times-circle"></i>
-                        <span>out</span>
-                    </button>
-                </div>
+                <template v-slot:left>
+                    <div class="item-group product-title-wrapper">
+                        <h3>{{`#${product.datasource_id}: ${product.title}`}}</h3>
+                        <span class="product-count">Product 
+                            {{availableProducts.findIndex(x => x.id == product.id)+1}} 
+                            of 
+                            {{availableProducts.length}}</span>
+                    </div>
+                </template>
+                <template v-slot:right>
+                    <div class="item-group">
+                        <button :class="product[currentAction] != 'Focus' ? 'ghost': 'primary'" 
+                        @click="onUpdateAction(product, 'Focus')">
+                            <i class="far fa-star"></i>
+                        </button>
+                        <button :class="product[currentAction] != 'In' ? 'ghost': 'green'" 
+                        @click="onUpdateAction(product, 'In')">
+                            <i class="far fa-heart"></i>
+                            <span>In</span>
+                        </button>
+                        <button :class="product[currentAction] != 'Out' ? 'ghost': 'red'" 
+                        @click="onUpdateAction(product, 'Out')">
+                            <i class="far fa-times-circle"></i>
+                            <span>out</span>
+                        </button>
+                    </div>
+                </template>
             </BaseFlyinHeader>
         </template>
         <template v-slot v-if="show">
@@ -154,7 +165,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct']),
+        ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'availableProducts']),
         ...mapGetters('selections', ['currentSelectionId', 'currentSelection', 'currentSelectionModeAction']),
         product () {
             return this.currentProduct
@@ -226,6 +237,15 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
+
+.product-title-wrapper {
+    flex-direction: column;
+    justify-content: flex-start;
+    .product-count {
+        font-size: 12px;
+        line-height: 1;
+    }
+}
 
 .product-single {
     .prices {

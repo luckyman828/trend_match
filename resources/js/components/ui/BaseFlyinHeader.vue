@@ -2,10 +2,10 @@
     <div class="flyin-header">
         <div class="left">
             <button class="circle close" @click="$emit('closeFlyin');$emit('close')"><i class="fal fa-times"></i></button>
-            <h3>{{title}}</h3>
+            <slot name="left"/>
         </div>
         <div class="right">
-            <slot/>
+            <slot name="right"/>
             <BaseFlyinHeaderNavigation v-if="!disableNavigation" :next="next" :prev="prev" @prev="$emit('prev')" @next="$emit('next')"/>
         </div>
     </div>
@@ -46,7 +46,7 @@ export default {
             align-items: center;
             .item-group {
                 display: flex;
-                align-items: center;
+                // align-items: center;
                 > *:not(:last-child) {
                     margin-right: 8px;
                 }
