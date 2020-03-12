@@ -216,13 +216,33 @@ export default {
         async removeUsersFromSelection({ commit, dispatch }, { selection, users }) {
             // Commit mutation to state
             await commit('removeUsersFromSelection', { selection, users })
+            // Find the users to deny and the users to remove
+            // Users added through a team have to be denied. Manually added users can simply be removed
+            const usersToDeny = []
+            const usersToRemove = []
+            users.forEach(user => {
+                if (user.inherit_from_teams) {
+                    usersToDeny.push(user)
+                } else {
+                    usersToRemove.push(user)
+                }
+            })
             // Send request to API
             const apiUrl = `/selections/${selection.id}/users`
             await axios.post(apiUrl, {
                 method: 'Remove',
-                users: users.map(x => {
+                users: usersToRemove.map(x => {
                     return {
                         id: x.id,
+                    }
+                }),
+            })
+            await axios.post(apiUrl, {
+                method: 'Add',
+                users: usersToDeny.map(x => {
+                    return {
+                        id: x.id,
+                        role: 'Denied',
                     }
                 }),
             })
