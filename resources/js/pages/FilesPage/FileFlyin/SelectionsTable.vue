@@ -575,6 +575,12 @@ export default {
             // Set the selection ID to null, so we create a new selection
             newSelection.id = null
             await this.insertSelection({file: this.currentFile, selection: newSelection})
+            // Fetch the selections settings (will be added to the selection as a settings object)
+            await this.fetchSelectionSettings(selection)
+            // Save selection settings to the new selection
+            newSelection.settings = selection.settings
+            console.log(newSelection)
+            this.updateSelectionSettings(newSelection)
             // Upload the fetched users and teams to our new selection
             if (selectionWithTeamsAndUsers.users.length > 0) 
                 this.addUsersToSelection({selection: newSelection, users: selectionWithTeamsAndUsers.users, ignoreRole: false})
